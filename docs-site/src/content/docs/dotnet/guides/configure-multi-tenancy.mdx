@@ -61,7 +61,9 @@ Add the configuration to `appsettings.json`:
     "IsEnabled": true,
     "TenantIdClaimType": "tenant_id",
     "TenantIdHeaderName": "X-Tenant-Id",
-    "HeaderTrustMode": "Unrestricted"
+    "HeaderTrustMode": "Unrestricted",
+    "DomainTemplate": "{0}.myapp.com",
+    "QueryStringParamName": "__tenant"
   }
 }
 ```
@@ -72,6 +74,8 @@ Add the configuration to `appsettings.json`:
 | `TenantIdClaimType` | `"tenant_id"` | JWT claim name containing the tenant ID |
 | `TenantIdHeaderName` | `"X-Tenant-Id"` | HTTP header name for explicit tenant specification |
 | `HeaderTrustMode` | `"Unrestricted"` | `Unrestricted` (accept header as-is) or `CrossValidate` (header must match JWT claim) |
+| `DomainTemplate` | `null` | Domain template with `{0}` placeholder (e.g., `"{0}.myapp.com"`). `null` = disabled |
+| `QueryStringParamName` | `"__tenant"` | Query string parameter name for dev/debug. `null` = disabled |
 
 :::caution[Security hardening]
 By default, the `X-Tenant-Id` header is trusted without cross-validation
@@ -83,12 +87,16 @@ between the header and the JWT `tenant_id` claim return **403 Forbidden**.
 
 ### Resolution order
 
-Two resolvers are registered by default, executed in `Order` sequence (first match wins):
+Four resolvers are registered by default, executed in `Order` sequence (first match wins):
 
-1. **HeaderTenantResolver** (Order 100) -- reads the `X-Tenant-Id` header, used for
+1. **DomainTenantResolver** (Order 50) -- extracts subdomain from `Host` header,
+   resolves via `ITenantReader`. Enabled when `DomainTemplate` is set
+2. **HeaderTenantResolver** (Order 100) -- reads the `X-Tenant-Id` header, used for
    service-to-service calls
-2. **JwtClaimTenantResolver** (Order 200) -- reads the `tenant_id` claim from the JWT token,
+3. **JwtClaimTenantResolver** (Order 200) -- reads the `tenant_id` claim from the JWT token,
    used for user-authenticated requests via Keycloak
+4. **QueryStringTenantResolver** (Order 300) -- reads `?__tenant={guid}` from the query
+   string, intended for development and debugging
 
 ## Step 4 -- Choose an isolation strategy
 
@@ -263,37 +271,59 @@ await ProcessTenantDataAsync();
 Use this pattern for `IHostedService` implementations that process multiple tenants
 sequentially, or in integration tests that simulate tenant-specific requests.
 
-## Step 6 -- Add a custom resolver
+## Step 6 -- Configure host schema (SchemaPerTenant only)
 
-To resolve tenants from subdomains or other sources, implement `ITenantResolver`:
+When using `SchemaPerTenant`, host modules (identity, audit, jobs) need an explicit
+schema. Configure it in `appsettings.json`:
+
+```json
+{
+  "TenantIsolation": {
+    "Strategy": "SchemaPerTenant",
+    "HostSchema": "host"
+  }
+}
+```
+
+All host modules automatically use the `host` schema via `GranitDbDefaults.HostDbSchema`.
+Tenant modules use unqualified table names, letting `SET search_path` route to the
+correct tenant schema.
+
+Create the host schema at startup (EF Core never creates schemas automatically):
 
 ```csharp
-public sealed class SubdomainTenantResolver : ITenantResolver
+await SchemaEnsurer.EnsureSchemasAsync(dbContext, cancellationToken, "host");
+```
+
+## Step 7 -- Add a custom resolver (optional)
+
+The four built-in resolvers cover most use cases. For additional strategies
+(e.g., cookie-based), implement `ITenantResolver`:
+
+```csharp
+public sealed class CookieTenantResolver : ITenantResolver
 {
-    public int Order => 50;  // runs before Header (100) and JWT (200)
+    public int Order => 150; // Between header (100) and JWT (200)
 
     public Task<TenantInfo?> ResolveAsync(
         HttpContext context,
         CancellationToken cancellationToken = default)
     {
-        var host = context.Request.Host.Host;
-        var subdomain = host.Split('.')[0];
+        if (!context.Request.Cookies.TryGetValue("tenant_id", out string? value))
+            return Task.FromResult<TenantInfo?>(null);
 
-        if (Guid.TryParse(subdomain, out var tenantId))
-        {
-            return Task.FromResult<TenantInfo?>(
-                new TenantInfo(tenantId));
-        }
+        if (!Guid.TryParse(value, out Guid tenantId))
+            return Task.FromResult<TenantInfo?>(null);
 
-        return Task.FromResult<TenantInfo?>(null);
+        return Task.FromResult<TenantInfo?>(new TenantInfo(tenantId));
     }
 }
 ```
 
-Register it in your module:
+Register it in DI:
 
 ```csharp
-services.AddSingleton<ITenantResolver, SubdomainTenantResolver>();
+services.AddScoped<ITenantResolver, CookieTenantResolver>();
 ```
 
 ## ICurrentTenant API reference
@@ -364,4 +394,4 @@ curl -s http://localhost:5000/api/v1/products \
 
 - [Configure caching](/dotnet/guides/configure-caching/) -- set up distributed caching with tenant-aware keys
 - [Create a module](/dotnet/guides/create-a-module/) -- build a tenant-aware module from scratch
-- [Multi-tenancy reference](/dotnet/infrastructure/multi-tenancy/) -- full API and architecture details
+- [Multi-tenancy reference](/dotnet/infrastructure/multi-tenancy/) -- overview, resolvers, isolation strategies, cache isolation, host/tenant separation

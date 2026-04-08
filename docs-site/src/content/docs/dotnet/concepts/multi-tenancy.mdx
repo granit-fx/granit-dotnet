@@ -23,37 +23,27 @@ a tenant WHERE clause.
 ## Tenant resolution
 
 The middleware pipeline resolves the tenant identity on every request.
-Two built-in resolvers run in priority order — **first match wins**:
+Four built-in resolvers run in priority order — **first match wins**:
 
 | Order | Resolver | Source | Use case |
 |-------|----------|--------|----------|
+| 50 | `DomainTenantResolver` | Subdomain → `ITenantReader` | SaaS branded URLs (`acme.monsaas.com`) |
 | 100 | `HeaderTenantResolver` | `X-Tenant-Id` header | Service-to-service calls, API gateways |
 | 200 | `JwtClaimTenantResolver` | `tenant_id` JWT claim | End-user requests via Keycloak |
+| 300 | `QueryStringTenantResolver` | `?__tenant={guid}` | Development and debugging |
+
+The domain resolver uses a configurable template (`{0}.monsaas.com`) and resolves
+the identifier via `ITenantReader.FindByIdentifierAsync()`. The query string
+resolver is a dev/debug fallback — disable in production by setting
+`QueryStringParamName` to `null`.
 
 ### Custom resolvers
 
-Implement `ITenantResolver` to add your own resolution logic (e.g., subdomain-based):
+Implement `ITenantResolver` to add your own resolution logic (e.g., cookie-based).
+Register in DI — the pipeline auto-discovers all implementations:
 
 ```csharp
-public class SubdomainTenantResolver : ITenantResolver
-{
-    public int Order => 50; // Runs before header and JWT resolvers
-
-    public Task<Guid?> ResolveAsync(HttpContext context, CancellationToken cancellationToken)
-    {
-        var host = context.Request.Host.Host;
-        var subdomain = host.Split('.')[0];
-
-        // Look up tenant ID from subdomain — your logic here
-        return Task.FromResult<Guid?>(null);
-    }
-}
-```
-
-Register it in your module:
-
-```csharp
-services.AddTransient<ITenantResolver, SubdomainTenantResolver>();
+services.AddScoped<ITenantResolver, CookieTenantResolver>();
 ```
 
 ## Async-safe tenant context
@@ -279,7 +269,9 @@ public class ReportService(ICurrentTenant currentTenant)
 
 ## Further reading
 
-- [Multi-Tenancy reference](/dotnet/infrastructure/multi-tenancy/) — configuration,
-  API surface, and extension methods
+- [Multi-Tenancy reference](/dotnet/infrastructure/multi-tenancy/) — overview,
+  resolvers, isolation strategies, cache isolation, host/tenant separation
+- [Configure multi-tenancy](/dotnet/guides/configure-multi-tenancy/) — step-by-step
+  setup guide
 - [Persistence concept](./persistence/) — how query filters and interceptors
   integrate with tenant isolation

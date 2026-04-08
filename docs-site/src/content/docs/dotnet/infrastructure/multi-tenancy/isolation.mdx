@@ -1,0 +1,199 @@
+---
+title: "Isolation Strategies — Data Separation"
+description: "Three EF Core isolation strategies (shared database, schema-per-tenant, database-per-tenant), hybrid model, SchemaEnsurer, and migration workflows."
+sidebar:
+  label: Isolation Strategies
+  order: 3
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Granit supports three data isolation strategies for multi-tenant applications.
+You can choose a single strategy for all tenants, or mix strategies dynamically —
+premium tenants get dedicated databases while standard tenants share a single database.
+
+## Strategy comparison
+
+| Strategy | Isolation | Tenant limit | Backup | Operational cost |
+|----------|----------|-------------|--------|-----------------|
+| `SharedDatabase` | Logical (WHERE clause) | Unlimited | Single backup | Lowest |
+| `SchemaPerTenant` | Schema-level | ~1,000/database | Per-schema `pg_dump -n` | Medium |
+| `DatabasePerTenant` | Physical (separate DB) | ~200 (with PgBouncer) | Per-tenant | Highest |
+
+## Decision matrix
+
+```mermaid
+flowchart TD
+    A[New tenant onboarding] --> B{"ISO 27001 physical<br/>separation required?"}
+    B -- Yes --> C[DatabasePerTenant]
+    B -- No --> D{"More than 1,000<br/>tenants expected?"}
+    D -- Yes --> E[SharedDatabase]
+    D -- No --> F[SchemaPerTenant]
+```
+
+## Configuration
+
+<Tabs>
+<TabItem label="Shared database">
+
+All tenants share one database. Isolation is enforced through EF Core query filters
+on `IMultiTenant` entities. Default strategy — no additional configuration needed.
+
+```json
+{
+  "TenantIsolation": {
+    "Strategy": "SharedDatabase"
+  }
+}
+```
+
+```csharp
+builder.Services.AddGranitIsolatedDbContext<AppDbContext>(
+    configureShared: options =>
+        options.UseNpgsql(connectionString));
+```
+
+</TabItem>
+<TabItem label="Schema per tenant">
+
+Each tenant gets a dedicated PostgreSQL schema. The `TenantSchemaConnectionInterceptor`
+executes `SET search_path` unconditionally on every connection open.
+
+```json
+{
+  "TenantIsolation": {
+    "Strategy": "SchemaPerTenant",
+    "HostSchema": "host"
+  }
+}
+```
+
+```csharp
+builder.Services.AddGranitIsolatedDbContext<AppDbContext>(
+    configureShared: options =>
+        options.UseNpgsql(connectionString),
+    configureSchemaPerTenant: options =>
+        options.UseNpgsql(connectionString),
+    configureTenantSchema: schema =>
+    {
+        schema.NamingConvention = TenantSchemaNamingConvention.TenantId;
+        schema.Prefix = "tenant_";
+    });
+```
+
+:::danger[Connection pool safety]
+Schema activators execute on **every connection open**. Pooled connections retain the
+previous tenant's schema — skipping the `SET search_path` call causes a
+**data isolation breach** (ISO 27001 violation). Granit enforces this unconditionally.
+:::
+
+:::caution[HasDefaultSchema incompatibility]
+`HasDefaultSchema("myschema")` in a DbContext generates schema-qualified SQL
+(e.g., `"myschema"."products"`), which **bypasses** `SET search_path`. Tenant-isolated
+DbContexts must use **unqualified table names** — do not call `HasDefaultSchema()`.
+Host DbContexts (non-isolated) can use explicit schemas safely.
+:::
+
+</TabItem>
+<TabItem label="Database per tenant">
+
+Maximum isolation — each tenant has its own database. Connection strings are resolved
+dynamically via `ITenantConnectionStringProvider`.
+
+```json
+{
+  "TenantIsolation": {
+    "Strategy": "DatabasePerTenant"
+  }
+}
+```
+
+```csharp
+builder.Services.AddSingleton<ITenantConnectionStringProvider,
+    VaultConnectionStringProvider>();
+
+builder.Services.AddGranitIsolatedDbContext<AppDbContext>(
+    configureShared: options =>
+        options.UseNpgsql(connectionString),
+    configureDatabasePerTenant: (options, cs) =>
+        options.UseNpgsql(cs));
+```
+
+</TabItem>
+</Tabs>
+
+## SchemaEnsurer
+
+EF Core / Npgsql never creates custom schemas automatically. If a module configures
+a schema (e.g., `"host"`) and migrations run before the schema exists, the provider
+throws a fatal error.
+
+Call `SchemaEnsurer.EnsureSchemasAsync()` at application startup, before any migration:
+
+```csharp
+// In Program.cs, before migrations
+await SchemaEnsurer.EnsureSchemasAsync(context, cancellationToken, "host");
+```
+
+For tenant provisioning, create the tenant schema **before** running migrations:
+
+```csharp
+// In tenant provisioning workflow
+await SchemaEnsurer.EnsureSchemasAsync(context, ct, $"tenant_{tenantId:N}");
+await context.Database.MigrateAsync(ct); // search_path already activated
+```
+
+:::caution[Provisioning order is critical]
+If migrations start with a `search_path` pointing to a non-existent schema,
+Npgsql throws a fatal error before creating the first table. Always create the
+schema first.
+:::
+
+## Hybrid model
+
+The `IsolatedDbContextFactory<TContext>` resolves the strategy **per tenant** at
+runtime via `ITenantIsolationStrategyProvider`. Premium tenants can use
+`DatabasePerTenant` while standard tenants share a `SharedDatabase` — all in the
+same deployment.
+
+```csharp
+public sealed class TieredIsolationProvider(
+    ITenantReader tenantReader) : ITenantIsolationStrategyProvider
+{
+    public async ValueTask<TenantIsolationStrategy> GetStrategyAsync(
+        Guid? tenantId, CancellationToken ct = default)
+    {
+        if (tenantId is null)
+            return TenantIsolationStrategy.SharedDatabase;
+
+        TenantData? tenant = await tenantReader
+            .FindByIdAsync(tenantId.Value, ct)
+            .ConfigureAwait(false);
+
+        return tenant?.IsPremium == true
+            ? TenantIsolationStrategy.DatabasePerTenant
+            : TenantIsolationStrategy.SharedDatabase;
+    }
+}
+```
+
+## Wolverine context propagation
+
+When Wolverine dispatches messages, the `OutgoingContextMiddleware` serializes
+`ICurrentTenant.Id` into an `X-Tenant-Id` message header. The `TenantContextBehavior`
+restores it on the receiving side:
+
+```text
+HTTP Request (Tenant A) --> Wolverine handler --> background job
+         X-Tenant-Id: A  ------------------->  ICurrentTenant.Id = A
+```
+
+This ensures tenant isolation across async message processing without manual
+propagation.
+
+## See also
+
+- [Host vs Tenant](./host-tenant/) — schema separation between host and tenant data
+- [Cache Isolation](./cache/) — tenant-scoped cache keys
+- [Persistence](/dotnet/data/persistence/) — `ApplyGranitConventions`,
+  interceptors, query filters

@@ -1,0 +1,187 @@
+---
+title: "Host vs Tenant — Schema Separation"
+description: "Separate host infrastructure (identity, audit, jobs) from tenant business data using GranitDbDefaults — configurable via appsettings.json with automatic module classification."
+sidebar:
+  label: Host vs Tenant
+  order: 4
+---
+
+In a multi-tenant application, some data is **host-level** (shared infrastructure)
+and some is **tenant-level** (business data isolated per tenant). Granit provides
+`GranitDbDefaults` to configure this separation declaratively — one line in
+`appsettings.json` puts all host tables in a dedicated schema.
+
+## The problem
+
+Without a global schema mechanism, every application must override each module's
+`*DbProperties.DbSchema` individually. The showcase app had 15+ manual overrides
+and still missed OpenIddict and BFF — their tables landed in PostgreSQL's `public`
+schema while everything else was in `showcase`.
+
+## GranitDbDefaults
+
+A static class with two properties that serve as global fallbacks for all module
+`*DbProperties.DbSchema` values:
+
+```csharp
+public static class GranitDbDefaults
+{
+    public static string? DbSchema { get; set; }      // All modules
+    public static string? HostDbSchema { get; set; }   // Host modules only
+}
+```
+
+### Fallback chains
+
+Each module's `DbSchema` property uses one of two fallback chains, determined
+at compile-time by the module author:
+
+| Module type | Fallback chain | Example modules |
+|------------|---------------|-----------------|
+| **Host** | `explicit → HostDbSchema → DbSchema → null` | MultiTenancy, OpenIddict, Auditing, BackgroundJobs, Features, Settings, BFF |
+| **Tenant** | `explicit → DbSchema → null` | Authorization, BlobStorage, Notifications, Timeline, Webhooks, Workflow |
+
+### Configuration via appsettings.json
+
+```json
+{
+  "TenantIsolation": {
+    "Strategy": "SchemaPerTenant",
+    "HostSchema": "host"
+  }
+}
+```
+
+The framework reads `TenantIsolation:HostSchema` and sets `GranitDbDefaults.HostDbSchema`
+automatically. No manual overrides needed.
+
+### Explicit override
+
+Any module can still override its schema individually — the explicit value always wins:
+
+```csharp
+// Override a specific host module to use a different schema
+GranitAuditingDbProperties.DbSchema = "compliance";
+
+// Opt a module out of the global schema (back to provider default)
+GranitBffDbProperties.DbSchema = null; // explicit null overrides HostDbSchema
+```
+
+## Module classification
+
+### Host modules (infrastructure)
+
+These modules use `AddGranitDbContext` (standard registration). Their tables always
+live in the host schema, regardless of the active tenant. `TenantId` (when present)
+is a data filter, not a schema router.
+
+| Module | IMultiTenant | Justification |
+|--------|-------------|---------------|
+| MultiTenancy (Tenant) | No | Tenant registry = host by definition |
+| OpenIddict (Users) | Yes (nullable) | Identity centralized (like ABP) |
+| OpenIddict (Roles) | No | Global RBAC shared cross-tenant |
+| OpenIddict (Applications) | Yes (nullable) | OIDC apps: global or per-tenant |
+| OpenIddict (SigningKeys) | No | Cryptographic infrastructure |
+| BFF (Sessions) | No | Auth sessions coupled to identity |
+| Auditing | Yes | Centralized audit trail (ISO 27001) |
+| Settings | No | Provider key (G/T/U), not IMultiTenant |
+| BackgroundJobs | No | Global job queue |
+| Features | No | Feature flags = global configuration |
+
+### Tenant modules (business data)
+
+These modules use `AddGranitIsolatedDbContext`. Their tables live in tenant-specific
+schemas (or are filtered by `TenantId` in shared database mode).
+
+| Module | Justification |
+|--------|---------------|
+| Authorization | Permission grants per tenant |
+| ApiKeys | API keys per tenant |
+| Notifications | Notifications per tenant |
+| Localization | Translation overrides per tenant |
+| BlobStorage | Blobs per tenant |
+| Timeline | Activity stream per tenant |
+| Webhooks | Subscriptions per tenant |
+| Workflow | State transitions per tenant |
+| DataExchange | Import/export mappings per tenant |
+| Templating | Templates per tenant |
+| QueryEngine | Saved views per tenant |
+
+### Mixed modules (TenantId nullable in host)
+
+Some host modules contain data for both host and tenants, differentiated by `TenantId`:
+
+- **OpenIddict Users** — `TenantId = null` = host admin, `TenantId = {guid}` = tenant user
+- **OpenIddict Apps** — `TenantId = null` = global app, `TenantId = {guid}` = tenant-restricted
+- **Auditing** — `TenantId = null` = host audit entries, `TenantId = {guid}` = tenant audit.
+  Centralized in the host schema for ISO 27001 unified cross-tenant audit trail.
+
+## Host-level identity (like ABP)
+
+Identity tables (users, roles, applications, tokens) stay in the **host schema only** —
+never duplicated in tenant schemas or databases. This is the same pattern ABP Framework
+uses:
+
+- `OpenIddictDbContext` uses `AddGranitDbContext` (standard, never isolated)
+- Authentication always goes through the host (BFF → OpenIddict → host DB)
+- The user ID comes from the JWT token, not from a direct table query
+- No DbContext split needed
+
+## ChangeToHost() extension
+
+When operating in a tenant context and needing to access host-level data, use the
+semantic `ChangeToHost()` extension:
+
+```csharp
+public class TenantProvisioningService(
+    ICurrentTenant currentTenant,
+    ITenantReader tenantReader)
+{
+    public async Task<TenantData?> GetTenantInfoAsync(
+        Guid tenantId, CancellationToken ct)
+    {
+        // Currently in tenant context — switch to host to read tenant registry
+        using (currentTenant.ChangeToHost())
+        {
+            return await tenantReader.FindByIdAsync(tenantId, ct);
+        }
+        // Previous tenant context is restored
+    }
+}
+```
+
+`ChangeToHost()` is a semantic wrapper around `currentTenant.Change(null)` — it
+communicates the intent clearly ("I'm accessing host data") rather than using a
+magic `null` value.
+
+## Schema layout example
+
+With `TenantIsolation:HostSchema = "host"` and `SchemaPerTenant`:
+
+```text
+Schema: host
+├── tenants_tenants
+├── openiddict_users, openiddict_roles, openiddict_applications, ...
+├── bff_sessions
+├── audit_log_entries, audit_log_entity_changes
+├── background_jobs_*
+├── features_*
+└── settings_*
+
+Schema: tenant_3fa85f6456954b5ab7d9c4f11f0b7f5e
+├── authorization_permission_grants
+├── notifications_*
+├── blob_storage_descriptors
+├── timeline_entries
+├── webhooks_subscriptions
+├── workflow_transition_records
+└── (application-specific tables)
+```
+
+## See also
+
+- [Isolation Strategies](./isolation/) — the three strategies and how they interact
+  with host schemas
+- [Cache Isolation](./cache/) — tenant-scoped cache keys
+- [Multi-tenancy concept](/dotnet/concepts/multi-tenancy/) — query filters, soft
+  dependency rule
