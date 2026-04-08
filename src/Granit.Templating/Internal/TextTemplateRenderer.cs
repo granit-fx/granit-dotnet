@@ -159,12 +159,9 @@ internal sealed partial class TextTemplateRenderer(
         }
 
         string html = textContent.Html;
-        foreach (IRenderedContentTransformer transformer in _transformers)
+        foreach (IRenderedContentTransformer transformer in _transformers.Where(t => t.CanTransform(format)))
         {
-            if (transformer.CanTransform(format))
-            {
-                html = await transformer.TransformAsync(html, format, cancellationToken).ConfigureAwait(false);
-            }
+            html = await transformer.TransformAsync(html, format, cancellationToken).ConfigureAwait(false);
         }
 
         return html == textContent.Html

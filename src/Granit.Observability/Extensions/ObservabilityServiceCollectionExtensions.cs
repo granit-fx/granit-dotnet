@@ -28,28 +28,8 @@ public static class ObservabilityServiceCollectionExtensions
             // Apply smart fallbacks when the Observability section is absent or incomplete.
             // PostConfigure runs after BindConfiguration so explicit config always wins.
             .PostConfigure<IHostEnvironment, IConfiguration>((opts, env, config) =>
-            {
-                if (string.IsNullOrWhiteSpace(opts.ServiceName) || opts.ServiceName is "unknown-service")
-                {
-                    opts.ServiceName = env.ApplicationName;
-                }
-
-                if (string.IsNullOrWhiteSpace(opts.Environment) || opts.Environment is "development")
-                {
-                    opts.Environment = env.EnvironmentName.ToLowerInvariant();
-                }
-
-                // Respect OTEL_EXPORTER_OTLP_ENDPOINT injected by Aspire when OtlpEndpoint
-                // is not explicitly configured (still at default value).
-                if (opts.OtlpEndpoint is "http://localhost:4317")
-                {
-                    string? envEndpoint = config["OTEL_EXPORTER_OTLP_ENDPOINT"];
-                    if (!string.IsNullOrWhiteSpace(envEndpoint))
-                    {
-                        opts.OtlpEndpoint = envEndpoint;
-                    }
-                }
-            })
+                ApplyFallbacks(opts, env.ApplicationName, env.EnvironmentName,
+                    config["OTEL_EXPORTER_OTLP_ENDPOINT"]))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -61,31 +41,34 @@ public static class ObservabilityServiceCollectionExtensions
             .GetSection(ObservabilityOptions.SectionName)
             .Bind(options);
 
-        if (string.IsNullOrWhiteSpace(options.ServiceName) || options.ServiceName is "unknown-service")
-        {
-            options.ServiceName = builder.Environment.ApplicationName;
-        }
-
-        if (string.IsNullOrWhiteSpace(options.Environment) || options.Environment is "development")
-        {
-            options.Environment = builder.Environment.EnvironmentName.ToLowerInvariant();
-        }
-
-        // Respect OTEL_EXPORTER_OTLP_ENDPOINT injected by Aspire when OtlpEndpoint
-        // is not explicitly configured (still at default value).
-        if (options.OtlpEndpoint is "http://localhost:4317")
-        {
-            string? envEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"];
-            if (!string.IsNullOrWhiteSpace(envEndpoint))
-            {
-                options.OtlpEndpoint = envEndpoint;
-            }
-        }
+        ApplyFallbacks(options, builder.Environment.ApplicationName,
+            builder.Environment.EnvironmentName, builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
         ConfigureSerilog(builder, options);
         ConfigureOpenTelemetry(builder, options);
 
         return builder;
+    }
+
+    private static void ApplyFallbacks(
+        ObservabilityOptions opts, string appName, string envName, string? otlpEndpointEnv)
+    {
+        if (string.IsNullOrWhiteSpace(opts.ServiceName) || opts.ServiceName is "unknown-service")
+        {
+            opts.ServiceName = appName;
+        }
+
+        if (string.IsNullOrWhiteSpace(opts.Environment) || opts.Environment is "development")
+        {
+            opts.Environment = envName.ToLowerInvariant();
+        }
+
+        // Respect OTEL_EXPORTER_OTLP_ENDPOINT injected by Aspire when OtlpEndpoint
+        // is not explicitly configured (still at default value).
+        if (opts.OtlpEndpoint is "http://localhost:4317" && !string.IsNullOrWhiteSpace(otlpEndpointEnv))
+        {
+            opts.OtlpEndpoint = otlpEndpointEnv;
+        }
     }
 
     private static void ConfigureSerilog(IHostApplicationBuilder builder, ObservabilityOptions options)
