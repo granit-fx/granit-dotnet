@@ -46,39 +46,42 @@ public sealed class GranitMultiTenancyModuleTests
     }
 
     [Fact]
-    public void TenantResolverPipeline_Is_Resolvable_And_Singleton()
+    public void TenantResolverPipeline_Is_Resolvable_As_Scoped()
     {
         using WebApplication app = BuildApp();
+        using IServiceScope scope = app.Services.CreateScope();
 
-        TenantResolverPipeline first = app.Services.GetRequiredService<TenantResolverPipeline>();
-        TenantResolverPipeline second = app.Services.GetRequiredService<TenantResolverPipeline>();
+        TenantResolverPipeline pipeline = scope.ServiceProvider.GetRequiredService<TenantResolverPipeline>();
 
-        first.ShouldNotBeNull();
-        first.ShouldBeSameAs(second, "TenantResolverPipeline must be a singleton");
+        pipeline.ShouldNotBeNull();
     }
 
     [Fact]
-    public void Two_TenantResolvers_Are_Registered()
+    public void Four_TenantResolvers_Are_Registered()
     {
         using WebApplication app = BuildApp();
+        using IServiceScope scope = app.Services.CreateScope();
 
-        IEnumerable<ITenantResolver> resolvers = app.Services.GetRequiredService<IEnumerable<ITenantResolver>>();
+        IEnumerable<ITenantResolver> resolvers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITenantResolver>>();
 
-        resolvers.Count().ShouldBe(2);
+        resolvers.Count().ShouldBe(4);
     }
 
     [Fact]
-    public void Resolvers_Are_Ordered_Header_Before_Jwt()
+    public void Resolvers_Are_Ordered_Domain_Header_Jwt_QueryString()
     {
         using WebApplication app = BuildApp();
+        using IServiceScope scope = app.Services.CreateScope();
 
-        var ordered = app.Services
+        var ordered = scope.ServiceProvider
             .GetRequiredService<IEnumerable<ITenantResolver>>()
             .OrderBy(r => r.Order)
             .ToList();
 
-        ordered[0].ShouldBeOfType<HeaderTenantResolver>("Header (order=100) must precede JWT (order=200)");
-        ordered[1].ShouldBeOfType<JwtClaimTenantResolver>();
+        ordered[0].ShouldBeOfType<DomainTenantResolver>("Domain (order=50)");
+        ordered[1].ShouldBeOfType<HeaderTenantResolver>("Header (order=100)");
+        ordered[2].ShouldBeOfType<JwtClaimTenantResolver>("JWT (order=200)");
+        ordered[3].ShouldBeOfType<QueryStringTenantResolver>("QueryString (order=300)");
     }
 
     [Fact]

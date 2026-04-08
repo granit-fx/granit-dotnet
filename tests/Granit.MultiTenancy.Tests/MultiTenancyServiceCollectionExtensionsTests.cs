@@ -44,8 +44,9 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
     public void AddGranitMultiTenancy_RegistersHeaderTenantResolver()
     {
         using ServiceProvider provider = BuildProvider();
+        using IServiceScope scope = provider.CreateScope();
 
-        IEnumerable<ITenantResolver> resolvers = provider.GetRequiredService<IEnumerable<ITenantResolver>>();
+        IEnumerable<ITenantResolver> resolvers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITenantResolver>>();
 
         resolvers.ShouldContain(r => r is HeaderTenantResolver);
     }
@@ -54,8 +55,9 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
     public void AddGranitMultiTenancy_RegistersJwtClaimTenantResolver()
     {
         using ServiceProvider provider = BuildProvider();
+        using IServiceScope scope = provider.CreateScope();
 
-        IEnumerable<ITenantResolver> resolvers = provider.GetRequiredService<IEnumerable<ITenantResolver>>();
+        IEnumerable<ITenantResolver> resolvers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITenantResolver>>();
 
         resolvers.ShouldContain(r => r is JwtClaimTenantResolver);
     }
@@ -64,8 +66,9 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
     public void AddGranitMultiTenancy_RegistersTenantResolverPipeline()
     {
         using ServiceProvider provider = BuildProvider();
+        using IServiceScope scope = provider.CreateScope();
 
-        TenantResolverPipeline pipeline = provider.GetRequiredService<TenantResolverPipeline>();
+        TenantResolverPipeline pipeline = scope.ServiceProvider.GetRequiredService<TenantResolverPipeline>();
 
         pipeline.ShouldNotBeNull();
     }
@@ -93,14 +96,15 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitMultiTenancy_TenantResolverPipeline_IsSingleton()
+    public void AddGranitMultiTenancy_TenantResolverPipeline_IsScoped()
     {
         using ServiceProvider provider = BuildProvider();
+        using IServiceScope scope = provider.CreateScope();
 
-        TenantResolverPipeline first = provider.GetRequiredService<TenantResolverPipeline>();
-        TenantResolverPipeline second = provider.GetRequiredService<TenantResolverPipeline>();
+        TenantResolverPipeline first = scope.ServiceProvider.GetRequiredService<TenantResolverPipeline>();
+        TenantResolverPipeline second = scope.ServiceProvider.GetRequiredService<TenantResolverPipeline>();
 
-        first.ShouldBeSameAs(second);
+        first.ShouldBeSameAs(second, "TenantResolverPipeline should be same within a scope");
     }
 
     [Fact]
@@ -109,12 +113,15 @@ public sealed class MultiTenancyServiceCollectionExtensionsTests
         ServiceCollection services = new();
         IConfiguration configuration = new ConfigurationBuilder().Build();
         services.AddSingleton(configuration);
+        services.AddLogging();
+        services.AddMetrics();
         services.AddGranitMultiTenancy();
         services.AddGranitMultiTenancy(); // second call
         using ServiceProvider provider = services.BuildServiceProvider();
+        using IServiceScope scope = provider.CreateScope();
 
-        // TryAddSingleton prevents duplicate TenantResolverPipeline
-        TenantResolverPipeline pipeline = provider.GetRequiredService<TenantResolverPipeline>();
+        // TryAddScoped prevents duplicate TenantResolverPipeline
+        TenantResolverPipeline pipeline = scope.ServiceProvider.GetRequiredService<TenantResolverPipeline>();
         pipeline.ShouldNotBeNull();
     }
 

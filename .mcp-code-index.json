@@ -22160,7 +22160,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitMultiTenancy",

@@ -3,6 +3,7 @@ using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
+using Granit.MultiTenancy.Stores;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,6 +28,10 @@ public static class MultiTenancyServiceCollectionExtensions
 
         // Replace the NullTenantContext registered by AddGranit<T>() with the real implementation.
         services.Replace(ServiceDescriptor.Singleton<ICurrentTenant, CurrentTenant>());
+
+        // NullTenantReader fallback — replaced by EfCoreTenantStore when
+        // Granit.MultiTenancy.EntityFrameworkCore is in the module tree.
+        services.TryAddScoped<ITenantReader, NullTenantReader>();
 
         // Resolvers: Domain (50) → Header (100) → JWT (200) → QueryString (300)
         // Registered as scoped: DomainTenantResolver depends on ITenantReader (scoped, EF Core).

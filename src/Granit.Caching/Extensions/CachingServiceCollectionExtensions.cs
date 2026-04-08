@@ -107,6 +107,11 @@ public static class CachingServiceCollectionExtensions
             return new EncryptingFusionCacheSerializer(jsonSerializer, encryptor, cachingOpts);
         });
 
+        // Ensure ICurrentTenant is available for the tenant-aware decorator.
+        // In full app startup, Granit base module registers NullTenantContext.
+        // This fallback covers standalone AddGranitCaching() usage (tests, tooling).
+        services.TryAddSingleton<ICurrentTenant>(new NullCurrentTenant());
+
         // Tenant-aware cache key isolation: move the raw IFusionCache singleton to a
         // keyed service and register a scoped decorator as the default IFusionCache.
         // All key-based operations are automatically prefixed with t:{tenantId}: or t:host:.
