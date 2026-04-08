@@ -246,8 +246,24 @@ public static class PersistenceTenantExtensions
         // Facade — dispatches to the keyed factory resolved at runtime.
         services.TryAddScoped<IDbContextFactory<TContext>, IsolatedDbContextFactory<TContext>>();
 
-        services.TryAddScoped<TContext>(
-            static sp => sp.GetRequiredService<IDbContextFactory<TContext>>().CreateDbContext());
+        // Scoped TContext: tries the isolated factory first, falls back to the
+        // SharedDatabase keyed factory when no tenant is active (e.g., Wolverine
+        // startup introspection, migration orchestration, health checks).
+        services.TryAddScoped<TContext>(static sp =>
+        {
+            ICurrentTenant? tenant = sp.GetService<ICurrentTenant>();
+            if (tenant is null || !tenant.IsAvailable)
+            {
+                IDbContextFactory<TContext>? sharedFactory =
+                    sp.GetKeyedService<IDbContextFactory<TContext>>(TenantIsolationStrategy.SharedDatabase);
+                if (sharedFactory is not null)
+                {
+                    return sharedFactory.CreateDbContext();
+                }
+            }
+
+            return sp.GetRequiredService<IDbContextFactory<TContext>>().CreateDbContext();
+        });
 
         return services;
     }

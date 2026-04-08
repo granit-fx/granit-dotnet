@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
+using Granit.MultiTenancy.Stores;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,15 +13,22 @@ namespace Granit.MultiTenancy.Middleware;
 /// Middleware for per-request HTTP tenant resolution.
 /// Uses <see cref="TenantResolverPipeline"/> and activates <see cref="ICurrentTenant"/>.
 /// </summary>
+/// <remarks>
+/// When <see cref="MultiTenancyOptions.ValidateTenantExistence"/> is enabled, the resolved
+/// tenant ID is verified against <see cref="ITenantReader"/> before activating the context.
+/// This prevents phantom tenants (arbitrary GUIDs) from creating orphaned data.
+/// </remarks>
 public sealed partial class TenantResolutionMiddleware(
     ICurrentTenant currentTenant,
     TenantResolverPipeline pipeline,
+    ITenantReader tenantReader,
     MultiTenancyMetrics metrics,
     IOptions<MultiTenancyOptions> options,
     ILogger<TenantResolutionMiddleware> logger) : IMiddleware
 {
     private readonly ICurrentTenant _currentTenant = currentTenant;
     private readonly TenantResolverPipeline _pipeline = pipeline;
+    private readonly ITenantReader _tenantReader = tenantReader;
     private readonly MultiTenancyMetrics _metrics = metrics;
     private readonly MultiTenancyOptions _options = options.Value;
     private readonly ILogger _logger = logger;
@@ -53,6 +61,18 @@ public sealed partial class TenantResolutionMiddleware(
                 }
             }
 
+            // Validate that the resolved tenant actually exists in the store.
+            // Prevents phantom tenants (arbitrary GUIDs) from creating orphaned data.
+            if (_options.ValidateTenantExistence
+                && result.Tenant.Id.HasValue
+                && !await _tenantReader.ExistsAsync(result.Tenant.Id.Value, context.RequestAborted).ConfigureAwait(false))
+            {
+                _metrics.RecordResolutionFailed();
+                LogPhantomTenant(result.Tenant.Id.Value, result.ResolverType);
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                return;
+            }
+
             _metrics.RecordResolutionSucceeded(result.Tenant.Id.ToString()!, result.ResolverType);
 
             using IDisposable _ = _currentTenant.Change(result.Tenant.Id, result.Tenant.Name);
@@ -67,4 +87,7 @@ public sealed partial class TenantResolutionMiddleware(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Tenant mismatch: resolved tenant {ResolvedTenantId} via {ResolverType} but JWT claim contains {JwtTenantId}. Request rejected.")]
     private partial void LogTenantMismatch(Guid resolvedTenantId, string resolverType, Guid jwtTenantId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Phantom tenant rejected: resolved tenant {TenantId} via {ResolverType} does not exist in the tenant store.")]
+    private partial void LogPhantomTenant(Guid tenantId, string resolverType);
 }

@@ -63,7 +63,7 @@ Add the configuration to `appsettings.json`:
     "TenantIdHeaderName": "X-Tenant-Id",
     "HeaderTrustMode": "Unrestricted",
     "DomainTemplate": "{0}.myapp.com",
-    "QueryStringParamName": "__tenant"
+    "ValidateTenantExistence": true
   }
 }
 ```
@@ -74,8 +74,9 @@ Add the configuration to `appsettings.json`:
 | `TenantIdClaimType` | `"tenant_id"` | JWT claim name containing the tenant ID |
 | `TenantIdHeaderName` | `"X-Tenant-Id"` | HTTP header name for explicit tenant specification |
 | `HeaderTrustMode` | `"Unrestricted"` | `Unrestricted` (accept header as-is) or `CrossValidate` (header must match JWT claim) |
+| `ValidateTenantExistence` | `true` | Verify resolved tenant exists in tenant store (prevents phantom tenants) |
 | `DomainTemplate` | `null` | Domain template with `{0}` placeholder (e.g., `"{0}.myapp.com"`). `null` = disabled |
-| `QueryStringParamName` | `"__tenant"` | Query string parameter name for dev/debug. `null` = disabled |
+| `QueryStringParamName` | `null` | Query string param name for dev/debug (`null` = disabled). Set `"__tenant"` in `appsettings.Development.json` |
 
 :::caution[Security hardening]
 By default, the `X-Tenant-Id` header is trusted without cross-validation

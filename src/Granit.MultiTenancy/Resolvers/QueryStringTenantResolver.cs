@@ -10,8 +10,8 @@ namespace Granit.MultiTenancy.Resolvers;
 /// Intended for development and debugging — lowest priority (order = 300).
 /// </summary>
 /// <remarks>
-/// Disabled when <see cref="MultiTenancyOptions.QueryStringParamName"/> is <c>null</c>.
-/// Default parameter name: <c>__tenant</c>.
+/// Disabled by default (<see cref="MultiTenancyOptions.QueryStringParamName"/> is <c>null</c>).
+/// Enable in <c>appsettings.Development.json</c> by setting to <c>"__tenant"</c>.
 /// </remarks>
 public sealed class QueryStringTenantResolver(
     IOptions<MultiTenancyOptions> options) : ITenantResolver

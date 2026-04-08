@@ -1923,6 +1923,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Templating.Mjml",
+      "deps": [
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Templating.Scriban",
       "deps": [
         "Granit.Templating"
@@ -22217,7 +22224,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Middleware/TenantResolutionMiddleware.cs",
-      "line": 15,
+      "line": 21,
       "members": [
         {
           "name": "InvokeAsync",
@@ -29641,7 +29648,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/SchemaEnsurer.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "EnsureSchemasAsync",
@@ -37352,6 +37359,38 @@
       "members": []
     },
     {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Templating.Mjml.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Templating.Mjml",
+      "file": "src/Granit.Templating.Mjml/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitTemplatingWithMjml",
+          "kind": "method",
+          "signature": "AddGranitTemplatingWithMjml(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTemplatingMjmlModule",
+      "fqn": "Granit.Templating.Mjml.GranitTemplatingMjmlModule",
+      "kind": "class",
+      "project": "Granit.Templating.Mjml",
+      "file": "src/Granit.Templating.Mjml/GranitTemplatingMjmlModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "BinaryRenderedContent",
       "fqn": "Granit.Templating.Pipeline.BinaryRenderedContent",
       "kind": "record",
@@ -37359,6 +37398,28 @@
       "file": "src/Granit.Templating/Pipeline/RenderedContent.cs",
       "line": 45,
       "members": []
+    },
+    {
+      "name": "IRenderedContentTransformer",
+      "fqn": "Granit.Templating.Pipeline.IRenderedContentTransformer",
+      "kind": "interface",
+      "project": "Granit.Templating",
+      "file": "src/Granit.Templating/Pipeline/IRenderedContentTransformer.cs",
+      "line": 39,
+      "members": [
+        {
+          "name": "CanTransform",
+          "kind": "method",
+          "signature": "CanTransform(DocumentFormat format)",
+          "returnType": "int Order { get; } bool"
+        },
+        {
+          "name": "TransformAsync",
+          "kind": "method",
+          "signature": "TransformAsync(string content, DocumentFormat format, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
     },
     {
       "name": "ITemplateEngine",

@@ -61,8 +61,24 @@ public sealed class MultiTenancyOptions
     public string? DomainTemplate { get; set; }
 
     /// <summary>
-    /// Query string parameter name for tenant resolution (dev/debug).
-    /// Default: <c>"__tenant"</c>. <c>null</c> = disabled.
+    /// When <c>true</c>, the middleware verifies that the resolved tenant ID
+    /// exists in <see cref="Stores.ITenantReader"/> before activating the context.
+    /// Prevents phantom tenants (arbitrary GUIDs from spoofed headers) from creating
+    /// orphaned data. Default: <c>true</c>.
     /// </summary>
-    public string? QueryStringParamName { get; set; } = "__tenant";
+    /// <remarks>
+    /// Requires <c>Granit.MultiTenancy.EntityFrameworkCore</c> for the real
+    /// <see cref="Stores.ITenantReader"/> implementation. Without it, the
+    /// <c>NullTenantReader</c> always returns <c>false</c> — all tenants
+    /// would be rejected.
+    /// </remarks>
+    public bool ValidateTenantExistence { get; set; } = true;
+
+    /// <summary>
+    /// Query string parameter name for tenant resolution (dev/debug only).
+    /// Default: <c>null</c> (disabled). Enable in <c>appsettings.Development.json</c>
+    /// by setting to <c>"__tenant"</c>. Never enable in production — allows
+    /// unauthenticated callers to select an arbitrary tenant context.
+    /// </summary>
+    public string? QueryStringParamName { get; set; }
 }

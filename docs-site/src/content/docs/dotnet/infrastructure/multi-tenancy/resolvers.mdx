@@ -99,15 +99,20 @@ debugging — lowest priority (order 300).
 GET /api/v1/products?__tenant=3fa85f64-5694-4b5a-b7d9-c4f11f0b7f5e
 ```
 
-Disable in production by setting `QueryStringParamName` to `null`:
+**Disabled by default** (`QueryStringParamName = null`). Enable in `appsettings.Development.json`:
 
 ```json
 {
   "MultiTenancy": {
-    "QueryStringParamName": null
+    "QueryStringParamName": "__tenant"
   }
 }
 ```
+
+:::danger[Never enable in production]
+The query string resolver allows unauthenticated callers to select an arbitrary
+tenant context. Only enable it in development environments.
+:::
 
 ## Custom resolver
 
@@ -141,6 +146,22 @@ services.AddScoped<ITenantResolver, CookieTenantResolver>();
 
 ## Security hardening
 
+### Tenant existence validation
+
+By default, the middleware verifies that the resolved tenant ID exists in the
+tenant store (`ITenantReader.ExistsAsync`). This prevents **phantom tenants** —
+arbitrary GUIDs from spoofed headers creating orphaned data.
+
+```json
+{
+  "MultiTenancy": {
+    "ValidateTenantExistence": true
+  }
+}
+```
+
+Disable only in test environments where no tenant store is available.
+
 ### Header trust mode
 
 The `X-Tenant-Id` header is accepted by default without cross-validation
@@ -168,8 +189,9 @@ reverse proxy. For direct API exposure, enable `CrossValidate`:
 | `TenantIdClaimType` | `"tenant_id"` | JWT claim name for tenant ID |
 | `TenantIdHeaderName` | `"X-Tenant-Id"` | HTTP header name for tenant ID |
 | `HeaderTrustMode` | `"Unrestricted"` | `Unrestricted` or `CrossValidate` |
+| `ValidateTenantExistence` | `true` | Verify resolved tenant exists in tenant store |
 | `DomainTemplate` | `null` | Domain template with `{0}` placeholder (e.g. `"{0}.monsaas.com"`) |
-| `QueryStringParamName` | `"__tenant"` | Query string parameter name (`null` to disable) |
+| `QueryStringParamName` | `null` | Query string param name (`null` = disabled, set `"__tenant"` in dev) |
 
 ## Observability
 
