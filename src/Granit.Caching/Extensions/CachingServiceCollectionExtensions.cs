@@ -113,8 +113,12 @@ public static class CachingServiceCollectionExtensions
         services.TryAddSingleton<ICurrentTenant>(new NullCurrentTenant());
 
         // Tenant-aware cache key isolation: move the raw IFusionCache singleton to a
-        // keyed service and register a scoped decorator as the default IFusionCache.
+        // keyed service and register the decorator as the default IFusionCache.
         // All key-based operations are automatically prefixed with t:{tenantId}: or t:host:.
+        //
+        // The decorator is a SINGLETON — ICurrentTenant is backed by AsyncLocal<T>,
+        // so the tenant is read at call time (not at construction time). This avoids
+        // breaking singletons that inject IFusionCache (Localization, BFF, OIDC, etc.).
         ServiceDescriptor? rawDescriptor = services.LastOrDefault(d =>
             d.ServiceType == typeof(IFusionCache) && d.Lifetime == ServiceLifetime.Singleton);
 
@@ -137,8 +141,8 @@ public static class CachingServiceCollectionExtensions
                     rawDescriptor.ImplementationType);
             }
 
-            // Scoped decorator as the default IFusionCache
-            services.AddScoped<IFusionCache>(sp => new TenantAwareFusionCache(
+            // Singleton decorator as the default IFusionCache
+            services.AddSingleton<IFusionCache>(sp => new TenantAwareFusionCache(
                 sp.GetRequiredKeyedService<IFusionCache>(TenantAwareFusionCache.RawCacheKey),
                 sp.GetRequiredService<ICurrentTenant>()));
         }

@@ -10,15 +10,18 @@ using ZiggyCreatures.Caching.Fusion.Serialization;
 namespace Granit.Caching.MultiTenancy;
 
 /// <summary>
-/// Scoped decorator around <see cref="IFusionCache"/> that automatically prefixes
+/// Singleton decorator around <see cref="IFusionCache"/> that automatically prefixes
 /// all cache keys and tags with the current tenant identifier, preventing
 /// cross-tenant cache pollution on shared Redis instances.
 /// </summary>
 /// <remarks>
 /// <para>Key format: <c>t:{tenantId:N}:{originalKey}</c> when a tenant is active,
 /// or <c>t:host:{originalKey}</c> in host context (no active tenant).</para>
-/// <para>The inner <see cref="IFusionCache"/> remains a singleton — only key
-/// prefixing is per-scope. All infrastructure operations (setup, plugins) are
+/// <para>Both the decorator and the inner cache are singletons.
+/// <see cref="ICurrentTenant"/> is backed by <c>AsyncLocal&lt;T&gt;</c>, so the
+/// tenant is resolved at call time — no scoped dependency needed. This allows
+/// singletons (Localization, BFF, OIDC) to safely inject <c>IFusionCache</c>.
+/// All infrastructure operations (setup, plugins) are
 /// delegated unchanged.</para>
 /// </remarks>
 internal sealed class TenantAwareFusionCache(
