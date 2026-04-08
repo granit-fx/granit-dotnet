@@ -26,7 +26,7 @@ internal sealed class BffDbContext(
 
         modelBuilder.Entity<BffSessionEntity>(b =>
         {
-            b.ToTable("bff_sessions");
+            b.ToTable(GranitBffDbProperties.DbTablePrefix + "sessions", GranitBffDbProperties.DbSchema);
             b.HasKey(e => e.Id);
             b.Property(e => e.Id).ValueGeneratedNever();
             b.Property(e => e.SessionId).HasMaxLength(64).IsRequired();

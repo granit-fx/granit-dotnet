@@ -12,4 +12,11 @@ public sealed class TenantIsolationOptions
     /// section is absent.
     /// </summary>
     public TenantIsolationStrategy Strategy { get; set; } = TenantIsolationStrategy.SharedDatabase;
+
+    /// <summary>
+    /// Database schema for host-level tables (identity, audit, tenants, background jobs…).
+    /// When set, host module <c>*DbProperties</c> classes use this schema via
+    /// <see cref="GranitDbDefaults.HostDbSchema"/>. Default: <c>null</c> (provider default).
+    /// </summary>
+    public string? HostSchema { get; set; }
 }

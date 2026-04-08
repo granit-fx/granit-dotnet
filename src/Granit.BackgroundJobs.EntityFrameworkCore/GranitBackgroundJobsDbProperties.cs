@@ -1,3 +1,5 @@
+using Granit.Persistence.EntityFrameworkCore;
+
 namespace Granit.BackgroundJobs.EntityFrameworkCore;
 
 /// <summary>
@@ -23,8 +25,17 @@ public static class GranitBackgroundJobsDbProperties
     /// </summary>
     public static string DbTablePrefix { get; set; } = "background_jobs_";
 
+    private static string? _dbSchema;
+    private static bool _dbSchemaExplicitlySet;
+
     /// <summary>
-    /// Database schema for all background job tables. Default: <c>null</c> (provider default schema).
+    /// Database schema for host-level tables.
+    /// Falls back to <see cref="GranitDbDefaults.HostDbSchema"/>, then
+    /// <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
     /// </summary>
-    public static string? DbSchema { get; set; }
+    public static string? DbSchema
+    {
+        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema;
+        set { _dbSchema = value; _dbSchemaExplicitlySet = true; }
+    }
 }

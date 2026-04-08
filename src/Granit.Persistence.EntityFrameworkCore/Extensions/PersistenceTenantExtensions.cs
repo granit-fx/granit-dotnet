@@ -181,6 +181,16 @@ public static class PersistenceTenantExtensions
                 "Valid values: SharedDatabase, DatabasePerTenant, SchemaPerTenant.")
             .ValidateOnStart();
 
+        // Wire HostSchema from configuration to GranitDbDefaults so host module
+        // *DbProperties classes inherit the schema automatically.
+        services.PostConfigure<TenantIsolationOptions>(opts =>
+        {
+            if (opts.HostSchema is not null)
+            {
+                GranitDbDefaults.HostDbSchema = opts.HostSchema;
+            }
+        });
+
         services.TryAddSingleton<ITenantIsolationStrategyProvider,
             ConfigurationTenantIsolationStrategyProvider>();
 

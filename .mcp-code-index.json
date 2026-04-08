@@ -2603,7 +2603,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/GranitAIDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -4157,7 +4157,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/GranitAuditingDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -4769,7 +4769,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitApiKeysDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -4785,7 +4785,7 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitAuthenticationApiKeysDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -6018,7 +6018,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -6563,7 +6563,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.EntityFrameworkCore",
       "file": "src/Granit.BackgroundJobs.EntityFrameworkCore/GranitBackgroundJobsDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -7028,6 +7028,22 @@
           "kind": "method",
           "signature": "AddGranitBffEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitBffDbProperties",
+      "fqn": "Granit.Bff.EntityFrameworkCore.GranitBffDbProperties",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/GranitBffDbProperties.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
         }
       ]
     },
@@ -7950,7 +7966,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.EntityFrameworkCore",
       "file": "src/Granit.BlobStorage.EntityFrameworkCore/GranitBlobStorageDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -9218,7 +9234,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.EntityFrameworkCore",
       "file": "src/Granit.CustomerBalance.EntityFrameworkCore/GranitCustomerBalanceDbProperties.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -9768,7 +9784,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
       "file": "src/Granit.DataExchange.EntityFrameworkCore/GranitDataExchangeDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -13409,7 +13425,7 @@
       "kind": "class",
       "project": "Granit.Features.EntityFrameworkCore",
       "file": "src/Granit.Features.EntityFrameworkCore/GranitFeaturesDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -16152,7 +16168,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -19317,7 +19333,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.EntityFrameworkCore",
       "file": "src/Granit.Invoicing.EntityFrameworkCore/GranitInvoicingDbProperties.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -20234,7 +20250,7 @@
       "kind": "class",
       "project": "Granit.Localization.EntityFrameworkCore",
       "file": "src/Granit.Localization.EntityFrameworkCore/GranitLocalizationDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -21423,7 +21439,7 @@
       "kind": "class",
       "project": "Granit.Metering.EntityFrameworkCore",
       "file": "src/Granit.Metering.EntityFrameworkCore/GranitMeteringDbProperties.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -21866,6 +21882,22 @@
       ]
     },
     {
+      "name": "CurrentTenantExtensions",
+      "fqn": "Granit.MultiTenancy.CurrentTenantExtensions",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/CurrentTenantExtensions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "ChangeToHost",
+          "kind": "method",
+          "signature": "ChangeToHost(this ICurrentTenant currentTenant)",
+          "returnType": "IDisposable"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyMetrics",
       "fqn": "Granit.MultiTenancy.Diagnostics.MultiTenancyMetrics",
       "kind": "class",
@@ -22060,7 +22092,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/MultiTenancyDbProperties.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -23653,7 +23685,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -26232,7 +26264,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/GranitOpenIddictDbProperties.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -27340,7 +27372,7 @@
       "kind": "class",
       "project": "Granit.Payments.EntityFrameworkCore",
       "file": "src/Granit.Payments.EntityFrameworkCore/GranitPaymentsDbProperties.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -29554,6 +29586,22 @@
       ]
     },
     {
+      "name": "SchemaEnsurer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SchemaEnsurer",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/SchemaEnsurer.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "EnsureSchemasAsync",
+          "kind": "method",
+          "signature": "EnsureSchemasAsync(DbContext context, CancellationToken cancellationToken = default, params string[] schemas)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "SpecificationEvaluator",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Specification.SpecificationEvaluator",
       "kind": "class",
@@ -30614,7 +30662,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/GranitPrivacyDbProperties.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -31984,7 +32032,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.EntityFrameworkCore",
       "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -33612,7 +33660,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.EntityFrameworkCore",
       "file": "src/Granit.Scheduling.EntityFrameworkCore/GranitSchedulingDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -34133,7 +34181,7 @@
       "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/GranitSettingsDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -35288,7 +35336,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.EntityFrameworkCore",
       "file": "src/Granit.Subscriptions.EntityFrameworkCore/GranitSubscriptionsDbProperties.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -36391,7 +36439,7 @@
       "kind": "class",
       "project": "Granit.Tax.EntityFrameworkCore",
       "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxDbProperties.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -37068,7 +37116,7 @@
       "kind": "class",
       "project": "Granit.Templating.EntityFrameworkCore",
       "file": "src/Granit.Templating.EntityFrameworkCore/GranitTemplatingDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -38380,7 +38428,7 @@
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -40807,7 +40855,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksDbProperties.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -41851,7 +41899,7 @@
       "kind": "class",
       "project": "Granit.Workflow.EntityFrameworkCore",
       "file": "src/Granit.Workflow.EntityFrameworkCore/GranitWorkflowDbProperties.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "DbTablePrefix",

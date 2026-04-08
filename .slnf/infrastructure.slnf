@@ -36,6 +36,7 @@
       "src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj",
       "src/Granit.Imaging/Granit.Imaging.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
+      "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",
       "src/Granit.MultiTenancy/Granit.MultiTenancy.csproj",
       "src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj",
       "src/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.csproj",

@@ -1,3 +1,5 @@
+using Granit.Persistence.EntityFrameworkCore;
+
 namespace Granit.Auditing.EntityFrameworkCore;
 
 /// <summary>
@@ -23,8 +25,17 @@ public static class GranitAuditingDbProperties
     /// </summary>
     public static string DbTablePrefix { get; set; } = "audit_log_";
 
+    private static string? _dbSchema;
+    private static bool _dbSchemaExplicitlySet;
+
     /// <summary>
-    /// Database schema for all audit log tables. Default: <c>null</c> (provider default schema).
+    /// Database schema for host-level tables.
+    /// Falls back to <see cref="GranitDbDefaults.HostDbSchema"/>, then
+    /// <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
     /// </summary>
-    public static string? DbSchema { get; set; }
+    public static string? DbSchema
+    {
+        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema;
+        set { _dbSchema = value; _dbSchemaExplicitlySet = true; }
+    }
 }

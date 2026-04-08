@@ -20,7 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.BackgroundJobs.EntityFrameworkCore\Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.BlobStorage.EntityFrameworkCore\Granit.BlobStorage.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ExceptionHandling\Granit.Http.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\..\src\Granit.MultiTenancy.EntityFrameworkCore\Granit.MultiTenancy.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
