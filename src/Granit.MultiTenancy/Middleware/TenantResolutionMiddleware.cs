@@ -69,6 +69,9 @@ public sealed partial class TenantResolutionMiddleware(
             {
                 _metrics.RecordResolutionFailed();
                 LogPhantomTenant(result.Tenant.Id.Value, result.ResolverType);
+                // Bare 403 without response body: intentional information-minimal
+                // rejection. Don't reveal to an attacker why the tenant was rejected.
+                // Server-side observability is provided by LogPhantomTenant.
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return;
             }

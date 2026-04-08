@@ -69,8 +69,8 @@ public sealed class MultiTenancyOptions
     /// <remarks>
     /// Requires <c>Granit.MultiTenancy.EntityFrameworkCore</c> for the real
     /// <see cref="Stores.ITenantReader"/> implementation. Without it, the
-    /// <c>NullTenantReader</c> always returns <c>false</c> — all tenants
-    /// would be rejected.
+    /// <c>NullTenantReader</c> returns <c>true</c> for all IDs — validation
+    /// is effectively skipped (safe degradation to avoid denial of service).
     /// </remarks>
     public bool ValidateTenantExistence { get; set; } = true;
 
