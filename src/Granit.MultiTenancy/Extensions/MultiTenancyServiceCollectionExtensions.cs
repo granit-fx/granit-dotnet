@@ -28,11 +28,15 @@ public static class MultiTenancyServiceCollectionExtensions
         // Replace the NullTenantContext registered by AddGranit<T>() with the real implementation.
         services.Replace(ServiceDescriptor.Singleton<ICurrentTenant, CurrentTenant>());
 
-        // Resolvers: Header first (order=100), then JWT (order=200)
-        services.AddSingleton<ITenantResolver, HeaderTenantResolver>();
-        services.AddSingleton<ITenantResolver, JwtClaimTenantResolver>();
+        // Resolvers: Domain (50) → Header (100) → JWT (200) → QueryString (300)
+        // Registered as scoped: DomainTenantResolver depends on ITenantReader (scoped, EF Core).
+        // All resolvers aligned to scoped for consistency.
+        services.AddScoped<ITenantResolver, DomainTenantResolver>();
+        services.AddScoped<ITenantResolver, HeaderTenantResolver>();
+        services.AddScoped<ITenantResolver, JwtClaimTenantResolver>();
+        services.AddScoped<ITenantResolver, QueryStringTenantResolver>();
 
-        services.TryAddSingleton<TenantResolverPipeline>();
+        services.TryAddScoped<TenantResolverPipeline>();
         services.TryAddSingleton<MultiTenancyMetrics>();
 
         // IMiddleware pattern: resolved per scope (per request)

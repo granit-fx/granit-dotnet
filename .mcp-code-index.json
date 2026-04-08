@@ -22258,6 +22258,12 @@
           "kind": "property",
           "signature": "TenantHeaderTrustMode HeaderTrustMode",
           "returnType": "TenantHeaderTrustMode"
+        },
+        {
+          "name": "DomainTemplate",
+          "kind": "property",
+          "signature": "string? DomainTemplate",
+          "returnType": "string?"
         }
       ]
     },
@@ -22299,6 +22305,28 @@
           "kind": "method",
           "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
           "returnType": "Task<TenantResolutionResult>"
+        }
+      ]
+    },
+    {
+      "name": "DomainTenantResolver",
+      "fqn": "Granit.MultiTenancy.Resolvers.DomainTenantResolver",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Resolvers/DomainTenantResolver.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Order",
+          "kind": "property",
+          "signature": "int Order",
+          "returnType": "int"
+        },
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantInfo?>"
         }
       ]
     },
@@ -22347,6 +22375,28 @@
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Resolvers/JwtClaimTenantResolver.cs",
       "line": 11,
+      "members": [
+        {
+          "name": "Order",
+          "kind": "property",
+          "signature": "int Order",
+          "returnType": "int"
+        },
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantInfo?>"
+        }
+      ]
+    },
+    {
+      "name": "QueryStringTenantResolver",
+      "fqn": "Granit.MultiTenancy.Resolvers.QueryStringTenantResolver",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Resolvers/QueryStringTenantResolver.cs",
+      "line": 16,
       "members": [
         {
           "name": "Order",

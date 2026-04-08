@@ -52,4 +52,17 @@ public sealed class MultiTenancyOptions
     /// the header may be attacker-controlled (no trusted reverse proxy).
     /// </summary>
     public TenantHeaderTrustMode HeaderTrustMode { get; set; } = TenantHeaderTrustMode.Unrestricted;
+
+    /// <summary>
+    /// Domain template for subdomain-based tenant resolution.
+    /// Use <c>{0}</c> as placeholder for the tenant identifier.
+    /// Example: <c>"{0}.monsaas.com"</c>. <c>null</c> = disabled.
+    /// </summary>
+    public string? DomainTemplate { get; set; }
+
+    /// <summary>
+    /// Query string parameter name for tenant resolution (dev/debug).
+    /// Default: <c>"__tenant"</c>. <c>null</c> = disabled.
+    /// </summary>
+    public string? QueryStringParamName { get; set; } = "__tenant";
 }
