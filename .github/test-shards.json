@@ -71,6 +71,7 @@
         "tests/Granit.ReferenceData.Tests",
         "tests/Granit.Templating.Endpoints.Tests",
         "tests/Granit.Templating.EntityFrameworkCore.Tests",
+        "tests/Granit.Templating.Mjml.Tests",
         "tests/Granit.Templating.Scriban.Tests",
         "tests/Granit.Templating.Tests",
         "tests/Granit.Templating.Workflow.Tests",

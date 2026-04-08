@@ -1,0 +1,79 @@
+---
+title: "Email Channel — SMTP, SendGrid, SES Providers & Plain Text Generation"
+description: "Configure Granit's email notification channel with SMTP, SendGrid, SES, Azure, Scaleway, or Brevo providers. Automatic HTML-to-text and MJML support."
+sidebar:
+  label: Email Channel
+  order: 3
+---
+
+The email channel supports multiple providers via Keyed Services. Pick the provider that fits your infrastructure, and Granit handles sender resolution, plain text generation, and layout wrapping automatically. For provider configuration options, see the [configuration reference](./configuration/).
+
+## Email providers
+
+| Provider | Package | Keyed Service key |
+|----------|---------|-------------------|
+| SMTP (MailKit) | `Granit.Notifications.Email.Smtp` | `"Smtp"` |
+| Azure Communication Services | `Granit.Notifications.Email.AzureCommunicationServices` | `"AzureCommunicationServices"` |
+| Scaleway TEM | `Granit.Notifications.Email.Scaleway` | `"Scaleway"` |
+| SendGrid | `Granit.Notifications.Email.SendGrid` | `"SendGrid"` |
+| Brevo | `Granit.Notifications.Brevo` | `"Brevo"` |
+
+Register the channel abstraction and your chosen provider:
+
+```csharp
+context.Services.AddGranitNotificationsEmail(opts => opts.Provider = "Smtp");
+context.Services.AddGranitNotificationsEmailSmtp();
+```
+
+## Automatic plain text generation
+
+Every email sent through `EmailNotificationChannel` automatically includes a
+`text/plain` alternative alongside the HTML body. This is critical for:
+
+- **Deliverability** — SpamAssassin penalizes HTML-only emails (RFC 2046 compliance)
+- **Accessibility** — CLI clients, screen readers, and wearables use the text version
+- **Fallback** — clients that block HTML rendering show the plain text
+
+The conversion uses `HtmlToPlainTextConverter` (AngleSharp-based), which:
+
+| HTML | Plain text |
+|------|-----------|
+| `<p>`, `<div>` | Double newline |
+| `<a href="url">text</a>` | `text (url)` |
+| `<h1>`--`<h6>` | UPPERCASE |
+| `<ul>/<li>` | `\u2022 item` |
+| `<ol>/<li>` | `1. item` |
+| `<strong>` | `*text*` |
+| `<em>` | `_text_` |
+| `<hr>` | `---` |
+| `<img alt="x">` | `[x]` |
+| `<table role="presentation">` | Traverse children (layout table) |
+| `<style>`, `<script>`, MSO comments | Stripped |
+
+The converter is designed for high-throughput scenarios (Wolverine mass notifications)
+with a reusable static `IBrowsingContext` to minimize GC pressure.
+
+:::note[Bifurcation, not mutation]
+The plain text converter is **not** part of the `IRenderedContentTransformer` pipeline.
+It runs as a bifurcation after the transformation chain completes — the final HTML is
+consumed by two paths: `HtmlBody` (unchanged) and `PlainTextBody` (converted).
+:::
+
+## MJML templates
+
+For marketing-style emails with complex layouts, use
+[Granit.Templating.Mjml](/dotnet/business/templating/mjml-email-templates/) to write
+MJML markup instead of hand-crafted table-based HTML. The `MjmlTransformer` runs in
+the post-render pipeline and compiles MJML to email-safe HTML automatically.
+
+## Built-in layout template
+
+`Granit.Notifications.Email` ships a built-in `Layout.Email.html` layout that wraps
+notification content with a header (app logo or name), footer (unsubscribe, copyright),
+and optional CTA link. The layout uses:
+
+- Table-based structure for maximum email client compatibility
+- 100% inline styles (no `<style>` block)
+- MSO conditional comments for Outlook `max-width` support
+- `x-apple-disable-message-reformatting` meta tag
+- RFC 2369/8058 `List-Unsubscribe` headers for one-click unsubscribe

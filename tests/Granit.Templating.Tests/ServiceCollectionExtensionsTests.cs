@@ -134,6 +134,33 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     // -------------------------------------------------------------------------
+    // AddRenderedContentTransformer
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void AddRenderedContentTransformer_Registers_As_Singleton()
+    {
+        ServiceCollection services = [];
+        services.AddRenderedContentTransformer<FakeTransformer>();
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(IRenderedContentTransformer) &&
+            d.ImplementationType == typeof(FakeTransformer) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddRenderedContentTransformer_CalledTwice_RegistersBoth()
+    {
+        ServiceCollection services = [];
+        services.AddRenderedContentTransformer<FakeTransformer>();
+        services.AddRenderedContentTransformer<FakeTransformer>();
+
+        services.Count(d => d.ServiceType == typeof(IRenderedContentTransformer))
+                .ShouldBe(2, "Multiple transformers should be registrable");
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -148,6 +175,14 @@ public sealed class ServiceCollectionExtensionsTests
         public int Order => 0;
         public Task<string> EnrichAsync(string data, CancellationToken cancellationToken = default) =>
             Task.FromResult(data);
+    }
+
+    private sealed class FakeTransformer : IRenderedContentTransformer
+    {
+        public int Order => 100;
+        public bool CanTransform(Granit.Templating.Keys.DocumentFormat format) => true;
+        public Task<string> TransformAsync(string content, Granit.Templating.Keys.DocumentFormat format, CancellationToken ct) =>
+            Task.FromResult(content);
     }
 
     private sealed class FakeTransitionHook : ITemplateTransitionHook

@@ -1,0 +1,97 @@
+---
+title: "Template Layouts — Two-Pass Rendering & Tenant Override"
+description: "Learn how Granit template layouts wrap content with shared HTML envelopes using two-pass rendering, admin overrides, and tenant-scoped customization."
+sidebar:
+  label: Layouts
+  order: 3
+---
+
+Layouts provide a shared HTML envelope (branding, header, footer) that wraps content
+templates automatically. Content templates contain only the body -- no `DOCTYPE`, no
+`<head>`, no boilerplate.
+
+## How it works
+
+The renderer performs **two-pass rendering** when a layout is configured:
+
+1. **Render content** -- the content template produces an HTML fragment
+2. **Render layout** -- the layout template receives the fragment as `{{ body | raw }}`
+   and wraps it in the full HTML structure
+
+## Layout resolution chain
+
+Layout is resolved in priority order:
+
+1. **`TemplateDescriptor.LayoutName`** (database) -- admin override per template
+2. **`ILayoutRegistry`** (code) -- pattern-based defaults registered at startup
+3. **No layout** -- template renders standalone
+
+## Registering layouts (code-level)
+
+```csharp
+// All notification emails use the email layout
+services.AddTemplateLayout("Notifications.*", "Layout.Email");
+
+// All billing templates use the document layout
+services.AddTemplateLayout("Billing.*", "Layout.Document");
+
+// Exact match takes precedence over prefix
+services.AddTemplateLayout("Billing.SpecialInvoice", "Layout.Custom");
+```
+
+Patterns support exact names (`"Billing.Invoice"`) and prefix wildcards (`"Billing.*"`).
+Exact matches always win. Among prefix matches, higher priority and longer prefix win.
+
+## Layout template example
+
+```html
+<!DOCTYPE html>
+<html lang="{{ context.culture }}">
+<head>
+    <meta charset="utf-8">
+    <title>{{ model.title }}</title>
+</head>
+<body>
+    {{- if app.logo_url != "" }}
+    <img src="{{ app.logo_url }}" alt="{{ app.name }}">
+    {{- end }}
+    {{ body | raw }}
+    {{- if app.base_url != "" }}
+    <p><a href="{{ app.base_url }}">{{ app.name }}</a></p>
+    {{- end }}
+</body>
+</html>
+```
+
+The content template is just the body:
+
+```html
+<p>You have received a new notification of type
+<strong>{{ model.notification_type }}</strong>.</p>
+```
+
+:::note[`{{ body | raw }}`]
+The `raw` filter prevents double-encoding if HTML escaping is enabled in the future.
+Today Scriban in Granit runs in raw text mode (no `HtmlEncoder`), but `raw` is a
+defensive best practice for layout templates.
+:::
+
+## Admin override
+
+An administrator can assign a specific layout to a template via the admin UI
+(`PUT /templates/{name}` with `layoutName` field). This overrides the code-level
+`ILayoutRegistry` default. Set `layoutName` to `null` to revert to the default.
+
+## Tenant override
+
+A tenant can override a layout by publishing their own version (e.g. `Layout.Email`)
+to the database template store. `StoreTemplateResolver` (priority 100) wins over the
+embedded default (priority -100). Multi-tenant query filters ensure isolation.
+
+## Safety guards
+
+- **Layout is always terminal** -- the layout render pass never resolves a layout for
+  itself, preventing infinite loops
+- **Graceful degradation** -- if the layout template cannot be resolved, a warning is
+  logged and the content renders standalone
+- **Binary skip** -- `BinaryRenderedContent` (Excel) skips layout wrapping

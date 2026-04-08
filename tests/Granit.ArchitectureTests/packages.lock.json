@@ -23,11 +23,11 @@
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.*, )",
-        "resolved": "18.3.0",
-        "contentHash": "xW3kXuWRQtgoxJp4J+gdhHSQyK+6Wb/AZDSd7lMvuMRYlZ1tnpkojyfZlWilB5G4dmZ0Y0ZxU/M23TlubndNkw==",
+        "resolved": "18.4.0",
+        "contentHash": "w49iZdL4HL6V25l41NVQLXWQ+e71GvSkKVteMrOL02gP/PUkcnO/1yEb2s9FntU4wGmJWfKnyrRAhcMHd9ZZNA==",
         "dependencies": {
-          "Microsoft.CodeCoverage": "18.3.0",
-          "Microsoft.TestPlatform.TestHost": "18.3.0"
+          "Microsoft.CodeCoverage": "18.4.0",
+          "Microsoft.TestPlatform.TestHost": "18.4.0"
         }
       },
       "Shouldly": {
@@ -93,8 +93,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.27",
-        "contentHash": "hGdpxa7GR2JrfOGI35MWlGCiqq4GlpNDJi0DDvE8lJunboziMFeTCXypvstS5eo0WYdJR9pqHykR53QsjWj7jg=="
+        "resolved": "4.0.3.28",
+        "contentHash": "OKvL+4Z/SFpOo7lbDbsT7bgcZY03fZkIQNFVV5LDZAt9hVhpX9z1Xn2MsGKSpXo4hwxXeiINv2j5Bb4n1KrVaQ=="
       },
       "Azure.Core": {
         "type": "Transitive",
@@ -521,8 +521,8 @@
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
-        "resolved": "18.3.0",
-        "contentHash": "23BNy/vziREC20Wwhb50K7+kZe0m07KlLWDQv4qjJ9tt3QjpDpDIqJFrhYHmMEo9xDkuSp55U/8h4bMF7MiB+g=="
+        "resolved": "18.4.0",
+        "contentHash": "9O0BtCfzCWrkAmK187ugKdq72HHOXoOUjuWFDVc2LsZZ0pOnA9bTt+Sg9q4cF+MoAaUU+MuWtvBuFsnduviJow=="
       },
       "Microsoft.Data.SqlClient": {
         "type": "Transitive",
@@ -776,15 +776,15 @@
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
-        "resolved": "18.3.0",
-        "contentHash": "AEIEX2aWdPO9XbtR96eBaJxmXRD9vaI9uQ1T/JbPEKlTAZwYx0ZrMzKyULMdh/HH9Sg03kXCoN7LszQ90o6nPQ=="
+        "resolved": "18.4.0",
+        "contentHash": "4L6m2kS2pY5uJ9cpeRxzW22opr6ttScIRqsOpMDQpgENp/ZwxkkQCcmc6LRSURo2dFaaSW5KVflQZvroiJ7Wzg=="
       },
       "Microsoft.TestPlatform.TestHost": {
         "type": "Transitive",
-        "resolved": "18.3.0",
-        "contentHash": "twmsoelXnp1uWMU3VGip9f0Jr1mZ0PZqgJdF35CIrdYgYrkHIJMV1m8uKyhcdjLdsQDESHAgkR7KhS9i1qpJag==",
+        "resolved": "18.4.0",
+        "contentHash": "gZsCHI+zOmZCcKZieIL4Jg14qKD2OGZOmX5DehuIk1EA9BN6Crm0+taXQNEuajOH1G9CCyBxw8VWR4t5tumcng==",
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "18.3.0",
+          "Microsoft.TestPlatform.ObjectModel": "18.4.0",
           "Newtonsoft.Json": "13.0.3"
         }
       },
@@ -1266,11 +1266,11 @@
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
-        "resolved": "5.27.0",
-        "contentHash": "q6aaQfl9VfOXsLKsniVL3mSQ+WVzHUWsl5ZUy19aOeGpkM+DzgIaQuPWRTA7NMEzXQ4/9Co3EHAtKGP/SButgg==",
+        "resolved": "5.28.0",
+        "contentHash": "ZvSZrw2wpuACp2C42Lxlg0ZZ+VMk6OWWirmr+X/rOKZ29oqc5O+ZDaVpVUN0hxp3bTC3cWWNJosgqiMVk0Xtfg==",
         "dependencies": {
           "Weasel.Core": "8.11.2",
-          "WolverineFx": "5.27.0"
+          "WolverineFx": "5.28.0"
         }
       },
       "xunit.analyzers": {
@@ -2243,6 +2243,7 @@
       "granit.notifications.email": {
         "type": "Project",
         "dependencies": {
+          "AngleSharp": "[1.4.0, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )"
         }
@@ -3022,6 +3023,12 @@
           "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
+      "AngleSharp": {
+        "type": "CentralTransitive",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "6ph8mpaQx0KL0COYRt0kI8MB9gSp1PtKijKMhJU//+aVFgKAJLKDesG/+26JSaVCOrHNgPf12wpfoyRcMYOeXg=="
+      },
       "Asp.Versioning.Mvc": {
         "type": "CentralTransitive",
         "requested": "[10.0.0-preview.*, )",
@@ -3043,55 +3050,55 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.8",
-        "contentHash": "GX6V1zrB4Phxc/nIO1WKXnZTNLH32lHDlHEaihkKZWPsvuWdrb7Vf79ABAmJEILFrcm5Yd/0mEDQ67ryVVY/CA==",
+        "resolved": "4.0.6.9",
+        "contentHash": "gPFwgYvRVBV8sC0LUG91w/3srFpSgCJqee8W+AaIbaFeYiSNHi8fObTYPIUKXjDZ58nP+bk+LQwD6mWnJBRE6A==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.KeyManagementService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.9",
-        "contentHash": "eib/lnq76rWEFEcijtyNa7TDMj//DjXVNTLLqL6QKky/hIZM9cZ1eTTKweOhpgDfhoNea2/9oSEliaXWFcdHhQ==",
+        "resolved": "4.0.9.10",
+        "contentHash": "U9ipXZuVLYdscu87b/2kMH5M0H4hM0J5EccJRBUSPe28QYDy9TeyQ0TWJEzxiXjPHJWjc/+HNX0tRxxf5btlpA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.20.3",
-        "contentHash": "CX/Bu4doaRSuLcaPS5HwOHULbuZl3gBqcr7MZxBIBs1wfjYbKv8vgvDYkBrSpg6fFs7UgmDZ8fT2k6ule8UgBw==",
+        "resolved": "4.0.21",
+        "contentHash": "ZAdrBxqtD0kzuOT05apaWeOn9cEmhuAMiocv2yvCC34HjpXIWKmuIqO2+T7e2E3hNb3EP5lbA16B6tmQMFkHpg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.15",
-        "contentHash": "jeVVXxq5N8El+1Zak58IcvexwdH7sna0yS/sEMiir68wy6dgIG2q9zyxeectotxAAYuUkSZQhtvAOiEtB2iOTA==",
+        "resolved": "4.0.4.16",
+        "contentHash": "SEDD9H08cRWMBZFuNFOURKmGh7fanbvsakba4vXrn0Vu3rtIR2e/Dm+46NOz/YWqeYgKptkpaQVT9TwEW4e9ng==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.8",
-        "contentHash": "AlulQij+NrdH2Wbof+yqOVj1ZD1N5LCO6NipNg0WIqKVcNeSzgNyRAQsVVgKyIDQCPdis1EPtbReDJro4AF7NQ==",
+        "resolved": "4.0.12.9",
+        "contentHash": "W5HE8c3IDcQ9JBHsA14f5GzlYHcJo6I6vkxl6P3MvaejCo+hClg2e+ouOa/jFZcVawTuWOTMJk7myXVRRS20Hw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.SimpleNotificationService": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.2.25",
-        "contentHash": "qfdBcO912okX+j0VsTHKwdPb96qrqBGfD9a0gvdQ+mk01e6HJJCw31H2uF79jRhVgpswbD8tp9KLEVeGOLdZRQ==",
+        "resolved": "4.0.2.26",
+        "contentHash": "catw7lfLXoONQ9mj7BnHGrqe6lVuojjG/yDB/+FJqWTeIvV+rm1ProjHwETDHzy6JfCV5MnyrYaNYFAeelxVww==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "Azure.AI.OpenAI": {
@@ -3744,8 +3751,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.27.0",
-        "contentHash": "cpuvQ7k0/ezc3pAIDYHydIhh+WE1VUKtQGkc9dLg01fj2bC0LHwvxTcrCYz2VfuTM1xCbR7rInNSXErGZydosQ==",
+        "resolved": "5.28.0",
+        "contentHash": "g5J41+KT89rzGnP86D0inOsd3V8ZbuKwznQJ1UbgcwUQ2JE3OhKVuzLDL9tm09qoNVKvutkIewwpCyOiIijapg==",
         "dependencies": {
           "JasperFx": "1.23.0",
           "JasperFx.Events": "1.25.0",
@@ -3757,44 +3764,44 @@
       "WolverineFx.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.27.0",
-        "contentHash": "pHxZoe702i9G1eV4FoRN+8vmz6byGx0qBoBE+g2qbMY9GVLH3HVck/zZyrdmGS7xtXiHuPR7QZGWfiV5gddGxg==",
+        "resolved": "5.28.0",
+        "contentHash": "7ggGvTKSX62Bm7mo7XzfQn9Iaj57NluF1ZAruisx1bl0iVgCtj2W5CnJSrT/ewlLHvDWxsMFqYF3qQsEDd+JSQ==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.2",
           "Weasel.EntityFrameworkCore": "8.11.2",
-          "WolverineFx.RDBMS": "5.27.0"
+          "WolverineFx.RDBMS": "5.28.0"
         }
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.27.0",
-        "contentHash": "x3tFTfwhUDIohhglaLXAQ2DW3bF3HiT5RIcejtRrlrg9yGR48pe7DSkVlgK4tXTJ84CY7L3y1t0kJk+qkPC9WQ==",
+        "resolved": "5.28.0",
+        "contentHash": "UBb+jvwENnLYOGIH1JVPUpBNjCfLdY5FMMjoo/nw3LWxmv+qE9fFSxy7vZ+N337ZqeoBDdFhWzlHsavild98YA==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.27.0"
+          "WolverineFx": "5.28.0"
         }
       },
       "WolverineFx.Postgresql": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.27.0",
-        "contentHash": "twh//YV9h6k4q67XAEJ4CeRuZShsGPe5bCItft+YNPXArGWDku/ougMv0MHOo9uId47ToWKyFpZt9xWw7ajnNw==",
+        "resolved": "5.28.0",
+        "contentHash": "US7SD3/4UbUVsq7q/WgEsd8zkM1f6+DtMPBdARpPPzlRjI/S844AiGQ+W1ntCtkN3Tgujc5H+bknEh+PT6OHKQ==",
         "dependencies": {
           "Weasel.Postgresql": "8.11.2",
-          "WolverineFx.RDBMS": "5.27.0"
+          "WolverineFx.RDBMS": "5.28.0"
         }
       },
       "WolverineFx.SqlServer": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.27.0",
-        "contentHash": "wkxC834MI15uQqdm18S7wmPLmD613EIyfC20VB/M50N7/wu4Z4e6jnt9UpYChKhDu0BTCX907tLOej+r/ZfiUQ==",
+        "resolved": "5.28.0",
+        "contentHash": "KNZiAPxgDfVsLjn1T8eP4Ovd8SOE+zoJsbXmmKNTSiL3cnbZltqQYRPYJvyBmf5F1eksVJq+om1l149kf3GqZw==",
         "dependencies": {
           "Weasel.SqlServer": "8.11.2",
-          "WolverineFx.RDBMS": "5.27.0"
+          "WolverineFx.RDBMS": "5.28.0"
         }
       },
       "Yarp.ReverseProxy": {

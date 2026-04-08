@@ -18,23 +18,18 @@ public sealed class DbPropertiesFallbackTests : IDisposable
     public DbPropertiesFallbackTests() => Reset();
     public void Dispose() => Reset();
 
-    private static void Reset()
-    {
-        GranitDbDefaults.ResetToDefaults();
-        // Reset explicit overrides by setting via the property (which sets the explicit flag).
-        // Then we need to "un-set" the explicit flag. Since ResetToDefaults is only on GranitDbDefaults,
-        // we rely on a fresh test process or accept that explicit flag carries across tests.
-        // For now, these tests must run in isolation or use a known state.
-    }
+    // Reset explicit overrides by setting via the property (which sets the explicit flag).
+    // Then we need to "un-set" the explicit flag. Since ResetToDefaults is only on GranitDbDefaults,
+    // we rely on a fresh test process or accept that explicit flag carries across tests.
+    // For now, these tests must run in isolation or use a known state.
+    private static void Reset() => GranitDbDefaults.ResetToDefaults();
 
     // ── Host module: MultiTenancyDbProperties ─────────────────────────
 
     [Fact]
-    public void HostModule_NoDefaults_ReturnsNull()
-    {
+    public void HostModule_NoDefaults_ReturnsNull() =>
         // No global, no explicit → null
         MultiTenancyDbProperties.DbSchema.ShouldBeNull();
-    }
 
     [Fact]
     public void HostModule_HostDbSchemaSet_ReturnsHostSchema()
@@ -65,10 +60,8 @@ public sealed class DbPropertiesFallbackTests : IDisposable
     // ── Tenant module: GranitBlobStorageDbProperties ──────────────────
 
     [Fact]
-    public void TenantModule_NoDefaults_ReturnsNull()
-    {
+    public void TenantModule_NoDefaults_ReturnsNull() =>
         GranitBlobStorageDbProperties.DbSchema.ShouldBeNull();
-    }
 
     [Fact]
     public void TenantModule_DbSchemaSet_ReturnsDbSchema()

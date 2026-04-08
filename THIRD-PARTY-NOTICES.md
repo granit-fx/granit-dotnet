@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-04
+Dernière mise à jour : 2026-04-08
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-04-04
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 81                 |
+| MIT          | 83                 |
 | Apache-2.0   | 34                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -26,6 +26,7 @@ Dernière mise à jour : 2026-04-04
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
+| AngleSharp | 1.4.0 | Copyright (c) 2013-2025 AngleSharp Contributors |
 | Asp.Versioning.Mvc | 10.0.0-preview.2 | (c) .NET Foundation |
 | Asp.Versioning.Mvc.ApiExplorer | 10.0.0-preview.2 | (c) .NET Foundation |
 | Azure.AI.OpenAI | 2.1.0 | (c) Microsoft Corporation |
@@ -39,6 +40,7 @@ Dernière mise à jour : 2026-04-04
 | Cronos | 0.11.1 | Copyright (c) 2016-2025 Hangfire OU |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.15.1 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
+| Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
 | Microsoft.AspNetCore.Authentication.JwtBearer | 10.0.5 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.Identity.EntityFrameworkCore | 10.0.5 | (c) Microsoft Corporation |
 | Microsoft.AspNetCore.OpenApi | 10.0.5 | (c) Microsoft Corporation |

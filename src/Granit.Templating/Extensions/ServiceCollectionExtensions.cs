@@ -104,6 +104,23 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ITemplateDataEnricher<TData>, TEnricher>();
 
     /// <summary>
+    /// Registers an <see cref="IRenderedContentTransformer"/> that transforms rendered text
+    /// content after template engine rendering and layout wrapping.
+    /// </summary>
+    /// <remarks>
+    /// Multiple transformers can be registered and are executed in ascending
+    /// <see cref="IRenderedContentTransformer.Order"/>. Each transformer receives the output
+    /// of the previous one (mutation chain pattern).
+    /// </remarks>
+    /// <typeparam name="T">The transformer implementation type.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddRenderedContentTransformer<T>(
+        this IServiceCollection services)
+        where T : class, IRenderedContentTransformer =>
+        services.AddSingleton<IRenderedContentTransformer, T>();
+
+    /// <summary>
     /// Registers a layout mapping: templates matching <paramref name="templatePattern"/>
     /// are automatically wrapped in the <paramref name="layoutTemplateName"/> layout
     /// during rendering.

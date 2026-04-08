@@ -1,0 +1,41 @@
+---
+title: "Wolverine Integration — Durable Outbox & Retry for Notifications"
+description: "Enable durable notification dispatch with Wolverine's transactional outbox, exponential backoff retry, and configurable delivery parallelism."
+sidebar:
+  label: Wolverine Integration
+  order: 7
+---
+
+`Granit.Notifications.Wolverine` replaces the default in-process `Channel<T>` publisher with a durable `IMessageBus`-backed implementation. Notifications are persisted in the Wolverine outbox and survive application crashes.
+
+```csharp
+[DependsOn(typeof(GranitNotificationsWolverineModule))]
+public class AppModule : GranitModule { }
+```
+
+## Local queues
+
+The module configures two local queues:
+
+| Queue | Message | Behavior |
+|-------|---------|----------|
+| `notification-fanout` | `NotificationTrigger` | Default parallelism |
+| `notification-delivery` | `DeliverNotificationCommand` | `MaxParallelDeliveries` (default 8) |
+
+## Retry policy
+
+Retry policy on `NotificationDeliveryException`:
+
+| Attempt | Delay |
+|---------|-------|
+| 1 | 10 seconds |
+| 2 | 1 minute |
+| 3 | 5 minutes |
+| 4 | 30 minutes |
+| 5 | 2 hours |
+
+:::tip
+Without the Wolverine package, the engine uses an in-process `Channel<T>` with a
+`BackgroundService` consumer. Messages are lost on crash. This is suitable for
+development and testing only.
+:::

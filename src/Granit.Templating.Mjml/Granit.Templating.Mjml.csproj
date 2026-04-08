@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Templating.Mjml</PackageId>
+    <Description>MJML email template support for Granit. Compiles MJML markup to email-client-safe HTML (table-based layout, inline CSS, MSO conditional comments) via Mjml.Net — a native .NET MJML compiler with zero Node.js dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Templating.Mjml.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Mjml.Net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+
+</Project>

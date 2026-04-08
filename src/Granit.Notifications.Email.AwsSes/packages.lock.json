@@ -5,10 +5,10 @@
       "AWSSDK.SimpleEmailV2": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.8",
-        "contentHash": "AlulQij+NrdH2Wbof+yqOVj1ZD1N5LCO6NipNg0WIqKVcNeSzgNyRAQsVVgKyIDQCPdis1EPtbReDJro4AF7NQ==",
+        "resolved": "4.0.12.9",
+        "contentHash": "W5HE8c3IDcQ9JBHsA14f5GzlYHcJo6I6vkxl6P3MvaejCo+hClg2e+ouOa/jFZcVawTuWOTMJk7myXVRRS20Hw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -69,8 +69,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.27",
-        "contentHash": "hGdpxa7GR2JrfOGI35MWlGCiqq4GlpNDJi0DDvE8lJunboziMFeTCXypvstS5eo0WYdJR9pqHykR53QsjWj7jg=="
+        "resolved": "4.0.3.28",
+        "contentHash": "OKvL+4Z/SFpOo7lbDbsT7bgcZY03fZkIQNFVV5LDZAt9hVhpX9z1Xn2MsGKSpXo4hwxXeiINv2j5Bb4n1KrVaQ=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
@@ -129,6 +129,7 @@
       "granit.notifications.email": {
         "type": "Project",
         "dependencies": {
+          "AngleSharp": "[1.4.0, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
@@ -164,6 +165,12 @@
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
+      },
+      "AngleSharp": {
+        "type": "CentralTransitive",
+        "requested": "[1.4.0, )",
+        "resolved": "1.4.0",
+        "contentHash": "6ph8mpaQx0KL0COYRt0kI8MB9gSp1PtKijKMhJU//+aVFgKAJLKDesG/+26JSaVCOrHNgPf12wpfoyRcMYOeXg=="
       },
       "Microsoft.Extensions.Configuration.Binder": {
         "type": "CentralTransitive",

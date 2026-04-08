@@ -59,7 +59,7 @@ internal sealed class TenantAwareFusionCache(
         TimeSpan? duration = null) =>
         inner.CreateEntryOptions(setupAction, duration);
 
-    // ── GetOrSet (key-prefixed) ───────────────────────────────────────
+    // ── GetOrSetAsync (key-prefixed) ────────────────────────────────────
 
     public ValueTask<TValue> GetOrSetAsync<TValue>(
         string key,
@@ -70,6 +70,16 @@ internal sealed class TenantAwareFusionCache(
         CancellationToken token = default) =>
         inner.GetOrSetAsync(PrefixKey(key), factory, failSafeDefaultValue, options, PrefixTags(tags), token);
 
+    public ValueTask<TValue> GetOrSetAsync<TValue>(
+        string key,
+        TValue defaultValue,
+        FusionCacheEntryOptions? options = null,
+        IEnumerable<string>? tags = null,
+        CancellationToken token = default) =>
+        inner.GetOrSetAsync(PrefixKey(key), defaultValue, options, PrefixTags(tags), token);
+
+    // ── GetOrSet (key-prefixed) ──────────────────────────────────────
+
     public TValue GetOrSet<TValue>(
         string key,
         Func<FusionCacheFactoryExecutionContext<TValue>, CancellationToken, TValue> factory,
@@ -78,14 +88,6 @@ internal sealed class TenantAwareFusionCache(
         IEnumerable<string>? tags = null,
         CancellationToken token = default) =>
         inner.GetOrSet(PrefixKey(key), factory, failSafeDefaultValue, options, PrefixTags(tags), token);
-
-    public ValueTask<TValue> GetOrSetAsync<TValue>(
-        string key,
-        TValue defaultValue,
-        FusionCacheEntryOptions? options = null,
-        IEnumerable<string>? tags = null,
-        CancellationToken token = default) =>
-        inner.GetOrSetAsync(PrefixKey(key), defaultValue, options, PrefixTags(tags), token);
 
     public TValue GetOrSet<TValue>(
         string key,

@@ -1,0 +1,60 @@
+---
+title: "Post-Render Transformers — Extensible HTML Processing Pipeline"
+description: "Build custom post-render transformers for Granit templates to inline CSS, minify HTML, or inject branding into rendered email and document output."
+sidebar:
+  label: Post-Render Transformers
+  order: 5
+---
+
+The transformer pipeline lets you modify rendered HTML before it reaches consumers
+(email channels, PDF generators). This is particularly useful for email templates,
+where you need table-based layout, inline CSS, and Outlook conditional comments --
+concerns that template authors should not deal with manually.
+
+## IRenderedContentTransformer interface
+
+```csharp
+public interface IRenderedContentTransformer
+{
+    int Order { get; }
+    bool CanTransform(DocumentFormat format);
+    Task<string> TransformAsync(string content, DocumentFormat format, CancellationToken ct);
+}
+```
+
+Transformers run as an ordered **mutation chain**: each receives the output of the
+previous one and returns modified content. Use `CanTransform` to restrict a transformer
+to specific formats (e.g., HTML-only, skip PDF/Excel).
+
+## Registering a custom transformer
+
+```csharp
+services.AddRenderedContentTransformer<HtmlMinificationTransformer>();
+```
+
+## Writing a custom transformer
+
+```csharp
+public sealed class HtmlMinificationTransformer : IRenderedContentTransformer
+{
+    public int Order => 300;
+    public bool CanTransform(DocumentFormat format) => format == DocumentFormat.Html;
+
+    public Task<string> TransformAsync(
+        string content, DocumentFormat format, CancellationToken ct)
+    {
+        // Your minification logic here
+        return Task.FromResult(Minify(content));
+    }
+}
+```
+
+## Ordering conventions
+
+| Range | Purpose | Example |
+|-------|---------|---------|
+| 100 | Structural transformation | MJML compilation |
+| 200 | CSS processing | Inlining, purging |
+| 300+ | Cosmetic | Minification, cleanup |
+
+The built-in `MjmlTransformer` (Order=100) runs first to convert MJML markup into table-based HTML. Application-level transformers should use Order 200+ to process the already-compiled HTML. See [MJML Email Templates](./mjml-email-templates/) for details on the MJML transformer, and [Rendering Pipeline](./rendering-pipeline/) for how transformers fit into the five-stage pipeline.

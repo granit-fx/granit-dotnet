@@ -16,58 +16,29 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Templates/Layout.Email.html"
-        LogicalName="Granit.Notifications.Email.Templates.Layout.Email.html" />
-    <EmbeddedResource Include="Templates/Notifications.Default.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.html" />
-    <EmbeddedResource Include="Templates/Notifications.Default.fr.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.fr.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.fr-CA.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.fr-CA.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.nl.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.nl.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.de.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.de.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.es.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.es.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.it.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.it.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.pt.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pt.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.pt-BR.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pt-BR.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.zh.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.zh.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.ja.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.ja.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.pl.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pl.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.tr.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.tr.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.ko.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.ko.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.sv.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.sv.html"
-        WithCulture="false" />
-    <EmbeddedResource Include="Templates/Notifications.Default.cs.html"
-        LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.cs.html"
-        WithCulture="false" />
+    <EmbeddedResource Include="Templates/Layout.Email.html" LogicalName="Granit.Notifications.Email.Templates.Layout.Email.html" />
+    <EmbeddedResource Include="Templates/Notifications.Default.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.html" />
+    <EmbeddedResource Include="Templates/Notifications.Default.fr.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.fr.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.fr-CA.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.fr-CA.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.nl.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.nl.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.de.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.de.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.es.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.es.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.it.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.it.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.pt.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pt.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.pt-BR.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pt-BR.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.zh.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.zh.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.ja.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.ja.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.pl.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.pl.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.tr.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.tr.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.ko.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.ko.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.sv.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.sv.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.cs.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.cs.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.hi.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.hi.html" WithCulture="false" />
+    <EmbeddedResource Include="Templates/Notifications.Default.en-GB.html" LogicalName="Granit.Notifications.Email.Templates.Notifications.Default.en-GB.html" WithCulture="false" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />

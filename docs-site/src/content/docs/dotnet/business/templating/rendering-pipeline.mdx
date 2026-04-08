@@ -1,0 +1,167 @@
+---
+title: "Rendering Pipeline — Enrich, Resolve, Layout, Render, Transform"
+description: "Explore Granit's five-stage template rendering pipeline: data enrichment, resolver chain, layout wrapping, Scriban engine execution, and post-render transforms."
+sidebar:
+  label: Rendering Pipeline
+  order: 1
+---
+
+This page describes the five sequential stages that `ITextTemplateRenderer` executes when rendering a template, from data enrichment through to the final transformed output.
+
+## Template rendering pipeline
+
+The text rendering pipeline executes five stages in sequence:
+
+```mermaid
+flowchart LR
+    subgraph "1. Enrich"
+        D[TData] --> E1["ITemplateDataEnricher #1"]
+        E1 --> E2["ITemplateDataEnricher #2"]
+        E2 --> ED[Enriched TData]
+    end
+    subgraph "2. Resolve"
+        ED --> R1["StoreTemplateResolver<br/>(Priority=100)"]
+        R1 -->|miss| R2["EmbeddedTemplateResolver<br/>(Priority=-100)"]
+        R1 -->|hit| TD[TemplateDescriptor]
+        R2 --> TD
+    end
+    subgraph "3. Layout"
+        TD -->|LayoutName?| LR["ILayoutRegistry"]
+        LR -->|resolve layout| LD[Layout Descriptor]
+        TD -->|no layout| ENG
+    end
+    subgraph "4. Render"
+        TD --> ENG["ITemplateEngine<br/>(Scriban)"]
+        LD -->|"two-pass:<br/>content → {{ body | raw }}"| ENG
+        ED --> ENG
+        GC["Global Contexts<br/>now.*, context.*, app.*"] --> ENG
+        ENG --> HTML[HTML string]
+    end
+    subgraph "5. Transform"
+        HTML --> TR1["MjmlTransformer<br/>(Order=100)"]
+        TR1 --> TR2["CssInliner<br/>(Order=200)"]
+        TR2 --> RC[RenderedTextResult]
+    end
+```
+
+**Stage 1 -- Enrichment.** `ITemplateDataEnricher<TData>` instances run in ascending `Order`.
+Each enricher returns a new immutable copy (record `with` expression) -- the original data
+is never mutated. Use enrichers to inject computed values (QR codes, aggregated totals,
+remote blob URLs) without coupling that logic to the domain layer.
+
+**Stage 2 -- Resolution.** `ITemplateResolver` implementations are tried by descending `Priority`.
+The resolver chain applies culture fallback: first `(Name, "fr-BE")`, then `(Name, null)`.
+Tenant scoping is the resolver's responsibility.
+
+| Resolver | Priority | Source |
+|----------|----------|--------|
+| `StoreTemplateResolver` | 100 | EF Core database (published revisions, FusionCache) |
+| `EmbeddedTemplateResolver` | -100 | Assembly embedded resources (code-level fallback) |
+
+**Stage 3 -- Layout wrapping.** If a layout is configured (via `TemplateDescriptor.LayoutName`
+from the database, or via `ILayoutRegistry` code-level defaults), the renderer performs
+two-pass rendering: content first, then the layout with `{{ body | raw }}` = rendered content.
+See [Layouts](./layouts/) for details.
+
+**Stage 4 -- Engine rendering.** `ITemplateEngine` selects itself via `CanRender(descriptor)`
+based on MIME type. Scriban handles `text/html` and `text/plain`. Global contexts are injected
+under their `ContextName` namespace.
+
+**Stage 5 -- Post-render transformation.** `IRenderedContentTransformer` instances run in
+ascending `Order` as a mutation chain: each transformer receives the previous output and
+returns modified HTML. Binary content (`BinaryRenderedContent`) skips this stage entirely.
+The pipeline is opt-in -- with no transformers registered, the stage is a no-op.
+
+| Transformer | Order | Package | Effect |
+|-------------|-------|---------|--------|
+| `MjmlTransformer` | 100 | `Granit.Templating.Mjml` | MJML markup to table-based HTML + inline CSS + MSO |
+| Custom | 200+ | Application | CSS inlining, minification, branding injection |
+
+## Declaring template types
+
+```csharp
+// Text template (email, SMS, push)
+public static class AcmeTemplates
+{
+    public static readonly TextTemplateType<AppointmentReminderData> AppointmentReminder =
+        new AppointmentReminderTemplateType();
+
+    private sealed class AppointmentReminderTemplateType
+        : TextTemplateType<AppointmentReminderData>
+    {
+        public override string Name => "Acme.AppointmentReminder";
+    }
+}
+
+public sealed record AppointmentReminderData(
+    string PatientName,
+    DateTimeOffset AppointmentDate,
+    string DoctorName,
+    string ClinicAddress);
+```
+
+## Rendering a text template
+
+```csharp
+public sealed class AppointmentReminderService(
+    ITextTemplateRenderer renderer,
+    IEmailSender emailSender)
+{
+    public async Task SendReminderAsync(
+        Patient patient,
+        Appointment appointment,
+        CancellationToken cancellationToken)
+    {
+        var data = new AppointmentReminderData(
+            PatientName: patient.FullName,
+            AppointmentDate: appointment.ScheduledAt,
+            DoctorName: appointment.Doctor.FullName,
+            ClinicAddress: appointment.Location.Address);
+
+        RenderedTextResult result = await renderer
+            .RenderAsync(AcmeTemplates.AppointmentReminder, data, cancellationToken)
+            .ConfigureAwait(false);
+
+        await emailSender
+            .SendAsync(patient.Email, subject: "Appointment reminder", html: result.Html, cancellationToken)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+## Data enrichment
+
+```csharp
+public sealed class PaymentQrCodeEnricher
+    : ITemplateDataEnricher<InvoiceDocumentData>
+{
+    public int Order => 10;
+
+    public Task<InvoiceDocumentData> EnrichAsync(
+        InvoiceDocumentData data,
+        CancellationToken cancellationToken = default)
+    {
+        using QRCodeGenerator generator = new();
+        QRCodeData qrData = generator.CreateQrCode(
+            data.PaymentUrl, QRCodeGenerator.ECCLevel.M);
+        SvgQRCode svg = new(qrData);
+
+        return Task.FromResult(data with { PaymentQrCodeSvg = svg.GetGraphic(5) });
+    }
+}
+```
+
+Register enrichers in the DI container:
+
+```csharp
+services.AddTransient<ITemplateDataEnricher<InvoiceDocumentData>,
+    PaymentQrCodeEnricher>();
+```
+
+:::caution[AI enricher security (GDPR / OWASP LLM)]
+`AITemplateDataEnricher<TData>` from `Granit.Templating.AI` sends business data to
+an external LLM provider. Subclass implementations of `BuildPrompt()` **must not**
+include PII (names, emails, addresses, financial data) unless the provider has a
+Data Processing Agreement covering the tenant's jurisdiction. Use `PromptBuilder`
+from `Granit.AI` to sanitize user-controlled input (prompt injection defense).
+:::

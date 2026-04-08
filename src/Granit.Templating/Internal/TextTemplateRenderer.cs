@@ -30,6 +30,7 @@ internal sealed partial class TextTemplateRenderer(
     IEnumerable<ITemplateResolver> resolvers,
     IEnumerable<ITemplateEngine> engines,
     IEnumerable<ITemplateGlobalContext> globalContexts,
+    IEnumerable<IRenderedContentTransformer> transformers,
     IServiceProvider serviceProvider,
     ILogger<TextTemplateRenderer> logger,
     ILayoutRegistry? layoutRegistry = null) : ITextTemplateRenderer
@@ -41,6 +42,9 @@ internal sealed partial class TextTemplateRenderer(
 
     private readonly IReadOnlyList<ITemplateGlobalContext> _globalContexts =
         globalContexts.ToList();
+
+    private readonly IReadOnlyList<IRenderedContentTransformer> _transformers =
+        [.. transformers.OrderBy(t => t.Order)];
 
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
@@ -102,8 +106,9 @@ internal sealed partial class TextTemplateRenderer(
         if (layoutName is null)
         {
             // No layout — render standalone (existing behavior)
-            return await engine.RenderAsync(
+            RenderedContent standaloneResult = await engine.RenderAsync(
                 descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+            return await ApplyTransformersAsync(standaloneResult, targetFormat, cancellationToken).ConfigureAwait(false);
         }
 
         TemplateDescriptor? layoutDescriptor = await ResolveAsync(
@@ -112,8 +117,9 @@ internal sealed partial class TextTemplateRenderer(
         if (layoutDescriptor is null)
         {
             Log.LayoutNotFound(logger, layoutName, templateType.Name);
-            return await engine.RenderAsync(
+            RenderedContent noLayoutResult = await engine.RenderAsync(
                 descriptor, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+            return await ApplyTransformersAsync(noLayoutResult, targetFormat, cancellationToken).ConfigureAwait(false);
         }
 
         // 5. Two-pass render: content first, then layout with body injection
@@ -135,8 +141,35 @@ internal sealed partial class TextTemplateRenderer(
             ExtraVariables = new Dictionary<string, object> { ["body"] = contentText.Html },
         };
 
-        return await engine.RenderAsync(
+        RenderedContent layoutResult = await engine.RenderAsync(
             layoutWithBody, enrichedData, targetFormat, _globalContexts, cancellationToken).ConfigureAwait(false);
+        return await ApplyTransformersAsync(layoutResult, targetFormat, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Runs all registered <see cref="IRenderedContentTransformer"/> instances in order
+    /// on the rendered text content. Binary content is returned unchanged.
+    /// </summary>
+    private async Task<RenderedContent> ApplyTransformersAsync(
+        RenderedContent content, DocumentFormat format, CancellationToken cancellationToken)
+    {
+        if (content is not TextRenderedContent textContent || _transformers.Count == 0)
+        {
+            return content;
+        }
+
+        string html = textContent.Html;
+        foreach (IRenderedContentTransformer transformer in _transformers)
+        {
+            if (transformer.CanTransform(format))
+            {
+                html = await transformer.TransformAsync(html, format, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return html == textContent.Html
+            ? content
+            : textContent with { Html = html };
     }
 
     private static partial class Log

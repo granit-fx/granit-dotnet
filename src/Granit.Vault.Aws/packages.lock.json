@@ -5,19 +5,19 @@
       "AWSSDK.KeyManagementService": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.9",
-        "contentHash": "eib/lnq76rWEFEcijtyNa7TDMj//DjXVNTLLqL6QKky/hIZM9cZ1eTTKweOhpgDfhoNea2/9oSEliaXWFcdHhQ==",
+        "resolved": "4.0.9.10",
+        "contentHash": "U9ipXZuVLYdscu87b/2kMH5M0H4hM0J5EccJRBUSPe28QYDy9TeyQ0TWJEzxiXjPHJWjc/+HNX0tRxxf5btlpA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.15",
-        "contentHash": "jeVVXxq5N8El+1Zak58IcvexwdH7sna0yS/sEMiir68wy6dgIG2q9zyxeectotxAAYuUkSZQhtvAOiEtB2iOTA==",
+        "resolved": "4.0.4.16",
+        "contentHash": "SEDD9H08cRWMBZFuNFOURKmGh7fanbvsakba4vXrn0Vu3rtIR2e/Dm+46NOz/YWqeYgKptkpaQVT9TwEW4e9ng==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.27, 5.0.0)"
+          "AWSSDK.Core": "[4.0.3.28, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -91,8 +91,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.27",
-        "contentHash": "hGdpxa7GR2JrfOGI35MWlGCiqq4GlpNDJi0DDvE8lJunboziMFeTCXypvstS5eo0WYdJR9pqHykR53QsjWj7jg=="
+        "resolved": "4.0.3.28",
+        "contentHash": "OKvL+4Z/SFpOo7lbDbsT7bgcZY03fZkIQNFVV5LDZAt9hVhpX9z1Xn2MsGKSpXo4hwxXeiINv2j5Bb4n1KrVaQ=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

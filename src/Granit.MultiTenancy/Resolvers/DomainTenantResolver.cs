@@ -88,6 +88,6 @@ public sealed class DomainTenantResolver(
             return null;
         }
 
-        return host.Substring(prefix.Length, identifierLength);
+        return host[prefix.Length..(prefix.Length + identifierLength)];
     }
 }

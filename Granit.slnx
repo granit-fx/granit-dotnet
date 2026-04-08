@@ -268,6 +268,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Templating.Mjml/Granit.Templating.Mjml.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -567,6 +568,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Templating.Mjml.Tests/Granit.Templating.Mjml.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

@@ -1,0 +1,90 @@
+---
+title: "Configuration & API Reference"
+description: "Complete Granit.Templating configuration reference, public API summary, usage guidance, and common pitfalls for text and email template rendering."
+sidebar:
+  label: Reference
+  order: 7
+---
+
+This page consolidates the configuration options, public API surface, usage guidance, and common pitfalls for the Granit.Templating module family.
+
+## Configuration reference
+
+### Endpoints
+
+```csharp
+app.MapGranitTemplating(options =>
+{
+    options.RoutePrefix = "api/v1/templates";  // default: "templates"
+    options.TagName = "Template Administration"; // default: "Templates"
+});
+```
+
+## Public API summary
+
+| Category | Key types | Package |
+| -------- | --------- | ------- |
+| Module | `GranitTemplatingModule`, `GranitTemplatingScribanModule`, `GranitTemplatingEntityFrameworkCoreModule`, `GranitTemplatingEndpointsModule`, `GranitTemplatingWorkflowModule` | -- |
+| Pipeline | `ITextTemplateRenderer`, `ITemplateResolver`, `ITemplateEngine` | `Granit.Templating` |
+| Pipeline | `TemplateDescriptor`, `RenderedContent`, `TextRenderedContent`, `BinaryRenderedContent`, `RenderedTextResult` | `Granit.Templating` |
+| Keys | `TemplateType<TData>`, `TextTemplateType<TData>`, `TemplateKey`, `DocumentFormat` | `Granit.Templating` |
+| Enrichment | `ITemplateDataEnricher<TData>` | `Granit.Templating` |
+| Layouts | `ILayoutRegistry`, `LayoutRegistration` | `Granit.Templating` |
+| Global context | `ITemplateGlobalContext`, `AppGlobalContextOptions` | `Granit.Templating`, `Granit.Templating.Scriban` |
+| Store (read) | `IDocumentTemplateStoreReader`, `ITemplateCategoryStoreReader` | `Granit.Templating` |
+| Store (write) | `IDocumentTemplateStoreWriter`, `ITemplateCategoryStoreWriter` | `Granit.Templating` |
+| Lifecycle | `WorkflowLifecycleStatus`, `ITemplateTransitionHook`, `TemplateRevision` | `Granit.Templating`, `Granit.Workflow` |
+| Permissions | `TemplatingPermissions.Manage` (`"Templates.Manage"`) | `Granit.Templating.Endpoints` |
+| Extensions | `AddGranitTemplating()`, `AddGranitTemplatingWithScriban()`, `AddEmbeddedTemplates()`, `AddTemplateLayout()` | -- |
+| Extensions | `MapGranitTemplating()` | `Granit.Templating.Endpoints` |
+
+## When to use -- and when not to
+
+Use Granit.Templating when:
+
+- **Non-developers need to edit** email/SMS/notification content without code changes
+- Templates require **approval workflows** before reaching customers (ISO 27001, regulated industries)
+- You need **multi-language templates** with culture fallback and variable injection
+- Template rendering must be **sandboxed** (user-authored content, no risk of code execution)
+
+Skip it when:
+
+- You generate **static, developer-controlled** text (e.g., internal log messages) -- string interpolation is simpler
+- You need **binary-first** output (PDF from scratch, not from HTML) -- go directly to [Document Generation](/dotnet/business/document-generation/)
+- Templates are **single-use** and never change -- the lifecycle overhead (Draft -> Published) is unnecessary
+
+## Common pitfalls
+
+:::caution[Scriban sandbox restrictions]
+The Scriban engine runs in a restricted sandbox: no file I/O, no reflection, no
+`System` namespace access. If a template uses `{{ import }}` or tries to call .NET
+methods directly, it will fail silently (returns empty string). Use `ITemplateGlobalContext`
+to expose safe data instead. See [Scriban Engine](./scriban-engine/) for full sandboxing details.
+:::
+
+:::caution[Template not resolving]
+`ITextTemplateRenderer` tries resolvers in priority order (Store = 100, Embedded = 0).
+If a template is in the database but has `LifecycleStatus = Draft`, the `StoreTemplateResolver`
+skips it. Only `Published` templates are resolved in production. For development, use
+embedded templates as fallback. See [Lifecycle](./lifecycle/) for the full resolver chain.
+:::
+
+:::caution[Missing culture fallback]
+If a template exists in `fr` but not `fr-CA`, the renderer falls back to `fr`. But if
+no fallback chain is configured, a request for `de` with no German template returns an
+error. Always register templates for your default culture at minimum.
+:::
+
+## See also
+
+- [Rendering Pipeline](./rendering-pipeline/) -- five-stage pipeline from enrichment to transformation
+- [Scriban Engine](./scriban-engine/) -- sandboxing, global contexts, includes
+- [Layouts](./layouts/) -- two-pass rendering, tenant override, safety guards
+- [Lifecycle & Admin API](./lifecycle/) -- state machine, workflow bridge, 17 admin endpoints
+- [Post-Render Transformers](./post-render-transformers/) -- extensible HTML processing pipeline
+- [MJML Email Templates](./mjml-email-templates/) -- responsive email design without Node.js
+- [ADR-010: Scriban](/dotnet/architecture/adr/010-scriban-template-engine/) -- Why Scriban was chosen as the template engine
+- [Document Generation module](/dotnet/business/document-generation/) -- HTML-to-PDF (Chromium), Excel (ClosedXML), PDF/A-3b
+- [Core module](/dotnet/core/module-system/) -- Module system, domain base types
+- [Persistence module](/dotnet/data/persistence/) -- `AuditedEntityInterceptor`, `ApplyGranitConventions`
+- [Notifications module](/dotnet/infrastructure/notifications/) -- Email, SMS, push channels that consume rendered templates

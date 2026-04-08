@@ -1,0 +1,136 @@
+---
+title: "Scriban Engine — Sandboxing, Global Contexts & Includes"
+description: "Configure Granit's sandboxed Scriban engine with global contexts, template includes, property mapping, and strict resource limits for safe rendering."
+sidebar:
+  label: Scriban Engine
+  order: 2
+---
+
+This page covers the Scriban template engine configuration, including global contexts that inject ambient data, sandboxing constraints that keep rendering safe, template includes for partial reuse, and a full template example.
+
+## Global contexts
+
+Global contexts inject ambient data into every template under a named variable.
+Three are registered by default when using `Granit.Templating.Scriban`:
+
+| Namespace | Variable | Example output |
+|-----------|----------|----------------|
+| `now` | `{{ now.date }}` | `27/02/2026` |
+| `now` | `{{ now.datetime }}` | `27/02/2026 14:35` |
+| `now` | `{{ now.iso }}` | `2026-02-27T14:35:00+00:00` |
+| `now` | `{{ now.year }}` | `2026` |
+| `now` | `{{ now.month }}` | `02` |
+| `now` | `{{ now.time }}` | `14:35` |
+| `context` | `{{ context.culture }}` | `fr-BE` |
+| `context` | `{{ context.culture_name }}` | `francais (Belgique)` |
+| `context` | `{{ context.tenant_id }}` | `3fa85f64-...` or empty |
+| `context` | `{{ context.tenant_name }}` | `Acme Corp` or empty |
+| `app` | `{{ app.name }}` | `Guava Admin` |
+| `app` | `{{ app.base_url }}` | `https://app.example.com` |
+| `app` | `{{ app.support_email }}` | `support@example.com` |
+| `app` | `{{ app.logo_url }}` | `https://cdn.example.com/logo.png` |
+
+The `app.*` context is bound to the `Granit:Templating:App` configuration section:
+
+```json
+{
+  "Granit": {
+    "Templating": {
+      "App": {
+        "Name": "Guava Admin",
+        "BaseUrl": "https://app.example.com",
+        "SupportEmail": "support@example.com",
+        "LogoUrl": "https://cdn.example.com/logo.png"
+      }
+    }
+  }
+}
+```
+
+:::caution
+User identity is intentionally **not** exposed in global contexts. Avoid injecting PII
+into `ITemplateGlobalContext` implementations -- pass PII through `TData` instead.
+:::
+
+### Custom global context
+
+```csharp
+public sealed class AcmeBrandingContext : ITemplateGlobalContext
+{
+    public string ContextName => "brand";
+
+    public object Resolve() => new
+    {
+        logo_url = "https://cdn.acme.com/logo.svg",
+        primary_color = "#1A73E8",
+    };
+}
+
+// Registration
+services.AddSingleton<ITemplateGlobalContext, AcmeBrandingContext>();
+```
+
+Template usage: `{{ brand.logo_url }}`, `{{ brand.primary_color }}`.
+
+## Scriban sandboxing
+
+The Scriban engine runs in strict sandboxed mode with explicit resource limits:
+
+- **`EnableRelaxedMemberAccess = false`** -- no access to .NET internals
+- **No I/O, reflection, or network access** from templates
+- **`LoopLimit = 500`** -- prevents CPU exhaustion from nested loops
+- **`RecursiveLimit = 50`** -- prevents stack overflow from recursive includes
+- **`MemberFilter` blocks `regex` builtins** -- prevents ReDoS attacks (CWE-1333) via user-controlled regex patterns
+- **Snake_case property mapping** -- `PatientName` becomes `{{ model.patient_name }}`
+- **Bounded template cache** -- parsed `Template` objects are cached by `RevisionId` with a maximum of 1 000 entries (evicts oldest on overflow)
+- **CancellationToken propagation** -- long-running templates can be cancelled
+- **Content size limit** -- template body is capped at 1 MB via `SaveTemplateRequestValidator`
+- **MIME type allowlist** -- only `text/html` and `text/plain` are accepted
+
+## Template includes
+
+Templates can include other templates via `{{ include 'template_name' }}`. Included
+templates are resolved through the standard `ITemplateResolver` chain with culture
+fallback.
+
+```html
+{{ include 'Partial.EmailHeader' }}
+<p>Dear {{ model.patient_name }}, your appointment is confirmed.</p>
+{{ include 'Partial.EmailFooter' }}
+```
+
+Include support is provided by `GranitTemplateLoader`, which bridges Scriban's
+`ITemplateLoader` to Granit's resolver chain. It is registered automatically by
+`AddGranitTemplatingWithScriban()`.
+
+:::caution[Async-only]
+`GranitTemplateLoader.Load()` (sync) throws `NotSupportedException`. Always use
+`Template.RenderAsync` -- the async path calls `LoadAsync` which properly awaits
+scoped resolvers (e.g. database-backed templates). This prevents thread starvation
+under load.
+:::
+
+## Scriban template example
+
+A discharge letter template stored in the EF Core store or as an embedded resource:
+
+```html
+<h1>Discharge Summary</h1>
+<p>Date: {{ now.date }}</p>
+<p>Dear {{ model.patient_name }},</p>
+<p>
+  You were admitted on {{ model.admission_date }} and discharged on
+  {{ model.discharge_date }} from the {{ model.ward_name }} ward.
+</p>
+<h2>Diagnosis</h2>
+<p>{{ model.primary_diagnosis }}</p>
+<h2>Follow-up Instructions</h2>
+<ul>
+  {{ for instruction in model.follow_up_instructions }}
+  <li>{{ instruction }}</li>
+  {{ end }}
+</ul>
+<p style="font-size: 0.8em; color: #666;">
+  Culture: {{ context.culture }} | Generated: {{ now.datetime }}
+</p>
+```

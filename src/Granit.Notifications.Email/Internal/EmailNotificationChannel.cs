@@ -115,6 +115,9 @@ internal sealed partial class EmailNotificationChannel(
         string htmlBody = rendered?.Html
             ?? $"<p>{context.NotificationTypeName}</p>";
 
+        string plainTextBody = await HtmlToPlainTextConverter
+            .ConvertAsync(htmlBody, cancellationToken).ConfigureAwait(false);
+
         EmailChannelOptions opts = options.Value;
 
         await sender.SendAsync(new EmailMessage
@@ -123,6 +126,7 @@ internal sealed partial class EmailNotificationChannel(
             ToName = recipient.DisplayName,
             Subject = subject,
             HtmlBody = htmlBody,
+            PlainTextBody = plainTextBody,
             FromEmailOverride = opts.DefaultSenderEmail,
             FromNameOverride = opts.DefaultSenderName,
             Headers = headers,

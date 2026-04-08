@@ -1,0 +1,107 @@
+---
+title: "Notification Channels — Email, SMS, Push, SignalR, SSE & Custom"
+description: "Explore Granit's notification channel abstraction: built-in InApp, Email, SMS, Push, SignalR, SSE, and Zulip channels plus custom channel implementation."
+sidebar:
+  label: Channels
+  order: 2
+---
+
+Every delivery channel implements `INotificationChannel`. The engine resolves all registered channels and routes delivery commands by name. See [email-specific details](./email-channel/) and [SMS, push, and real-time channels](./sms-push-realtime/) for provider configuration.
+
+## INotificationChannel
+
+Every delivery channel implements this interface. The engine resolves all
+registered `INotificationChannel` services and routes by `Name`:
+
+```csharp
+public interface INotificationChannel
+{
+    string Name { get; }
+    Task SendAsync(NotificationDeliveryContext context,
+        CancellationToken cancellationToken = default);
+}
+```
+
+Channels not registered are silently skipped with a warning log
+(graceful degradation pattern).
+
+## Well-known channels
+
+```csharp
+public static class NotificationChannels
+{
+    public const string InApp = "InApp";
+    public const string SignalR = "SignalR";
+    public const string Email = "Email";
+    public const string Sms = "Sms";
+    public const string WhatsApp = "WhatsApp";
+    public const string Push = "Push";        // W3C Web Push
+    public const string MobilePush = "MobilePush";
+    public const string Sse = "Sse";
+    public const string Zulip = "Zulip";
+}
+```
+
+## Channel registration
+
+| Channel | Registration | Provider resolution |
+|---------|-------------|---------------------|
+| InApp | Built-in (auto-registered) | N/A |
+| Email | `AddGranitNotificationsEmail()` | Keyed Service: `"Smtp"`, `"Brevo"`, `"AzureCommunicationServices"`, `"Scaleway"`, `"SendGrid"` |
+| SMS | `AddGranitNotificationsSms()` | Keyed Service: `"Brevo"`, `"AzureCommunicationServices"`, `"AwsSns"`, `"Twilio"` |
+| WhatsApp | `AddGranitNotificationsWhatsApp()` | Keyed Service: `"Brevo"`, `"Twilio"` |
+| Mobile Push | `AddGranitNotificationsMobilePush()` | Keyed Service: `"GoogleFcm"`, `"AzureNotificationHubs"`, `"AwsSns"` |
+| SignalR | `AddGranitNotificationsSignalR()` | Direct (`NotificationHub`) |
+| Web Push | `AddGranitNotificationsPush()` | VAPID (Lib.Net.Http.WebPush) |
+| SSE | `AddGranitNotificationsSse()` | Native .NET 10 SSE |
+| Zulip | `AddGranitNotificationsZulip()` | Zulip Bot API |
+
+## Implementing a custom channel
+
+```csharp
+public class TeamsNotificationChannel(IRecipientResolver resolver)
+    : INotificationChannel
+{
+    public string Name => "Teams";
+
+    public async Task SendAsync(
+        NotificationDeliveryContext context,
+        CancellationToken cancellationToken = default)
+    {
+        RecipientInfo? recipient = await resolver
+            .ResolveAsync(context.RecipientUserId, cancellationToken)
+            .ConfigureAwait(false);
+        if (recipient is null) return;
+
+        // Send via Microsoft Graph API...
+    }
+}
+
+// Register
+services.AddSingleton<INotificationChannel, TeamsNotificationChannel>();
+```
+
+## IRecipientResolver
+
+The application must implement this interface to resolve contact information
+from user identifiers. It is **not** provided by Granit -- each application
+knows its own user model.
+
+```csharp
+public interface IRecipientResolver
+{
+    Task<RecipientInfo?> ResolveAsync(
+        string userId, CancellationToken cancellationToken = default);
+}
+```
+
+```csharp
+public sealed record RecipientInfo
+{
+    public required string UserId { get; init; }
+    public string? Email { get; init; }
+    public string? PhoneNumber { get; init; }     // E.164 format
+    public string? PreferredCulture { get; init; } // BCP 47
+    public string? DisplayName { get; init; }
+}
+```

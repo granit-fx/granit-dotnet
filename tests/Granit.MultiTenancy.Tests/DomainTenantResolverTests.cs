@@ -19,20 +19,16 @@ public sealed class DomainTenantResolverTests
     [InlineData("my-tenant.app.local", "{0}.app.local", "my-tenant")]
     [InlineData("tenant1.sub.example.com", "{0}.sub.example.com", "tenant1")]
     public void ExtractIdentifier_ValidHost_ReturnsIdentifier(
-        string host, string template, string expected)
-    {
+        string host, string template, string expected) =>
         DomainTenantResolver.ExtractIdentifier(host, template).ShouldBe(expected);
-    }
 
     [Theory]
     [InlineData("example.com", "{0}.example.com")]
     [InlineData("other.domain.com", "{0}.example.com")]
     [InlineData("", "{0}.example.com")]
     [InlineData("acme.example.com", "no-placeholder.com")]
-    public void ExtractIdentifier_NoMatch_ReturnsNull(string host, string template)
-    {
+    public void ExtractIdentifier_NoMatch_ReturnsNull(string host, string template) =>
         DomainTenantResolver.ExtractIdentifier(host, template).ShouldBeNull();
-    }
 
     // ── ResolveAsync integration tests ───────────────────────────────
 

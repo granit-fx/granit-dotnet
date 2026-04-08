@@ -11,16 +11,12 @@ public sealed class GranitDbDefaultsTests : IDisposable
     public void Dispose() => GranitDbDefaults.ResetToDefaults();
 
     [Fact]
-    public void DbSchema_Default_IsNull()
-    {
+    public void DbSchema_Default_IsNull() =>
         GranitDbDefaults.DbSchema.ShouldBeNull();
-    }
 
     [Fact]
-    public void HostDbSchema_Default_IsNull()
-    {
+    public void HostDbSchema_Default_IsNull() =>
         GranitDbDefaults.HostDbSchema.ShouldBeNull();
-    }
 
     [Fact]
     public void DbSchema_WhenSet_ReturnsSetValue()

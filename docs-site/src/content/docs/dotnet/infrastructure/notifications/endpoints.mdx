@@ -1,0 +1,71 @@
+---
+title: "REST Endpoints — Inbox, Preferences, Subscriptions & Push Tokens"
+description: "Explore Granit's notification REST API: inbox with paging, unread counts, user preferences, topic subscriptions, entity followers, and push tokens."
+sidebar:
+  label: Endpoints
+  order: 6
+---
+
+`Granit.Notifications.Endpoints` maps all endpoints under the `/notifications` prefix (configurable via `NotificationEndpointsOptions.RoutePrefix`). All endpoints require authentication **and** a permission from `NotificationPermissions`.
+
+| Permission | Scope |
+|------------|-------|
+| `Notifications.UserNotifications.Read` | Read-only access (inbox, counts, preferences, subscriptions, followers) |
+| `Notifications.UserNotifications.Manage` | Write access (mark read, update preferences, subscribe, follow, push tokens) |
+
+:::caution[IDOR protection]
+`MarkAsReadAsync` and `RemoveAsync` (push tokens) enforce ownership at the
+store level -- the `recipientUserId` / `userId` is extracted from the
+`ClaimsPrincipal` and passed down to the query filter. A user cannot mark
+another user's notification as read or remove another user's device token.
+:::
+
+## Inbox
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications` | `Read` | User's notification inbox (paged, newest first) |
+| GET | `/notifications/unread/count` | `Read` | Unread notification count |
+| POST | `/notifications/{id}/read` | `Manage` | Mark a single notification as read |
+| POST | `/notifications/read-all` | `Manage` | Mark all notifications as read |
+
+## Activity feed
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/entity/{entityType}/{entityId}` | `Read` | Activity feed for a specific entity |
+
+## Preferences
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/preferences` | `Read` | User's delivery preferences |
+| PUT | `/notifications/preferences` | `Manage` | Create or update a preference |
+| GET | `/notifications/types` | `Read` | List all registered notification type definitions |
+
+## Subscriptions
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| GET | `/notifications/subscriptions` | `Read` | User's topic subscriptions |
+| POST | `/notifications/subscriptions/{typeName}` | `Manage` | Subscribe to a notification type |
+| DELETE | `/notifications/subscriptions/{typeName}` | `Manage` | Unsubscribe from a notification type |
+
+## Entity followers
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| POST | `/notifications/entity/{entityType}/{entityId}/follow` | `Manage` | Follow an entity |
+| DELETE | `/notifications/entity/{entityType}/{entityId}/follow` | `Manage` | Unfollow an entity |
+| GET | `/notifications/entity/{entityType}/{entityId}/followers` | `Read` | List entity followers |
+
+## Mobile push tokens
+
+Mapped separately via `MapGranitMobilePushTokens()` under
+`api/notifications/mobile-push/tokens`:
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| POST | `/api/notifications/mobile-push/tokens` | `Manage` | Register a device token |
+| DELETE | `/api/notifications/mobile-push/tokens/{deviceToken}` | `Manage` | Remove a device token (owner-scoped) |
+| GET | `/api/notifications/mobile-push/tokens` | `Read` | List current user's device tokens |

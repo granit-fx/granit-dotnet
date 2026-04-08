@@ -1,0 +1,102 @@
+---
+title: "SMS, Push & Real-Time — WhatsApp, FCM, SignalR, SSE & Web Push"
+description: "Configure SMS (ACS, SNS, Twilio), WhatsApp, mobile push (FCM, Azure Notification Hubs), SignalR, Web Push, SSE, and Zulip notification channels."
+sidebar:
+  label: SMS, Push & Real-Time
+  order: 4
+---
+
+Granit.Notifications supports a wide range of delivery channels beyond email. Each channel is registered independently and resolved via Keyed Services. For provider configuration options, see the [configuration reference](./configuration/).
+
+## SMS
+
+### Providers
+
+| Provider | Package | Keyed Service key |
+|----------|---------|-------------------|
+| Azure Communication Services | `Granit.Notifications.Sms.AzureCommunicationServices` | `"AzureCommunicationServices"` |
+| AWS SNS | `Granit.Notifications.Sms.AwsSns` | `"AwsSns"` |
+| Twilio | `Granit.Notifications.Twilio` | `"Twilio"` |
+| Brevo | `Granit.Notifications.Brevo` | `"Brevo"` |
+
+```csharp
+context.Services.AddGranitNotificationsSms(opts => opts.Provider = "Brevo");
+```
+
+## WhatsApp
+
+### Providers
+
+| Provider | Package | Keyed Service key |
+|----------|---------|-------------------|
+| Brevo | `Granit.Notifications.Brevo` | `"Brevo"` |
+| Twilio | `Granit.Notifications.Twilio` | `"Twilio"` |
+
+```csharp
+context.Services.AddGranitNotificationsWhatsApp(opts => opts.Provider = "Brevo");
+```
+
+## Mobile Push
+
+### Providers
+
+| Provider | Package | Keyed Service key |
+|----------|---------|-------------------|
+| Firebase Cloud Messaging (FCM HTTP v1) | `Granit.Notifications.MobilePush.GoogleFcm` | `"GoogleFcm"` |
+| Azure Notification Hubs | `Granit.Notifications.MobilePush.AzureNotificationHubs` | `"AzureNotificationHubs"` |
+| AWS SNS Platform Application | `Granit.Notifications.MobilePush.AwsSns` | `"AwsSns"` |
+
+```csharp
+context.Services.AddGranitNotificationsMobilePush(opts => opts.Provider = "GoogleFcm");
+context.Services.AddGranitNotificationsMobilePushGoogleFcm();
+```
+
+:::caution
+FCM push data payloads must NOT contain PII or health data. The push serves
+as a wake-up signal only -- the app fetches details from the API after
+receiving the push (ISO 27001 compliance).
+:::
+
+## SignalR
+
+Real-time notifications delivered via SignalR hub with optional Redis backplane for multi-instance deployments.
+
+```csharp
+context.Services.AddGranitNotificationsSignalR(
+    context.Configuration.GetConnectionString("Redis")!);
+```
+
+Map the hub in your application:
+
+```csharp
+context.App.MapHub<NotificationHub>("/hubs/notifications");
+```
+
+## Web Push
+
+W3C Web Push (VAPID, RFC 8030/8291/8292) -- no dependency on FCM or US cloud providers, European sovereignty by design.
+
+```csharp
+context.Services.AddGranitNotificationsPush();
+```
+
+## SSE (Server-Sent Events)
+
+Native .NET 10 SSE channel with authentication, per-user connection limits, and bounded message buffers.
+
+```csharp
+context.Services.AddGranitNotificationsSse();
+```
+
+The SSE channel requires authentication (`.RequireAuthorization()` on the route
+group) and enforces per-user connection limits to prevent resource exhaustion.
+When the limit is reached, the endpoint returns `429 Too Many Requests`.
+Message buffers use bounded channels with `DropOldest` policy.
+
+## Zulip
+
+Zulip Bot API chat integration for team notifications.
+
+```csharp
+context.Services.AddGranitNotificationsZulip();
+```

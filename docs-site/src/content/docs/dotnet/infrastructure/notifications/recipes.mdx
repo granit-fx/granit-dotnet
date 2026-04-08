@@ -1,0 +1,123 @@
+---
+title: "Cross-Module Recipes — Workflow, Authorization & Encryption Integration"
+description: "Integrate Granit notifications with Workflow state transitions, Authorization permission gates, and Encryption for PII-safe notification payloads."
+sidebar:
+  label: Recipes
+  order: 9
+---
+
+These recipes show how to combine Granit.Notifications with other framework modules for common real-world scenarios.
+
+## Workflow + Notifications: notify on state transition
+
+When an entity transitions in a workflow, publish a notification automatically.
+The `WorkflowStateChangedEvent` is published by Wolverine — handle it in a
+notification handler:
+
+```csharp
+public static class InvoiceApprovalNotificationHandler
+{
+    public static async Task Handle(
+        WorkflowStateChangedEvent @event,
+        INotificationPublisher publisher,
+        CancellationToken ct)
+    {
+        if (@event.NewState != nameof(InvoiceStatus.PendingApproval))
+            return;
+
+        await publisher.PublishAsync(new NotificationRequest(
+            Type: "InvoiceApprovalRequired",
+            EntityType: "Invoice",
+            EntityId: @event.EntityId,
+            Recipients: [@event.Properties["ApproverId"]],
+            Data: new { InvoiceNumber = @event.Properties["Number"] }), ct)
+            .ConfigureAwait(false);
+    }
+}
+```
+
+## Authorization + Notifications: permission-gated channels
+
+Use `IPermissionChecker` to restrict notification channels based on the sender's
+permissions (e.g., only managers can trigger SMS notifications):
+
+```csharp
+public class SmsPermissionFilter(IPermissionChecker permissionChecker)
+    : INotificationChannelFilter
+{
+    public async Task<bool> ShouldSendAsync(
+        NotificationContext context, CancellationToken ct)
+    {
+        return await permissionChecker
+            .IsGrantedAsync("Notifications.Sms.Send")
+            .ConfigureAwait(false);
+    }
+}
+```
+
+## Encryption + Notifications: protect PII in notification payloads
+
+When notification data contains PII (patient names, account numbers), encrypt the
+`Data` dictionary before persisting. The `InApp` channel stores the notification
+in the database — combine with `IStringEncryptionService`:
+
+```csharp
+public class EncryptedNotificationEnricher(IStringEncryptionService encryption)
+    : INotificationDataEnricher
+{
+    public Task EnrichAsync(NotificationContext context, CancellationToken ct)
+    {
+        if (context.Data.TryGetValue("PatientName", out var name))
+            context.Data["PatientName"] = encryption.Encrypt(name?.ToString() ?? "");
+        return Task.CompletedTask;
+    }
+}
+```
+
+## Public API summary
+
+| Category | Key types | Package |
+|----------|-----------|---------|
+| Module | `GranitNotificationsModule`, `GranitNotificationsEntityFrameworkCoreModule`, `GranitNotificationsWolverineModule` | -- |
+| Publisher | `INotificationPublisher`, `NotificationType<TData>` | `Granit.Notifications` |
+| Channels | `INotificationChannel`, `NotificationChannels`, `NotificationDeliveryContext` | `Granit.Notifications` |
+| Definitions | `NotificationDefinition`, `INotificationDefinitionProvider`, `INotificationDefinitionContext`, `INotificationDefinitionStore` | `Granit.Notifications` |
+| Entities | `UserNotification`, `NotificationDeliveryAttempt`, `NotificationPreference`, `NotificationSubscription`, `UserNotificationState` | `Granit.Notifications` |
+| CQRS | `IUserNotificationReader`, `IUserNotificationWriter`, `INotificationPreferenceReader`, `INotificationPreferenceWriter`, `INotificationSubscriptionReader`, `INotificationSubscriptionWriter`, `INotificationDeliveryWriter` | `Granit.Notifications` |
+| Recipient | `IRecipientResolver`, `RecipientInfo` | `Granit.Notifications` |
+| Entity tracking | `ITrackedEntity`, `TrackedPropertyConfig`, `EntityStateChangedData`, `EntityReference` | `Granit.Notifications` |
+| Messages | `NotificationTrigger`, `DeliverNotificationCommand` | `Granit.Notifications` |
+| Handlers | `NotificationFanoutHandler`, `NotificationDeliveryHandler` | `Granit.Notifications` |
+| Options | `NotificationsOptions`, `EmailChannelOptions`, `SmtpOptions`, `BrevoOptions`, `ScalewayEmailOptions`, `SendGridEmailOptions`, `AcsEmailOptions`, `SmsChannelOptions`, `AcsSmsOptions`, `AwsSnsSmsOptions`, `TwilioOptions`, `MobilePushChannelOptions`, `GoogleFcmOptions`, `AzureNotificationHubsOptions`, `AwsSnsMobilePushOptions`, `SignalRChannelOptions`, `PushChannelOptions`, `SseChannelOptions`, `ZulipChannelOptions`, `ZulipBotOptions` | various |
+| Email | `IEmailSender`, `EmailMessage` | `Granit.Notifications.Email`, `Granit.Notifications.Email.AzureCommunicationServices`, `Granit.Notifications.Email.Scaleway`, `Granit.Notifications.Email.SendGrid` |
+| SMS | `ISmsSender`, `SmsMessage` | `Granit.Notifications.Sms`, `Granit.Notifications.Sms.AwsSns`, `Granit.Notifications.Twilio` |
+| WhatsApp | `IWhatsAppSender`, `WhatsAppMessage` | `Granit.Notifications.WhatsApp`, `Granit.Notifications.Twilio` |
+| Mobile Push | `IMobilePushSender`, `MobilePushMessage`, `IMobilePushTokenReader`, `IMobilePushTokenWriter`, `MobilePushTokenInfo`, `MobilePlatform` | `Granit.Notifications.MobilePush`, `Granit.Notifications.MobilePush.AwsSns` |
+| SignalR | `NotificationHub`, `SignalRNotificationMessage` | `Granit.Notifications.SignalR` |
+| Web Push | `IPushSubscriptionReader`, `IPushSubscriptionWriter`, `PushSubscriptionInfo` | `Granit.Notifications.WebPush` |
+| SSE | `ISseConnectionManager`, `SseConnection`, `SseNotificationMessage` | `Granit.Notifications.Sse` |
+| Zulip | `IZulipSender`, `ZulipMessage` | `Granit.Notifications.Zulip` |
+| Exceptions | `NotificationDeliveryException` | `Granit.Notifications` |
+| Endpoints | `NotificationEndpointsOptions`, `MobilePushTokenEndpoints` | `Granit.Notifications.Endpoints` |
+| Extensions | `AddGranitNotifications()`, `AddGranitNotificationsEntityFrameworkCore()`, `AddGranitNotificationsEmail()`, `AddGranitNotificationsEmailSmtp()`, `AddGranitNotificationsEmailAcs()`, `AddGranitNotificationsEmailScaleway()`, `AddGranitNotificationsEmailSendGrid()`, `AddGranitNotificationsBrevo()`, `AddGranitNotificationsSms()`, `AddGranitNotificationsSmsAcs()`, `AddGranitNotificationsSmsAwsSns()`, `AddGranitNotificationsTwilio()`, `AddGranitNotificationsWhatsApp()`, `AddGranitNotificationsMobilePush()`, `AddGranitNotificationsMobilePushGoogleFcm()`, `AddGranitNotificationsMobilePushAzureNotificationHubs()`, `AddGranitNotificationsMobilePushAwsSns()`, `AddGranitNotificationsSignalR()`, `AddGranitNotificationsPush()`, `AddGranitNotificationsSse()`, `AddGranitNotificationsZulip()`, `AddNotificationDefinitions<T>()`, `MapGranitNotifications()`, `MapGranitMobilePushTokens()` | various |
+
+## See also
+
+- [Overview](./): Package structure, dependency graph, and setup
+- [Fan-Out Engine](./fan-out-engine/): Dispatch mechanics and INotificationPublisher
+- [Channels](./channels/): Channel abstraction and custom channel implementation
+- [Email Channel](./email-channel/): Email providers, plain text generation, MJML
+- [SMS, Push & Real-Time](./sms-push-realtime/): SMS, WhatsApp, FCM, SignalR, SSE, Web Push
+- [Data Model](./data-model/): Entities, CQRS stores, preferences, entity tracking
+- [Endpoints](./endpoints/): REST API for inbox, preferences, subscriptions
+- [Wolverine Integration](./wolverine-integration/): Durable outbox and retry
+- [Configuration](./configuration/): Provider options, health checks, telemetry
+- [Set up notifications guide](/dotnet/guides/set-up-notifications/) -- step-by-step configuration walkthrough
+- [Templating module](/dotnet/business/templating/) -- Scriban engine, MJML, post-render transformers
+- [Wolverine module](/dotnet/infrastructure/wolverine-messaging/) -- Durable messaging, transactional outbox
+- [Persistence module](/dotnet/data/persistence/) -- `AuditedEntity`, `Entity`, interceptors
+- [Identity module](/dotnet/security/identity/) -- User lookup for `IRecipientResolver` implementation
+- [Templating module](./templating/) -- Scriban templates for email/SMS content
+- [Workflow module](/dotnet/business/workflow/) -- FSM engine with transition events
+- [Core module](../core/module-system/) -- `Entity`, `AuditedEntity`, `IMultiTenant`
+- [API Reference](/api/Granit.Notifications.html) (auto-generated from XML docs)

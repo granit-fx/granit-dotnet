@@ -1,0 +1,371 @@
+---
+title: "Configuration Reference — Provider Options, Health Checks & Telemetry"
+description: "Complete configuration reference for all Granit notification providers: SMTP, Brevo, SendGrid, Twilio, FCM, Azure, AWS SNS, SignalR, SSE, and Zulip."
+sidebar:
+  label: Configuration
+  order: 8
+---
+
+This page documents all configuration options, health checks, and OpenTelemetry instrumentation for the notification engine and its providers.
+
+## Core
+
+```json
+{
+  "Notifications": {
+    "MaxParallelDeliveries": 8
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `MaxParallelDeliveries` | `8` | Max concurrent delivery messages (Wolverine queue parallelism) |
+
+## Email
+
+```json
+{
+  "Notifications": {
+    "Email": {
+      "Provider": "Smtp",
+      "SenderAddress": "noreply@clinic.example.com",
+      "SenderName": "Clinic Portal"
+    }
+  }
+}
+```
+
+## SMTP
+
+```json
+{
+  "Notifications": {
+    "Smtp": {
+      "Host": "smtp.example.com",
+      "Port": 587,
+      "UseSsl": true,
+      "Username": "user",
+      "Password": "vault:secret/data/smtp#password",
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+## Brevo
+
+```json
+{
+  "Notifications": {
+    "Brevo": {
+      "ApiKey": "vault:secret/data/brevo#api-key",
+      "DefaultSenderEmail": "noreply@clinic.example.com",
+      "DefaultSenderName": "Clinic Portal",
+      "DefaultSmsSenderId": "CLINIC",
+      "BaseUrl": "https://api.brevo.com/v3",
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+## SendGrid
+
+```json
+{
+  "Notifications": {
+    "Email": {
+      "SendGrid": {
+        "ApiKey": "vault:secret/data/sendgrid#api-key",
+        "DefaultSenderEmail": "noreply@clinic.example.com",
+        "DefaultSenderName": "Clinic Portal",
+        "SandboxMode": false,
+        "TimeoutSeconds": 30
+      }
+    }
+  }
+}
+```
+
+## Twilio
+
+```json
+{
+  "Notifications": {
+    "Twilio": {
+      "AccountSid": "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "AuthToken": "vault:secret/data/twilio#auth-token",
+      "DefaultSmsFrom": "+15551234567",
+      "DefaultWhatsAppFrom": "whatsapp:+14155238886",
+      "MessagingServiceSid": null,
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+## SMS
+
+```json
+{
+  "Notifications": {
+    "Sms": {
+      "Provider": "Brevo",
+      "SenderId": "CLINIC"
+    }
+  }
+}
+```
+
+## Mobile Push (FCM)
+
+```json
+{
+  "Notifications": {
+    "MobilePush": {
+      "Provider": "GoogleFcm",
+      "GoogleFcm": {
+        "ProjectId": "my-firebase-project",
+        "ServiceAccountJson": "vault:secret/data/fcm#service-account",
+        "BaseAddress": "https://fcm.googleapis.com/",
+        "TimeoutSeconds": 30
+      }
+    }
+  }
+}
+```
+
+:::caution
+FCM push data payloads must NOT contain PII or health data. The push serves
+as a wake-up signal only -- the app fetches details from the API after
+receiving the push (ISO 27001 compliance).
+:::
+
+## Azure Communication Services — Email
+
+```json
+{
+  "AzureCommunicationServices": {
+    "Email": {
+      "ConnectionString": "endpoint=...;accesskey=...",
+      "SenderAddress": "noreply@mydomain.com",
+      "TimeoutSeconds": 120
+    }
+  }
+}
+```
+
+:::note
+`ConnectionString` or `Endpoint` must be provided. When using `Endpoint`, authentication
+uses `DefaultAzureCredential` (Managed Identity in production).
+:::
+
+## Azure Communication Services — SMS
+
+```json
+{
+  "AzureCommunicationServices": {
+    "Sms": {
+      "ConnectionString": "endpoint=...;accesskey=...",
+      "FromPhoneNumber": "+15551234567",
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+## AWS SNS — SMS
+
+```json
+{
+  "Notifications": {
+    "Sms": {
+      "AwsSns": {
+        "Region": "eu-west-1",
+        "SenderId": "MYAPP",
+        "SmsType": "Transactional",
+        "TimeoutSeconds": 30
+      }
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Region` | — | AWS region (required) |
+| `SenderId` | `null` | Alphanumeric sender ID (1-11 chars, region-dependent) |
+| `SmsType` | `"Transactional"` | `"Transactional"` or `"Promotional"` |
+| `OriginationNumber` | `null` | E.164 originating number |
+| `AccessKeyId` | `null` | AWS access key (uses default credential chain when null) |
+| `SecretAccessKey` | `null` | AWS secret key (required if AccessKeyId set) |
+
+## AWS SNS — Mobile Push
+
+```json
+{
+  "Notifications": {
+    "MobilePush": {
+      "AwsSns": {
+        "Region": "eu-west-1",
+        "PlatformApplicationArn": "arn:aws:sns:eu-west-1:123456789:app/GCM/my-app",
+        "TimeoutSeconds": 30
+      }
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `Region` | — | AWS region (required) |
+| `PlatformApplicationArn` | — | SNS Platform Application ARN (required) |
+| `AccessKeyId` | `null` | AWS access key (uses default credential chain when null) |
+| `SecretAccessKey` | `null` | AWS secret key (required if AccessKeyId set) |
+
+:::caution
+Like FCM, push data payloads via AWS SNS must NOT contain PII or
+health data. The push serves as a wake-up signal only (ISO 27001 compliance).
+:::
+
+## Azure Notification Hubs — Mobile Push
+
+```json
+{
+  "Notifications": {
+    "AzureNotificationHubs": {
+      "ConnectionString": "Endpoint=sb://...",
+      "HubName": "my-notification-hub",
+      "TimeoutSeconds": 30
+    }
+  }
+}
+```
+
+:::caution
+Like FCM, push data payloads via Azure Notification Hubs must NOT contain PII or
+health data. The push serves as a wake-up signal only (ISO 27001 compliance).
+:::
+
+## SignalR
+
+```json
+{
+  "Notifications": {
+    "SignalR": {
+      "RedisConnectionString": "redis:6379"
+    }
+  }
+}
+```
+
+## Web Push (VAPID)
+
+```json
+{
+  "Notifications": {
+    "Push": {
+      "VapidSubject": "mailto:admin@clinic.example.com",
+      "VapidPublicKey": "BFx...",
+      "VapidPrivateKey": "vault:secret/data/webpush#private-key"
+    }
+  }
+}
+```
+
+:::note
+Web Push uses W3C standards (RFC 8030/8291/8292) with VAPID authentication.
+No dependency on FCM or US cloud providers -- European sovereignty by design.
+:::
+
+## SSE
+
+```json
+{
+  "Notifications": {
+    "Sse": {
+      "HeartbeatIntervalSeconds": 30,
+      "MaxConnectionsPerUser": 10,
+      "MaxBufferSize": 100
+    }
+  }
+}
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `HeartbeatIntervalSeconds` | 30 | Keep-alive interval through proxies |
+| `MaxConnectionsPerUser` | 10 | Concurrent SSE connections per user (covers multiple tabs/devices) |
+| `MaxBufferSize` | 100 | Messages buffered per connection before oldest are dropped |
+
+## Zulip
+
+```json
+{
+  "Notifications": {
+    "Zulip": {
+      "DefaultStream": "alerts",
+      "DefaultTopic": "system",
+      "Bot": {
+        "BaseUrl": "https://zulip.example.com",
+        "BotEmail": "notification-bot@zulip.example.com",
+        "ApiKey": "vault:secret/data/zulip#api-key",
+        "TimeoutSeconds": 30
+      }
+    }
+  }
+}
+```
+
+## Health checks
+
+Notification channel providers register opt-in health checks:
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitSmtpHealthCheck()
+    .AddGranitAwsSesHealthCheck()
+    .AddGranitBrevoHealthCheck()
+    .AddGranitAcsEmailHealthCheck()
+    .AddGranitAcsSmsHealthCheck()
+    .AddGranitAzureNotificationHubsHealthCheck()
+    .AddGranitAwsSnsSmsHealthCheck()
+    .AddGranitAwsSnsMobilePushHealthCheck()
+    .AddGranitScalewayEmailHealthCheck()
+    .AddGranitSendGridHealthCheck()
+    .AddGranitTwilioHealthCheck()
+    .AddGranitZulipHealthCheck();
+```
+
+| Provider | Extension | Probe | Tags |
+|----------|-----------|-------|------|
+| SMTP | `AddGranitSmtpHealthCheck()` | EHLO handshake via MailKit | readiness |
+| SES | `AddGranitAwsSesHealthCheck()` | `GetAccount()` — Degraded if sending paused | readiness, startup |
+| Brevo | `AddGranitBrevoHealthCheck()` | `GET /account` | readiness |
+| ACS Email | `AddGranitAcsEmailHealthCheck()` | `SendAsync` probe | readiness |
+| ACS SMS | `AddGranitAcsSmsHealthCheck()` | `SendAsync` probe | readiness |
+| Azure Notification Hubs | `AddGranitAzureNotificationHubsHealthCheck()` | Hub description retrieval | readiness |
+| SNS SMS | `AddGranitAwsSnsSmsHealthCheck()` | SNS API connectivity check | readiness, startup |
+| SNS Mobile Push | `AddGranitAwsSnsMobilePushHealthCheck()` | SNS Platform Application check | readiness, startup |
+| Scaleway TEM | `AddGranitScalewayEmailHealthCheck()` | GET /emails?page_size=1 | readiness, startup |
+| SendGrid | `AddGranitSendGridHealthCheck()` | `GET /scopes` | readiness, startup |
+| Twilio | `AddGranitTwilioHealthCheck()` | `GET /Accounts/{sid}.json` | readiness, startup |
+| Zulip | `AddGranitZulipHealthCheck()` | `GET /api/v1/users/me` (Bot auth) | readiness |
+
+All checks sanitize error messages — credentials, hostnames, and API keys are never
+exposed in the health check response. Every check enforces a 10-second defensive timeout
+via `.WaitAsync()` to prevent blocking Kubernetes probe cycles.
+
+## OpenTelemetry
+
+All fan-out and delivery operations are traced via `ActivitySource`:
+
+| Activity name | Description |
+|---------------|-------------|
+| `notifications.fanout` | Fan-out of a `NotificationTrigger` into delivery commands |
+| `notifications.deliver` | Delivery of a single `DeliverNotificationCommand` via a channel |
+
+Tags: `notifications.type`, `notifications.channel`, `notifications.delivery_id`,
+`notifications.notification_id`, `notifications.recipient_count`,
+`notifications.delivery_count`, `notifications.success`.

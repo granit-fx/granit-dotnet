@@ -1,0 +1,95 @@
+---
+title: "MJML Email Templates — Responsive Email Design Without Node.js"
+description: "Use MJML markup in Granit templates to produce responsive, email-client-safe HTML with inline CSS and Outlook conditionals -- no Node.js required."
+sidebar:
+  label: MJML Email Templates
+  order: 6
+---
+
+import { Badge } from "@astrojs/starlight/components";
+
+<Badge text="Granit.Templating.Mjml" variant="note" />
+
+[MJML](https://mjml.io/) is a markup language that compiles to email-client-safe HTML.
+Instead of writing table-based layouts with inline styles by hand, template authors
+write semantic MJML components (`<mj-section>`, `<mj-column>`, `<mj-text>`,
+`<mj-button>`) and the compiler handles the rest.
+
+`Granit.Templating.Mjml` integrates [Mjml.Net](https://github.com/SebastianStehle/mjml-net)
+-- a native .NET MJML compiler with 100% feature parity and 10x performance vs the
+Node.js original. No Node.js runtime required.
+
+## Setup
+
+```csharp
+[DependsOn(
+    typeof(GranitTemplatingScribanModule),
+    typeof(GranitTemplatingMjmlModule))]  // Add this
+public class AppModule : GranitModule { }
+```
+
+Or without the module system:
+
+```csharp
+services.AddGranitTemplatingWithScriban();
+services.AddGranitTemplatingWithMjml();
+```
+
+## How it works
+
+The `MjmlTransformer` (Order=100) runs in the [post-render pipeline](./post-render-transformers/). It auto-detects
+MJML content by checking if the rendered output starts with `<mjml>`. Plain HTML
+templates pass through unchanged -- backward compatibility is guaranteed.
+
+```text
+Scriban render → "<mjml>..{{ model.name }}..</mjml>" → MjmlTransformer → email-safe HTML
+Scriban render → "<html>..{{ model.name }}..</html>" → MjmlTransformer → unchanged (passthrough)
+```
+
+## MJML template example
+
+```html
+<mjml>
+  <mj-body>
+    <mj-section background-color="#1a1a2e" padding="24px 32px">
+      <mj-column>
+        <mj-text align="center" color="#ffffff" font-size="20px">
+          {{ app.name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#ffffff" padding="32px">
+      <mj-column>
+        <mj-text>Hello {{ model.patient_name }},</mj-text>
+        <mj-text>Your appointment is scheduled for
+          {{ model.appointment_date | to_user_time }}.</mj-text>
+        <mj-button href="{{ app.base_url }}/appointments/{{ model.id }}">
+          View appointment
+        </mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#f3f4f6" padding="20px 32px">
+      <mj-column>
+        <mj-text align="center" font-size="13px" color="#4b5563">
+          &copy; {{ now.year }} {{ app.name }}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
+```
+
+The MJML compiler produces:
+- Table-based layout (compatible with all email clients)
+- Inline CSS styles (Gmail strips `<style>` blocks)
+- Outlook conditional comments (`<!--[if mso]>`)
+- Responsive design with `@media` queries in `<style>` (for clients that support it)
+
+Scriban variables (`{{ model.* }}`, `{{ app.* }}`, `{{ now.* }}`) are preserved through
+the MJML compilation -- Scriban runs first, MJML compiles the result.
+
+:::tip[MJML vs plain HTML templates]
+Use MJML for marketing-style emails and complex layouts. For simple transactional
+notifications (password reset, verification codes), plain HTML with the built-in
+`Layout.Email.html` template is often sufficient.
+:::

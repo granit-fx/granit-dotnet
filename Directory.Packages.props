@@ -8,11 +8,13 @@
   <!-- Toutes les versions sont centralisées ici (Central Package Mgmt)    -->
   <!-- =================================================================== -->
   <ItemGroup Label="Localisation">
+    <PackageVersion Include="AngleSharp" Version="1.4.0" />
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.*" />
     <PackageVersion Include="SmartFormat" Version="3.*" />
   </ItemGroup>
   <ItemGroup Label="Templating">
     <PackageVersion Include="ClosedXML" Version="0.105.*" />
+    <PackageVersion Include="Mjml.Net" Version="4.*" />
     <PackageVersion Include="PuppeteerSharp" Version="24.*" />
     <PackageVersion Include="Scriban" Version="7.*" />
   </ItemGroup>
