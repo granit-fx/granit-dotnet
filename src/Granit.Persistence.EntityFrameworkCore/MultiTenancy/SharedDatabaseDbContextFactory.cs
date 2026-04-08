@@ -1,5 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 
@@ -9,8 +10,15 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 /// enforced by the global EF Core query filter on <c>TenantId</c>.
 /// </summary>
 /// <remarks>
+/// <para>
 /// No <c>search_path</c> override is applied — all tenants share the same schema.
-/// <see cref="AuditedEntityInterceptor"/> is wired automatically when available in DI.
+/// <see cref="Interceptors.AuditedEntityInterceptor"/> is wired automatically when available in DI.
+/// </para>
+/// <para>
+/// Uses <c>ActivatorUtilities.CreateInstance</c> instead of <c>Activator.CreateInstance</c>
+/// so that DbContexts with optional DI parameters (e.g. <c>ICurrentTenant?</c>, <c>IDataFilter?</c>)
+/// are constructed correctly. <c>Activator.CreateInstance</c> does not resolve optional parameters.
+/// </para>
 /// </remarks>
 internal sealed class SharedDatabaseDbContextFactory<TContext>(
     IServiceProvider serviceProvider,
@@ -26,7 +34,7 @@ internal sealed class SharedDatabaseDbContextFactory<TContext>(
         DbContextOptionsBuilder<TContext> optionsBuilder = new();
         _options.Configure(optionsBuilder);
         optionsBuilder.UseGranitInterceptors(_serviceProvider);
-        return (TContext)Activator.CreateInstance(typeof(TContext), optionsBuilder.Options)!;
+        return ActivatorUtilities.CreateInstance<TContext>(_serviceProvider, optionsBuilder.Options);
     }
 
     /// <inheritdoc/>
