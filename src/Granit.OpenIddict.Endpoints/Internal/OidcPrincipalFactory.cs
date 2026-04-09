@@ -82,6 +82,12 @@ internal sealed class OidcPrincipalFactory(
             identity.AddClaim(OpenIddictConstants.Claims.Role, role);
         }
 
+        // Tenant
+        if (user.TenantId is not null)
+        {
+            identity.AddClaim("tenant_id", user.TenantId.Value.ToString());
+        }
+
         // Custom claims from UserManager store
         IList<Claim> customClaims = await userManager.GetClaimsAsync(user).ConfigureAwait(false);
         identity.AddClaims(customClaims);

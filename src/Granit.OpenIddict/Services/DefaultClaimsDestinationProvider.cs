@@ -82,8 +82,8 @@ public class DefaultClaimsDestinationProvider : IClaimsDestinationProvider
             yield break;
         }
 
-        // Subject — always in both tokens
-        if (claim.Type is ClaimTypes.NameIdentifier or "sub")
+        // Subject and tenant — always in both tokens
+        if (claim.Type is ClaimTypes.NameIdentifier or "sub" or "tenant_id")
         {
             yield return ClaimsDestinations.AccessToken;
             yield return ClaimsDestinations.IdentityToken;

@@ -89,38 +89,57 @@ internal static partial class ConnectTokenEndpoints
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
 
-        // Retrieve the user from the subject claim.
+        // Restore tenant context from the token's tenant_id claim before looking up the user.
+        // For refresh_token grants, no tenant middleware has run — the claim is the only source.
+        // When absent (host admin), the filter naturally matches TenantId IS NULL.
         string? subject = authenticateResult.Principal.GetClaim(OpenIddictConstants.Claims.Subject);
-        UserManager<GranitUser> userManager = context.RequestServices
-            .GetRequiredService<UserManager<GranitUser>>();
-
-        GranitUser? user = subject is not null
-            ? await userManager.FindByIdAsync(subject).ConfigureAwait(false)
-            : null;
-
-        if (user is null)
+        string? tokenTenantId = authenticateResult.Principal.GetClaim("tenant_id");
+        ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
+        IDisposable? tenantScope = null;
+        if (tokenTenantId is not null && Guid.TryParse(tokenTenantId, out Guid tenantGuid))
         {
-            LogUserNotFound(logger, subject ?? "(null)");
-            metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
-            return Results.Forbid(
-                authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+            tenantScope = currentTenant?.Change(tenantGuid);
+            tenantId ??= tokenTenantId;
         }
 
-        // Rebuild the principal with up-to-date claims.
-        // Preserve scopes from the original principal (including offline_access for refresh tokens).
-        ImmutableArray<string> scopes = authenticateResult.Principal.GetScopes();
+        try
+        {
+            // Retrieve the user from the subject claim.
+            UserManager<GranitUser> userManager = context.RequestServices
+                .GetRequiredService<UserManager<GranitUser>>();
 
-        ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
-            user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
-            .ConfigureAwait(false);
+            GranitUser? user = subject is not null
+                ? await userManager.FindByIdAsync(subject).ConfigureAwait(false)
+                : null;
 
-        string grantType = request.GrantType!;
-        metrics.RecordTokenIssued(tenantId, grantType);
-        metrics.RecordAuthenticationSuccess(tenantId, grantType);
-        LogTokenIssued(logger, user.Id.ToString(), grantType);
+            if (user is null)
+            {
+                LogUserNotFound(logger, subject ?? "(null)");
+                metrics.RecordAuthenticationFailure(tenantId, "invalid_credentials");
+                return Results.Forbid(
+                    authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
+            }
 
-        return Results.SignIn(principal,
-            authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+            // Rebuild the principal with up-to-date claims.
+            // Preserve scopes from the original principal (including offline_access for refresh tokens).
+            ImmutableArray<string> scopes = authenticateResult.Principal.GetScopes();
+
+            ClaimsPrincipal principal = await principalFactory.CreateUserPrincipalAsync(
+                user, scopes, OpenIddictServerAspNetCoreDefaults.AuthenticationScheme)
+                .ConfigureAwait(false);
+
+            string grantType = request.GrantType!;
+            metrics.RecordTokenIssued(tenantId, grantType);
+            metrics.RecordAuthenticationSuccess(tenantId, grantType);
+            LogTokenIssued(logger, user.Id.ToString(), grantType);
+
+            return Results.SignIn(principal,
+                authenticationScheme: OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
+        }
+        finally
+        {
+            tenantScope?.Dispose();
+        }
     }
 
     private static IResult HandleClientCredentials(

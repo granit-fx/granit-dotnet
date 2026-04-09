@@ -41,6 +41,12 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // Replace default UserManager with GranitUserManager (exponential backoff lockout)
         context.Services.Replace(ServiceDescriptor.Scoped<UserManager<GranitUser>, GranitUserManager>());
 
+        // Replace default claims principal factory to inject tenant_id into the Identity cookie.
+        // This ensures multi-tenancy middleware can resolve the tenant from the authenticated
+        // cookie on subsequent requests (authorize, refresh, 2FA second step).
+        context.Services.Replace(ServiceDescriptor.Scoped<
+            IUserClaimsPrincipalFactory<GranitUser>, GranitUserClaimsPrincipalFactory>());
+
         // ASP.NET Core Identity service implementations (depend on UserManager<GranitUser>)
         context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
