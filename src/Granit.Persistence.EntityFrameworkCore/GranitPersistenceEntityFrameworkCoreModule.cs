@@ -19,6 +19,9 @@ namespace Granit.Persistence.EntityFrameworkCore;
     typeof(GranitTimingModule))]
 public sealed class GranitPersistenceEntityFrameworkCoreModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        GranitDbDefaults.EnsureFromConfiguration(context.Configuration);
         context.Services.AddGranitPersistence();
+    }
 }

@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
@@ -93,13 +94,13 @@ internal sealed partial class GranitMigrationRunner(
             }
 
             // Data seeding — two passes for SchemaPerTenant cold start:
-            // Pass 1: seed host data (tenants, OpenIddict). Module seeders will fail
-            //         gracefully because tenant schemas/tables don't exist yet.
+            // Pass 1 (hostOnly): seed host data only (tenants, OpenIddict).
+            //         Tenant seeders skip via DataSeedContext.IsHostOnly.
             // After: re-migrate per-tenant + ensure tenant internal tables.
-            // Pass 2: re-seed — all seeders succeed with complete tenant schemas.
+            // Pass 2 (full): all seeders run — tenant tables now exist.
             if (options.SeedAfterMigration)
             {
-                await SeedAsync(ct).ConfigureAwait(false);
+                await SeedAsync(ct, hostOnly: true).ConfigureAwait(false);
 
                 // Post-seed per-tenant migration: seeding may have created tenants
                 // (cold start). Re-run migrations — ITenantEnumerator now finds them.
@@ -225,6 +226,12 @@ internal sealed partial class GranitMigrationRunner(
         {
             await using AsyncServiceScope tenantScope = scopeFactory.CreateAsyncScope();
 
+            // Activate tenant context BEFORE resolving the DbContext so the scoped
+            // TContext registration uses the IsolatedDbContextFactory (not the
+            // SharedDatabase fallback which creates in public schema).
+            ICurrentTenant currentTenant = tenantScope.ServiceProvider.GetRequiredService<ICurrentTenant>();
+            using IDisposable tenantChange = currentTenant.Change(tenantId);
+
             // Create tenant schema if SchemaPerTenant (PostgreSQL never auto-creates).
             if (schemaProvider is not null)
             {
@@ -299,7 +306,7 @@ internal sealed partial class GranitMigrationRunner(
         }
     }
 
-    private async Task SeedAsync(CancellationToken ct)
+    private async Task SeedAsync(CancellationToken ct, bool hostOnly = false)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         IDataSeeder? seeder = scope.ServiceProvider.GetService<IDataSeeder>();
@@ -311,6 +318,11 @@ internal sealed partial class GranitMigrationRunner(
 
         LogSeedingStart();
         DataSeedContext seedContext = new();
+        if (hostOnly)
+        {
+            seedContext[DataSeedContext.HostOnlyKey] = true;
+        }
+
         await seeder.SeedAsync(seedContext, ct).ConfigureAwait(false);
         LogSeedingCompleted();
     }

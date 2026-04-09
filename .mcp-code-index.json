@@ -28677,7 +28677,20 @@
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/DataSeedContext.cs",
       "line": 18,
-      "members": []
+      "members": [
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Properties",
+          "kind": "property",
+          "signature": "Dictionary<string, object?> Properties",
+          "returnType": "Dictionary<string, object?>"
+        }
+      ]
     },
     {
       "name": "IDataSeedContributor",
@@ -28808,7 +28821,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceTenantExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": []
     },
     {
@@ -28910,10 +28923,10 @@
       "line": 21,
       "members": [
         {
-          "name": "ResetToDefaults",
+          "name": "EnsureFromConfiguration",
           "kind": "method",
-          "signature": "ResetToDefaults()",
-          "returnType": "string? DbSchema { get; set; } public string? HostDbSchema { get; set; } internal void"
+          "signature": "EnsureFromConfiguration(Microsoft.Extensions.Configuration.IConfiguration configuration)",
+          "returnType": "string? DbSchema { get; set; } public string? HostDbSchema { get; set; } public void"
         }
       ]
     },

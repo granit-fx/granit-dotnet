@@ -37,6 +37,33 @@ public static class GranitDbDefaults
     public static string? HostDbSchema { get; set; }
 
     /// <summary>
+    /// Sets <see cref="HostDbSchema"/> from <c>TenantIsolation:HostSchema</c> in
+    /// configuration if not already set. Idempotent — first call wins.
+    /// </summary>
+    /// <remarks>
+    /// Call from module extension methods that have access to <see cref="Microsoft.Extensions.Configuration.IConfiguration"/>
+    /// (typically via <c>IHostApplicationBuilder.Configuration</c>). This must run
+    /// before any EF Core model compilation — EF Core caches the compiled model
+    /// after first use, making later mutations ineffective.
+    /// </remarks>
+    /// <param name="configuration">The application configuration.</param>
+    public static void EnsureFromConfiguration(Microsoft.Extensions.Configuration.IConfiguration configuration)
+    {
+        if (HostDbSchema is not null)
+        {
+            System.Diagnostics.Trace.WriteLine($"[GranitDbDefaults] EnsureFromConfiguration SKIPPED — already '{HostDbSchema}'");
+            return;
+        }
+
+        string? hostSchema = configuration["TenantIsolation:HostSchema"];
+        System.Diagnostics.Trace.WriteLine($"[GranitDbDefaults] EnsureFromConfiguration read '{hostSchema ?? "(null)"}' from config");
+        if (hostSchema is not null)
+        {
+            HostDbSchema = hostSchema;
+        }
+    }
+
+    /// <summary>
     /// Resets all properties to their default values. Test use only.
     /// </summary>
     internal static void ResetToDefaults()

@@ -11,7 +11,7 @@ internal sealed class MigrationProgressConfiguration : IEntityTypeConfiguration<
 {
     public void Configure(EntityTypeBuilder<MigrationProgress> builder)
     {
-        builder.ToTable("data_migration_progress");
+        builder.ToTable("data_migration_progress", Granit.Persistence.EntityFrameworkCore.GranitDbDefaults.HostDbSchema);
 
         builder.HasKey(e => e.Id);
 

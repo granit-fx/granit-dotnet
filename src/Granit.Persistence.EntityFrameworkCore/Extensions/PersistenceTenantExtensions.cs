@@ -1,7 +1,6 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -182,22 +181,9 @@ public static class PersistenceTenantExtensions
                 "Valid values: SharedDatabase, DatabasePerTenant, SchemaPerTenant.")
             .ValidateOnStart();
 
-        // Wire HostSchema EAGERLY during ConfigureServices. EF Core caches the
-        // compiled model on first DbContext creation — if GranitDbDefaults.HostDbSchema
-        // is not set before that, *DbProperties.DbSchema returns null and the model
-        // is cached with the wrong (public) schema permanently.
-        //
-        // PostConfigure runs only when IOptions<T>.Value is first accessed, which may
-        // be too late. Reading IConfiguration directly ensures the value is set
-        // before any DbContextFactory registration captures it.
-        var configuration = services
-            .FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))
-            ?.ImplementationInstance as IConfiguration;
-        string? hostSchema = configuration?["TenantIsolation:HostSchema"];
-        if (hostSchema is not null)
-        {
-            GranitDbDefaults.HostDbSchema = hostSchema;
-        }
+        // HostDbSchema is set eagerly by GranitPersistenceEntityFrameworkCoreModule
+        // via GranitDbDefaults.EnsureFromConfiguration(). No need to read config here —
+        // the module runs before any downstream module registers DbContexts.
 
         services.TryAddSingleton<ITenantIsolationStrategyProvider,
             ConfigurationTenantIsolationStrategyProvider>();
@@ -255,8 +241,10 @@ public static class PersistenceTenantExtensions
         services.TryAddScoped<IDbContextFactory<TContext>, IsolatedDbContextFactory<TContext>>();
 
         // Scoped TContext: tries the isolated factory first, falls back to the
-        // SharedDatabase keyed factory when no tenant is active (e.g., Wolverine
-        // startup introspection, migration orchestration, health checks).
+        // SharedDatabase keyed factory when no tenant is active. This fallback is
+        // needed for Wolverine handler graph compilation (startup introspection)
+        // which resolves DbContext types without a tenant context.
+        // The fallback context is read-only — no migrations or table creation.
         services.TryAddScoped<TContext>(static sp =>
         {
             ICurrentTenant? tenant = sp.GetService<ICurrentTenant>();

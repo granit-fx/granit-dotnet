@@ -29,9 +29,22 @@ public sealed class DataSeedContext
     }
 
     /// <summary>
+    /// Well-known property key for host-only seeding mode.
+    /// When <c>true</c>, tenant-scoped seed contributors should skip their work
+    /// (tenant tables don't exist yet during the first seed pass).
+    /// </summary>
+    public const string HostOnlyKey = "Granit:HostOnly";
+
+    /// <summary>
     /// Identifier of the tenant being seeded, or <c>null</c> for host-level seeding.
     /// </summary>
     public Guid? TenantId { get; }
+
+    /// <summary>
+    /// Indicates whether this is a host-only seed pass (first pass in SchemaPerTenant mode).
+    /// Tenant-scoped seed contributors should return early when this is <c>true</c>.
+    /// </summary>
+    public bool IsHostOnly => this[HostOnlyKey] is true;
 
     /// <summary>
     /// Arbitrary key-value pairs for passing data to seed contributors.
