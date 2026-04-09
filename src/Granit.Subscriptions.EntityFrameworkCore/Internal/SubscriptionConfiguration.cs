@@ -14,6 +14,11 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
 
         builder.HasKey(e => e.Id);
 
+        // PlanId is a SingleValueObject<Guid> — must be declared as a scalar property
+        // to prevent EF Core from discovering it as a navigation/entity type.
+        // The value converter is applied automatically by ApplyGranitConventions.
+        builder.Property(e => e.PlanId).IsRequired();
+
         builder.Property(e => e.Status).IsRequired();
         builder.Property(e => e.CurrentPeriodStart).IsRequired();
         builder.Property(e => e.CurrentPeriodEnd).IsRequired();

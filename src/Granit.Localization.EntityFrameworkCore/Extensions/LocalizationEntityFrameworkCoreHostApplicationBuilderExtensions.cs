@@ -38,7 +38,7 @@ public static class LocalizationEntityFrameworkCoreHostApplicationBuilderExtensi
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<LocalizationDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<LocalizationDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<LocalizationDbContext>();
 
         builder.Services.TryAddKeyedScoped<ILocalizationOverrideStoreReader, EfCoreLocalizationOverrideStore>(
             CachedLocalizationOverrideStore.RawStoreKey);

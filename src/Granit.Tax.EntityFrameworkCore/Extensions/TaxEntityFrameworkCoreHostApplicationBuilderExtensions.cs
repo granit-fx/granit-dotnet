@@ -17,7 +17,7 @@ public static class TaxEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<TaxDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<TaxDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<TaxDbContext>();
 
         builder.Services.AddScoped<EfValidatedTaxIdStore>();
         builder.Services.TryAddScoped<IValidatedTaxIdReader>(sp => sp.GetRequiredService<EfValidatedTaxIdStore>());

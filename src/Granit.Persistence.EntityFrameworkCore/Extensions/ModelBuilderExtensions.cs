@@ -121,11 +121,34 @@ public static class ModelBuilderExtensions
         }
 
         // --- SingleValueObject<T> conventions ---
-        // Auto-applies value converters for properties whose CLR type inherits from
-        // SingleValueObject<T>, mapping them to the underlying primitive column type.
+        // 1. Remove any SingleValueObject<T> types that EF Core auto-discovered as entity
+        //    types. These are value objects (e.g. PlanId, InvoiceId) used as scalar
+        //    properties on entities — they must NOT be treated as entities themselves.
+        RemoveSingleValueObjectEntityTypes(modelBuilder);
+
+        // 2. Auto-apply value converters for properties whose CLR type inherits from
+        //    SingleValueObject<T>, mapping them to the underlying primitive column type.
         ApplySingleValueObjectConverters(modelBuilder);
 
         return modelBuilder;
+    }
+
+    // Removes any SingleValueObject<T> subclass that EF Core auto-discovered as an entity type.
+    // When a class property (e.g. Subscription.PlanId of type PlanId : SingleValueObject<Guid>)
+    // is not explicitly configured via builder.Property(), EF Core's convention scanner treats
+    // the CLR type as a navigation target and adds it as an entity type — which then fails
+    // validation because no primary key is defined. This step removes those phantom entities
+    // so the subsequent converter step can safely map the property as a scalar column.
+    private static void RemoveSingleValueObjectEntityTypes(ModelBuilder modelBuilder)
+    {
+        var svoEntityTypes = modelBuilder.Model.GetEntityTypes()
+            .Where(et => GetSingleValueObjectBase(et.ClrType) is not null)
+            .ToList();
+
+        foreach (IMutableEntityType svoEntityType in svoEntityTypes)
+        {
+            modelBuilder.Model.RemoveEntityType(svoEntityType.ClrType);
+        }
     }
 
     // Scans all entity properties for SingleValueObject<T> types and applies a ValueConverter

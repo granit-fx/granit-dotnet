@@ -6,22 +6,18 @@ using Microsoft.Extensions.Logging;
 namespace Granit.Persistence.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// Generic <see cref="IInternalDbContextEnsurer"/> that creates tables for any isolated
-/// Granit <see cref="DbContext"/> that is not host-migratable.
+/// Creates tables for host-level internal <see cref="DbContext"/> instances
+/// (BackgroundJobs, BFF, MultiTenancy, Features, OpenIddict, Auditing, Localization).
 /// </summary>
 /// <remarks>
-/// <para>
 /// Uses two separate <see cref="DbContext"/> instances to avoid PostgreSQL connection-state
 /// contamination: one for probing table existence (which may throw) and a fresh one for
-/// <see cref="IRelationalDatabaseCreator.CreateTablesAsync"/>. This avoids the "current
-/// transaction is aborted" error that occurs when a failed query and a DDL command share
-/// the same connection.
-/// </para>
+/// <see cref="IRelationalDatabaseCreator.CreateTablesAsync"/>.
 /// </remarks>
-/// <typeparam name="TContext">The isolated DbContext type whose tables should be created.</typeparam>
-internal sealed partial class InternalDbContextEnsurer<TContext>(
+/// <typeparam name="TContext">The host DbContext type whose tables should be created.</typeparam>
+internal sealed partial class HostInternalDbContextEnsurer<TContext>(
     IDbContextFactory<TContext> factory,
-    ILogger<InternalDbContextEnsurer<TContext>> logger) : IInternalDbContextEnsurer
+    ILogger<HostInternalDbContextEnsurer<TContext>> logger) : IHostInternalDbContextEnsurer
     where TContext : DbContext
 {
     /// <inheritdoc/>
@@ -35,8 +31,6 @@ internal sealed partial class InternalDbContextEnsurer<TContext>(
             return;
         }
 
-        // Use a FRESH context — the probe context's connection may be in a failed state
-        // after the unsuccessful SELECT.
         await using TContext db = await factory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
@@ -47,25 +41,19 @@ internal sealed partial class InternalDbContextEnsurer<TContext>(
         await creator.CreateTablesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Probes whether the first table in the model already exists by executing a
-    /// lightweight <c>SELECT 1 FROM {table} WHERE 1=0</c> query.
-    /// </summary>
-    /// <returns><c>true</c> if the table exists; <c>false</c> if the query throws.</returns>
     private async Task<bool> ProbeTableExistsAsync(CancellationToken cancellationToken)
     {
         await using TContext db = await factory
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // Pick the first mapped table from the model as a representative probe target.
         Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType = db.Model
             .GetEntityTypes()
             .FirstOrDefault(e => e.GetTableName() is not null);
 
         if (entityType is null)
         {
-            return true; // No tables in model — nothing to create
+            return true;
         }
 
         string tableName = entityType.GetTableName()!;
@@ -78,12 +66,9 @@ internal sealed partial class InternalDbContextEnsurer<TContext>(
 
         try
         {
-            // Provider-agnostic probe — WHERE 1=0 returns zero rows without scanning.
-            // Table name is from the EF model (not user input) and delimiter-escaped via
-            // ISqlGenerationHelper, so string concatenation is safe here.
             string probeSql = string.Concat("SELECT 1 FROM ", qualifiedName, " WHERE 1=0");
             await db.Database
-                .ExecuteSqlRawAsync(probeSql, cancellationToken) // NOSONAR S2077 — table name from EF model (not user input), delimiter-escaped via ISqlGenerationHelper
+                .ExecuteSqlRawAsync(probeSql, cancellationToken) // NOSONAR — table name from EF model, delimiter-escaped
                 .ConfigureAwait(false);
 
             return true;
@@ -100,6 +85,6 @@ internal sealed partial class InternalDbContextEnsurer<TContext>(
     private partial void LogTableNotFound(string contextName, string tableName);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Creating tables for internal DbContext '{ContextName}'.")]
+        Message = "Creating tables for host internal DbContext '{ContextName}'.")]
     private partial void LogCreatingTables(string contextName);
 }

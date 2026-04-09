@@ -29079,12 +29079,12 @@
       ]
     },
     {
-      "name": "IInternalDbContextEnsurer",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.IInternalDbContextEnsurer",
+      "name": "IHostInternalDbContextEnsurer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.IHostInternalDbContextEnsurer",
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/IInternalDbContextEnsurer.cs",
-      "line": 21,
+      "file": "src/Granit.Persistence.EntityFrameworkCore/IHostInternalDbContextEnsurer.cs",
+      "line": 12,
       "members": [
         {
           "name": "EnsureCreatedAsync",
@@ -29107,6 +29107,22 @@
           "kind": "method",
           "signature": "PurgeAsync(DateTimeOffset cutoff, int batchSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "ITenantInternalDbContextEnsurer",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ITenantInternalDbContextEnsurer",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ITenantInternalDbContextEnsurer.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "EnsureCreatedForTenantAsync",
+          "kind": "method",
+          "signature": "EnsureCreatedForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "string ContextName { get; } Task"
         }
       ]
     },

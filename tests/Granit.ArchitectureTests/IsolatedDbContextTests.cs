@@ -183,7 +183,7 @@ public sealed partial class IsolatedDbContextTests
     }
 
     [Fact]
-    public void AddGranitDbContext_should_have_matching_AddInternalDbContextEnsurer()
+    public void AddGranitDbContext_should_have_matching_HostOrTenantInternalDbContextEnsurer()
     {
         string srcDir = Path.Join(RepoRoot, "src");
 
@@ -210,17 +210,21 @@ public sealed partial class IsolatedDbContextTests
                     continue;
                 }
 
-                if (!content.Contains($"AddInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal))
+                bool hasEnsurer =
+                    content.Contains($"AddHostInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal) ||
+                    content.Contains($"AddTenantInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal);
+
+                if (!hasEnsurer)
                 {
                     string rel = Path.GetRelativePath(RepoRoot, csFile);
                     int line = content[..match.Index].Count(c => c == '\n') + 1;
-                    violations.Add($"{rel}:{line} — AddGranitDbContext<{contextType}> without matching AddInternalDbContextEnsurer");
+                    violations.Add($"{rel}:{line} — AddGranitDbContext<{contextType}> without matching AddHostInternalDbContextEnsurer or AddTenantInternalDbContextEnsurer");
                 }
             }
         }
 
         violations.ShouldBeEmpty(
-            "Every AddGranitDbContext<T> must be paired with AddInternalDbContextEnsurer<T> in the same file. " +
+            "Every AddGranitDbContext<T> must be paired with AddHostInternalDbContextEnsurer<T> or AddTenantInternalDbContextEnsurer<T>. " +
             $"Violators:\n  {string.Join("\n  ", violations)}");
     }
 

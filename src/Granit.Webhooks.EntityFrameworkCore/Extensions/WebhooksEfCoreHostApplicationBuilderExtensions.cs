@@ -34,7 +34,7 @@ public static class WebhooksEfCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<WebhooksDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<WebhooksDbContext>();
+        builder.Services.AddTenantInternalDbContextEnsurer<WebhooksDbContext>();
 
         builder.Services.AddScoped<EfWebhookSubscriptionStore>();
         builder.Services.Replace(

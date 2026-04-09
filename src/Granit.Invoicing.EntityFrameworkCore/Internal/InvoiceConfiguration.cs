@@ -26,6 +26,11 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(e => e.AmountRemaining).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.Overpayment).HasPrecision(18, 4).IsRequired();
 
+        // ParentInvoiceId is a SingleValueObject<Guid> — must be declared as a scalar property
+        // to prevent EF Core from discovering it as a navigation/entity type.
+        // The value converter is applied automatically by ApplyGranitConventions.
+        builder.Property(e => e.ParentInvoiceId);
+
         builder.OwnsOne(e => e.BillingAddress, ba =>
         {
             ba.Property(a => a.CompanyName).HasMaxLength(200);

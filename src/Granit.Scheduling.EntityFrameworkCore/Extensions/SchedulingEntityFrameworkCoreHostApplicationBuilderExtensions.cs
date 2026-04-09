@@ -29,7 +29,7 @@ public static class SchedulingEntityFrameworkCoreHostApplicationBuilderExtension
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<SchedulingDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<SchedulingDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<SchedulingDbContext>();
 
         builder.Services.AddScoped<EfScheduledActionStore>();
         builder.Services.Replace(

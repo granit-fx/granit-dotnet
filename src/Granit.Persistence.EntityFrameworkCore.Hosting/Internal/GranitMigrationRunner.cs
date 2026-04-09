@@ -82,12 +82,41 @@ internal sealed partial class GranitMigrationRunner(
             // Ensure Expand & Contract tracking table exists
             await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
 
-            // Ensure internal DbContext tables (OpenIddict, etc.)
-            await EnsureInternalDbContextsAsync(ct).ConfigureAwait(false);
+            // Ensure HOST internal DbContext tables (BackgroundJobs, OpenIddict, etc.)
+            await EnsureHostInternalDbContextsAsync(ct).ConfigureAwait(false);
 
-            // Data seeding
+            // Resolve tenant enumerator for post-seed passes
+            ITenantEnumerator? tenantEnumerator;
+            await using (AsyncServiceScope enumScope = scopeFactory.CreateAsyncScope())
+            {
+                tenantEnumerator = enumScope.ServiceProvider.GetService<ITenantEnumerator>();
+            }
+
+            // Data seeding — two passes for SchemaPerTenant cold start:
+            // Pass 1: seed host data (tenants, OpenIddict). Module seeders will fail
+            //         gracefully because tenant schemas/tables don't exist yet.
+            // After: re-migrate per-tenant + ensure tenant internal tables.
+            // Pass 2: re-seed — all seeders succeed with complete tenant schemas.
             if (options.SeedAfterMigration)
             {
+                await SeedAsync(ct).ConfigureAwait(false);
+
+                // Post-seed per-tenant migration: seeding may have created tenants
+                // (cold start). Re-run migrations — ITenantEnumerator now finds them.
+                foreach ((GranitModule module, Type dbContextType) in migratableModules)
+                {
+                    await MigrateDbContextAsync(module.GetType().Name, dbContextType, ct)
+                        .ConfigureAwait(false);
+                }
+
+                // Ensure TENANT internal DbContext tables per-tenant
+                if (tenantEnumerator is not null)
+                {
+                    await EnsureTenantInternalDbContextsAsync(tenantEnumerator, ct)
+                        .ConfigureAwait(false);
+                }
+
+                // Re-seed: module seeders that failed in pass 1 now succeed.
                 await SeedAsync(ct).ConfigureAwait(false);
             }
 
@@ -153,14 +182,27 @@ internal sealed partial class GranitMigrationRunner(
 
         // Check for multi-tenant migration
         ITenantEnumerator? tenantEnumerator = scope.ServiceProvider.GetService<ITenantEnumerator>();
+        bool hasTenants = tenantEnumerator is not null
+            && await HasTenantsAsync(tenantEnumerator, ct).ConfigureAwait(false);
 
-        if (tenantEnumerator is not null && await HasTenantsAsync(tenantEnumerator, ct).ConfigureAwait(false))
+        if (hasTenants)
         {
-            await MigratePerTenantAsync(moduleName, dbContextType, scope.ServiceProvider, tenantEnumerator, ct)
+            await MigratePerTenantAsync(moduleName, dbContextType, scope.ServiceProvider, tenantEnumerator!, ct)
                 .ConfigureAwait(false);
+        }
+        else if (tenantEnumerator is not null)
+        {
+            // ITenantEnumerator is registered (SchemaPerTenant / DatabasePerTenant)
+            // but no tenants exist yet (cold start). Skip migration — migrating
+            // without a tenant would create tables in "public" schema. The
+            // __EFMigrationsHistory in public would then prevent per-tenant migration
+            // later (SET search_path includes "public" → EF sees migrations as applied).
+            // Tables will be created per-tenant after seeding creates tenants.
+            return;
         }
         else
         {
+            // SharedDatabase or single-tenant — migrate normally in default schema.
             LogMigratingContext(moduleName, dbContextType.Name);
             await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType)
                 .ConfigureAwait(false);
@@ -225,17 +267,35 @@ internal sealed partial class GranitMigrationRunner(
         await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
-    private async Task EnsureInternalDbContextsAsync(CancellationToken ct)
+    private async Task EnsureHostInternalDbContextsAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        IEnumerable<IInternalDbContextEnsurer> ensurers =
-            scope.ServiceProvider.GetServices<IInternalDbContextEnsurer>();
+        IEnumerable<IHostInternalDbContextEnsurer> ensurers =
+            scope.ServiceProvider.GetServices<IHostInternalDbContextEnsurer>();
 
-        foreach (IInternalDbContextEnsurer ensurer in ensurers)
+        foreach (IHostInternalDbContextEnsurer ensurer in ensurers)
         {
             LogEnsuringInternalContext(ensurer.ContextName);
             await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
             LogEnsuredInternalContext(ensurer.ContextName);
+        }
+    }
+
+    private async Task EnsureTenantInternalDbContextsAsync(
+        ITenantEnumerator tenantEnumerator, CancellationToken ct)
+    {
+        await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
+        {
+            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+            IEnumerable<ITenantInternalDbContextEnsurer> ensurers =
+                scope.ServiceProvider.GetServices<ITenantInternalDbContextEnsurer>();
+
+            foreach (ITenantInternalDbContextEnsurer ensurer in ensurers)
+            {
+                LogEnsuringInternalContext($"{ensurer.ContextName} (tenant {tenantId})");
+                await ensurer.EnsureCreatedForTenantAsync(tenantId, ct).ConfigureAwait(false);
+                LogEnsuredInternalContext($"{ensurer.ContextName} (tenant {tenantId})");
+            }
         }
     }
 

@@ -18,7 +18,7 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<SubscriptionsDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<SubscriptionsDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<SubscriptionsDbContext>();
 
         builder.Services.TryAddScoped<IPlanReader, EfPlanReader>();
         builder.Services.TryAddScoped<IPlanWriter, EfPlanWriter>();

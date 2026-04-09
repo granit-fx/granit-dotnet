@@ -39,7 +39,7 @@ public static class FeaturesEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<FeaturesDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<FeaturesDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<FeaturesDbContext>();
 
         // Fallbacks: ensure event bus, TimeProvider, and metrics are available even if
         // AddGranitFeatures() / AddGranitEvents() was not called (e.g. in tests).

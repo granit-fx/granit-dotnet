@@ -33,7 +33,7 @@ public static class BackgroundJobsEntityFrameworkCoreHostApplicationBuilderExten
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<BackgroundJobsDbContext>(configure);
-        builder.Services.AddInternalDbContextEnsurer<BackgroundJobsDbContext>();
+        builder.Services.AddHostInternalDbContextEnsurer<BackgroundJobsDbContext>();
 
         // Scoped: AddGranitDbContext registers IDbContextFactory<T> as Scoped (interceptors depend on
         // ICurrentTenant/ICurrentUser which are Scoped). EfBackgroundJobStore injects the factory and

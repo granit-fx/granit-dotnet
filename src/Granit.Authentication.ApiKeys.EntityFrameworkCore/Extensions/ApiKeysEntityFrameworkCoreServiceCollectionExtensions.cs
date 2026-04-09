@@ -24,7 +24,7 @@ public static class ApiKeysEntityFrameworkCoreServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(configureDbContext);
 
         services.AddGranitDbContext<AuthenticationApiKeysDbContext>(configureDbContext);
-        services.AddInternalDbContextEnsurer<AuthenticationApiKeysDbContext>();
+        services.AddTenantInternalDbContextEnsurer<AuthenticationApiKeysDbContext>();
 
         services.TryAddScoped<IApiKeyStore, EfCoreApiKeyStore>();
         services.TryAddScoped<IApiKeyAdminStore, EfCoreApiKeyAdminStore>();
