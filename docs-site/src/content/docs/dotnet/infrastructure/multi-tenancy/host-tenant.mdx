@@ -90,21 +90,21 @@ is a data filter, not a schema router.
 
 ### Tenant modules (business data)
 
-These modules use `AddGranitIsolatedDbContext`. Their tables live in tenant-specific
-schemas (or are filtered by `TenantId` in shared database mode).
+These modules use `AddGranitIsolatedDbContext` (for `IMigratableModule` modules)
+or `AddTenantInternalDbContextEnsurer` (for internal modules). Their tables live
+in tenant-specific schemas (or are filtered by `TenantId` in shared database mode).
 
-| Module | Justification |
-|--------|---------------|
-| Authorization | Permission grants per tenant |
-| ApiKeys | API keys per tenant |
-| Notifications | Notifications per tenant |
-| Localization | Translation overrides per tenant |
-| BlobStorage | Blobs per tenant |
-| Timeline | Activity stream per tenant |
-| Webhooks | Subscriptions per tenant |
-| Workflow | State transitions per tenant |
-| DataExchange | Import/export mappings per tenant |
-| Templating | Templates per tenant |
+| Module | Registration | Justification |
+|--------|-------------|---------------|
+| Authorization | `IMigratableModule` | Permission grants per tenant |
+| ApiKeys | `TenantInternalDbContextEnsurer` | API keys per tenant |
+| Notifications | `TenantInternalDbContextEnsurer` | Notifications per tenant |
+| BlobStorage | `TenantInternalDbContextEnsurer` | Blobs per tenant |
+| Timeline | `TenantInternalDbContextEnsurer` | Activity stream per tenant |
+| Webhooks | `TenantInternalDbContextEnsurer` | Subscriptions per tenant |
+| Workflow | `TenantInternalDbContextEnsurer` | State transitions per tenant |
+| DataExchange | `TenantInternalDbContextEnsurer` | Import/export mappings per tenant |
+| Templating | `TenantInternalDbContextEnsurer` | Templates per tenant |
 | QueryEngine | Saved views per tenant |
 
 ### Mixed modules (TenantId nullable in host)
