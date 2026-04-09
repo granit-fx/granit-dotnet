@@ -1,7 +1,11 @@
+using System.Data;
+using System.Data.Common;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Persistence.EntityFrameworkCore.Internal;
@@ -13,22 +17,24 @@ namespace Granit.Persistence.EntityFrameworkCore.Internal;
 /// <remarks>
 /// <para>
 /// Uses <see cref="ICurrentTenant.Change"/> to activate the tenant context before
-/// creating the <see cref="DbContext"/>. The factory dispatches to the correct
-/// isolation strategy:
+/// creating the <see cref="DbContext"/>. After creation, explicitly activates the
+/// tenant schema on the connection via <see cref="ITenantSchemaActivator"/> when
+/// running in SchemaPerTenant mode.
 /// </para>
-/// <list type="bullet">
-///   <item><b>SchemaPerTenant</b>: <c>TenantPerSchemaDbContextFactory</c> adds
-///   <c>SET search_path</c> interceptor → tables created in tenant schema.</item>
-///   <item><b>DatabasePerTenant</b>: <c>TenantPerDatabaseDbContextFactory</c> resolves
-///   tenant connection string → tables created in tenant database.</item>
-///   <item><b>SharedDatabase</b>: <c>SharedDatabaseDbContextFactory</c> → tables created
-///   once in default schema (same behavior as host ensurer).</item>
-/// </list>
+/// <para>
+/// Schema activation is necessary because module extensions register standard
+/// <see cref="IDbContextFactory{TContext}"/> instances (via <c>AddGranitDbContext</c>
+/// or <c>AddDbContextFactory</c>) that do not include
+/// <see cref="TenantSchemaConnectionInterceptor"/>. Only
+/// <c>TenantPerSchemaDbContextFactory</c> (registered by <c>AddGranitIsolatedDbContext</c>)
+/// wires the interceptor automatically.
+/// </para>
 /// </remarks>
 /// <typeparam name="TContext">The tenant DbContext type whose tables should be created.</typeparam>
 internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
     IDbContextFactory<TContext> factory,
     ICurrentTenant currentTenant,
+    IServiceProvider serviceProvider,
     ILogger<TenantInternalDbContextEnsurer<TContext>> logger) : ITenantInternalDbContextEnsurer
     where TContext : DbContext
 {
@@ -49,6 +55,8 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
                 .CreateDbContextAsync(cancellationToken)
                 .ConfigureAwait(false);
 
+            await ActivateTenantSchemaAsync(db, tenantId, cancellationToken).ConfigureAwait(false);
+
             IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
 
             LogCreatingTablesForTenant(ContextName, tenantId);
@@ -62,6 +70,8 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        await ActivateTenantSchemaAsync(db, currentTenant.Id!.Value, cancellationToken).ConfigureAwait(false);
+
         Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType = db.Model
             .GetEntityTypes()
             .FirstOrDefault(e => e.GetTableName() is not null);
@@ -74,7 +84,7 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
         string tableName = entityType.GetTableName()!;
         ISqlGenerationHelper helper = db.GetService<ISqlGenerationHelper>();
 
-        // In SchemaPerTenant mode, search_path is already set by the interceptor.
+        // search_path is set by ActivateTenantSchemaAsync above.
         // Use unqualified table name — the search_path handles schema resolution.
         string qualifiedName = helper.DelimitIdentifier(tableName);
 
@@ -92,6 +102,39 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
             LogTableNotFoundForTenant(ContextName, tableName, currentTenant.Id);
             return false;
         }
+    }
+
+    /// <summary>
+    /// Activates the tenant schema on the DbContext connection when running in
+    /// SchemaPerTenant mode. No-op when <see cref="ITenantSchemaProvider"/> or
+    /// <see cref="ITenantSchemaActivator"/> are not registered (SharedDatabase
+    /// or DatabasePerTenant modes).
+    /// </summary>
+    private async Task ActivateTenantSchemaAsync(
+        TContext db, Guid tenantId, CancellationToken cancellationToken)
+    {
+        ITenantSchemaProvider? schemaProvider = serviceProvider.GetService<ITenantSchemaProvider>();
+        ITenantSchemaActivator? schemaActivator = serviceProvider.GetService<ITenantSchemaActivator>();
+
+        if (schemaProvider is null || schemaActivator is null)
+        {
+            return;
+        }
+
+        string schemaName = await schemaProvider
+            .GetSchemaNameAsync(tenantId, cancellationToken)
+            .ConfigureAwait(false);
+
+        DbConnection connection = db.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        await schemaActivator
+            .ActivateSchemaAsync(connection, schemaName, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Debug,

@@ -28783,7 +28783,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": []
     },
     {

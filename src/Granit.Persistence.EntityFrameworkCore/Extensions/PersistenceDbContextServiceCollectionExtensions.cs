@@ -1,5 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -46,6 +47,23 @@ public static class PersistenceDbContextServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configure);
+
+        // Wire HostSchema EAGERLY. EF Core caches the compiled model on first
+        // DbContext creation — if GranitDbDefaults.HostDbSchema is not set before
+        // that, host module *DbProperties.DbSchema returns null and the model is
+        // cached with the wrong (public) schema permanently.
+        // Idempotent: first caller wins; subsequent calls are no-ops.
+        if (GranitDbDefaults.HostDbSchema is null)
+        {
+            var configuration = services
+                .FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))
+                ?.ImplementationInstance as IConfiguration;
+            string? hostSchema = configuration?["TenantIsolation:HostSchema"];
+            if (hostSchema is not null)
+            {
+                GranitDbDefaults.HostDbSchema = hostSchema;
+            }
+        }
 
         services.AddDbContextFactory<TContext>((sp, options) =>
         {
