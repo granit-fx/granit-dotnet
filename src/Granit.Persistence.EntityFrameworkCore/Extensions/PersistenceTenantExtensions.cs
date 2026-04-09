@@ -1,6 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -181,15 +182,22 @@ public static class PersistenceTenantExtensions
                 "Valid values: SharedDatabase, DatabasePerTenant, SchemaPerTenant.")
             .ValidateOnStart();
 
-        // Wire HostSchema from configuration to GranitDbDefaults so host module
-        // *DbProperties classes inherit the schema automatically.
-        services.PostConfigure<TenantIsolationOptions>(opts =>
+        // Wire HostSchema EAGERLY during ConfigureServices. EF Core caches the
+        // compiled model on first DbContext creation — if GranitDbDefaults.HostDbSchema
+        // is not set before that, *DbProperties.DbSchema returns null and the model
+        // is cached with the wrong (public) schema permanently.
+        //
+        // PostConfigure runs only when IOptions<T>.Value is first accessed, which may
+        // be too late. Reading IConfiguration directly ensures the value is set
+        // before any DbContextFactory registration captures it.
+        var configuration = services
+            .FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))
+            ?.ImplementationInstance as IConfiguration;
+        string? hostSchema = configuration?["TenantIsolation:HostSchema"];
+        if (hostSchema is not null)
         {
-            if (opts.HostSchema is not null)
-            {
-                GranitDbDefaults.HostDbSchema = opts.HostSchema;
-            }
-        });
+            GranitDbDefaults.HostDbSchema = hostSchema;
+        }
 
         services.TryAddSingleton<ITenantIsolationStrategyProvider,
             ConfigurationTenantIsolationStrategyProvider>();

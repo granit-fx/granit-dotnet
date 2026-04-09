@@ -28808,7 +28808,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceTenantExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
