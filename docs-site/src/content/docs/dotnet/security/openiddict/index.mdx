@@ -126,8 +126,9 @@ app.MapGranitOpenIddict();
 ### 5. Run migrations
 
 `OpenIddictDbContext` tables are created **automatically** during `--migrate`.
-The framework registers an `IInternalDbContextEnsurer` that calls
+The framework registers an `IHostInternalDbContextEnsurer` that calls
 `CreateTablesAsync()` when the `openiddict_*` tables do not yet exist.
+In SchemaPerTenant mode, tables are created in the host schema.
 
 ```bash
 dotnet run --migrate
