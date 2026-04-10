@@ -74,17 +74,18 @@ internal sealed partial class GranitMigrationRunner(
                 }
             }
 
+            // Ensure HOST internal DbContext tables BEFORE migrations so that
+            // HasTenantsAsync (which queries tenants_tenants) doesn't hit a missing table.
+            await EnsureHostInternalDbContextsAsync(ct).ConfigureAwait(false);
+
+            // Ensure Expand & Contract tracking table exists
+            await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
+
             // Migrate each DbContext in topological order
             foreach ((GranitModule module, Type dbContextType) in migratableModules)
             {
                 await MigrateWithRetryAsync(module, dbContextType, ct).ConfigureAwait(false);
             }
-
-            // Ensure Expand & Contract tracking table exists
-            await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
-
-            // Ensure HOST internal DbContext tables (BackgroundJobs, OpenIddict, etc.)
-            await EnsureHostInternalDbContextsAsync(ct).ConfigureAwait(false);
 
             // Resolve tenant enumerator for post-seed passes
             ITenantEnumerator? tenantEnumerator;
@@ -376,25 +377,14 @@ internal sealed partial class GranitMigrationRunner(
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
     {
+        IAsyncEnumerator<Guid> e = enumerator.GetActiveTenantIdsAsync(ct).GetAsyncEnumerator(ct);
         try
         {
-            IAsyncEnumerator<Guid> e = enumerator.GetActiveTenantIdsAsync(ct).GetAsyncEnumerator(ct);
-            try
-            {
-                return await e.MoveNextAsync().ConfigureAwait(false);
-            }
-            finally
-            {
-                await e.DisposeAsync().ConfigureAwait(false);
-            }
+            return await e.MoveNextAsync().ConfigureAwait(false);
         }
-        catch (Exception) when (!ct.IsCancellationRequested)
+        finally
         {
-            // Cold start: the tenant table may not exist yet (created by
-            // EnsureHostInternalDbContextsAsync after the migration loop).
-            // Treat as "no tenants" — the post-seed re-migration pass will
-            // pick them up after host seeding creates the tenant records.
-            return false;
+            await e.DisposeAsync().ConfigureAwait(false);
         }
     }
 
