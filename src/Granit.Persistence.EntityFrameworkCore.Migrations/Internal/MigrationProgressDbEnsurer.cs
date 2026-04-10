@@ -47,22 +47,32 @@ internal sealed class MigrationProgressDbEnsurer(
             return true; // Non-relational providers don't need table creation
         }
 
-        IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
+        // Query information_schema instead of probing with a SELECT that would generate
+        // Npgsql error-level log noise when the table does not exist yet.
+        Microsoft.EntityFrameworkCore.Metadata.IEntityType? entityType = db.Model
+            .GetEntityTypes()
+            .FirstOrDefault(e => e.GetTableName() is not null);
 
-        if (!await creator.HasTablesAsync(cancellationToken).ConfigureAwait(false))
+        if (entityType is null)
         {
-            return false; // Database has no tables at all
-        }
-
-        // Database has tables (from host migrations) — probe the specific table.
-        try
-        {
-            await db.MigrationProgresses.AnyAsync(cancellationToken).ConfigureAwait(false);
             return true;
         }
-        catch (Exception) when (!cancellationToken.IsCancellationRequested)
-        {
-            return false;
-        }
+
+        string tableName = entityType.GetTableName()!;
+        string? schema = entityType.GetSchema();
+
+        string sql = schema is not null
+            ? string.Concat(
+                "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = '", schema,
+                "' AND table_name = '", tableName, "'")
+            : string.Concat(
+                "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = '", tableName, "'");
+
+        int count = await db.Database
+            .SqlQueryRaw<int>(sql) // NOSONAR — schema/table from EF model metadata
+            .SingleAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return count > 0;
     }
 }

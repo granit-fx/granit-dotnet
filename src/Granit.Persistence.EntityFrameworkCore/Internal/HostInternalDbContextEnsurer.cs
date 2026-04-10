@@ -58,26 +58,28 @@ internal sealed partial class HostInternalDbContextEnsurer<TContext>(
 
         string tableName = entityType.GetTableName()!;
         string? schema = entityType.GetSchema();
-        ISqlGenerationHelper helper = db.GetService<ISqlGenerationHelper>();
 
-        string qualifiedName = schema is not null
-            ? $"{helper.DelimitIdentifier(schema)}.{helper.DelimitIdentifier(tableName)}"
-            : helper.DelimitIdentifier(tableName);
+        // Query information_schema instead of probing with SELECT — avoids
+        // Npgsql error-level log noise when the table does not exist yet.
+        string sql = schema is not null
+            ? string.Concat(
+                "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = '", schema,
+                "' AND table_name = '", tableName, "'")
+            : string.Concat(
+                "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = '", tableName, "'");
 
-        try
+        int count = await db.Database
+            .SqlQueryRaw<int>(sql) // NOSONAR — schema/table from EF model metadata, not user input
+            .SingleAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        if (count == 0)
         {
-            string probeSql = string.Concat("SELECT 1 FROM ", qualifiedName, " WHERE 1=0");
-            await db.Database
-                .ExecuteSqlRawAsync(probeSql, cancellationToken) // NOSONAR — table name from EF model, delimiter-escaped
-                .ConfigureAwait(false);
-
-            return true;
-        }
-        catch (Exception) when (!cancellationToken.IsCancellationRequested)
-        {
+            string qualifiedName = schema is not null ? $"{schema}.{tableName}" : tableName;
             LogTableNotFound(ContextName, qualifiedName);
-            return false;
         }
+
+        return count > 0;
     }
 
     [LoggerMessage(Level = LogLevel.Debug,

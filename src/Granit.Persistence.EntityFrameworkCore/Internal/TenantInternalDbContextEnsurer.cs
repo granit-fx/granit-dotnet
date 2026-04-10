@@ -82,26 +82,23 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
         }
 
         string tableName = entityType.GetTableName()!;
-        ISqlGenerationHelper helper = db.GetService<ISqlGenerationHelper>();
 
-        // search_path is set by ActivateTenantSchemaAsync above.
-        // Use unqualified table name — the search_path handles schema resolution.
-        string qualifiedName = helper.DelimitIdentifier(tableName);
+        // Query information_schema using the current search_path (set by ActivateTenantSchemaAsync).
+        // This avoids Npgsql error-level log noise when the table does not exist yet.
+        // The search_path resolves the schema, so we only filter by table_name.
+        string sql = string.Concat(
+            "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = '", tableName, "'");
+        int count = await db.Database
+            .SqlQueryRaw<int>(sql) // NOSONAR — table name from EF model metadata, not user input
+            .SingleAsync(cancellationToken)
+            .ConfigureAwait(false);
 
-        try
-        {
-            string probeSql = string.Concat("SELECT 1 FROM ", qualifiedName, " WHERE 1=0");
-            await db.Database
-                .ExecuteSqlRawAsync(probeSql, cancellationToken) // NOSONAR — table name from EF model, delimiter-escaped
-                .ConfigureAwait(false);
-
-            return true;
-        }
-        catch (Exception) when (!cancellationToken.IsCancellationRequested)
+        if (count == 0)
         {
             LogTableNotFoundForTenant(ContextName, tableName, currentTenant.Id);
-            return false;
         }
+
+        return count > 0;
     }
 
     /// <summary>
