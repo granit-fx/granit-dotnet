@@ -41,9 +41,8 @@ internal sealed class AppGlobalContext(
         // ITenantUrlResolver is scoped (async-local ICurrentTenant), safe to resolve here.
         // The call is cached in-memory so sync-over-async hits only the ConcurrentDictionary.
         var urlResolver = serviceProvider.GetService(typeof(ITenantUrlResolver)) as ITenantUrlResolver;
-        string baseUrl = urlResolver is not null
-            ? urlResolver.ResolveBaseUrlAsync().GetAwaiter().GetResult()
-            : opts.BaseUrl;
+        string? resolvedUrl = urlResolver?.ResolveBaseUrlAsync().GetAwaiter().GetResult();
+        string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.BaseUrl;
 
         return new
         {

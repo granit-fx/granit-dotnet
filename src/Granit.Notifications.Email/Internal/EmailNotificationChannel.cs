@@ -148,9 +148,10 @@ internal sealed partial class EmailNotificationChannel(
 
         // Soft dependency: use tenant-aware URL when multi-tenancy is configured
         ITenantUrlResolver? urlResolver = serviceProvider.GetService<ITenantUrlResolver>();
-        string? baseUrl = urlResolver is not null
+        string? resolvedUrl = urlResolver is not null
             ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
-            : configuration["Granit:Templating:App:BaseUrl"];
+            : null;
+        string? baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : configuration["Granit:Templating:App:BaseUrl"];
 
         return string.IsNullOrEmpty(baseUrl) ? "" : baseUrl.TrimEnd('/') + "/notifications/preferences";
     }

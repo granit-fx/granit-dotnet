@@ -21,9 +21,10 @@ public class PasswordResetRequestedHandler
         CancellationToken cancellationToken = default)
     {
         IdentityNotificationOptions opts = options.Value;
-        string baseUrl = urlResolver is not null
+        string? resolvedUrl = urlResolver is not null
             ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
-            : opts.FrontendBaseUrl;
+            : null;
+        string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.FrontendBaseUrl;
 
         string resetLink = opts.BuildResetPasswordUrl(
             baseUrl, evt.UserId.ToString(), evt.ResetToken);

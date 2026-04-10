@@ -30,9 +30,10 @@ public class EmailConfirmationRequestedHandler
         }
 
         IdentityNotificationOptions opts = options.Value;
-        string baseUrl = urlResolver is not null
+        string? resolvedUrl = urlResolver is not null
             ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
-            : opts.FrontendBaseUrl;
+            : null;
+        string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.FrontendBaseUrl;
 
         string confirmLink = opts.BuildConfirmEmailUrl(
             baseUrl, evt.UserId.ToString(), evt.Token);

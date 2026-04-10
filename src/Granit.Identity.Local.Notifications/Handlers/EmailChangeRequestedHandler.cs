@@ -37,9 +37,10 @@ public class EmailChangeRequestedHandler
         // Confirmation to the new email — override recipient so the email
         // goes to the new address, not the one currently on file.
         IdentityNotificationOptions opts = options.Value;
-        string baseUrl = urlResolver is not null
+        string? resolvedUrl = urlResolver is not null
             ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
-            : opts.FrontendBaseUrl;
+            : null;
+        string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.FrontendBaseUrl;
 
         string confirmLink = opts.BuildChangeEmailUrl(
             baseUrl, userId, evt.NewEmail, evt.Token);
