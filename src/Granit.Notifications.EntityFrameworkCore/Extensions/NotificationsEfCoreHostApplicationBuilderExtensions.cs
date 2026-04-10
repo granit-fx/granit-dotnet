@@ -49,6 +49,7 @@ public static class NotificationsEfCoreHostApplicationBuilderExtensions
             options.UseGranitInterceptors(sp);
             options.AddInterceptors(sp.GetRequiredService<EntityTrackingInterceptor>());
         }, ServiceLifetime.Scoped);
+        builder.Services.AddHostInternalDbContextEnsurer<NotificationsDbContext>();
         builder.Services.AddTenantInternalDbContextEnsurer<NotificationsDbContext>();
 
         // UserNotification store — CQRS forwarding pattern
