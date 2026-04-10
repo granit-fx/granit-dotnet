@@ -33,8 +33,6 @@ public sealed class DataSeedContext
     /// When <c>true</c>, tenant-scoped seed contributors should skip their work
     /// (tenant tables don't exist yet during the first seed pass).
     /// </summary>
-    [Obsolete("Use IHostDataSeedContributor / ITenantDataSeedContributor instead of checking IsHostOnly. " +
-              "Kept for backward compatibility with legacy IDataSeedContributor implementations.")]
     public const string HostOnlyKey = "Granit:HostOnly";
 
     /// <summary>
@@ -46,8 +44,6 @@ public sealed class DataSeedContext
     /// Indicates whether this is a host-only seed pass (first pass in SchemaPerTenant mode).
     /// Tenant-scoped seed contributors should return early when this is <c>true</c>.
     /// </summary>
-    [Obsolete("Use IHostDataSeedContributor / ITenantDataSeedContributor instead of checking IsHostOnly. " +
-              "Kept for backward compatibility with legacy IDataSeedContributor implementations.")]
     public bool IsHostOnly => this[HostOnlyKey] is true;
 
     /// <summary>

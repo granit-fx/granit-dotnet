@@ -49,9 +49,7 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
 
-#pragma warning disable CS0618 // IDataSeedContributor: ReferenceData supports both host/tenant, migrating in a follow-up
-        services.AddTransient<IDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
-#pragma warning restore CS0618
+        services.AddTransient<IHostDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
 
         return services;
     }

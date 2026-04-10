@@ -51,12 +51,12 @@ public static class GranitDbDefaults
     {
         if (HostDbSchema is not null)
         {
-            System.Diagnostics.Trace.WriteLine($"[GranitDbDefaults] EnsureFromConfiguration SKIPPED — already '{HostDbSchema}'");
+            System.Diagnostics.Trace.TraceInformation("[GranitDbDefaults] EnsureFromConfiguration SKIPPED — already '{0}'", HostDbSchema);
             return;
         }
 
         string? hostSchema = configuration["TenantIsolation:HostSchema"];
-        System.Diagnostics.Trace.WriteLine($"[GranitDbDefaults] EnsureFromConfiguration read '{hostSchema ?? "(null)"}' from config");
+        System.Diagnostics.Trace.TraceInformation("[GranitDbDefaults] EnsureFromConfiguration read '{0}' from config", hostSchema ?? "(null)");
         if (hostSchema is not null)
         {
             HostDbSchema = hostSchema;

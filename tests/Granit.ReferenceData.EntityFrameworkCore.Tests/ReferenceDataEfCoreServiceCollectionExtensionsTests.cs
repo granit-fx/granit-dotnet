@@ -69,18 +69,16 @@ public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
         writer.ShouldNotBeNull();
     }
 
-#pragma warning disable CS0618 // IDataSeedContributor: testing backward compat registration
     [Fact]
-    public void AddReferenceDataStore_RegistersDataSeedContributor()
+    public void AddReferenceDataStore_RegistersHostDataSeedContributor()
     {
         using ServiceProvider sp = BuildProvider();
 
-        IEnumerable<IDataSeedContributor> contributors =
-            sp.GetServices<IDataSeedContributor>();
+        IEnumerable<IHostDataSeedContributor> contributors =
+            sp.GetServices<IHostDataSeedContributor>();
 
         contributors.ShouldNotBeEmpty();
     }
-#pragma warning restore CS0618
 
     [Fact]
     public void AddReferenceDataStore_ReaderAndWriter_AreSameInstance()

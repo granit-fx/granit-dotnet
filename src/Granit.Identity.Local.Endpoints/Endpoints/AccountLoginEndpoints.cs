@@ -211,25 +211,8 @@ internal static partial class AccountLoginEndpoints
         // GetTwoFactorAuthenticationUserAsync internally calls FindByIdAsync which is subject to
         // the multi-tenant query filter. When no tenant is resolved, disable the filter to find
         // the user, then establish the tenant context for the rest of the handler.
-        IDisposable? tenantScope = null;
-        if (currentTenant is { IsAvailable: false })
-        {
-            IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
-            try
-            {
-                GranitUser? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
-                    .ConfigureAwait(false);
-
-                if (twoFactorUser?.TenantId is not null)
-                {
-                    tenantScope = currentTenant.Change(twoFactorUser.TenantId);
-                }
-            }
-            finally
-            {
-                filterScope?.Dispose();
-            }
-        }
+        IDisposable? tenantScope = await ResolveTenantFromTwoFactorSessionAsync(
+            signInManager, currentTenant, dataFilter).ConfigureAwait(false);
 
         try
         {
@@ -310,6 +293,31 @@ internal static partial class AccountLoginEndpoints
         {
             tenantScope?.Dispose();
         }
+    }
+
+    /// <summary>
+    /// Resolves the tenant context from the 2FA session cookie when no tenant is active.
+    /// Returns an <see cref="IDisposable"/> that restores the previous tenant on dispose,
+    /// or <c>null</c> if no tenant switch was needed.
+    /// </summary>
+    private static async Task<IDisposable?> ResolveTenantFromTwoFactorSessionAsync(
+        SignInManager<GranitUser> signInManager,
+        ICurrentTenant? currentTenant,
+        IDataFilter? dataFilter)
+    {
+        if (currentTenant is not { IsAvailable: false })
+        {
+            return null;
+        }
+
+        using IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
+
+        GranitUser? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
+            .ConfigureAwait(false);
+
+        return twoFactorUser?.TenantId is not null
+            ? currentTenant.Change(twoFactorUser.TenantId)
+            : null;
     }
 
     // ──── Timing attack mitigation ────

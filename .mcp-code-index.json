@@ -28698,7 +28698,7 @@
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedContributor.cs",
-      "line": 27,
+      "line": 24,
       "members": [
         {
           "name": "SeedAsync",

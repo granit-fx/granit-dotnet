@@ -17,33 +17,20 @@ internal sealed partial class DataSeeder(
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
 
-        // New host contributors
+        // Host contributors
         IEnumerable<IHostDataSeedContributor> hostContributors =
             scope.ServiceProvider.GetServices<IHostDataSeedContributor>();
 
         foreach (IHostDataSeedContributor contributor in hostContributors)
         {
             await ExecuteContributorAsync(
-                contributor.GetType(), () => contributor.SeedAsync(context, cancellationToken),
-                cancellationToken).ConfigureAwait(false);
+                contributor.GetType(), () => contributor.SeedAsync(context, cancellationToken))
+                .ConfigureAwait(false);
         }
 
         // Legacy contributors — first pass with IsHostOnly=true
-#pragma warning disable CS0618 // Obsolete: backward compat with legacy IDataSeedContributor
-        IEnumerable<IDataSeedContributor> legacyContributors =
-            scope.ServiceProvider.GetServices<IDataSeedContributor>();
-
-        DataSeedContext hostOnlyContext = new(context.TenantId);
-        hostOnlyContext[DataSeedContext.HostOnlyKey] = true;
-        CopyProperties(context, hostOnlyContext);
-
-        foreach (IDataSeedContributor contributor in legacyContributors)
-        {
-            await ExecuteContributorAsync(
-                contributor.GetType(), () => contributor.SeedAsync(hostOnlyContext, cancellationToken),
-                cancellationToken).ConfigureAwait(false);
-        }
-#pragma warning restore CS0618
+        await ExecuteLegacyContributorsAsync(scope.ServiceProvider, context, isHostOnly: true, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
@@ -51,22 +38,9 @@ internal sealed partial class DataSeeder(
     {
         // Legacy contributors — second pass with IsHostOnly=false, no tenant context
         // (they manage their own ICurrentTenant.Change() calls internally)
-#pragma warning disable CS0618 // Obsolete: backward compat with legacy IDataSeedContributor
-        {
-            await using AsyncServiceScope legacyScope = scopeFactory.CreateAsyncScope();
-            IEnumerable<IDataSeedContributor> legacyContributors =
-                legacyScope.ServiceProvider.GetServices<IDataSeedContributor>();
+        await ExecuteLegacyTenantPassAsync(context, cancellationToken).ConfigureAwait(false);
 
-            foreach (IDataSeedContributor contributor in legacyContributors)
-            {
-                await ExecuteContributorAsync(
-                    contributor.GetType(), () => contributor.SeedAsync(context, cancellationToken),
-                    cancellationToken).ConfigureAwait(false);
-            }
-        }
-#pragma warning restore CS0618
-
-        // New tenant contributors — per-tenant with DataSeeder-managed context
+        // Tenant contributors — per-tenant with DataSeeder-managed context
         await using AsyncServiceScope providerScope = scopeFactory.CreateAsyncScope();
         IDataSeedTenantProvider? tenantProvider =
             providerScope.ServiceProvider.GetService<IDataSeedTenantProvider>();
@@ -117,8 +91,8 @@ internal sealed partial class DataSeeder(
             foreach (ITenantDataSeedContributor contributor in contributors)
             {
                 await ExecuteContributorAsync(
-                    contributor.GetType(), () => contributor.SeedAsync(context, cancellationToken),
-                    cancellationToken).ConfigureAwait(false);
+                    contributor.GetType(), () => contributor.SeedAsync(context, cancellationToken))
+                    .ConfigureAwait(false);
             }
         }
         finally
@@ -127,8 +101,32 @@ internal sealed partial class DataSeeder(
         }
     }
 
-    private async Task ExecuteContributorAsync(
-        Type contributorType, Func<Task> action, CancellationToken cancellationToken)
+    private async Task ExecuteLegacyContributorsAsync(
+        IServiceProvider serviceProvider, DataSeedContext context, bool isHostOnly, CancellationToken cancellationToken)
+    {
+        IEnumerable<IDataSeedContributor> contributors =
+            serviceProvider.GetServices<IDataSeedContributor>();
+
+        DataSeedContext legacyContext = new(context.TenantId);
+        legacyContext[DataSeedContext.HostOnlyKey] = isHostOnly;
+        CopyProperties(context, legacyContext);
+
+        foreach (IDataSeedContributor contributor in contributors)
+        {
+            await ExecuteContributorAsync(
+                contributor.GetType(), () => contributor.SeedAsync(legacyContext, cancellationToken))
+                .ConfigureAwait(false);
+        }
+    }
+
+    private async Task ExecuteLegacyTenantPassAsync(DataSeedContext context, CancellationToken cancellationToken)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        await ExecuteLegacyContributorsAsync(scope.ServiceProvider, context, isHostOnly: false, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    private async Task ExecuteContributorAsync(Type contributorType, Func<Task> action)
     {
         string contributorName = contributorType.FullName ?? contributorType.Name;
 
@@ -148,9 +146,7 @@ internal sealed partial class DataSeeder(
     {
         foreach (KeyValuePair<string, object?> kvp in source.Properties)
         {
-#pragma warning disable CS0618 // Obsolete: HostOnlyKey managed internally
             if (kvp.Key != DataSeedContext.HostOnlyKey)
-#pragma warning restore CS0618
             {
                 target.Properties[kvp.Key] = kvp.Value;
             }

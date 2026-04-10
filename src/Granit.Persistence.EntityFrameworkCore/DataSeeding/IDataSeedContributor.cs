@@ -21,9 +21,6 @@ namespace Granit.Persistence.EntityFrameworkCore.DataSeeding;
 /// </code>
 /// </para>
 /// </remarks>
-[Obsolete("Use IHostDataSeedContributor for host-level seeding or ITenantDataSeedContributor for per-tenant seeding. " +
-          "Legacy contributors are still executed: once with IsHostOnly=true during the host pass, " +
-          "then once with IsHostOnly=false during the tenant pass (self-managed tenant context).")]
 public interface IDataSeedContributor
 {
     /// <summary>

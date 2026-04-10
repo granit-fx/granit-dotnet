@@ -16,9 +16,7 @@ internal sealed partial class OpenIddictSeedContributor(
     IOpenIddictApplicationManager applicationManager,
     IOpenIddictScopeManager scopeManager,
     IOptions<GranitOpenIddictSeedingOptions> options,
-#pragma warning disable CS0618 // IDataSeedContributor: OpenIddict seeds are host-level, migrating to IHostDataSeedContributor in a follow-up
-    ILogger<OpenIddictSeedContributor> logger) : IDataSeedContributor
-#pragma warning restore CS0618
+    ILogger<OpenIddictSeedContributor> logger) : IHostDataSeedContributor
 {
     /// <summary>
     /// Standard OIDC scopes seeded automatically on every startup.
