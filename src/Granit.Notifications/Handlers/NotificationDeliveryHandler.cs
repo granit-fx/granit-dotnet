@@ -67,6 +67,8 @@ public sealed partial class NotificationDeliveryHandler(
 
         var stopwatch = Stopwatch.StartNew();
         bool sent = false;
+        string? errorMessage = null;
+        NotificationDeliveryException? deliveryException = null;
         try
         {
             await channel.SendAsync(context, cancellationToken).ConfigureAwait(false);
@@ -94,7 +96,8 @@ public sealed partial class NotificationDeliveryHandler(
 
             LogNotificationDeliveryFailed(ex, command.ChannelName, command.DeliveryId, command.NotificationId);
 
-            throw new NotificationDeliveryException(
+            errorMessage = ex.Message;
+            deliveryException = new NotificationDeliveryException(
                 $"Failed to deliver notification {command.NotificationId} via {command.ChannelName}", ex);
         }
 
@@ -114,13 +117,18 @@ public sealed partial class NotificationDeliveryHandler(
                 OccurredAt = clock.Now,
                 DurationMs = stopwatch.ElapsedMilliseconds,
                 IsSuccess = sent,
-                ErrorMessage = sent ? null : "Send failed — see previous log entry",
+                ErrorMessage = errorMessage,
             }, cancellationToken).ConfigureAwait(false);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             // Audit persistence failure must not mask a successful send or trigger retry.
             LogAuditRecordFailed(ex, command.ChannelName, command.DeliveryId);
+        }
+
+        if (deliveryException is not null)
+        {
+            throw deliveryException;
         }
     }
 
