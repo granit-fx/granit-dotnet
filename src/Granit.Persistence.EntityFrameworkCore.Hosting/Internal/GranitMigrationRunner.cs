@@ -148,7 +148,23 @@ internal sealed partial class GranitMigrationRunner(
 
         foreach (GranitModule module in application.GetModuleInstances())
         {
-            if (module is IMigratableModule migratable)
+            // A module may implement IMigratableModule<T> for multiple DbContexts
+            // (e.g., a host DbContext + a tenant DbContext). Scan all implemented
+            // generic interfaces to discover every DbContext type.
+            bool found = false;
+            foreach (Type iface in module.GetType().GetInterfaces())
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IMigratableModule<>))
+                {
+                    Type dbContextType = iface.GetGenericArguments()[0];
+                    LogModuleDiscovered(module.GetType().Name, dbContextType.Name);
+                    result.Add((module, dbContextType));
+                    found = true;
+                }
+            }
+
+            // Fallback: non-generic IMigratableModule (custom DbContextType override)
+            if (!found && module is IMigratableModule migratable)
             {
                 Type dbContextType = migratable.DbContextType;
                 LogModuleDiscovered(module.GetType().Name, dbContextType.Name);
