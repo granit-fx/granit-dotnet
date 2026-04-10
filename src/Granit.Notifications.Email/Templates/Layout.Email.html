@@ -11,7 +11,7 @@
     <mj-section background-color="#1a1a2e" padding="24px 32px">
       <mj-column background-color="#1a1a2e">
         {{- if app.logo_url != "" }}
-        <mj-image src="{{ app.logo_url }}" alt="{{ app.name }}" width="160px" />
+        <mj-image src="{{ app.logo_url }}" alt="{{ app.name }}" height="50px" />
         {{- else }}
         <mj-text align="center" color="#ffffff" font-size="20px" font-weight="bold" letter-spacing="0.5px">{{ app.name }}</mj-text>
         {{- end }}
