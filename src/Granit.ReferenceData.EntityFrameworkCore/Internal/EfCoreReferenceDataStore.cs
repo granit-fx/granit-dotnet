@@ -63,8 +63,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         ReferenceDataQuery? query = null,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
         query ??= new ReferenceDataQuery();
 
@@ -151,8 +151,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
             return maybe.Value;
         }
 
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
         IQueryable<TEntity> queryable = context.Set<TEntity>().AsNoTracking();
 
@@ -233,8 +233,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     /// <inheritdoc/>
     public async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
         context.Set<TEntity>().Update(entity);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
