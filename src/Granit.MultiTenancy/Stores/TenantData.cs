@@ -12,6 +12,7 @@ namespace Granit.MultiTenancy.Stores;
 /// <param name="IsActive">Whether the tenant is active.</param>
 /// <param name="Jurisdiction">Privacy regulation code or ISO country code, or <c>null</c>.</param>
 /// <param name="CreatedAt">Timestamp when the tenant was created.</param>
+/// <param name="CustomDomain">Optional custom domain for outbound URL generation (e.g., <c>"app.acme-corp.com"</c>).</param>
 public sealed record TenantData(
     Guid Id,
     string Name,
@@ -19,4 +20,5 @@ public sealed record TenantData(
     string? ContactEmail,
     bool IsActive,
     string? Jurisdiction,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string? CustomDomain = null);

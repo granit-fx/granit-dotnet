@@ -36,6 +36,9 @@ internal sealed class TenantEntityTypeConfiguration : IEntityTypeConfiguration<T
         builder.Property(e => e.IsActive)
                .IsRequired();
 
+        builder.Property(e => e.CustomDomain)
+               .HasMaxLength(253);
+
         // Audit columns (FullAuditedAggregateRoot)
         builder.Property(e => e.CreatedAt).IsRequired();
         builder.Property(e => e.CreatedBy).HasMaxLength(450).IsRequired();
@@ -49,5 +52,11 @@ internal sealed class TenantEntityTypeConfiguration : IEntityTypeConfiguration<T
         builder.HasIndex(e => e.Identifier)
                .IsUnique()
                .HasDatabaseName("uq_tenants_identifier");
+
+        // Unique filtered index on CustomDomain (non-null only) for inbound resolution
+        builder.HasIndex(e => e.CustomDomain)
+               .IsUnique()
+               .HasFilter("\"CustomDomain\" IS NOT NULL")
+               .HasDatabaseName("uq_tenants_custom_domain");
     }
 }

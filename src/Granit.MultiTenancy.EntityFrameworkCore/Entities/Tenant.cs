@@ -29,6 +29,14 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
     /// <summary>Whether the tenant is active and can be resolved by the middleware.</summary>
     public bool IsActive { get; private set; } = true;
 
+    /// <summary>
+    /// Optional custom domain for this tenant (e.g., <c>"app.acme-corp.com"</c>).
+    /// When set, outbound URLs (emails, templates) use this domain instead of
+    /// the subdomain derived from <see cref="Identifier"/>.
+    /// Max 253 characters (RFC 1035).
+    /// </summary>
+    public string? CustomDomain { get; private set; }
+
     // Explicit interface: Entity.Id is Guid, ITenantInfo.Id is Guid?
     Guid? ITenantInfo.Id => Id;
 
@@ -85,6 +93,27 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
         Jurisdiction = jurisdiction;
 
         AddDomainEvent(new TenantUpdatedEvent(Id, name, contactEmail));
+    }
+
+    /// <summary>
+    /// Sets or clears the custom domain for this tenant.
+    /// Raises <see cref="TenantCustomDomainChangedEvent"/> for cache invalidation.
+    /// </summary>
+    /// <param name="customDomain">
+    /// The custom domain (e.g., <c>"app.acme-corp.com"</c>), or <c>null</c> to clear.
+    /// </param>
+    public void SetCustomDomain(string? customDomain)
+    {
+        string? normalized = string.IsNullOrWhiteSpace(customDomain) ? null : customDomain.Trim().ToLowerInvariant();
+
+        if (string.Equals(CustomDomain, normalized, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        string? oldDomain = CustomDomain;
+        CustomDomain = normalized;
+        AddDomainEvent(new TenantCustomDomainChangedEvent(Id, oldDomain, normalized));
     }
 
     /// <summary>

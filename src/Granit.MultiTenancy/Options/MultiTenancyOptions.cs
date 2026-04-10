@@ -81,4 +81,24 @@ public sealed class MultiTenancyOptions
     /// unauthenticated callers to select an arbitrary tenant context.
     /// </summary>
     public string? QueryStringParamName { get; set; }
+
+    /// <summary>
+    /// Strategy for generating outbound tenant-specific URLs (email links, templates, etc.).
+    /// Default: <see cref="TenantUrlStrategy.Shared"/> (backward-compatible, static URL).
+    /// </summary>
+    public TenantUrlStrategy UrlStrategy { get; set; } = TenantUrlStrategy.Shared;
+
+    /// <summary>
+    /// URI scheme for generated tenant URLs.
+    /// Default: <c>"https"</c>. Use <c>"http"</c> only in development.
+    /// </summary>
+    public string UrlScheme { get; set; } = "https";
+
+    /// <summary>
+    /// Static fallback base URL used when <see cref="UrlStrategy"/> is
+    /// <see cref="TenantUrlStrategy.Shared"/> or when no tenant context is active.
+    /// Typically matches <c>Granit:Templating:App:BaseUrl</c>.
+    /// No trailing slash.
+    /// </summary>
+    public string? FallbackBaseUrl { get; set; }
 }

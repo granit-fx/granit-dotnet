@@ -66,6 +66,21 @@ internal sealed partial class EfCoreTenantStore(
     }
 
     /// <inheritdoc/>
+    public async Task<TenantData?> FindByCustomDomainAsync(string customDomain, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(customDomain);
+
+        Tenant? tenant = await ReadAsync(
+            async db => await db.Tenants
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.CustomDomain == customDomain, cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken).ConfigureAwait(false);
+
+        return tenant is null ? null : ToData(tenant);
+    }
+
+    /// <inheritdoc/>
     public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default) =>
         await ReadAsync(
             async db => await db.Tenants
@@ -151,7 +166,7 @@ internal sealed partial class EfCoreTenantStore(
     // -------------------------------------------------------------------------
 
     private static TenantData ToData(Tenant tenant) =>
-        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.IsActive, tenant.Jurisdiction, tenant.CreatedAt);
+        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.IsActive, tenant.Jurisdiction, tenant.CreatedAt, tenant.CustomDomain);
 
     // -------------------------------------------------------------------------
     // Logging

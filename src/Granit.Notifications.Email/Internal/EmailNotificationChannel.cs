@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Email.Options;
 using Granit.Templating.Keys;
@@ -83,7 +84,7 @@ internal sealed partial class EmailNotificationChannel(
         string unsubscribeUrl = "";
         if (allowOptOut)
         {
-            unsubscribeUrl = ResolveUnsubscribeUrl();
+            unsubscribeUrl = await ResolveUnsubscribeUrlAsync(cancellationToken).ConfigureAwait(false);
             if (unsubscribeUrl.Length > 0)
             {
                 headers = new()
@@ -134,10 +135,10 @@ internal sealed partial class EmailNotificationChannel(
     }
 
     /// <summary>
-    /// Resolves the unsubscribe URL from <see cref="EmailChannelOptions.UnsubscribeUrl"/>
-    /// or falls back to <c>{BaseUrl}/notifications/preferences</c>.
+    /// Resolves the unsubscribe URL from <see cref="EmailChannelOptions.UnsubscribeUrl"/>,
+    /// then tenant-aware URL, then static configuration fallback.
     /// </summary>
-    private string ResolveUnsubscribeUrl()
+    private async Task<string> ResolveUnsubscribeUrlAsync(CancellationToken cancellationToken)
     {
         string? url = options.Value.UnsubscribeUrl;
         if (!string.IsNullOrEmpty(url))
@@ -145,7 +146,12 @@ internal sealed partial class EmailNotificationChannel(
             return url;
         }
 
-        string? baseUrl = configuration["Granit:Templating:App:BaseUrl"];
+        // Soft dependency: use tenant-aware URL when multi-tenancy is configured
+        ITenantUrlResolver? urlResolver = serviceProvider.GetService<ITenantUrlResolver>();
+        string? baseUrl = urlResolver is not null
+            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            : configuration["Granit:Templating:App:BaseUrl"];
+
         return string.IsNullOrEmpty(baseUrl) ? "" : baseUrl.TrimEnd('/') + "/notifications/preferences";
     }
 

@@ -1,6 +1,7 @@
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Identity.Local.Notifications.Options;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;
 
@@ -16,10 +17,16 @@ public class PasswordResetRequestedHandler
         PasswordResetRequestedEto evt,
         IOptions<IdentityNotificationOptions> options,
         INotificationPublisher publisher,
-        CancellationToken cancellationToken)
+        ITenantUrlResolver? urlResolver = null,
+        CancellationToken cancellationToken = default)
     {
-        string resetLink = options.Value.BuildResetPasswordUrl(
-            evt.UserId.ToString(), evt.ResetToken);
+        IdentityNotificationOptions opts = options.Value;
+        string baseUrl = urlResolver is not null
+            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            : opts.FrontendBaseUrl;
+
+        string resetLink = opts.BuildResetPasswordUrl(
+            baseUrl, evt.UserId.ToString(), evt.ResetToken);
 
         await publisher.PublishAsync(
             PasswordResetNotificationType.Instance,

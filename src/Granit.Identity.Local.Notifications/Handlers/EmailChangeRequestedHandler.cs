@@ -1,6 +1,7 @@
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Identity.Local.Notifications.Options;
+using Granit.MultiTenancy;
 using Granit.Notifications;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;
@@ -21,7 +22,8 @@ public class EmailChangeRequestedHandler
         EmailChangeRequestedEto evt,
         IOptions<IdentityNotificationOptions> options,
         INotificationPublisher publisher,
-        CancellationToken cancellationToken)
+        ITenantUrlResolver? urlResolver = null,
+        CancellationToken cancellationToken = default)
     {
         string userId = evt.UserId.ToString();
 
@@ -34,8 +36,13 @@ public class EmailChangeRequestedHandler
 
         // Confirmation to the new email — override recipient so the email
         // goes to the new address, not the one currently on file.
-        string confirmLink = options.Value.BuildChangeEmailUrl(
-            userId, evt.NewEmail, evt.Token);
+        IdentityNotificationOptions opts = options.Value;
+        string baseUrl = urlResolver is not null
+            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            : opts.FrontendBaseUrl;
+
+        string confirmLink = opts.BuildChangeEmailUrl(
+            baseUrl, userId, evt.NewEmail, evt.Token);
 
         await publisher.PublishAsync(
             EmailChangeConfirmationNotificationType.Instance,

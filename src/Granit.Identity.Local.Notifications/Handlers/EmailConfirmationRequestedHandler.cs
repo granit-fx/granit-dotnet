@@ -1,6 +1,7 @@
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Notifications.NotificationTypes;
 using Granit.Identity.Local.Notifications.Options;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Microsoft.Extensions.Options;
 
@@ -17,7 +18,8 @@ public class EmailConfirmationRequestedHandler
         IIdentityUserReader userReader,
         IOptions<IdentityNotificationOptions> options,
         INotificationPublisher publisher,
-        CancellationToken cancellationToken)
+        ITenantUrlResolver? urlResolver = null,
+        CancellationToken cancellationToken = default)
     {
         IIdentityUser? user = await userReader.GetUserAsync(evt.UserId.ToString(), cancellationToken)
             .ConfigureAwait(false);
@@ -27,8 +29,13 @@ public class EmailConfirmationRequestedHandler
             return;
         }
 
-        string confirmLink = options.Value.BuildConfirmEmailUrl(
-            evt.UserId.ToString(), evt.Token);
+        IdentityNotificationOptions opts = options.Value;
+        string baseUrl = urlResolver is not null
+            ? await urlResolver.ResolveBaseUrlAsync(cancellationToken).ConfigureAwait(false)
+            : opts.FrontendBaseUrl;
+
+        string confirmLink = opts.BuildConfirmEmailUrl(
+            baseUrl, evt.UserId.ToString(), evt.Token);
 
         await publisher.PublishAsync(
             EmailConfirmationNotificationType.Instance,

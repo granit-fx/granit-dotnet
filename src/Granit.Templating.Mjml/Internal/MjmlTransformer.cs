@@ -40,7 +40,7 @@ internal sealed class MjmlTransformer : IRenderedContentTransformer
 
         RenderResult result = Renderer.Render(content, new MjmlOptions
         {
-            Beautify = false,
+            Beautify = true,
         });
 
         return Task.FromResult(result.Html);

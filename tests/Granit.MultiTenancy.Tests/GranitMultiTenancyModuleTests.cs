@@ -57,18 +57,18 @@ public sealed class GranitMultiTenancyModuleTests
     }
 
     [Fact]
-    public void Four_TenantResolvers_Are_Registered()
+    public void Five_TenantResolvers_Are_Registered()
     {
         using WebApplication app = BuildApp();
         using IServiceScope scope = app.Services.CreateScope();
 
         IEnumerable<ITenantResolver> resolvers = scope.ServiceProvider.GetRequiredService<IEnumerable<ITenantResolver>>();
 
-        resolvers.Count().ShouldBe(4);
+        resolvers.Count().ShouldBe(5);
     }
 
     [Fact]
-    public void Resolvers_Are_Ordered_Domain_Header_Jwt_QueryString()
+    public void Resolvers_Are_Ordered_CustomDomain_Domain_Header_Jwt_QueryString()
     {
         using WebApplication app = BuildApp();
         using IServiceScope scope = app.Services.CreateScope();
@@ -78,10 +78,11 @@ public sealed class GranitMultiTenancyModuleTests
             .OrderBy(r => r.Order)
             .ToList();
 
-        ordered[0].ShouldBeOfType<DomainTenantResolver>("Domain (order=50)");
-        ordered[1].ShouldBeOfType<HeaderTenantResolver>("Header (order=100)");
-        ordered[2].ShouldBeOfType<JwtClaimTenantResolver>("JWT (order=200)");
-        ordered[3].ShouldBeOfType<QueryStringTenantResolver>("QueryString (order=300)");
+        ordered[0].ShouldBeOfType<CustomDomainTenantResolver>("CustomDomain (order=25)");
+        ordered[1].ShouldBeOfType<DomainTenantResolver>("Domain (order=50)");
+        ordered[2].ShouldBeOfType<HeaderTenantResolver>("Header (order=100)");
+        ordered[3].ShouldBeOfType<JwtClaimTenantResolver>("JWT (order=200)");
+        ordered[4].ShouldBeOfType<QueryStringTenantResolver>("QueryString (order=300)");
     }
 
     [Fact]

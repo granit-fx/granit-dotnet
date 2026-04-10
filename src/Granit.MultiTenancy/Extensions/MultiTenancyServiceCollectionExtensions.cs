@@ -4,6 +4,7 @@ using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
 using Granit.MultiTenancy.Resolvers;
 using Granit.MultiTenancy.Stores;
+using Granit.MultiTenancy.Url;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -33,9 +34,10 @@ public static class MultiTenancyServiceCollectionExtensions
         // Granit.MultiTenancy.EntityFrameworkCore is in the module tree.
         services.TryAddScoped<ITenantReader, NullTenantReader>();
 
-        // Resolvers: Domain (50) → Header (100) → JWT (200) → QueryString (300)
+        // Resolvers: CustomDomain (25) → Domain (50) → Header (100) → JWT (200) → QueryString (300)
         // Registered as scoped: DomainTenantResolver depends on ITenantReader (scoped, EF Core).
         // All resolvers aligned to scoped for consistency.
+        services.AddScoped<ITenantResolver, CustomDomainTenantResolver>();
         services.AddScoped<ITenantResolver, DomainTenantResolver>();
         services.AddScoped<ITenantResolver, HeaderTenantResolver>();
         services.AddScoped<ITenantResolver, JwtClaimTenantResolver>();
@@ -43,6 +45,9 @@ public static class MultiTenancyServiceCollectionExtensions
 
         services.TryAddScoped<TenantResolverPipeline>();
         services.TryAddSingleton<MultiTenancyMetrics>();
+
+        // Outbound URL resolution (scoped: depends on ICurrentTenant + ITenantReader)
+        services.TryAddScoped<ITenantUrlResolver, TenantUrlResolver>();
 
         // IMiddleware pattern: resolved per scope (per request)
         services.AddScoped<TenantResolutionMiddleware>();

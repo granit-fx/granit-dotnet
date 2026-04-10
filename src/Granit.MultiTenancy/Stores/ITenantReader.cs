@@ -23,6 +23,15 @@ public interface ITenantReader
     Task<TenantData?> FindByIdentifierAsync(string identifier, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Finds a tenant by its custom domain.
+    /// Used by <see cref="Resolvers.CustomDomainTenantResolver"/> for inbound resolution.
+    /// </summary>
+    /// <param name="customDomain">The custom domain to look up (e.g., <c>"app.acme-corp.com"</c>).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The tenant data, or <c>null</c> if no tenant uses this domain.</returns>
+    Task<TenantData?> FindByCustomDomainAsync(string customDomain, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns all tenants.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>

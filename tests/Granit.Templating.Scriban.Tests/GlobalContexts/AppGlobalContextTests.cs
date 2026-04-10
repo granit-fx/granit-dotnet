@@ -1,4 +1,5 @@
 using Granit.Templating.Scriban.GlobalContexts;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
@@ -7,10 +8,13 @@ namespace Granit.Templating.Scriban.Tests.GlobalContexts;
 
 public sealed class AppGlobalContextTests
 {
+    private static ServiceProvider BuildSp() => new ServiceCollection().BuildServiceProvider();
+
     [Fact]
     public void ContextName_IsApp()
     {
-        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()));
+        using ServiceProvider sp = BuildSp();
+        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), sp);
 
         sut.ContextName.ShouldBe("app");
     }
@@ -25,7 +29,8 @@ public sealed class AppGlobalContextTests
             SupportEmail = "support@example.com",
             LogoUrl = "https://cdn.example.com/logo.png",
         };
-        AppGlobalContext sut = new(Options.Create(opts));
+        using ServiceProvider sp = BuildSp();
+        AppGlobalContext sut = new(Options.Create(opts), sp);
 
         dynamic resolved = sut.Resolve();
         Type type = resolved.GetType();
@@ -40,7 +45,8 @@ public sealed class AppGlobalContextTests
     public void Resolve_TrimsTrailingSlashFromBaseUrl()
     {
         AppGlobalContextOptions opts = new() { BaseUrl = "https://app.example.com/" };
-        AppGlobalContext sut = new(Options.Create(opts));
+        using ServiceProvider sp = BuildSp();
+        AppGlobalContext sut = new(Options.Create(opts), sp);
 
         dynamic resolved = sut.Resolve();
 
@@ -51,7 +57,8 @@ public sealed class AppGlobalContextTests
     [Fact]
     public void Resolve_DefaultOptions_ReturnsEmptyStrings()
     {
-        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()));
+        using ServiceProvider sp = BuildSp();
+        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), sp);
 
         dynamic resolved = sut.Resolve();
         Type type = resolved.GetType();

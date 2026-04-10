@@ -63,7 +63,7 @@ public sealed class HandlerTests
             Guid.Parse("00000000-0000-0000-0000-000000000001"),
             "alice@test.com", "reset-token-123", null);
 
-        await PasswordResetRequestedHandler.HandleAsync(evt, _options, _publisher, TestContext.Current.CancellationToken);
+        await PasswordResetRequestedHandler.HandleAsync(evt, _options, _publisher, cancellationToken: TestContext.Current.CancellationToken);
 
         await _publisher.Received(1).PublishAsync(
             PasswordResetNotificationType.Instance,
@@ -84,7 +84,7 @@ public sealed class HandlerTests
             Guid.Parse("00000000-0000-0000-0000-000000000001"),
             "confirm-token-456", null);
 
-        await EmailConfirmationRequestedHandler.HandleAsync(evt, _userReader, _options, _publisher, TestContext.Current.CancellationToken);
+        await EmailConfirmationRequestedHandler.HandleAsync(evt, _userReader, _options, _publisher, cancellationToken: TestContext.Current.CancellationToken);
 
         await _publisher.Received(1).PublishAsync(
             EmailConfirmationNotificationType.Instance,
@@ -102,7 +102,7 @@ public sealed class HandlerTests
             .Returns((IIdentityUser?)null);
         var evt = new EmailConfirmationRequestedEto(Guid.NewGuid(), "token", null);
 
-        await EmailConfirmationRequestedHandler.HandleAsync(evt, _userReader, _options, _publisher, TestContext.Current.CancellationToken);
+        await EmailConfirmationRequestedHandler.HandleAsync(evt, _userReader, _options, _publisher, cancellationToken: TestContext.Current.CancellationToken);
 
         await _publisher.DidNotReceiveWithAnyArgs().PublishAsync(
             Arg.Any<NotificationType<EmailConfirmationNotificationData>>(),
@@ -120,7 +120,7 @@ public sealed class HandlerTests
             Guid.Parse("00000000-0000-0000-0000-000000000001"),
             "old@test.com", "new@test.com", "change-token", null);
 
-        await EmailChangeRequestedHandler.HandleAsync(evt, _options, _publisher, TestContext.Current.CancellationToken);
+        await EmailChangeRequestedHandler.HandleAsync(evt, _options, _publisher, cancellationToken: TestContext.Current.CancellationToken);
 
         // Alert to old email (standard publish)
         await _publisher.Received(1).PublishAsync(

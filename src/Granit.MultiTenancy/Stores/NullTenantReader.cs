@@ -13,6 +13,9 @@ internal sealed class NullTenantReader : ITenantReader
     public Task<TenantData?> FindByIdentifierAsync(string identifier, CancellationToken cancellationToken = default) =>
         Task.FromResult<TenantData?>(null);
 
+    public Task<TenantData?> FindByCustomDomainAsync(string customDomain, CancellationToken cancellationToken = default) =>
+        Task.FromResult<TenantData?>(null);
+
     public Task<IReadOnlyList<TenantData>> GetAllAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<TenantData>>([]);
 

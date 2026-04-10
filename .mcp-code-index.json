@@ -17428,12 +17428,12 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/EmailChangeRequestedHandler.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(EmailChangeRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(EmailChangeRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, ITenantUrlResolver? urlResolver = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -17444,12 +17444,12 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/EmailConfirmationRequestedHandler.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(EmailConfirmationRequestedEto evt, IIdentityUserReader userReader, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(EmailConfirmationRequestedEto evt, IIdentityUserReader userReader, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, ITenantUrlResolver? urlResolver = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -17476,12 +17476,12 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Notifications",
       "file": "src/Granit.Identity.Local.Notifications/Handlers/PasswordResetRequestedHandler.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(PasswordResetRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(PasswordResetRequestedEto evt, IOptions<IdentityNotificationOptions> options, INotificationPublisher publisher, ITenantUrlResolver? urlResolver = null, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -17888,15 +17888,33 @@
           "returnType": "string"
         },
         {
+          "name": "BuildResetPasswordUrl",
+          "kind": "method",
+          "signature": "BuildResetPasswordUrl(string baseUrl, string userId, string token)",
+          "returnType": "string"
+        },
+        {
           "name": "BuildConfirmEmailUrl",
           "kind": "method",
           "signature": "BuildConfirmEmailUrl(string userId, string token)",
           "returnType": "string"
         },
         {
+          "name": "BuildConfirmEmailUrl",
+          "kind": "method",
+          "signature": "BuildConfirmEmailUrl(string baseUrl, string userId, string token)",
+          "returnType": "string"
+        },
+        {
           "name": "BuildChangeEmailUrl",
           "kind": "method",
           "signature": "BuildChangeEmailUrl(string userId, string newEmail, string token)",
+          "returnType": "string"
+        },
+        {
+          "name": "BuildChangeEmailUrl",
+          "kind": "method",
+          "signature": "BuildChangeEmailUrl(string baseUrl, string userId, string newEmail, string token)",
           "returnType": "string"
         }
       ]
@@ -22046,6 +22064,12 @@
           "returnType": "string?"
         },
         {
+          "name": "CustomDomain",
+          "kind": "property",
+          "signature": "string? CustomDomain",
+          "returnType": "string?"
+        },
+        {
           "name": "Create",
           "kind": "method",
           "signature": "Create(Guid id, string name, string identifier, string? contactEmail = null, string? jurisdiction = null)",
@@ -22129,6 +22153,15 @@
       "members": []
     },
     {
+      "name": "TenantCustomDomainChangedEvent",
+      "fqn": "Granit.MultiTenancy.Events.TenantCustomDomainChangedEvent",
+      "kind": "record",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Events/TenantCustomDomainChangedEvent.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "TenantDeactivatedEvent",
       "fqn": "Granit.MultiTenancy.Events.TenantDeactivatedEvent",
       "kind": "record",
@@ -22168,7 +22201,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -22218,6 +22251,22 @@
       "file": "src/Granit.MultiTenancy/ITenantInfo.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "ITenantUrlResolver",
+      "fqn": "Granit.MultiTenancy.ITenantUrlResolver",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/ITenantUrlResolver.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "ResolveBaseUrlAsync",
+          "kind": "method",
+          "signature": "ResolveBaseUrlAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
     },
     {
       "name": "TenantResolutionMiddleware",
@@ -22272,6 +22321,18 @@
           "kind": "property",
           "signature": "string? DomainTemplate",
           "returnType": "string?"
+        },
+        {
+          "name": "QueryStringParamName",
+          "kind": "property",
+          "signature": "string? QueryStringParamName",
+          "returnType": "string?"
+        },
+        {
+          "name": "UrlScheme",
+          "kind": "property",
+          "signature": "string UrlScheme",
+          "returnType": "string"
         }
       ]
     },
@@ -22313,6 +22374,28 @@
           "kind": "method",
           "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
           "returnType": "Task<TenantResolutionResult>"
+        }
+      ]
+    },
+    {
+      "name": "CustomDomainTenantResolver",
+      "fqn": "Granit.MultiTenancy.Resolvers.CustomDomainTenantResolver",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Resolvers/CustomDomainTenantResolver.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Order",
+          "kind": "property",
+          "signature": "int Order",
+          "returnType": "int"
+        },
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantInfo?>"
         }
       ]
     },
@@ -22441,6 +22524,12 @@
           "returnType": "Task<TenantData?>"
         },
         {
+          "name": "FindByCustomDomainAsync",
+          "kind": "method",
+          "signature": "FindByCustomDomainAsync(string customDomain, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantData?>"
+        },
+        {
           "name": "GetAllAsync",
           "kind": "method",
           "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
@@ -22494,7 +22583,7 @@
       "kind": "record",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Stores/TenantData.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -22503,6 +22592,15 @@
       "kind": "record",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/TenantInfo.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TenantUrlStrategy",
+      "fqn": "Granit.MultiTenancy.TenantUrlStrategy",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/TenantUrlStrategy.cs",
       "line": 6,
       "members": []
     },

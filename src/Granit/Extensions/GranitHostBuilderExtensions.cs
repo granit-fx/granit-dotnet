@@ -98,6 +98,7 @@ public static class GranitHostBuilderExtensions
             moduleAssemblies);
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
+        builder.Services.TryAddScoped<ITenantUrlResolver, NullTenantUrlResolver>();
 
         application.ConfigureServices(context);
 
@@ -121,6 +122,7 @@ public static class GranitHostBuilderExtensions
             moduleAssemblies);
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
+        builder.Services.TryAddScoped<ITenantUrlResolver, NullTenantUrlResolver>();
 
         await application.ConfigureServicesAsync(context).ConfigureAwait(false);
 

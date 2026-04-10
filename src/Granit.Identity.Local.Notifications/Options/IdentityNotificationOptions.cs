@@ -28,13 +28,25 @@ public sealed class IdentityNotificationOptions
 
     /// <summary>Builds a password reset URL with the given user ID and token.</summary>
     public string BuildResetPasswordUrl(string userId, string token) =>
-        $"{FrontendBaseUrl.TrimEnd('/')}/{ResetPasswordPath}?userId={Uri.EscapeDataString(userId)}&token={Uri.EscapeDataString(token)}";
+        BuildResetPasswordUrl(FrontendBaseUrl, userId, token);
+
+    /// <summary>Builds a password reset URL using an explicit base URL (tenant-aware).</summary>
+    public string BuildResetPasswordUrl(string baseUrl, string userId, string token) =>
+        $"{baseUrl.TrimEnd('/')}/{ResetPasswordPath}?userId={Uri.EscapeDataString(userId)}&token={Uri.EscapeDataString(token)}";
 
     /// <summary>Builds an email confirmation URL with the given user ID and token.</summary>
     public string BuildConfirmEmailUrl(string userId, string token) =>
-        $"{FrontendBaseUrl.TrimEnd('/')}/{ConfirmEmailPath}?userId={Uri.EscapeDataString(userId)}&token={Uri.EscapeDataString(token)}";
+        BuildConfirmEmailUrl(FrontendBaseUrl, userId, token);
+
+    /// <summary>Builds an email confirmation URL using an explicit base URL (tenant-aware).</summary>
+    public string BuildConfirmEmailUrl(string baseUrl, string userId, string token) =>
+        $"{baseUrl.TrimEnd('/')}/{ConfirmEmailPath}?userId={Uri.EscapeDataString(userId)}&token={Uri.EscapeDataString(token)}";
 
     /// <summary>Builds an email change confirmation URL with the given user ID, new email, and token.</summary>
     public string BuildChangeEmailUrl(string userId, string newEmail, string token) =>
-        $"{FrontendBaseUrl.TrimEnd('/')}/{ChangeEmailPath}?userId={Uri.EscapeDataString(userId)}&newEmail={Uri.EscapeDataString(newEmail)}&token={Uri.EscapeDataString(token)}";
+        BuildChangeEmailUrl(FrontendBaseUrl, userId, newEmail, token);
+
+    /// <summary>Builds an email change confirmation URL using an explicit base URL (tenant-aware).</summary>
+    public string BuildChangeEmailUrl(string baseUrl, string userId, string newEmail, string token) =>
+        $"{baseUrl.TrimEnd('/')}/{ChangeEmailPath}?userId={Uri.EscapeDataString(userId)}&newEmail={Uri.EscapeDataString(newEmail)}&token={Uri.EscapeDataString(token)}";
 }
