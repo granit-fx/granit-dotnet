@@ -92,13 +92,44 @@ public static class OpenIddictModelBuilderExtensions
             b.Property(r => r.Description).HasMaxLength(512);
         });
 
-        modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable(prefix + "user_roles", schema);
-        modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable(prefix + "user_claims", schema);
-        modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable(prefix + "user_logins", schema);
-        modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable(prefix + "user_tokens", schema);
-        modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable(prefix + "role_claims", schema);
+        // ASP.NET Identity join/claim entities — define keys explicitly so that
+        // ConfigureOpenIddictModule() is self-contained and works in any DbContext,
+        // not only those inheriting from IdentityDbContext.
+        modelBuilder.Entity<IdentityUserRole<Guid>>(b =>
+        {
+            b.ToTable(prefix + "user_roles", schema);
+            b.HasKey(r => new { r.UserId, r.RoleId });
+        });
 
-        // ──── Remap OpenIddict core tables to openiddict_* prefix ────
+        modelBuilder.Entity<IdentityUserClaim<Guid>>(b =>
+        {
+            b.ToTable(prefix + "user_claims", schema);
+            b.HasKey(c => c.Id);
+        });
+
+        modelBuilder.Entity<IdentityUserLogin<Guid>>(b =>
+        {
+            b.ToTable(prefix + "user_logins", schema);
+            b.HasKey(l => new { l.LoginProvider, l.ProviderKey });
+        });
+
+        modelBuilder.Entity<IdentityUserToken<Guid>>(b =>
+        {
+            b.ToTable(prefix + "user_tokens", schema);
+            b.HasKey(t => new { t.UserId, t.LoginProvider, t.Name });
+        });
+
+        modelBuilder.Entity<IdentityRoleClaim<Guid>>(b =>
+        {
+            b.ToTable(prefix + "role_claims", schema);
+            b.HasKey(c => c.Id);
+        });
+
+        // ──── OpenIddict conventions + table remapping ────
+        // UseOpenIddict registers key/index conventions for the custom OpenIddict entities.
+        // Must be called before ToTable remapping.
+        modelBuilder.UseOpenIddict<GranitOpenIddictApplication, GranitOpenIddictAuthorization,
+            GranitOpenIddictScope, GranitOpenIddictToken, Guid>();
 
         modelBuilder.Entity<GranitOpenIddictApplication>().ToTable(prefix + "applications", schema);
         modelBuilder.Entity<GranitOpenIddictAuthorization>().ToTable(prefix + "authorizations", schema);

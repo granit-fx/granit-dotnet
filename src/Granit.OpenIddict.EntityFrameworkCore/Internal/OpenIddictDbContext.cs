@@ -42,14 +42,14 @@ internal sealed class OpenIddictDbContext(
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        // 1. ASP.NET Identity conventions (default table names, keys, indexes)
+        // 1. ASP.NET Identity conventions (default table names, keys, indexes).
+        // ConfigureOpenIddictModule() is self-contained (defines Identity keys +
+        // calls UseOpenIddict), but base.OnModelCreating() is still needed for
+        // IdentityDbContext-specific conventions (navigation properties, indexes).
         base.OnModelCreating(builder);
 
-        // 2. OpenIddict conventions with custom multi-tenant entities
-        builder.UseOpenIddict<GranitOpenIddictApplication, GranitOpenIddictAuthorization,
-            GranitOpenIddictScope, GranitOpenIddictToken, Guid>();
-
-        // 3. Granit OpenIddict conventions (openiddict_* table prefix, column constraints, manual filters)
+        // 2. Granit OpenIddict conventions (Identity keys, OpenIddict conventions,
+        //    openiddict_* table prefix, column constraints, manual soft-delete filter)
         builder.ConfigureOpenIddictModule(dataFilter, extensionOptions?.Value);
 
         // 4. Granit cross-cutting conventions (IMultiTenant, ISoftDeletable, IActive, etc.)
