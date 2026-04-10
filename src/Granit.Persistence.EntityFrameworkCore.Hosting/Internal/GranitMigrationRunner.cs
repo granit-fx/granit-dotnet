@@ -93,14 +93,16 @@ internal sealed partial class GranitMigrationRunner(
                 tenantEnumerator = enumScope.ServiceProvider.GetService<ITenantEnumerator>();
             }
 
-            // Data seeding — two passes for SchemaPerTenant cold start:
-            // Pass 1 (hostOnly): seed host data only (tenants, OpenIddict).
-            //         Tenant seeders skip via DataSeedContext.IsHostOnly.
-            // After: re-migrate per-tenant + ensure tenant internal tables.
-            // Pass 2 (full): all seeders run — tenant tables now exist.
+            // Data seeding — host/tenant split:
+            // 1. Host pass: IHostDataSeedContributor + legacy (IsHostOnly=true)
+            //    → creates tenants, roles, OpenIddict apps, etc.
+            // 2. Re-migrate per-tenant: seeding may have created tenants (cold start).
+            // 3. Ensure tenant internal tables.
+            // 4. Tenant pass: legacy (IsHostOnly=false) + ITenantDataSeedContributor per tenant
+            //    → seeds tenant-specific data (products, articles, users).
             if (options.SeedAfterMigration)
             {
-                await SeedAsync(ct, hostOnly: true).ConfigureAwait(false);
+                await SeedHostAsync(ct).ConfigureAwait(false);
 
                 // Post-seed per-tenant migration: seeding may have created tenants
                 // (cold start). Re-run migrations — ITenantEnumerator now finds them.
@@ -117,8 +119,7 @@ internal sealed partial class GranitMigrationRunner(
                         .ConfigureAwait(false);
                 }
 
-                // Re-seed: module seeders that failed in pass 1 now succeed.
-                await SeedAsync(ct).ConfigureAwait(false);
+                await SeedTenantsAsync(ct).ConfigureAwait(false);
             }
 
             LogMigrationCompleted();
@@ -306,7 +307,7 @@ internal sealed partial class GranitMigrationRunner(
         }
     }
 
-    private async Task SeedAsync(CancellationToken ct, bool hostOnly = false)
+    private async Task SeedHostAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
         IDataSeeder? seeder = scope.ServiceProvider.GetService<IDataSeeder>();
@@ -317,13 +318,22 @@ internal sealed partial class GranitMigrationRunner(
         }
 
         LogSeedingStart();
-        DataSeedContext seedContext = new();
-        if (hostOnly)
+        await seeder.SeedHostAsync(new DataSeedContext(), ct).ConfigureAwait(false);
+        LogSeedingCompleted();
+    }
+
+    private async Task SeedTenantsAsync(CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IDataSeeder? seeder = scope.ServiceProvider.GetService<IDataSeeder>();
+
+        if (seeder is null)
         {
-            seedContext[DataSeedContext.HostOnlyKey] = true;
+            return;
         }
 
-        await seeder.SeedAsync(seedContext, ct).ConfigureAwait(false);
+        LogSeedingStart();
+        await seeder.SeedTenantsAsync(new DataSeedContext(), ct).ConfigureAwait(false);
         LogSeedingCompleted();
     }
 

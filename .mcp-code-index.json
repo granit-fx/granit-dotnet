@@ -28698,7 +28698,7 @@
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedContributor.cs",
-      "line": 24,
+      "line": 27,
       "members": [
         {
           "name": "SeedAsync",
@@ -28709,12 +28709,72 @@
       ]
     },
     {
+      "name": "IDataSeedTenantProvider",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeedTenantProvider",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeedTenantProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "GetTenantIdsAsync",
+          "kind": "method",
+          "signature": "GetTenantIdsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "IAsyncEnumerable<Guid>"
+        }
+      ]
+    },
+    {
       "name": "IDataSeeder",
       "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IDataSeeder",
       "kind": "interface",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IDataSeeder.cs",
-      "line": 16,
+      "line": 24,
+      "members": [
+        {
+          "name": "SeedHostAsync",
+          "kind": "method",
+          "signature": "SeedHostAsync(DataSeedContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "SeedTenantsAsync",
+          "kind": "method",
+          "signature": "SeedTenantsAsync(DataSeedContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "SeedAsync",
+          "kind": "method",
+          "signature": "SeedAsync(DataSeedContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IHostDataSeedContributor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.IHostDataSeedContributor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/IHostDataSeedContributor.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "SeedAsync",
+          "kind": "method",
+          "signature": "SeedAsync(DataSeedContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ITenantDataSeedContributor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.ITenantDataSeedContributor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/DataSeeding/ITenantDataSeedContributor.cs",
+      "line": 28,
       "members": [
         {
           "name": "SeedAsync",
@@ -29250,7 +29310,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Extensions/PersistenceMigrationsHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPersistenceMigrations",
@@ -33052,13 +33112,13 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Domain/ReferenceDataEntity.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
-          "name": "Code",
+          "name": "TenantId",
           "kind": "property",
-          "signature": "string Code",
-          "returnType": "string"
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
         },
         {
           "name": "LabelEn",
@@ -33159,6 +33219,15 @@
       ]
     },
     {
+      "name": "ReferenceDataScope",
+      "fqn": "Granit.ReferenceData.Domain.ReferenceDataScope",
+      "kind": "enum",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/Domain/ReferenceDataScope.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "ReferenceDataCreateRequest",
       "fqn": "Granit.ReferenceData.Endpoints.Dtos.ReferenceDataCreateRequest",
       "kind": "record",
@@ -33191,7 +33260,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.Endpoints",
       "file": "src/Granit.ReferenceData.Endpoints/Extensions/ReferenceDataEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -33258,7 +33327,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -33401,6 +33470,12 @@
       "line": 21,
       "members": [
         {
+          "name": "Scope",
+          "kind": "property",
+          "signature": "ReferenceDataScope Scope",
+          "returnType": "ReferenceDataScope"
+        },
+        {
           "name": "TableName",
           "kind": "property",
           "signature": "string TableName",
@@ -33442,7 +33517,7 @@
       "kind": "record",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Options/ReferenceDataExtensionOptions.cs",
-      "line": 93,
+      "line": 110,
       "members": []
     },
     {
@@ -33492,8 +33567,15 @@
       "kind": "record",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/ReferenceDataTypeRegistration.cs",
-      "line": 14,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "Scope",
+          "kind": "property",
+          "signature": "ReferenceDataScope Scope",
+          "returnType": "ReferenceDataScope"
+        }
+      ]
     },
     {
       "name": "GranitSchedulingBackgroundJobsModule",

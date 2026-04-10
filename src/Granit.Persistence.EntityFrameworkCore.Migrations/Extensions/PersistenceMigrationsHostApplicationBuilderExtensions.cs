@@ -1,4 +1,5 @@
 using System.Threading.Channels;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
@@ -84,6 +85,9 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Default no-op enumerator. Applications using Tenant-per-Schema or Tenant-per-Database
         // must register their own ITenantEnumerator BEFORE calling this method.
         builder.Services.TryAddSingleton<ITenantEnumerator, NullTenantEnumerator>();
+
+        // Bridge ITenantEnumerator → IDataSeedTenantProvider for DataSeeder tenant iteration.
+        builder.Services.TryAddSingleton<IDataSeedTenantProvider, TenantEnumeratorDataSeedTenantProvider>();
 
         // Channel-based dispatch (default). Replaced by Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine if installed.
         builder.Services.TryAddSingleton(Channel.CreateUnbounded<RunMigrationBatchCommand>());

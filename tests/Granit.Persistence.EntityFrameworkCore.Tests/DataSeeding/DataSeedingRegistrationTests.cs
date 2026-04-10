@@ -50,6 +50,7 @@ public sealed class DataSeedingRegistrationTests
         descriptor.ShouldNotBeNull();
     }
 
+#pragma warning disable CS0618 // Obsolete: testing that legacy interface is not auto-registered
     [Fact]
     public void AddGranitDataSeeding_DoesNotRegisterContributors()
     {
@@ -61,6 +62,35 @@ public sealed class DataSeedingRegistrationTests
 
         // Assert
         services.Where(d => d.ServiceType == typeof(IDataSeedContributor))
+            .ShouldBeEmpty();
+    }
+#pragma warning restore CS0618
+
+    [Fact]
+    public void AddGranitDataSeeding_DoesNotRegisterHostContributors()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitDataSeeding();
+
+        // Assert
+        services.Where(d => d.ServiceType == typeof(IHostDataSeedContributor))
+            .ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void AddGranitDataSeeding_DoesNotRegisterTenantContributors()
+    {
+        // Arrange
+        ServiceCollection services = new();
+
+        // Act
+        services.AddGranitDataSeeding();
+
+        // Assert
+        services.Where(d => d.ServiceType == typeof(ITenantDataSeedContributor))
             .ShouldBeEmpty();
     }
 

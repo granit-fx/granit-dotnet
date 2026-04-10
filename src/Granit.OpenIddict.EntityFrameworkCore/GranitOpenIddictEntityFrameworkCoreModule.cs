@@ -34,7 +34,9 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         // Data seeding
+#pragma warning disable CS0618 // IDataSeedContributor: migrating to IHostDataSeedContributor in a follow-up
         context.Services.AddTransient<IDataSeedContributor, OpenIddictSeedContributor>();
+#pragma warning restore CS0618
 
         // EF Core stores
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();

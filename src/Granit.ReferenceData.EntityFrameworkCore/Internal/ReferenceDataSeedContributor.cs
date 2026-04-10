@@ -24,7 +24,9 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
 internal sealed partial class ReferenceDataSeedContributor<TEntity>(
     IServiceProvider serviceProvider,
+#pragma warning disable CS0618 // IDataSeedContributor: ReferenceData supports both host/tenant, migrating in a follow-up
     ILogger<ReferenceDataSeedContributor<TEntity>> logger) : IDataSeedContributor
+#pragma warning restore CS0618
     where TEntity : ReferenceDataEntity
 {
     /// <inheritdoc/>

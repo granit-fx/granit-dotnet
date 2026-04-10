@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Granit.QueryEngine;
@@ -25,9 +26,14 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
     /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
     /// <typeparam name="TDbContext">The host application's DbContext.</typeparam>
     /// <param name="services">The service collection.</param>
+    /// <param name="scope">
+    /// The multi-tenancy scope. Defaults to <see cref="ReferenceDataScope.Global"/>
+    /// (shared across all tenants, managed by host admin).
+    /// </param>
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddReferenceDataStore<TEntity, TDbContext>(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        ReferenceDataScope scope = ReferenceDataScope.Global)
         where TEntity : ReferenceDataEntity
         where TDbContext : DbContext
     {
@@ -35,13 +41,17 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
             new EfCoreReferenceDataStore<TEntity, TDbContext>(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 sp.GetRequiredService<IFusionCache>(),
-                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                scope,
+                sp.GetRequiredService<ICurrentTenant>()));
         services.AddScoped<IReferenceDataStoreReader<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
 
+#pragma warning disable CS0618 // IDataSeedContributor: ReferenceData supports both host/tenant, migrating in a follow-up
         services.AddTransient<IDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
+#pragma warning restore CS0618
 
         return services;
     }
@@ -114,19 +124,25 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         {
             // 1. Register keyed store services (type name = key)
             // Uses DynamicReferenceDataEntity (concrete) since ReferenceDataEntity is abstract
+            ReferenceDataScope registrationScope = registration.Scope;
+
             services.AddKeyedScoped<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(
                 registration.TypeName,
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                    registrationScope,
+                    sp.GetRequiredService<ICurrentTenant>()));
 
             services.AddKeyedScoped<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(
                 registration.TypeName,
                 (sp, _) => new EfCoreReferenceDataStore<DynamicReferenceDataEntity, TDbContext>(
                     sp.GetRequiredService<IServiceScopeFactory>(),
                     sp.GetRequiredService<IFusionCache>(),
-                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>()));
+                    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
+                    registrationScope,
+                    sp.GetRequiredService<ICurrentTenant>()));
 
             // 2. Register ExtraProperty mappings for shadow columns
             if (registration.Options.PropertyMappings.Count > 0)
