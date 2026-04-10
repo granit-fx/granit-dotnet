@@ -195,11 +195,19 @@ internal sealed partial class GranitMigrationRunner(
         else if (tenantEnumerator is not null)
         {
             // ITenantEnumerator is registered (SchemaPerTenant / DatabasePerTenant)
-            // but no tenants exist yet (cold start). Skip migration — migrating
-            // without a tenant would create tables in "public" schema. The
-            // __EFMigrationsHistory in public would then prevent per-tenant migration
-            // later (SET search_path includes "public" → EF sees migrations as applied).
-            // Tables will be created per-tenant after seeding creates tenants.
+            // but no tenants exist yet (cold start). Migrate in the HOST schema so
+            // that host-level tables (permissions, global reference data, etc.) are
+            // created before seeding. Per-tenant schemas will be created later when
+            // the post-seed re-migration pass finds the tenants created by host seeders.
+            if (GranitDbDefaults.HostDbSchema is not null)
+            {
+                LogMigratingContext(moduleName, $"{dbContextType.Name} (host schema)");
+                await using DbContext hostContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType)
+                    .ConfigureAwait(false);
+                await hostContext.Database.MigrateAsync(ct).ConfigureAwait(false);
+                LogMigratedContext(moduleName, $"{dbContextType.Name} (host schema)");
+            }
+
             return;
         }
         else
