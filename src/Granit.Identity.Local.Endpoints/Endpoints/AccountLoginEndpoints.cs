@@ -211,88 +211,81 @@ internal static partial class AccountLoginEndpoints
         // GetTwoFactorAuthenticationUserAsync internally calls FindByIdAsync which is subject to
         // the multi-tenant query filter. When no tenant is resolved, disable the filter to find
         // the user, then establish the tenant context for the rest of the handler.
-        IDisposable? tenantScope = await ResolveTenantFromTwoFactorSessionAsync(
+        using IDisposable? tenantScope = await ResolveTenantFromTwoFactorSessionAsync(
             signInManager, currentTenant, dataFilter).ConfigureAwait(false);
 
-        try
+        // Strip whitespace and dashes from the code (authenticator apps often format codes with spaces)
+        string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
+            .Replace("-", string.Empty, StringComparison.Ordinal);
+
+        string method = request.UseRecoveryCode ? "recovery_code" : "totp";
+        string failureReason = request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code";
+
+        Microsoft.AspNetCore.Identity.SignInResult result;
+
+        if (request.UseRecoveryCode)
         {
-            // Strip whitespace and dashes from the code (authenticator apps often format codes with spaces)
-            string sanitizedCode = request.Code.Replace(" ", string.Empty, StringComparison.Ordinal)
-                .Replace("-", string.Empty, StringComparison.Ordinal);
+            result = await signInManager
+                .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
+                .ConfigureAwait(false);
 
-            string method = request.UseRecoveryCode ? "recovery_code" : "totp";
-            string failureReason = request.UseRecoveryCode ? "invalid_recovery_code" : "invalid_totp_code";
-
-            Microsoft.AspNetCore.Identity.SignInResult result;
-
-            if (request.UseRecoveryCode)
+            // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
+            // so re-sign the user with a persistent cookie when RememberMe is requested.
+            if (result.Succeeded && request.RememberMe)
             {
-                result = await signInManager
-                    .TwoFactorRecoveryCodeSignInAsync(sanitizedCode)
-                    .ConfigureAwait(false);
+                GranitUser? user = await signInManager.UserManager
+                    .GetUserAsync(httpContext.User).ConfigureAwait(false);
 
-                // TwoFactorRecoveryCodeSignInAsync does not accept isPersistent,
-                // so re-sign the user with a persistent cookie when RememberMe is requested.
-                if (result.Succeeded && request.RememberMe)
+                if (user is not null)
                 {
-                    GranitUser? user = await signInManager.UserManager
-                        .GetUserAsync(httpContext.User).ConfigureAwait(false);
-
-                    if (user is not null)
-                    {
-                        await signInManager.SignInAsync(user, isPersistent: true)
-                            .ConfigureAwait(false);
-                    }
-                }
-            }
-            else
-            {
-                result = await signInManager
-                    .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
-                    .ConfigureAwait(false);
-            }
-
-            if (result.Succeeded)
-            {
-                LogTwoFactorSuccess(logger, method);
-                metrics?.RecordAuthenticationSuccess(null, method);
-
-                return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
-            }
-
-            if (result.IsLockedOut)
-            {
-                GranitUser? lockedUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
-                    .ConfigureAwait(false);
-
-                LogLoginLockedOut(logger, lockedUser?.Id.ToString() ?? "two-factor-user");
-                metrics?.RecordAuthenticationFailure(null, "account_locked");
-
-                if (lockedUser is not null)
-                {
-                    await PublishAccountLockedAsync(
-                        httpContext, signInManager.UserManager, lockedUser, cancellationToken)
+                    await signInManager.SignInAsync(user, isPersistent: true)
                         .ConfigureAwait(false);
                 }
+            }
+        }
+        else
+        {
+            result = await signInManager
+                .TwoFactorAuthenticatorSignInAsync(sanitizedCode, isPersistent: request.RememberMe, rememberClient: false)
+                .ConfigureAwait(false);
+        }
 
-                // Return 401 (same as invalid code) to prevent account enumeration.
-                // The user is notified of the lockout exclusively via email.
-                return TypedResults.Problem(
-                    detail: "Invalid verification code.",
-                    statusCode: StatusCodes.Status401Unauthorized);
+        if (result.Succeeded)
+        {
+            LogTwoFactorSuccess(logger, method);
+            metrics?.RecordAuthenticationSuccess(null, method);
+
+            return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
+        }
+
+        if (result.IsLockedOut)
+        {
+            GranitUser? lockedUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
+                .ConfigureAwait(false);
+
+            LogLoginLockedOut(logger, lockedUser?.Id.ToString() ?? "two-factor-user");
+            metrics?.RecordAuthenticationFailure(null, "account_locked");
+
+            if (lockedUser is not null)
+            {
+                await PublishAccountLockedAsync(
+                    httpContext, signInManager.UserManager, lockedUser, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
-            LogTwoFactorFailed(logger, failureReason);
-            metrics?.RecordAuthenticationFailure(null, "invalid_token");
-
+            // Return 401 (same as invalid code) to prevent account enumeration.
+            // The user is notified of the lockout exclusively via email.
             return TypedResults.Problem(
                 detail: "Invalid verification code.",
                 statusCode: StatusCodes.Status401Unauthorized);
         }
-        finally
-        {
-            tenantScope?.Dispose();
-        }
+
+        LogTwoFactorFailed(logger, failureReason);
+        metrics?.RecordAuthenticationFailure(null, "invalid_token");
+
+        return TypedResults.Problem(
+            detail: "Invalid verification code.",
+            statusCode: StatusCodes.Status401Unauthorized);
     }
 
     /// <summary>
