@@ -35,6 +35,16 @@ internal sealed partial class HostInternalDbContextEnsurer<TContext>(
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        // Set search_path to the host schema so CreateTablesAsync creates tables
+        // in the correct schema (not public) for modules whose DbProperties.DbSchema
+        // falls back to null (tenant-internal modules reused in host context).
+        if (GranitDbDefaults.HostDbSchema is not null)
+        {
+            await db.Database.ExecuteSqlRawAsync(
+                string.Concat("SET search_path TO ", GranitDbDefaults.HostDbSchema),
+                cancellationToken).ConfigureAwait(false);
+        }
+
         IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
 
         LogCreatingTables(ContextName);
@@ -57,7 +67,10 @@ internal sealed partial class HostInternalDbContextEnsurer<TContext>(
         }
 
         string tableName = entityType.GetTableName()!;
-        string? schema = entityType.GetSchema();
+        // Host internal tables should be in the host schema. If the model has no
+        // schema (tenant-internal modules like Templating/Notifications), fall back
+        // to HostDbSchema so the probe looks in the correct schema.
+        string? schema = entityType.GetSchema() ?? GranitDbDefaults.HostDbSchema;
 
         // Query information_schema instead of probing with SELECT — avoids
         // Npgsql error-level log noise when the table does not exist yet.
