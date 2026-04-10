@@ -27,7 +27,7 @@ public static class GranitTemplatingDbProperties
     /// </summary>
     public static string? DbSchema
     {
-        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.DbSchema;
+        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema;
         set { _dbSchema = value; _dbSchemaExplicitlySet = true; }
     }
 }

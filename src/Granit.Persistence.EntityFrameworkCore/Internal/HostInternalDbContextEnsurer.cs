@@ -35,23 +35,6 @@ internal sealed partial class HostInternalDbContextEnsurer<TContext>(
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // For modules whose DbProperties.DbSchema is null (tenant-internal modules
-        // reused in host context), set search_path so CreateTablesAsync creates tables
-        // in the host schema instead of public. Open the connection explicitly to ensure
-        // the SET and CREATE use the same underlying connection.
-        if (GranitDbDefaults.HostDbSchema is not null)
-        {
-            System.Data.Common.DbConnection connection = db.Database.GetDbConnection();
-            if (connection.State != System.Data.ConnectionState.Open)
-            {
-                await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
-            }
-
-            await db.Database.ExecuteSqlRawAsync(
-                string.Concat("SET search_path TO ", GranitDbDefaults.HostDbSchema),
-                cancellationToken).ConfigureAwait(false);
-        }
-
         IRelationalDatabaseCreator creator = db.GetService<IRelationalDatabaseCreator>();
 
         LogCreatingTables(ContextName);
