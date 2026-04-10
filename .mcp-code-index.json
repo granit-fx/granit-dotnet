@@ -23943,7 +23943,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Handlers/NotificationDeliveryHandler.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "HandleAsync",
