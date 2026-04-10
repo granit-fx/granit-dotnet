@@ -66,25 +66,13 @@ public sealed partial class NotificationDeliveryHandler(
         };
 
         var stopwatch = Stopwatch.StartNew();
+        bool sent = false;
         try
         {
             await channel.SendAsync(context, cancellationToken).ConfigureAwait(false);
+            sent = true;
             stopwatch.Stop();
             activity?.SetTag("notifications.success", true);
-
-            await deliveryWriter.RecordAsync(new NotificationDeliveryAttempt
-            {
-                Id = guidGenerator.Create(),
-                DeliveryId = command.DeliveryId,
-                NotificationId = command.NotificationId,
-                NotificationTypeName = command.NotificationTypeName,
-                ChannelName = command.ChannelName,
-                RecipientUserId = command.RecipientUserId,
-                TenantId = command.TenantId,
-                OccurredAt = clock.Now,
-                DurationMs = stopwatch.ElapsedMilliseconds,
-                IsSuccess = true,
-            }, cancellationToken).ConfigureAwait(false);
 
             metrics.RecordDeliverySucceeded(
                 command.TenantId?.ToString(), command.ChannelName, command.NotificationTypeName);
@@ -99,6 +87,21 @@ public sealed partial class NotificationDeliveryHandler(
             activity?.SetTag("notifications.success", false);
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
 
+            metrics.RecordDeliveryFailed(
+                command.TenantId?.ToString(), command.ChannelName, command.NotificationTypeName);
+            metrics.RecordDeliveryDuration(
+                command.TenantId?.ToString(), command.ChannelName, "failure", stopwatch.Elapsed);
+
+            LogNotificationDeliveryFailed(ex, command.ChannelName, command.DeliveryId, command.NotificationId);
+
+            throw new NotificationDeliveryException(
+                $"Failed to deliver notification {command.NotificationId} via {command.ChannelName}", ex);
+        }
+
+        // Record the delivery attempt AFTER the send — audit failures must NOT
+        // trigger a retry of the send (which would cause duplicate emails).
+        try
+        {
             await deliveryWriter.RecordAsync(new NotificationDeliveryAttempt
             {
                 Id = guidGenerator.Create(),
@@ -110,19 +113,14 @@ public sealed partial class NotificationDeliveryHandler(
                 TenantId = command.TenantId,
                 OccurredAt = clock.Now,
                 DurationMs = stopwatch.ElapsedMilliseconds,
-                ErrorMessage = ex.Message,
-                IsSuccess = false,
+                IsSuccess = sent,
+                ErrorMessage = sent ? null : "Send failed — see previous log entry",
             }, cancellationToken).ConfigureAwait(false);
-
-            metrics.RecordDeliveryFailed(
-                command.TenantId?.ToString(), command.ChannelName, command.NotificationTypeName);
-            metrics.RecordDeliveryDuration(
-                command.TenantId?.ToString(), command.ChannelName, "failure", stopwatch.Elapsed);
-
-            LogNotificationDeliveryFailed(ex, command.ChannelName, command.DeliveryId, command.NotificationId);
-
-            throw new NotificationDeliveryException(
-                $"Failed to deliver notification {command.NotificationId} via {command.ChannelName}", ex);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            // Audit persistence failure must not mask a successful send or trigger retry.
+            LogAuditRecordFailed(ex, command.ChannelName, command.DeliveryId);
         }
     }
 
@@ -137,4 +135,7 @@ public sealed partial class NotificationDeliveryHandler(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Notification delivery failed via '{ChannelName}' for delivery {DeliveryId} notification {NotificationId}")]
     private partial void LogNotificationDeliveryFailed(Exception exception, string channelName, Guid deliveryId, Guid notificationId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to record delivery audit for '{ChannelName}' delivery {DeliveryId} — the notification was sent but the audit trail is incomplete")]
+    private partial void LogAuditRecordFailed(Exception exception, string channelName, Guid deliveryId);
 }
