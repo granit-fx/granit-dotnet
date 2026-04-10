@@ -1,5 +1,6 @@
 using Granit.MultiTenancy;
 using Granit.Templating.GlobalContext;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Templating.Scriban.GlobalContexts;
@@ -27,7 +28,7 @@ namespace Granit.Templating.Scriban.GlobalContexts;
 /// </remarks>
 internal sealed class AppGlobalContext(
     IOptions<AppGlobalContextOptions> options,
-    IServiceProvider serviceProvider) : ITemplateGlobalContext
+    IServiceScopeFactory scopeFactory) : ITemplateGlobalContext
 {
     /// <inheritdoc/>
     public string ContextName => "app";
@@ -37,11 +38,16 @@ internal sealed class AppGlobalContext(
     {
         AppGlobalContextOptions opts = options.Value;
 
-        // Soft dependency: resolve tenant-aware URL when multi-tenancy is configured.
-        // ITenantUrlResolver is scoped (async-local ICurrentTenant), safe to resolve here.
-        // The call is cached in-memory so sync-over-async hits only the ConcurrentDictionary.
-        var urlResolver = serviceProvider.GetService(typeof(ITenantUrlResolver)) as ITenantUrlResolver;
-        string? resolvedUrl = urlResolver?.ResolveBaseUrlAsync().GetAwaiter().GetResult();
+        // ITenantUrlResolver is scoped (depends on ITenantReader/EF Core).
+        // AppGlobalContext is a singleton, so we create a short-lived scope to resolve it.
+        // The resolver uses an in-memory cache so the scope + DB overhead is minimal.
+        string? resolvedUrl = null;
+        using (IServiceScope scope = scopeFactory.CreateScope())
+        {
+            ITenantUrlResolver? urlResolver = scope.ServiceProvider.GetService<ITenantUrlResolver>();
+            resolvedUrl = urlResolver?.ResolveBaseUrlAsync().GetAwaiter().GetResult();
+        }
+
         string baseUrl = !string.IsNullOrEmpty(resolvedUrl) ? resolvedUrl : opts.BaseUrl;
 
         return new

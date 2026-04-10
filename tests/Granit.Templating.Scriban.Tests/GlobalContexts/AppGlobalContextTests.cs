@@ -8,13 +8,14 @@ namespace Granit.Templating.Scriban.Tests.GlobalContexts;
 
 public sealed class AppGlobalContextTests
 {
-    private static ServiceProvider BuildSp() => new ServiceCollection().BuildServiceProvider();
+    private static IServiceScopeFactory BuildScopeFactory() =>
+        new ServiceCollection().BuildServiceProvider().GetRequiredService<IServiceScopeFactory>();
 
     [Fact]
     public void ContextName_IsApp()
     {
-        using ServiceProvider sp = BuildSp();
-        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), sp);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory();
+        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), scopeFactory);
 
         sut.ContextName.ShouldBe("app");
     }
@@ -29,8 +30,8 @@ public sealed class AppGlobalContextTests
             SupportEmail = "support@example.com",
             LogoUrl = "https://cdn.example.com/logo.png",
         };
-        using ServiceProvider sp = BuildSp();
-        AppGlobalContext sut = new(Options.Create(opts), sp);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory();
+        AppGlobalContext sut = new(Options.Create(opts), scopeFactory);
 
         dynamic resolved = sut.Resolve();
         Type type = resolved.GetType();
@@ -45,8 +46,8 @@ public sealed class AppGlobalContextTests
     public void Resolve_TrimsTrailingSlashFromBaseUrl()
     {
         AppGlobalContextOptions opts = new() { BaseUrl = "https://app.example.com/" };
-        using ServiceProvider sp = BuildSp();
-        AppGlobalContext sut = new(Options.Create(opts), sp);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory();
+        AppGlobalContext sut = new(Options.Create(opts), scopeFactory);
 
         dynamic resolved = sut.Resolve();
 
@@ -57,8 +58,8 @@ public sealed class AppGlobalContextTests
     [Fact]
     public void Resolve_DefaultOptions_ReturnsEmptyStrings()
     {
-        using ServiceProvider sp = BuildSp();
-        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), sp);
+        IServiceScopeFactory scopeFactory = BuildScopeFactory();
+        AppGlobalContext sut = new(Options.Create(new AppGlobalContextOptions()), scopeFactory);
 
         dynamic resolved = sut.Resolve();
         Type type = resolved.GetType();
