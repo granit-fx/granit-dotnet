@@ -49,7 +49,15 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
 
-        services.AddTransient<IHostDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
+        // Register seeder as Host or Tenant contributor based on scope
+        if (scope == ReferenceDataScope.Tenant)
+        {
+            services.AddTransient<ITenantDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
+        }
+        else
+        {
+            services.AddTransient<IHostDataSeedContributor, ReferenceDataSeedContributor<TEntity>>();
+        }
 
         return services;
     }

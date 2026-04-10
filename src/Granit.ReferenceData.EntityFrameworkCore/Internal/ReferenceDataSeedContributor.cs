@@ -24,7 +24,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
 internal sealed partial class ReferenceDataSeedContributor<TEntity>(
     IServiceProvider serviceProvider,
-    ILogger<ReferenceDataSeedContributor<TEntity>> logger) : IHostDataSeedContributor
+    ILogger<ReferenceDataSeedContributor<TEntity>> logger) : IHostDataSeedContributor, ITenantDataSeedContributor
     where TEntity : ReferenceDataEntity
 {
     /// <inheritdoc/>
