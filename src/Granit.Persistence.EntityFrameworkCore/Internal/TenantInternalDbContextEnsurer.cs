@@ -87,7 +87,7 @@ internal sealed partial class TenantInternalDbContextEnsurer<TContext>(
         // This avoids Npgsql error-level log noise when the table does not exist yet.
         // The search_path resolves the schema, so we only filter by table_name.
         string sql = string.Concat(
-            "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = '", tableName, "'");
+            "SELECT COUNT(1) AS \"Value\" FROM information_schema.tables WHERE table_name = '", tableName, "'");
         int count = await db.Database
             .SqlQueryRaw<int>(sql) // NOSONAR — table name from EF model metadata, not user input
             .SingleAsync(cancellationToken)

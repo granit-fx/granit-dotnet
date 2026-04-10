@@ -63,10 +63,10 @@ internal sealed class MigrationProgressDbEnsurer(
 
         string sql = schema is not null
             ? string.Concat(
-                "SELECT COUNT(1) FROM information_schema.tables WHERE table_schema = '", schema,
+                "SELECT COUNT(1) AS \"Value\" FROM information_schema.tables WHERE table_schema = '", schema,
                 "' AND table_name = '", tableName, "'")
             : string.Concat(
-                "SELECT COUNT(1) FROM information_schema.tables WHERE table_name = '", tableName, "'");
+                "SELECT COUNT(1) AS \"Value\" FROM information_schema.tables WHERE table_name = '", tableName, "'");
 
         int count = await db.Database
             .SqlQueryRaw<int>(sql) // NOSONAR — schema/table from EF model metadata
