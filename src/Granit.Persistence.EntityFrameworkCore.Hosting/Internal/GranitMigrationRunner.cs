@@ -199,28 +199,27 @@ internal sealed partial class GranitMigrationRunner(
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
 
-        // Check for multi-tenant migration
-        ITenantEnumerator? tenantEnumerator = scope.ServiceProvider.GetService<ITenantEnumerator>();
-        bool hasTenants = tenantEnumerator is not null
-            && await HasTenantsAsync(tenantEnumerator, ct).ConfigureAwait(false);
+        // Check if this DbContext is tenant-isolated (registered via AddGranitIsolatedDbContext)
+        bool isIsolated = scope.ServiceProvider.GetServices<MultiTenancy.IsolatedDbContextMarker>()
+            .Any(m => m.DbContextType == dbContextType);
 
-        if (hasTenants)
+        if (isIsolated)
         {
-            await MigratePerTenantAsync(moduleName, dbContextType, scope.ServiceProvider, tenantEnumerator!, ct)
-                .ConfigureAwait(false);
-        }
-        else if (tenantEnumerator is not null)
-        {
-            // ITenantEnumerator is registered (SchemaPerTenant / DatabasePerTenant)
-            // but no tenants exist yet (cold start). Skip migration — migrating
-            // without a tenant context would create tables in "public" schema.
-            // Per-tenant schemas will be created by the post-seed re-migration pass
-            // once host seeders have created the tenant records.
-            // Host-level tables belong in a separate SharedDatabase DbContext
-            // with HasDefaultSchema(HostDbSchema).
+            ITenantEnumerator? tenantEnumerator = scope.ServiceProvider.GetService<ITenantEnumerator>();
+            bool hasTenants = tenantEnumerator is not null
+                && await HasTenantsAsync(tenantEnumerator, ct).ConfigureAwait(false);
+
+            if (hasTenants)
+            {
+                await MigratePerTenantAsync(moduleName, dbContextType, scope.ServiceProvider, tenantEnumerator!, ct)
+                    .ConfigureAwait(false);
+            }
+
+            // No tenants yet (cold start): skip — tables will be created per-tenant
+            // by the post-seed re-migration pass once host seeders create tenants.
             return;
         }
-        else
+
         {
             // SharedDatabase or single-tenant — migrate normally in default schema.
             LogMigratingContext(moduleName, dbContextType.Name);

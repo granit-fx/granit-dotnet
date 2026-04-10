@@ -29613,6 +29613,22 @@
       ]
     },
     {
+      "name": "IsolatedDbContextMarker",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.IsolatedDbContextMarker",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/MultiTenancy/IsolatedDbContextMarker.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "DbContextType",
+          "kind": "property",
+          "signature": "Type DbContextType",
+          "returnType": "Type"
+        }
+      ]
+    },
+    {
       "name": "TenantIsolationOptions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.MultiTenancy.TenantIsolationOptions",
       "kind": "class",

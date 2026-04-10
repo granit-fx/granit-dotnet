@@ -240,6 +240,9 @@ public static class PersistenceTenantExtensions
         // Facade — dispatches to the keyed factory resolved at runtime.
         services.TryAddScoped<IDbContextFactory<TContext>, IsolatedDbContextFactory<TContext>>();
 
+        // Marker for migration runner: this DbContext is tenant-isolated, skip on cold start.
+        services.AddSingleton(new IsolatedDbContextMarker(typeof(TContext)));
+
         // Scoped TContext: tries the isolated factory first, falls back to the
         // SharedDatabase keyed factory when no tenant is active. This fallback is
         // needed for Wolverine handler graph compilation (startup introspection)
