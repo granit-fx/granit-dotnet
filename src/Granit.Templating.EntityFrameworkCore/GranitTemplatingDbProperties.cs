@@ -21,8 +21,9 @@ public static class GranitTemplatingDbProperties
     private static bool _dbSchemaExplicitlySet;
 
     /// <summary>
-    /// Database schema for tenant-level tables.
-    /// Falls back to <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
+    /// Database schema for templating tables.
+    /// Falls back to <see cref="GranitDbDefaults.HostDbSchema"/>, then
+    /// <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
     /// </summary>
     public static string? DbSchema
     {
