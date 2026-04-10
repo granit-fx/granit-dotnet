@@ -43,9 +43,6 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
         // 1. Register the isolated DbContext with Granit interceptors
         builder.Services.AddGranitDbContext<OpenIddictDbContext>(configure);
 
-        // Register the internal DbContext ensurer for --migrate table auto-creation
-        builder.Services.AddHostInternalDbContextEnsurer<OpenIddictDbContext>();
-
         // 2. Bind lockout options (exponential backoff)
         GranitLockoutOptions lockoutOptions = new();
         builder.Configuration.GetSection(GranitLockoutOptions.SectionName).Bind(lockoutOptions);

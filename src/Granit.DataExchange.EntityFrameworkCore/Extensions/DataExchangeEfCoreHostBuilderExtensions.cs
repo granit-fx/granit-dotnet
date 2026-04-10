@@ -29,7 +29,6 @@ public static class DataExchangeEfCoreHostBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<DataExchangeDbContext>(configure);
-        builder.Services.AddTenantInternalDbContextEnsurer<DataExchangeDbContext>();
 
         // Import stores
         builder.Services.AddScoped<IMappingReader, EfMappingStore>();

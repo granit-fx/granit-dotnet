@@ -1,5 +1,5 @@
-using Granit.BlobStorage.Database.Configurations;
 using Granit.BlobStorage.Database.Entities;
+using Granit.BlobStorage.Database.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -22,7 +22,7 @@ internal sealed class BlobStorageDatabaseDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfiguration(new DatabaseBlobContentConfiguration());
+        modelBuilder.ConfigureBlobStorageDatabaseModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

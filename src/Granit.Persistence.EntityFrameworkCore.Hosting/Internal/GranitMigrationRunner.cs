@@ -1,6 +1,5 @@
 using Granit.Modularity;
 using Granit.MultiTenancy;
-using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
@@ -74,10 +73,6 @@ internal sealed partial class GranitMigrationRunner(
                 }
             }
 
-            // Ensure HOST internal DbContext tables BEFORE migrations so that
-            // HasTenantsAsync (which queries tenants_tenants) doesn't hit a missing table.
-            await EnsureHostInternalDbContextsAsync(ct).ConfigureAwait(false);
-
             // Ensure Expand & Contract tracking table exists
             await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
 
@@ -110,13 +105,6 @@ internal sealed partial class GranitMigrationRunner(
                 foreach ((GranitModule module, Type dbContextType) in migratableModules)
                 {
                     await MigrateDbContextAsync(module.GetType().Name, dbContextType, ct)
-                        .ConfigureAwait(false);
-                }
-
-                // Ensure TENANT internal DbContext tables per-tenant
-                if (tenantEnumerator is not null)
-                {
-                    await EnsureTenantInternalDbContextsAsync(tenantEnumerator, ct)
                         .ConfigureAwait(false);
                 }
 
@@ -292,38 +280,6 @@ internal sealed partial class GranitMigrationRunner(
         await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
-    private async Task EnsureHostInternalDbContextsAsync(CancellationToken ct)
-    {
-        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        IEnumerable<IHostInternalDbContextEnsurer> ensurers =
-            scope.ServiceProvider.GetServices<IHostInternalDbContextEnsurer>();
-
-        foreach (IHostInternalDbContextEnsurer ensurer in ensurers)
-        {
-            LogEnsuringInternalContext(ensurer.ContextName);
-            await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
-            LogEnsuredInternalContext(ensurer.ContextName);
-        }
-    }
-
-    private async Task EnsureTenantInternalDbContextsAsync(
-        ITenantEnumerator tenantEnumerator, CancellationToken ct)
-    {
-        await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(ct).ConfigureAwait(false))
-        {
-            await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-            IEnumerable<ITenantInternalDbContextEnsurer> ensurers =
-                scope.ServiceProvider.GetServices<ITenantInternalDbContextEnsurer>();
-
-            foreach (ITenantInternalDbContextEnsurer ensurer in ensurers)
-            {
-                LogEnsuringInternalContext($"{ensurer.ContextName} (tenant {tenantId})");
-                await ensurer.EnsureCreatedForTenantAsync(tenantId, ct).ConfigureAwait(false);
-                LogEnsuredInternalContext($"{ensurer.ContextName} (tenant {tenantId})");
-            }
-        }
-    }
-
     private async Task SeedHostAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
@@ -427,14 +383,6 @@ internal sealed partial class GranitMigrationRunner(
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Data seeding completed.")]
     private partial void LogSeedingCompleted();
-
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Ensuring internal DbContext '{ContextName}' tables exist...")]
-    private partial void LogEnsuringInternalContext(string contextName);
-
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Internal DbContext '{ContextName}' tables verified.")]
-    private partial void LogEnsuredInternalContext(string contextName);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "All migrations completed successfully.")]
     private partial void LogMigrationCompleted();

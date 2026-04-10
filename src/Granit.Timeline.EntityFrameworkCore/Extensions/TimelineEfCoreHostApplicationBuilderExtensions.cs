@@ -34,7 +34,6 @@ public static class TimelineEfCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<TimelineDbContext>(configure);
-        builder.Services.AddTenantInternalDbContextEnsurer<TimelineDbContext>();
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<ITimelineWriter, EfCoreTimelineStore>());

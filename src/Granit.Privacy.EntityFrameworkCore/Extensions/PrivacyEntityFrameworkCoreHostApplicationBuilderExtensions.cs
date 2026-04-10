@@ -17,7 +17,6 @@ public static class PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<PrivacyDbContext>(configure);
-        builder.Services.AddTenantInternalDbContextEnsurer<PrivacyDbContext>();
 
         builder.Services.AddScoped<EfLegalDocumentStore>();
         builder.Services.TryAddScoped<ILegalDocumentReader>(sp => sp.GetRequiredService<EfLegalDocumentStore>());

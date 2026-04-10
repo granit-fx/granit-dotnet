@@ -16,7 +16,6 @@ public static class InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<InvoicingDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<InvoicingDbContext>();
 
         builder.Services.AddScoped<EfInvoiceStore>();
         builder.Services.TryAddScoped<IInvoiceReader>(sp => sp.GetRequiredService<EfInvoiceStore>());

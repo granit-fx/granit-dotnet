@@ -34,7 +34,6 @@ public static class BffEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<BffDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<BffDbContext>();
 
         return builder;
     }

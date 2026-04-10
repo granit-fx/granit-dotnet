@@ -18,7 +18,6 @@ public static class MeteringEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<MeteringDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<MeteringDbContext>();
 
         builder.Services.TryAddScoped<IMeterDefinitionReader, EfMeterDefinitionReader>();
         builder.Services.TryAddScoped<IMeterDefinitionWriter, EfMeterDefinitionWriter>();

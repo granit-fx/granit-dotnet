@@ -26,7 +26,6 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<MultiTenancyDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<MultiTenancyDbContext>();
 
         // Ensure event infrastructure is available (fallback if not called directly)
         builder.Services.AddGranitEvents();

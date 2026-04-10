@@ -7040,6 +7040,22 @@
       ]
     },
     {
+      "name": "BffModelBuilderExtensions",
+      "fqn": "Granit.Bff.EntityFrameworkCore.Extensions.BffModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Bff.EntityFrameworkCore",
+      "file": "src/Granit.Bff.EntityFrameworkCore/Extensions/BffModelBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureBffModule",
+          "kind": "method",
+          "signature": "ConfigureBffModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitBffDbProperties",
       "fqn": "Granit.Bff.EntityFrameworkCore.GranitBffDbProperties",
       "kind": "class",
@@ -7664,6 +7680,22 @@
           "kind": "method",
           "signature": "AddGranitBlobStorageDatabase(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
           "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "BlobStorageDatabaseModelBuilderExtensions",
+      "fqn": "Granit.BlobStorage.Database.Extensions.BlobStorageDatabaseModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Database",
+      "file": "src/Granit.BlobStorage.Database/Extensions/BlobStorageDatabaseModelBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureBlobStorageDatabaseModule",
+          "kind": "method",
+          "signature": "ConfigureBlobStorageDatabaseModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
         }
       ]
     },
@@ -25335,7 +25367,7 @@
       "kind": "class",
       "project": "Granit.Observability",
       "file": "src/Granit.Observability/Extensions/ObservabilityServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitObservability",
@@ -28954,7 +28986,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Extensions/PersistenceDbContextServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": []
     },
     {
@@ -29250,22 +29282,6 @@
       ]
     },
     {
-      "name": "IHostInternalDbContextEnsurer",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.IHostInternalDbContextEnsurer",
-      "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/IHostInternalDbContextEnsurer.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "EnsureCreatedAsync",
-          "kind": "method",
-          "signature": "EnsureCreatedAsync(CancellationToken cancellationToken = default)",
-          "returnType": "string ContextName { get; } Task"
-        }
-      ]
-    },
-    {
       "name": "ISoftDeletePurgeTarget",
       "fqn": "Granit.Persistence.EntityFrameworkCore.ISoftDeletePurgeTarget",
       "kind": "interface",
@@ -29278,22 +29294,6 @@
           "kind": "method",
           "signature": "PurgeAsync(DateTimeOffset cutoff, int batchSize, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "ITenantInternalDbContextEnsurer",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ITenantInternalDbContextEnsurer",
-      "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ITenantInternalDbContextEnsurer.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "EnsureCreatedForTenantAsync",
-          "kind": "method",
-          "signature": "EnsureCreatedForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "string ContextName { get; } Task"
         }
       ]
     },

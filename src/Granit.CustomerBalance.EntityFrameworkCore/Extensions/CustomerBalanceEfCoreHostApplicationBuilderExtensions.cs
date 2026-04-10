@@ -16,7 +16,6 @@ public static class CustomerBalanceEfCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<CustomerBalanceDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<CustomerBalanceDbContext>();
 
         builder.Services.AddScoped<EfBalanceAccountStore>();
         builder.Services.TryAddScoped<IBalanceAccountReader>(sp => sp.GetRequiredService<EfBalanceAccountStore>());

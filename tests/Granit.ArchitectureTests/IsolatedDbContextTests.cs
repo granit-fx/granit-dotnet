@@ -183,11 +183,15 @@ public sealed partial class IsolatedDbContextTests
     }
 
     [Fact]
-    public void AddGranitDbContext_should_have_matching_HostOrTenantInternalDbContextEnsurer()
+    public void AddGranitDbContext_should_have_matching_ConfigureModule_extension()
     {
         string srcDir = Path.Join(RepoRoot, "src");
 
         List<string> violations = [];
+
+        // MigrationProgressDbContext is a system context that bootstraps the migration
+        // runner itself — it does not need a Configure*Module extension.
+        HashSet<string> exempted = ["MigrationProgressDbContext"];
 
         foreach (string csFile in Directory.GetFiles(srcDir, "*.cs", SearchOption.AllDirectories))
         {
@@ -203,28 +207,45 @@ public sealed partial class IsolatedDbContextTests
             {
                 string contextType = match.Groups[1].Value;
 
-                // MigrationProgressDbContext is a system context that must stay independent
-                // from the ensurer mechanism (it bootstraps the migration runner itself).
-                if (contextType == "MigrationProgressDbContext")
+                if (exempted.Contains(contextType))
                 {
                     continue;
                 }
 
-                bool hasEnsurer =
-                    content.Contains($"AddHostInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal) ||
-                    content.Contains($"AddTenantInternalDbContextEnsurer<{contextType}>", StringComparison.Ordinal);
+                // The DbContext's project must contain a Configure*Module() ModelBuilder
+                // extension method so that host applications can include the module's
+                // entity configurations in their own DbContext and generate migrations.
+                string? projectDir = Path.GetDirectoryName(csFile);
+                while (projectDir is not null && Directory.GetFiles(projectDir, "*.csproj").Length == 0)
+                {
+                    projectDir = Path.GetDirectoryName(projectDir);
+                }
 
-                if (!hasEnsurer)
+                if (projectDir is null)
+                {
+                    continue;
+                }
+
+                bool hasConfigureMethod = Directory.GetFiles(projectDir, "*ModelBuilderExtensions.cs", SearchOption.AllDirectories)
+                    .Any(f =>
+                    {
+                        string ext = File.ReadAllText(f);
+                        return ext.Contains("Configure", StringComparison.Ordinal)
+                            && ext.Contains("this ModelBuilder", StringComparison.Ordinal);
+                    });
+
+                if (!hasConfigureMethod)
                 {
                     string rel = Path.GetRelativePath(RepoRoot, csFile);
                     int line = content[..match.Index].Count(c => c == '\n') + 1;
-                    violations.Add($"{rel}:{line} — AddGranitDbContext<{contextType}> without matching AddHostInternalDbContextEnsurer or AddTenantInternalDbContextEnsurer");
+                    violations.Add($"{rel}:{line} — AddGranitDbContext<{contextType}> without a matching Configure*Module() ModelBuilder extension");
                 }
             }
         }
 
         violations.ShouldBeEmpty(
-            "Every AddGranitDbContext<T> must be paired with AddHostInternalDbContextEnsurer<T> or AddTenantInternalDbContextEnsurer<T>. " +
+            "Every AddGranitDbContext<T> must have a Configure*Module() ModelBuilder extension " +
+            "in the same project so host applications can include module tables in their migrations. " +
             $"Violators:\n  {string.Join("\n  ", violations)}");
     }
 

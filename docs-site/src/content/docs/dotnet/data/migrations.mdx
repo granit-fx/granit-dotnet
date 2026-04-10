@@ -113,40 +113,32 @@ flowchart TD
     C -->|yes| E[Discover IMigratableModule&lt;T&gt; in topological order]
     E --> F[TryAcquire distributed lock]
     F -->|lock unavailable| G[Log warning — skip]
-    F -->|acquired| H[MigrateAsync per module]
-    H --> I[EnsureCreated — Expand & Contract table]
-    I --> L1[EnsureCreated — host internal tables]
-    L1 --> J1["Seed pass 1 (host-only)"]
+    F -->|acquired| I[EnsureCreated — Expand & Contract table]
+    I --> H[MigrateAsync per module]
+    H --> J1["Seed pass 1 (host-only)"]
     J1 --> M[Re-migrate per-tenant]
-    M --> L2[EnsureCreated — tenant internal tables per-tenant]
-    L2 --> J2["Seed pass 2 (full)"]
+    M --> J2["Seed pass 2 (full)"]
     J2 --> K[Release lock — return exit code 0]
 ```
 
 The discovery step reads the topologically sorted module list from `GranitApplication`
-(respecting `[DependsOn]` declarations). Modules that do not implement
-`IMigratableModule<T>` — including most internal Granit DbContexts such as
-`BackgroundJobsDbContext` or `WebhooksDbContext` — are skipped by the migration step.
-Only **host application DbContexts** that own migration files should implement the interface.
+(respecting `[DependsOn]` declarations). Each module that implements
+`IMigratableModule<T>` is migrated in order. The host application's DbContexts include
+Granit module tables via `Configure*Module()` extension methods called in `OnModelCreating`,
+so all tables — both application and framework — are covered by standard EF Core migrations.
 
-After host migrations complete, the runner runs two types of internal ensurers:
+Each Granit module exposes a `Configure*Module()` extension on `ModelBuilder`:
 
-- **`IHostInternalDbContextEnsurer`** — creates tables for host-level modules
-  (BackgroundJobs, BFF, MultiTenancy, Features, OpenIddict, Auditing, Localization,
-  Scheduling) in the host schema. Runs once before seeding.
-- **`ITenantInternalDbContextEnsurer`** — creates tables for tenant-level modules
-  (Templating, Timeline, BlobStorage, DataExchange, QueryEngine, Webhooks,
-  Notifications) in each tenant's schema. Runs per-tenant after the post-seed
-  re-migration pass.
+- **Host-level modules** (BackgroundJobs, BFF, MultiTenancy, Features, OpenIddict,
+  Auditing, Localization, Scheduling, etc.) — call in the host `DbContext`.
+- **Tenant-level modules** (Timeline, BlobStorage, DataExchange, QueryEngine, Webhooks,
+  Notifications, Privacy, ApiKeys, etc.) — call in the tenant-isolated `DbContext`.
 
 In SchemaPerTenant mode, the runner uses a **double-seed** flow:
 1. **Seed pass 1** (`IsHostOnly = true`): only host seeders run (tenant creation, OpenIddict).
    Tenant-scoped seeders skip via `context.IsHostOnly`.
 2. **Re-migrate per-tenant**: now that tenants exist, create schemas and apply migrations.
-3. **Tenant internal ensurers**: create infra tables per tenant schema.
-4. **Seed pass 2** (full): all seeders run — tenant tables now exist.
-
-Tables are created idempotently via `IRelationalDatabaseCreator.CreateTablesAsync()`.
+3. **Seed pass 2** (full): all seeders run — tenant tables now exist.
 
 ### `IMigratableModule<TContext>`
 

@@ -15,7 +15,6 @@ public static class PaymentsEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<PaymentsDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<PaymentsDbContext>();
 
         builder.Services.AddScoped<EfPaymentTransactionStore>();
         builder.Services.TryAddScoped<IPaymentTransactionReader>(sp => sp.GetRequiredService<EfPaymentTransactionStore>());

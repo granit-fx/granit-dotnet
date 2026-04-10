@@ -25,7 +25,6 @@ public static class QueryEngineEfCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<QueryEngineDbContext>(configure);
-        builder.Services.AddTenantInternalDbContextEnsurer<QueryEngineDbContext>();
 
         // Replace the null-object default from Granit.QueryEngine — CQRS forwarding pattern
         builder.Services.AddScoped<EfCoreSavedViewStore>();

@@ -50,7 +50,6 @@ public static class BlobStorageDatabaseHostApplicationBuilderExtensions
         builder.Services.AddSingleton<IValidateOptions<DatabaseBlobOptions>, DatabaseBlobOptionsValidator>();
 
         builder.Services.AddGranitDbContext<BlobStorageDatabaseDbContext>(configure);
-        builder.Services.AddTenantInternalDbContextEnsurer<BlobStorageDatabaseDbContext>();
 
         builder.Services.AddScoped<IBlobStoreProvider, DatabaseBlobClient>();
         builder.Services.AddScoped<IBlobKeyStrategy, DatabaseBlobKeyStrategy>();

@@ -1,3 +1,4 @@
+using Granit.Bff.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -23,24 +24,7 @@ internal sealed class BffDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<BffSessionEntity>(b =>
-        {
-            b.ToTable(GranitBffDbProperties.DbTablePrefix + "sessions", GranitBffDbProperties.DbSchema);
-            b.HasKey(e => e.Id);
-            b.Property(e => e.Id).ValueGeneratedNever();
-            b.Property(e => e.SessionId).HasMaxLength(64).IsRequired();
-            b.Property(e => e.FrontendName).HasMaxLength(64).IsRequired();
-            b.Property(e => e.UserId).HasMaxLength(128);
-            b.Property(e => e.SerializedTokens).IsRequired();
-            b.Property(e => e.ExpiresAt).IsRequired();
-            b.Property(e => e.CreatedAt).IsRequired();
-
-            b.HasIndex(e => new { e.FrontendName, e.SessionId }).IsUnique();
-            b.HasIndex(e => new { e.FrontendName, e.UserId });
-            b.HasIndex(e => e.ExpiresAt); // For cleanup job
-        });
-
+        modelBuilder.ConfigureBffModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

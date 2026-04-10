@@ -1,4 +1,3 @@
-using Granit.Persistence.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -74,34 +73,4 @@ public static class PersistenceDbContextServiceCollectionExtensions
         return services;
     }
 
-    /// <summary>
-    /// Registers a host-level <see cref="IHostInternalDbContextEnsurer"/> for the specified
-    /// <typeparamref name="TContext"/>. Tables are created in the host schema during <c>--migrate</c>.
-    /// </summary>
-    /// <typeparam name="TContext">The host DbContext type.</typeparam>
-    public static IServiceCollection AddHostInternalDbContextEnsurer<TContext>(
-        this IServiceCollection services)
-        where TContext : DbContext
-    {
-        services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<IHostInternalDbContextEnsurer, HostInternalDbContextEnsurer<TContext>>());
-
-        return services;
-    }
-
-    /// <summary>
-    /// Registers a tenant-level <see cref="ITenantInternalDbContextEnsurer"/> for the specified
-    /// <typeparamref name="TContext"/>. Tables are created per-tenant schema/database during
-    /// <c>--migrate</c> and hot provisioning.
-    /// </summary>
-    /// <typeparam name="TContext">The tenant DbContext type.</typeparam>
-    public static IServiceCollection AddTenantInternalDbContextEnsurer<TContext>(
-        this IServiceCollection services)
-        where TContext : DbContext
-    {
-        services.TryAddEnumerable(
-            ServiceDescriptor.Scoped<ITenantInternalDbContextEnsurer, TenantInternalDbContextEnsurer<TContext>>());
-
-        return services;
-    }
 }

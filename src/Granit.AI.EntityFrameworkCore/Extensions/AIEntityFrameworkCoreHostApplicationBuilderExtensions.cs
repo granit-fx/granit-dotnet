@@ -33,7 +33,6 @@ public static class AIEntityFrameworkCoreHostApplicationBuilderExtensions
         Action<DbContextOptionsBuilder> configure)
     {
         builder.Services.AddGranitDbContext<AIDbContext>(configure);
-        builder.Services.AddHostInternalDbContextEnsurer<AIDbContext>();
 
         builder.Services.AddScoped<EfAIWorkspaceStore>();
         builder.Services.AddScoped<IAIWorkspaceStoreReader>(sp => sp.GetRequiredService<EfAIWorkspaceStore>());

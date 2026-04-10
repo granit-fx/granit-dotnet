@@ -90,22 +90,24 @@ is a data filter, not a schema router.
 
 ### Tenant modules (business data)
 
-These modules use `AddGranitIsolatedDbContext` (for `IMigratableModule` modules)
-or `AddTenantInternalDbContextEnsurer` (for internal modules). Their tables live
-in tenant-specific schemas (or are filtered by `TenantId` in shared database mode).
+These modules expose `Configure*Module()` extensions on `ModelBuilder`. The host
+application calls them in its tenant-isolated `DbContext.OnModelCreating`. Tables
+live in tenant-specific schemas (or are filtered by `TenantId` in shared database mode).
 
-| Module | Registration | Justification |
-|--------|-------------|---------------|
-| Authorization | `IMigratableModule` | Permission grants per tenant |
-| ApiKeys | `TenantInternalDbContextEnsurer` | API keys per tenant |
-| Notifications | `TenantInternalDbContextEnsurer` | Notifications per tenant |
-| BlobStorage | `TenantInternalDbContextEnsurer` | Blobs per tenant |
-| Timeline | `TenantInternalDbContextEnsurer` | Activity stream per tenant |
-| Webhooks | `TenantInternalDbContextEnsurer` | Subscriptions per tenant |
-| Workflow | `TenantInternalDbContextEnsurer` | State transitions per tenant |
-| DataExchange | `TenantInternalDbContextEnsurer` | Import/export mappings per tenant |
-| Templating | `TenantInternalDbContextEnsurer` | Templates per tenant |
-| QueryEngine | Saved views per tenant |
+| Module | Configure method | Justification |
+|--------|-----------------|---------------|
+| Authorization | `ConfigureAuthorizationModule()` | Permission grants per tenant |
+| ApiKeys | `ConfigureApiKeysModule()` | API keys per tenant |
+| Notifications | `ConfigureNotificationsModule()` | Notifications per tenant |
+| BlobStorage | `ConfigureBlobStorageModule()` | Blobs per tenant |
+| BlobStorage DB | `ConfigureBlobStorageDatabaseModule()` | Blob content per tenant |
+| Timeline | `ConfigureTimelineModule()` | Activity stream per tenant |
+| Webhooks | `ConfigureWebhooksModule()` | Subscriptions per tenant |
+| Workflow | `ConfigureWorkflowModule()` | State transitions per tenant |
+| DataExchange | `ConfigureDataExchangeModule()` | Import/export mappings per tenant |
+| Templating | `ConfigureTemplatingModule()` | Templates per tenant |
+| QueryEngine | `ConfigureQueryEngineModule()` | Saved views per tenant |
+| Privacy | `ConfigurePrivacyModule()` | Legal documents per tenant |
 
 ### Mixed modules (TenantId nullable in host)
 
