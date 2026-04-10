@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
@@ -17,23 +18,45 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
 /// <typeparam name="TDbContext">The host application's DbContext.</typeparam>
 /// <remarks>
+/// <para>
 /// Registered as Scoped. Uses <see cref="IServiceScopeFactory"/> to create
 /// a dedicated scope per database operation, ensuring correct EF Core lifetime.
+/// </para>
+/// <para>
+/// Multi-tenancy behavior depends on <see cref="ReferenceDataScope"/>:
+/// <list type="bullet">
+/// <item><description><see cref="ReferenceDataScope.Global"/>: bypasses the MultiTenant query filter
+/// and explicitly filters on <c>TenantId IS NULL</c>. Writes neutralize the tenant context
+/// via <see cref="ICurrentTenant.Change"/> to prevent the interceptor from injecting a TenantId.</description></item>
+/// <item><description><see cref="ReferenceDataScope.Tenant"/>: relies on the standard MultiTenant query filter
+/// for read isolation. The interceptor auto-injects the current tenant's ID on writes.</description></item>
+/// </list>
+/// </para>
 /// </remarks>
 internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     IServiceScopeFactory scopeFactory,
     IFusionCache cache,
-    IOptions<ReferenceDataOptions> options) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
+    IOptions<ReferenceDataOptions> options,
+    ReferenceDataScope scope,
+    ICurrentTenant currentTenant) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
     where TEntity : ReferenceDataEntity
     where TDbContext : DbContext
 {
     private static readonly string EntityName = typeof(TEntity).Name;
-    private static string AllCacheKey => $"refdata:{EntityName}:all";
-    private static string CodeCacheKey(string code) => $"refdata:{EntityName}:{code}";
 
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly IFusionCache _cache = cache;
     private readonly ReferenceDataOptions _options = options.Value;
+    private readonly ReferenceDataScope _scope = scope;
+    private readonly ICurrentTenant _currentTenant = currentTenant;
+
+    private string AllCacheKey => _scope == ReferenceDataScope.Global
+        ? $"refdata:{EntityName}:host:all"
+        : $"refdata:{EntityName}:t:{_currentTenant.Id}:all";
+
+    private string CodeCacheKey(string code) => _scope == ReferenceDataScope.Global
+        ? $"refdata:{EntityName}:host:{code}"
+        : $"refdata:{EntityName}:t:{_currentTenant.Id}:{code}";
 
     /// <inheritdoc/>
     public async Task<PagedResult<TEntity>> GetAllAsync(
@@ -46,6 +69,17 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         query ??= new ReferenceDataQuery();
 
         IQueryable<TEntity> queryable = context.Set<TEntity>().AsNoTracking();
+
+        // Scope-aware tenant filtering
+        if (_scope == ReferenceDataScope.Global)
+        {
+            // Global data has TenantId=null; bypass the auto MultiTenant filter
+            // and explicitly filter for null TenantId.
+            queryable = queryable
+                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                .Where(e => e.TenantId == null);
+        }
+        // Tenant scope: the standard MultiTenant query filter handles isolation automatically.
 
         // Active filter
         if (query.ActiveOnly)
@@ -120,8 +154,16 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
         TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        TEntity? entity = await context.Set<TEntity>()
-            .AsNoTracking()
+        IQueryable<TEntity> queryable = context.Set<TEntity>().AsNoTracking();
+
+        if (_scope == ReferenceDataScope.Global)
+        {
+            queryable = queryable
+                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                .Where(e => e.TenantId == null);
+        }
+
+        TEntity? entity = await queryable
             .FirstOrDefaultAsync(e => e.Code == code, cancellationToken).ConfigureAwait(false);
 
         if (entity is not null)
@@ -135,15 +177,20 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     /// <inheritdoc/>
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        // For Global scope, neutralize the tenant context so that AuditedEntityInterceptor
+        // does not auto-inject a TenantId. TenantId must remain null for global entries.
+        using IDisposable? tenantOverride = _scope == ReferenceDataScope.Global
+            ? _currentTenant.Change(null)
+            : null;
 
-        // Bypass the Active filter so inactive records are detected, preventing a
-        // duplicate-key error when the seeder runs a second time against an existing
-        // (possibly inactive) entry with the same Code.
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
+
+        // Bypass Active and MultiTenant filters so inactive and cross-tenant records are
+        // detected, preventing a duplicate-key error when the seeder runs a second time.
         bool exists = await context.Set<TEntity>()
-            .IgnoreQueryFilters([GranitFilterNames.Active])
-            .AnyAsync(e => e.Code == entity.Code, cancellationToken)
+            .IgnoreQueryFilters([GranitFilterNames.Active, GranitFilterNames.MultiTenant])
+            .AnyAsync(DuplicateCheck(entity.Code), cancellationToken)
             .ConfigureAwait(false);
 
         if (exists)
@@ -166,8 +213,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
             TDbContext verifyContext = verifyScope.ServiceProvider.GetRequiredService<TDbContext>();
 
             bool concurrentInsert = await verifyContext.Set<TEntity>()
-                .IgnoreQueryFilters([GranitFilterNames.Active])
-                .AnyAsync(e => e.Code == entity.Code, cancellationToken)
+                .IgnoreQueryFilters([GranitFilterNames.Active, GranitFilterNames.MultiTenant])
+                .AnyAsync(DuplicateCheck(entity.Code), cancellationToken)
                 .ConfigureAwait(false);
 
             if (!concurrentInsert)
@@ -201,19 +248,22 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         bool isActive,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        // Bypass the Active filter so inactive records can be found and reactivated.
-        TEntity? entity = await context.Set<TEntity>()
-            .IgnoreQueryFilters([GranitFilterNames.Active])
-            .FirstOrDefaultAsync(e => e.Code == code, cancellationToken).ConfigureAwait(false);
+        // Bypass Active filter so inactive records can be found and reactivated.
+        // Also bypass MultiTenant for Global scope where no tenant context is active.
+        IQueryable<TEntity> queryable = context.Set<TEntity>()
+            .IgnoreQueryFilters([GranitFilterNames.Active, GranitFilterNames.MultiTenant]);
+
+        TEntity? entity = _scope == ReferenceDataScope.Global
+            ? await queryable.FirstOrDefaultAsync(e => e.Code == code && e.TenantId == null, cancellationToken).ConfigureAwait(false)
+            : await queryable.FirstOrDefaultAsync(e => e.Code == code && e.TenantId == _currentTenant.Id, cancellationToken).ConfigureAwait(false);
 
         if (entity is not null)
         {
             entity.IsActive = isActive;
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-
         }
 
         InvalidateCache(code);
@@ -224,11 +274,19 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         string? parentCode,
         CancellationToken cancellationToken = default)
     {
-        await using AsyncServiceScope scope = _scopeFactory.CreateAsyncScope();
-        TDbContext context = scope.ServiceProvider.GetRequiredService<TDbContext>();
+        await using AsyncServiceScope serviceScope = _scopeFactory.CreateAsyncScope();
+        TDbContext context = serviceScope.ServiceProvider.GetRequiredService<TDbContext>();
 
-        List<TEntity> children = await context.Set<TEntity>()
-            .AsNoTracking()
+        IQueryable<TEntity> queryable = context.Set<TEntity>().AsNoTracking();
+
+        if (_scope == ReferenceDataScope.Global)
+        {
+            queryable = queryable
+                .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+                .Where(e => e.TenantId == null);
+        }
+
+        List<TEntity> children = await queryable
             .Where(e => e.ParentCode == parentCode && e.IsActive)
             .OrderBy(e => e.SortOrder)
             .ThenBy(e => e.Code)
@@ -237,6 +295,15 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
         return children;
     }
+
+    /// <summary>
+    /// Returns a scope-aware duplicate predicate: for Global checks Code only (TenantId=null),
+    /// for Tenant checks Code + current TenantId.
+    /// </summary>
+    private System.Linq.Expressions.Expression<Func<TEntity, bool>> DuplicateCheck(string code) =>
+        _scope == ReferenceDataScope.Global
+            ? e => e.Code == code && e.TenantId == null
+            : e => e.Code == code && e.TenantId == _currentTenant.Id;
 
     private void InvalidateCache(string code)
     {

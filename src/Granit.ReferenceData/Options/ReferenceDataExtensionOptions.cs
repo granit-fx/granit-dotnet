@@ -21,6 +21,12 @@ namespace Granit.ReferenceData.Options;
 public sealed class ReferenceDataExtensionOptions
 {
     /// <summary>
+    /// Gets or sets the multi-tenancy scope for this reference data type.
+    /// Defaults to <see cref="ReferenceDataScope.Global"/> (shared across all tenants).
+    /// </summary>
+    public ReferenceDataScope Scope { get; set; } = ReferenceDataScope.Global;
+
+    /// <summary>
     /// Gets or sets the database table name for this reference data type.
     /// </summary>
     public string TableName { get; set; } = "ref_data";
@@ -55,6 +61,17 @@ public sealed class ReferenceDataExtensionOptions
     public ReferenceDataExtensionOptions Hierarchical()
     {
         IsHierarchical = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the multi-tenancy scope for this reference data type.
+    /// </summary>
+    /// <param name="scope">The scope to apply.</param>
+    /// <returns>This options instance for chaining.</returns>
+    public ReferenceDataExtensionOptions WithScope(ReferenceDataScope scope)
+    {
+        Scope = scope;
         return this;
     }
 

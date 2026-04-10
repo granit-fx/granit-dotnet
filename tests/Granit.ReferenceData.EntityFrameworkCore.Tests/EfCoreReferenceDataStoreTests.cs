@@ -1,10 +1,13 @@
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
+using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -47,7 +50,9 @@ public sealed class EfCoreReferenceDataStoreTests
         return new EfCoreReferenceDataStore<TestEntity, TestDbContext>(
             sp.GetRequiredService<IServiceScopeFactory>(),
             cache,
-            options);
+            options,
+            ReferenceDataScope.Global,
+            Substitute.For<ICurrentTenant>());
     }
 
     private static async Task SeedAsync(
@@ -361,7 +366,7 @@ public sealed class EfCoreReferenceDataStoreTests
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, ReferenceDataScope.Global, Substitute.For<ICurrentTenant>());
 
         // Populate cache by querying
         await store.GetByCodeAsync("DE", TestContext.Current.CancellationToken);

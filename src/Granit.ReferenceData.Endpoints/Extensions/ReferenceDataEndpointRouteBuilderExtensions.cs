@@ -1,5 +1,6 @@
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Endpoints;
+using Granit.ReferenceData.Endpoints.Internal;
 using Granit.ReferenceData.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -19,6 +20,12 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// </summary>
     /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
     /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="scope">
+    /// The multi-tenancy scope. Determines which admin operations are allowed based on
+    /// the current tenant context: <see cref="ReferenceDataScope.Global"/> entries can only
+    /// be managed from the host context, <see cref="ReferenceDataScope.Tenant"/> entries
+    /// can only be managed from a tenant context.
+    /// </param>
     /// <param name="configure">Optional delegate to customize <see cref="ReferenceDataEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     /// <remarks>
@@ -33,12 +40,13 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// </para>
     /// <para>Call from your application:</para>
     /// <code>
-    /// app.MapGranitReferenceData&lt;Country&gt;();
-    /// app.MapGranitReferenceData&lt;Currency&gt;(opts => opts.TagName = "Currencies");
+    /// app.MapGranitReferenceData&lt;Country&gt;(ReferenceDataScope.Global);
+    /// app.MapGranitReferenceData&lt;ProductCategory&gt;(ReferenceDataScope.Tenant);
     /// </code>
     /// </remarks>
     public static RouteGroupBuilder MapGranitReferenceData<TEntity>(
         this IEndpointRouteBuilder endpoints,
+        ReferenceDataScope scope = ReferenceDataScope.Global,
         Action<ReferenceDataEndpointsOptions>? configure = null)
         where TEntity : ReferenceDataEntity, new()
     {
@@ -52,7 +60,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapReadEndpoints<TEntity>();
-        group.MapAdminEndpoints<TEntity>();
+        group.MapAdminEndpoints<TEntity>(scope);
 
         return group;
     }
@@ -65,11 +73,13 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// The logical type name (e.g., <c>"Countries"</c>) as declared in
     /// <c>AddReferenceData&lt;TDbContext&gt;()</c>.
     /// </param>
+    /// <param name="scope">The multi-tenancy scope for this type.</param>
     /// <param name="configure">Optional delegate to customize <see cref="ReferenceDataEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     public static RouteGroupBuilder MapGranitReferenceData(
         this IEndpointRouteBuilder endpoints,
         string typeName,
+        ReferenceDataScope scope = ReferenceDataScope.Global,
         Action<ReferenceDataEndpointsOptions>? configure = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(typeName);
@@ -84,7 +94,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         group.MapDynamicReadEndpoints(typeName);
-        group.MapDynamicAdminEndpoints(typeName);
+        group.MapDynamicAdminEndpoints(typeName, scope);
 
         return group;
     }
@@ -104,7 +114,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
 
         foreach (ReferenceDataTypeRegistration registration in registry.Types)
         {
-            endpoints.MapGranitReferenceData(registration.TypeName, configure);
+            endpoints.MapGranitReferenceData(registration.TypeName, registration.Scope, configure);
         }
 
         return endpoints;

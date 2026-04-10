@@ -1,6 +1,7 @@
 using System.Globalization;
 
 using Granit.Domain;
+using Granit.MultiTenancy;
 
 namespace Granit.ReferenceData.Domain;
 
@@ -28,8 +29,11 @@ namespace Granit.ReferenceData.Domain;
 /// <c>ExtraPropertyMappingOptions&lt;T&gt;.MapProperty()</c> for indexing and querying.
 /// </para>
 /// </remarks>
-public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents
+public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents, IMultiTenant
 {
+    /// <inheritdoc/>
+    public Guid? TenantId { get; set; }
+
     /// <summary>
     /// Unique business key for the reference data entry (e.g., "BE", "EUR", "fr").
     /// Immutable after creation. Used as the lookup key in APIs and seeders.

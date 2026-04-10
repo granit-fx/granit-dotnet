@@ -57,35 +57,45 @@ internal static class ReferenceDataDynamicEndpoints
 
     /// <summary>
     /// Registers POST /, PUT /{code}, and DELETE /{code} for a dynamic reference data type.
+    /// Admin endpoints are protected by a scope-based filter.
     /// </summary>
     internal static RouteGroupBuilder MapDynamicAdminEndpoints(
         this RouteGroupBuilder group,
-        string typeName)
+        string typeName,
+        ReferenceDataScope scope = ReferenceDataScope.Global)
     {
+        ReferenceDataScopeEndpointFilter scopeFilter = new(scope);
+
         group.MapPost("/", CreateAsync)
+            .AddEndpointFilter(scopeFilter)
             .RequireAuthorization(ReferenceDataPermissions.Entries.Create)
             .WithName($"Create{typeName}")
             .WithSummary($"Creates a new {typeName} entry.")
             .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")
             .Produces(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapPut("/{code}", UpdateAsync)
+            .AddEndpointFilter(scopeFilter)
             .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Update{typeName}")
             .WithSummary($"Updates an existing {typeName} entry.")
             .WithDescription($"Updates labels, sort order, active status, and validity dates. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if not found.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapDelete("/{code}", DeactivateAsync)
+            .AddEndpointFilter(scopeFilter)
             .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Deactivate{typeName}")
             .WithSummary($"Deactivates a {typeName} entry (soft delete).")
             .WithDescription($"Sets the entry's active flag to false. Returns 404 if not found.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         return group;

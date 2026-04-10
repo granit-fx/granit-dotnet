@@ -1,3 +1,4 @@
+using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Options;
 
 namespace Granit.ReferenceData;
@@ -13,4 +14,10 @@ namespace Granit.ReferenceData;
 /// <param name="Options">The extension options declared via the fluent builder.</param>
 public sealed record ReferenceDataTypeRegistration(
     string TypeName,
-    ReferenceDataExtensionOptions Options);
+    ReferenceDataExtensionOptions Options)
+{
+    /// <summary>
+    /// Multi-tenancy scope declared for this reference data type.
+    /// </summary>
+    public ReferenceDataScope Scope => Options.Scope;
+}

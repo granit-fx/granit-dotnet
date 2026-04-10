@@ -1,9 +1,11 @@
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -39,6 +41,7 @@ public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
         services.AddSingleton<IOptions<ReferenceDataOptions>>(
             Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()));
         services.AddLogging();
+        services.AddSingleton(Substitute.For<ICurrentTenant>());
         services.AddReferenceDataStore<TestEntity, TestDbContext>();
 
         return services.BuildServiceProvider();

@@ -35,14 +35,21 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
     where TEntity : ReferenceDataEntity
 {
     private readonly string _tableName;
+    private readonly ReferenceDataScope _scope;
 
     /// <summary>
-    /// Initializes a new instance with the specified table name.
+    /// Initializes a new instance with the specified table name and multi-tenancy scope.
     /// </summary>
     /// <param name="tableName">The database table name (e.g., "ref_countries").</param>
-    protected ReferenceDataEntityTypeConfiguration(string tableName)
+    /// <param name="scope">
+    /// The multi-tenancy scope. <see cref="ReferenceDataScope.Global"/> uses a unique index on
+    /// <c>Code</c> alone; <see cref="ReferenceDataScope.Tenant"/> uses a composite index on
+    /// <c>(Code, TenantId)</c>.
+    /// </param>
+    protected ReferenceDataEntityTypeConfiguration(string tableName, ReferenceDataScope scope = ReferenceDataScope.Global)
     {
         _tableName = tableName;
+        _scope = scope;
     }
 
     /// <inheritdoc/>
@@ -52,14 +59,26 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
 
         builder.HasKey(e => e.Id);
 
-        // Business key — unique
+        // TenantId — nullable for IMultiTenant support
+        builder.Property(e => e.TenantId);
+
+        // Business key — unique constraint depends on scope
         builder.Property(e => e.Code)
                .HasMaxLength(50)
                .IsRequired();
 
-        builder.HasIndex(e => e.Code)
-               .IsUnique()
-               .HasDatabaseName($"uq_{_tableName}_code");
+        if (_scope == ReferenceDataScope.Tenant)
+        {
+            builder.HasIndex(e => new { e.Code, e.TenantId })
+                   .IsUnique()
+                   .HasDatabaseName($"uq_{_tableName}_code_tenant");
+        }
+        else
+        {
+            builder.HasIndex(e => e.Code)
+                   .IsUnique()
+                   .HasDatabaseName($"uq_{_tableName}_code");
+        }
 
         // Label (not mapped — virtual property)
         builder.Ignore(e => e.Label);

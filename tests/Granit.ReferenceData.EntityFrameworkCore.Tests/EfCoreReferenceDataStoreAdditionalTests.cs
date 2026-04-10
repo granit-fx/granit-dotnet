@@ -1,10 +1,13 @@
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
+using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -47,7 +50,9 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         return new EfCoreReferenceDataStore<TestEntity, TestDbContext>(
             sp.GetRequiredService<IServiceScopeFactory>(),
             cache,
-            options);
+            options,
+            ReferenceDataScope.Global,
+            Substitute.For<ICurrentTenant>());
     }
 
     private static async Task SeedAsync(
@@ -341,7 +346,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, ReferenceDataScope.Global, Substitute.For<ICurrentTenant>());
 
         // Create entity
         TestEntity entity = new()
@@ -364,7 +369,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
         await store.UpdateAsync(cached, TestContext.Current.CancellationToken);
 
         // Re-fetch — should get updated value
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> freshStore = new(scopeFactory, cache, opts);
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> freshStore = new(scopeFactory, cache, opts, ReferenceDataScope.Global, Substitute.For<ICurrentTenant>());
         TestEntity? updated = await freshStore.GetByCodeAsync("BE", TestContext.Current.CancellationToken);
 
         updated!.LabelEn.ShouldBe("Kingdom of Belgium");

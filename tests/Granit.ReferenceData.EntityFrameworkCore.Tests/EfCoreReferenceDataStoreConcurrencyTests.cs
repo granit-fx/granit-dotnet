@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -6,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 using ZiggyCreatures.Caching.Fusion;
@@ -116,7 +119,9 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
     private static EfCoreReferenceDataStore<TestEntity, TestDbContext> CreateStore(IServiceScopeFactory scopeFactory) =>
         new(scopeFactory,
             new FusionCache(new FusionCacheOptions()),
-            Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()));
+            Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()),
+            ReferenceDataScope.Global,
+            Substitute.For<ICurrentTenant>());
 
     [Fact]
     public async Task CreateAsync_ConcurrentInsert_RecoveredGracefully()

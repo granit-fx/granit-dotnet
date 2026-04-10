@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
@@ -61,6 +62,12 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
+
+        // ICurrentTenant is required by ReferenceDataScopeEndpointFilter.
+        // Default scope is Global, so IsAvailable must return false (host context).
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.IsAvailable.Returns(false);
+        builder.Services.AddSingleton(currentTenant);
 
         _app = builder.Build();
         _app.MapGranitReferenceData<TestRefEntity>();
