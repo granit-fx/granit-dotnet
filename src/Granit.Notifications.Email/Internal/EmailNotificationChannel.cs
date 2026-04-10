@@ -116,6 +116,9 @@ internal sealed partial class EmailNotificationChannel(
         string htmlBody = rendered?.Html
             ?? $"<p>{context.NotificationTypeName}</p>";
 
+        // Apply content transformers (MJML → HTML, CSS inlining, etc.)
+        htmlBody = await ApplyTransformersAsync(htmlBody, cancellationToken).ConfigureAwait(false);
+
         string plainTextBody = await HtmlToPlainTextConverter
             .ConvertAsync(htmlBody, cancellationToken).ConfigureAwait(false);
 
@@ -400,6 +403,32 @@ internal sealed partial class EmailNotificationChannel(
 
         string title = html[start..end].Trim();
         return string.IsNullOrEmpty(title) ? null : title;
+    }
+
+    /// <summary>
+    /// Runs all registered <see cref="IRenderedContentTransformer"/> instances (e.g. MJML → HTML)
+    /// on the final HTML body, mirroring the pipeline in <c>TextTemplateRenderer</c>.
+    /// </summary>
+    private async Task<string> ApplyTransformersAsync(string html, CancellationToken cancellationToken)
+    {
+        IEnumerable<IRenderedContentTransformer>? transformers =
+            serviceProvider.GetService<IEnumerable<IRenderedContentTransformer>>();
+
+        if (transformers is null)
+        {
+            return html;
+        }
+
+        string result = html;
+        foreach (IRenderedContentTransformer transformer in transformers.OrderBy(t => t.Order))
+        {
+            if (transformer.CanTransform(DocumentFormat.Html))
+            {
+                result = await transformer.TransformAsync(result, DocumentFormat.Html, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return result;
     }
 
     /// <summary>Result of rendering a Scriban email template.</summary>
