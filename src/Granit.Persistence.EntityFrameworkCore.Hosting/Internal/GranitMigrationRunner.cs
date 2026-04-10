@@ -376,14 +376,25 @@ internal sealed partial class GranitMigrationRunner(
 
     private static async Task<bool> HasTenantsAsync(ITenantEnumerator enumerator, CancellationToken ct)
     {
-        IAsyncEnumerator<Guid> e = enumerator.GetActiveTenantIdsAsync(ct).GetAsyncEnumerator(ct);
         try
         {
-            return await e.MoveNextAsync().ConfigureAwait(false);
+            IAsyncEnumerator<Guid> e = enumerator.GetActiveTenantIdsAsync(ct).GetAsyncEnumerator(ct);
+            try
+            {
+                return await e.MoveNextAsync().ConfigureAwait(false);
+            }
+            finally
+            {
+                await e.DisposeAsync().ConfigureAwait(false);
+            }
         }
-        finally
+        catch (Exception) when (!ct.IsCancellationRequested)
         {
-            await e.DisposeAsync().ConfigureAwait(false);
+            // Cold start: the tenant table may not exist yet (created by
+            // EnsureHostInternalDbContextsAsync after the migration loop).
+            // Treat as "no tenants" — the post-seed re-migration pass will
+            // pick them up after host seeding creates the tenant records.
+            return false;
         }
     }
 
