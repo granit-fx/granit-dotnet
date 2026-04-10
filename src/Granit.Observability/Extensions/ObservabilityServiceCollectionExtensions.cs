@@ -3,6 +3,7 @@ using Granit.Observability.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -106,7 +107,7 @@ public static class ObservabilityServiceCollectionExtensions
         bool crossCuttingOtlpActive = !string.IsNullOrWhiteSpace(
             builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
 
-        builder.Services.AddOpenTelemetry()
+        OpenTelemetry.IOpenTelemetryBuilder otelBuilder = builder.Services.AddOpenTelemetry()
             .ConfigureResource(r => r.AddService(
                 serviceName: options.ServiceName,
                 serviceVersion: options.ServiceVersion,
@@ -161,5 +162,13 @@ public static class ObservabilityServiceCollectionExtensions
                     metrics.AddOtlpExporter(otlp => otlp.Endpoint = new Uri(options.OtlpEndpoint));
                 }
             });
+
+        // When OTEL_EXPORTER_OTLP_ENDPOINT is set (e.g. by .NET Aspire), use the
+        // cross-cutting UseOtlpExporter() which exports all signals (traces, metrics,
+        // logs) in a single call — avoiding the SDK 1.9+ conflict with per-signal exporters.
+        if (crossCuttingOtlpActive)
+        {
+            otelBuilder.UseOtlpExporter();
+        }
     }
 }
