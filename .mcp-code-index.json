@@ -29420,6 +29420,22 @@
       "members": []
     },
     {
+      "name": "MigrationsModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Extensions.MigrationsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Extensions/MigrationsModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureMigrationsModule",
+          "kind": "method",
+          "signature": "ConfigureMigrationsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
       "name": "PersistenceMigrationsHostApplicationBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Extensions.PersistenceMigrationsHostApplicationBuilderExtensions",
       "kind": "class",
@@ -29540,6 +29556,38 @@
           "kind": "method",
           "signature": "GetActiveTenantIdsAsync(CancellationToken cancellationToken)",
           "returnType": "IAsyncEnumerable<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "MigrationProgress",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Internal.MigrationProgress",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Internal/MigrationProgress.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid Id",
+          "returnType": "Guid"
+        }
+      ]
+    },
+    {
+      "name": "MigrationProgressConfiguration",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Internal.MigrationProgressConfiguration",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Internal/MigrationProgressConfiguration.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Configure",
+          "kind": "method",
+          "signature": "Configure(EntityTypeBuilder<MigrationProgress> builder)",
+          "returnType": "void"
         }
       ]
     },

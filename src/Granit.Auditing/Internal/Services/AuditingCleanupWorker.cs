@@ -48,6 +48,7 @@ internal sealed partial class AuditingCleanupWorker(
         activity?.SetTag("tenant_id", "global");
 
         AuditingOptions options = optionsMonitor.CurrentValue;
+        LogCleanupStarted();
 
         foreach (AuditCategory category in Enum.GetValues<AuditCategory>())
         {
@@ -71,14 +72,19 @@ internal sealed partial class AuditingCleanupWorker(
             if (totalPurged > 0)
             {
                 metrics.RecordPurged(totalPurged, category.ToString(), tenantId: null);
-                LogEntriesPurged(totalPurged, category.ToString());
             }
+
+            LogCategoryPurged(category.ToString(), totalPurged, cutoff);
         }
     }
 
+    [LoggerMessage(Level = LogLevel.Debug,
+        Message = "Audit log cleanup started")]
+    private partial void LogCleanupStarted();
+
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Purged {Count} expired audit log entries for category '{Category}'")]
-    private partial void LogEntriesPurged(long count, string category);
+        Message = "Audit log cleanup '{Category}': purged {Count} entries (cutoff: {Cutoff})")]
+    private partial void LogCategoryPurged(string category, long count, DateTimeOffset cutoff);
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "Audit log cleanup failed")]

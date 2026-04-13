@@ -420,12 +420,9 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         string result = html;
-        foreach (IRenderedContentTransformer transformer in transformers.OrderBy(t => t.Order))
+        foreach (IRenderedContentTransformer transformer in transformers.OrderBy(t => t.Order).Where(t => t.CanTransform(DocumentFormat.Html)))
         {
-            if (transformer.CanTransform(DocumentFormat.Html))
-            {
-                result = await transformer.TransformAsync(result, DocumentFormat.Html, cancellationToken).ConfigureAwait(false);
-            }
+            result = await transformer.TransformAsync(result, DocumentFormat.Html, cancellationToken).ConfigureAwait(false);
         }
 
         return result;
