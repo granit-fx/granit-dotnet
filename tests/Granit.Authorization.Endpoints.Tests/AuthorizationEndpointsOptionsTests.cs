@@ -8,7 +8,7 @@ public sealed class AuthorizationEndpointsOptionsTests
 {
     [Fact]
     public void RoutePrefix_Default_ShouldBeAuth() =>
-        new AuthorizationEndpointsOptions().RoutePrefix.ShouldBe("auth");
+        new AuthorizationEndpointsOptions().RoutePrefix.ShouldBe("authorization");
 
     [Fact]
     public void TagName_Default_ShouldBeAuthorization() =>

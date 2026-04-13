@@ -11,7 +11,7 @@ public sealed class AccountEndpointsOptionsTests
     {
         AccountEndpointsOptions options = new();
 
-        options.AccountRoutePrefix.ShouldBe("api/account");
+        options.AccountRoutePrefix.ShouldBe("account");
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public sealed class AccountEndpointsOptionsTests
     {
         AccountEndpointsOptions options = new();
 
-        options.AdminRoutePrefix.ShouldBe("api/admin");
+        options.AdminRoutePrefix.ShouldBe("admin");
     }
 
     [Fact]

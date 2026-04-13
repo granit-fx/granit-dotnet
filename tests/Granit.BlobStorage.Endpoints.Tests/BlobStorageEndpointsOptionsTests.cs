@@ -11,7 +11,7 @@ public sealed class BlobStorageEndpointsOptionsTests
     {
         BlobStorageEndpointsOptions options = new();
 
-        options.RoutePrefix.ShouldBe("blobs");
+        options.RoutePrefix.ShouldBe("blob-storage");
         options.TagName.ShouldBe("BlobStorage");
     }
 

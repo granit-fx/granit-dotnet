@@ -11,7 +11,7 @@ public sealed class TemplatingEndpointsOptionsTests
     {
         TemplatingEndpointsOptions options = new();
 
-        options.RoutePrefix.ShouldBe("templates");
+        options.RoutePrefix.ShouldBe("templating");
         options.TagName.ShouldBe("Templates");
     }
 

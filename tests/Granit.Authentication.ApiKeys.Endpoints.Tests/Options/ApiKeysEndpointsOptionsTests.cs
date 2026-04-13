@@ -15,7 +15,7 @@ public sealed class ApiKeysEndpointsOptionsTests
     {
         ApiKeysEndpointsOptions options = new();
 
-        options.RoutePrefix.ShouldBe("api-keys");
+        options.RoutePrefix.ShouldBe("authentication");
         options.TagName.ShouldBe("API Keys");
         options.AllowedEnvironments.ShouldBe(["live", "test", "dev"]);
     }
