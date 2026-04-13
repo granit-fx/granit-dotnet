@@ -1,5 +1,7 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -48,8 +50,8 @@ public static class WebhooksEfCoreHostApplicationBuilderExtensions
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IWebhookStatsReader, EfWebhookStatsReader>());
-        builder.Services.Replace(
-            ServiceDescriptor.Scoped<IWebhookQueryableProvider, EfWebhookQueryableProvider>());
+        builder.Services.AddScoped<IQueryableSource<WebhookSubscription>, EfWebhookSubscriptionQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<WebhookDeliveryAttempt>, EfWebhookDeliveryAttemptQueryableSource>();
 
         return builder;
     }

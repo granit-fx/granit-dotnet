@@ -1,18 +1,19 @@
 using Granit.AI.EntityFrameworkCore.Entities;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// EF Core implementation of <see cref="IAIUsageQueryableProvider"/>.
-/// Exposes <see cref="IQueryable{T}"/> access to usage records via <see cref="AIDbContext"/>.
+/// EF Core implementation of <see cref="IQueryableSource{TEntity}"/> for <see cref="AIUsageRecord"/>.
+/// Projects internal <see cref="AIUsageRecordEntity"/> to the public <see cref="AIUsageRecord"/> DTO.
 /// </summary>
-internal sealed class EfAIUsageQueryableProvider(IDbContextFactory<AIDbContext> contextFactory)
-    : IAIUsageQueryableProvider
+internal sealed class EfAIUsageQueryableSource(IDbContextFactory<AIDbContext> contextFactory)
+    : IQueryableSource<AIUsageRecord>
 {
     private readonly AIDbContext _context = contextFactory.CreateDbContext();
 
-    public IQueryable<AIUsageRecord> GetUsageRecords() =>
+    public IQueryable<AIUsageRecord> GetQueryable() =>
         _context.UsageRecords
             .AsNoTracking()
             .Select(e => new AIUsageRecord

@@ -1,6 +1,5 @@
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
-using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Endpoints;
 using Granit.Webhooks.Endpoints.Options;
@@ -8,7 +7,6 @@ using Granit.Webhooks.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Webhooks.Endpoints.Extensions;
 
@@ -63,22 +61,8 @@ public static class WebhooksEndpointRouteBuilderExtensions
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
 
         // Query endpoints for subscription list and delivery attempts.
-        // Use a temporary scope because IWebhookQueryableProvider is Scoped
-        // when EF Core persistence is registered and cannot be resolved from the root provider.
-        bool hasQueryableProvider;
-        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
-        {
-            hasQueryableProvider = scope.ServiceProvider.GetService<IWebhookQueryableProvider>() is not null;
-        }
-
-        if (hasQueryableProvider)
-        {
-            group.MapGroup("subscriptions").MapGranitQuery<WebhookSubscription>(
-                sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetSubscriptions());
-
-            group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
-                sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetDeliveryAttempts());
-        }
+        group.MapGroup("subscriptions").MapGranitQuery<WebhookSubscription>();
+        group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>();
 
         return group;
     }

@@ -1,5 +1,7 @@
+using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,7 +42,7 @@ public static class BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensio
         builder.Services.AddScoped<IBlobDescriptorReader>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
         builder.Services.AddScoped<IBlobDescriptorWriter>(sp => sp.GetRequiredService<EfBlobDescriptorStore>());
 
-        builder.Services.AddScoped<IBlobQueryableProvider, EfBlobQueryableProvider>();
+        builder.Services.AddScoped<IQueryableSource<BlobDescriptor>, EfBlobQueryableSource>();
 
         return builder;
     }

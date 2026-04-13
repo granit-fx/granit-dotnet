@@ -7,7 +7,6 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Scheduling.Endpoints.Extensions;
 
@@ -50,17 +49,8 @@ public static class SchedulingEndpointRouteBuilderExtensions
         actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Manage).MapWriteEndpoints();
 
         // QueryEngine-powered list endpoint with pagination, filtering, and sorting
-        bool hasQueryableProvider;
-        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
-        {
-            hasQueryableProvider = scope.ServiceProvider.GetService<IScheduledActionQueryableProvider>() is not null;
-        }
-
-        if (hasQueryableProvider)
-        {
-            actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read).MapGranitQuery<ScheduledAction>(
-                sp => sp.GetRequiredService<IScheduledActionQueryableProvider>().GetScheduledActions());
-        }
+        actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read)
+            .MapGranitQuery<ScheduledAction>();
 
         return group;
     }

@@ -2448,7 +2448,7 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Extensions/AIEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitAI",
@@ -2858,22 +2858,6 @@
           "kind": "method",
           "signature": "CheckAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<AIQuotaResult>"
-        }
-      ]
-    },
-    {
-      "name": "IAIUsageQueryableProvider",
-      "fqn": "Granit.AI.IAIUsageQueryableProvider",
-      "kind": "interface",
-      "project": "Granit.AI",
-      "file": "src/Granit.AI/IAIUsageQueryableProvider.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "GetUsageRecords",
-          "kind": "method",
-          "signature": "GetUsageRecords()",
-          "returnType": "IQueryable<AIUsageRecord>"
         }
       ]
     },
@@ -7901,7 +7885,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Extensions/BlobStorageEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitBlobStorage",
@@ -8297,22 +8281,6 @@
           "kind": "method",
           "signature": "TryExtractTenantId(string objectKey, out string? tenantId)",
           "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "IBlobQueryableProvider",
-      "fqn": "Granit.BlobStorage.IBlobQueryableProvider",
-      "kind": "interface",
-      "project": "Granit.BlobStorage",
-      "file": "src/Granit.BlobStorage/IBlobQueryableProvider.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "GetDescriptors",
-          "kind": "method",
-          "signature": "GetDescriptors()",
-          "returnType": "IQueryable<BlobDescriptor>"
         }
       ]
     },
@@ -33927,7 +33895,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/Extensions/SchedulingEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitScheduling",
@@ -34099,22 +34067,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IScheduledActionQueryableProvider",
-      "fqn": "Granit.Scheduling.IScheduledActionQueryableProvider",
-      "kind": "interface",
-      "project": "Granit.Scheduling",
-      "file": "src/Granit.Scheduling/IScheduledActionQueryableProvider.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "GetScheduledActions",
-          "kind": "method",
-          "signature": "GetScheduledActions()",
-          "returnType": "IQueryable<ScheduledAction>"
         }
       ]
     },
@@ -40643,28 +40595,6 @@
       "members": []
     },
     {
-      "name": "IWebhookQueryableProvider",
-      "fqn": "Granit.Webhooks.Abstractions.IWebhookQueryableProvider",
-      "kind": "interface",
-      "project": "Granit.Webhooks",
-      "file": "src/Granit.Webhooks/Abstractions/IWebhookQueryableProvider.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "GetSubscriptions",
-          "kind": "method",
-          "signature": "GetSubscriptions()",
-          "returnType": "IQueryable<WebhookSubscription>"
-        },
-        {
-          "name": "GetDeliveryAttempts",
-          "kind": "method",
-          "signature": "GetDeliveryAttempts()",
-          "returnType": "IQueryable<WebhookDeliveryAttempt>"
-        }
-      ]
-    },
-    {
       "name": "IWebhookSecretProtector",
       "fqn": "Granit.Webhooks.Abstractions.IWebhookSecretProtector",
       "kind": "interface",
@@ -41135,7 +41065,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Extensions/WebhooksEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitWebhooks",
@@ -41241,7 +41171,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEfCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",

@@ -1,4 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
+using Granit.Scheduling.Domain;
 using Granit.Scheduling.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +38,7 @@ public static class SchedulingEntityFrameworkCoreHostApplicationBuilderExtension
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IScheduledActionWriter>(sp => sp.GetRequiredService<EfScheduledActionStore>()));
 
-        builder.Services.AddScoped<IScheduledActionQueryableProvider, EfScheduledActionQueryableProvider>();
+        builder.Services.AddScoped<IQueryableSource<ScheduledAction>, EfScheduledActionQueryableSource>();
 
         return builder;
     }

@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Granit.AI.Workspaces;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +40,7 @@ public static class AIEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<IAIWorkspaceStoreWriter>(sp => sp.GetRequiredService<EfAIWorkspaceStore>());
 
         builder.Services.AddScoped<IAIUsageTracker, EfAIUsageStore>();
-        builder.Services.AddScoped<IAIUsageQueryableProvider, EfAIUsageQueryableProvider>();
+        builder.Services.AddScoped<IQueryableSource<AIUsageRecord>, EfAIUsageQueryableSource>();
 
         return builder;
     }

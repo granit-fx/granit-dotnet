@@ -6,7 +6,6 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.AI.Endpoints.Extensions;
 
@@ -49,22 +48,10 @@ public static class AIEndpointRouteBuilderExtensions
         adminGroup.MapWorkspaceEndpoints();
 
         // Admin endpoints — usage tracking via Granit.QueryEngine.
-        // Use a temporary scope because IAIUsageQueryableProvider is Scoped
-        // when EF Core persistence is registered and cannot be resolved from the root provider.
-        bool hasQueryableProvider;
-        using (IServiceScope scope = endpoints.ServiceProvider.CreateScope())
-        {
-            hasQueryableProvider = scope.ServiceProvider.GetService<IAIUsageQueryableProvider>() is not null;
-        }
-
-        if (hasQueryableProvider)
-        {
-            RouteGroupBuilder usageGroup = group.MapGroup("usage")
-                .WithTags(options.UsageTagName)
-                .RequireAuthorization(AIPermissions.Usage.Read);
-            usageGroup.MapGranitQuery<AIUsageRecord>(
-                sp => sp.GetRequiredService<IAIUsageQueryableProvider>().GetUsageRecords());
-        }
+        RouteGroupBuilder usageGroup = group.MapGroup("usage")
+            .WithTags(options.UsageTagName)
+            .RequireAuthorization(AIPermissions.Usage.Read);
+        usageGroup.MapGranitQuery<AIUsageRecord>();
 
         // User endpoints — chat completion proxy
         RouteGroupBuilder chatGroup = group.MapGroup("")
