@@ -131,16 +131,16 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/jobs` | ListImportJobs | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/` | CreateImportJob | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/{jobId}/preview` | PreviewImportJob | `DataExchange.Import.*` |
-| <Badge text="PUT" variant="caution" /> | `/{jobId}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/{jobId}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/{jobId}/dry-run` | DryRunImportJob | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/{jobId}` | GetImportJob | `DataExchange.Import.*` |
-| <Badge text="DELETE" variant="danger" /> | `/{jobId}` | DeleteImportJob | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/{jobId}/report` | GetImportReport | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/{jobId}/correction-file` | DownloadImportCorrectionFile | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/jobs` | ListImportJobs | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import` | CreateImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId}/preview` | PreviewImportJob | `DataExchange.Import.*` |
+| <Badge text="PUT" variant="caution" /> | `/import/{jobId}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId}/dry-run` | DryRunImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId}` | GetImportJob | `DataExchange.Import.*` |
+| <Badge text="DELETE" variant="danger" /> | `/import/{jobId}` | DeleteImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId}/report` | GetImportReport | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId}/correction-file` | DownloadImportCorrectionFile | `DataExchange.Import.*` |
 
 ### Export
 
@@ -148,8 +148,8 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/export/jobs` | ListExportJobs | `DataExchange.Export.*` |
 | <Badge text="POST" variant="success" /> | `/export/jobs` | CreateExportJob | `DataExchange.Export.*` |
-| <Badge text="GET" variant="note" /> | `/export/jobs/{id}` | GetExportJob | `DataExchange.Export.*` |
-| <Badge text="GET" variant="note" /> | `/export/jobs/{id}/download` | DownloadExportFile | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId}` | GetExportJob | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId}/download` | DownloadExportFile | `DataExchange.Export.*` |
 
 ### Metadata
 

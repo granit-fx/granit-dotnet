@@ -64,6 +64,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
 
         // Import endpoints (listing, upload, mappings, execution, reports)
         RouteGroupBuilder importGroup = group
+            .MapGroup("import")
             .RequireAuthorization(DataExchangePermissions.Imports.Execute);
 
         importGroup.MapImportJobListEndpoints();
