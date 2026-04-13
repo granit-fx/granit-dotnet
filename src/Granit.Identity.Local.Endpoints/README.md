@@ -12,11 +12,11 @@ provider (e.g. Duende Identity Server).
 ```csharp
 builder.AddGranit(granit => granit.AddOpenIddict());
 
-// Map account self-service endpoints (/api/account)
-app.MapGranitAccount();
+// Map account self-service endpoints (on versioned API group)
+api.MapGranitAccount();
 
-// Map OpenIddict OIDC endpoints (/connect/*, /api/admin/oidc)
-app.MapGranitOpenIddict();
+// Map OpenIddict admin + account OIDC endpoints
+api.MapGranitOpenIddict();
 app.MapGranitOpenIddictServer();
 ```
 

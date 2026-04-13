@@ -295,18 +295,18 @@ environment variables. Never commit secrets to source control.
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
-| `AccountRoutePrefix` | `string` | `"api/account"` | Route prefix for account self-service endpoints. |
-| `AdminRoutePrefix` | `string` | `"api/admin"` | Route prefix for admin management endpoints. |
+| `AccountRoutePrefix` | `string` | `"account"` | Route prefix for account self-service endpoints. |
+| `AdminRoutePrefix` | `string` | `"admin"` | Route prefix for admin management endpoints. |
 | `AccountTagName` | `string` | `"Account"` | OpenAPI tag for account endpoints. |
 | `AdminTagName` | `string` | `"Administration"` | OpenAPI tag for admin endpoints. |
 
 **Example:**
 
 ```csharp
-app.MapGranitOpenIddict(options =>
+api.MapGranitOpenIddict(options =>
 {
-    options.AccountRoutePrefix = "api/v1/account";
-    options.AdminRoutePrefix = "api/v1/admin";
+    options.AccountRoutePrefix = "account";
+    options.AdminRoutePrefix = "admin";
 });
 ```
 
