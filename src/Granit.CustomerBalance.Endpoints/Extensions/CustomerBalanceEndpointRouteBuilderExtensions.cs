@@ -38,7 +38,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
             .Produces<IReadOnlyList<BalanceTransactionResponse>>()
             .RequireAuthorization(CustomerBalancePermissions.Transactions.Read);
 
-        group.MapPost("/credit", AdminCreditEndpoint.HandleAsync)
+        group.MapPost("/balance/credit", AdminCreditEndpoint.HandleAsync)
             .WithName("AddAdminCredit")
             .WithSummary("Adds a manual credit to the tenant's balance.")
             .WithDescription(

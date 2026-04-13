@@ -40,28 +40,30 @@ public static class ApiKeysEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
+        RouteGroupBuilder keysGroup = group.MapGroup("api-keys");
+
         // Read endpoints (list, get by ID)
-        group
+        keysGroup
             .RequireAuthorization(ApiKeyPermissions.Keys.Read)
             .MapReadEndpoints();
 
         // Create endpoint
-        group
+        keysGroup
             .RequireAuthorization(ApiKeyPermissions.Keys.Create)
             .MapCreateEndpoints();
 
         // Revoke endpoint
-        group
+        keysGroup
             .RequireAuthorization(ApiKeyPermissions.Keys.Revoke)
             .MapRevokeEndpoints();
 
         // Rotate endpoint
-        group
+        keysGroup
             .RequireAuthorization(ApiKeyPermissions.Keys.Rotate)
             .MapRotateEndpoints();
 
         // Update scopes endpoint
-        group
+        keysGroup
             .RequireAuthorization(ApiKeyPermissions.Keys.UpdateScopes)
             .MapScopesEndpoints();
 

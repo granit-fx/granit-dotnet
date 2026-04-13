@@ -6,9 +6,9 @@ namespace Granit.Auditing.Endpoints.Options;
 public sealed class AuditingEndpointsOptions
 {
     /// <summary>
-    /// Route prefix for audit log endpoints. Default: <c>"audit-log"</c>.
+    /// Route prefix for audit log endpoints. Default: <c>"auditing"</c>.
     /// </summary>
-    public string RoutePrefix { get; set; } = "audit-log";
+    public string RoutePrefix { get; set; } = "auditing";
 
     /// <summary>
     /// OpenAPI tag name for the audit log endpoints.

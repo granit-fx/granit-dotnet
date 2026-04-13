@@ -19,8 +19,8 @@ public static class AuthorizationEndpointRouteBuilderExtensions
     /// <remarks>
     /// <para>Registers three endpoint groups:</para>
     /// <list type="bullet">
-    /// <item><c>GET /{prefix}/me</c> — current user's granted permissions (authenticated only)</item>
-    /// <item><c>GET /{prefix}/definitions</c> — all permission definitions (admin)</item>
+    /// <item><c>GET /{prefix}/permissions</c> — current user's granted permissions (authenticated only)</item>
+    /// <item><c>GET /{prefix}/permissions/definitions</c> — all permission definitions (admin)</item>
     /// <item><c>GET/PUT/DELETE /{prefix}/roles/{roleName}/...</c> — grant management (admin)</item>
     /// </list>
     /// <para>Call this from your application route registration:</para>
@@ -49,8 +49,9 @@ public static class AuthorizationEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        group.MapMyPermissionsEndpoints();
-        group.MapPermissionDefinitionsEndpoints();
+        RouteGroupBuilder permissionsGroup = group.MapGroup("permissions");
+        permissionsGroup.MapMyPermissionsEndpoints();
+        permissionsGroup.MapPermissionDefinitionsEndpoints();
         group.MapPermissionGrantEndpoints();
 
         return group;

@@ -18,16 +18,37 @@ namespace Granit.QueryEngine.AspNetCore.Extensions;
 public static class QueryEndpointRouteBuilderExtensions
 {
     /// <summary>
+    /// Maps query endpoints for <typeparamref name="TEntity"/>, resolving the base
+    /// <see cref="IQueryable{T}"/> from <see cref="IQueryableSource{TEntity}"/> in DI.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type to query.</typeparam>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="prefix">Optional route prefix for the query group (e.g. <c>"products"</c>). Defaults to empty.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="QueryEndpointOptions"/>.</param>
+    /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
+    public static RouteGroupBuilder MapGranitQuery<TEntity>(
+        this IEndpointRouteBuilder endpoints,
+        string prefix = "",
+        Action<QueryEndpointOptions>? configure = null)
+        where TEntity : class
+    {
+        return endpoints.MapGranitQuery<TEntity>(
+            sp => sp.GetRequiredService<IQueryableSource<TEntity>>().GetQueryable(),
+            prefix,
+            configure);
+    }
+
+    /// <summary>
     /// Maps query endpoints for <typeparamref name="TEntity"/> using the specified
     /// <paramref name="sourceProvider"/> to resolve the base <see cref="IQueryable{T}"/>.
     /// </summary>
     /// <typeparam name="TEntity">The entity type to query.</typeparam>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="pattern">The route pattern (e.g. <c>"/api/products"</c>).</param>
     /// <param name="sourceProvider">
     /// Delegate that resolves the base <see cref="IQueryable{TEntity}"/> from the DI container.
     /// Example: <c>sp => sp.GetRequiredService&lt;AppDbContext&gt;().Products.AsNoTracking()</c>.
     /// </param>
+    /// <param name="prefix">Optional route prefix for the query group (e.g. <c>"products"</c>). Defaults to empty (mounts on the current group).</param>
     /// <param name="configure">Optional delegate to customize <see cref="QueryEndpointOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     /// <remarks>
@@ -44,8 +65,8 @@ public static class QueryEndpointRouteBuilderExtensions
     /// </remarks>
     public static RouteGroupBuilder MapGranitQuery<TEntity>(
         this IEndpointRouteBuilder endpoints,
-        string pattern,
         Func<IServiceProvider, IQueryable<TEntity>> sourceProvider,
+        string prefix = "",
         Action<QueryEndpointOptions>? configure = null)
         where TEntity : class
     {
@@ -55,7 +76,7 @@ public static class QueryEndpointRouteBuilderExtensions
         string tag = options.TagName ?? typeof(TEntity).Name;
         string entityName = typeof(TEntity).Name;
 
-        RouteGroupBuilder group = endpoints.MapGranitGroup(pattern).WithTags(tag);
+        RouteGroupBuilder group = endpoints.MapGranitGroup(prefix).WithTags(tag);
 
         if (options.AuthorizationPolicy is not null)
         {

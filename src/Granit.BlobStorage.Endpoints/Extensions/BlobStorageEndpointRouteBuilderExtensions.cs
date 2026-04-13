@@ -45,9 +45,11 @@ public static class BlobStorageEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        group.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapReadEndpoints();
-        group.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapWriteEndpoints();
-        group.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapOperationEndpoints();
+        RouteGroupBuilder blobsGroup = group.MapGroup("blobs");
+
+        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapReadEndpoints();
+        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapWriteEndpoints();
+        blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapOperationEndpoints();
 
         // Use a temporary scope because IBlobQueryableProvider is Scoped
         // when EF Core persistence is registered and cannot be resolved from the root provider.
@@ -59,8 +61,7 @@ public static class BlobStorageEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            group.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapGranitQuery<BlobDescriptor>(
-                "query",
+            blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapGranitQuery<BlobDescriptor>(
                 sp => sp.GetRequiredService<IBlobQueryableProvider>().GetDescriptors());
         }
 

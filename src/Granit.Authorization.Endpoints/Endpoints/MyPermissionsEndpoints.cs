@@ -14,11 +14,11 @@ namespace Granit.Authorization.Endpoints.Endpoints;
 internal static class MyPermissionsEndpoints
 {
     /// <summary>
-    /// Registers GET /me onto the given route group.
+    /// Registers GET / onto the permissions route group.
     /// </summary>
     internal static RouteGroupBuilder MapMyPermissionsEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/me", GetMyPermissionsAsync)
+        group.MapGet("/", GetMyPermissionsAsync)
             .WithName("GetMyPermissions")
             .WithSummary("Returns the list of permissions granted to the current user.")
             .WithDescription("Evaluates all registered permission definitions against the current user's claims and roles. Returns the flat list of granted permission names. Useful for front-end UI to conditionally render actions based on the user's effective permissions.")

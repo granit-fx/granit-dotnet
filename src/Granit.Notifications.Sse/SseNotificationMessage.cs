@@ -17,7 +17,7 @@ public sealed record SseNotificationMessage
     public NotificationSeverity Severity { get; init; }
 
     /// <summary>Notification payload as a JSON element.</summary>
-    public JsonElement Data { get; init; }
+    public JsonElement? Data { get; init; }
 
     /// <summary>Related entity type, if any.</summary>
     public string? RelatedEntityType { get; init; }

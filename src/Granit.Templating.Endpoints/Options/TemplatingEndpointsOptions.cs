@@ -7,9 +7,9 @@ public sealed class TemplatingEndpointsOptions
 {
     /// <summary>
     /// Route prefix for all template admin endpoints.
-    /// Default: <c>"templates"</c>.
+    /// Default: <c>"templating"</c>.
     /// </summary>
-    public string RoutePrefix { get; set; } = "templates";
+    public string RoutePrefix { get; set; } = "templating";
 
     /// <summary>
     /// OpenAPI tag name for all template admin endpoints.

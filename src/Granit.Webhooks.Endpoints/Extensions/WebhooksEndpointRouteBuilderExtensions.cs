@@ -73,12 +73,10 @@ public static class WebhooksEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            group.MapGranitQuery<WebhookSubscription>(
-                "subscriptions/query",
+            group.MapGroup("subscriptions").MapGranitQuery<WebhookSubscription>(
                 sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetSubscriptions());
 
-            group.MapGranitQuery<WebhookDeliveryAttempt>(
-                "deliveries/query",
+            group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
                 sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetDeliveryAttempts());
         }
 

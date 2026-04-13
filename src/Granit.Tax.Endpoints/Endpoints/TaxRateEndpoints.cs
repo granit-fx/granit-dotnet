@@ -14,7 +14,7 @@ internal static class TaxRateEndpoints
 {
     internal static RouteGroupBuilder MapRateEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/rates", GetAllRatesAsync)
+        group.MapGet("/", GetAllRatesAsync)
             .RequireAuthorization(TaxPermissions.Rates.Read)
             .WithName("GetAllTaxRates")
             .WithSummary("Returns all currently effective tax rates.")
@@ -24,7 +24,7 @@ internal static class TaxRateEndpoints
                 + "or database-managed overrides when the EF Core package is registered).")
             .Produces<IReadOnlyList<TaxRateResponse>>();
 
-        group.MapGet("/rates/{countryCode}", GetRateByCountryAsync)
+        group.MapGet("/{countryCode}", GetRateByCountryAsync)
             .RequireAuthorization(TaxPermissions.Rates.Read)
             .WithName("GetTaxRateByCountry")
             .WithSummary("Returns the current tax rate for a specific country.")

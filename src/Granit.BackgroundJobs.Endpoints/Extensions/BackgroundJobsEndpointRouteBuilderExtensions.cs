@@ -51,8 +51,9 @@ public static class BackgroundJobsEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        group.RequireAuthorization(BackgroundJobsPermissions.Jobs.Read).MapReadEndpoints();
-        group.RequireAuthorization(BackgroundJobsPermissions.Jobs.Manage).MapWriteEndpoints();
+        RouteGroupBuilder jobsGroup = group.MapGroup("jobs");
+        jobsGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Read).MapReadEndpoints();
+        jobsGroup.RequireAuthorization(BackgroundJobsPermissions.Jobs.Manage).MapWriteEndpoints();
 
         return group;
     }

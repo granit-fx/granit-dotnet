@@ -59,11 +59,10 @@ public static class AIEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            RouteGroupBuilder usageGroup = group.MapGroup("")
+            RouteGroupBuilder usageGroup = group.MapGroup("usage")
                 .WithTags(options.UsageTagName)
                 .RequireAuthorization(AIPermissions.Usage.Read);
             usageGroup.MapGranitQuery<AIUsageRecord>(
-                "usage/query",
                 sp => sp.GetRequiredService<IAIUsageQueryableProvider>().GetUsageRecords());
         }
 

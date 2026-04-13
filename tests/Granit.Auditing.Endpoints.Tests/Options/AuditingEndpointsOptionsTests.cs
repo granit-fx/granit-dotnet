@@ -11,7 +11,7 @@ public sealed class AuditingEndpointsOptionsTests
     {
         AuditingEndpointsOptions options = new();
 
-        options.RoutePrefix.ShouldBe("audit-log");
+        options.RoutePrefix.ShouldBe("auditing");
         options.TagName.ShouldBe("Audit Log");
     }
 

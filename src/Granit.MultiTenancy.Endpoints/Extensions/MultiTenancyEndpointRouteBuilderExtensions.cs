@@ -34,12 +34,14 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
             .RequireAuthorization()
             .WithTags(options.TagName);
 
-        MapListEndpoint(group);
-        MapGetByIdEndpoint(group);
-        MapCreateEndpoint(group);
-        MapUpdateEndpoint(group);
-        MapActivateEndpoint(group);
-        MapDeactivateEndpoint(group);
+        RouteGroupBuilder tenantsGroup = group.MapGroup("tenants");
+
+        MapListEndpoint(tenantsGroup);
+        MapGetByIdEndpoint(tenantsGroup);
+        MapCreateEndpoint(tenantsGroup);
+        MapUpdateEndpoint(tenantsGroup);
+        MapActivateEndpoint(tenantsGroup);
+        MapDeactivateEndpoint(tenantsGroup);
 
         return group;
     }

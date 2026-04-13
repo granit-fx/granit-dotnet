@@ -7,9 +7,9 @@ public sealed class MultiTenancyEndpointsOptions
 {
     /// <summary>
     /// Route prefix for all tenant management endpoints.
-    /// Default: <c>"admin/tenants"</c>.
+    /// Default: <c>"multi-tenancy"</c>.
     /// </summary>
-    public string RoutePrefix { get; set; } = "admin/tenants";
+    public string RoutePrefix { get; set; } = "multi-tenancy";
 
     /// <summary>
     /// OpenAPI tag name for all tenant management endpoints.

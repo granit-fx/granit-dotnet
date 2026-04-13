@@ -44,8 +44,10 @@ public static class SchedulingEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        group.RequireAuthorization(SchedulingPermissions.Actions.Read).MapReadEndpoints();
-        group.RequireAuthorization(SchedulingPermissions.Actions.Manage).MapWriteEndpoints();
+        RouteGroupBuilder actionsGroup = group.MapGroup("scheduled-actions");
+
+        actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read).MapReadEndpoints();
+        actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Manage).MapWriteEndpoints();
 
         // QueryEngine-powered list endpoint with pagination, filtering, and sorting
         bool hasQueryableProvider;
@@ -56,8 +58,7 @@ public static class SchedulingEndpointRouteBuilderExtensions
 
         if (hasQueryableProvider)
         {
-            group.RequireAuthorization(SchedulingPermissions.Actions.Read).MapGranitQuery<ScheduledAction>(
-                "query",
+            actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read).MapGranitQuery<ScheduledAction>(
                 sp => sp.GetRequiredService<IScheduledActionQueryableProvider>().GetScheduledActions());
         }
 

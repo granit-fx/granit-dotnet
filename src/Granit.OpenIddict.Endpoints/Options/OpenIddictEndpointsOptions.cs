@@ -5,9 +5,9 @@ namespace Granit.OpenIddict.Endpoints.Options;
 /// </summary>
 public sealed class OpenIddictEndpointsOptions
 {
-    /// <summary>Route prefix for account self-service endpoints. Default: <c>"api/account"</c>.</summary>
-    public string AccountRoutePrefix { get; set; } = "api/account";
+    /// <summary>Route prefix for account self-service endpoints. Default: <c>"account"</c>.</summary>
+    public string AccountRoutePrefix { get; set; } = "account";
 
-    /// <summary>Route prefix for admin management endpoints. Default: <c>"api/admin"</c>.</summary>
-    public string AdminRoutePrefix { get; set; } = "api/admin";
+    /// <summary>Route prefix for admin management endpoints. Default: <c>"admin"</c>.</summary>
+    public string AdminRoutePrefix { get; set; } = "admin";
 }

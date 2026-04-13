@@ -12,9 +12,9 @@ public sealed class AuthorizationEndpointsOptions
 
     /// <summary>
     /// Route prefix for all authorization endpoints.
-    /// Default: <c>"auth"</c>.
+    /// Default: <c>"authorization"</c>.
     /// </summary>
-    public string RoutePrefix { get; set; } = "auth";
+    public string RoutePrefix { get; set; } = "authorization";
 
     /// <summary>
     /// OpenAPI tag name for grouping authorization endpoints in Swagger UI.

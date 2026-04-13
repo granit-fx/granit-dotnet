@@ -53,8 +53,8 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
 
         // Map query endpoints with a fake source
         _app.MapGranitQuery<TestProduct>(
-            Prefix,
-            _ => Array.Empty<TestProduct>().AsQueryable());
+            _ => Array.Empty<TestProduct>().AsQueryable(),
+            Prefix);
 
         _app.StartAsync().GetAwaiter().GetResult();
 
@@ -378,8 +378,8 @@ public sealed class QueryEndpointIntegrationTests : IAsyncDisposable
 
         await using WebApplication customApp = builder.Build();
         customApp.MapGranitQuery<TestProduct>(
-            "/api/items",
             _ => Array.Empty<TestProduct>().AsQueryable(),
+            "/api/items",
             opts =>
             {
                 opts.IncludeMetaEndpoint = false;

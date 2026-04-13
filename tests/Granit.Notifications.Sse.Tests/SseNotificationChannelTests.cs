@@ -62,7 +62,7 @@ public sealed class SseNotificationChannelTests
         _captured!.NotificationId.ShouldBe(context.NotificationId);
         _captured.NotificationTypeName.ShouldBe(context.NotificationTypeName);
         _captured.Severity.ShouldBe(context.Severity);
-        _captured.Data.GetProperty("key").GetString().ShouldBe("value");
+        _captured.Data!.Value.GetProperty("key").GetString().ShouldBe("value");
         _captured.OccurredAt.ShouldBe(context.OccurredAt);
     }
 

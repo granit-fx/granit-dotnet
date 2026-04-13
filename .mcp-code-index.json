@@ -2580,7 +2580,7 @@
       "kind": "class",
       "project": "Granit.AI.EntityFrameworkCore",
       "file": "src/Granit.AI.EntityFrameworkCore/Extensions/AIEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitAIEntityFrameworkCore",
@@ -7975,7 +7975,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage.EntityFrameworkCore",
       "file": "src/Granit.BlobStorage.EntityFrameworkCore/Extensions/BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitBlobStorageEntityFrameworkCore",
@@ -32616,6 +32616,22 @@
       ]
     },
     {
+      "name": "IQueryableSource",
+      "fqn": "Granit.QueryEngine.IQueryableSource",
+      "kind": "interface",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/IQueryableSource.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "GetQueryable",
+          "kind": "method",
+          "signature": "GetQueryable()",
+          "returnType": "IQueryable<TEntity>"
+        }
+      ]
+    },
+    {
       "name": "ColumnDefinition",
       "fqn": "Granit.QueryEngine.Meta.ColumnDefinition",
       "kind": "record",
@@ -33976,7 +33992,7 @@
       "kind": "class",
       "project": "Granit.Scheduling.EntityFrameworkCore",
       "file": "src/Granit.Scheduling.EntityFrameworkCore/Extensions/SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitSchedulingEntityFrameworkCore",
@@ -41225,7 +41241,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEfCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitWebhooksEntityFrameworkCore",

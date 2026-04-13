@@ -84,7 +84,9 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         // ----- Read endpoints (Templates.Read) -----
 
-        group.MapGet("/", HandleListAsync)
+        RouteGroupBuilder templateGroup = group.MapGroup("templates");
+
+        templateGroup.MapGet("/", HandleListAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("ListTemplates")
              .WithSummary("Returns a paginated list of templates with filters.")
@@ -93,7 +95,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapGet("/{name}", HandleGetDetailAsync)
+        templateGroup.MapGet("/{name}", HandleGetDetailAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("GetTemplateDetail")
              .WithSummary("Returns detail of a template (current draft and published revision).")
@@ -103,7 +105,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapGet("/{name}/lifecycle", HandleGetLifecycleAsync)
+        templateGroup.MapGet("/{name}/lifecycle", HandleGetLifecycleAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("GetTemplateLifecycle")
              .WithSummary("Returns lifecycle status, workflow state, and available transitions.")
@@ -113,7 +115,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapGet("/{name}/variables", HandleGetVariablesAsync)
+        templateGroup.MapGet("/{name}/variables", HandleGetVariablesAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("GetTemplateVariables")
              .WithSummary("Returns all available template variables (global, model, enriched) for autocompletion.")
@@ -121,7 +123,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .Produces<TemplateVariablesResponse>()
              .ProducesProblem(StatusCodes.Status400BadRequest);
 
-        group.MapGet("/{name}/history", HandleGetHistoryAsync)
+        templateGroup.MapGet("/{name}/history", HandleGetHistoryAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("GetTemplateHistory")
              .WithSummary("Returns a paginated revision history for the template (without content).")
@@ -130,7 +132,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapGet("/{name}/history/{revisionId:guid}", HandleGetRevisionDetailAsync)
+        templateGroup.MapGet("/{name}/history/{revisionId:guid}", HandleGetRevisionDetailAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
              .WithName("GetTemplateRevisionDetail")
              .WithSummary("Returns the full detail of a specific template revision (including content).")
@@ -142,7 +144,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         // ----- Write endpoints (Templates.Manage) -----
 
-        group.MapPost("/", HandleCreateAsync)
+        templateGroup.MapPost("/", HandleCreateAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("CreateTemplateDraft")
              .WithSummary("Creates a new template draft.")
@@ -152,7 +154,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapPut("/{name}", HandleUpdateAsync)
+        templateGroup.MapPut("/{name}", HandleUpdateAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("UpdateTemplateDraft")
              .WithSummary("Updates an existing template draft.")
@@ -162,7 +164,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapDelete("/{name}/draft", HandleDeleteDraftAsync)
+        templateGroup.MapDelete("/{name}/draft", HandleDeleteDraftAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("DeleteTemplateDraft")
              .WithSummary("Deletes the draft revision of a template (published/archived are preserved).")
@@ -171,7 +173,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapPost("/{name}/publish", HandlePublishAsync)
+        templateGroup.MapPost("/{name}/publish", HandlePublishAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("PublishTemplate")
              .WithSummary("Publishes the current draft, archiving any previous published revision.")
@@ -181,7 +183,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapPost("/{name}/unpublish", HandleUnpublishAsync)
+        templateGroup.MapPost("/{name}/unpublish", HandleUnpublishAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("UnpublishTemplate")
              .WithSummary("Unpublishes the template (archives the published revision).")
@@ -190,7 +192,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesProblem(StatusCodes.Status501NotImplemented);
 
-        group.MapPost("/{name}/preview", HandlePreviewAsync)
+        templateGroup.MapPost("/{name}/preview", HandlePreviewAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Manage)
              .WithName("PreviewTemplate")
              .WithSummary("Renders the current draft with optional test data and returns the HTML output.")

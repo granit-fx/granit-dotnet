@@ -8,8 +8,8 @@ public sealed class ApiKeysEndpointsOptions
     /// <summary>Configuration section name.</summary>
     public const string SectionName = "ApiKeysEndpoints";
 
-    /// <summary>Route prefix for API key endpoints. Default: <c>api-keys</c>.</summary>
-    public string RoutePrefix { get; set; } = "api-keys";
+    /// <summary>Route prefix for API key endpoints. Default: <c>authentication</c>.</summary>
+    public string RoutePrefix { get; set; } = "authentication";
 
     /// <summary>OpenAPI tag name. Default: <c>API Keys</c>.</summary>
     public string TagName { get; set; } = "API Keys";

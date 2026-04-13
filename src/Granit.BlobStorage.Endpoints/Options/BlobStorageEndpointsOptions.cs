@@ -10,9 +10,9 @@ public sealed class BlobStorageEndpointsOptions
 
     /// <summary>
     /// Route prefix for all blob storage endpoints.
-    /// Default: <c>"blobs"</c>.
+    /// Default: <c>"blob-storage"</c>.
     /// </summary>
-    public string RoutePrefix { get; set; } = "blobs";
+    public string RoutePrefix { get; set; } = "blob-storage";
 
     /// <summary>
     /// OpenAPI tag name for grouping blob storage endpoints.

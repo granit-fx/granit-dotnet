@@ -18,23 +18,23 @@ for request/response types — this page focuses on **routes, methods, and permi
 
 ## Conventions
 
-- **Route prefixes are relative** — each module defines a short prefix (e.g., `"templates"`,
-  `"blobs"`, `"identity/users"`) via its `*EndpointsOptions` class. The **application**
+- **Route prefixes are relative** — each module defines a short prefix (e.g., `"templating"`,
+  `"blob-storage"`, `"identity/users"`) via its `*EndpointsOptions` class. The **application**
   composes the full path by mounting modules under a versioned group:
 
 ```csharp
 // Application startup (e.g., Program.cs)
 RouteGroupBuilder api = app.MapGroup("api/v{version:apiVersion}");
 
-api.MapGranitBlobStorage();      // → /api/v1/blobs/...
-api.MapGranitTemplating();       // → /api/v1/templates/...
+api.MapGranitBlobStorage();      // → /api/v1/blob-storage/blobs/...
+api.MapGranitTemplating();       // → /api/v1/templating/templates/...
 api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ```
 
 - **Permissions:** follow `[Group].[Resource].[Action]` (three segments)
 - **Error responses:** all endpoints return RFC 7807 Problem Details on errors
-- **Query endpoints** (`MapGranitQuery<T>`) are registered by the **application**,
-  not the framework — the route pattern is app-defined
+- **Query endpoints** (`MapGranitQuery<T>`) mount directly on their parent route
+  group — no extra `/query` suffix
 - **Routes below** show only the module-relative path (without the app prefix)
 
 ---
@@ -42,7 +42,7 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ## Authentication & API Keys
 
 **Module:** `Granit.Authentication.ApiKeys.Endpoints`
-**Prefix:** `api-keys`
+**Prefix:** `authentication/api-keys`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -58,12 +58,12 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ## Authorization
 
 **Module:** `Granit.Authorization.Endpoints`
-**Prefix:** `auth`
+**Prefix:** `authorization`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/me` | GetMyPermissions | Authenticated |
-| <Badge text="GET" variant="note" /> | `/definitions` | GetPermissionDefinitions | Admin |
+| <Badge text="GET" variant="note" /> | `/permissions` | GetMyPermissions | Authenticated |
+| <Badge text="GET" variant="note" /> | `/permissions/definitions` | GetPermissionDefinitions | Admin |
 | <Badge text="GET" variant="note" /> | `/roles/{roleName}` | GetRolePermissions | Admin |
 | <Badge text="PUT" variant="caution" /> | `/roles/{roleName}/{permissionName}` | GrantPermission | Admin |
 | <Badge text="DELETE" variant="danger" /> | `/roles/{roleName}/{permissionName}` | RevokePermission | Admin |
@@ -77,18 +77,18 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | GetAllBackgroundJobs | `BackgroundJobs.Jobs.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}` | GetBackgroundJobByName | `BackgroundJobs.Jobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/pause` | PauseBackgroundJob | `BackgroundJobs.Jobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/resume` | ResumeBackgroundJob | `BackgroundJobs.Jobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/trigger` | TriggerBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="GET" variant="note" /> | `/jobs/` | GetAllBackgroundJobs | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="GET" variant="note" /> | `/jobs/{name}` | GetBackgroundJobByName | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/jobs/{name}/pause` | PauseBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/jobs/{name}/resume` | ResumeBackgroundJob | `BackgroundJobs.Jobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/jobs/{name}/trigger` | TriggerBackgroundJob | `BackgroundJobs.Jobs.Manage` |
 
 ---
 
 ## Blob Storage
 
 **Module:** `Granit.BlobStorage.Endpoints`
-**Prefix:** `blobs`
+**Prefix:** `blob-storage/blobs`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -102,7 +102,7 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ### Blob Proxy
 
 **Module:** `Granit.BlobStorage.Proxy`
-**Prefix:** `blobs/proxy`
+**Prefix:** `blob-storage/blobs/proxy`
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -513,23 +513,36 @@ interface OidcAuthorizationResponse {
 ## QueryEngine
 
 **Module:** `Granit.QueryEngine.AspNetCore`
-**Prefix:** app-defined via `MapGranitQuery<T>(pattern)`
+**Prefix:** mounts on the calling group — no extra prefix by default
 
-<Aside type="caution">
-QueryEngine endpoints are registered by the **application**, not the framework.
-The route pattern is passed to `MapGranitQuery<T>()`. For consistency,
-use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrides`).
+<Aside type="tip">
+`MapGranitQuery<T>()` registers query, metadata, and saved-view endpoints
+directly on the current route group. The module's existing group structure
+defines the route — there is no separate `pattern` parameter.
+
+```csharp
+// Single-entity module — mounts directly on the module group
+group.MapGranitQuery<BlobDescriptor>(
+    sp => sp.GetRequiredService<IBlobQueryableProvider>().GetDescriptors());
+// → GET /blobs, GET /blobs/meta, GET /blobs/saved-views, …
+
+// Multi-entity module — create a sub-group first
+group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
+    sp => sp.GetRequiredService<IWebhookQueryableProvider>().GetDeliveryAttempts());
+// → GET /webhooks/deliveries, GET /webhooks/deliveries/meta, …
+```
+
 </Aside>
 
 | Method | Route | Operation |
 |--------|-------|-----------|
-| <Badge text="GET" variant="note" /> | `/{pattern}` | Query\{EntityName\} |
-| <Badge text="GET" variant="note" /> | `/{pattern}/meta` | Get\{EntityName\}Meta |
-| <Badge text="GET" variant="note" /> | `/{pattern}/saved-views` | GetSavedViews |
-| <Badge text="POST" variant="success" /> | `/{pattern}/saved-views` | CreateSavedView |
-| <Badge text="PUT" variant="caution" /> | `/{pattern}/saved-views/{id}` | UpdateSavedView |
-| <Badge text="DELETE" variant="danger" /> | `/{pattern}/saved-views/{id}` | DeleteSavedView |
-| <Badge text="POST" variant="success" /> | `/{pattern}/saved-views/{id}/set-default` | SetDefaultSavedView |
+| <Badge text="GET" variant="note" /> | `/` | Query\{EntityName\} |
+| <Badge text="GET" variant="note" /> | `/meta` | Get\{EntityName\}Meta |
+| <Badge text="GET" variant="note" /> | `/saved-views` | GetSavedViews |
+| <Badge text="POST" variant="success" /> | `/saved-views` | CreateSavedView |
+| <Badge text="PUT" variant="caution" /> | `/saved-views/{id}` | UpdateSavedView |
+| <Badge text="DELETE" variant="danger" /> | `/saved-views/{id}` | DeleteSavedView |
+| <Badge text="POST" variant="success" /> | `/saved-views/{id}/set-default` | SetDefaultSavedView |
 
 ---
 
@@ -554,24 +567,24 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 ## Templating
 
 **Module:** `Granit.Templating.Endpoints`
-**Prefix:** `templates`
+**Prefix:** `templating`
 
-### Templates
+### Templates (`templates/`)
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | ListTemplates | `Templates.Templates.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}` | GetTemplateDetail | `Templates.Templates.Manage` |
-| <Badge text="POST" variant="success" /> | `/` | CreateTemplateDraft | `Templates.Templates.Manage` |
-| <Badge text="PUT" variant="caution" /> | `/{name}` | UpdateTemplateDraft | `Templates.Templates.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/{name}/draft` | DeleteTemplateDraft | `Templates.Templates.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/publish` | PublishTemplate | `Templates.Templates.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/unpublish` | UnpublishTemplate | `Templates.Templates.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}/lifecycle` | GetTemplateLifecycle | `Templates.Templates.Manage` |
-| <Badge text="POST" variant="success" /> | `/{name}/preview` | PreviewTemplate | `Templates.Templates.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}/variables` | GetTemplateVariables | `Templates.Templates.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}/history` | GetTemplateHistory | `Templates.Templates.Manage` |
-| <Badge text="GET" variant="note" /> | `/{name}/history/{revisionId:guid}` | GetTemplateRevisionDetail | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/` | ListTemplates | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/{name}` | GetTemplateDetail | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/templates/` | CreateTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/templates/{name}` | UpdateTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/templates/{name}/draft` | DeleteTemplateDraft | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/templates/{name}/publish` | PublishTemplate | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/templates/{name}/unpublish` | UnpublishTemplate | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/{name}/lifecycle` | GetTemplateLifecycle | `Templates.Templates.Manage` |
+| <Badge text="POST" variant="success" /> | `/templates/{name}/preview` | PreviewTemplate | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/{name}/variables` | GetTemplateVariables | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/{name}/history` | GetTemplateHistory | `Templates.Templates.Manage` |
+| <Badge text="GET" variant="note" /> | `/templates/{name}/history/{revisionId:guid}` | GetTemplateRevisionDetail | `Templates.Templates.Manage` |
 
 ### Categories
 
@@ -656,7 +669,7 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/stats` | GetWebhookStats | `Webhooks.Subscriptions.Manage` |
-| <Badge text="GET" variant="note" /> | `/deliveries/query` | QueryWebhookDeliveries | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/deliveries` | QueryWebhookDeliveries | `Webhooks.Subscriptions.Manage` |
 | <Badge text="POST" variant="success" /> | `/deliveries/{deliveryId}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
 
 ---
@@ -706,9 +719,9 @@ use the same prefix as the module's CRUD endpoints (e.g., `/localization/overrid
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | GetAuditEntries | `Auditing.AuditEntries.Read` |
-| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetAuditEntryById | `Auditing.AuditEntries.Read` |
-| <Badge text="GET" variant="note" /> | `/entity/{entityType}/{entityId}` | GetAuditEntriesByEntity | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/audit-entries/` | GetAuditEntries | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/audit-entries/{id:guid}` | GetAuditEntryById | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/audit-entries/entity/{entityType}/{entityId}` | GetAuditEntriesByEntity | `Auditing.AuditEntries.Read` |
 
 ---
 
