@@ -1,6 +1,9 @@
 using Granit.Authorization;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
+using Granit.QueryEngine.Extensions;
+using Granit.Subscriptions.Domain;
+using Granit.Subscriptions.Endpoints.Queries;
 using Granit.Validation;
 
 namespace Granit.Subscriptions.Endpoints;
@@ -13,4 +16,10 @@ namespace Granit.Subscriptions.Endpoints;
     typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitSubscriptionsModule),
     typeof(GranitValidationModule))]
-public sealed class GranitSubscriptionsEndpointsModule : GranitModule;
+public sealed class GranitSubscriptionsEndpointsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddQueryDefinition<Subscription, SubscriptionQueryDefinition>();
+    }
+}

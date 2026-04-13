@@ -1,6 +1,9 @@
 using Granit.Authorization;
+using Granit.Invoicing.Domain;
+using Granit.Invoicing.Endpoints.Queries;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
+using Granit.QueryEngine.Extensions;
 using Granit.Validation;
 
 namespace Granit.Invoicing.Endpoints;
@@ -11,4 +14,10 @@ namespace Granit.Invoicing.Endpoints;
     typeof(GranitInvoicingModule),
     typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitValidationModule))]
-public sealed class GranitInvoicingEndpointsModule : GranitModule;
+public sealed class GranitInvoicingEndpointsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
+    }
+}

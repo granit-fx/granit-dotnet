@@ -1,5 +1,7 @@
+using Granit.Invoicing.Domain;
 using Granit.Invoicing.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,6 +22,8 @@ public static class InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<EfInvoiceStore>();
         builder.Services.TryAddScoped<IInvoiceReader>(sp => sp.GetRequiredService<EfInvoiceStore>());
         builder.Services.TryAddScoped<IInvoiceWriter>(sp => sp.GetRequiredService<EfInvoiceStore>());
+
+        builder.Services.AddScoped<IQueryableSource<Invoice>, EfInvoiceQueryableSource>();
 
         return builder;
     }

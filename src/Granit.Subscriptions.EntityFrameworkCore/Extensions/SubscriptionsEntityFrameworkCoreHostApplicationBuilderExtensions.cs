@@ -1,4 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
+using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +31,8 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         builder.Services.TryAddScoped<ISeatWriter, EfSeatWriter>();
 
         builder.Services.TryAddScoped<IPricingResolver, EfPricingResolver>();
+
+        builder.Services.AddScoped<IQueryableSource<Subscription>, EfSubscriptionQueryableSource>();
 
         return builder;
     }
