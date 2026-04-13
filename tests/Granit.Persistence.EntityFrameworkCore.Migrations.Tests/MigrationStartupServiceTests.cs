@@ -94,17 +94,7 @@ public sealed class MigrationStartupServiceTests
         IMigrationBatchDispatcher dispatcher,
         int defaultBatchSize = 200)
     {
-        IMigrationProgressDbEnsurer ensurer = Substitute.For<IMigrationProgressDbEnsurer>();
-
-        IServiceScopeFactory scopeFactory = Substitute.For<IServiceScopeFactory>();
-        IServiceScope scope = Substitute.For<IServiceScope>();
-        IServiceProvider sp = Substitute.For<IServiceProvider>();
-        sp.GetService(typeof(IMigrationProgressDbEnsurer)).Returns(ensurer);
-        scope.ServiceProvider.Returns(sp);
-        scopeFactory.CreateScope().Returns(scope);
-
         return new(
-            scopeFactory,
             factory,
             tenantEnumerator,
             dispatcher,
