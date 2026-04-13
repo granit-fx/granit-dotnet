@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -29,6 +30,7 @@ internal static class AccountPasskeyEndpoints
             .WithDescription(
                 "Returns PublicKeyCredentialCreationOptions with mediation: conditional "
                 + "for browser-native passkey autofill support.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<string>(StatusCodes.Status200OK, "application/json")
             .RequireAuthorization();
 
@@ -36,6 +38,7 @@ internal static class AccountPasskeyEndpoints
             .WithName("CompletePasskeyRegistration")
             .WithSummary("Completes a WebAuthn passkey registration ceremony.")
             .WithDescription("Validates and stores the credential via ASP.NET Identity's built-in WebAuthn support.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<PasskeyInfo>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization();
@@ -68,6 +71,7 @@ internal static class AccountPasskeyEndpoints
             .WithName("RenamePasskey")
             .WithSummary("Renames a passkey.")
             .WithDescription("Updates the friendly name of a registered passkey.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization();
@@ -78,6 +82,7 @@ internal static class AccountPasskeyEndpoints
             .WithDescription(
                 "Removes a registered passkey. Returns 400 if this is the last credential "
                 + "and no password is set on the account.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)

@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
 using Granit.Identity.Local;
 using Granit.Identity.Local.Diagnostics;
@@ -28,6 +29,7 @@ internal static class AccountRegistrationEndpoints
                 + "Always returns 202 to prevent email enumeration. "
                 + "Sends a confirmation email if the account is new, or a notification if the email is already taken. "
                 + "Returns 422 if the password does not meet policy requirements.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)

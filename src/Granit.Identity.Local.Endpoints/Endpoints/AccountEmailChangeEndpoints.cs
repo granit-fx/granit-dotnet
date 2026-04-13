@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Services;
@@ -21,6 +22,7 @@ internal static class AccountEmailChangeEndpoints
                 "Generates a change-email token and publishes an EmailChangeRequestedEto event. "
                 + "A security alert is sent to the current email and a confirmation link to the new email. "
                 + "Always returns 202 to prevent email enumeration.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
             .RequireAuthorization();
@@ -31,6 +33,7 @@ internal static class AccountEmailChangeEndpoints
             .WithDescription(
                 "Validates the email change token from the confirmation link, applies the new email, "
                 + "and updates the username to match. Returns 400 if the token is invalid or expired.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()

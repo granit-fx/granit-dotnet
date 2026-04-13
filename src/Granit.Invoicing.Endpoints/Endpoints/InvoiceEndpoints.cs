@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.Dtos;
@@ -53,6 +54,7 @@ internal static class InvoiceEndpoints
                 "Creates a draft invoice or credit note for the current tenant. " +
                 "Credit notes must reference a parent invoice via parentInvoiceId. " +
                 "Line items can be added after creation.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<InvoiceResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(InvoicingPermissions.Invoices.Manage);

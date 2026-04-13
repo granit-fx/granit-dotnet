@@ -1492,6 +1492,7 @@
         "dependencies": {
           "Granit.Authentication.ApiKeys": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -1714,6 +1715,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.RateLimiting": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
@@ -1933,6 +1935,9 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.http.abstractions": {
+        "type": "Project"
+      },
       "granit.http.apidocumentation": {
         "type": "Project",
         "dependencies": {
@@ -1993,6 +1998,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
@@ -2118,6 +2124,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
@@ -2483,6 +2490,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "Granit.OpenIddict.Server": "[0.1.0-dev, )",
@@ -2941,6 +2949,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"

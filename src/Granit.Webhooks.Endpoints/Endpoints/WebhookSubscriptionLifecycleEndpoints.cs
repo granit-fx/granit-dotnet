@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
@@ -21,6 +22,7 @@ internal static class WebhookSubscriptionLifecycleEndpoints
                 "Transitions a subscription from Suspended to Active status. "
                 + "Deliveries will resume for matching events. "
                 + "The consecutive failure counter is reset to zero.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -31,6 +33,7 @@ internal static class WebhookSubscriptionLifecycleEndpoints
                 "Temporarily pauses event delivery for the subscription. "
                 + "The caller's identity is recorded alongside the suspension reason. "
                 + "Use the activate endpoint to resume deliveries.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
@@ -41,6 +44,7 @@ internal static class WebhookSubscriptionLifecycleEndpoints
                 "Moves the subscription to the Deactivated terminal status. "
                 + "No further deliveries will be attempted. A deactivation reason must be provided. "
                 + "This action cannot be reversed — create a new subscription instead.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

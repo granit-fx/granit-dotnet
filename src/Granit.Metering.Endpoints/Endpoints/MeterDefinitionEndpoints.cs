@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Endpoints.Dtos;
@@ -42,6 +43,7 @@ internal static class MeterDefinitionEndpoints
                 "Creates a meter definition with the specified name, unit, and aggregation type. "
                 + "The meter is created in an active state and immediately accepts events. "
                 + "Names must be unique within the tenant scope.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<MeterDefinitionResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(MeteringPermissions.Meters.Manage);
@@ -53,6 +55,7 @@ internal static class MeterDefinitionEndpoints
                 "Updates the name, unit, and description of an existing meter definition. "
                 + "The aggregation type cannot be changed after creation to preserve data consistency. "
                 + "Returns 404 if the meter does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<MeterDefinitionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
@@ -65,6 +68,7 @@ internal static class MeterDefinitionEndpoints
                 "Marks the meter as inactive so it no longer accepts new events. "
                 + "Existing usage data and aggregates are preserved. "
                 + "Returns 404 if the meter does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(MeteringPermissions.Meters.Manage);

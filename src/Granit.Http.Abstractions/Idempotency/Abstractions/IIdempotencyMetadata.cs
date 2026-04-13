@@ -2,7 +2,7 @@ namespace Granit.Http.Idempotency.Abstractions;
 
 /// <summary>
 /// Marker contract implemented by <see cref="Attributes.IdempotentAttribute"/> and consumed by
-/// <see cref="Internal.IdempotencyMiddleware"/> to detect idempotent endpoints.
+/// the idempotency middleware to detect idempotent endpoints.
 /// </summary>
 public interface IIdempotencyMetadata
 {
@@ -14,7 +14,7 @@ public interface IIdempotencyMetadata
 
     /// <summary>
     /// Override for the completed-entry TTL in seconds.
-    /// Use <c>-1</c> to inherit from <see cref="Models.IdempotencyOptions.CompletedTtl"/>.
+    /// Use <c>-1</c> to inherit from the global <c>IdempotencyOptions.CompletedTtl</c>.
     /// </summary>
     int CompletedTtlSeconds { get; }
 }

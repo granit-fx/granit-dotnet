@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +19,7 @@ internal static class AdminImpersonationEndpoints
             .WithDescription(
                 "Issues a short-lived token (max 1h) with impersonator_id claim. "
                 + "Writes audit log and sends transparency notification.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<ImpersonationResult>()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)

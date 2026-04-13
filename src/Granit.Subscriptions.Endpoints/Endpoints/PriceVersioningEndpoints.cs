@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
@@ -23,6 +24,7 @@ internal static class PriceVersioningEndpoints
                 "Adds a new price for the given currency and interval. If an active price already " +
                 "exists for the same slot, it is marked as replaced. Allowed on Draft and Published " +
                 "plans. Existing subscribers keep their pinned price (grandfathering).")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<PlanPriceResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -45,6 +47,7 @@ internal static class PriceVersioningEndpoints
             .WithDescription(
                 "Updates the pinned price for a specific subscription. Only allowed for " +
                 "Active or Trial subscriptions. Publishes a SubscriptionPriceMigratedEto event.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -56,6 +59,7 @@ internal static class PriceVersioningEndpoints
             .WithDescription(
                 "Migrates all active subscriptions on a given plan to a new price version. " +
                 "Optionally filters by old price ID. Returns the number of migrated subscriptions.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<BulkMigratePriceResponse>()
             .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Prices.Manage);

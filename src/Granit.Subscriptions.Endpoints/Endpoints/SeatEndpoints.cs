@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
@@ -28,6 +29,7 @@ internal static class SeatEndpoints
             .WithName("AssignSeat")
             .WithSummary("Assigns a seat to a user.")
             .WithDescription("Adds a user to the subscription. Fails if the seat limit is reached.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<SeatResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -37,6 +39,7 @@ internal static class SeatEndpoints
             .WithName("RevokeSeat")
             .WithSummary("Revokes a seat from a user.")
             .WithDescription("Removes the user's seat assignment from the subscription.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(SubscriptionsPermissions.Seats.Manage);

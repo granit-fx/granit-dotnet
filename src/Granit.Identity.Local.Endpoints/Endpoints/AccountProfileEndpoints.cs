@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Services;
@@ -28,6 +29,7 @@ internal static class AccountProfileEndpoints
             .WithDescription(
                 "Updates the authenticated user's first name and last name. "
                 + "Returns the updated profile.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountProfileResponse>()
             .ProducesValidationProblem()
             .RequireAuthorization();

@@ -27,6 +27,9 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.http.abstractions": {
+        "type": "Project"
+      },
       "granit.timing": {
         "type": "Project",
         "dependencies": {

@@ -18,7 +18,6 @@
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
-      "src/Granit.Http.Idempotency/Granit.Http.Idempotency.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Invoicing.Abstractions/Granit.Invoicing.Abstractions.csproj",
       "src/Granit.Invoicing.BackgroundJobs/Granit.Invoicing.BackgroundJobs.csproj",

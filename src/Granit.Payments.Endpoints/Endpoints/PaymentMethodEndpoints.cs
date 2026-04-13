@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
@@ -45,6 +46,7 @@ internal static class PaymentMethodEndpoints
                 + "SetupIntent confirmation token) and persists it as a saved method for the tenant. "
                 + "Returns the newly created payment method. "
                 + "Requires the Payments.Methods.Manage permission.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<PaymentMethodResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -56,6 +58,7 @@ internal static class PaymentMethodEndpoints
             .WithDescription(
                 "Removes the payment method from the provider and deletes the local record. "
                 + "Returns 204 No Content on success, or 404 if the method does not exist.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(PaymentsPermissions.Methods.Manage);

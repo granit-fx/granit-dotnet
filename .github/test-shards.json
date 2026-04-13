@@ -114,6 +114,7 @@
         "tests/Granit.Http.Cookies.Tests",
         "tests/Granit.Http.Cors.Tests",
         "tests/Granit.Http.ExceptionHandling.Tests",
+        "tests/Granit.Http.Abstractions.Tests",
         "tests/Granit.Http.Idempotency.Tests",
         "tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests",
         "tests/Granit.Http.OutputCaching.Tests",

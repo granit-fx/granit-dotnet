@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
@@ -44,6 +45,7 @@ internal static class SubscriptionEndpoints
             .WithName("CreateSubscription")
             .WithSummary("Creates a new subscription.")
             .WithDescription("Creates a subscription for the current tenant. If trialEndsAt is provided, starts in Trial status; otherwise starts as Active.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<SubscriptionResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
@@ -52,6 +54,7 @@ internal static class SubscriptionEndpoints
             .WithName("CancelSubscription")
             .WithSummary("Cancels a subscription.")
             .WithDescription("Cancels immediately or schedules cancellation at period end based on the request.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -61,6 +64,7 @@ internal static class SubscriptionEndpoints
             .WithName("ChangeSubscriptionPlan")
             .WithSummary("Changes the subscription plan.")
             .WithDescription("Switches to a different plan. Only allowed for Active or Trial subscriptions.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)

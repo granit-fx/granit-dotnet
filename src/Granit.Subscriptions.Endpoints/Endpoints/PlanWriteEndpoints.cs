@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
@@ -19,6 +20,7 @@ internal static class PlanWriteEndpoints
             .WithName("CreatePlan")
             .WithSummary("Creates a new plan in Draft status.")
             .WithDescription("Creates a plan that can be configured with prices and features before publishing.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<PlanResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Plans.Manage);
@@ -27,6 +29,7 @@ internal static class PlanWriteEndpoints
             .WithName("UpdatePlan")
             .WithSummary("Updates a draft plan.")
             .WithDescription("Only Draft plans can be updated. Published and Archived plans are immutable.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<PlanResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -36,6 +39,7 @@ internal static class PlanWriteEndpoints
             .WithName("PublishPlan")
             .WithSummary("Publishes a draft plan, making it available for purchase.")
             .WithDescription("Transitions the plan from Draft to Published. This action is irreversible.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
@@ -45,6 +49,7 @@ internal static class PlanWriteEndpoints
             .WithName("ArchivePlan")
             .WithSummary("Archives a published plan.")
             .WithDescription("Archived plans are no longer purchasable but remain usable by existing subscribers.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)

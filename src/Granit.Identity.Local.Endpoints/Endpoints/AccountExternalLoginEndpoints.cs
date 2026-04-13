@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -53,6 +54,7 @@ internal static class AccountExternalLoginEndpoints
             .WithDescription(
                 "Removes the association between the authenticated user and the specified provider. "
                 + "Returns 400 if it's the last login method and no password is set.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization();

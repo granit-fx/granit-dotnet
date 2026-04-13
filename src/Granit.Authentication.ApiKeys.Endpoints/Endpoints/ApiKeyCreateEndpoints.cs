@@ -2,6 +2,7 @@ using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authorization;
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -21,6 +22,7 @@ internal static class ApiKeyCreateEndpoints
             .WithName("CreateApiKey")
             .WithSummary("Creates a new API key. The raw secret is returned once.")
             .WithDescription("Generates a new API key with the specified type, environment, permissions, and optional CIDR restrictions. The caller must possess every permission being assigned (privilege escalation prevention). The response includes the full raw secret — this is the only time the secret is available. Store it securely; it cannot be retrieved later. The key is immediately active.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<ApiKeyCreateResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 

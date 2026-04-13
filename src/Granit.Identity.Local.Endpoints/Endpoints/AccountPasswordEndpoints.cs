@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -23,6 +24,7 @@ internal static class AccountPasswordEndpoints
             .WithDescription(
                 "Validates the current password, then sets the new password. "
                 + "Returns 400 if the current password is incorrect or the new password is too weak.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
@@ -44,6 +46,7 @@ internal static class AccountPasswordEndpoints
             .WithDescription(
                 "Validates the reset token from the email link and sets the new password. "
                 + "Returns 400 if the token is invalid or expired.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()

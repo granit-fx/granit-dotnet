@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Granit.Http.Idempotency.Attributes;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Permissions;
@@ -29,6 +30,7 @@ internal static class AdminOidcEndpoints
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
             .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
@@ -37,6 +39,7 @@ internal static class AdminOidcEndpoints
             .WithName("DeleteOidcApplication")
             .WithSummary("Deletes an OIDC application.")
             .WithDescription("Removes the OIDC client and all associated authorizations and tokens.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Applications.Manage);
@@ -49,6 +52,7 @@ internal static class AdminOidcEndpoints
             .WithDescription(
                 "Generates a new client secret, invalidating the old one immediately. "
                 + "The new plaintext secret is returned once in the response (never stored in plaintext).")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcRotateSecretResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Applications.Rotate);
@@ -67,6 +71,7 @@ internal static class AdminOidcEndpoints
             .WithName("CreateOidcScope")
             .WithSummary("Creates a new OIDC scope.")
             .WithDescription("Registers a new scope with the specified name, display name, and resources.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
@@ -75,6 +80,7 @@ internal static class AdminOidcEndpoints
             .WithName("DeleteOidcScope")
             .WithSummary("Deletes an OIDC scope.")
             .WithDescription("Removes the scope. Existing authorizations using this scope are not affected.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
@@ -93,6 +99,7 @@ internal static class AdminOidcEndpoints
             .WithName("RevokeOidcAuthorization")
             .WithSummary("Revokes an OIDC authorization.")
             .WithDescription("Revokes the authorization and all associated tokens.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Revoke);
@@ -101,6 +108,7 @@ internal static class AdminOidcEndpoints
             .WithName("RevokeUserOidcAuthorizations")
             .WithSummary("Revokes all OIDC authorizations for a user.")
             .WithDescription("Revokes all authorizations and tokens for the specified user. Used for GDPR erasure and security incidents.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Revoke);
 

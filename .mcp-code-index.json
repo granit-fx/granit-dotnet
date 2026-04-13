@@ -131,8 +131,9 @@
     {
       "name": "Granit.Authentication.ApiKeys.Endpoints",
       "deps": [
-        "Granit.Http.ApiDocumentation",
         "Granit.Authentication.ApiKeys",
+        "Granit.Http.Abstractions",
+        "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.QueryEngine",
         "Granit.Timing",
@@ -366,7 +367,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BlobStorage",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.RateLimiting",
         "Granit.Validation"
@@ -640,6 +641,11 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.Abstractions",
+      "deps": [],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Http.ApiDocumentation",
       "deps": [
         "Granit.Http.ApiVersioning"
@@ -703,7 +709,7 @@
       "name": "Granit.Http.Idempotency",
       "deps": [
         "Granit.Caching",
-        "Granit.Http.ApiDocumentation"
+        "Granit.Http.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -837,6 +843,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Caching",
+        "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.Identity.Local",
         "Granit.Settings",
@@ -905,7 +912,7 @@
       "name": "Granit.Invoicing.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.Invoicing",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -1040,7 +1047,7 @@
       "name": "Granit.Metering.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.Metering",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -1355,6 +1362,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Caching",
+        "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.OpenIddict",
         "Granit.OpenIddict.Server",
@@ -1403,7 +1411,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Guids",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.Payments",
         "Granit.Validation"
       ],
@@ -1794,7 +1802,7 @@
       "name": "Granit.Subscriptions.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.Subscriptions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -2116,7 +2124,7 @@
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Http.ApiDocumentation",
+        "Granit.Http.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Webhooks"
@@ -14993,8 +15001,8 @@
       "name": "IIdempotencyMetadata",
       "fqn": "Granit.Http.Idempotency.Abstractions.IIdempotencyMetadata",
       "kind": "interface",
-      "project": "Granit.Http.ApiDocumentation",
-      "file": "src/Granit.Http.ApiDocumentation/Idempotency/IIdempotencyMetadata.cs",
+      "project": "Granit.Http.Abstractions",
+      "file": "src/Granit.Http.Abstractions/Idempotency/Abstractions/IIdempotencyMetadata.cs",
       "line": 7,
       "members": []
     },
@@ -15036,8 +15044,8 @@
       "name": "IdempotentAttribute",
       "fqn": "Granit.Http.Idempotency.Attributes.IdempotentAttribute",
       "kind": "class",
-      "project": "Granit.Http.ApiDocumentation",
-      "file": "src/Granit.Http.ApiDocumentation/Idempotency/IdempotentAttribute.cs",
+      "project": "Granit.Http.Abstractions",
+      "file": "src/Granit.Http.Abstractions/Idempotency/Attributes/IdempotentAttribute.cs",
       "line": 14,
       "members": [
         {
@@ -27343,7 +27351,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
-      "line": 50,
+      "line": 46,
       "members": []
     },
     {
@@ -27361,7 +27369,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
-      "line": 10,
+      "line": 9,
       "members": []
     },
     {
@@ -27370,7 +27378,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
-      "line": 37,
+      "line": 33,
       "members": []
     },
     {
@@ -27406,7 +27414,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentRequests.cs",
-      "line": 23,
+      "line": 20,
       "members": []
     },
     {
@@ -35515,7 +35523,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Endpoints/PriceVersioningEndpoints.cs",
-      "line": 211,
+      "line": 215,
       "members": []
     },
     {

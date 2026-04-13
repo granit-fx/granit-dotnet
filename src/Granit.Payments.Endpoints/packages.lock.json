@@ -264,17 +264,13 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.http.abstractions": {
+        "type": "Project"
+      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.http.idempotency": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
       "granit.invoicing.abstractions": {
@@ -375,12 +371,6 @@
           "Microsoft.CodeAnalysis.Workspaces.Common": "[5.0.0]",
           "System.Composition": "9.0.0"
         }
-      },
-      "Microsoft.IO.RecyclableMemoryStream": {
-        "type": "CentralTransitive",
-        "requested": "[3.*, )",
-        "resolved": "3.0.1",
-        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
       },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",

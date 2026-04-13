@@ -19,9 +19,5 @@ internal sealed class PaymentRefundRequestValidator : AbstractValidator<PaymentR
         RuleFor(x => x.Reason)
             .MaximumLength(500)
             .When(x => x.Reason is not null);
-
-        RuleFor(x => x.IdempotencyKey)
-            .NotEmpty()
-            .MaximumLength(128);
     }
 }

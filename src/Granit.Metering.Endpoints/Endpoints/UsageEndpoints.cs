@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
@@ -45,6 +46,7 @@ internal static class UsageEndpoints
                 "Accepts a batch of usage events and records them against their respective meter definitions. "
                 + "Duplicate events (same idempotency key within a tenant) are silently ignored. "
                 + "All events must have a positive quantity and a non-empty idempotency key.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
             .RequireAuthorization(MeteringPermissions.Usage.Record);

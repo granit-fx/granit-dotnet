@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
@@ -20,6 +21,7 @@ internal static class WebhookSubscriptionOperationEndpoints
                 "Generates a new HMAC signing secret for the subscription. "
                 + "The previous secret is invalidated immediately. "
                 + "The new plain-text secret is returned once and cannot be retrieved later.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionRotateSecretResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

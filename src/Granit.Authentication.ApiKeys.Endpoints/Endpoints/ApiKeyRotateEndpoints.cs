@@ -3,6 +3,7 @@ using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Events;
 using Granit.Events;
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -23,6 +24,7 @@ internal static class ApiKeyRotateEndpoints
             .WithName("RotateApiKey")
             .WithSummary("Rotates an API key: revokes the current key and creates a replacement with the same settings.")
             .WithDescription("Atomically revokes the existing key and creates a new one inheriting the same name, type, environment, permissions, CIDR restrictions, and expiration. The response contains the new raw secret (shown once) and both the old and new key IDs. Returns 404 if the key does not exist or is already revoked.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<ApiKeyRotateResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 

@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Services;
@@ -22,6 +23,7 @@ internal static class AccountDeletionEndpoints
                 + "Requires password confirmation. Triggers soft-delete, token revocation, "
                 + "and publishes AccountDeletedEto for downstream cleanup. Returns 202 "
                 + "as deletion is asynchronous.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()

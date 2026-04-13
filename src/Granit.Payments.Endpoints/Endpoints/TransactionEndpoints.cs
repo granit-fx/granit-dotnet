@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
 using Granit.Payments.Domain;
@@ -46,6 +47,7 @@ internal static class TransactionEndpoints
                 + "using the given payment method type. The charge is processed asynchronously "
                 + "and the transaction can be tracked via the transactions endpoints. "
                 + "Returns 202 Accepted when the command has been dispatched.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
             .RequireAuthorization(PaymentsPermissions.Charges.Execute);
@@ -58,6 +60,7 @@ internal static class TransactionEndpoints
                 + "are supported by specifying an amount less than the original charge. "
                 + "The refund is processed asynchronously via the payment provider. "
                 + "Returns 202 Accepted when the command has been dispatched.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -70,6 +73,7 @@ internal static class TransactionEndpoints
                 "Generates a hosted payment page URL via the payment provider. The client should "
                 + "redirect the user to the returned URL. On completion, the provider redirects "
                 + "to the success or cancel URL. Returns the session details including URL and expiry.")
+            .WithMetadata(new IdempotentAttribute())
             .Produces<PaymentCheckoutSessionResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -116,6 +120,7 @@ internal static class TransactionEndpoints
 
     private static async Task<Accepted> ChargeAsync(
         PaymentChargeRequest request,
+        [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         [FromServices] IMessageBus messageBus,
         [FromServices] ICurrentTenant currentTenant)
     {
@@ -127,7 +132,7 @@ internal static class TransactionEndpoints
             request.Amount,
             request.Currency,
             request.MethodType,
-            request.IdempotencyKey,
+            idempotencyKey,
             request.ProviderName);
 
         await messageBus.SendAsync(command).ConfigureAwait(false);
@@ -137,13 +142,14 @@ internal static class TransactionEndpoints
 
     private static async Task<Results<Accepted, NotFound>> RefundAsync(
         PaymentRefundRequest request,
+        [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         [FromServices] IMessageBus messageBus)
     {
         var command = new RequestRefundCommand(
             request.TransactionId,
             request.Amount,
             request.Reason,
-            request.IdempotencyKey);
+            idempotencyKey);
 
         await messageBus.SendAsync(command).ConfigureAwait(false);
 

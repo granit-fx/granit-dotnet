@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,6 +19,7 @@ internal static class ApiKeyRevokeEndpoints
             .WithName("RevokeApiKey")
             .WithSummary("Revokes an API key. The key will no longer be accepted for authentication.")
             .WithDescription("Permanently revokes the API key. Any subsequent authentication attempt using this key will be rejected. This operation is irreversible — use rotate instead if you need a replacement key. Returns 404 if the key does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 

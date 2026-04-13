@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
@@ -41,6 +42,7 @@ internal static class AccountTwoFactorEndpoints
                 "Validates the provided TOTP code against the shared key. On success, "
                 + "enables 2FA and returns single-use recovery codes. "
                 + "Returns 400 if the code is invalid.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountTwoFactorEnableResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
@@ -52,6 +54,7 @@ internal static class AccountTwoFactorEndpoints
             .WithDescription(
                 "Disables TOTP-based two-factor authentication. "
                 + "Requires password confirmation as step-up authentication (OWASP ASVS V2.8.1).")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
@@ -64,6 +67,7 @@ internal static class AccountTwoFactorEndpoints
                 "Generates 10 new single-use recovery codes. Previously generated codes "
                 + "are invalidated. Requires password confirmation as step-up authentication. "
                 + "Recovery codes can be used instead of a TOTP code during login.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AccountRecoveryCodesResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()

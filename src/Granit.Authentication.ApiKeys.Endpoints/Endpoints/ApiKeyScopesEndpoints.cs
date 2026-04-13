@@ -1,5 +1,6 @@
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authorization;
+using Granit.Http.Idempotency.Attributes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -19,6 +20,7 @@ internal static class ApiKeyScopesEndpoints
             .WithName("UpdateApiKeyScopes")
             .WithSummary("Updates the permissions and allowed CIDR ranges for an API key.")
             .WithDescription("Replaces the full list of permissions and allowed CIDR ranges for the specified key. The caller must possess every permission being assigned (privilege escalation prevention). Both fields are replaced entirely (not merged). Returns 404 if the key does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);

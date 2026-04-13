@@ -1,6 +1,7 @@
 using Granit.BlobStorage.Endpoints.Dtos;
 using Granit.BlobStorage.Endpoints.Permissions;
 using Granit.BlobStorage.Options;
+using Granit.Http.Idempotency.Attributes;
 using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +22,7 @@ internal static class BlobOperationEndpoints
                 "Triggers content-type verification and size validation on an uploaded blob. "
                 + "The response includes the validation result: verified content type, actual size, "
                 + "and an optional rejection reason if the blob failed validation.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<BlobConfirmUploadResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status429TooManyRequests)

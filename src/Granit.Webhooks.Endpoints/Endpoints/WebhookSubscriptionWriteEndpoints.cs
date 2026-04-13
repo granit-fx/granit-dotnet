@@ -1,3 +1,4 @@
+using Granit.Http.Idempotency.Attributes;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
@@ -20,6 +21,7 @@ internal static class WebhookSubscriptionWriteEndpoints
                 "Registers a new webhook subscription for the specified event type. "
                 + "The response includes the plain-text signing secret which is only returned once. "
                 + "The subscription starts in the Active status.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionCreatedResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem();
 
@@ -30,6 +32,7 @@ internal static class WebhookSubscriptionWriteEndpoints
                 "Replaces the target URL of an existing subscription. "
                 + "The subscription keeps its current status, secret, and event type. "
                 + "Returns 404 if the subscription does not exist.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<WebhookSubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
@@ -40,6 +43,7 @@ internal static class WebhookSubscriptionWriteEndpoints
             .WithDescription(
                 "Permanently removes a webhook subscription and all its associated delivery history. "
                 + "This action is irreversible.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent);
 
         return group;

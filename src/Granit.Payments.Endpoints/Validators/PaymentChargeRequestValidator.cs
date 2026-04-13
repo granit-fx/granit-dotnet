@@ -25,10 +25,6 @@ internal sealed class PaymentChargeRequestValidator : AbstractValidator<PaymentC
             .NotEmpty()
             .MaximumLength(50);
 
-        RuleFor(x => x.IdempotencyKey)
-            .NotEmpty()
-            .MaximumLength(128);
-
         RuleFor(x => x.ProviderName)
             .MaximumLength(50)
             .When(x => x.ProviderName is not null);

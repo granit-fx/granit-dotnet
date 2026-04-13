@@ -745,17 +745,13 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "granit.http.abstractions": {
+        "type": "Project"
+      },
       "granit.http.exceptionhandling": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.http.idempotency": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
         }
       },
       "granit.invoicing.abstractions": {
@@ -795,7 +791,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
-          "Granit.Http.Idempotency": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
@@ -968,12 +964,6 @@
           "Microsoft.Extensions.Options": "10.0.5",
           "Microsoft.Extensions.Primitives": "10.0.5"
         }
-      },
-      "Microsoft.IO.RecyclableMemoryStream": {
-        "type": "CentralTransitive",
-        "requested": "[3.*, )",
-        "resolved": "3.0.1",
-        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
       },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",
