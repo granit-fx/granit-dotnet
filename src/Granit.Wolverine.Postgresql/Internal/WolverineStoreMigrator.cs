@@ -10,8 +10,6 @@ internal sealed class WolverineStoreMigrator(IMessageStore messageStore) : IExte
 {
     public string Name => "Wolverine message storage";
 
-    public async Task MigrateAsync(CancellationToken cancellationToken = default)
-    {
+    public async Task MigrateAsync(CancellationToken cancellationToken = default) =>
         await messageStore.Admin.MigrateAsync().ConfigureAwait(false);
-    }
 }

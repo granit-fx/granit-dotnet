@@ -73,9 +73,6 @@ internal sealed partial class GranitMigrationRunner(
                 }
             }
 
-            // Ensure Expand & Contract tracking table exists
-            await EnsureExpandContractDbAsync(ct).ConfigureAwait(false);
-
             // Migrate each DbContext in topological order
             foreach ((GranitModule module, Type dbContextType) in migratableModules)
             {
@@ -86,11 +83,6 @@ internal sealed partial class GranitMigrationRunner(
             await MigrateExternalStoresAsync(ct).ConfigureAwait(false);
 
             // Resolve tenant enumerator for post-seed passes
-            ITenantEnumerator? tenantEnumerator;
-            await using (AsyncServiceScope enumScope = scopeFactory.CreateAsyncScope())
-            {
-                tenantEnumerator = enumScope.ServiceProvider.GetService<ITenantEnumerator>();
-            }
 
             // Data seeding — host/tenant split:
             // 1. Host pass: IHostDataSeedContributor + legacy (IsHostOnly=true)
@@ -211,14 +203,12 @@ internal sealed partial class GranitMigrationRunner(
             return;
         }
 
-        {
-            // SharedDatabase or single-tenant — migrate normally in default schema.
-            LogMigratingContext(moduleName, dbContextType.Name);
-            await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType)
-                .ConfigureAwait(false);
-            await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
-            LogMigratedContext(moduleName, dbContextType.Name);
-        }
+        // SharedDatabase or single-tenant — migrate normally in default schema.
+        LogMigratingContext(moduleName, dbContextType.Name);
+        await using DbContext dbContext = await ResolveDbContextAsync(scope.ServiceProvider, dbContextType)
+            .ConfigureAwait(false);
+        await dbContext.Database.MigrateAsync(ct).ConfigureAwait(false);
+        LogMigratedContext(moduleName, dbContextType.Name);
     }
 
     private async Task MigratePerTenantAsync(
@@ -277,24 +267,6 @@ internal sealed partial class GranitMigrationRunner(
             await migrator.MigrateAsync(ct).ConfigureAwait(false);
             LogMigratedExternalStore(migrator.Name);
         }
-    }
-
-    private async Task EnsureExpandContractDbAsync(CancellationToken ct)
-    {
-        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-
-        // Resolve MigrationProgressDbContext dynamically to avoid exposing the internal type
-        // in this assembly's public surface (which would cause ReflectionTypeLoadException
-        // when other modules scan assemblies).
-        IMigrationProgressDbEnsurer? ensurer = scope.ServiceProvider.GetService<IMigrationProgressDbEnsurer>();
-
-        if (ensurer is null)
-        {
-            return;
-        }
-
-        LogCreatingExpandContractDb();
-        await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     private async Task SeedHostAsync(CancellationToken ct)
@@ -398,10 +370,6 @@ internal sealed partial class GranitMigrationRunner(
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Migrated external store '{StoreName}' successfully.")]
     private partial void LogMigratedExternalStore(string storeName);
-
-    [LoggerMessage(Level = LogLevel.Information,
-        Message = "Creating Expand & Contract progress tracking table.")]
-    private partial void LogCreatingExpandContractDb();
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Running data seeders...")]
     private partial void LogSeedingStart();
