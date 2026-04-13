@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-08
+Dernière mise à jour : 2026-04-13
 
 ---
 
@@ -112,7 +112,7 @@ Dernière mise à jour : 2026-04-08
 | Google.Cloud.Kms.V1 | 3.23.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
-| Magick.NET-Q8-AnyCPU | 14.11.1 | Copyright 2013-2026 Dirk Lemstra |
+| Magick.NET-Q8-AnyCPU | 14.12.0 | Copyright 2013-2026 Dirk Lemstra |
 | ModelContextProtocol | 1.1.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.1.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.4.0 | Copyright (c) Kévin Chalet |
