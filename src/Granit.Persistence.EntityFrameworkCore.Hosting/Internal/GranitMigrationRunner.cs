@@ -82,6 +82,9 @@ internal sealed partial class GranitMigrationRunner(
                 await MigrateWithRetryAsync(module, dbContextType, ct).ConfigureAwait(false);
             }
 
+            // Migrate external (non-EF Core) stores (e.g., Wolverine message storage)
+            await MigrateExternalStoresAsync(ct).ConfigureAwait(false);
+
             // Resolve tenant enumerator for post-seed passes
             ITenantEnumerator? tenantEnumerator;
             await using (AsyncServiceScope enumScope = scopeFactory.CreateAsyncScope())
@@ -262,6 +265,20 @@ internal sealed partial class GranitMigrationRunner(
         }
     }
 
+    private async Task MigrateExternalStoresAsync(CancellationToken ct)
+    {
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        IEnumerable<IExternalStoreMigrator> migrators =
+            scope.ServiceProvider.GetServices<IExternalStoreMigrator>();
+
+        foreach (IExternalStoreMigrator migrator in migrators)
+        {
+            LogMigratingExternalStore(migrator.Name);
+            await migrator.MigrateAsync(ct).ConfigureAwait(false);
+            LogMigratedExternalStore(migrator.Name);
+        }
+    }
+
     private async Task EnsureExpandContractDbAsync(CancellationToken ct)
     {
         await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
@@ -373,6 +390,14 @@ internal sealed partial class GranitMigrationRunner(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Migration attempt {Attempt}/{MaxRetries} failed for '{ModuleName}'. Retrying...")]
     private partial void LogRetry(string moduleName, int attempt, int maxRetries, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrating external store '{StoreName}'...")]
+    private partial void LogMigratingExternalStore(string storeName);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Migrated external store '{StoreName}' successfully.")]
+    private partial void LogMigratedExternalStore(string storeName);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Creating Expand & Contract progress tracking table.")]

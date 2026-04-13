@@ -2148,7 +2148,8 @@
       "name": "Granit.Wolverine.Postgresql",
       "deps": [
         "Granit.Wolverine",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Hosting"
       ],
       "framework": "net10.0"
     },
@@ -29194,6 +29195,22 @@
       ]
     },
     {
+      "name": "IExternalStoreMigrator",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IExternalStoreMigrator",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/IExternalStoreMigrator.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MigrateAsync",
+          "kind": "method",
+          "signature": "MigrateAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } Task"
+        }
+      ]
+    },
+    {
       "name": "IGranitMigrationLock",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.IGranitMigrationLock",
       "kind": "interface",
@@ -41703,7 +41720,7 @@
       "kind": "class",
       "project": "Granit.Wolverine.Postgresql",
       "file": "src/Granit.Wolverine.Postgresql/Extensions/WolverinePostgresqlHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitWolverineWithPostgresql",

@@ -1,9 +1,11 @@
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 using Granit.Wolverine.Internal;
 using Granit.Wolverine.Postgresql.Internal;
 using Granit.Wolverine.Postgresql.Options;
+using JasperFx;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -152,9 +154,16 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
             wolverineOptions.PersistMessagesWithPostgresql(connectionString);
         }
 
+        // Disable auto-provisioning at startup — table creation is handled
+        // by IExternalStoreMigrator during --migrate mode only.
+        wolverineOptions.AutoBuildMessageStorageOnStartup = AutoCreate.None;
+
         wolverineOptions.UseEntityFrameworkCoreTransactions(options.TransactionMode);
         wolverineOptions.Policies.AutoApplyTransactions();
         configure?.Invoke(wolverineOptions);
+
+        // Register the Wolverine storage migrator for the --migrate pipeline
+        builder.Services.AddSingleton<IExternalStoreMigrator, WolverineStoreMigrator>();
 
         return builder;
     }
