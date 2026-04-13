@@ -7,7 +7,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// EF Core Fluent API configuration for <see cref="MigrationProgress"/>.
 /// Table: <c>data_migration_progress</c> (system schema, never affected by tenant schema switches).
 /// </summary>
-public sealed class MigrationProgressConfiguration : IEntityTypeConfiguration<MigrationProgress>
+internal sealed class MigrationProgressConfiguration : IEntityTypeConfiguration<MigrationProgress>
 {
     public void Configure(EntityTypeBuilder<MigrationProgress> builder)
     {

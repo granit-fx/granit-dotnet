@@ -29528,38 +29528,6 @@
       ]
     },
     {
-      "name": "MigrationProgress",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Internal.MigrationProgress",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Internal/MigrationProgress.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "Id",
-          "kind": "property",
-          "signature": "Guid Id",
-          "returnType": "Guid"
-        }
-      ]
-    },
-    {
-      "name": "MigrationProgressConfiguration",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Internal.MigrationProgressConfiguration",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Internal/MigrationProgressConfiguration.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Configure",
-          "kind": "method",
-          "signature": "Configure(EntityTypeBuilder<MigrationProgress> builder)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "RunMigrationBatchCommand",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Messages.RunMigrationBatchCommand",
       "kind": "record",
