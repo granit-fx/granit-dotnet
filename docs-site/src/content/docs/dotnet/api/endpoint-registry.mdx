@@ -53,6 +53,12 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 | <Badge text="POST" variant="success" /> | `/api-keys/{id:guid}/rotate` | RotateApiKey | `ApiKeys.Keys.Rotate` |
 | <Badge text="PUT" variant="caution" /> | `/api-keys/{id:guid}/scopes` | UpdateApiKeyScopes | `ApiKeys.Keys.UpdateScopes` |
 
+<Aside type="caution" title="Idempotency">
+`RevokeApiKey` returns **404** if the key is already revoked instead of 204.
+A client retry after a timeout will get a spurious error. The domain should
+short-circuit when `RevokedAt != null`.
+</Aside>
+
 ---
 
 ## Authorization
@@ -83,6 +89,13 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 | <Badge text="POST" variant="success" /> | `/jobs/{name}/resume` | ResumeBackgroundJob | `BackgroundJobs.Jobs.Manage` |
 | <Badge text="POST" variant="success" /> | `/jobs/{name}/trigger` | TriggerBackgroundJob | `BackgroundJobs.Jobs.Manage` |
 
+<Aside type="caution" title="Idempotency">
+- `PauseBackgroundJob` fires a `BackgroundJobPausedEvent` **unconditionally** — no
+  `if (IsEnabled)` guard. Calling pause twice emits the event twice.
+- `ResumeBackgroundJob` schedules a **duplicate cron message** on every call,
+  even if the job is already running.
+</Aside>
+
 ---
 
 ## Blob Storage
@@ -92,6 +105,8 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/blobs` | QueryBlobDescriptor | `BlobStorage.Blobs.Manage` |
+| <Badge text="GET" variant="note" /> | `/blobs/meta` | GetBlobDescriptorMeta | `BlobStorage.Blobs.Manage` |
 | <Badge text="GET" variant="note" /> | `/blobs/{id:guid}` | GetBlobDescriptor | `BlobStorage.Blobs.Manage` |
 | <Badge text="POST" variant="success" /> | `/blobs/upload` | InitiateBlobUpload | `BlobStorage.Blobs.Manage` |
 | <Badge text="POST" variant="success" /> | `/blobs/{id:guid}/confirm` | ConfirmBlobUpload | `BlobStorage.Blobs.Manage` |
@@ -99,15 +114,70 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 | <Badge text="DELETE" variant="danger" /> | `/blobs/{id:guid}` | DeleteBlob | `BlobStorage.Blobs.Manage` |
 | <Badge text="POST" variant="success" /> | `/blobs/cleanup-orphans` | CleanupOrphanedBlobs | `BlobStorage.Blobs.Manage` |
 
-### Blob Proxy
+<Aside type="note">
+The `GET /blobs` and `GET /blobs/meta` endpoints are registered via
+`MapGranitQuery<BlobDescriptor>()` on the `blobs` sub-group.
+</Aside>
+
+<Aside type="caution" title="Idempotency">
+`ConfirmBlobUpload` throws `BlobNotValidException` if the blob is already confirmed
+(`Status != Pending`). A client retry after a timeout will get an error even though
+the blob is in the desired state. The handler should short-circuit when
+`Status == BlobStatus.Valid`.
+</Aside>
+
+### Blob Proxy (Token-based)
 
 **Module:** `Granit.BlobStorage.Proxy`
-**Prefix:** `blob-storage/blobs/proxy`
+**Prefix:** `/api/blobs` *(standalone, not under the blob-storage group)*
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
 | <Badge text="PUT" variant="caution" /> | `/upload/{token}` | BlobProxyUpload | Token-based |
 | <Badge text="GET" variant="note" /> | `/download/{token}` | BlobProxyDownload | Token-based |
+
+---
+
+## BFF (Backend for Frontend)
+
+**Module:** `Granit.Bff.Endpoints`
+**Prefix:** `{pathPrefix}/bff` *(per-frontend, dynamic)*
+
+<Aside type="tip">
+BFF endpoints are registered **per frontend** via `MapGranitBff()`. Each frontend
+gets its own route group with a unique path prefix. Operation IDs are suffixed
+with the frontend name (e.g., `BffLogin_Admin`).
+</Aside>
+
+### OIDC Flow
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/login` | BffLogin\_\{Name\} | Anonymous |
+| <Badge text="GET" variant="note" /> | `/callback` | BffCallback\_\{Name\} | Anonymous |
+| <Badge text="GET" variant="note" /> | `/logout` | BffLogout\_\{Name\} | Anonymous |
+| <Badge text="POST" variant="success" /> | `/backchannel-logout` | BffBackChannelLogout\_\{Name\} | Anonymous |
+
+### Session & User
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/user` | BffGetUser\_\{Name\} | Anonymous |
+| <Badge text="POST" variant="success" /> | `/csrf-token` | BffGenerateCsrfToken\_\{Name\} | Anonymous |
+| <Badge text="GET" variant="note" /> | `/sessions` | BffListSessions\_\{Name\} | Anonymous |
+| <Badge text="DELETE" variant="danger" /> | `/sessions/{targetSessionId}` | BffRevokeSession\_\{Name\} | Anonymous |
+| <Badge text="DELETE" variant="danger" /> | `/sessions` | BffRevokeAllSessions\_\{Name\} | Anonymous |
+
+### Static Files (conditional)
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/{**path}` | BffStaticFiles\_\{Name\} | Anonymous |
+
+<Aside type="note">
+The static files / SPA fallback endpoint is only registered when
+`frontend.StaticFilesPath` is configured.
+</Aside>
 
 ---
 
@@ -122,6 +192,19 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 
 ---
 
+## Customer Balance
+
+**Module:** `Granit.CustomerBalance.Endpoints`
+**Prefix:** `customer-balance`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/balance` | GetCustomerBalance | `CustomerBalance.Accounts.Read` |
+| <Badge text="GET" variant="note" /> | `/transactions` | ListBalanceTransactions | `CustomerBalance.Transactions.Read` |
+| <Badge text="POST" variant="success" /> | `/balance/credit` | AddAdminCredit | `CustomerBalance.Credits.Manage` |
+
+---
+
 ## Data Exchange
 
 **Module:** `Granit.DataExchange.Endpoints`
@@ -132,15 +215,15 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/import/jobs` | ListImportJobs | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/import/jobs` | CreateImportJob | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/import/{jobId}/preview` | PreviewImportJob | `DataExchange.Import.*` |
-| <Badge text="PUT" variant="caution" /> | `/import/{jobId}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/import/{jobId}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/import/{jobId}/dry-run` | DryRunImportJob | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/import/{jobId}` | GetImportJob | `DataExchange.Import.*` |
-| <Badge text="DELETE" variant="danger" /> | `/import/{jobId}` | DeleteImportJob | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/import/{jobId}/report` | GetImportReport | `DataExchange.Import.*` |
-| <Badge text="GET" variant="note" /> | `/import/{jobId}/correction-file` | DownloadImportCorrectionFile | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/jobs` | UploadImportFile | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId:guid}/preview` | PreviewImportJob | `DataExchange.Import.*` |
+| <Badge text="PUT" variant="caution" /> | `/import/{jobId:guid}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId:guid}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/{jobId:guid}/dry-run` | DryRunImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId:guid}` | GetImportJobStatus | `DataExchange.Import.*` |
+| <Badge text="DELETE" variant="danger" /> | `/import/{jobId:guid}` | CancelImportJob | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId:guid}/report` | GetImportReport | `DataExchange.Import.*` |
+| <Badge text="GET" variant="note" /> | `/import/{jobId:guid}/correction-file` | GetImportCorrectionFile | `DataExchange.Import.*` |
 
 ### Export
 
@@ -148,14 +231,14 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/export/jobs` | ListExportJobs | `DataExchange.Export.*` |
 | <Badge text="POST" variant="success" /> | `/export/jobs` | CreateExportJob | `DataExchange.Export.*` |
-| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId}` | GetExportJob | `DataExchange.Export.*` |
-| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId}/download` | DownloadExportFile | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId:guid}` | GetExportJobStatus | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/export/jobs/{jobId:guid}/download` | DownloadExportFile | `DataExchange.Export.*` |
 
 ### Metadata
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/metadata/definitions` | GetExportDefinitions | `DataExchange.Export.*` |
+| <Badge text="GET" variant="note" /> | `/metadata/definitions` | ListExportDefinitions | `DataExchange.Export.*` |
 | <Badge text="GET" variant="note" /> | `/metadata/definitions/{name}/fields` | GetExportDefinitionFields | `DataExchange.Export.*` |
 | <Badge text="GET" variant="note" /> | `/metadata/presets/{definitionName}` | ListExportPresets | `DataExchange.Export.*` |
 | <Badge text="POST" variant="success" /> | `/metadata/presets` | SaveExportPreset | `DataExchange.Export.*` |
@@ -180,7 +263,8 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 
 ## Identity
 
-Identity uses **two separate endpoint groups** with distinct prefixes.
+Identity uses **three separate endpoint groups** with distinct prefixes and separate
+registration methods.
 
 ### User Cache (`identity/users`)
 
@@ -189,15 +273,16 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | SearchIdentityUsers | `Identity.UserCache.Read` |
-| <Badge text="GET" variant="note" /> | `/{userId}` | GetIdentityUser | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/` | SearchIdentityUserCache | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/{userId}` | GetIdentityUserById | `Identity.UserCache.Read` |
 | <Badge text="POST" variant="success" /> | `/batch` | BatchResolveIdentityUsers | `Identity.UserCache.Read` |
 | <Badge text="GET" variant="note" /> | `/stats` | GetIdentityUserCacheStats | `Identity.UserCache.Read` |
-| <Badge text="GET" variant="note" /> | `/capabilities` | GetCapabilities | `Identity.UserCache.Read` |
+| <Badge text="GET" variant="note" /> | `/capabilities` | GetIdentityProviderCapabilities | `Identity.UserCache.Read` |
 | <Badge text="POST" variant="success" /> | `/sync` | SyncIdentityUsers | `Identity.UserCache.Sync` |
 | <Badge text="POST" variant="success" /> | `/sync-all` | SyncAllIdentityUsers | `Identity.UserCache.Sync` |
 | <Badge text="POST" variant="success" /> | `/sync-stale` | SyncStaleIdentityUsers | `Identity.UserCache.Sync` |
-| <Badge text="DELETE" variant="danger" /> | `/{userId}` | EraseIdentityUserData | `Identity.UserCache.Delete` |
+| <Badge text="PATCH" variant="caution" /> | `/{userId}/pseudonymize` | PseudonymizeIdentityUserCache | `Identity.UserCache.Delete` |
+| <Badge text="DELETE" variant="danger" /> | `/{userId}` | EraseIdentityUserCache | `Identity.UserCache.Delete` |
 
 ### Identity Provider (`identity/provider`)
 
@@ -208,52 +293,76 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/users` | ListProviderUsers | `Identity.Users.Read` |
-| <Badge text="GET" variant="note" /> | `/users/{userId}` | GetProviderUser | `Identity.Users.Read` |
-| <Badge text="POST" variant="success" /> | `/users` | CreateProviderUser | `Identity.Users.Manage` |
-| <Badge text="PUT" variant="caution" /> | `/users/{userId}` | UpdateProviderUser | `Identity.Users.Manage` |
+| <Badge text="GET" variant="note" /> | `/users` | GetIdentityProviderUsers | `Identity.Users.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}` | GetIdentityProviderUser | `Identity.Users.Read` |
+| <Badge text="POST" variant="success" /> | `/users` | CreateIdentityProviderUser | `Identity.Users.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}` | UpdateIdentityProviderUser | `Identity.Users.Manage` |
+| <Badge text="PATCH" variant="caution" /> | `/users/{userId}/enabled` | SetIdentityProviderUserEnabled | `Identity.Users.Manage` |
 
 #### Roles
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/roles` | ListProviderRoles | `Identity.Roles.Read` |
-| <Badge text="GET" variant="note" /> | `/roles/{roleName}/members` | GetRoleMembers | `Identity.Roles.Read` |
-| <Badge text="GET" variant="note" /> | `/users/{userId}/roles` | GetUserRoles | `Identity.Roles.Read` |
-| <Badge text="PUT" variant="caution" /> | `/users/{userId}/roles/{roleName}` | AssignUserRole | `Identity.Roles.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/roles/{roleName}` | RemoveUserRole | `Identity.Roles.Manage` |
+| <Badge text="GET" variant="note" /> | `/roles` | GetIdentityProviderRoles | `Identity.Roles.Read` |
+| <Badge text="GET" variant="note" /> | `/roles/{roleName}/members` | GetIdentityProviderRoleMembers | `Identity.Roles.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/roles` | GetIdentityProviderUserRoles | `Identity.Roles.Read` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}/roles/{roleName}` | AssignIdentityProviderRole | `Identity.Roles.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/roles/{roleName}` | RemoveIdentityProviderRole | `Identity.Roles.Manage` |
 
 #### Groups
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/groups` | ListProviderGroups | `Identity.Groups.Read` |
-| <Badge text="GET" variant="note" /> | `/users/{userId}/groups` | GetUserGroups | `Identity.Groups.Read` |
-| <Badge text="PUT" variant="caution" /> | `/users/{userId}/groups/{groupId}` | AddUserToGroup | `Identity.Groups.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/groups/{groupId}` | RemoveUserFromGroup | `Identity.Groups.Manage` |
+| <Badge text="GET" variant="note" /> | `/groups` | GetIdentityProviderGroups | `Identity.Groups.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/groups` | GetIdentityProviderUserGroups | `Identity.Groups.Read` |
+| <Badge text="PUT" variant="caution" /> | `/users/{userId}/groups/{groupId}` | AddIdentityProviderUserToGroup | `Identity.Groups.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/groups/{groupId}` | RemoveIdentityProviderUserFromGroup | `Identity.Groups.Manage` |
 
 #### Sessions & Devices
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/users/{userId}/sessions` | ListUserSessions | `Identity.Sessions.Read` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions/{sessionId}` | TerminateSession | `Identity.Sessions.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions` | TerminateAllSessions | `Identity.Sessions.Manage` |
-| <Badge text="GET" variant="note" /> | `/users/{userId}/devices` | GetUserDeviceActivity | `Identity.Sessions.Read` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/sessions` | GetIdentityProviderUserSessions | `Identity.Sessions.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions/{sessionId}` | TerminateIdentityProviderSession | `Identity.Sessions.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/users/{userId}/sessions` | TerminateAllIdentityProviderSessions | `Identity.Sessions.Manage` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/devices` | GetIdentityProviderUserDevices | `Identity.Sessions.Read` |
 
 #### Passwords
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/users/{userId}/password/changed-at` | GetPasswordChangedAt | `Identity.Passwords.Read` |
-| <Badge text="POST" variant="success" /> | `/users/{userId}/password/reset-email` | SendPasswordResetEmail | `Identity.Passwords.Manage` |
-| <Badge text="POST" variant="success" /> | `/users/{userId}/password/temporary` | SetTemporaryPassword | `Identity.Passwords.Manage` |
+| <Badge text="GET" variant="note" /> | `/users/{userId}/password/changed-at` | GetIdentityProviderPasswordChangedAt | `Identity.Passwords.Read` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/reset-email` | SendIdentityProviderPasswordResetEmail | `Identity.Passwords.Manage` |
+| <Badge text="POST" variant="success" /> | `/users/{userId}/password/temporary` | SetIdentityProviderTemporaryPassword | `Identity.Passwords.Manage` |
 
 ### Webhook
 
+**Module:** `Granit.Identity.Endpoints` — registered at `identity/webhook`
+(outside the `identity/provider` group, via `MapGranitIdentityUserCache()`)
+
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
-| <Badge text="POST" variant="success" /> | `/webhook` | IdentityWebhook | Signature-validated |
+| <Badge text="POST" variant="success" /> | `/identity/webhook` | IdentityWebhook | Signature-validated |
+
+---
+
+## Invoicing
+
+**Module:** `Granit.Invoicing.Endpoints`
+**Prefix:** `invoicing`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/invoices` | QueryInvoice | `Invoicing.Invoices.Read` |
+| <Badge text="GET" variant="note" /> | `/invoices/meta` | GetInvoiceMeta | `Invoicing.Invoices.Read` |
+| <Badge text="GET" variant="note" /> | `/invoices/{id:guid}` | GetInvoiceById | `Invoicing.Invoices.Read` |
+| <Badge text="GET" variant="note" /> | `/invoices/{id:guid}/pdf` | DownloadInvoicePdf | `Invoicing.Invoices.Download` |
+| <Badge text="POST" variant="success" /> | `/invoices` | CreateInvoice | `Invoicing.Invoices.Manage` |
+
+<Aside type="note">
+The `GET /invoices` list and `GET /invoices/meta` endpoints are registered via
+`MapGranitQuery<Invoice>()` on the `invoices` sub-group.
+</Aside>
 
 ---
 
@@ -268,6 +377,47 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 | <Badge text="GET" variant="note" /> | `/overrides` | GetLocalizationOverrides | `Localization.Overrides.Manage` |
 | <Badge text="PUT" variant="caution" /> | `/overrides/{resourceName}/{cultureName}/{key}` | PutLocalizationOverride | `Localization.Overrides.Manage` |
 | <Badge text="DELETE" variant="danger" /> | `/overrides/{resourceName}/{cultureName}/{key}` | DeleteLocalizationOverride | `Localization.Overrides.Manage` |
+
+---
+
+## Metering
+
+**Module:** `Granit.Metering.Endpoints`
+**Prefix:** `metering`
+
+### Meter Definitions
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/meters` | ListActiveMeters | `Metering.Meters.Read` |
+| <Badge text="GET" variant="note" /> | `/meters/{id:guid}` | GetMeterDefinition | `Metering.Meters.Read` |
+| <Badge text="POST" variant="success" /> | `/meters` | CreateMeterDefinition | `Metering.Meters.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/meters/{id:guid}` | UpdateMeterDefinition | `Metering.Meters.Manage` |
+| <Badge text="POST" variant="success" /> | `/meters/{id:guid}/deactivate` | DeactivateMeterDefinition | `Metering.Meters.Manage` |
+
+### Usage & Quota
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/usage` | GetUsageForPeriod | `Metering.Usage.Read` |
+| <Badge text="GET" variant="note" /> | `/quota/{meterId:guid}` | CheckMeteringQuota | `Metering.Usage.Read` |
+| <Badge text="POST" variant="success" /> | `/events` | RecordUsageEvents | `Metering.Usage.Record` |
+
+---
+
+## Multi-Tenancy
+
+**Module:** `Granit.MultiTenancy.Endpoints`
+**Prefix:** `multi-tenancy`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/tenants/` | ListTenants | `MultiTenancy.Tenants.Read` |
+| <Badge text="GET" variant="note" /> | `/tenants/{id:guid}` | GetTenant | `MultiTenancy.Tenants.Read` |
+| <Badge text="POST" variant="success" /> | `/tenants/` | CreateTenant | `MultiTenancy.Tenants.Create` |
+| <Badge text="PUT" variant="caution" /> | `/tenants/{id:guid}` | UpdateTenant | `MultiTenancy.Tenants.Update` |
+| <Badge text="POST" variant="success" /> | `/tenants/{id:guid}/activate` | ActivateTenant | `MultiTenancy.Tenants.Update` |
+| <Badge text="POST" variant="success" /> | `/tenants/{id:guid}/deactivate` | DeactivateTenant | `MultiTenancy.Tenants.Update` |
 
 ---
 
@@ -312,17 +462,25 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 
 ---
 
-## OpenIddict
+## Account Self-Service
 
-OpenIddict uses **two endpoint groups**: account self-service (anonymous + authenticated)
-and admin management (permission-protected).
-
-### Account Self-Service (`account`)
-
-**Module:** `Granit.OpenIddict.Endpoints` — `MapGranitOpenIddict()`
+**Module:** `Granit.Identity.Local.Endpoints` — `MapGranitAccount()`
 **Prefix:** `account`
 
-#### Registration & Email
+### Login
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/login` | AccountLogin | Anonymous |
+| <Badge text="POST" variant="success" /> | `/login/two-factor` | AccountTwoFactorLogin | Anonymous |
+
+### Configuration
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="GET" variant="note" /> | `/config` | GetAccountConfig | Anonymous |
+
+### Registration & Email
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -330,14 +488,14 @@ and admin management (permission-protected).
 | <Badge text="GET" variant="note" /> | `/confirm-email` | ConfirmEmail | Anonymous |
 | <Badge text="POST" variant="success" /> | `/resend-confirmation-email` | ResendConfirmationEmail | Authenticated |
 
-#### Profile
+### Profile
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
 | <Badge text="GET" variant="note" /> | `/profile` | GetAccountProfile | Authenticated |
 | <Badge text="PUT" variant="caution" /> | `/profile` | UpdateAccountProfile | Authenticated |
 
-#### Password
+### Password
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -345,7 +503,7 @@ and admin management (permission-protected).
 | <Badge text="POST" variant="success" /> | `/forgot-password` | ForgotPassword | Anonymous |
 | <Badge text="POST" variant="success" /> | `/reset-password` | ResetPassword | Anonymous |
 
-#### Two-Factor Authentication
+### Two-Factor Authentication
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -355,7 +513,14 @@ and admin management (permission-protected).
 | <Badge text="POST" variant="success" /> | `/two-factor/disable` | DisableTwoFactor | Authenticated |
 | <Badge text="POST" variant="success" /> | `/two-factor/recovery-codes` | GenerateRecoveryCodes | Authenticated |
 
-#### External Logins
+<Aside type="caution" title="Idempotency">
+- `EnableTwoFactor` **regenerates recovery codes on every call** — a client retry
+  silently invalidates the codes from the first call.
+- `DisableTwoFactor` **rotates the security stamp on every call** — a client retry
+  kills all active sessions a second time.
+</Aside>
+
+### External Logins
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -364,7 +529,7 @@ and admin management (permission-protected).
 | <Badge text="GET" variant="note" /> | `/external-logins/callback` | ExternalLoginCallback | Anonymous |
 | <Badge text="DELETE" variant="danger" /> | `/external-logins/{provider}` | UnlinkExternalLogin | Authenticated |
 
-#### Passkeys (WebAuthn)
+### Passkeys (WebAuthn)
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -372,10 +537,11 @@ and admin management (permission-protected).
 | <Badge text="POST" variant="success" /> | `/passkeys/register/begin` | BeginPasskeyRegistration | Authenticated |
 | <Badge text="POST" variant="success" /> | `/passkeys/register/complete` | CompletePasskeyRegistration | Authenticated |
 | <Badge text="POST" variant="success" /> | `/passkeys/assertion/begin` | BeginPasskeyAssertion | Anonymous |
+| <Badge text="POST" variant="success" /> | `/passkeys/assertion/complete` | CompletePasskeyAssertion | Anonymous |
 | <Badge text="PATCH" variant="caution" /> | `/passkeys/{id}` | RenamePasskey | Authenticated |
 | <Badge text="DELETE" variant="danger" /> | `/passkeys/{id}` | DeletePasskey | Authenticated |
 
-#### Account & Session
+### Account & Session
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
@@ -383,41 +549,31 @@ and admin management (permission-protected).
 | <Badge text="POST" variant="success" /> | `/session/heartbeat` | SessionHeartbeat | Authenticated |
 | <Badge text="POST" variant="success" /> | `/session/back-to-impersonator` | BackToImpersonator | Authenticated |
 
-### Admin Management (`admin`)
+---
+
+## OpenIddict Admin
+
+OpenIddict admin endpoints manage OIDC applications, scopes, and authorizations.
+User/role/group admin is handled by [Identity Provider](#identity-provider-identityprovider).
 
 **Module:** `Granit.OpenIddict.Endpoints` — `MapGranitOpenIddict()`
 **Prefix:** `admin`
 
-#### Users
+### Users (Local Identity)
+
+<Aside type="note">
+These endpoints are registered by `Granit.Identity.Local.Endpoints` within
+the OpenIddict `admin` route group via `MapGranitOpenIddict()`.
+</Aside>
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/users` | ListUsers | `OpenIddict.Users.Read` |
 | <Badge text="GET" variant="note" /> | `/users/{userId}` | GetUser | `OpenIddict.Users.Read` |
 | <Badge text="POST" variant="success" /> | `/users` | CreateUser | `OpenIddict.Users.Create` |
-| <Badge text="DELETE" variant="danger" /> | `/users/{userId}` | DeleteUser | `OpenIddict.Users.Delete` |
 | <Badge text="POST" variant="success" /> | `/users/{userId}/impersonate` | ImpersonateUser | `OpenIddict.Users.Impersonate` |
 
-#### Roles
-
-| Method | Route | Operation | Permission |
-|--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/roles` | ListRoles | `OpenIddict.Roles.Read` |
-| <Badge text="POST" variant="success" /> | `/roles` | CreateRole | `OpenIddict.Roles.Create` |
-| <Badge text="DELETE" variant="danger" /> | `/roles/{roleName}` | DeleteRole | `OpenIddict.Roles.Delete` |
-| <Badge text="GET" variant="note" /> | `/roles/{roleName}/members` | GetRoleMembers | `OpenIddict.Roles.Read` |
-
-#### Groups
-
-| Method | Route | Operation | Permission |
-|--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/groups` | ListGroups | `OpenIddict.Groups.Read` |
-| <Badge text="POST" variant="success" /> | `/groups` | CreateGroup | `OpenIddict.Groups.Create` |
-| <Badge text="DELETE" variant="danger" /> | `/groups/{groupId}` | DeleteGroup | `OpenIddict.Groups.Delete` |
-| <Badge text="POST" variant="success" /> | `/groups/{groupId}/members` | AddGroupMember | `OpenIddict.Groups.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/groups/{groupId}/members/{userId}` | RemoveGroupMember | `OpenIddict.Groups.Manage` |
-
-#### OIDC Applications
+### OIDC Applications
 
 | Method | Route | Operation | Permission | Response |
 |--------|-------|-----------|------------|----------|
@@ -442,7 +598,7 @@ interface OidcSecretRotationResponse {
 }
 ```
 
-#### OIDC Scopes
+### OIDC Scopes
 
 | Method | Route | Operation | Permission | Response |
 |--------|-------|-----------|------------|----------|
@@ -458,12 +614,12 @@ interface OidcScopeResponse {
 }
 ```
 
-#### OIDC Authorizations
+### OIDC Authorizations
 
 | Method | Route | Operation | Permission | Response |
 |--------|-------|-----------|------------|----------|
 | <Badge text="GET" variant="note" /> | `/oidc/authorizations` | ListOidcAuthorizations | `OpenIddict.Authorizations.Read` | `OidcAuthorizationResponse[]` |
-| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/{id}` | RevokeOidcAuthorization | `OpenIddict.Authorizations.Revoke` | 204 / 404 |
+| <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/{authorizationId:guid}` | RevokeOidcAuthorization | `OpenIddict.Authorizations.Revoke` | 204 / 404 |
 | <Badge text="DELETE" variant="danger" /> | `/oidc/authorizations/user/{userId}` | RevokeUserOidcAuthorizations | `OpenIddict.Authorizations.Revoke` | 204 |
 
 ```typescript
@@ -477,27 +633,79 @@ interface OidcAuthorizationResponse {
 
 ---
 
+## Payments
+
+**Module:** `Granit.Payments.Endpoints`
+**Prefix:** `payments`
+
+### Payment Methods
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/methods` | ListPaymentMethods | `Payments.Methods.Read` |
+| <Badge text="GET" variant="note" /> | `/methods/available` | GetAvailablePaymentMethods | `Payments.Methods.Read` |
+| <Badge text="POST" variant="success" /> | `/methods` | AttachPaymentMethod | `Payments.Methods.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/methods/{id:guid}` | DetachPaymentMethod | `Payments.Methods.Manage` |
+
+### Transactions & Charges
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/transactions` | ListPaymentTransactions | `Payments.Transactions.Read` |
+| <Badge text="GET" variant="note" /> | `/transactions/{id:guid}` | GetPaymentTransaction | `Payments.Transactions.Read` |
+| <Badge text="POST" variant="success" /> | `/charge` | InitiatePaymentCharge | `Payments.Charges.Execute` |
+| <Badge text="POST" variant="success" /> | `/refund` | RequestPaymentRefund | `Payments.Refunds.Execute` |
+
+### Checkout & Webhooks
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/checkout` | CreateCheckoutSession | `Payments.Charges.Execute` |
+| <Badge text="POST" variant="success" /> | `/webhooks/{provider}` | HandlePaymentWebhook | Anonymous |
+
+---
+
 ## Privacy (GDPR)
 
 **Module:** `Granit.Privacy.Endpoints`
 **Prefix:** `privacy`
+
+### Regulation & Purposes
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/regulation` | GetApplicableRegulation | Authenticated |
+| <Badge text="GET" variant="note" /> | `/purposes` | ListProcessingPurposes | `Privacy.Purposes.Read` |
+
+### Opt-Out (CCPA)
+
+| Method | Route | Operation | Auth |
+|--------|-------|-----------|------|
+| <Badge text="POST" variant="success" /> | `/opt-out` | RequestOptOut | Anonymous |
+| <Badge text="GET" variant="note" /> | `/opt-out/status` | GetOptOutStatus | Anonymous |
 
 ### Data Export (Art. 15/20)
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="POST" variant="success" /> | `/exports` | RequestPrivacyExport | `Privacy.Export.Execute` |
-| <Badge text="GET" variant="note" /> | `/exports/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
-| <Badge text="GET" variant="note" /> | `/exports` | ListPrivacyExports | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/exports/{requestId:guid}` | GetPrivacyExportStatus | `Privacy.Export.Execute` |
+| <Badge text="GET" variant="note" /> | `/exports` | ListPrivacyExports | `Privacy.Export.Execute` |
 
 ### Data Deletion (Art. 17)
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="POST" variant="success" /> | `/deletions` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="POST" variant="success" /> | `/deletions/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="GET" variant="note" /> | `/deletions/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
-| <Badge text="GET" variant="note" /> | `/deletions` | ListPrivacyDeletions | *(owner only)* |
+| <Badge text="POST" variant="success" /> | `/deletions/{requestId:guid}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletions/{requestId:guid}` | GetPrivacyDeletionStatus | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletions` | ListPrivacyDeletions | `Privacy.Deletion.Execute` |
+
+<Aside type="caution" title="Idempotency">
+`CancelPrivacyDeletion` returns **409 Conflict** if the deletion is already
+cancelled (target state reached). A client retry after timeout will get a
+spurious error.
+</Aside>
 
 ### Legal Agreements (Art. 7)
 
@@ -507,6 +715,16 @@ interface OidcAuthorizationResponse {
 | <Badge text="GET" variant="note" /> | `/agreements/status` | GetPrivacyConsentStatus | `Privacy.Agreements.Read` |
 | <Badge text="GET" variant="note" /> | `/agreements/history` | ListPrivacyAgreementHistory | `Privacy.Agreements.Read` |
 | <Badge text="POST" variant="success" /> | `/agreements/accept` | AcceptPrivacyAgreement | `Privacy.Agreements.Create` |
+
+### Legal Documents (Admin)
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/legal-documents/` | ListLegalDocumentVersions | `Privacy.LegalDocuments.Read` |
+| <Badge text="GET" variant="note" /> | `/legal-documents/{id:guid}` | GetLegalDocument | `Privacy.LegalDocuments.Read` |
+| <Badge text="POST" variant="success" /> | `/legal-documents/` | CreateLegalDocument | `Privacy.LegalDocuments.Create` |
+| <Badge text="PUT" variant="caution" /> | `/legal-documents/{id:guid}` | UpdateLegalDocument | `Privacy.LegalDocuments.Manage` |
+| <Badge text="POST" variant="success" /> | `/legal-documents/{id:guid}/publish` | PublishLegalDocument | `Privacy.LegalDocuments.Manage` |
 
 ---
 
@@ -534,22 +752,41 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 
 </Aside>
 
+<Aside type="note">
+Operation IDs are suffixed with the entity type name. For example,
+`MapGranitQuery<BlobDescriptor>()` produces `QueryBlobDescriptor`,
+`GetBlobDescriptorMeta`, `GetSavedViews_BlobDescriptor`, etc.
+</Aside>
+
 | Method | Route | Operation |
 |--------|-------|-----------|
 | <Badge text="GET" variant="note" /> | `/` | Query\{EntityName\} |
 | <Badge text="GET" variant="note" /> | `/meta` | Get\{EntityName\}Meta |
-| <Badge text="GET" variant="note" /> | `/saved-views` | GetSavedViews |
-| <Badge text="POST" variant="success" /> | `/saved-views` | CreateSavedView |
-| <Badge text="PUT" variant="caution" /> | `/saved-views/{id}` | UpdateSavedView |
-| <Badge text="DELETE" variant="danger" /> | `/saved-views/{id}` | DeleteSavedView |
-| <Badge text="POST" variant="success" /> | `/saved-views/{id}/set-default` | SetDefaultSavedView |
+| <Badge text="GET" variant="note" /> | `/saved-views` | GetSavedViews\_\{EntityName\} |
+| <Badge text="POST" variant="success" /> | `/saved-views` | CreateSavedView\_\{EntityName\} |
+| <Badge text="PUT" variant="caution" /> | `/saved-views/{id}` | UpdateSavedView\_\{EntityName\} |
+| <Badge text="DELETE" variant="danger" /> | `/saved-views/{id}` | DeleteSavedView\_\{EntityName\} |
+| <Badge text="POST" variant="success" /> | `/saved-views/{id}/set-default` | SetDefaultSavedView\_\{EntityName\} |
+
+---
+
+## Scheduling
+
+**Module:** `Granit.Scheduling.Endpoints`
+**Prefix:** `scheduling`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/scheduled-actions/{id:guid}` | GetScheduledActionById | `Scheduling.Actions.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/scheduled-actions/{id:guid}` | CancelScheduledAction | `Scheduling.Actions.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/scheduled-actions/{id:guid}/reschedule` | RescheduleScheduledAction | `Scheduling.Actions.Manage` |
 
 ---
 
 ## Settings
 
 **Module:** `Granit.Settings.Endpoints`
-**Prefix:** `settings`
+**Prefix:** `settings` *(three independent sub-groups: `settings/user`, `settings/tenant`, `settings/global`)*
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
@@ -586,14 +823,84 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 | <Badge text="GET" variant="note" /> | `/templates/{name}/history` | GetTemplateHistory | `Templates.Templates.Manage` |
 | <Badge text="GET" variant="note" /> | `/templates/{name}/history/{revisionId:guid}` | GetTemplateRevisionDetail | `Templates.Templates.Manage` |
 
+### Layouts
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/layouts` | ListAvailableLayouts | `Templates.Templates.Manage` |
+
 ### Categories
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/categories` | ListTemplateCategories | `Templates.Templates.Manage` |
 | <Badge text="POST" variant="success" /> | `/categories` | CreateTemplateCategory | `Templates.Templates.Manage` |
-| <Badge text="PUT" variant="caution" /> | `/categories/{id}` | UpdateTemplateCategory | `Templates.Templates.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/categories/{id}` | DeleteTemplateCategory | `Templates.Templates.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/categories/{id:guid}` | UpdateTemplateCategory | `Templates.Templates.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/categories/{id:guid}` | DeleteTemplateCategory | `Templates.Templates.Manage` |
+
+---
+
+## Subscriptions
+
+**Module:** `Granit.Subscriptions.Endpoints`
+**Prefix:** `subscriptions`
+
+### Plans
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/plans` | ListPlans | `Subscriptions.Plans.Read` |
+| <Badge text="GET" variant="note" /> | `/plans/{id:guid}` | GetPlanById | `Subscriptions.Plans.Read` |
+| <Badge text="POST" variant="success" /> | `/plans` | CreatePlan | `Subscriptions.Plans.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/plans/{id:guid}` | UpdatePlan | `Subscriptions.Plans.Manage` |
+| <Badge text="POST" variant="success" /> | `/plans/{id:guid}/publish` | PublishPlan | `Subscriptions.Plans.Manage` |
+| <Badge text="POST" variant="success" /> | `/plans/{id:guid}/archive` | ArchivePlan | `Subscriptions.Plans.Manage` |
+
+<Aside type="caution" title="Idempotency">
+`PublishPlan` and `ArchivePlan` return **409 Conflict** if the plan is already
+in the target state, despite having `IdempotentAttribute`. The domain methods
+should short-circuit with a guard instead of throwing.
+</Aside>
+
+### Pricing
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/plans/{planId:guid}/prices/history` | GetPlanPriceHistory | `Subscriptions.Prices.Read` |
+| <Badge text="POST" variant="success" /> | `/plans/{planId:guid}/prices` | CreatePriceVersion | `Subscriptions.Prices.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/migrate-price` | MigrateSubscriptionPrice | `Subscriptions.Prices.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/bulk-migrate-price` | BulkMigrateSubscriptionPrice | `Subscriptions.Prices.Manage` |
+
+### Subscriptions
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/subscriptions/active` | GetActiveSubscription | `Subscriptions.Subscriptions.Read` |
+| <Badge text="GET" variant="note" /> | `/subscriptions/{id:guid}` | GetSubscriptionById | `Subscriptions.Subscriptions.Read` |
+| <Badge text="POST" variant="success" /> | `/subscriptions` | CreateSubscription | `Subscriptions.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/cancel` | CancelSubscription | `Subscriptions.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/change-plan` | ChangeSubscriptionPlan | `Subscriptions.Subscriptions.Manage` |
+
+### Seats
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/subscriptions/{id:guid}/seats` | ListSeats | `Subscriptions.Seats.Read` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/seats` | AssignSeat | `Subscriptions.Seats.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/subscriptions/{id:guid}/seats/{userId:guid}` | RevokeSeat | `Subscriptions.Seats.Manage` |
+
+---
+
+## Tax
+
+**Module:** `Granit.Tax.Endpoints`
+**Prefix:** `tax`
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/rates/` | GetAllTaxRates | `Tax.Rates.Read` |
+| <Badge text="GET" variant="note" /> | `/rates/{countryCode}` | GetTaxRateByCountry | `Tax.Rates.Read` |
+| <Badge text="POST" variant="success" /> | `/ids/validate` | ValidateTaxId | `Tax.Validations.Execute` |
 
 ---
 
@@ -606,7 +913,15 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}` | GetTimelineStream | `Timeline.Entries.Read` |
 | <Badge text="POST" variant="success" /> | `/{entityType}/{entityId}/entries` | PostTimelineEntry | `Timeline.Entries.Read` |
-| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/entries/{entryId}` | DeleteTimelineEntry | `Timeline.Entries.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/entries/{entryId:guid}` | DeleteTimelineEntry | `Timeline.Entries.Read` |
+
+### Entity Followers
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="POST" variant="success" /> | `/{entityType}/{entityId}/follow` | FollowTimelineEntity | `Timeline.Entries.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/follow` | UnfollowTimelineEntity | `Timeline.Entries.Read` |
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/followers` | GetTimelineFollowers | `Timeline.Entries.Read` |
 
 ---
 
@@ -630,6 +945,10 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 
 ### Module Config
 
+<Aside type="note">
+Registered separately via `MapGranitWebhooksConfig()`, not part of `MapGranitWebhooks()`.
+</Aside>
+
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/config` | GetWebhooksConfig | `Webhooks.Subscriptions.Manage` |
@@ -640,37 +959,63 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/event-types` | GetWebhookEventTypes | `Webhooks.Subscriptions.Manage` |
 
+### Subscriptions — Query
+
+| Method | Route | Operation | Permission |
+|--------|-------|-----------|------------|
+| <Badge text="GET" variant="note" /> | `/subscriptions` | QueryWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/subscriptions/meta` | GetWebhookSubscriptionMeta | `Webhooks.Subscriptions.Manage` |
+
+<Aside type="note">
+The subscription list and metadata endpoints are registered via
+`MapGranitQuery<WebhookSubscription>()`.
+</Aside>
+
 ### Subscriptions — CRUD
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/subscriptions/{id}` | GetWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/subscriptions/{id:guid}` | GetWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 | <Badge text="POST" variant="success" /> | `/subscriptions` | CreateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="PUT" variant="caution" /> | `/subscriptions/{id}` | UpdateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/subscriptions/{id}` | DeleteWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/subscriptions/{id:guid}` | UpdateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/subscriptions/{id:guid}` | DeleteWebhookSubscription | `Webhooks.Subscriptions.Manage` |
 
 ### Subscriptions — Lifecycle
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/activate` | ActivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/suspend` | SuspendWebhookSubscription | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/deactivate` | DeactivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/activate` | ActivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/suspend` | SuspendWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/deactivate` | DeactivateWebhookSubscription | `Webhooks.Subscriptions.Manage` |
+
+<Aside type="caution" title="Idempotency">
+All three lifecycle endpoints throw `InvalidOperationException` if the subscription
+is already in the target state (e.g., activating an Active subscription),
+despite having `IdempotentAttribute`. The domain FSM should short-circuit
+when already in the target state.
+</Aside>
 
 ### Subscriptions — Operations
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/rotate-secret` | RotateWebhookSecret | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/subscriptions/{id}/test-ping` | TestWebhookPing | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/rotate-secret` | RotateWebhookSecret | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/subscriptions/{id:guid}/test-ping` | TestWebhookPing | `Webhooks.Subscriptions.Manage` |
 
 ### Statistics & Deliveries
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/stats` | GetWebhookStats | `Webhooks.Subscriptions.Manage` |
-| <Badge text="GET" variant="note" /> | `/deliveries` | QueryWebhookDeliveries | `Webhooks.Subscriptions.Manage` |
-| <Badge text="POST" variant="success" /> | `/deliveries/{deliveryId}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/deliveries` | QueryWebhookDeliveryAttempt | `Webhooks.Subscriptions.Manage` |
+| <Badge text="GET" variant="note" /> | `/deliveries/meta` | GetWebhookDeliveryAttemptMeta | `Webhooks.Subscriptions.Manage` |
+| <Badge text="POST" variant="success" /> | `/deliveries/{deliveryId:guid}/retry` | RetryWebhookDelivery | `Webhooks.Subscriptions.Manage` |
+
+<Aside type="note">
+`GET /deliveries` and `GET /deliveries/meta` are registered via
+`MapGranitQuery<WebhookDeliveryAttempt>()`. The retry endpoint is registered
+separately via `MapGranitWebhooksRedelivery()`.
+</Aside>
 
 ---
 
@@ -679,11 +1024,17 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 **Module:** `Granit.Workflow.Endpoints`
 **Prefix:** `workflow`
 
+<Aside type="note">
+Transition operation IDs are **dynamic** — suffixed with the state enum type name.
+For example, with an `OrderState` enum: `GetAvailableOrderStateTransitions`,
+`ExecuteOrderStateTransition`.
+</Aside>
+
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetTransitionHistory | `Workflow.History` |
-| <Badge text="GET" variant="note" /> | `/transitions` | GetAvailableTransitions | `Workflow.History` |
-| <Badge text="POST" variant="success" /> | `/transitions` | ExecuteTransition | `Workflow.History` |
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetWorkflowTransitionHistory | `Workflow.History` |
+| <Badge text="GET" variant="note" /> | `/transitions` | GetAvailable\{TState\}Transitions | `Workflow.History` |
+| <Badge text="POST" variant="success" /> | `/transitions` | Execute\{TState\}Transition | `Workflow.History` |
 
 ---
 
@@ -706,9 +1057,9 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}` | CreateChatCompletion | `AI.Chat.Execute` |
-| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}/stream` | StreamChatCompletion | `AI.Chat.Execute` |
-| <Badge text="POST" variant="success" /> | `/embeddings/{workspaceName}` | GenerateEmbedding | `AI.Embedding.Generate` |
+| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}` | AIChatComplete | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/chat/{workspaceName}/stream` | AIChatStream | `AI.Chat.Execute` |
+| <Badge text="POST" variant="success" /> | `/embeddings/{workspaceName}` | AIGenerateEmbeddings | `AI.Embedding.Generate` |
 
 ---
 
@@ -722,6 +1073,8 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 | <Badge text="GET" variant="note" /> | `/audit-entries/` | GetAuditEntries | `Auditing.AuditEntries.Read` |
 | <Badge text="GET" variant="note" /> | `/audit-entries/{id:guid}` | GetAuditEntryById | `Auditing.AuditEntries.Read` |
 | <Badge text="GET" variant="note" /> | `/audit-entries/entity/{entityType}/{entityId}` | GetAuditEntriesByEntity | `Auditing.AuditEntries.Read` |
+| <Badge text="GET" variant="note" /> | `/audit-entries/correlation/{correlationId}` | GetAuditEntriesByCorrelationId | `Auditing.AuditEntries.Read` |
+| <Badge text="POST" variant="success" /> | `/audit-entries/pseudonymize/{userId}` | PseudonymizeAuditEntries | `Auditing.AuditEntries.Manage` |
 
 ---
 
@@ -732,7 +1085,7 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
-| <Badge text="GET" variant="note" /> | `/health` | GetSystemHealth | Authenticated |
+| <Badge text="GET" variant="note" /> | `/health` | GetMonitoringHealth | Authenticated |
 
 ---
 
@@ -744,16 +1097,18 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 <Aside type="caution">
 Reference Data endpoints are registered per entity type by the **application**
 via `MapGranitReferenceData<T>()`. Each entity gets its own sub-group
-under the prefix.
+under the prefix. Operation IDs are suffixed with the entity type name
+(e.g., `GetAllCountry`, `GetCountryByCode`).
 </Aside>
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | GetReferenceDataList | Read |
-| <Badge text="GET" variant="note" /> | `/{code}` | GetReferenceDataByCode | Read |
-| <Badge text="POST" variant="success" /> | `/` | CreateReferenceData | Admin |
-| <Badge text="PUT" variant="caution" /> | `/{code}` | UpdateReferenceData | Admin |
-| <Badge text="DELETE" variant="danger" /> | `/{code}` | DeactivateReferenceData | Admin |
+| <Badge text="GET" variant="note" /> | `/` | GetAll\{EntityType\} | Read |
+| <Badge text="GET" variant="note" /> | `/{code}` | Get\{EntityType\}ByCode | Read |
+| <Badge text="GET" variant="note" /> | `/{code}/children` | Get\{EntityType\}Children | Read |
+| <Badge text="POST" variant="success" /> | `/` | Create\{EntityType\} | Admin |
+| <Badge text="PUT" variant="caution" /> | `/{code}` | Update\{EntityType\} | Admin |
+| <Badge text="DELETE" variant="danger" /> | `/{code}` | Deactivate\{EntityType\} | Admin |
 
 ---
 
@@ -761,27 +1116,38 @@ under the prefix.
 
 | Module | Endpoints | Auth model |
 |--------|-----------|------------|
+| AI | 8 | Permission-based |
 | API Keys | 6 | Permission-based |
-| Audit Log | 3 | Permission-based |
+| Audit Log | 5 | Permission-based |
 | Authorization | 5 | Admin + Authenticated |
 | Background Jobs | 5 | Permission-based |
-| Blob Storage | 6 + 2 proxy | Permission + Token |
+| BFF | 10 per frontend | Anonymous (session-based) |
+| Blob Storage | 8 + 2 proxy | Permission + Token |
 | Cookie Consent | 1 | Anonymous |
+| Customer Balance | 3 | Permission-based |
 | Data Exchange | 19 | Permission-based |
 | Diagnostics | 1 | Authenticated |
 | Features | 5 | Permission + Authenticated |
-| Identity — Cache | 9 | Permission-based |
-| Identity — Provider | 18 + webhook | Permission-based |
+| Identity — Cache | 10 | Permission-based |
+| Identity — Provider | 19 + webhook | Permission-based |
+| Invoicing | 5 | Permission-based |
 | Localization | 4 | Anonymous + Permission |
+| Metering | 8 | Permission-based |
+| Multi-Tenancy | 6 | Permission-based |
 | Notifications | 14 | Authenticated |
-| Privacy (GDPR) | 8 | Permission-based |
+| Account Self-Service | 28 | Anonymous + Authenticated |
+| OpenIddict — Admin | 14 | Permission-based |
+| Payments | 10 | Permission + Anonymous |
+| Privacy (GDPR) | 20 | Permission + Anonymous |
 | QueryEngine | 7 per entity | App-defined |
-| Reference Data | 5 per entity | App-defined |
+| Reference Data | 6 per entity | App-defined |
+| Scheduling | 3 | Permission-based |
 | Settings | 8 | Authenticated + Permission |
-| Templating | 16 | Permission-based |
-| Timeline | 3 | Permission-based |
+| Subscriptions | 18 | Permission-based |
+| Tax | 3 | Permission-based |
+| Templating | 17 | Permission-based |
+| Timeline | 6 | Permission-based |
 | Validation | 3 | Anonymous |
-| Webhooks | 15 | Permission-based |
+| Webhooks | 17 | Permission-based |
 | Workflow | 3 | Permission-based |
-| AI | 8 | Permission-based |
-| **Total** | **~168+** | |
+| **Total** | **~290+** | |
