@@ -114,11 +114,11 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ## Cookie Consent
 
 **Module:** `Granit.Http.Cookies.Endpoints`
-**Prefix:** _(root — mounted directly on the app group)_
+**Prefix:** `cookies`
 
 | Method | Route | Operation | Auth |
 |--------|-------|-----------|------|
-| <Badge text="GET" variant="note" /> | `/cookies/config` | GetCookieConsentConfig | Anonymous |
+| <Badge text="GET" variant="note" /> | `/config` | GetCookieConsentConfig | Anonymous |
 
 ---
 
@@ -260,14 +260,14 @@ Identity uses **two separate endpoint groups** with distinct prefixes.
 ## Localization
 
 **Module:** `Granit.Localization.Endpoints`
-**Prefix:** _(root — mounted directly on the app group)_
+**Prefix:** `localization`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/localization` | GetGranitLocalization | Anonymous |
-| <Badge text="GET" variant="note" /> | `/localization/overrides` | GetLocalizationOverrides | `Localization.Overrides.Manage` |
-| <Badge text="PUT" variant="caution" /> | `/localization/overrides/{resourceName}/{cultureName}/{key}` | PutLocalizationOverride | `Localization.Overrides.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/localization/overrides/{resourceName}/{cultureName}/{key}` | DeleteLocalizationOverride | `Localization.Overrides.Manage` |
+| <Badge text="GET" variant="note" /> | `/` | GetGranitLocalization | Anonymous |
+| <Badge text="GET" variant="note" /> | `/overrides` | GetLocalizationOverrides | `Localization.Overrides.Manage` |
+| <Badge text="PUT" variant="caution" /> | `/overrides/{resourceName}/{cultureName}/{key}` | PutLocalizationOverride | `Localization.Overrides.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/overrides/{resourceName}/{cultureName}/{key}` | DeleteLocalizationOverride | `Localization.Overrides.Manage` |
 
 ---
 
