@@ -168,13 +168,14 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.23.0",
-        "contentHash": "Tr7fZJjPQegv+aCWEXQiZJuIqVcs+rBW0K4EkMAZ6Ns3AhfzRszySClEXIfnOOCJco5rZa07vf/oMsStpZYivQ==",
+        "resolved": "1.24.1",
+        "contentHash": "aZlQx92iNtt4XT5u7j1Qwsx4fjabneWGco2TP4Ms7ivNwLNN6jFxwX084i/HyRAW1NIbro7T0VeFpstlDNEEdw==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
           "Microsoft.Bcl.TimeProvider": "10.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0",
+          "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.0",
           "Microsoft.Extensions.Hosting": "10.0.0",
           "Microsoft.Extensions.ObjectPool": "10.0.0",
           "Polly.Core": "8.6.5",
@@ -183,10 +184,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.25.0",
-        "contentHash": "+CKFTEIcApGVbj24kZUGLf55KGrf86yQI4ARvRWRTD+d7d/S4oZDkbVUggOD9BjC14NmiigcU52pzPHY2D3eVA==",
+        "resolved": "1.27.0",
+        "contentHash": "OAnWVIbLp7qZxLGLixvzeRnwm+cEl7qEL/GVWAK8ndsAqXBKsGU26RGf2rNJE2qxiWHTs+f4nh1bkAbtk+Ps9Q==",
         "dependencies": {
-          "JasperFx": "1.23.0"
+          "JasperFx": "1.24.0"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -200,6 +201,11 @@
           "Microsoft.CodeAnalysis.Scripting": "5.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.0"
         }
+      },
+      "JasperFx.SourceGeneration": {
+        "type": "Transitive",
+        "resolved": "1.1.0",
+        "contentHash": "yIOaiA/OrlXQLGPjxFDubHnOU8MCzPTz465xBGRITMm4fDf7DbWKogb2SZC2jYLWEj27q3smTz1Z7lU4h1KkOQ=="
       },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
@@ -914,38 +920,38 @@
       },
       "Weasel.Core": {
         "type": "Transitive",
-        "resolved": "8.11.2",
-        "contentHash": "PITDgSSUmNuIXcqiZZuvkItZveRHO0iIrFlmNlxgm2Necrgzuk1gBRK3Wc6r0ddgWCQB0YPFZEznMChTIKaNFA==",
+        "resolved": "8.13.0",
+        "contentHash": "zfNfdPSPk4pzYPjyEiHlnx7E8qliXdIYEIigo72Kemnl6mCYF2SEZ5VY4p8ppEP0T3J3uePlo74IV1cH+SnBgA==",
         "dependencies": {
-          "JasperFx": "1.21.4"
+          "JasperFx": "1.24.0"
         }
       },
       "Weasel.EntityFrameworkCore": {
         "type": "Transitive",
-        "resolved": "8.11.2",
-        "contentHash": "+WObL+roPd0u/9LyGSFlAPiqc6N7NqQF1vv/Sja0xGiiSCeUWuJV+0oEWl1cOlJ5Gd75R+bY1G1OJ58rzr8t6w==",
+        "resolved": "8.13.0",
+        "contentHash": "oFBFaA0r+rAmD2l8XzAWqHsD6FIcdlIUkr2D+V+iK8UPQh7h4KR2vhNQHxp8izCCQswS542Ty59eoMzNRNBmsA==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "9.0.0",
-          "Weasel.Core": "8.11.2"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.0",
+          "Weasel.Core": "8.13.0"
         }
       },
       "Weasel.SqlServer": {
         "type": "Transitive",
-        "resolved": "8.11.2",
-        "contentHash": "UH4HkYw+xder/fuvzxB7xc69MXDfalFmDcIPXT2woGyC95TmSGA8wjkwHTwjs8I+B1Qpv71UzqqF3GqeTZz0KQ==",
+        "resolved": "8.13.0",
+        "contentHash": "YsrAP2kL5N1sjq+Yq12pIbvtoJZux0vxyAgwfJBh5/8a8d+ewbVxdpx16TaQGq1iEiKGnAyrZVQGQv7o4Ou/HA==",
         "dependencies": {
           "Microsoft.Data.SqlClient": "6.1.3",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.0",
-          "Weasel.Core": "8.11.2"
+          "Weasel.Core": "8.13.0"
         }
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
-        "resolved": "5.28.0",
-        "contentHash": "ZvSZrw2wpuACp2C42Lxlg0ZZ+VMk6OWWirmr+X/rOKZ29oqc5O+ZDaVpVUN0hxp3bTC3cWWNJosgqiMVk0Xtfg==",
+        "resolved": "5.30.0",
+        "contentHash": "urmPzyW/4Nt9jyLiTTBdShJleZE8jcKmyWaQy0tx84HBo5zAReJ9YvqhiWHHuUr1GoLJS5X4+e3pJPGPQ00nbA==",
         "dependencies": {
-          "Weasel.Core": "8.11.2",
-          "WolverineFx": "5.28.0"
+          "Weasel.Core": "8.13.0",
+          "WolverineFx": "5.30.0"
         }
       },
       "xunit.analyzers": {
@@ -1350,12 +1356,13 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.28.0",
-        "contentHash": "g5J41+KT89rzGnP86D0inOsd3V8ZbuKwznQJ1UbgcwUQ2JE3OhKVuzLDL9tm09qoNVKvutkIewwpCyOiIijapg==",
+        "resolved": "5.30.0",
+        "contentHash": "2ttDgTC66TgoM6MSCxVVbHSkGVMt+muHdwLBFVOkQKmTjPigj69JTW4bV6AQHMFX7fBQ6NknEl9OU48saLFmuA==",
         "dependencies": {
-          "JasperFx": "1.23.0",
-          "JasperFx.Events": "1.25.0",
+          "JasperFx": "1.24.1",
+          "JasperFx.Events": "1.27.0",
           "JasperFx.RuntimeCompiler": "4.4.0",
+          "JasperFx.SourceGeneration": "1.1.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",
           "Microsoft.Extensions.Configuration": "10.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "10.0.0",
@@ -1372,34 +1379,34 @@
       "WolverineFx.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.28.0",
-        "contentHash": "7ggGvTKSX62Bm7mo7XzfQn9Iaj57NluF1ZAruisx1bl0iVgCtj2W5CnJSrT/ewlLHvDWxsMFqYF3qQsEDd+JSQ==",
+        "resolved": "5.30.0",
+        "contentHash": "F4FXNqVPIBJ57Njivc7Yz0ss70n/k+tzHs/Nshsn1+iy9gmipZPz2P8nLQWObkEYHFVIn14BSx5m5i70QxREAQ==",
         "dependencies": {
           "Microsoft.EntityFrameworkCore": "10.0.2",
           "Microsoft.EntityFrameworkCore.Design": "10.0.2",
           "Microsoft.EntityFrameworkCore.Relational": "10.0.2",
-          "Weasel.EntityFrameworkCore": "8.11.2",
-          "WolverineFx.RDBMS": "5.28.0"
+          "Weasel.EntityFrameworkCore": "8.13.0",
+          "WolverineFx.RDBMS": "5.30.0"
         }
       },
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.28.0",
-        "contentHash": "UBb+jvwENnLYOGIH1JVPUpBNjCfLdY5FMMjoo/nw3LWxmv+qE9fFSxy7vZ+N337ZqeoBDdFhWzlHsavild98YA==",
+        "resolved": "5.30.0",
+        "contentHash": "HCcc7LiNWnUQShjmzlAifDTKIdeYxg+p1xEM9uzb3BNK1WHqg4mB+tRIsmUuDj0bnVnCGpOHRdUb0Yd0kxBApA==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.28.0"
+          "WolverineFx": "5.30.0"
         }
       },
       "WolverineFx.SqlServer": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.28.0",
-        "contentHash": "KNZiAPxgDfVsLjn1T8eP4Ovd8SOE+zoJsbXmmKNTSiL3cnbZltqQYRPYJvyBmf5F1eksVJq+om1l149kf3GqZw==",
+        "resolved": "5.30.0",
+        "contentHash": "qSIVjmaPiSzmVfCXdcvLQqj+05vs3f70EUe9XypFrvBL5W5jf+RtMjEyglZLG0kY6s+KhI8PLviNJnIrZMEZNg==",
         "dependencies": {
-          "Weasel.SqlServer": "8.11.2",
-          "WolverineFx.RDBMS": "5.28.0"
+          "Weasel.SqlServer": "8.13.0",
+          "WolverineFx.RDBMS": "5.30.0"
         }
       },
       "ZiggyCreatures.FusionCache": {

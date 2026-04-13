@@ -421,8 +421,8 @@
       "Scriban": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.0.6",
-        "contentHash": "bOtHyk30sjl0y3+KYImIJv0ETZYLuFFJvlBF2ks2YLNtydhJqxRTGe4WaBDvg/3VRhhI6uf+qVfixuFROsOi+w=="
+        "resolved": "7.1.0",
+        "contentHash": "8paijHmWYO7zxSRNLlbDzzaFT7By827wIgdOrAg9q64+XasUYK8RCT3Y4mbISxeQ3iNdaK7wGeDmT2GWRtqRBQ=="
       }
     }
   }
