@@ -40,7 +40,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(fakeUser);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/register",
+            "/account/register",
             new AccountRegisterRequest("new@example.com", "StrongP@ss1!", "Jane", "Doe"),
             TestContext.Current.CancellationToken);
 
@@ -60,7 +60,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Email is already taken"));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/register",
+            "/account/register",
             new AccountRegisterRequest("taken@example.com", "StrongP@ss1!", null, null),
             TestContext.Current.CancellationToken);
 
@@ -76,7 +76,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns("false");
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/register",
+            "/account/register",
             new AccountRegisterRequest("new@example.com", "StrongP@ss1!", "Jane", "Doe"),
             TestContext.Current.CancellationToken);
 
@@ -91,7 +91,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Password too weak"));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/register",
+            "/account/register",
             new AccountRegisterRequest("user@example.com", "weak", null, null),
             TestContext.Current.CancellationToken);
 
@@ -110,7 +110,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/forgot-password",
+            "/account/forgot-password",
             new AccountForgotPasswordRequest("user@example.com"),
             TestContext.Current.CancellationToken);
 
@@ -126,7 +126,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/change-password",
+            "/account/change-password",
             new AccountPasswordChangeRequest("OldP@ss1!", "NewP@ss2!"),
             TestContext.Current.CancellationToken);
 
@@ -146,7 +146,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/change-password",
+            "/account/change-password",
             new AccountPasswordChangeRequest("WrongP@ss!", "NewP@ss2!"),
             TestContext.Current.CancellationToken);
 
@@ -157,7 +157,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ResetPassword_ValidToken_Returns204()
     {
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/reset-password",
+            "/account/reset-password",
             new AccountPasswordResetRequest("user-id-1", "valid-token", "NewP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -175,7 +175,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Invalid or expired reset token."));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/reset-password",
+            "/account/reset-password",
             new AccountPasswordResetRequest("user-id-1", "bad-token", "NewP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -207,7 +207,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Array.Empty<ExternalLoginInfo>());
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/profile", TestContext.Current.CancellationToken);
+            "/account/profile", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -243,7 +243,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Array.Empty<ExternalLoginInfo>());
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PutAsJsonAsync(
-            "/api/account/profile",
+            "/account/profile",
             new AccountProfileUpdateRequest("Updated", "Name"),
             TestContext.Current.CancellationToken);
 
@@ -274,7 +274,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new TwoFactorStatus(true, true, 5));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/two-factor", TestContext.Current.CancellationToken);
+            "/account/two-factor", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -297,7 +297,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(recoveryCodes);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/enable",
+            "/account/two-factor/enable",
             new AccountTwoFactorEnableRequest("123456"),
             TestContext.Current.CancellationToken);
 
@@ -319,7 +319,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Invalid TOTP code."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/enable",
+            "/account/two-factor/enable",
             new AccountTwoFactorEnableRequest("000000"),
             TestContext.Current.CancellationToken);
 
@@ -334,7 +334,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/disable",
+            "/account/two-factor/disable",
             new AccountTwoFactorDisableRequest("MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -352,7 +352,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/disable",
+            "/account/two-factor/disable",
             new AccountTwoFactorDisableRequest("WrongP@ss!"),
             TestContext.Current.CancellationToken);
 
@@ -371,7 +371,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/delete",
+            "/account/delete",
             new AccountDeleteRequest("CorrectP@ss!"),
             TestContext.Current.CancellationToken);
 
@@ -389,7 +389,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/delete",
+            "/account/delete",
             new AccountDeleteRequest("WrongP@ss!"),
             TestContext.Current.CancellationToken);
 
@@ -404,7 +404,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task SessionHeartbeat_Authenticated_Returns204()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            "/api/account/session/heartbeat", null,
+            "/account/session/heartbeat", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -428,7 +428,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/confirm-email?userId=user-id-1&token=valid-token",
+            "/account/confirm-email?userId=user-id-1&token=valid-token",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -442,7 +442,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/confirm-email?userId=user-id-1&token=bad-token",
+            "/account/confirm-email?userId=user-id-1&token=bad-token",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -456,7 +456,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task GetProfile_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/profile", TestContext.Current.CancellationToken);
+            "/account/profile", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -479,7 +479,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(passkeys);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/passkeys", TestContext.Current.CancellationToken);
+            "/account/passkeys", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -494,7 +494,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListPasskeys_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/passkeys", TestContext.Current.CancellationToken);
+            "/account/passkeys", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -509,7 +509,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(optionsJson);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            "/api/account/passkeys/register/begin", null,
+            "/account/passkeys/register/begin", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -534,7 +534,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(createdPasskey);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/passkeys/register/complete",
+            "/account/passkeys/register/complete",
             new PasskeyRegistrationRequest("""{"id":"cred123"}""", "My Key"),
             TestContext.Current.CancellationToken);
 
@@ -553,7 +553,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Invalid attestation response."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/passkeys/register/complete",
+            "/account/passkeys/register/complete",
             new PasskeyRegistrationRequest("""{"id":"bad"}""", null),
             TestContext.Current.CancellationToken);
 
@@ -570,7 +570,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(optionsJson);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
-            "/api/account/passkeys/assertion/begin", null,
+            "/account/passkeys/assertion/begin", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -595,7 +595,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(fakeUser);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/passkeys/assertion/complete",
+            "/account/passkeys/assertion/complete",
             new AccountPasskeyLoginRequest("""{"id":"cred123","response":{}}"""),
             TestContext.Current.CancellationToken);
 
@@ -616,7 +616,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new GranitPasskeyAssertionResult(false, null));
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/passkeys/assertion/complete",
+            "/account/passkeys/assertion/complete",
             new AccountPasskeyLoginRequest("""{"id":"bad"}"""),
             TestContext.Current.CancellationToken);
 
@@ -635,7 +635,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns((GranitUser?)null);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/passkeys/assertion/complete",
+            "/account/passkeys/assertion/complete",
             new AccountPasskeyLoginRequest("""{"id":"cred123"}"""),
             TestContext.Current.CancellationToken);
 
@@ -648,7 +648,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         var passkeyId = Guid.NewGuid();
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PatchAsJsonAsync(
-            $"/api/account/passkeys/{passkeyId}",
+            $"/account/passkeys/{passkeyId}",
             new PasskeyRenameRequest("Renamed Key"),
             TestContext.Current.CancellationToken);
 
@@ -667,7 +667,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         var passkeyId = Guid.NewGuid();
 
         HttpResponseMessage response = await _server.AuthenticatedClient.DeleteAsync(
-            $"/api/account/passkeys/{passkeyId}",
+            $"/account/passkeys/{passkeyId}",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -691,7 +691,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Cannot delete the last credential."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.DeleteAsync(
-            $"/api/account/passkeys/{passkeyId}",
+            $"/account/passkeys/{passkeyId}",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -715,7 +715,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(logins);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/external-logins", TestContext.Current.CancellationToken);
+            "/account/external-logins", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -730,7 +730,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListExternalLogins_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/external-logins", TestContext.Current.CancellationToken);
+            "/account/external-logins", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -743,7 +743,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(true);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
-            "/api/account/external-logins/challenge/Google", null,
+            "/account/external-logins/challenge/Google", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -757,7 +757,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
-            "/api/account/external-logins/challenge/NotConfigured", null,
+            "/account/external-logins/challenge/NotConfigured", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -776,7 +776,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(logins);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.DeleteAsync(
-            "/api/account/external-logins/Google",
+            "/account/external-logins/Google",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
@@ -796,7 +796,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Array.Empty<ExternalLoginInfo>());
 
         HttpResponseMessage response = await _server.AuthenticatedClient.DeleteAsync(
-            "/api/account/external-logins/GitHub",
+            "/account/external-logins/GitHub",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -820,7 +820,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("Cannot remove last login method."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.DeleteAsync(
-            "/api/account/external-logins/Google",
+            "/account/external-logins/Google",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -830,7 +830,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ExternalLoginCallback_MissingProvider_Returns400()
     {
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
-            "/api/account/external-logins/callback",
+            "/account/external-logins/callback",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -844,7 +844,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/external-logins/callback?provider=Google",
+            "/account/external-logins/callback?provider=Google",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -858,7 +858,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("DuplicateEmail: email already in use."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/external-logins/callback?provider=Google",
+            "/account/external-logins/callback?provider=Google",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
@@ -872,7 +872,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ThrowsAsync(new InvalidOperationException("User not found for external login."));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/external-logins/callback?provider=GitHub",
+            "/account/external-logins/callback?provider=GitHub",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
@@ -897,7 +897,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(fakeResult);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            $"/api/admin/users/{targetUserId}/impersonate", null,
+            $"/admin/users/{targetUserId}/impersonate", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -916,7 +916,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         var targetUserId = Guid.NewGuid();
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
-            $"/api/admin/users/{targetUserId}/impersonate", null,
+            $"/admin/users/{targetUserId}/impersonate", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -928,7 +928,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         var targetUserId = Guid.NewGuid();
 
         HttpResponseMessage response = await _server.ImpersonatedClient.PostAsync(
-            $"/api/admin/users/{targetUserId}/impersonate", null,
+            $"/admin/users/{targetUserId}/impersonate", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
@@ -950,7 +950,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns((GranitUser?)null);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("unknown@example.com", "SomeP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -981,7 +981,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns("reset-token-abc");
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("locked@example.com", "MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -1011,7 +1011,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("2fa@example.com", "MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -1039,7 +1039,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.NotAllowed);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("unconfirmed@example.com", "MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -1060,7 +1060,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("user@example.com", "WrongP@ss!"),
             TestContext.Current.CancellationToken);
 
@@ -1081,7 +1081,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("remember@example.com", "GoodP@ss1!", RememberMe: true),
             TestContext.Current.CancellationToken);
 
@@ -1108,7 +1108,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login",
+            "/account/login",
             new AccountLoginRequest("success@example.com", "GoodP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -1133,7 +1133,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("123456"),
             TestContext.Current.CancellationToken);
 
@@ -1154,7 +1154,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("RECOVERY1", UseRecoveryCode: true),
             TestContext.Current.CancellationToken);
 
@@ -1175,7 +1175,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("123456", RememberMe: true),
             TestContext.Current.CancellationToken);
 
@@ -1202,7 +1202,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(fakeUser);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("RECOVERY1", UseRecoveryCode: true, RememberMe: true),
             TestContext.Current.CancellationToken);
 
@@ -1226,7 +1226,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(Microsoft.AspNetCore.Identity.SignInResult.Failed);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("000000"),
             TestContext.Current.CancellationToken);
 
@@ -1257,7 +1257,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns("reset-token-2fa");
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
-            "/api/account/login/two-factor",
+            "/account/login/two-factor",
             new AccountTwoFactorLoginRequest("123456"),
             TestContext.Current.CancellationToken);
 
@@ -1285,7 +1285,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new AuthenticatorKeyInfo("JBSWY3DPEHPK3PXP", "otpauth://totp/Granit:test@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Granit"));
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/api/account/two-factor/authenticator-key",
+            "/account/two-factor/authenticator-key",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -1311,7 +1311,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(codes);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/recovery-codes",
+            "/account/two-factor/recovery-codes",
             new AccountGenerateRecoveryCodesRequest("MyP@ss1!"),
             TestContext.Current.CancellationToken);
 
@@ -1333,7 +1333,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(false);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/api/account/two-factor/recovery-codes",
+            "/account/two-factor/recovery-codes",
             new AccountGenerateRecoveryCodesRequest("WrongP@ss!"),
             TestContext.Current.CancellationToken);
 
@@ -1356,7 +1356,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .Returns(fakeResult);
 
         HttpResponseMessage response = await _server.ImpersonatedClient.PostAsync(
-            "/api/account/session/back-to-impersonator", null,
+            "/account/session/back-to-impersonator", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -1372,7 +1372,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task BackToImpersonator_NotImpersonated_Returns400()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            "/api/account/session/back-to-impersonator", null,
+            "/account/session/back-to-impersonator", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -1382,7 +1382,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task BackToImpersonator_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient.PostAsync(
-            "/api/account/session/back-to-impersonator", null,
+            "/account/session/back-to-impersonator", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);

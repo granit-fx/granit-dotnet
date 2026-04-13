@@ -27,7 +27,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListApplications_ReturnsEmptyList()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/applications", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/applications", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -62,7 +62,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns("native");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/applications", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/applications", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -87,7 +87,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListApplications_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient
-            .GetAsync("/api/admin/oidc/applications", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/applications", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -111,10 +111,10 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateApplicationRequest request = new("new-client", "New App", null, "web");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        response.Headers.Location?.ToString().ShouldBe("/api/admin/oidc/applications/new-client");
+        response.Headers.Location?.ToString().ShouldBe("/admin/oidc/applications/new-client");
 
         AdminOidcApplicationResponse? result = await response.Content
             .ReadFromJsonAsync<AdminOidcApplicationResponse>(TestContext.Current.CancellationToken);
@@ -145,7 +145,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateApplicationRequest request = new("confidential-client", "Confidential App", "my-secret", "web");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -176,7 +176,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateApplicationRequest request = new("public-client", null, null, null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -194,7 +194,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateApplicationRequest request = new("", "Name", null, null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
@@ -205,7 +205,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateApplicationRequest request = new("client", "Name", null, null);
 
         HttpResponseMessage response = await _server.AnonymousClient
-            .PostAsJsonAsync("/api/admin/oidc/applications", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/applications", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -219,7 +219,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns(existingApp);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync("/api/admin/oidc/applications/client-to-delete", TestContext.Current.CancellationToken);
+            .DeleteAsync("/admin/oidc/applications/client-to-delete", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -234,7 +234,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns((object?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync("/api/admin/oidc/applications/nonexistent", TestContext.Current.CancellationToken);
+            .DeleteAsync("/admin/oidc/applications/nonexistent", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -250,7 +250,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns("Rotate App");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsync("/api/admin/oidc/applications/rotate-client/rotate-secret", null,
+            .PostAsync("/admin/oidc/applications/rotate-client/rotate-secret", null,
                 TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -280,7 +280,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns((object?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsync("/api/admin/oidc/applications/nonexistent/rotate-secret", null,
+            .PostAsync("/admin/oidc/applications/nonexistent/rotate-secret", null,
                 TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -294,7 +294,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListScopes_ReturnsEmptyList()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/scopes", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/scopes", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -329,7 +329,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns("User profile scope");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/scopes", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/scopes", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -352,7 +352,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListScopes_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient
-            .GetAsync("/api/admin/oidc/scopes", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/scopes", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -376,10 +376,10 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateScopeRequest request = new("custom_scope", "Custom Scope", "A custom OIDC scope");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
-        response.Headers.Location?.ToString().ShouldBe("/api/admin/oidc/scopes/custom_scope");
+        response.Headers.Location?.ToString().ShouldBe("/admin/oidc/scopes/custom_scope");
 
         AdminOidcScopeResponse? result = await response.Content
             .ReadFromJsonAsync<AdminOidcScopeResponse>(TestContext.Current.CancellationToken);
@@ -396,7 +396,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
         AdminOidcCreateScopeRequest request = new("", "Display", null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .PostAsJsonAsync("/api/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
+            .PostAsJsonAsync("/admin/oidc/scopes", request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.UnprocessableEntity);
     }
@@ -410,7 +410,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns(existingScope);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync("/api/admin/oidc/scopes/scope-to-delete", TestContext.Current.CancellationToken);
+            .DeleteAsync("/admin/oidc/scopes/scope-to-delete", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -425,7 +425,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns((object?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync("/api/admin/oidc/scopes/nonexistent", TestContext.Current.CancellationToken);
+            .DeleteAsync("/admin/oidc/scopes/nonexistent", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -438,7 +438,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListAuthorizations_ReturnsEmptyList()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/authorizations", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/authorizations", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -468,7 +468,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns("permanent");
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .GetAsync("/api/admin/oidc/authorizations", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/authorizations", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -487,7 +487,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
     public async Task ListAuthorizations_Anonymous_Returns401()
     {
         HttpResponseMessage response = await _server.AnonymousClient
-            .GetAsync("/api/admin/oidc/authorizations", TestContext.Current.CancellationToken);
+            .GetAsync("/admin/oidc/authorizations", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
@@ -506,7 +506,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns(ToAsyncEnumerable<object>(token1));
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync($"/api/admin/oidc/authorizations/{authId}", TestContext.Current.CancellationToken);
+            .DeleteAsync($"/admin/oidc/authorizations/{authId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -526,7 +526,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns((object?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync($"/api/admin/oidc/authorizations/{authId}", TestContext.Current.CancellationToken);
+            .DeleteAsync($"/admin/oidc/authorizations/{authId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -548,7 +548,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns(ToAsyncEnumerable<object>(auth1));
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync($"/api/admin/oidc/authorizations/user/{userId}", TestContext.Current.CancellationToken);
+            .DeleteAsync($"/admin/oidc/authorizations/user/{userId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
@@ -573,7 +573,7 @@ public sealed class AdminOidcEndpointsIntegrationTests : IAsyncLifetime
             .Returns(AsyncEnumerable.Empty<object>());
 
         HttpResponseMessage response = await _server.AuthenticatedClient
-            .DeleteAsync($"/api/admin/oidc/authorizations/user/{userId}", TestContext.Current.CancellationToken);
+            .DeleteAsync($"/admin/oidc/authorizations/user/{userId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
     }

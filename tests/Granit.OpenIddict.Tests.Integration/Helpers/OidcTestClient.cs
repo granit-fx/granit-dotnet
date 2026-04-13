@@ -182,12 +182,12 @@ public sealed class OidcTestClient(HttpClient client)
             System.Text.Encoding.UTF8,
             "application/json");
 
-        return await client.PostAsync("/api/account/register", content);
+        return await client.PostAsync("/account/register", content);
     }
 
     public async Task<HttpResponseMessage> GetProfileAsync(string accessToken)
     {
-        using var request = new HttpRequestMessage(HttpMethod.Get, "/api/account/profile");
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/profile");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         return await client.SendAsync(request);
     }
