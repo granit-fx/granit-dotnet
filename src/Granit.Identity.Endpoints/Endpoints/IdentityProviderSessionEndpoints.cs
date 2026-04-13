@@ -1,3 +1,5 @@
+using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ internal static class IdentityProviderSessionEndpoints
             .WithName("GetIdentityProviderUserSessions")
             .WithSummary("Lists active sessions for a user.")
             .WithDescription("Returns all active sessions for the specified user from the identity provider.")
-            .Produces<IReadOnlyList<IdentitySession>>();
+            .Produces<IReadOnlyList<IdentitySessionResponse>>();
 
         group.MapDelete("/{sessionId}", TerminateSessionAsync)
             .WithName("TerminateIdentityProviderSession")
@@ -42,12 +44,12 @@ internal static class IdentityProviderSessionEndpoints
             .WithName("GetIdentityProviderUserDevices")
             .WithSummary("Lists device activity for a user.")
             .WithDescription("Returns device activity information for the specified user, including device type, OS, browser, and associated sessions.")
-            .Produces<IReadOnlyList<IdentityDeviceActivity>>();
+            .Produces<IReadOnlyList<IdentityDeviceActivityResponse>>();
 
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentitySession>>> GetUserSessionsAsync(
+    private static async Task<Ok<IReadOnlyList<IdentitySessionResponse>>> GetUserSessionsAsync(
         string userId,
         [FromServices] IIdentitySessionManager sessionManager,
         CancellationToken cancellationToken)
@@ -56,10 +58,11 @@ internal static class IdentityProviderSessionEndpoints
             .GetUserSessionsAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(sessions);
+        return TypedResults.Ok<IReadOnlyList<IdentitySessionResponse>>(
+            sessions.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityDeviceActivity>>> GetUserDeviceActivityAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityDeviceActivityResponse>>> GetUserDeviceActivityAsync(
         string userId,
         [FromServices] IIdentitySessionManager sessionManager,
         CancellationToken cancellationToken)
@@ -68,7 +71,8 @@ internal static class IdentityProviderSessionEndpoints
             .GetUserDeviceActivityAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(devices);
+        return TypedResults.Ok<IReadOnlyList<IdentityDeviceActivityResponse>>(
+            devices.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> TerminateSessionAsync(

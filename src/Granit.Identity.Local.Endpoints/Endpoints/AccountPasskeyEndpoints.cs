@@ -2,6 +2,7 @@ using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +22,7 @@ internal static class AccountPasskeyEndpoints
             .WithName("ListPasskeys")
             .WithSummary("Lists registered passkeys.")
             .WithDescription("Returns the list of WebAuthn passkeys registered for the authenticated user.")
-            .Produces<IReadOnlyList<PasskeyInfo>>()
+            .Produces<IReadOnlyList<PasskeyInfoResponse>>()
             .RequireAuthorization();
 
         group.MapPost("/passkeys/register/begin", BeginRegistrationAsync)
@@ -39,7 +40,7 @@ internal static class AccountPasskeyEndpoints
             .WithSummary("Completes a WebAuthn passkey registration ceremony.")
             .WithDescription("Validates and stores the credential via ASP.NET Identity's built-in WebAuthn support.")
             .WithMetadata(new IdempotentAttribute { Required = false })
-            .Produces<PasskeyInfo>(StatusCodes.Status201Created)
+            .Produces<PasskeyInfoResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization();
 
@@ -91,7 +92,7 @@ internal static class AccountPasskeyEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<PasskeyInfo>>> ListPasskeysAsync(
+    private static async Task<Ok<IReadOnlyList<PasskeyInfoResponse>>> ListPasskeysAsync(
         HttpContext httpContext,
         [FromServices] IPasskeyService passkeyService,
         CancellationToken cancellationToken)
@@ -99,7 +100,8 @@ internal static class AccountPasskeyEndpoints
         string userId = httpContext.User.FindFirst("sub")!.Value;
         IReadOnlyList<PasskeyInfo> passkeys = await passkeyService
             .GetPasskeysAsync(userId, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Ok(passkeys);
+        return TypedResults.Ok<IReadOnlyList<PasskeyInfoResponse>>(
+            passkeys.Select(IdentityLocalResponseMapper.ToResponse).ToList());
     }
 
     private static async Task<Ok<string>> BeginRegistrationAsync(
@@ -113,7 +115,7 @@ internal static class AccountPasskeyEndpoints
         return TypedResults.Ok(optionsJson);
     }
 
-    private static async Task<Results<Created<PasskeyInfo>, ProblemHttpResult>> CompleteRegistrationAsync(
+    private static async Task<Results<Created<PasskeyInfoResponse>, ProblemHttpResult>> CompleteRegistrationAsync(
         PasskeyRegistrationRequest request,
         HttpContext httpContext,
         [FromServices] IPasskeyService passkeyService,
@@ -126,7 +128,9 @@ internal static class AccountPasskeyEndpoints
             PasskeyInfo passkey = await passkeyService
                 .CompleteRegistrationAsync(userId, request.CredentialJson, request.Name, cancellationToken)
                 .ConfigureAwait(false);
-            return TypedResults.Created($"/api/account/passkeys/{passkey.Id}", passkey);
+            return TypedResults.Created(
+                $"/api/account/passkeys/{passkey.Id}",
+                IdentityLocalResponseMapper.ToResponse(passkey));
         }
         catch (InvalidOperationException ex)
         {
@@ -181,7 +185,7 @@ internal static class AccountPasskeyEndpoints
         return TypedResults.Ok(new AccountLoginResponse(Succeeded: true));
     }
 
-    private static async Task<Results<NoContent, NotFound>> RenamePasskeyAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RenamePasskeyAsync(
         Guid id,
         PasskeyRenameRequest request,
         HttpContext httpContext,

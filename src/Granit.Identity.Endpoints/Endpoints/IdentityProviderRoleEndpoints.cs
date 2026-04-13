@@ -1,3 +1,5 @@
+using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,13 +20,13 @@ internal static class IdentityProviderRoleEndpoints
             .WithName("GetIdentityProviderRoles")
             .WithSummary("Lists all roles defined in the identity provider.")
             .WithDescription("Returns all roles available in the identity provider (Keycloak realm roles, Cognito groups, etc.).")
-            .Produces<IReadOnlyList<IdentityRole>>();
+            .Produces<IReadOnlyList<IdentityRoleResponse>>();
 
         group.MapGet("/{roleName}/members", GetRoleMembersAsync)
             .WithName("GetIdentityProviderRoleMembers")
             .WithSummary("Lists all users assigned to a specific role.")
             .WithDescription("Returns users who have the specified role assigned.")
-            .Produces<IReadOnlyList<IIdentityUser>>();
+            .Produces<IReadOnlyList<IdentityUserResponse>>();
 
         return group;
     }
@@ -35,7 +37,7 @@ internal static class IdentityProviderRoleEndpoints
             .WithName("GetIdentityProviderUserRoles")
             .WithSummary("Lists roles assigned to a specific user.")
             .WithDescription("Returns all roles currently assigned to the specified user.")
-            .Produces<IReadOnlyList<IdentityRole>>();
+            .Produces<IReadOnlyList<IdentityRoleResponse>>();
 
         return group;
     }
@@ -57,7 +59,7 @@ internal static class IdentityProviderRoleEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityRole>>> GetRolesAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityRoleResponse>>> GetRolesAsync(
         [FromServices] IIdentityRoleManager roleManager,
         CancellationToken cancellationToken)
     {
@@ -65,10 +67,11 @@ internal static class IdentityProviderRoleEndpoints
             .GetRolesAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(roles);
+        return TypedResults.Ok<IReadOnlyList<IdentityRoleResponse>>(
+            roles.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
-    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> GetRoleMembersAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityUserResponse>>> GetRoleMembersAsync(
         string roleName,
         [FromServices] IIdentityRoleManager roleManager,
         CancellationToken cancellationToken)
@@ -77,10 +80,11 @@ internal static class IdentityProviderRoleEndpoints
             .GetRoleMembersAsync(roleName, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(members);
+        return TypedResults.Ok<IReadOnlyList<IdentityUserResponse>>(
+            members.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityRole>>> GetUserRolesAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityRoleResponse>>> GetUserRolesAsync(
         string userId,
         [FromServices] IIdentityRoleManager roleManager,
         CancellationToken cancellationToken)
@@ -89,7 +93,8 @@ internal static class IdentityProviderRoleEndpoints
             .GetUserRolesAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(roles);
+        return TypedResults.Ok<IReadOnlyList<IdentityRoleResponse>>(
+            roles.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
     private static async Task<NoContent> AssignRoleAsync(

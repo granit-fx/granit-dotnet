@@ -1,4 +1,6 @@
 using Granit.Http.Idempotency.Attributes;
+using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
@@ -20,7 +22,7 @@ internal static class AdminImpersonationEndpoints
                 "Issues a short-lived token (max 1h) with impersonator_id claim. "
                 + "Writes audit log and sends transparency notification.")
             .WithMetadata(new IdempotentAttribute { Required = false })
-            .Produces<ImpersonationResult>()
+            .Produces<ImpersonationResponse>()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(IdentityLocalPermissions.Users.Impersonate);
@@ -28,7 +30,7 @@ internal static class AdminImpersonationEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<ImpersonationResult>, ProblemHttpResult>> ImpersonateAsync(
+    private static async Task<Results<Ok<ImpersonationResponse>, ProblemHttpResult>> ImpersonateAsync(
         Guid userId,
         HttpContext httpContext,
         [FromServices] IImpersonationService impersonationService,
@@ -51,6 +53,6 @@ internal static class AdminImpersonationEndpoints
             .ImpersonateAsync(userId.ToString(), adminId, adminName, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(result);
+        return TypedResults.Ok(IdentityLocalResponseMapper.ToResponse(result));
     }
 }
