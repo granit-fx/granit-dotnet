@@ -36,7 +36,8 @@ internal static class ReferenceDataAdminEndpoints
             .WithSummary($"Creates a new {typeof(TEntity).Name} entry.")
             .WithDescription($"Creates a new {typeof(TEntity).Name} reference data entry with a unique code and localized labels for all supported languages. The entry is active by default. Optional validity date range can restrict when the entry is selectable.")
             .Produces(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesValidationProblem();
 
         group.MapPut("/{code}", UpdateAsync<TEntity>)
             .AddEndpointFilter(scopeFilter)
@@ -46,7 +47,8 @@ internal static class ReferenceDataAdminEndpoints
             .WithDescription($"Updates the labels, sort order, active status, and validity dates of an existing {typeof(TEntity).Name} entry. The code is immutable and cannot be changed. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if no entry matches the code.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesValidationProblem();
 
         group.MapDelete("/{code}", DeactivateAsync<TEntity>)
             .AddEndpointFilter(scopeFilter)
@@ -106,7 +108,7 @@ internal static class ReferenceDataAdminEndpoints
         return TypedResults.Created($"{request.Code}");
     }
 
-    private static async Task<Results<Ok, NotFound>> UpdateAsync<TEntity>(
+    private static async Task<Results<Ok, ProblemHttpResult>> UpdateAsync<TEntity>(
         string code,
         ReferenceDataUpdateRequest request,
         [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
@@ -117,7 +119,7 @@ internal static class ReferenceDataAdminEndpoints
         TEntity? existing = await storeReader.GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         existing.LabelEn = request.LabelEn;
@@ -153,7 +155,7 @@ internal static class ReferenceDataAdminEndpoints
         return TypedResults.Ok();
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeactivateAsync<TEntity>(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeactivateAsync<TEntity>(
         string code,
         [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
         [FromServices] IReferenceDataStoreWriter<TEntity> storeWriter,
@@ -163,7 +165,7 @@ internal static class ReferenceDataAdminEndpoints
         TEntity? existing = await storeReader.GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await storeWriter.SetActiveAsync(code, false, cancellationToken).ConfigureAwait(false);

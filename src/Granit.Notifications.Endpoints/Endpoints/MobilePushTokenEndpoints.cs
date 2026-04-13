@@ -33,7 +33,8 @@ public static class MobilePushTokenEndpoints
             .WithSummary("Registers a mobile device token for push notifications.")
             .WithDescription("Registers a device token (FCM or APNs) for the authenticated user. If the token already exists, it is updated (upsert). Returns 201 Created for new registrations, 200 OK for updates. Tokens are scoped to the current tenant.")
             .Produces(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status200OK);
+            .Produces(StatusCodes.Status200OK)
+            .ProducesValidationProblem();
 
         group.MapDelete("/{deviceToken}", RemoveTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)

@@ -56,7 +56,7 @@ internal static class ImportExecutionEndpoints
         return group;
     }
 
-    private static async Task<Results<Accepted, NotFound, ProblemHttpResult>> ExecuteAsync(
+    private static async Task<Results<Accepted, ProblemHttpResult>> ExecuteAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         [FromServices] IImportCommandDispatcher dispatcher,
@@ -65,7 +65,7 @@ internal static class ImportExecutionEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (job.Status != ImportJobStatus.Mapped)
@@ -81,7 +81,7 @@ internal static class ImportExecutionEndpoints
         return TypedResults.Accepted($"/{job.Id}");
     }
 
-    private static async Task<Results<Ok<ImportReportResponse>, NotFound, ProblemHttpResult>> DryRunAsync(
+    private static async Task<Results<Ok<ImportReportResponse>, ProblemHttpResult>> DryRunAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         [FromServices] IImportOrchestrator orchestrator,
@@ -90,7 +90,7 @@ internal static class ImportExecutionEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (job.Status != ImportJobStatus.Mapped)
@@ -105,7 +105,7 @@ internal static class ImportExecutionEndpoints
         return TypedResults.Ok(ImportReportResponse.FromReport(jobId, report));
     }
 
-    private static async Task<Results<Ok<ImportJobResponse>, NotFound>> GetStatusAsync(
+    private static async Task<Results<Ok<ImportJobResponse>, ProblemHttpResult>> GetStatusAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         CancellationToken cancellationToken)
@@ -113,13 +113,13 @@ internal static class ImportExecutionEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ImportJobResponse.FromJob(job));
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> CancelAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> CancelAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         [FromServices] IImportJobWriter jobWriter,
@@ -129,7 +129,7 @@ internal static class ImportExecutionEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try

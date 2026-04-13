@@ -29,12 +29,13 @@ internal static class SchedulingWriteEndpoints
             .WithDescription("Changes the execution date of a pending scheduled action. Returns 200 on success. Returns 404 if the action does not exist, or 409 if the action is no longer in Pending status.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status409Conflict);
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem();
 
         return group;
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> CancelActionAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> CancelActionAsync(
         Guid id,
         [FromServices] IScheduler scheduler,
         CancellationToken cancellationToken)
@@ -46,7 +47,7 @@ internal static class SchedulingWriteEndpoints
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
         catch (InvalidOperationException ex)
         {
@@ -54,7 +55,7 @@ internal static class SchedulingWriteEndpoints
         }
     }
 
-    private static async Task<Results<Ok, NotFound, ProblemHttpResult>> RescheduleActionAsync(
+    private static async Task<Results<Ok, ProblemHttpResult>> RescheduleActionAsync(
         Guid id,
         [FromBody] RescheduleActionRequest request,
         [FromServices] IScheduler scheduler,
@@ -68,7 +69,7 @@ internal static class SchedulingWriteEndpoints
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.OrdinalIgnoreCase))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
         catch (InvalidOperationException ex)
         {

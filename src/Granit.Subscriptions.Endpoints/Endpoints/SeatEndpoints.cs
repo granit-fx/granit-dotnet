@@ -47,7 +47,7 @@ internal static class SeatEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<SeatResponse>>, NotFound>> ListSeatsAsync(
+    private static async Task<Results<Ok<IReadOnlyList<SeatResponse>>, ProblemHttpResult>> ListSeatsAsync(
         Guid id,
         [FromServices] ISubscriptionReader reader,
         CancellationToken cancellationToken)
@@ -57,14 +57,14 @@ internal static class SeatEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok<IReadOnlyList<SeatResponse>>(
             sub.Seats.Select(SeatResponse.FromEntity).ToList());
     }
 
-    private static async Task<Results<Created<SeatResponse>, NotFound, ProblemHttpResult>> AssignSeatAsync(
+    private static async Task<Results<Created<SeatResponse>, ProblemHttpResult>> AssignSeatAsync(
         Guid id,
         SeatAssignRequest request,
         [FromServices] ISubscriptionReader reader,
@@ -78,7 +78,7 @@ internal static class SeatEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try
@@ -97,7 +97,7 @@ internal static class SeatEndpoints
         }
     }
 
-    private static async Task<Results<NoContent, NotFound>> RevokeSeatAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RevokeSeatAsync(
         Guid id,
         Guid userId,
         [FromServices] ISubscriptionReader reader,
@@ -109,12 +109,12 @@ internal static class SeatEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (!sub.RevokeSeat(userId))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);

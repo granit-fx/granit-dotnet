@@ -67,7 +67,7 @@ internal static class PriceVersioningEndpoints
         return group;
     }
 
-    private static async Task<Results<Created<PlanPriceResponse>, NotFound, ProblemHttpResult, ValidationProblem>>
+    private static async Task<Results<Created<PlanPriceResponse>, ProblemHttpResult, ValidationProblem>>
         CreatePriceVersionAsync(
             Guid planId,
             CreatePriceVersionRequest request,
@@ -90,7 +90,7 @@ internal static class PriceVersioningEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         DateTimeOffset now = clock.Now;
@@ -118,7 +118,7 @@ internal static class PriceVersioningEndpoints
             PlanPriceResponse.FromEntity(newPrice));
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<PlanPriceResponse>>, NotFound, ValidationProblem>>
+    private static async Task<Results<Ok<IReadOnlyList<PlanPriceResponse>>, ProblemHttpResult, ValidationProblem>>
         GetPriceHistoryAsync(
             Guid planId,
             [FromQuery] string currency,
@@ -139,7 +139,7 @@ internal static class PriceVersioningEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IReadOnlyList<PlanPrice> history = plan.GetPriceHistory(currency, billingInterval);
@@ -148,7 +148,7 @@ internal static class PriceVersioningEndpoints
             history.Select(PlanPriceResponse.FromEntity).ToList());
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> MigratePriceAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> MigratePriceAsync(
         Guid id,
         MigratePriceRequest request,
         [FromServices] ISubscriptionReader reader,
@@ -160,7 +160,7 @@ internal static class PriceVersioningEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try

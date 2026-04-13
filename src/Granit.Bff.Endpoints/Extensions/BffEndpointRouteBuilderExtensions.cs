@@ -116,7 +116,7 @@ public static class BffEndpointRouteBuilderExtensions
             // Skip BFF API routes — they are handled by the endpoint group
             if (path.StartsWith("bff/", StringComparison.OrdinalIgnoreCase))
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
             }
 
             IFileInfo fileInfo = fileProvider.GetFileInfo(path);
@@ -132,7 +132,7 @@ public static class BffEndpointRouteBuilderExtensions
                 return TypedResults.Stream(indexFile.CreateReadStream(), "text/html");
             }
 
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         })
         .WithName($"BffStaticFiles_{frontend.Name}")
         .WithSummary("Serves static files and SPA fallback for the BFF frontend.")

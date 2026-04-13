@@ -100,7 +100,7 @@ internal static class TransactionEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Results<Ok<PaymentTransactionResponse>, NotFound>> GetByIdAsync(
+    private static async Task<Results<Ok<PaymentTransactionResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] IPaymentTransactionReader reader,
         [FromServices] ICurrentTenant currentTenant,
@@ -112,7 +112,7 @@ internal static class TransactionEndpoints
 
         if (transaction is null || transaction.TenantId != currentTenant.Id)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(MapToResponse(transaction));
@@ -140,7 +140,7 @@ internal static class TransactionEndpoints
         return TypedResults.Accepted((string?)null);
     }
 
-    private static async Task<Results<Accepted, NotFound>> RefundAsync(
+    private static async Task<Results<Accepted, ProblemHttpResult>> RefundAsync(
         PaymentRefundRequest request,
         [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         [FromServices] IMessageBus messageBus)
@@ -156,7 +156,7 @@ internal static class TransactionEndpoints
         return TypedResults.Accepted((string?)null);
     }
 
-    private static async Task<Results<Created<PaymentCheckoutSessionResponse>, NotFound>> CheckoutAsync(
+    private static async Task<Results<Created<PaymentCheckoutSessionResponse>, ProblemHttpResult>> CheckoutAsync(
         PaymentCheckoutRequest request,
         [FromServices] IEnumerable<ICheckoutSessionFactory> factories,
         [FromServices] IPaymentProviderResolver resolver,
@@ -172,7 +172,7 @@ internal static class TransactionEndpoints
 
         if (factory is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         Granit.Payments.Contracts.PaymentCheckoutSession session = await factory

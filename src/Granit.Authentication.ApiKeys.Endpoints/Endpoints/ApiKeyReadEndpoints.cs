@@ -53,7 +53,7 @@ internal static class ApiKeyReadEndpoints
         return TypedResults.Ok(new PagedResult<ApiKeyResponse>(items, result.TotalCount, result.HasMore));
     }
 
-    private static async Task<Results<Ok<ApiKeyResponse>, NotFound>> GetByIdAsync(
+    private static async Task<Results<Ok<ApiKeyResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] IApiKeyAdminStore adminStore,
         CancellationToken cancellationToken)
@@ -63,7 +63,7 @@ internal static class ApiKeyReadEndpoints
 
         if (entry is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ApiKeyResponse.FromEntry(entry));

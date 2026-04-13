@@ -42,7 +42,7 @@ internal static class ImportReportEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<ImportReportResponse>, NotFound>> GetReportAsync(
+    private static async Task<Results<Ok<ImportReportResponse>, ProblemHttpResult>> GetReportAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         CancellationToken cancellationToken)
@@ -50,19 +50,19 @@ internal static class ImportReportEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null || string.IsNullOrEmpty(job.ReportJson))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         ImportReport? report = JsonSerializer.Deserialize<ImportReport>(job.ReportJson);
         if (report is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ImportReportResponse.FromReport(jobId, report));
     }
 
-    private static async Task<Results<FileStreamHttpResult, NoContent, NotFound>> GetCorrectionFileAsync(
+    private static async Task<Results<FileStreamHttpResult, NoContent, ProblemHttpResult>> GetCorrectionFileAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         [FromServices] IImportFileProvider fileProvider,
@@ -72,13 +72,13 @@ internal static class ImportReportEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null || string.IsNullOrEmpty(job.ReportJson))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         ImportReport? report = JsonSerializer.Deserialize<ImportReport>(job.ReportJson);
         if (report is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (report.RowErrors.Count == 0)

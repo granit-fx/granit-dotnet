@@ -87,7 +87,7 @@ internal static class MeterDefinitionEndpoints
             meters.Select(MeterDefinitionResponse.FromEntity).ToList());
     }
 
-    private static async Task<Results<Ok<MeterDefinitionResponse>, NotFound>> GetMeterByIdAsync(
+    private static async Task<Results<Ok<MeterDefinitionResponse>, ProblemHttpResult>> GetMeterByIdAsync(
         Guid id,
         [FromServices] IMeterDefinitionReader reader,
         CancellationToken cancellationToken)
@@ -96,7 +96,7 @@ internal static class MeterDefinitionEndpoints
             .GetByIdAsync(MeterDefinitionId.Create(id), cancellationToken).ConfigureAwait(false);
 
         return definition is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(MeterDefinitionResponse.FromEntity(definition));
     }
 
@@ -120,7 +120,7 @@ internal static class MeterDefinitionEndpoints
             MeterDefinitionResponse.FromEntity(definition));
     }
 
-    private static async Task<Results<Ok<MeterDefinitionResponse>, NotFound>> UpdateMeterAsync(
+    private static async Task<Results<Ok<MeterDefinitionResponse>, ProblemHttpResult>> UpdateMeterAsync(
         Guid id,
         MeterDefinitionUpdateRequest request,
         [FromServices] IMeterDefinitionReader reader,
@@ -132,7 +132,7 @@ internal static class MeterDefinitionEndpoints
 
         if (definition is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         definition.Update(request.Name, request.Unit, request.Description);
@@ -141,7 +141,7 @@ internal static class MeterDefinitionEndpoints
         return TypedResults.Ok(MeterDefinitionResponse.FromEntity(definition));
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeactivateMeterAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeactivateMeterAsync(
         Guid id,
         [FromServices] IMeterDefinitionReader reader,
         [FromServices] IMeterDefinitionWriter writer,
@@ -152,7 +152,7 @@ internal static class MeterDefinitionEndpoints
 
         if (definition is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         definition.Deactivate();

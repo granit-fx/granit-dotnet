@@ -45,7 +45,7 @@ internal static class PlanReadEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Results<Ok<PlanResponse>, NotFound>> GetPlanByIdAsync(
+    private static async Task<Results<Ok<PlanResponse>, ProblemHttpResult>> GetPlanByIdAsync(
         Guid id,
         [FromServices] IPlanReader planReader,
         CancellationToken cancellationToken)
@@ -55,7 +55,7 @@ internal static class PlanReadEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(PlanResponse.FromEntity(plan));

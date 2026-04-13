@@ -26,7 +26,7 @@ internal static class ApiKeyRevokeEndpoints
         return group;
     }
 
-    private static async Task<Results<NoContent, NotFound>> RevokeAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RevokeAsync(
         Guid id,
         [FromServices] IApiKeyAdminStore adminStore,
         [FromServices] IClock clock,
@@ -37,7 +37,7 @@ internal static class ApiKeyRevokeEndpoints
 
         if (!revoked)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.NoContent();

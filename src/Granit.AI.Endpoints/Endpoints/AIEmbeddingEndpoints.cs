@@ -29,7 +29,7 @@ internal static class AIEmbeddingEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<AIEmbeddingResponse>, NotFound, ProblemHttpResult>> GenerateAsync(
+    private static async Task<Results<Ok<AIEmbeddingResponse>, ProblemHttpResult>> GenerateAsync(
         string workspaceName,
         AIEmbeddingRequest request,
         [FromServices] IAIEmbeddingGeneratorFactory embeddingFactory,
@@ -42,7 +42,7 @@ internal static class AIEmbeddingEndpoints
 
         if (workspace is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IEmbeddingGenerator<string, Embedding<float>> generator;

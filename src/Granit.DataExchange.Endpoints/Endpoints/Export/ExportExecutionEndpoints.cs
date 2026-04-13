@@ -92,7 +92,7 @@ internal static class ExportExecutionEndpoints
         return TypedResults.Created($"/jobs/{result.JobId}", response);
     }
 
-    private static async Task<Results<Ok<ExportJobResponse>, NotFound>> GetJobStatusAsync(
+    private static async Task<Results<Ok<ExportJobResponse>, ProblemHttpResult>> GetJobStatusAsync(
         Guid jobId,
         [FromServices] IExportOrchestrator orchestrator,
         CancellationToken cancellationToken)
@@ -100,13 +100,13 @@ internal static class ExportExecutionEndpoints
         ExportJob? job = await orchestrator.GetJobAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ExportJobResponse.FromJob(job));
     }
 
-    private static async Task<Results<FileStreamHttpResult, NotFound, ProblemHttpResult>> DownloadAsync(
+    private static async Task<Results<FileStreamHttpResult, ProblemHttpResult>> DownloadAsync(
         Guid jobId,
         [FromServices] IExportOrchestrator orchestrator,
         CancellationToken cancellationToken)
@@ -114,7 +114,7 @@ internal static class ExportExecutionEndpoints
         ExportJob? job = await orchestrator.GetJobAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (job.Status != ExportJobStatus.Completed)
@@ -127,7 +127,7 @@ internal static class ExportExecutionEndpoints
         ExportDownload? download = await orchestrator.GetDownloadAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (download is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.File(download.Content, download.MimeType, download.FileName);

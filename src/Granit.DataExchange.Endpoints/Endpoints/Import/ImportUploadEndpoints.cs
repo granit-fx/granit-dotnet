@@ -66,7 +66,7 @@ internal static class ImportUploadEndpoints
         return TypedResults.Created($"/{result.Job!.Id}", ImportJobResponse.FromJob(result.Job));
     }
 
-    private static async Task<Results<Ok<ImportPreviewResponse>, NotFound>> PreviewAsync(
+    private static async Task<Results<Ok<ImportPreviewResponse>, ProblemHttpResult>> PreviewAsync(
         Guid jobId,
         [FromServices] IImportPreviewService previewService,
         CancellationToken cancellationToken)
@@ -76,14 +76,14 @@ internal static class ImportUploadEndpoints
 
         if (preview is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(new ImportPreviewResponse(
             preview.Headers, preview.PreviewRows, preview.Suggestions, preview.FieldMetadata));
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> ConfirmMappingsAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> ConfirmMappingsAsync(
         Guid jobId,
         ConfirmMappingsRequest request,
         [FromServices] IImportJobReader jobReader,
@@ -93,7 +93,7 @@ internal static class ImportUploadEndpoints
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (request.Mappings is null || request.Mappings.Count == 0)

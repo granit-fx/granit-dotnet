@@ -76,7 +76,7 @@ internal static class AIWorkspaceEndpoints
         return TypedResults.Ok(new AIWorkspaceListResponse(items, items.Count));
     }
 
-    private static async Task<Results<Ok<AIWorkspaceResponse>, NotFound>> GetByNameAsync(
+    private static async Task<Results<Ok<AIWorkspaceResponse>, ProblemHttpResult>> GetByNameAsync(
         string name,
         [FromServices] IAIWorkspaceProvider provider,
         CancellationToken cancellationToken)
@@ -85,7 +85,7 @@ internal static class AIWorkspaceEndpoints
 
         if (workspace is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(MapToResponse(workspace));
@@ -123,7 +123,7 @@ internal static class AIWorkspaceEndpoints
         return TypedResults.Created($"/workspaces/{request.Name}", MapToResponse(created!));
     }
 
-    private static async Task<Results<Ok<AIWorkspaceResponse>, NotFound, ProblemHttpResult>> UpdateAsync(
+    private static async Task<Results<Ok<AIWorkspaceResponse>, ProblemHttpResult>> UpdateAsync(
         string name,
         AIWorkspaceUpdateRequest request,
         [FromServices] IAIWorkspaceManager manager,
@@ -134,7 +134,7 @@ internal static class AIWorkspaceEndpoints
 
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (existing.Kind == AIWorkspaceKind.System)
@@ -160,7 +160,7 @@ internal static class AIWorkspaceEndpoints
         return TypedResults.Ok(MapToResponse(refreshed!));
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> DeleteAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeleteAsync(
         string name,
         [FromServices] IAIWorkspaceManager manager,
         [FromServices] IAIWorkspaceProvider provider,
@@ -170,7 +170,7 @@ internal static class AIWorkspaceEndpoints
 
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         if (existing.Kind == AIWorkspaceKind.System)

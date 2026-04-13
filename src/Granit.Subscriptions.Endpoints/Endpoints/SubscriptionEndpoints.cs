@@ -18,18 +18,12 @@ internal static class SubscriptionEndpoints
 {
     internal static RouteGroupBuilder MapSubscriptionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/subscriptions", ListSubscriptionsAsync)
-            .WithName("ListSubscriptions")
-            .WithSummary("Returns all subscriptions for the current tenant.")
-            .WithDescription("Returns subscriptions in any status. Use the 'active' endpoint for the current active subscription only.")
-            .Produces<IReadOnlyList<SubscriptionResponse>>()
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
-
         group.MapGet("/subscriptions/active", GetActiveSubscriptionAsync)
             .WithName("GetActiveSubscription")
             .WithSummary("Returns the active subscription for the current tenant.")
-            .WithDescription("Returns the subscription in Active or Trial status. Returns 404 if no active subscription exists.")
+            .WithDescription("Returns the subscription in Active or Trial status. Returns 404 if no active subscription exists. Requires tenant context.")
             .Produces<SubscriptionResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
 
@@ -44,9 +38,10 @@ internal static class SubscriptionEndpoints
         group.MapPost("/subscriptions", CreateSubscriptionAsync)
             .WithName("CreateSubscription")
             .WithSummary("Creates a new subscription.")
-            .WithDescription("Creates a subscription for the current tenant. If trialEndsAt is provided, starts in Trial status; otherwise starts as Active.")
+            .WithDescription("Creates a subscription for the current tenant. If trialEndsAt is provided, starts in Trial status; otherwise starts as Active. Requires tenant context.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<SubscriptionResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
 
@@ -73,32 +68,25 @@ internal static class SubscriptionEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<SubscriptionResponse>>> ListSubscriptionsAsync(
+    private static async Task<Results<Ok<SubscriptionResponse>, ProblemHttpResult>> GetActiveSubscriptionAsync(
         [FromServices] ISubscriptionReader reader,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<Subscription> subs = await reader
-            .GetByTenantAsync(currentTenant.Id!.Value, cancellationToken).ConfigureAwait(false);
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
 
-        return TypedResults.Ok<IReadOnlyList<SubscriptionResponse>>(
-            subs.Select(SubscriptionResponse.FromEntity).ToList());
-    }
-
-    private static async Task<Results<Ok<SubscriptionResponse>, NotFound>> GetActiveSubscriptionAsync(
-        [FromServices] ISubscriptionReader reader,
-        [FromServices] ICurrentTenant currentTenant,
-        CancellationToken cancellationToken)
-    {
         Subscription? sub = await reader
             .GetActiveForTenantAsync(currentTenant.Id!.Value, cancellationToken).ConfigureAwait(false);
 
         return sub is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(SubscriptionResponse.FromEntity(sub));
     }
 
-    private static async Task<Results<Ok<SubscriptionResponse>, NotFound>> GetSubscriptionByIdAsync(
+    private static async Task<Results<Ok<SubscriptionResponse>, ProblemHttpResult>> GetSubscriptionByIdAsync(
         Guid id,
         [FromServices] ISubscriptionReader reader,
         CancellationToken cancellationToken)
@@ -107,11 +95,11 @@ internal static class SubscriptionEndpoints
             .GetByIdAsync(SubscriptionId.Create(id), cancellationToken).ConfigureAwait(false);
 
         return sub is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(SubscriptionResponse.FromEntity(sub));
     }
 
-    private static async Task<Results<Created<SubscriptionResponse>, ValidationProblem>> CreateSubscriptionAsync(
+    private static async Task<Results<Created<SubscriptionResponse>, ValidationProblem, ProblemHttpResult>> CreateSubscriptionAsync(
         SubscriptionCreateRequest request,
         [FromServices] ISubscriptionWriter writer,
         [FromServices] ICurrentTenant currentTenant,
@@ -119,6 +107,11 @@ internal static class SubscriptionEndpoints
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         DateTimeOffset now = clock.Now;
         var sub = Subscription.Create(
             guidGenerator.Create(),
@@ -134,7 +127,7 @@ internal static class SubscriptionEndpoints
             $"/subscriptions/{sub.Id}", SubscriptionResponse.FromEntity(sub));
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> CancelSubscriptionAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> CancelSubscriptionAsync(
         Guid id,
         SubscriptionCancelRequest request,
         [FromServices] ISubscriptionReader reader,
@@ -147,7 +140,7 @@ internal static class SubscriptionEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try
@@ -170,7 +163,7 @@ internal static class SubscriptionEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> ChangePlanAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> ChangePlanAsync(
         Guid id,
         SubscriptionChangePlanRequest request,
         [FromServices] ISubscriptionReader reader,
@@ -182,7 +175,7 @@ internal static class SubscriptionEndpoints
 
         if (sub is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try

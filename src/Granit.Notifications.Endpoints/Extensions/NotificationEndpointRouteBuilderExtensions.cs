@@ -177,7 +177,8 @@ public static class NotificationEndpointRouteBuilderExtensions
             .WithName("UpdatePreference")
             .WithSummary("Creates or updates a notification delivery preference.")
             .WithDescription("Creates or updates a delivery preference for a specific notification type and channel. If a preference already exists for the same type and channel, it is replaced (upsert).")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesValidationProblem();
 
         group.MapGet("/types", GetNotificationTypes)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Read)
