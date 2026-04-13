@@ -1,7 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,7 +28,6 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// </para>
 /// </remarks>
 internal sealed partial class MigrationStartupService(
-    IServiceScopeFactory scopeFactory,
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
     ITenantEnumerator tenantEnumerator,
     IMigrationBatchDispatcher dispatcher,
@@ -54,11 +52,8 @@ internal sealed partial class MigrationStartupService(
 
     private async Task ResumeAsync(CancellationToken cancellationToken)
     {
-        // Ensure the progress table exists using a dedicated probe + DDL context pair
-        // to avoid PostgreSQL connection-state contamination.
-        await EnsureProgressTableAsync(cancellationToken).ConfigureAwait(false);
-
-        // Use a fresh context for the actual query — the probe contexts are disposed.
+        // The data_migration_progress table is created by EF Core migrations
+        // (via ConfigureMigrationsModule in the host DbContext).
         await using MigrationProgressDbContext db = await progressFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<MigrationProgress> pending = await db.MigrationProgresses
@@ -121,20 +116,6 @@ internal sealed partial class MigrationStartupService(
         }
 
         return commands;
-    }
-
-    /// <summary>
-    /// Creates the <c>data_migration_progress</c> table if it doesn't exist.
-    /// </summary>
-    /// <remarks>
-    /// Uses two separate DbContext instances to avoid PostgreSQL connection-state contamination:
-    /// one for probing table existence (which may throw) and a fresh one for DDL.
-    /// </remarks>
-    private async Task EnsureProgressTableAsync(CancellationToken ct)
-    {
-        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
-        IMigrationProgressDbEnsurer ensurer = scope.ServiceProvider.GetRequiredService<IMigrationProgressDbEnsurer>();
-        await ensurer.EnsureCreatedAsync(ct).ConfigureAwait(false);
     }
 
     [LoggerMessage(Level = LogLevel.Information,
