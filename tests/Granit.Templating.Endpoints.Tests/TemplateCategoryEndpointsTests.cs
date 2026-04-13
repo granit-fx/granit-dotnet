@@ -30,7 +30,7 @@ namespace Granit.Templating.Endpoints.Tests;
 /// </summary>
 public sealed class TemplateCategoryEndpointsTests : IAsyncDisposable
 {
-    private const string Prefix = "/templates/categories";
+    private const string Prefix = "/templating/categories";
     private const string ManageRole = "template-admin";
 
     private readonly ITemplateCategoryStoreReader _categoryReader = Substitute.For<ITemplateCategoryStoreReader>();

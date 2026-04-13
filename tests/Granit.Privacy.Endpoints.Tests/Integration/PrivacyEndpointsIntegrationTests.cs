@@ -103,7 +103,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         _server.GuidGenerator.Create().Returns(requestId);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            "/privacy/export", null, TestContext.Current.CancellationToken);
+            "/privacy/exports", null, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
 
@@ -136,7 +136,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(status);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            $"/privacy/export/{requestId}", TestContext.Current.CancellationToken);
+            $"/privacy/exports/{requestId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -157,7 +157,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns((ExportRequestStatus?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            $"/privacy/export/{requestId}", TestContext.Current.CancellationToken);
+            $"/privacy/exports/{requestId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -176,7 +176,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(status);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            $"/privacy/export/{requestId}", TestContext.Current.CancellationToken);
+            $"/privacy/exports/{requestId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -199,7 +199,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new[] { status });
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/privacy/export", TestContext.Current.CancellationToken);
+            "/privacy/exports", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -223,7 +223,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         _server.GuidGenerator.Create().Returns(requestId);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/privacy/deletion",
+            "/privacy/deletions",
             new PrivacyDeletionRequest("Account closure", false),
             TestContext.Current.CancellationToken);
 
@@ -242,7 +242,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         _server.GuidGenerator.Create().Returns(requestId);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/privacy/deletion",
+            "/privacy/deletions",
             new PrivacyDeletionRequest("Withdrawal of consent", true),
             TestContext.Current.CancellationToken);
 
@@ -276,7 +276,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new[] { existing });
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/privacy/deletion",
+            "/privacy/deletions",
             new PrivacyDeletionRequest("New request", false),
             TestContext.Current.CancellationToken);
 
@@ -287,7 +287,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
     public async Task PostDeletion_EmptyReason_Returns422()
     {
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsJsonAsync(
-            "/privacy/deletion",
+            "/privacy/deletions",
             new PrivacyDeletionRequest("", false),
             TestContext.Current.CancellationToken);
 
@@ -312,7 +312,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(status);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            $"/privacy/deletion/{requestId}/cancel", null,
+            $"/privacy/deletions/{requestId}/cancel", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -327,7 +327,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns((DeletionRequestStatus?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            $"/privacy/deletion/{requestId}/cancel", null,
+            $"/privacy/deletions/{requestId}/cancel", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
@@ -353,7 +353,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(status);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.PostAsync(
-            $"/privacy/deletion/{requestId}/cancel", null,
+            $"/privacy/deletions/{requestId}/cancel", null,
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
@@ -377,7 +377,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(status);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            $"/privacy/deletion/{requestId}", TestContext.Current.CancellationToken);
+            $"/privacy/deletions/{requestId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
@@ -399,7 +399,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns((DeletionRequestStatus?)null);
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            $"/privacy/deletion/{requestId}", TestContext.Current.CancellationToken);
+            $"/privacy/deletions/{requestId}", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
@@ -423,7 +423,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
             .Returns(new[] { status });
 
         HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/privacy/deletion", TestContext.Current.CancellationToken);
+            "/privacy/deletions", TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 

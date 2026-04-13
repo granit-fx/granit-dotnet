@@ -28,7 +28,7 @@ namespace Granit.Authentication.ApiKeys.Endpoints.Tests;
 /// </summary>
 public sealed class ApiKeyEndpointsIntegrationTests : IAsyncDisposable
 {
-    private const string Prefix = "/api-keys";
+    private const string Prefix = "/authentication/api-keys";
     private const string AdminRole = "granit-apikeys-admin";
 
     private readonly IApiKeyAdminStore _adminStore = Substitute.For<IApiKeyAdminStore>();

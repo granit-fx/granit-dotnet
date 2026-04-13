@@ -28,7 +28,7 @@ namespace Granit.BackgroundJobs.Endpoints.Tests;
 public sealed class BackgroundJobsEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-background-jobs-admin";
-    private const string Prefix = "/background-jobs";
+    private const string Prefix = "/background-jobs/jobs";
 
     private readonly IBackgroundJobReader _reader = Substitute.For<IBackgroundJobReader>();
     private readonly IBackgroundJobWriter _writer = Substitute.For<IBackgroundJobWriter>();

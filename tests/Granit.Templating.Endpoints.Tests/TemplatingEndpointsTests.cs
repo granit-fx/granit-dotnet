@@ -37,7 +37,7 @@ namespace Granit.Templating.Endpoints.Tests;
 /// </summary>
 public sealed class TemplatingEndpointsTests : IAsyncDisposable
 {
-    private const string Prefix = "/templates";
+    private const string Prefix = "/templating/templates";
     private const string ManageRole = "template-admin";
 
     private readonly IDocumentTemplateStoreReader _storeReader = Substitute.For<IDocumentTemplateStoreReader>();
@@ -1108,11 +1108,11 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
         using HttpClient client = BuildClient(app, ManageRole);
 
         HttpResponseMessage notFound = await client.GetAsync(
-            "/templates",
+            "/templating/templates",
             TestContext.Current.CancellationToken);
 
         HttpResponseMessage ok = await client.GetAsync(
-            "/custom-templates",
+            "/custom-templates/templates",
             TestContext.Current.CancellationToken);
 
         notFound.StatusCode.ShouldBe(HttpStatusCode.NotFound);

@@ -158,7 +158,7 @@ internal static class AdminOidcEndpoints
         Guid? tenantId = app is GranitOpenIddictApplication granitApp ? granitApp.TenantId : null;
 
         return TypedResults.Created(
-            $"/api/admin/oidc/applications/{clientId}",
+            $"/admin/oidc/applications/{clientId}",
             new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
     }
 
@@ -243,7 +243,7 @@ internal static class AdminOidcEndpoints
         string? description = await scopeManager.GetDescriptionAsync(scope, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Created(
-            $"/api/admin/oidc/scopes/{name}",
+            $"/admin/oidc/scopes/{name}",
             new AdminOidcScopeResponse(name, displayName, description));
     }
 

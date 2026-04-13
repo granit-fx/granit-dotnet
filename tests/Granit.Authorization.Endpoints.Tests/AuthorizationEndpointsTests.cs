@@ -27,7 +27,7 @@ namespace Granit.Authorization.Endpoints.Tests;
 /// </summary>
 public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 {
-    private const string Prefix = "/auth";
+    private const string Prefix = "/authorization";
 
     private readonly IPermissionChecker _permissionChecker = Substitute.For<IPermissionChecker>();
     private readonly IPermissionDefinitionManager _definitionManager = Substitute.For<IPermissionDefinitionManager>();
@@ -95,7 +95,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
 
-    // ── GET /me ────────────────────────────────────────────────────────────────
+    // ── GET /permissions ───────────────────────────────────────────────────────
 
     [Fact]
     public async Task GetMe_WithAuthenticatedUser_Returns200WithGrantedPermissions()
@@ -110,7 +110,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 
         // Act
         HttpResponseMessage response = await _userClient.GetAsync(
-            $"{Prefix}/me", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -127,7 +127,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     public async Task GetMe_WithoutToken_Returns401()
     {
         HttpResponseMessage response = await _anonClient.GetAsync(
-            $"{Prefix}/me", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions", TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
@@ -138,7 +138,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
 
         // Act
         HttpResponseMessage response = await _userClient.GetAsync(
-            $"{Prefix}/me", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -149,14 +149,14 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         result!.Permissions.ShouldBeEmpty();
     }
 
-    // ── GET /definitions ───────────────────────────────────────────────────────
+    // ── GET /permissions/definitions ────────────────────────────────────────────
 
     [Fact]
     public async Task GetDefinitions_WithAdminRole_Returns200WithGroups()
     {
         // Act
         HttpResponseMessage response = await _adminClient.GetAsync(
-            $"{Prefix}/definitions", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions/definitions", TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
@@ -173,7 +173,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     public async Task GetDefinitions_WithoutToken_Returns401()
     {
         HttpResponseMessage response = await _anonClient.GetAsync(
-            $"{Prefix}/definitions", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions/definitions", TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
@@ -181,7 +181,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     public async Task GetDefinitions_WithWrongRole_Returns403()
     {
         HttpResponseMessage response = await _userClient.GetAsync(
-            $"{Prefix}/definitions", TestContext.Current.CancellationToken);
+            $"{Prefix}/permissions/definitions", TestContext.Current.CancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
 
