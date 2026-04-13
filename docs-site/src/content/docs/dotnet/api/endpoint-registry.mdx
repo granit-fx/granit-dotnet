@@ -42,16 +42,16 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ## Authentication & API Keys
 
 **Module:** `Granit.Authentication.ApiKeys.Endpoints`
-**Prefix:** `authentication/api-keys`
+**Prefix:** `authentication`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/` | ListApiKeys | `ApiKeys.Keys.Read` |
-| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetApiKeyById | `ApiKeys.Keys.Read` |
-| <Badge text="POST" variant="success" /> | `/` | CreateApiKey | `ApiKeys.Keys.Create` |
-| <Badge text="POST" variant="success" /> | `/{id:guid}/revoke` | RevokeApiKey | `ApiKeys.Keys.Revoke` |
-| <Badge text="POST" variant="success" /> | `/{id:guid}/rotate` | RotateApiKey | `ApiKeys.Keys.Rotate` |
-| <Badge text="PUT" variant="caution" /> | `/{id:guid}/scopes` | UpdateApiKeyScopes | `ApiKeys.Keys.UpdateScopes` |
+| <Badge text="GET" variant="note" /> | `/api-keys` | ListApiKeys | `ApiKeys.Keys.Read` |
+| <Badge text="GET" variant="note" /> | `/api-keys/{id:guid}` | GetApiKeyById | `ApiKeys.Keys.Read` |
+| <Badge text="POST" variant="success" /> | `/api-keys` | CreateApiKey | `ApiKeys.Keys.Create` |
+| <Badge text="POST" variant="success" /> | `/api-keys/{id:guid}/revoke` | RevokeApiKey | `ApiKeys.Keys.Revoke` |
+| <Badge text="POST" variant="success" /> | `/api-keys/{id:guid}/rotate` | RotateApiKey | `ApiKeys.Keys.Rotate` |
+| <Badge text="PUT" variant="caution" /> | `/api-keys/{id:guid}/scopes` | UpdateApiKeyScopes | `ApiKeys.Keys.UpdateScopes` |
 
 ---
 
@@ -88,16 +88,16 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 ## Blob Storage
 
 **Module:** `Granit.BlobStorage.Endpoints`
-**Prefix:** `blob-storage/blobs`
+**Prefix:** `blob-storage`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/{id:guid}` | GetBlobDescriptor | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/upload` | InitiateBlobUpload | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/{id:guid}/confirm` | ConfirmBlobUpload | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/{id:guid}/download-url` | GenerateBlobDownloadUrl | `BlobStorage.Blobs.Manage` |
-| <Badge text="DELETE" variant="danger" /> | `/{id:guid}` | DeleteBlob | `BlobStorage.Blobs.Manage` |
-| <Badge text="POST" variant="success" /> | `/cleanup-orphans` | CleanupOrphanedBlobs | `BlobStorage.Blobs.Manage` |
+| <Badge text="GET" variant="note" /> | `/blobs/{id:guid}` | GetBlobDescriptor | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/blobs/upload` | InitiateBlobUpload | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/blobs/{id:guid}/confirm` | ConfirmBlobUpload | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/blobs/{id:guid}/download-url` | GenerateBlobDownloadUrl | `BlobStorage.Blobs.Manage` |
+| <Badge text="DELETE" variant="danger" /> | `/blobs/{id:guid}` | DeleteBlob | `BlobStorage.Blobs.Manage` |
+| <Badge text="POST" variant="success" /> | `/blobs/cleanup-orphans` | CleanupOrphanedBlobs | `BlobStorage.Blobs.Manage` |
 
 ### Blob Proxy
 
@@ -715,7 +715,7 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 ## Audit Log
 
 **Module:** `Granit.Auditing.Endpoints`
-**Prefix:** `audit-log`
+**Prefix:** `auditing`
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
