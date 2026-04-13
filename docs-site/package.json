@@ -15,7 +15,7 @@
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
     "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.1.4",
+    "astro": "^6.1.5",
     "astro-mermaid": "^2.0.1",
     "mermaid": "^11.14.0",
     "rehype-external-links": "^3.0.0",
