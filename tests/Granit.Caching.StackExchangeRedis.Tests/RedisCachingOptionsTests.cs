@@ -56,4 +56,28 @@ public sealed class RedisCachingOptionsTests
 
         options.IsEnabled.ShouldBeFalse();
     }
+
+    [Fact]
+    public void Defaults_ConnectionStringName_IsCache()
+    {
+        RedisCachingOptions options = new();
+
+        options.ConnectionStringName.ShouldBe("cache");
+    }
+
+    [Fact]
+    public void ConnectionStringName_CanBeSetToNull()
+    {
+        RedisCachingOptions options = new() { ConnectionStringName = null };
+
+        options.ConnectionStringName.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ConnectionStringName_CanBeOverridden()
+    {
+        RedisCachingOptions options = new() { ConnectionStringName = "my-redis" };
+
+        options.ConnectionStringName.ShouldBe("my-redis");
+    }
 }

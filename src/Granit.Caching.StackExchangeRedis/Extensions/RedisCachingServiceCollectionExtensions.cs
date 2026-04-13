@@ -3,6 +3,7 @@ using Granit.Caching.Options;
 using Granit.Caching.StackExchangeRedis.HealthChecks;
 using Granit.Caching.StackExchangeRedis.Internal;
 using Granit.Caching.StackExchangeRedis.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -50,6 +51,26 @@ public static partial class RedisCachingServiceCollectionExtensions
             .BindConfiguration(RedisCachingOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        // Resolve ConnectionStrings:{name} → Configuration (Aspire / standard .NET support).
+        // PostConfigure runs after BindConfiguration, so the ConnectionStringName property
+        // is already populated from appsettings. If the named connection string exists,
+        // it takes precedence over the explicit Configuration value.
+        services
+            .AddOptions<RedisCachingOptions>()
+            .PostConfigure<IConfiguration>((opts, config) =>
+            {
+                if (string.IsNullOrEmpty(opts.ConnectionStringName))
+                {
+                    return;
+                }
+
+                string? connectionString = config.GetConnectionString(opts.ConnectionStringName);
+                if (!string.IsNullOrEmpty(connectionString))
+                {
+                    opts.Configuration = connectionString;
+                }
+            });
 
         // Replace IDistributedCache (MemoryDistributedCache -> RedisCache)
         // Deferred configuration: reads RedisCachingOptions at resolution time.

@@ -166,6 +166,118 @@ public sealed class RedisCachingServiceCollectionExtensionsTests
     }
 
     [Fact]
+    public void AddGranitCachingRedis_ConnectionStringName_ResolvesFromConnectionStrings()
+    {
+        // Arrange — Aspire-style: ConnectionStrings:cache contains the dynamic endpoint
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:cache"] = "aspire-redis:12345",
+            ["Cache:Redis:ConnectionStringName"] = "cache",
+            ["Cache:Redis:InstanceName"] = "test:",
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddGranitCachingRedis();
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Act
+        RedisCachingOptions opts = sp.GetRequiredService<IOptions<RedisCachingOptions>>().Value;
+
+        // Assert — ConnectionStrings:cache takes precedence over default Configuration
+        opts.Configuration.ShouldBe("aspire-redis:12345");
+    }
+
+    [Fact]
+    public void AddGranitCachingRedis_ConnectionStringName_DefaultCache_ResolvesAutomatically()
+    {
+        // Arrange — default ConnectionStringName is "cache"; no explicit setting needed
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:cache"] = "aspire-redis:55123",
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddGranitCachingRedis();
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Act
+        RedisCachingOptions opts = sp.GetRequiredService<IOptions<RedisCachingOptions>>().Value;
+
+        // Assert
+        opts.Configuration.ShouldBe("aspire-redis:55123");
+    }
+
+    [Fact]
+    public void AddGranitCachingRedis_ConnectionStringName_Null_UsesExplicitConfiguration()
+    {
+        // Arrange — opt-out: ConnectionStringName = null → use Configuration directly
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:cache"] = "should-be-ignored",
+            ["Cache:Redis:ConnectionStringName"] = null,
+            ["Cache:Redis:Configuration"] = "explicit-redis:6379",
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddGranitCachingRedis();
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Act
+        RedisCachingOptions opts = sp.GetRequiredService<IOptions<RedisCachingOptions>>().Value;
+
+        // Assert — explicit Configuration is used, not the connection string
+        opts.Configuration.ShouldBe("explicit-redis:6379");
+    }
+
+    [Fact]
+    public void AddGranitCachingRedis_ConnectionStringName_NotFound_FallsBackToConfiguration()
+    {
+        // Arrange — ConnectionStringName set but no matching ConnectionStrings entry
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["Cache:Redis:ConnectionStringName"] = "nonexistent",
+            ["Cache:Redis:Configuration"] = "fallback-redis:6379",
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddGranitCachingRedis();
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Act
+        RedisCachingOptions opts = sp.GetRequiredService<IOptions<RedisCachingOptions>>().Value;
+
+        // Assert — falls back to explicit Configuration
+        opts.Configuration.ShouldBe("fallback-redis:6379");
+    }
+
+    [Fact]
+    public void AddGranitCachingRedis_ConnectionStringName_PropagatedToStackExchangeOptions()
+    {
+        // Arrange — verify the resolved connection string flows through to RedisCacheOptions
+        IConfiguration configuration = BuildConfiguration(new Dictionary<string, string?>
+        {
+            ["ConnectionStrings:cache"] = "aspire-redis:12345",
+            ["Cache:Redis:InstanceName"] = "myapp:",
+        });
+
+        ServiceCollection services = new();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddGranitCachingRedis();
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        // Act
+        RedisCacheOptions redisOpts = sp.GetRequiredService<IOptions<RedisCacheOptions>>().Value;
+
+        // Assert — StackExchange RedisCacheOptions uses the resolved connection string
+        redisOpts.Configuration.ShouldBe("aspire-redis:12345");
+        redisOpts.InstanceName.ShouldBe("myapp:");
+    }
+
+    [Fact]
     public void AddGranitRedisHealthCheck_WhenIConnectionMultiplexerNotRegistered_RegistersIt()
     {
         // Arrange

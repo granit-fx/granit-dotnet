@@ -17,7 +17,22 @@ public sealed class RedisCachingOptions
     public bool IsEnabled { get; set; } = true;
 
     /// <summary>
-    /// Redis connection string in StackExchange.Redis format.
+    /// Name of the connection string in <c>ConnectionStrings:{name}</c>.
+    /// When set and the named connection string exists, it takes precedence
+    /// over <see cref="Configuration"/>. This supports .NET Aspire resource
+    /// injection out-of-the-box (<c>builder.AddRedis("cache")</c>).
+    /// Set to <c>null</c> to disable connection string resolution and use
+    /// <see cref="Configuration"/> directly.
+    /// Default: <c>"cache"</c>.
+    /// </summary>
+#pragma warning disable GRSEC003 // Config key name, not a secret value
+    public string? ConnectionStringName { get; set; } = "cache";
+#pragma warning restore GRSEC003
+
+    /// <summary>
+    /// Explicit Redis connection string in StackExchange.Redis format.
+    /// Used when <see cref="ConnectionStringName"/> is <c>null</c> or the named
+    /// connection string is not found in configuration.
     /// Examples: <c>"localhost:6379"</c>, <c>"redis-service:6379,password=secret"</c>.
     /// In production: provided via Vault or environment variables.
     /// </summary>

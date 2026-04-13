@@ -8923,7 +8923,7 @@
       "kind": "class",
       "project": "Granit.Caching.StackExchangeRedis",
       "file": "src/Granit.Caching.StackExchangeRedis/Extensions/RedisCachingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitCachingRedis",
@@ -8962,6 +8962,12 @@
           "kind": "property",
           "signature": "bool IsEnabled",
           "returnType": "bool"
+        },
+        {
+          "name": "ConnectionStringName",
+          "kind": "property",
+          "signature": "string? ConnectionStringName",
+          "returnType": "string?"
         },
         {
           "name": "Configuration",
