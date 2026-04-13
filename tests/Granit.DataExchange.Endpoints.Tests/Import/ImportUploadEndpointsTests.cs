@@ -35,7 +35,7 @@ namespace Granit.DataExchange.Endpoints.Tests.Import;
 public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-data-exchange-admin";
-    private const string Prefix = "/data-exchange";
+    private const string Prefix = "/data-exchange/import";
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
@@ -123,7 +123,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Test.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _adminClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _adminClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
@@ -143,7 +143,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Unknown.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _adminClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _adminClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -159,7 +159,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Test.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _adminClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _adminClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -173,7 +173,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Test.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _adminClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _adminClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
@@ -187,7 +187,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Test.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _anonClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _anonClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -201,7 +201,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
         content.Add(new StringContent("Test.Import"), "definitionName");
 
         // Act
-        HttpResponseMessage response = await _userClient.PostAsync(Prefix, content, TestContext.Current.CancellationToken);
+        HttpResponseMessage response = await _userClient.PostAsync($"{Prefix}/jobs", content, TestContext.Current.CancellationToken);
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

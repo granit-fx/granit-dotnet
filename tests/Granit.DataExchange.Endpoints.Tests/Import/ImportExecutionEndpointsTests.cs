@@ -30,7 +30,7 @@ namespace Granit.DataExchange.Endpoints.Tests.Import;
 public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-data-exchange-admin";
-    private const string Prefix = "/data-exchange";
+    private const string Prefix = "/data-exchange/import";
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();

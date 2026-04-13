@@ -366,6 +366,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.BlobStorage",
+        "Granit.Http.ApiDocumentation",
         "Granit.QueryEngine.AspNetCore",
         "Granit.RateLimiting",
         "Granit.Validation"
@@ -701,7 +702,8 @@
     {
       "name": "Granit.Http.Idempotency",
       "deps": [
-        "Granit.Caching"
+        "Granit.Caching",
+        "Granit.Http.ApiDocumentation"
       ],
       "framework": "net10.0"
     },
@@ -903,6 +905,7 @@
       "name": "Granit.Invoicing.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
         "Granit.Invoicing",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -1037,6 +1040,7 @@
       "name": "Granit.Metering.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
         "Granit.Metering",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -1399,7 +1403,7 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Guids",
-        "Granit.Http.Idempotency",
+        "Granit.Http.ApiDocumentation",
         "Granit.Payments",
         "Granit.Validation"
       ],
@@ -1790,6 +1794,7 @@
       "name": "Granit.Subscriptions.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
         "Granit.Subscriptions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -2111,6 +2116,7 @@
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
         "Granit.Webhooks"
@@ -14987,8 +14993,8 @@
       "name": "IIdempotencyMetadata",
       "fqn": "Granit.Http.Idempotency.Abstractions.IIdempotencyMetadata",
       "kind": "interface",
-      "project": "Granit.Http.Idempotency",
-      "file": "src/Granit.Http.Idempotency/Abstractions/IIdempotencyMetadata.cs",
+      "project": "Granit.Http.ApiDocumentation",
+      "file": "src/Granit.Http.ApiDocumentation/Idempotency/IIdempotencyMetadata.cs",
       "line": 7,
       "members": []
     },
@@ -15030,8 +15036,8 @@
       "name": "IdempotentAttribute",
       "fqn": "Granit.Http.Idempotency.Attributes.IdempotentAttribute",
       "kind": "class",
-      "project": "Granit.Http.Idempotency",
-      "file": "src/Granit.Http.Idempotency/Attributes/IdempotentAttribute.cs",
+      "project": "Granit.Http.ApiDocumentation",
+      "file": "src/Granit.Http.ApiDocumentation/Idempotency/IdempotentAttribute.cs",
       "line": 14,
       "members": [
         {
@@ -27443,7 +27449,7 @@
       "kind": "class",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/GranitPaymentsEndpointsModule.cs",
-      "line": 14,
+      "line": 12,
       "members": []
     },
     {
