@@ -19,7 +19,7 @@ internal static class ImportUploadEndpoints
     /// </summary>
     internal static RouteGroupBuilder MapUploadEndpoints(this RouteGroupBuilder group)
     {
-        group.MapPost("/", UploadAsync)
+        group.MapPost("/jobs", UploadAsync)
             .WithName("UploadImportFile")
             .WithSummary("Uploads a file and creates an import job.")
             .WithDescription("Accepts a multipart/form-data upload with the file and a definitionName field. Validates MIME type and file size against the import definition's constraints. Creates an import job in 'Created' status. The next step is to call the preview endpoint to inspect headers and mapping suggestions.")

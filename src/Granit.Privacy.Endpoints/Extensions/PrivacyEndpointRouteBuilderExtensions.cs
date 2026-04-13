@@ -279,7 +279,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static void MapExportEndpoints(RouteGroupBuilder group)
     {
-        group.MapPost("/export", HandleRequestExportAsync)
+        group.MapPost("/exports", HandleRequestExportAsync)
              .RequireAuthorization(PrivacyPermissions.Export.Execute)
              .WithName("RequestPrivacyExport")
              .WithSummary("Requests a personal data export for the current user.")
@@ -291,7 +291,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
                  + "Use the ArchiveBlobReferenceId with the BlobStorage download endpoint to obtain a pre-signed URL.")
              .Produces<PrivacyExportRequestResponse>(StatusCodes.Status202Accepted);
 
-        group.MapGet("/export/{requestId:guid}", HandleGetExportStatusAsync)
+        group.MapGet("/exports/{requestId:guid}", HandleGetExportStatusAsync)
              .WithName("GetPrivacyExportStatus")
              .WithSummary("Returns the status of a personal data export request.")
              .WithDescription(
@@ -303,7 +303,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .Produces<PrivacyExportStatusResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapGet("/export", HandleGetMyExportsAsync)
+        group.MapGet("/exports", HandleGetMyExportsAsync)
              .WithName("ListPrivacyExports")
              .WithSummary("Lists all export requests for the current user.")
              .WithDescription(
@@ -318,7 +318,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
 
     private static void MapDeletionEndpoints(RouteGroupBuilder group)
     {
-        group.MapPost("/deletion", HandleRequestDeletionAsync)
+        group.MapPost("/deletions", HandleRequestDeletionAsync)
              .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
              .WithName("RequestPrivacyDeletion")
              .WithSummary("Requests personal data deletion for the current user.")
@@ -333,7 +333,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status409Conflict)
              .ProducesValidationProblem();
 
-        group.MapPost("/deletion/{requestId:guid}/cancel", HandleCancelDeletionAsync)
+        group.MapPost("/deletions/{requestId:guid}/cancel", HandleCancelDeletionAsync)
              .RequireAuthorization(PrivacyPermissions.Deletion.Execute)
              .WithName("CancelPrivacyDeletion")
              .WithSummary("Cancels a deferred deletion request during the grace period.")
@@ -344,7 +344,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict);
 
-        group.MapGet("/deletion/{requestId:guid}", HandleGetDeletionStatusAsync)
+        group.MapGet("/deletions/{requestId:guid}", HandleGetDeletionStatusAsync)
              .WithName("GetPrivacyDeletionStatus")
              .WithSummary("Returns the status of a deferred deletion request.")
              .WithDescription(
@@ -355,7 +355,7 @@ public static class PrivacyEndpointRouteBuilderExtensions
              .Produces<PrivacyDeletionStatusResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
 
-        group.MapGet("/deletion", HandleGetMyDeletionsAsync)
+        group.MapGet("/deletions", HandleGetMyDeletionsAsync)
              .WithName("ListPrivacyDeletions")
              .WithSummary("Lists all deletion requests for the current user.")
              .WithDescription(

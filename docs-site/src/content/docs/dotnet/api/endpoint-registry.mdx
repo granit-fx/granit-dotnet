@@ -132,7 +132,7 @@ api.MapGranitIdentityUserCache();// → /api/v1/identity/users/...
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
 | <Badge text="GET" variant="note" /> | `/import/jobs` | ListImportJobs | `DataExchange.Import.*` |
-| <Badge text="POST" variant="success" /> | `/import` | CreateImportJob | `DataExchange.Import.*` |
+| <Badge text="POST" variant="success" /> | `/import/jobs` | CreateImportJob | `DataExchange.Import.*` |
 | <Badge text="POST" variant="success" /> | `/import/{jobId}/preview` | PreviewImportJob | `DataExchange.Import.*` |
 | <Badge text="PUT" variant="caution" /> | `/import/{jobId}/mappings` | ConfirmImportMappings | `DataExchange.Import.*` |
 | <Badge text="POST" variant="success" /> | `/import/{jobId}/execute` | ExecuteImportJob | `DataExchange.Import.*` |
@@ -486,18 +486,18 @@ interface OidcAuthorizationResponse {
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/export` | RequestPrivacyExport | `Privacy.Export.Execute` |
-| <Badge text="GET" variant="note" /> | `/export/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
-| <Badge text="GET" variant="note" /> | `/export` | ListPrivacyExports | *(owner only)* |
+| <Badge text="POST" variant="success" /> | `/exports` | RequestPrivacyExport | `Privacy.Export.Execute` |
+| <Badge text="GET" variant="note" /> | `/exports/{requestId}` | GetPrivacyExportStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/exports` | ListPrivacyExports | *(owner only)* |
 
 ### Data Deletion (Art. 17)
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="POST" variant="success" /> | `/deletion` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="POST" variant="success" /> | `/deletion/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
-| <Badge text="GET" variant="note" /> | `/deletion/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
-| <Badge text="GET" variant="note" /> | `/deletion` | ListPrivacyDeletions | *(owner only)* |
+| <Badge text="POST" variant="success" /> | `/deletions` | RequestPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="POST" variant="success" /> | `/deletions/{requestId}/cancel` | CancelPrivacyDeletion | `Privacy.Deletion.Execute` |
+| <Badge text="GET" variant="note" /> | `/deletions/{requestId}` | GetPrivacyDeletionStatus | *(owner only)* |
+| <Badge text="GET" variant="note" /> | `/deletions` | ListPrivacyDeletions | *(owner only)* |
 
 ### Legal Agreements (Art. 7)
 
@@ -604,9 +604,9 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 
 | Method | Route | Operation | Permission |
 |--------|-------|-----------|------------|
-| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}/history` | GetEntityStream | `Timeline.Entries.Read` |
+| <Badge text="GET" variant="note" /> | `/{entityType}/{entityId}` | GetTimelineStream | `Timeline.Entries.Read` |
 | <Badge text="POST" variant="success" /> | `/{entityType}/{entityId}/entries` | PostTimelineEntry | `Timeline.Entries.Read` |
-| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/entries/{id}` | DeleteTimelineEntry | `Timeline.Entries.Read` |
+| <Badge text="DELETE" variant="danger" /> | `/{entityType}/{entityId}/entries/{entryId}` | DeleteTimelineEntry | `Timeline.Entries.Read` |
 
 ---
 
