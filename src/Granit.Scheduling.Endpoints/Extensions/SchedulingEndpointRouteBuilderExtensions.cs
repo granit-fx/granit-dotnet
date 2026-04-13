@@ -43,7 +43,7 @@ public static class SchedulingEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder actionsGroup = group.MapGroup("scheduled-actions");
+        RouteGroupBuilder actionsGroup = group.MapGranitGroup("scheduled-actions");
 
         actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Read).MapReadEndpoints();
         actionsGroup.RequireAuthorization(SchedulingPermissions.Actions.Manage).MapWriteEndpoints();

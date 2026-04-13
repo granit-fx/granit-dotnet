@@ -40,7 +40,7 @@ public static class ApiKeysEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder keysGroup = group.MapGroup("api-keys");
+        RouteGroupBuilder keysGroup = group.MapGranitGroup("api-keys");
 
         // Read endpoints (list, get by ID)
         keysGroup

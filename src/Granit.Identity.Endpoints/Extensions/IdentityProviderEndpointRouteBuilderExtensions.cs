@@ -42,53 +42,53 @@ public static class IdentityProviderEndpointRouteBuilderExtensions
             .WithTags(options.TagName);
 
         // -- Users --
-        RouteGroupBuilder usersRead = group.MapGroup("/users")
+        RouteGroupBuilder usersRead = group.MapGranitGroup("/users")
             .RequireAuthorization(IdentityPermissions.Users.Read);
         usersRead.MapProviderUserReadEndpoints();
 
-        RouteGroupBuilder usersWrite = group.MapGroup("/users")
+        RouteGroupBuilder usersWrite = group.MapGranitGroup("/users")
             .RequireAuthorization(IdentityPermissions.Users.Manage);
         usersWrite.MapProviderUserWriteEndpoints();
 
         // -- Roles (top-level) --
-        RouteGroupBuilder rolesRead = group.MapGroup("/roles")
+        RouteGroupBuilder rolesRead = group.MapGranitGroup("/roles")
             .RequireAuthorization(IdentityPermissions.Roles.Read);
         rolesRead.MapProviderRoleReadEndpoints();
 
         // -- Roles (per-user) --
-        RouteGroupBuilder userRolesRead = group.MapGroup("/users/{userId}/roles")
+        RouteGroupBuilder userRolesRead = group.MapGranitGroup("/users/{userId}/roles")
             .RequireAuthorization(IdentityPermissions.Roles.Read);
         userRolesRead.MapProviderUserRoleReadEndpoints();
 
-        RouteGroupBuilder userRolesWrite = group.MapGroup("/users/{userId}/roles")
+        RouteGroupBuilder userRolesWrite = group.MapGranitGroup("/users/{userId}/roles")
             .RequireAuthorization(IdentityPermissions.Roles.Manage);
         userRolesWrite.MapProviderUserRoleWriteEndpoints();
 
         // -- Groups (top-level) --
-        RouteGroupBuilder groupsRead = group.MapGroup("/groups")
+        RouteGroupBuilder groupsRead = group.MapGranitGroup("/groups")
             .RequireAuthorization(IdentityPermissions.Groups.Read);
         groupsRead.MapProviderGroupReadEndpoints();
 
         // -- Groups (per-user) --
-        RouteGroupBuilder userGroupsRead = group.MapGroup("/users/{userId}/groups")
+        RouteGroupBuilder userGroupsRead = group.MapGranitGroup("/users/{userId}/groups")
             .RequireAuthorization(IdentityPermissions.Groups.Read);
         userGroupsRead.MapProviderUserGroupReadEndpoints();
 
-        RouteGroupBuilder userGroupsWrite = group.MapGroup("/users/{userId}/groups")
+        RouteGroupBuilder userGroupsWrite = group.MapGranitGroup("/users/{userId}/groups")
             .RequireAuthorization(IdentityPermissions.Groups.Manage);
         userGroupsWrite.MapProviderUserGroupWriteEndpoints();
 
         // -- Sessions --
-        RouteGroupBuilder sessionsRead = group.MapGroup("/users/{userId}/sessions")
+        RouteGroupBuilder sessionsRead = group.MapGranitGroup("/users/{userId}/sessions")
             .RequireAuthorization(IdentityPermissions.Sessions.Read);
         sessionsRead.MapProviderSessionEndpoints();
 
-        RouteGroupBuilder devicesRead = group.MapGroup("/users/{userId}/devices")
+        RouteGroupBuilder devicesRead = group.MapGranitGroup("/users/{userId}/devices")
             .RequireAuthorization(IdentityPermissions.Sessions.Read);
         devicesRead.MapProviderDeviceEndpoints();
 
         // -- Passwords --
-        RouteGroupBuilder passwords = group.MapGroup("/users/{userId}/password")
+        RouteGroupBuilder passwords = group.MapGranitGroup("/users/{userId}/password")
             .RequireAuthorization(IdentityPermissions.Passwords.Manage);
         passwords.MapProviderPasswordEndpoints();
 

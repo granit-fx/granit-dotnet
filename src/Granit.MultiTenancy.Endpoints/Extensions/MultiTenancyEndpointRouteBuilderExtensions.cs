@@ -34,7 +34,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
             .RequireAuthorization()
             .WithTags(options.TagName);
 
-        RouteGroupBuilder tenantsGroup = group.MapGroup("tenants");
+        RouteGroupBuilder tenantsGroup = group.MapGranitGroup("tenants");
 
         MapListEndpoint(tenantsGroup);
         MapGetByIdEndpoint(tenantsGroup);

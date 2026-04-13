@@ -61,8 +61,8 @@ public static class WebhooksEndpointRouteBuilderExtensions
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
 
         // Query endpoints for subscription list and delivery attempts.
-        group.MapGroup("subscriptions").MapGranitQuery<WebhookSubscription>();
-        group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>();
+        group.MapGranitGroup("subscriptions").MapGranitQuery<WebhookSubscription>();
+        group.MapGranitGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>();
 
         return group;
     }

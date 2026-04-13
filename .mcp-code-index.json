@@ -2478,8 +2478,15 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/GranitAIEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AIEndpointsOptions",
@@ -7915,8 +7922,15 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 18,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "BlobStorageEndpointsOptions",
@@ -7966,6 +7980,22 @@
       "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStorageRateLimitPolicies.cs",
       "line": 18,
       "members": []
+    },
+    {
+      "name": "BlobDescriptorQueryDefinition",
+      "fqn": "Granit.BlobStorage.Endpoints.Queries.BlobDescriptorQueryDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage.Endpoints",
+      "file": "src/Granit.BlobStorage.Endpoints/Queries/BlobDescriptorQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -15690,6 +15720,24 @@
       ]
     },
     {
+      "name": "IdentityDeviceActivityResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityDeviceActivityResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "IdentityGroupResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityGroupResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "IdentityPasswordChangedAtResponse",
       "fqn": "Granit.Identity.Endpoints.Dtos.IdentityPasswordChangedAtResponse",
       "kind": "record",
@@ -15705,6 +15753,24 @@
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityProviderCapabilitiesResponse.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "IdentityRoleResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityRoleResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IdentitySessionResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentitySessionResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 27,
       "members": []
     },
     {
@@ -15750,6 +15816,15 @@
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityUserCreateRequest.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "IdentityUserResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityUserResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -17191,12 +17266,39 @@
       "members": []
     },
     {
+      "name": "ExternalLoginInfoResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ExternalLoginInfoResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "IdentityLocalConfigResponse",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.IdentityLocalConfigResponse",
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "ImpersonationResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ImpersonationResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "PasskeyInfoResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.PasskeyInfoResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -19296,7 +19398,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/Extensions/InvoicingEndpointRouteBuilderExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitInvoicing",
@@ -19312,8 +19414,15 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "CreditNotes",
@@ -19343,12 +19452,28 @@
       "members": []
     },
     {
+      "name": "InvoiceQueryDefinition",
+      "fqn": "Granit.Invoicing.Endpoints.Queries.InvoiceQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Queries/InvoiceQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Invoicing.EntityFrameworkCore.Extensions.InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Invoicing.EntityFrameworkCore",
       "file": "src/Granit.Invoicing.EntityFrameworkCore/Extensions/InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitInvoicingEntityFrameworkCore",
@@ -32330,7 +32455,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.EntityFrameworkCore",
       "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineEntityFrameworkCoreModule.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -33899,8 +34024,15 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/GranitSchedulingEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "SchedulingEndpointsOptions",
@@ -33941,6 +34073,22 @@
       "file": "src/Granit.Scheduling.Endpoints/Permissions/SchedulingPermissions.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "ScheduledActionQueryDefinition",
+      "fqn": "Granit.Scheduling.Endpoints.Queries.ScheduledActionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Scheduling.Endpoints",
+      "file": "src/Granit.Scheduling.Endpoints/Queries/ScheduledActionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -35538,7 +35686,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Extensions/SubscriptionsEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitSubscriptions",
@@ -35554,8 +35702,15 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/GranitSubscriptionsEndpointsModule.cs",
-      "line": 16,
-      "members": []
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "Plans",
@@ -35603,12 +35758,28 @@
       "members": []
     },
     {
+      "name": "SubscriptionQueryDefinition",
+      "fqn": "Granit.Subscriptions.Endpoints.Queries.SubscriptionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Queries/SubscriptionQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Subscriptions.EntityFrameworkCore.Extensions.SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Subscriptions.EntityFrameworkCore",
       "file": "src/Granit.Subscriptions.EntityFrameworkCore/Extensions/SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitSubscriptionsEntityFrameworkCore",
@@ -38666,6 +38837,24 @@
       "members": []
     },
     {
+      "name": "TimelineAttachmentInfoResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.TimelineAttachmentInfoResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "TimelineStreamEntryResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.TimelineStreamEntryResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "TimelineEndpointRouteBuilderExtensions",
       "fqn": "Granit.Timeline.Endpoints.Extensions.TimelineEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -41069,8 +41258,15 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/GranitWebhooksEndpointsModule.cs",
-      "line": 15,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "WebhooksEndpointsOptions",
@@ -41111,6 +41307,38 @@
       "file": "src/Granit.Webhooks.Endpoints/Permissions/WebhooksPermissions.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "WebhookDeliveryAttemptQueryDefinition",
+      "fqn": "Granit.Webhooks.Endpoints.Queries.WebhookDeliveryAttemptQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookDeliveryAttemptQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSubscriptionQueryDefinition",
+      "fqn": "Granit.Webhooks.Endpoints.Queries.WebhookSubscriptionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookSubscriptionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "WebhookTargetUrlValidatorExtensions",
