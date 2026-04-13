@@ -3,6 +3,7 @@ using Granit.Authorization;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Permissions;
 using Granit.MultiTenancy;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,7 +23,7 @@ internal static partial class PermissionGrantEndpoints
     /// </summary>
     internal static RouteGroupBuilder MapPermissionGrantEndpoints(this RouteGroupBuilder group)
     {
-        RouteGroupBuilder adminGroup = group.MapGroup("/roles")
+        RouteGroupBuilder adminGroup = group.MapGranitGroup("/roles")
             .RequireAuthorization(AuthorizationEndpointsPermissions.Grants.Manage);
 
         adminGroup.MapGet("/{roleName}", GetGrantedPermissionsAsync)

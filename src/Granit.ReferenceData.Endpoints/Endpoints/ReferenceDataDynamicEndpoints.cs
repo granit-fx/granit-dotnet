@@ -74,6 +74,7 @@ internal static class ReferenceDataDynamicEndpoints
             .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")
             .Produces(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesValidationProblem()
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapPut("/{code}", UpdateAsync)
@@ -85,6 +86,7 @@ internal static class ReferenceDataDynamicEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesValidationProblem()
             .WithMetadata(new ReferenceDataTypeNameMetadata(typeName));
 
         group.MapDelete("/{code}", DeactivateAsync)
@@ -135,7 +137,7 @@ internal static class ReferenceDataDynamicEndpoints
         return TypedResults.Ok(mapped);
     }
 
-    private static async Task<Results<Ok<ReferenceDataResponse>, NotFound>> GetByCodeAsync(
+    private static async Task<Results<Ok<ReferenceDataResponse>, ProblemHttpResult>> GetByCodeAsync(
         string code,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -149,13 +151,13 @@ internal static class ReferenceDataDynamicEndpoints
 
         if (entity is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ReferenceDataMapper.ToResponse(entity));
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<ReferenceDataResponse>>, NotFound>> GetChildrenAsync(
+    private static async Task<Results<Ok<IReadOnlyList<ReferenceDataResponse>>, ProblemHttpResult>> GetChildrenAsync(
         string code,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -169,7 +171,7 @@ internal static class ReferenceDataDynamicEndpoints
 
         if (parent is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IReadOnlyList<DynamicReferenceDataEntity> children = await reader
@@ -228,7 +230,7 @@ internal static class ReferenceDataDynamicEndpoints
         return TypedResults.Created($"{request.Code}");
     }
 
-    private static async Task<Results<Ok, NotFound>> UpdateAsync(
+    private static async Task<Results<Ok, ProblemHttpResult>> UpdateAsync(
         string code,
         ReferenceDataUpdateRequest request,
         HttpContext httpContext,
@@ -245,7 +247,7 @@ internal static class ReferenceDataDynamicEndpoints
 
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         existing.LabelEn = request.LabelEn;
@@ -280,7 +282,7 @@ internal static class ReferenceDataDynamicEndpoints
         return TypedResults.Ok();
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeactivateAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeactivateAsync(
         string code,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -296,7 +298,7 @@ internal static class ReferenceDataDynamicEndpoints
 
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await writer.SetActiveAsync(code, false, cancellationToken).ConfigureAwait(false);

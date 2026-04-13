@@ -27,7 +27,7 @@ internal static class SchedulingReadEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<ScheduledActionResponse>, NotFound>> GetActionByIdAsync(
+    private static async Task<Results<Ok<ScheduledActionResponse>, ProblemHttpResult>> GetActionByIdAsync(
         Guid id,
         [FromServices] IScheduledActionReader reader,
         CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ internal static class SchedulingReadEndpoints
 
         if (action is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(MapToResponse(action));

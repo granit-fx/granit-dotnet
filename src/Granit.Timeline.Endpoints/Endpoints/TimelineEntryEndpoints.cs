@@ -3,6 +3,7 @@ using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
+using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Permissions;
 using Granit.Timeline.Internal;
 using Granit.Users;
@@ -28,7 +29,7 @@ internal static class TimelineEntryEndpoints
             .WithName("PostTimelineEntry")
             .WithSummary("Posts a new comment, internal note, or system log entry.")
             .WithDescription("Creates a new timeline entry for the specified entity. Supports Comment and InternalNote types (SystemLog is system-only). The body supports Markdown. @mentions in the body trigger one-time mention notifications (max 10 per entry). Supports threaded replies via parentEntryId.")
-            .Produces<TimelineStreamEntry>(StatusCodes.Status201Created)
+            .Produces<TimelineStreamEntryResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem();
 
         group.MapDelete("/{entityType}/{entityId}/entries/{entryId:guid}", DeleteEntryAsync)
@@ -43,7 +44,7 @@ internal static class TimelineEntryEndpoints
         return group;
     }
 
-    private static async Task<Created<TimelineStreamEntry>> PostEntryAsync(
+    private static async Task<Created<TimelineStreamEntryResponse>> PostEntryAsync(
         string entityType,
         string entityId,
         PostTimelineEntryRequest request,
@@ -73,28 +74,27 @@ internal static class TimelineEntryEndpoints
             await notifier.NotifyMentionedUsersAsync(entry, mentionedUserIds, cancellationToken).ConfigureAwait(false);
         }
 
-        TimelineStreamEntry result = new()
-        {
-            Id = entry.Id,
-            OccurredAt = entry.CreatedAt,
-            EntryType = entry.EntryType switch
+        TimelineStreamEntryResponse result = new(
+            entry.Id,
+            entry.CreatedAt,
+            entry.EntryType switch
             {
                 TimelineEntryType.Comment => TimelineStreamEntryType.Comment,
                 TimelineEntryType.InternalNote => TimelineStreamEntryType.InternalNote,
                 TimelineEntryType.SystemLog => TimelineStreamEntryType.SystemLog,
                 _ => TimelineStreamEntryType.SystemLog,
             },
-            AuthorId = entry.AuthorId,
-            AuthorName = entry.AuthorName,
-            Body = entry.Body,
-            ParentEntryId = entry.ParentEntryId,
-        };
+            entry.AuthorId,
+            entry.AuthorName,
+            entry.Body,
+            [],
+            entry.ParentEntryId);
 
         return TypedResults.Created($"/api/timeline/{entityType}/{entityId}/entries/{entry.Id}", result);
     }
 
 #pragma warning disable S1172 // Route parameters bound by ASP.NET Core minimal API
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> DeleteEntryAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeleteEntryAsync(
         string entityType,
         string entityId,
         Guid entryId,
@@ -115,7 +115,7 @@ internal static class TimelineEntryEndpoints
 
             if (target is null)
             {
-                return TypedResults.NotFound();
+                return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
             }
 
             string userId = currentUser.UserId ?? string.Empty;
@@ -134,7 +134,7 @@ internal static class TimelineEntryEndpoints
         }
         catch (KeyNotFoundException)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
     }
 }

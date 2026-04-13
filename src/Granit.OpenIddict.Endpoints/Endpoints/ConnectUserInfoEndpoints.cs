@@ -109,6 +109,6 @@ internal static class ConnectUserInfoEndpoints
             }
         }
 
-        return Results.Ok(claims);
+        return TypedResults.Ok(claims);
     }
 }

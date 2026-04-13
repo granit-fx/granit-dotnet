@@ -41,7 +41,7 @@ internal static class AIChatEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<AIChatResponse>, NotFound, ProblemHttpResult>> CompleteAsync(
+    private static async Task<Results<Ok<AIChatResponse>, ProblemHttpResult>> CompleteAsync(
         string workspaceName,
         AIChatRequest request,
         [FromServices] IAIChatCompletionService completionService,
@@ -69,7 +69,7 @@ internal static class AIChatEndpoints
 
         if (result is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         AIChatUsageResponse? usageResponse = result.InputTokens is not null

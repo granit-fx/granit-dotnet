@@ -92,7 +92,7 @@ internal static class LegalDocumentAdminEndpoints
             ToResponse(document));
     }
 
-    private static async Task<Results<Ok<LegalDocumentDetailResponse>, NotFound>> GetByIdAsync(
+    private static async Task<Results<Ok<LegalDocumentDetailResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] ILegalDocumentReader reader,
         CancellationToken cancellationToken)
@@ -101,7 +101,7 @@ internal static class LegalDocumentAdminEndpoints
             .ConfigureAwait(false);
 
         return document is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(ToResponse(document));
     }
 
@@ -120,7 +120,7 @@ internal static class LegalDocumentAdminEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Results<Ok<LegalDocumentDetailResponse>, NotFound, ProblemHttpResult>> UpdateAsync(
+    private static async Task<Results<Ok<LegalDocumentDetailResponse>, ProblemHttpResult>> UpdateAsync(
         Guid id,
         LegalDocumentUpdateRequest request,
         [FromServices] ILegalDocumentReader reader,
@@ -132,7 +132,7 @@ internal static class LegalDocumentAdminEndpoints
 
         if (document is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try
@@ -153,7 +153,7 @@ internal static class LegalDocumentAdminEndpoints
         return TypedResults.Ok(ToResponse(document));
     }
 
-    private static async Task<Results<Ok<LegalDocumentDetailResponse>, NotFound, ProblemHttpResult>> PublishAsync(
+    private static async Task<Results<Ok<LegalDocumentDetailResponse>, ProblemHttpResult>> PublishAsync(
         Guid id,
         [FromServices] ILegalDocumentPublicationService publicationService,
         CancellationToken cancellationToken)
@@ -167,7 +167,7 @@ internal static class LegalDocumentAdminEndpoints
         }
         catch (InvalidOperationException ex) when (ex.Message.Contains("not found"))
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
         catch (InvalidOperationException ex)
         {

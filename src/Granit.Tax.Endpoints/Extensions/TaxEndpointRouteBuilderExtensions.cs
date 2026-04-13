@@ -17,8 +17,8 @@ public static class TaxEndpointRouteBuilderExtensions
             .MapGranitGroup("tax")
             .WithTags("Tax");
 
-        group.MapGroup("tax-ids").MapValidationEndpoints();
-        group.MapGroup("tax-rates").MapRateEndpoints();
+        group.MapGranitGroup("ids").MapValidationEndpoints();
+        group.MapGranitGroup("rates").MapRateEndpoints();
 
         return group;
     }

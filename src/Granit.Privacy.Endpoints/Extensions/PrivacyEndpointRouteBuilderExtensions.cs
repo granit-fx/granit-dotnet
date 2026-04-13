@@ -882,14 +882,11 @@ public static class PrivacyEndpointRouteBuilderExtensions
             status.ExecutedAt);
 
     /// <summary>
-    /// Pseudonymizes an IP address using <see cref="System.Net.IPAddress"/> for reliable parsing.
-    /// IPv4: masks to /16 (last 2 octets zeroed). IPv6: masks to /48 (last 80 bits zeroed).
-    /// GDPR requires data minimization — the full IP is not stored.
-    /// Compliant with CNIL guidance on IP anonymization (2020) and WP29 Opinion 05/2014.
+    /// Maps the legal document administration endpoints (create, read, update, publish).
     /// </summary>
     private static void MapLegalDocumentAdminEndpoints(RouteGroupBuilder group)
     {
-        group.MapGroup("/legal-documents")
+        group.MapGranitGroup("/legal-documents")
             .MapLegalDocumentAdminEndpoints();
     }
 

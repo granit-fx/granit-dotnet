@@ -1,3 +1,5 @@
+using Granit.QueryEngine.AspNetCore.Extensions;
+using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Endpoints.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -24,6 +26,11 @@ public static class SubscriptionsEndpointRouteBuilderExtensions
         group.MapPriceVersioningEndpoints();
         group.MapSubscriptionEndpoints();
         group.MapSeatEndpoints();
+
+        // Query engine endpoint — paginated, filterable list.
+        // When no tenant context is active, the IQueryableSource disables the
+        // multi-tenant filter so host admin sees all subscriptions cross-tenant.
+        group.MapGranitGroup("subscriptions").MapGranitQuery<Subscription>();
 
         return group;
     }

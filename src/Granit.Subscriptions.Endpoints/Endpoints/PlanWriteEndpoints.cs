@@ -94,7 +94,7 @@ internal static class PlanWriteEndpoints
         return TypedResults.Created($"/plans/{plan.Id}", PlanResponse.FromEntity(plan));
     }
 
-    private static async Task<Results<Ok<PlanResponse>, NotFound, ProblemHttpResult>> UpdatePlanAsync(
+    private static async Task<Results<Ok<PlanResponse>, ProblemHttpResult>> UpdatePlanAsync(
         Guid id,
         PlanUpdateRequest request,
         [FromServices] IPlanReader planReader,
@@ -106,7 +106,7 @@ internal static class PlanWriteEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try
@@ -122,7 +122,7 @@ internal static class PlanWriteEndpoints
         return TypedResults.Ok(PlanResponse.FromEntity(plan));
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> PublishPlanAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> PublishPlanAsync(
         Guid id,
         [FromServices] IPlanReader planReader,
         [FromServices] IPlanWriter planWriter,
@@ -133,7 +133,7 @@ internal static class PlanWriteEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try
@@ -149,7 +149,7 @@ internal static class PlanWriteEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> ArchivePlanAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> ArchivePlanAsync(
         Guid id,
         [FromServices] IPlanReader planReader,
         [FromServices] IPlanWriter planWriter,
@@ -160,7 +160,7 @@ internal static class PlanWriteEndpoints
 
         if (plan is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         try

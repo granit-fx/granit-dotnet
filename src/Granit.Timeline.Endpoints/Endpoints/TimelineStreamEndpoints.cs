@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Endpoints.Dtos;
+using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -21,12 +23,12 @@ internal static class TimelineStreamEndpoints
             .WithName("GetTimelineStream")
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
             .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read), and system log entries. Supports pagination. Soft-deleted entries are excluded.")
-            .Produces<PagedResult<TimelineStreamEntry>>();
+            .Produces<PagedResult<TimelineStreamEntryResponse>>();
 
         return group;
     }
 
-    private static async Task<Ok<PagedResult<TimelineStreamEntry>>> GetStreamAsync(
+    private static async Task<Ok<PagedResult<TimelineStreamEntryResponse>>> GetStreamAsync(
         string entityType,
         string entityId,
         [FromServices] ITimelineReader reader,
@@ -50,6 +52,11 @@ internal static class TimelineStreamEndpoints
             result = new PagedResult<TimelineStreamEntry>(filtered, result.TotalCount, result.HasMore);
         }
 
-        return TypedResults.Ok(result);
+        PagedResult<TimelineStreamEntryResponse> mapped = new(
+            result.Items.Select(TimelineResponseMapper.ToResponse).ToList(),
+            result.TotalCount,
+            result.HasMore);
+
+        return TypedResults.Ok(mapped);
     }
 }

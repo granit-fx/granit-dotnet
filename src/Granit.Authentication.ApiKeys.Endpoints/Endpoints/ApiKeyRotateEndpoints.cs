@@ -31,7 +31,7 @@ internal static class ApiKeyRotateEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<ApiKeyRotateResponse>, NotFound>> RotateAsync(
+    private static async Task<Results<Ok<ApiKeyRotateResponse>, ProblemHttpResult>> RotateAsync(
         Guid id,
         [FromServices] IApiKeyAdminStore adminStore,
         [FromServices] IApiKeyGenerator generator,
@@ -45,7 +45,7 @@ internal static class ApiKeyRotateEndpoints
 
         if (existing is null || existing.RevokedAt.HasValue)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         // Revoke old key

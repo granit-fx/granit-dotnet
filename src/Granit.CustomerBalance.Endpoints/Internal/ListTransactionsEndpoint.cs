@@ -10,7 +10,7 @@ namespace Granit.CustomerBalance.Endpoints.Internal;
 
 internal static class ListTransactionsEndpoint
 {
-    internal static async Task<Results<Ok<IReadOnlyList<BalanceTransactionResponse>>, NotFound>> HandleAsync(
+    internal static async Task<Results<Ok<IReadOnlyList<BalanceTransactionResponse>>, ProblemHttpResult>> HandleAsync(
         string currency,
         int page,
         int pageSize,
@@ -24,7 +24,7 @@ internal static class ListTransactionsEndpoint
 
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         BalanceAccount? account = await accountReader

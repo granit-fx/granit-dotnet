@@ -102,7 +102,7 @@ internal static class ExportPresetEndpoints
         return TypedResults.Created($"/presets/{request.DefinitionName}");
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeletePresetAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeletePresetAsync(
         string definitionName,
         string presetName,
         [FromServices] IExportPresetReader presetReader,
@@ -113,7 +113,7 @@ internal static class ExportPresetEndpoints
             await presetReader.GetAsync(definitionName, presetName, cancellationToken).ConfigureAwait(false);
         if (existing is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await presetWriter.DeleteAsync(definitionName, presetName, cancellationToken).ConfigureAwait(false);

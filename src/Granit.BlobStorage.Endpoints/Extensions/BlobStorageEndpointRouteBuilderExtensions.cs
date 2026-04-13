@@ -44,7 +44,7 @@ public static class BlobStorageEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder blobsGroup = group.MapGroup("blobs");
+        RouteGroupBuilder blobsGroup = group.MapGranitGroup("blobs");
 
         blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Read).MapReadEndpoints();
         blobsGroup.RequireAuthorization(BlobStoragePermissions.Administration.Manage).MapWriteEndpoints();

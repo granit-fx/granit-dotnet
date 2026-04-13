@@ -100,7 +100,7 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Results<Created<PaymentMethodResponse>, NotFound>> AttachAsync(
+    private static async Task<Results<Created<PaymentMethodResponse>, ProblemHttpResult>> AttachAsync(
         Dtos.PaymentAttachMethodRequest request,
         [FromServices] IEnumerable<IPaymentMethodManager> managers,
         [FromServices] IPaymentMethodWriter writer,
@@ -115,7 +115,7 @@ internal static class PaymentMethodEndpoints
 
         if (manager is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         PaymentProviderMethod providerMethod = await manager
@@ -139,7 +139,7 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Created($"/methods/{method.Id}", response);
     }
 
-    private static async Task<Results<NoContent, NotFound>> DetachAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DetachAsync(
         Guid id,
         [FromServices] IPaymentMethodReader reader,
         [FromServices] IPaymentMethodWriter writer,
@@ -153,7 +153,7 @@ internal static class PaymentMethodEndpoints
 
         if (method is null || method.TenantId != currentTenant.Id)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IPaymentMethodManager? manager = managers

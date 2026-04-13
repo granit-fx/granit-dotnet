@@ -1,4 +1,5 @@
 using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,7 +20,7 @@ internal static class IdentityProviderUserWriteEndpoints
             .WithName("CreateIdentityProviderUser")
             .WithSummary("Creates a new user in the identity provider.")
             .WithDescription("Creates a user in the upstream identity provider (Keycloak, Cognito, etc.). Returns the created user with its provider-assigned ID. Returns 501 if the provider does not support user creation.")
-            .Produces<IIdentityUser>(StatusCodes.Status201Created)
+            .Produces<IdentityUserResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status501NotImplemented);
 
         group.MapPut("/{userId}", UpdateUserAsync)
@@ -37,7 +38,7 @@ internal static class IdentityProviderUserWriteEndpoints
         return group;
     }
 
-    private static async Task<Results<Created<IIdentityUser>, ProblemHttpResult>> CreateUserAsync(
+    private static async Task<Results<Created<IdentityUserResponse>, ProblemHttpResult>> CreateUserAsync(
         IdentityUserCreateRequest request,
         [FromServices] IIdentityUserWriter userWriter,
         [FromServices] IIdentityProviderCapabilities capabilities,
@@ -62,7 +63,8 @@ internal static class IdentityProviderUserWriteEndpoints
             .CreateUserAsync(model, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Created($"/identity/provider/users/{created.UserId}", created);
+        IdentityUserResponse response = IdentityResponseMapper.ToResponse(created);
+        return TypedResults.Created($"/identity/provider/users/{response.UserId}", response);
     }
 
     private static async Task<NoContent> UpdateUserAsync(

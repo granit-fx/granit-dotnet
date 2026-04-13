@@ -38,7 +38,7 @@ public static class AuditingEndpointRouteBuilderExtensions
             .WithTags(options.TagName)
             .RequireAuthorization(AuditingPermissions.AuditEntries.Read);
 
-        RouteGroupBuilder entriesGroup = group.MapGroup("audit-entries");
+        RouteGroupBuilder entriesGroup = group.MapGranitGroup("audit-entries");
         entriesGroup.MapAuditingReadEndpoints();
         entriesGroup.MapAuditingManagementEndpoints();
 

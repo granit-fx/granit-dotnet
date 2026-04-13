@@ -25,7 +25,7 @@ internal static class BlobReadEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<BlobDescriptorResponse>, NotFound>> GetByIdAsync(
+    private static async Task<Results<Ok<BlobDescriptorResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromQuery] string containerName,
         [FromServices] IBlobStorage blobStorage,
@@ -37,7 +37,7 @@ internal static class BlobReadEndpoints
 
         if (descriptor is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(MapToResponse(descriptor));

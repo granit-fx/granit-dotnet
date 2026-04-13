@@ -18,15 +18,6 @@ internal static class InvoiceEndpoints
 {
     internal static RouteGroupBuilder MapInvoiceEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/invoices", ListInvoicesAsync)
-            .WithName("ListInvoices")
-            .WithSummary("Returns all invoices for the current tenant.")
-            .WithDescription(
-                "Returns invoices and credit notes in any status for the current tenant. " +
-                "Results include line items. Filter by document type on the client side.")
-            .Produces<IReadOnlyList<InvoiceResponse>>()
-            .RequireAuthorization(InvoicingPermissions.Invoices.Read);
-
         group.MapGet("/invoices/{id:guid}", GetInvoiceByIdAsync)
             .WithName("GetInvoiceById")
             .WithSummary("Returns an invoice by ID.")
@@ -53,28 +44,17 @@ internal static class InvoiceEndpoints
             .WithDescription(
                 "Creates a draft invoice or credit note for the current tenant. " +
                 "Credit notes must reference a parent invoice via parentInvoiceId. " +
-                "Line items can be added after creation.")
+                "Line items can be added after creation. Requires tenant context.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<InvoiceResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
             .RequireAuthorization(InvoicingPermissions.Invoices.Manage);
 
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<InvoiceResponse>>> ListInvoicesAsync(
-        [FromServices] IInvoiceReader reader,
-        [FromServices] ICurrentTenant currentTenant,
-        CancellationToken cancellationToken)
-    {
-        IReadOnlyList<Invoice> invoices = await reader
-            .GetForTenantAsync(currentTenant.Id!.Value, cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Ok<IReadOnlyList<InvoiceResponse>>(
-            invoices.Select(InvoiceResponse.FromEntity).ToList());
-    }
-
-    private static async Task<Results<Ok<InvoiceResponse>, NotFound>> GetInvoiceByIdAsync(
+    private static async Task<Results<Ok<InvoiceResponse>, ProblemHttpResult>> GetInvoiceByIdAsync(
         Guid id,
         [FromServices] IInvoiceReader reader,
         CancellationToken cancellationToken)
@@ -83,11 +63,11 @@ internal static class InvoiceEndpoints
             .GetByIdAsync(InvoiceId.Create(id), cancellationToken).ConfigureAwait(false);
 
         return invoice is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(InvoiceResponse.FromEntity(invoice));
     }
 
-    private static async Task<Results<FileContentHttpResult, NotFound>> DownloadInvoicePdfAsync(
+    private static async Task<Results<FileContentHttpResult, ProblemHttpResult>> DownloadInvoicePdfAsync(
         Guid id,
         [FromServices] IInvoiceReader reader,
         [FromServices] IInvoiceDocumentGenerator documentGenerator,
@@ -98,7 +78,7 @@ internal static class InvoiceEndpoints
 
         if (invoice is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         InvoiceDocumentResult result = await documentGenerator
@@ -107,13 +87,18 @@ internal static class InvoiceEndpoints
         return TypedResults.File(result.Content, result.ContentType, result.FileName);
     }
 
-    private static async Task<Results<Created<InvoiceResponse>, ValidationProblem>> CreateInvoiceAsync(
+    private static async Task<Results<Created<InvoiceResponse>, ValidationProblem, ProblemHttpResult>> CreateInvoiceAsync(
         InvoiceCreateRequest request,
         [FromServices] IInvoiceWriter writer,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         var invoice = Invoice.Create(
             guidGenerator.Create(),
             currentTenant.Id!.Value,

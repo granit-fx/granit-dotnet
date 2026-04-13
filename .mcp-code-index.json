@@ -15720,6 +15720,24 @@
       ]
     },
     {
+      "name": "IdentityDeviceActivityResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityDeviceActivityResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "IdentityGroupResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityGroupResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "IdentityPasswordChangedAtResponse",
       "fqn": "Granit.Identity.Endpoints.Dtos.IdentityPasswordChangedAtResponse",
       "kind": "record",
@@ -15735,6 +15753,24 @@
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityProviderCapabilitiesResponse.cs",
       "line": 14,
+      "members": []
+    },
+    {
+      "name": "IdentityRoleResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityRoleResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IdentitySessionResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentitySessionResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 27,
       "members": []
     },
     {
@@ -15780,6 +15816,15 @@
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityUserCreateRequest.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "IdentityUserResponse",
+      "fqn": "Granit.Identity.Endpoints.Dtos.IdentityUserResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Endpoints",
+      "file": "src/Granit.Identity.Endpoints/Dtos/IdentityResponses.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -17221,12 +17266,39 @@
       "members": []
     },
     {
+      "name": "ExternalLoginInfoResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ExternalLoginInfoResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "IdentityLocalConfigResponse",
       "fqn": "Granit.Identity.Local.Endpoints.Dtos.IdentityLocalConfigResponse",
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalConfigResponse.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "ImpersonationResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.ImpersonationResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "PasskeyInfoResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.PasskeyInfoResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/IdentityLocalResponses.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -19326,7 +19398,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/Extensions/InvoicingEndpointRouteBuilderExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitInvoicing",
@@ -35614,7 +35686,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Extensions/SubscriptionsEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitSubscriptions",
@@ -38762,6 +38834,24 @@
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/PostTimelineEntryRequest.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "TimelineAttachmentInfoResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.TimelineAttachmentInfoResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "TimelineStreamEntryResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.TimelineStreamEntryResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
+      "line": 6,
       "members": []
     },
     {

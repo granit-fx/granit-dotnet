@@ -42,25 +42,25 @@ public static class AIEndpointRouteBuilderExtensions
         RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
 
         // Admin endpoints — workspace CRUD
-        RouteGroupBuilder adminGroup = group.MapGroup("")
+        RouteGroupBuilder adminGroup = group.MapGranitGroup("")
             .WithTags(options.WorkspacesTagName)
             .RequireAuthorization(AIPermissions.Workspaces.Manage);
         adminGroup.MapWorkspaceEndpoints();
 
         // Admin endpoints — usage tracking via Granit.QueryEngine.
-        RouteGroupBuilder usageGroup = group.MapGroup("usage")
+        RouteGroupBuilder usageGroup = group.MapGranitGroup("usage")
             .WithTags(options.UsageTagName)
             .RequireAuthorization(AIPermissions.Usage.Read);
         usageGroup.MapGranitQuery<AIUsageRecord>();
 
         // User endpoints — chat completion proxy
-        RouteGroupBuilder chatGroup = group.MapGroup("")
+        RouteGroupBuilder chatGroup = group.MapGranitGroup("")
             .WithTags(options.InferenceTagName)
             .RequireAuthorization(AIPermissions.Chat.Execute);
         chatGroup.MapChatEndpoints();
 
         // User endpoints — embedding generation proxy
-        RouteGroupBuilder embeddingGroup = group.MapGroup("")
+        RouteGroupBuilder embeddingGroup = group.MapGranitGroup("")
             .WithTags(options.InferenceTagName)
             .RequireAuthorization(AIPermissions.Embeddings.Execute);
         embeddingGroup.MapEmbeddingEndpoints();

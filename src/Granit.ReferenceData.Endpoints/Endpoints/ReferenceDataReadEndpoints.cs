@@ -71,7 +71,7 @@ internal static class ReferenceDataReadEndpoints
         return TypedResults.Ok(mapped);
     }
 
-    private static async Task<Results<Ok<ReferenceDataResponse>, NotFound>> GetByCodeAsync<TEntity>(
+    private static async Task<Results<Ok<ReferenceDataResponse>, ProblemHttpResult>> GetByCodeAsync<TEntity>(
         string code,
         [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
         CancellationToken cancellationToken = default)
@@ -81,13 +81,13 @@ internal static class ReferenceDataReadEndpoints
 
         if (entity is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(ReferenceDataMapper.ToResponse(entity));
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<ReferenceDataResponse>>, NotFound>> GetChildrenAsync<TEntity>(
+    private static async Task<Results<Ok<IReadOnlyList<ReferenceDataResponse>>, ProblemHttpResult>> GetChildrenAsync<TEntity>(
         string code,
         [FromServices] IReferenceDataStoreReader<TEntity> storeReader,
         CancellationToken cancellationToken = default)
@@ -96,7 +96,7 @@ internal static class ReferenceDataReadEndpoints
         TEntity? parent = await storeReader.GetByCodeAsync(code, cancellationToken).ConfigureAwait(false);
         if (parent is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IReadOnlyList<TEntity> children = await storeReader

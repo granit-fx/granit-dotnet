@@ -84,7 +84,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         // ----- Read endpoints (Templates.Read) -----
 
-        RouteGroupBuilder templateGroup = group.MapGroup("templates");
+        RouteGroupBuilder templateGroup = group.MapGranitGroup("templates");
 
         templateGroup.MapGet("/", HandleListAsync)
              .RequireAuthorization(TemplatingPermissions.Templates.Read)
@@ -860,7 +860,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
     // POST /{name}/preview — Render the current draft with test data
     // -------------------------------------------------------------------------
 
-    private static async Task<Results<Ok<TemplatePreviewResponse>, NotFound, ProblemHttpResult>> HandlePreviewAsync(
+    private static async Task<Results<Ok<TemplatePreviewResponse>, ProblemHttpResult>> HandlePreviewAsync(
         HttpContext context,
         string name,
         TemplatePreviewRequest body,
@@ -894,7 +894,7 @@ public static class TemplatingEndpointRouteBuilderExtensions
 
         if (draft is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         var engines =

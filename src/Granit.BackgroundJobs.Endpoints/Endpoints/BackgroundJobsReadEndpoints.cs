@@ -50,7 +50,7 @@ internal static class BackgroundJobsReadEndpoints
         return TypedResults.Ok(new PagedResult<BackgroundJobStatus>(items, totalCount, HasMore: skip + items.Count < totalCount));
     }
 
-    private static async Task<Results<Ok<BackgroundJobStatus>, NotFound>> GetJobByNameAsync(
+    private static async Task<Results<Ok<BackgroundJobStatus>, ProblemHttpResult>> GetJobByNameAsync(
         string name,
         [FromServices] IBackgroundJobReader reader,
         CancellationToken cancellationToken)
@@ -58,7 +58,7 @@ internal static class BackgroundJobsReadEndpoints
         BackgroundJobStatus? job = await reader.FindAsync(name, cancellationToken).ConfigureAwait(false);
         if (job is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(job);

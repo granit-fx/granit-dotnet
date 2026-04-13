@@ -55,7 +55,7 @@ internal static class TaxRateEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Results<Ok<TaxRateResponse>, NotFound>> GetRateByCountryAsync(
+    private static async Task<Results<Ok<TaxRateResponse>, ProblemHttpResult>> GetRateByCountryAsync(
         string countryCode,
         [FromServices] ITaxRateProvider rateProvider,
         [FromServices] IClock clock,
@@ -67,7 +67,7 @@ internal static class TaxRateEndpoints
 
         if (rate is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(new TaxRateResponse(

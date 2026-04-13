@@ -54,7 +54,7 @@ internal static class UsageEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<UsageAggregateResponse>, NotFound>> GetUsageForPeriodAsync(
+    private static async Task<Results<Ok<UsageAggregateResponse>, ProblemHttpResult>> GetUsageForPeriodAsync(
         [FromQuery] Guid meterId,
         [FromQuery] DateTimeOffset periodStart,
         [FromQuery] DateTimeOffset periodEnd,
@@ -72,7 +72,7 @@ internal static class UsageEndpoints
             .ConfigureAwait(false);
 
         return aggregate is null
-            ? TypedResults.NotFound()
+            ? TypedResults.Problem(statusCode: StatusCodes.Status404NotFound)
             : TypedResults.Ok(UsageAggregateResponse.FromEntity(aggregate));
     }
 

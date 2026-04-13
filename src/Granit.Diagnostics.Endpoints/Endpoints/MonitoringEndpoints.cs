@@ -19,7 +19,7 @@ internal static class MonitoringEndpoints
         group.MapGet("health", HandleGetHealthAsync)
             .RequireAuthorization(DiagnosticsPermissions.Monitoring.Read)
             .WithName("GetMonitoringHealth")
-            .WithSummary("Aggregated health status of all registered services")
+            .WithSummary("Returns the aggregated health status of all registered services.")
             .WithDescription("Returns the current health status, response time, and description for every registered health check. Results are cached for the configured monitoring cache duration (default 30 seconds).")
             .Produces<MonitoringHealthResponse>();
     }

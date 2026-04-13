@@ -25,7 +25,7 @@ internal static class WebhookSubscriptionReadEndpoints
         return group;
     }
 
-    private static async Task<Results<Ok<WebhookSubscriptionResponse>, NotFound>> GetById(
+    private static async Task<Results<Ok<WebhookSubscriptionResponse>, ProblemHttpResult>> GetById(
         Guid id,
         [FromServices] IWebhookSubscriptionReader reader,
         CancellationToken cancellationToken)
@@ -36,7 +36,7 @@ internal static class WebhookSubscriptionReadEndpoints
 
         if (subscription is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.Ok(MapToResponse(subscription));

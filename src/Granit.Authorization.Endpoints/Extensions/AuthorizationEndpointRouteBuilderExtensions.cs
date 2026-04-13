@@ -49,7 +49,7 @@ public static class AuthorizationEndpointRouteBuilderExtensions
             .MapGranitGroup(options.RoutePrefix)
             .WithTags(options.TagName);
 
-        RouteGroupBuilder permissionsGroup = group.MapGroup("permissions");
+        RouteGroupBuilder permissionsGroup = group.MapGranitGroup("permissions");
         permissionsGroup.MapMyPermissionsEndpoints();
         permissionsGroup.MapPermissionDefinitionsEndpoints();
         group.MapPermissionGrantEndpoints();

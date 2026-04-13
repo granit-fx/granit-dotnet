@@ -64,7 +64,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
 
         // Import endpoints (listing, upload, mappings, execution, reports)
         RouteGroupBuilder importGroup = group
-            .MapGroup("import")
+            .MapGranitGroup("import")
             .RequireAuthorization(DataExchangePermissions.Imports.Execute);
 
         importGroup.MapImportJobListEndpoints();
@@ -74,7 +74,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
 
         // Export job endpoints under /export/ sub-group
         RouteGroupBuilder exportGroup = group
-            .MapGroup("export")
+            .MapGranitGroup("export")
             .RequireAuthorization(DataExchangePermissions.Exports.Execute);
 
         exportGroup.MapExportJobListEndpoints();
@@ -83,7 +83,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
         // Shared metadata (definitions, presets) under /metadata/
         // Export-specific write operations require DataExchange.Exports.Execute
         RouteGroupBuilder metadataGroup = group
-            .MapGroup("metadata")
+            .MapGranitGroup("metadata")
             .RequireAuthorization();
 
         metadataGroup.MapExportDefinitionEndpoints();
@@ -91,7 +91,7 @@ public static class DataExchangeEndpointRouteBuilderExtensions
         // Empty sub-group to isolate authorization without adding a route segment.
         // Preset endpoints already include /presets/ in their individual paths.
         RouteGroupBuilder presetGroup = metadataGroup
-            .MapGroup(string.Empty)
+            .MapGranitGroup(string.Empty)
             .RequireAuthorization(DataExchangePermissions.Exports.Execute);
 
         presetGroup.MapExportPresetEndpoints();

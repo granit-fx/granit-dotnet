@@ -1,4 +1,6 @@
 using Granit.Http.Idempotency.Attributes;
+using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ internal static class AccountExternalLoginEndpoints
             .WithDescription(
                 "Returns the list of external providers (Google, Microsoft, GitHub) "
                 + "currently linked to the authenticated user's account.")
-            .Produces<IReadOnlyList<ExternalLoginInfo>>()
+            .Produces<IReadOnlyList<ExternalLoginInfoResponse>>()
             .RequireAuthorization();
 
         group.MapPost("/external-logins/challenge/{provider}", ChallengeAsync)
@@ -62,7 +64,7 @@ internal static class AccountExternalLoginEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<ExternalLoginInfo>>> ListExternalLoginsAsync(
+    private static async Task<Ok<IReadOnlyList<ExternalLoginInfoResponse>>> ListExternalLoginsAsync(
         HttpContext httpContext,
         [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
@@ -70,7 +72,8 @@ internal static class AccountExternalLoginEndpoints
         string userId = httpContext.User.FindFirst("sub")!.Value;
         IReadOnlyList<ExternalLoginInfo> logins = await externalLoginService
             .GetLoginsAsync(userId, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Ok(logins);
+        return TypedResults.Ok<IReadOnlyList<ExternalLoginInfoResponse>>(
+            logins.Select(IdentityLocalResponseMapper.ToResponse).ToList());
     }
 
     private static Task<Results<Ok, ProblemHttpResult>> ChallengeAsync(

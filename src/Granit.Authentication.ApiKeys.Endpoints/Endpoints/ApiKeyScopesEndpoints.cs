@@ -28,7 +28,7 @@ internal static class ApiKeyScopesEndpoints
         return group;
     }
 
-    private static async Task<Results<NoContent, ProblemHttpResult, NotFound>> UpdateScopesAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> UpdateScopesAsync(
         Guid id,
         ApiKeyUpdateScopesRequest request,
         [FromServices] IApiKeyAdminStore adminStore,
@@ -54,7 +54,7 @@ internal static class ApiKeyScopesEndpoints
 
         if (!updated)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         return TypedResults.NoContent();

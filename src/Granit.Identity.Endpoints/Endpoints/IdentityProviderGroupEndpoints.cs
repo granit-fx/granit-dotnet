@@ -1,3 +1,5 @@
+using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Granit.Identity.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,7 @@ internal static class IdentityProviderGroupEndpoints
             .WithName("GetIdentityProviderGroups")
             .WithSummary("Lists all groups defined in the identity provider.")
             .WithDescription("Returns all groups available in the identity provider, including their hierarchical structure.")
-            .Produces<IReadOnlyList<IdentityGroup>>();
+            .Produces<IReadOnlyList<IdentityGroupResponse>>();
 
         return group;
     }
@@ -29,7 +31,7 @@ internal static class IdentityProviderGroupEndpoints
             .WithName("GetIdentityProviderUserGroups")
             .WithSummary("Lists groups a specific user belongs to.")
             .WithDescription("Returns all groups the specified user is a member of.")
-            .Produces<IReadOnlyList<IdentityGroup>>();
+            .Produces<IReadOnlyList<IdentityGroupResponse>>();
 
         return group;
     }
@@ -51,7 +53,7 @@ internal static class IdentityProviderGroupEndpoints
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityGroup>>> GetGroupsAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityGroupResponse>>> GetGroupsAsync(
         [FromServices] IIdentityGroupManager groupManager,
         CancellationToken cancellationToken)
     {
@@ -59,10 +61,11 @@ internal static class IdentityProviderGroupEndpoints
             .GetGroupsAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(groups);
+        return TypedResults.Ok<IReadOnlyList<IdentityGroupResponse>>(
+            groups.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
-    private static async Task<Ok<IReadOnlyList<IdentityGroup>>> GetUserGroupsAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityGroupResponse>>> GetUserGroupsAsync(
         string userId,
         [FromServices] IIdentityGroupManager groupManager,
         CancellationToken cancellationToken)
@@ -71,7 +74,8 @@ internal static class IdentityProviderGroupEndpoints
             .GetUserGroupsAsync(userId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(groups);
+        return TypedResults.Ok<IReadOnlyList<IdentityGroupResponse>>(
+            groups.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
     private static async Task<NoContent> AddUserToGroupAsync(

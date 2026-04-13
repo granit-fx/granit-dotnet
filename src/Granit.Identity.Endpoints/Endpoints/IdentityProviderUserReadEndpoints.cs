@@ -1,3 +1,5 @@
+using Granit.Identity.Endpoints.Dtos;
+using Granit.Identity.Endpoints.Internal;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,19 +19,19 @@ internal static class IdentityProviderUserReadEndpoints
             .WithName("GetIdentityProviderUsers")
             .WithSummary("Lists users from the identity provider with optional search and pagination.")
             .WithDescription("Queries the identity provider directly (Keycloak, Cognito, etc.) for user records. Supports free-text search and pagination. Unlike the cache endpoints, this always hits the provider.")
-            .Produces<IReadOnlyList<IIdentityUser>>();
+            .Produces<IReadOnlyList<IdentityUserResponse>>();
 
         group.MapGet("/{userId}", GetUserAsync)
             .WithName("GetIdentityProviderUser")
             .WithSummary("Gets a single user by ID from the identity provider.")
             .WithDescription("Fetches a user record directly from the identity provider. Returns 404 if the user does not exist in the provider.")
-            .Produces<IIdentityUser>()
+            .Produces<IdentityUserResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<IIdentityUser>>> GetUsersAsync(
+    private static async Task<Ok<IReadOnlyList<IdentityUserResponse>>> GetUsersAsync(
         [FromServices] IIdentityUserReader userReader,
         [FromQuery] string? search,
         [FromQuery] int? first,
@@ -40,10 +42,11 @@ internal static class IdentityProviderUserReadEndpoints
             .GetUsersAsync(search, first, max, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(users);
+        return TypedResults.Ok<IReadOnlyList<IdentityUserResponse>>(
+            users.Select(IdentityResponseMapper.ToResponse).ToList());
     }
 
-    private static async Task<Results<Ok<IIdentityUser>, NotFound>> GetUserAsync(
+    private static async Task<Results<Ok<IdentityUserResponse>, ProblemHttpResult>> GetUserAsync(
         string userId,
         [FromServices] IIdentityUserReader userReader,
         CancellationToken cancellationToken)
@@ -53,9 +56,9 @@ internal static class IdentityProviderUserReadEndpoints
 
         if (user is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        return TypedResults.Ok(user);
+        return TypedResults.Ok(IdentityResponseMapper.ToResponse(user));
     }
 }

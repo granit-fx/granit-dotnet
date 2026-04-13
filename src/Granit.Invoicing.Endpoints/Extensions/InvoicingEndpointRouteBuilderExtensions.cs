@@ -1,4 +1,6 @@
+using Granit.Invoicing.Domain;
 using Granit.Invoicing.Endpoints.Endpoints;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,6 +19,11 @@ public static class InvoicingEndpointRouteBuilderExtensions
             .WithTags("Invoicing");
 
         group.MapInvoiceEndpoints();
+
+        // Query engine endpoint — paginated, filterable list.
+        // When no tenant context is active, the IQueryableSource disables the
+        // multi-tenant filter so host admin sees all invoices cross-tenant.
+        group.MapGranitGroup("invoices").MapGranitQuery<Invoice>();
 
         return group;
     }

@@ -52,7 +52,7 @@ internal static class ExportDefinitionEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, NotFound> GetFieldsAsync(
+    private static Results<Ok<IReadOnlyList<ExportFieldResponse>>, ProblemHttpResult> GetFieldsAsync(
         string name,
         [FromServices] IServiceProvider serviceProvider)
     {
@@ -60,7 +60,7 @@ internal static class ExportDefinitionEndpoints
             ExportDefinitionResolver.FindByName(serviceProvider, name);
         if (descriptor is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         IReadOnlyList<ExportFieldResponse> fields = descriptor.GetFields()

@@ -42,7 +42,7 @@ internal static class BackgroundJobsWriteEndpoints
         return group;
     }
 
-    private static async Task<Results<NoContent, NotFound>> PauseJobAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> PauseJobAsync(
         string name,
         [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
@@ -54,11 +54,11 @@ internal static class BackgroundJobsWriteEndpoints
         }
         catch (EntityNotFoundException)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
     }
 
-    private static async Task<Results<NoContent, NotFound>> ResumeJobAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> ResumeJobAsync(
         string name,
         [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
@@ -70,11 +70,11 @@ internal static class BackgroundJobsWriteEndpoints
         }
         catch (EntityNotFoundException)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
     }
 
-    private static async Task<Results<Accepted, NotFound>> TriggerJobAsync(
+    private static async Task<Results<Accepted, ProblemHttpResult>> TriggerJobAsync(
         string name,
         [FromServices] IBackgroundJobWriter writer,
         CancellationToken cancellationToken)
@@ -86,7 +86,7 @@ internal static class BackgroundJobsWriteEndpoints
         }
         catch (EntityNotFoundException)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
     }
 }

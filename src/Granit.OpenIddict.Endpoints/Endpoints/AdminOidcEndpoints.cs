@@ -3,6 +3,7 @@ using Granit.Http.Idempotency.Attributes;
 using Granit.OpenIddict.Endpoints.Dtos;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Permissions;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -17,19 +18,19 @@ internal static class AdminOidcEndpoints
     internal static RouteGroupBuilder MapAdminOidcEndpoints(this RouteGroupBuilder group)
     {
         // ──── Applications ────
-        RouteGroupBuilder apps = group.MapGroup("/oidc/applications");
+        RouteGroupBuilder apps = group.MapGranitGroup("/oidc/applications");
 
         apps.MapGet("/", ListApplicationsAsync)
             .WithName("ListOidcApplications")
             .WithSummary("Returns all OIDC applications.")
-            .WithDescription("Returns a paginated list of registered OIDC client applications.")
+            .WithDescription("Returns all registered OIDC client applications with their client ID, display name, type, and tenant association. Applications are either public (SPA, mobile) or confidential (server-side). Use this list to manage the registered clients in the admin panel.")
             .Produces<IReadOnlyList<AdminOidcApplicationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Applications.Read);
 
         apps.MapPost("/", CreateApplicationAsync)
             .WithName("CreateOidcApplication")
             .WithSummary("Creates a new OIDC application.")
-            .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs.")
+            .WithDescription("Registers a new OIDC client with the specified permissions and redirect URIs. For confidential clients, a client secret is generated and returned once in the response. Returns 409 Conflict if a client with the same client ID already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcApplicationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -58,19 +59,19 @@ internal static class AdminOidcEndpoints
             .RequireAuthorization(OpenIddictPermissions.Applications.Rotate);
 
         // ──── Scopes ────
-        RouteGroupBuilder scopes = group.MapGroup("/oidc/scopes");
+        RouteGroupBuilder scopes = group.MapGranitGroup("/oidc/scopes");
 
         scopes.MapGet("/", ListScopesAsync)
             .WithName("ListOidcScopes")
             .WithSummary("Returns all OIDC scopes.")
-            .WithDescription("Returns the list of registered OIDC scopes with their resources.")
+            .WithDescription("Returns all registered OIDC scopes with their name, display name, and associated resources. Scopes define the claims and resources that tokens can grant access to. Use this endpoint to audit which scopes are available for client configuration.")
             .Produces<IReadOnlyList<AdminOidcScopeResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Scopes.Read);
 
         scopes.MapPost("/", CreateScopeAsync)
             .WithName("CreateOidcScope")
             .WithSummary("Creates a new OIDC scope.")
-            .WithDescription("Registers a new scope with the specified name, display name, and resources.")
+            .WithDescription("Registers a new OIDC scope with the specified name, display name, and associated resources. The scope name must be unique. Returns 409 Conflict if a scope with the same name already exists.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<AdminOidcScopeResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -86,19 +87,19 @@ internal static class AdminOidcEndpoints
             .RequireAuthorization(OpenIddictPermissions.Scopes.Manage);
 
         // ──── Authorizations ────
-        RouteGroupBuilder auths = group.MapGroup("/oidc/authorizations");
+        RouteGroupBuilder auths = group.MapGranitGroup("/oidc/authorizations");
 
         auths.MapGet("/", ListAuthorizationsAsync)
             .WithName("ListOidcAuthorizations")
             .WithSummary("Returns OIDC authorizations.")
-            .WithDescription("Returns a paginated list filterable by userId and clientId.")
+            .WithDescription("Returns OIDC authorizations filterable by user ID and client ID. Each authorization represents a user's consent grant to an application. Includes the authorization status (valid, revoked) and type (permanent, ad-hoc).")
             .Produces<IReadOnlyList<AdminOidcAuthorizationResponse>>()
             .RequireAuthorization(OpenIddictPermissions.Authorizations.Read);
 
         auths.MapDelete("/{authorizationId:guid}", RevokeAuthorizationAsync)
             .WithName("RevokeOidcAuthorization")
             .WithSummary("Revokes an OIDC authorization.")
-            .WithDescription("Revokes the authorization and all associated tokens.")
+            .WithDescription("Revokes the authorization and all associated tokens. The user will need to re-authorize on next login. Returns 404 if the authorization does not exist.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -170,7 +171,7 @@ internal static class AdminOidcEndpoints
             new AdminOidcApplicationResponse(clientId, displayName, type, tenantId));
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeleteApplicationAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeleteApplicationAsync(
         string clientId,
         [FromServices] IOpenIddictApplicationManager applicationManager,
         CancellationToken cancellationToken)
@@ -178,7 +179,7 @@ internal static class AdminOidcEndpoints
         object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
         if (app is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await applicationManager.DeleteAsync(app, cancellationToken).ConfigureAwait(false);
@@ -186,7 +187,7 @@ internal static class AdminOidcEndpoints
     }
 
 #pragma warning disable GRSEC003 // Secret generation and rotation logic, not a stored secret
-    private static async Task<Results<Ok<AdminOidcRotateSecretResponse>, NotFound>> RotateSecretAsync(
+    private static async Task<Results<Ok<AdminOidcRotateSecretResponse>, ProblemHttpResult>> RotateSecretAsync(
         string clientId,
         [FromServices] IOpenIddictApplicationManager applicationManager,
         CancellationToken cancellationToken)
@@ -194,7 +195,7 @@ internal static class AdminOidcEndpoints
         object? app = await applicationManager.FindByClientIdAsync(clientId, cancellationToken).ConfigureAwait(false);
         if (app is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         // Generate a cryptographically random 256-bit secret
@@ -255,7 +256,7 @@ internal static class AdminOidcEndpoints
             new AdminOidcScopeResponse(name, displayName, description));
     }
 
-    private static async Task<Results<NoContent, NotFound>> DeleteScopeAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeleteScopeAsync(
         string scopeName,
         [FromServices] IOpenIddictScopeManager scopeManager,
         CancellationToken cancellationToken)
@@ -263,7 +264,7 @@ internal static class AdminOidcEndpoints
         object? scope = await scopeManager.FindByNameAsync(scopeName, cancellationToken).ConfigureAwait(false);
         if (scope is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         await scopeManager.DeleteAsync(scope, cancellationToken).ConfigureAwait(false);
@@ -293,7 +294,7 @@ internal static class AdminOidcEndpoints
         return TypedResults.Ok<IReadOnlyList<AdminOidcAuthorizationResponse>>(results);
     }
 
-    private static async Task<Results<NoContent, NotFound>> RevokeAuthorizationAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RevokeAuthorizationAsync(
         Guid authorizationId,
         [FromServices] IOpenIddictAuthorizationManager authorizationManager,
         [FromServices] IOpenIddictTokenManager tokenManager,
@@ -304,7 +305,7 @@ internal static class AdminOidcEndpoints
 
         if (auth is null)
         {
-            return TypedResults.NotFound();
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
         // Revoke all tokens associated with this authorization

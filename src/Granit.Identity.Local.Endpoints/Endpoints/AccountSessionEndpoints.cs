@@ -1,3 +1,5 @@
+using Granit.Identity.Local.Endpoints.Dtos;
+using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Extensions;
 using Granit.Identity.Local.Services;
 using Microsoft.AspNetCore.Builder;
@@ -29,7 +31,7 @@ internal static class AccountSessionEndpoints
                 "Reads the impersonator_id claim from the current (impersonated) token "
                 + "and issues a fresh token set for the original admin user. "
                 + "Returns 400 if the current token is not an impersonation token.")
-            .Produces<ImpersonationResult>()
+            .Produces<ImpersonationResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization();
 
@@ -69,7 +71,7 @@ internal static class AccountSessionEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<Ok<ImpersonationResult>, ProblemHttpResult>> BackToImpersonatorAsync(
+    private static async Task<Results<Ok<ImpersonationResponse>, ProblemHttpResult>> BackToImpersonatorAsync(
         HttpContext httpContext,
         [FromServices] IImpersonationService impersonationService,
         CancellationToken cancellationToken = default)
@@ -86,6 +88,6 @@ internal static class AccountSessionEndpoints
             .BackToImpersonatorAsync(impersonatorId, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(result);
+        return TypedResults.Ok(IdentityLocalResponseMapper.ToResponse(result));
     }
 }
