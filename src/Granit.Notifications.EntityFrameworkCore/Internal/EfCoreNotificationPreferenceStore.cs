@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Persistence.EntityFrameworkCore;
@@ -10,8 +11,9 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <see cref="INotificationPreferenceWriter"/> backed by PostgreSQL.
 /// </summary>
 internal sealed class EfCoreNotificationPreferenceStore(
-    IDbContextFactory<NotificationsDbContext> contextFactory)
-    : EfStoreBase<NotificationPreference, NotificationsDbContext>(contextFactory), INotificationPreferenceReader, INotificationPreferenceWriter
+    IDbContextFactory<NotificationsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<NotificationPreference, NotificationsDbContext>(contextFactory, currentTenant), INotificationPreferenceReader, INotificationPreferenceWriter
 {
     /// <inheritdoc/>
     public Task<IReadOnlyList<NotificationPreference>> GetListAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>

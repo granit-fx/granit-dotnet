@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
@@ -19,9 +20,10 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfWebhookDeliveryStore(
     IDbContextFactory<WebhooksDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     IClock clock,
     IGuidGenerator guidGenerator)
-    : EfStoreBase<WebhookDeliveryAttempt, WebhooksDbContext>(contextFactory),
+    : EfStoreBase<WebhookDeliveryAttempt, WebhooksDbContext>(contextFactory, currentTenant),
       IWebhookDeliveryWriter, IWebhookDeliveryReader
 {
     public Task<WebhookDeliveryAttempt?> FindByDeliveryIdAsync(

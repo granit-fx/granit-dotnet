@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Subscriptions.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -5,8 +6,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Subscriptions.EntityFrameworkCore.Internal;
 
 internal sealed class EfSubscriptionWriter(
-    IDbContextFactory<SubscriptionsDbContext> contextFactory)
-    : EfStoreBase<Subscription, SubscriptionsDbContext>(contextFactory),
+    IDbContextFactory<SubscriptionsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<Subscription, SubscriptionsDbContext>(contextFactory, currentTenant),
       ISubscriptionWriter
 {
     Task ISubscriptionWriter.AddAsync(Subscription subscription, CancellationToken cancellationToken) =>

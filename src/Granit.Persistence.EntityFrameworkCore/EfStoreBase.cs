@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Granit.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Specification;
 using Granit.QueryEngine;
@@ -21,14 +22,52 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// Each method creates and disposes its own <typeparamref name="TContext"/> via the factory,
 /// ensuring thread-safe concurrent access and fresh query filter evaluation per operation.
 /// </para>
+/// <para>
+/// <b>Host context bypass:</b> When <paramref name="currentTenant"/> is provided and no
+/// tenant is active (<see cref="ICurrentTenant.IsAvailable"/> is <c>false</c>), the
+/// <see cref="GranitFilterNames.MultiTenant"/> named query filter is bypassed on all read
+/// operations so the caller sees entities across all tenants. This is used for host-level
+/// administration endpoints protected by <c>RequireHostContextEndpointFilter</c>.
+/// All other filters (soft-delete, GDPR, active) remain active.
+/// </para>
 /// </remarks>
 /// <typeparam name="TEntity">The entity type (must inherit <see cref="Entity"/>).</typeparam>
 /// <typeparam name="TContext">The isolated <see cref="DbContext"/> type.</typeparam>
+/// <param name="contextFactory">The factory for creating isolated <typeparamref name="TContext"/> instances.</param>
+/// <param name="currentTenant">
+/// Optional tenant context. When provided for <see cref="IMultiTenant"/> entities, enables
+/// automatic host-context bypass of the multi-tenant query filter. Pass <c>null</c> (or omit)
+/// to keep the default filtering behavior.
+/// </param>
 public abstract class EfStoreBase<TEntity, TContext>(
-    IDbContextFactory<TContext> contextFactory)
+    IDbContextFactory<TContext> contextFactory,
+    ICurrentTenant? currentTenant = null)
     where TEntity : Entity
     where TContext : DbContext
 {
+    // Pre-computed at construction (Scoped = once per request).
+    // True only when TEntity implements IMultiTenant AND no tenant is active.
+    private readonly bool _bypassTenantFilter =
+        typeof(IMultiTenant).IsAssignableFrom(typeof(TEntity))
+        && currentTenant is { IsAvailable: false };
+
+    // ── Query helper ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the base queryable for <typeparamref name="TEntity"/>.
+    /// In host context (no active tenant), the <see cref="GranitFilterNames.MultiTenant"/>
+    /// named query filter is bypassed so all entities are visible cross-tenant.
+    /// All other filters (soft-delete, GDPR, active) remain active.
+    /// </summary>
+    /// <remarks>
+    /// This method is safe to call in any context — when a tenant is active, it returns
+    /// the standard <c>DbSet</c> with all filters applied.
+    /// </remarks>
+    protected IQueryable<TEntity> Query(TContext db) =>
+        _bypassTenantFilter
+            ? db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            : db.Set<TEntity>();
+
     // ── Read helpers ────────────────────────────────────────────────────
 
     /// <summary>
@@ -46,7 +85,7 @@ public abstract class EfStoreBase<TEntity, TContext>(
         CancellationToken ct = default)
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
-        return await db.Set<TEntity>()
+        return await Query(db)
             .FirstOrDefaultAsync(e => e.Id == id, ct).ConfigureAwait(false);
     }
 
@@ -56,7 +95,7 @@ public abstract class EfStoreBase<TEntity, TContext>(
         CancellationToken ct = default)
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
-        return await db.Set<TEntity>()
+        return await Query(db)
             .FirstOrDefaultAsync(predicate, ct).ConfigureAwait(false);
     }
 
@@ -67,7 +106,7 @@ public abstract class EfStoreBase<TEntity, TContext>(
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await SpecificationEvaluator
-            .Apply(db.Set<TEntity>().AsQueryable(), spec)
+            .Apply(Query(db), spec)
             .ToListAsync(ct).ConfigureAwait(false);
     }
 
@@ -80,7 +119,7 @@ public abstract class EfStoreBase<TEntity, TContext>(
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return await SpecificationEvaluator
-            .Apply(db.Set<TEntity>().AsQueryable(), spec)
+            .Apply(Query(db), spec)
             .ToPagedResultAsync(page, pageSize, ct).ConfigureAwait(false);
     }
 
@@ -91,8 +130,8 @@ public abstract class EfStoreBase<TEntity, TContext>(
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
         return predicate is null
-            ? await db.Set<TEntity>().CountAsync(ct).ConfigureAwait(false)
-            : await db.Set<TEntity>().CountAsync(predicate, ct).ConfigureAwait(false);
+            ? await Query(db).CountAsync(ct).ConfigureAwait(false)
+            : await Query(db).CountAsync(predicate, ct).ConfigureAwait(false);
     }
 
     /// <summary>Checks whether any entity matches the predicate.</summary>
@@ -101,7 +140,7 @@ public abstract class EfStoreBase<TEntity, TContext>(
         CancellationToken ct = default)
     {
         await using TContext db = await contextFactory.CreateDbContextAsync(ct).ConfigureAwait(false);
-        return await db.Set<TEntity>().AnyAsync(predicate, ct).ConfigureAwait(false);
+        return await Query(db).AnyAsync(predicate, ct).ConfigureAwait(false);
     }
 
     // ── Full DbContext access (complex queries, Include, joins) ────────

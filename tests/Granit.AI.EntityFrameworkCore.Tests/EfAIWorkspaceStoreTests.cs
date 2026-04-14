@@ -1,7 +1,9 @@
 using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Granit.AI.Workspaces;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 
 namespace Granit.AI.EntityFrameworkCore.Tests;
@@ -18,7 +20,7 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
             .Options;
 
         _factory = new TestDbContextFactory(options);
-        _store = new EfAIWorkspaceStore(_factory);
+        _store = new EfAIWorkspaceStore(_factory, Substitute.For<ICurrentTenant>());
     }
 
     public async ValueTask DisposeAsync()

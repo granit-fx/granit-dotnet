@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using Granit.Domain.ValueObjects;
 using Granit.Exceptions;
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
@@ -17,10 +18,11 @@ namespace Granit.Webhooks.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfWebhookSubscriptionStore(
     IDbContextFactory<WebhooksDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     IGuidGenerator guidGenerator,
     IWebhookSecretProtector secretProtector,
     IClock clock)
-    : EfStoreBase<WebhookSubscription, WebhooksDbContext>(contextFactory),
+    : EfStoreBase<WebhookSubscription, WebhooksDbContext>(contextFactory, currentTenant),
       IWebhookSubscriptionReader, IWebhookSubscriptionWriter
 {
     /// <inheritdoc/>

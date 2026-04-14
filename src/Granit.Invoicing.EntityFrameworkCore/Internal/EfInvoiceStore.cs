@@ -1,5 +1,6 @@
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Invoicing.EntityFrameworkCore.Internal;
 
 internal sealed class EfInvoiceStore(
-    IDbContextFactory<InvoicingDbContext> contextFactory)
-    : EfStoreBase<Invoice, InvoicingDbContext>(contextFactory),
+    IDbContextFactory<InvoicingDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<Invoice, InvoicingDbContext>(contextFactory, currentTenant),
       IInvoiceReader, IInvoiceWriter
 {
     public Task<Invoice?> GetByIdAsync(InvoiceId id, CancellationToken cancellationToken = default) =>

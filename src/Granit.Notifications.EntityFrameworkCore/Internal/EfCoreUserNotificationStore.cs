@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Persistence;
@@ -13,8 +14,9 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <see cref="IUserNotificationWriter"/> backed by PostgreSQL.
 /// </summary>
 internal sealed class EfCoreUserNotificationStore(
-    IDbContextFactory<NotificationsDbContext> contextFactory)
-    : EfStoreBase<UserNotification, NotificationsDbContext>(contextFactory), IUserNotificationReader, IUserNotificationWriter
+    IDbContextFactory<NotificationsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<UserNotification, NotificationsDbContext>(contextFactory, currentTenant), IUserNotificationReader, IUserNotificationWriter
 {
     /// <inheritdoc/>
     public Task InsertAsync(UserNotification notification, CancellationToken cancellationToken = default) =>
