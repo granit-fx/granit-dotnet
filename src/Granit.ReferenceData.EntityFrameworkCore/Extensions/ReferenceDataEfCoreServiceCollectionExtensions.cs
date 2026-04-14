@@ -50,9 +50,15 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
 
         // Register IQueryableSource and QueryDefinition for QueryEngine integration
+        // Global scope: resolve TDbContext directly — the scoped registration
+        // falls back to SharedDatabase when no tenant is active (host context).
+        // Tenant scope: resolve via IDbContextFactory to preserve fail-fast when
+        // no tenant is active (defense in depth — middleware should reject first).
         services.TryAddScoped<IQueryableSource<TEntity>>(sp =>
             new ReferenceDataQueryableSource<TEntity, TDbContext>(
-                sp.GetRequiredService<IDbContextFactory<TDbContext>>(),
+                scope == ReferenceDataScope.Global
+                    ? sp.GetRequiredService<TDbContext>()
+                    : sp.GetRequiredService<IDbContextFactory<TDbContext>>().CreateDbContext(),
                 scope));
 
         services.TryAddSingleton<QueryDefinition<TEntity>>(

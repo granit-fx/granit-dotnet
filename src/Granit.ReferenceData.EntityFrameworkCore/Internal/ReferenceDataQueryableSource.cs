@@ -10,17 +10,15 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 /// Applies scope-aware tenant filtering identical to <see cref="EfCoreReferenceDataStore{TEntity,TDbContext}"/>.
 /// </summary>
 internal sealed class ReferenceDataQueryableSource<TEntity, TDbContext>(
-    IDbContextFactory<TDbContext> contextFactory,
+    TDbContext context,
     ReferenceDataScope scope) : IQueryableSource<TEntity>
     where TEntity : ReferenceDataEntity
     where TDbContext : DbContext
 {
-    private readonly TDbContext _context = contextFactory.CreateDbContext();
-
     /// <inheritdoc/>
     public IQueryable<TEntity> GetQueryable()
     {
-        IQueryable<TEntity> queryable = _context.Set<TEntity>().AsNoTracking();
+        IQueryable<TEntity> queryable = context.Set<TEntity>().AsNoTracking();
 
         if (scope == ReferenceDataScope.Global)
         {

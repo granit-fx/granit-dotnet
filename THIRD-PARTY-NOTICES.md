@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-13
+Dernière mise à jour : 2026-04-14
 
 ---
 
@@ -109,7 +109,7 @@ Dernière mise à jour : 2026-04-13
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | GoCardless | 7.11.2 | Copyright (c) 2017 GoCardless |
 | FluentValidation.DependencyInjectionExtensions | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
-| Google.Cloud.Kms.V1 | 3.23.0 | Copyright (c) Google LLC |
+| Google.Cloud.Kms.V1 | 3.24.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | Magick.NET-Q8-AnyCPU | 14.12.0 | Copyright 2013-2026 Dirk Lemstra |
