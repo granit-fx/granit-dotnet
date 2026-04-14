@@ -18,5 +18,9 @@ internal sealed class SubscriptionSeatConfiguration : IEntityTypeConfiguration<S
 
         builder.HasIndex(e => e.UserId)
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}seats_user_id");
+
+        builder.HasIndex("SubscriptionId", nameof(SubscriptionSeat.UserId))
+            .IsUnique()
+            .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}seats_subscription_user_unique");
     }
 }
