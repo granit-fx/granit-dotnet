@@ -36430,6 +36430,12 @@
           "kind": "method",
           "signature": "GetActiveByPlanAsync(PlanId planId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Subscription>>"
+        },
+        {
+          "name": "GetPastDueForTenantAsync",
+          "kind": "method",
+          "signature": "GetPastDueForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Subscription?>"
         }
       ]
     },
@@ -36782,12 +36788,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Wolverine",
       "file": "src/Granit.Subscriptions.Wolverine/Handlers/PaymentFailedHandler.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(PaymentFailedEto eto, IDunningService dunningService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(PaymentFailedEto eto, IDunningService dunningService, ICurrentTenant currentTenant, ILogger<PaymentFailedHandler> logger, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

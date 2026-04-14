@@ -34,4 +34,7 @@ public interface ISubscriptionReader
     Task<IReadOnlyList<Subscription>> GetActiveByPlanAsync(
         PlanId planId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Returns the PastDue subscription for a tenant, or <c>null</c> if none exists.</summary>
+    Task<Subscription?> GetPastDueForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
 }

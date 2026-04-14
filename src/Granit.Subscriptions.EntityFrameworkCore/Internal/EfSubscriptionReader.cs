@@ -60,4 +60,9 @@ internal sealed class EfSubscriptionReader(
                 s.PlanId == planId &&
                 (s.Status == SubscriptionStatus.Active || s.Status == SubscriptionStatus.Trial)),
             cancellationToken);
+
+    public Task<Subscription?> GetPastDueForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
+        FirstOrDefaultAsync(
+            s => s.TenantId == tenantId && s.Status == SubscriptionStatus.PastDue,
+            cancellationToken);
 }
