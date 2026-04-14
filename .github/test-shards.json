@@ -158,6 +158,7 @@
         "tests/Granit.MultiTenancy.Endpoints.Tests",
         "tests/Granit.MultiTenancy.EntityFrameworkCore.Tests",
         "tests/Granit.MultiTenancy.Tests",
+        "tests/Granit.MultiTenancy.Wolverine.Tests",
         "tests/Granit.Notifications.Brevo.Tests",
         "tests/Granit.Notifications.Email.AwsSes.Tests",
         "tests/Granit.Notifications.Email.AzureCommunicationServices.Tests",

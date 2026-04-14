@@ -81,4 +81,43 @@ public sealed class PersistenceHostingHostApplicationBuilderExtensionsTests
         GranitMigrateOptions options = sp.GetRequiredService<GranitMigrateOptions>();
         options.SeedOnStartup.ShouldBeFalse();
     }
+
+    [Fact]
+    public void AddGranitMigrateSupport_RegistersTenantProvisioner()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+
+        builder.AddGranitMigrateSupport();
+
+        builder.Services.ShouldContain(
+            d => d.ServiceType == typeof(ITenantProvisioner));
+    }
+
+    [Fact]
+    public void AddGranitMigrateSupport_TenantProvisioner_IsSingleton()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+
+        builder.AddGranitMigrateSupport();
+
+        ServiceDescriptor descriptor = builder.Services
+            .First(d => d.ServiceType == typeof(ITenantProvisioner));
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddGranitMigrateSupport_CustomProvisioner_IsNotOverridden()
+    {
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+
+        // Pre-register a custom provisioner
+        builder.Services.AddSingleton<ITenantProvisioner>(
+            NSubstitute.Substitute.For<ITenantProvisioner>());
+
+        builder.AddGranitMigrateSupport();
+
+        // TryAddSingleton should not override the custom registration
+        builder.Services.Count(d => d.ServiceType == typeof(ITenantProvisioner))
+            .ShouldBe(1);
+    }
 }

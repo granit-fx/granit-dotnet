@@ -65,6 +65,10 @@ internal sealed partial class DataSeeder(
     }
 
     /// <inheritdoc/>
+    public Task SeedTenantAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
+        SeedTenantContributorsAsync(new DataSeedContext(tenantId), cancellationToken, tenantId);
+
+    /// <inheritdoc/>
     public async Task SeedAsync(DataSeedContext context, CancellationToken cancellationToken = default)
     {
         await SeedHostAsync(context, cancellationToken).ConfigureAwait(false);

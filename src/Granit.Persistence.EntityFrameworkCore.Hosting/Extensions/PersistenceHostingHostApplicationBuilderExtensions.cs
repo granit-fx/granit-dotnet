@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore.Hosting;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Internal;
 using Granit.Persistence.EntityFrameworkCore.Hosting.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +34,7 @@ public static class PersistenceHostingHostApplicationBuilderExtensions
         builder.Services.AddSingleton(options);
         builder.Services.TryAddSingleton<IGranitMigrationLock, NullMigrationLock>();
         builder.Services.TryAddSingleton<IGranitMigrationRunner, GranitMigrationRunner>();
+        builder.Services.TryAddSingleton<ITenantProvisioner, AutoTenantProvisioner>();
 
         // Disable DataSeedingHostedService by default when Hosting is loaded.
         // Re-enabled only if SeedOnStartup = true (dev mode).

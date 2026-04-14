@@ -46,6 +46,18 @@ public interface IDataSeeder
     Task SeedTenantsAsync(DataSeedContext context, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Executes tenant contributors for a single tenant (with tenant context activated).
+    /// </summary>
+    /// <remarks>
+    /// Use this method when provisioning a newly created tenant at runtime — it seeds
+    /// data for that specific tenant without iterating all existing tenants.
+    /// </remarks>
+    /// <param name="tenantId">The identifier of the tenant to seed.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task SeedTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Convenience method that calls <see cref="SeedHostAsync"/> followed by <see cref="SeedTenantsAsync"/>.
     /// </summary>
     /// <param name="context">Seeding context.</param>
