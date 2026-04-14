@@ -1,3 +1,4 @@
+using Granit.Metering;
 using Granit.Modularity;
 using Granit.Scheduling;
 using Granit.Subscriptions.Extensions;
@@ -15,6 +16,7 @@ namespace Granit.Subscriptions;
 /// a concrete <see cref="ISubscriptionProvider"/> implementation.
 /// </remarks>
 [DependsOn(
+    typeof(GranitMeteringModule),
     typeof(GranitSchedulingModule),
     typeof(GranitTimingModule),
     typeof(GranitWorkflowModule))]

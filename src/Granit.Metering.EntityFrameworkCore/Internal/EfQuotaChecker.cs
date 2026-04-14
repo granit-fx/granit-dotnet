@@ -1,19 +1,22 @@
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
+using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Metering.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IQuotaChecker"/>.
-/// Reads current billing-period usage from aggregates and quota limits
-/// from <see cref="IQuotaLimitProvider"/>.
+/// Reads current billing-period usage from hourly aggregates, scoped to the
+/// tenant's actual billing period via <see cref="IBillingPeriodProvider"/>.
 /// </summary>
 internal sealed class EfQuotaChecker(
     IDbContextFactory<MeteringDbContext> contextFactory,
     IMeterDefinitionReader definitionReader,
-    IQuotaLimitProvider quotaLimitProvider) : IQuotaChecker
+    IQuotaLimitProvider quotaLimitProvider,
+    IBillingPeriodProvider billingPeriodProvider,
+    IClock clock) : IQuotaChecker
 {
     public async Task<QuotaStatus> CheckAsync(
         Guid tenantId,
@@ -28,18 +31,24 @@ internal sealed class EfQuotaChecker(
             return QuotaStatus.Unlimited("unknown", 0);
         }
 
+        BillingPeriodBoundaries? period = await billingPeriodProvider
+            .GetCurrentPeriodAsync(tenantId, cancellationToken).ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+        DateTimeOffset start = period?.Start ?? new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, now.Offset);
+        DateTimeOffset end = period?.End ?? start.AddMonths(1);
+
         await using MeteringDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        UsageAggregate? currentAggregate = await db.UsageAggregates
+        decimal currentUsage = await db.UsageAggregates
             .Where(a => a.TenantId == tenantId
                 && a.MeterDefinitionId == meterId.Value
-                && a.Period == AggregationPeriod.BillingPeriod)
-            .OrderByDescending(a => a.PeriodStart)
-            .FirstOrDefaultAsync(cancellationToken)
+                && a.Period == AggregationPeriod.Hourly
+                && a.PeriodStart >= start
+                && a.PeriodEnd <= end)
+            .SumAsync(a => a.AggregatedValue, cancellationToken)
             .ConfigureAwait(false);
-
-        decimal currentUsage = currentAggregate?.AggregatedValue ?? 0;
 
         decimal? limit = await quotaLimitProvider
             .GetLimitAsync(tenantId, meterId, cancellationToken).ConfigureAwait(false);

@@ -1794,6 +1794,7 @@
         "Granit",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
+        "Granit.Metering",
         "Granit.Scheduling",
         "Granit.Timing",
         "Granit.Workflow"
@@ -21314,6 +21315,15 @@
       ]
     },
     {
+      "name": "BillingPeriodBoundaries",
+      "fqn": "Granit.Metering.BillingPeriodBoundaries",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IBillingPeriodProvider.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "MeteringMetrics",
       "fqn": "Granit.Metering.Diagnostics.MeteringMetrics",
       "kind": "class",
@@ -21728,6 +21738,22 @@
           "kind": "method",
           "signature": "RunAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IBillingPeriodProvider",
+      "fqn": "Granit.Metering.IBillingPeriodProvider",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/IBillingPeriodProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetCurrentPeriodAsync",
+          "kind": "method",
+          "signature": "GetCurrentPeriodAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BillingPeriodBoundaries?>"
         }
       ]
     },
@@ -36039,7 +36065,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitSubscriptions",
@@ -36071,7 +36097,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/GranitSubscriptionsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
