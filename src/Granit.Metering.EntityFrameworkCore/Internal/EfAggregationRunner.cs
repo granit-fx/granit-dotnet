@@ -28,7 +28,13 @@ internal sealed partial class EfAggregationRunner(
         // Disable tenant filter for the entire aggregation flow: the job runs
         // without tenant context and must enumerate definitions across all tenants,
         // then query each tenant's events with explicit TenantId predicates.
-        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
+        if (dataFilter is null)
+        {
+            Log.DataFilterNotAvailable(logger);
+            return;
+        }
+
+        using IDisposable _ = dataFilter.Disable<IMultiTenant>();
 
         IReadOnlyList<MeterDefinition> definitions = await definitionReader
             .GetActiveAsync(cancellationToken).ConfigureAwait(false);
@@ -128,6 +134,10 @@ internal sealed partial class EfAggregationRunner(
 
     private static partial class Log
     {
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "IDataFilter is not available, aggregation skipped — register GranitPersistenceModule")]
+        public static partial void DataFilterNotAvailable(ILogger logger);
+
         [LoggerMessage(Level = LogLevel.Debug,
             Message = "Aggregation batch completed for meter '{MeterName}': {EventCount} events")]
         public static partial void AggregationBatchCompleted(

@@ -2,6 +2,7 @@ using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
 using Granit.Subscriptions.Endpoints.Permissions;
+using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -24,7 +25,7 @@ internal static class PlanReadEndpoints
         group.MapGet("/plans/{id:guid}", GetPlanByIdAsync)
             .WithName("GetPlanById")
             .WithSummary("Returns a plan by ID.")
-            .WithDescription("Returns the full plan details including prices. Works for any lifecycle status (Draft, Published, Archived).")
+            .WithDescription("Returns the full plan details including prices for Published and Archived plans. Draft plans are not visible to Plans.Read holders and return 404.")
             .Produces<PlanResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(SubscriptionsPermissions.Plans.Read);
@@ -54,6 +55,11 @@ internal static class PlanReadEndpoints
             .GetByIdAsync(PlanId.Create(id), cancellationToken).ConfigureAwait(false);
 
         if (plan is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (plan.LifecycleStatus == WorkflowLifecycleStatus.Draft)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }

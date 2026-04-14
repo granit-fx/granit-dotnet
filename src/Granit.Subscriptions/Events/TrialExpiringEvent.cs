@@ -6,4 +6,5 @@ namespace Granit.Subscriptions.Events;
 public sealed record TrialExpiringEvent(
     Guid SubscriptionId,
     Guid PlanId,
+    Guid TenantId,
     int DaysRemaining) : IDomainEvent;

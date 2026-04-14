@@ -14,7 +14,6 @@ public sealed record SubscriptionResponse(
     bool CancelAtPeriodEnd,
     DateTimeOffset? CancelledAt,
     string? CancellationReason,
-    int DunningAttempt,
     int SeatCount,
     Guid? PlanPriceId = null)
 {
@@ -29,7 +28,6 @@ public sealed record SubscriptionResponse(
         sub.CancelAtPeriodEnd,
         sub.CancelledAt,
         sub.CancellationReason,
-        sub.DunningAttempt,
         sub.Seats.Count,
         sub.PlanPriceId);
 }
