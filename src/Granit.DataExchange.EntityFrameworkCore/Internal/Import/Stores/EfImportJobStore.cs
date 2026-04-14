@@ -1,5 +1,6 @@
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -13,8 +14,9 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 /// Performs CRUD operations on <see cref="ImportJob"/> via <see cref="DataExchangeDbContext"/>.
 /// </summary>
 internal sealed class EfImportJobStore(
-    IDbContextFactory<DataExchangeDbContext> contextFactory)
-    : EfStoreBase<ImportJob, DataExchangeDbContext>(contextFactory), IImportJobReader, IImportJobWriter
+    IDbContextFactory<DataExchangeDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<ImportJob, DataExchangeDbContext>(contextFactory, currentTenant), IImportJobReader, IImportJobWriter
 {
     /// <inheritdoc/>
     public Task<ImportJob?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>

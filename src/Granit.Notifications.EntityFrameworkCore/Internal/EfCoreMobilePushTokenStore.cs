@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Notifications.EntityFrameworkCore.Entities;
 using Granit.Notifications.MobilePush;
 using Granit.Persistence.EntityFrameworkCore;
@@ -9,8 +10,9 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="IMobilePushTokenReader"/> and <see cref="IMobilePushTokenWriter"/>.
 /// </summary>
 internal sealed class EfCoreMobilePushTokenStore(
-    IDbContextFactory<NotificationsDbContext> contextFactory)
-    : EfStoreBase<MobilePushTokenEntity, NotificationsDbContext>(contextFactory), IMobilePushTokenReader, IMobilePushTokenWriter
+    IDbContextFactory<NotificationsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<MobilePushTokenEntity, NotificationsDbContext>(contextFactory, currentTenant), IMobilePushTokenReader, IMobilePushTokenWriter
 {
     /// <inheritdoc />
     public Task<IReadOnlyList<MobilePushTokenInfo>> GetTokensAsync(

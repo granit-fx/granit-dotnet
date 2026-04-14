@@ -1,4 +1,5 @@
 using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,8 +17,9 @@ namespace Granit.Localization.EntityFrameworkCore.Internal;
 /// <see cref="LocalizationDbContext"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfCoreLocalizationOverrideStore(
-    IDbContextFactory<LocalizationDbContext> contextFactory)
-    : EfStoreBase<LocalizationOverride, LocalizationDbContext>(contextFactory), ILocalizationOverrideStoreReader, ILocalizationOverrideStoreWriter
+    IDbContextFactory<LocalizationDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<LocalizationOverride, LocalizationDbContext>(contextFactory, currentTenant), ILocalizationOverrideStoreReader, ILocalizationOverrideStoreWriter
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyDictionary<string, string>> GetOverridesAsync(

@@ -1,4 +1,5 @@
 using Granit.BlobStorage.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -15,8 +16,9 @@ namespace Granit.BlobStorage.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/>, making it safe for concurrent request handling.
 /// </remarks>
 internal sealed class EfBlobDescriptorStore(
-    IDbContextFactory<BlobStorageDbContext> contextFactory)
-    : EfStoreBase<BlobDescriptor, BlobStorageDbContext>(contextFactory), IBlobDescriptorStore
+    IDbContextFactory<BlobStorageDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<BlobDescriptor, BlobStorageDbContext>(contextFactory, currentTenant), IBlobDescriptorStore
 {
     /// <inheritdoc/>
     public Task<BlobDescriptor?> FindAsync(

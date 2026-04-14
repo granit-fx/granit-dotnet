@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Payments.Domain;
 using Granit.Payments.Domain.ValueObjects;
 using Granit.Persistence;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Payments.EntityFrameworkCore.Internal;
 
 internal sealed class EfPaymentTransactionStore(
-    IDbContextFactory<PaymentsDbContext> contextFactory)
-    : EfStoreBase<PaymentTransaction, PaymentsDbContext>(contextFactory),
+    IDbContextFactory<PaymentsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<PaymentTransaction, PaymentsDbContext>(contextFactory, currentTenant),
       IPaymentTransactionReader, IPaymentTransactionWriter
 {
     public Task<PaymentTransaction?> GetByIdAsync(TransactionId id, CancellationToken cancellationToken = default) =>

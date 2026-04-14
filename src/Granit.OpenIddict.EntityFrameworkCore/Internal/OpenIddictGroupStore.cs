@@ -1,6 +1,7 @@
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Services;
 using Granit.Identity.Models;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,8 +11,9 @@ namespace Granit.OpenIddict.EntityFrameworkCore.Internal;
 /// <see cref="ILocalIdentityGroupStore"/> implementation backed by <see cref="OpenIddictDbContext"/>.
 /// </summary>
 internal sealed class OpenIddictGroupStore(
-    IDbContextFactory<OpenIddictDbContext> dbFactory)
-    : EfStoreBase<GranitUserGroup, OpenIddictDbContext>(dbFactory), ILocalIdentityGroupStore
+    IDbContextFactory<OpenIddictDbContext> dbFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<GranitUserGroup, OpenIddictDbContext>(dbFactory, currentTenant), ILocalIdentityGroupStore
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IdentityGroup>> GetGroupsAsync(CancellationToken cancellationToken = default)

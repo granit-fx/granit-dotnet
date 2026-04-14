@@ -1,5 +1,6 @@
 using Granit.DataFiltering;
 using Granit.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
@@ -9,8 +10,9 @@ namespace Granit.Privacy.EntityFrameworkCore.Internal;
 
 internal sealed class EfLegalDocumentStore(
     IDbContextFactory<PrivacyDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     IDataFilter? dataFilter = null)
-    : EfStoreBase<LegalDocument, PrivacyDbContext>(contextFactory),
+    : EfStoreBase<LegalDocument, PrivacyDbContext>(contextFactory, currentTenant),
       ILegalDocumentReader, ILegalDocumentWriter
 {
     private readonly IDbContextFactory<PrivacyDbContext> _contextFactory = contextFactory;

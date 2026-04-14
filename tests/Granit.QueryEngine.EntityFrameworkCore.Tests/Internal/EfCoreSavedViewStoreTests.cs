@@ -1,7 +1,9 @@
+using Granit.MultiTenancy;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.SavedViews.Domain;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -15,7 +17,7 @@ public sealed class EfCoreSavedViewStoreTests : IAsyncLifetime
     public ValueTask InitializeAsync()
     {
         _factory = new TestQueryEngineDbContextFactory();
-        _store = new EfCoreSavedViewStore(_factory);
+        _store = new EfCoreSavedViewStore(_factory, Substitute.For<ICurrentTenant>());
         return ValueTask.CompletedTask;
     }
 

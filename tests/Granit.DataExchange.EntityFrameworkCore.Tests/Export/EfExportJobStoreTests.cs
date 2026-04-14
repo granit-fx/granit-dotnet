@@ -2,6 +2,8 @@ using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
+using Granit.MultiTenancy;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -126,7 +128,7 @@ public sealed class EfExportJobStoreTests
     private static EfExportJobStore CreateStore(string dbName)
     {
         InMemoryDataExchangeContextFactory factory = new(dbName);
-        return new EfExportJobStore(factory);
+        return new EfExportJobStore(factory, Substitute.For<ICurrentTenant>());
     }
 
     private static ExportJob BuildJob() =>

@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Subscriptions.Domain;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Subscriptions.EntityFrameworkCore.Internal;
 
 internal sealed class EfSubscriptionReader(
-    IDbContextFactory<SubscriptionsDbContext> contextFactory)
-    : EfStoreBase<Subscription, SubscriptionsDbContext>(contextFactory),
+    IDbContextFactory<SubscriptionsDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<Subscription, SubscriptionsDbContext>(contextFactory, currentTenant),
       ISubscriptionReader
 {
     public Task<Subscription?> GetByIdAsync(SubscriptionId id, CancellationToken cancellationToken = default) =>

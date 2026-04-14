@@ -26,7 +26,7 @@ internal sealed class EfCoreTimelineStore(
     ICurrentUserService currentUser,
     IGuidGenerator guidGenerator,
     ICurrentTenant currentTenant)
-    : EfStoreBase<TimelineEntry, TimelineDbContext>(dbContextFactory), ITimelineWriter
+    : EfStoreBase<TimelineEntry, TimelineDbContext>(dbContextFactory, currentTenant), ITimelineWriter
 {
     private readonly AuditContext _audit = new(guidGenerator, clock, currentUser, currentTenant);
 

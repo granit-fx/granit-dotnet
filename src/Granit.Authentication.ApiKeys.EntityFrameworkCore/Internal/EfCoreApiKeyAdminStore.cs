@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,9 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// <see cref="IDbContextFactory{TContext}"/> for safe concurrent access.
 /// </summary>
 internal sealed class EfCoreApiKeyAdminStore(
-    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory)
-    : EfStoreBase<ApiKeyEntry, AuthenticationApiKeysDbContext>(contextFactory), IApiKeyAdminStore
+    IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<ApiKeyEntry, AuthenticationApiKeysDbContext>(contextFactory, currentTenant), IApiKeyAdminStore
 {
     /// <inheritdoc/>
     public new Task<ApiKeyEntry?> FindByIdAsync(Guid id, CancellationToken cancellationToken = default) =>

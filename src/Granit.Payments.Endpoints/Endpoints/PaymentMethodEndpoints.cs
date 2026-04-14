@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -26,7 +27,8 @@ internal static class PaymentMethodEndpoints
                 + "including their type, provider, display label, and default status. "
                 + "Requires the Payments.Methods.Read permission.")
             .Produces<IReadOnlyList<PaymentMethodResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Methods.Read);
+            .RequireAuthorization(PaymentsPermissions.Methods.Read)
+            .AllowHostAccess();
 
         group.MapGet("/methods/available", GetAvailable)
             .WithName("GetAvailablePaymentMethods")
@@ -36,7 +38,8 @@ internal static class PaymentMethodEndpoints
                 + "providers. This includes method types, categories, and display labels as "
                 + "reported by the active payment providers.")
             .Produces<IReadOnlyList<PaymentAvailableMethodResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Methods.Read);
+            .RequireAuthorization(PaymentsPermissions.Methods.Read)
+            .AllowHostAccess();
 
         group.MapPost("/methods", AttachAsync)
             .WithName("AttachPaymentMethod")
