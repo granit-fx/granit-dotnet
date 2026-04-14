@@ -83,7 +83,7 @@ public static class ModuleConfigEndpointExtensions
         RouteHandlerBuilder builder = endpoints
             .MapGet(
                 $"{routePrefix}/config",
-                async ([FromServices] TProvider provider, CancellationToken cancellationToken) =>
+                ([FromServices] TProvider provider, CancellationToken cancellationToken) =>
                     HandleGetConfigAsync(provider, cancellationToken))
             .WithName(endpointName)
             .WithTags(tag)
