@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Invoicing.Domain;
@@ -26,7 +27,8 @@ internal static class InvoiceEndpoints
                 "Returns 404 if the invoice does not exist.")
             .Produces<InvoiceResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(InvoicingPermissions.Invoices.Read);
+            .RequireAuthorization(InvoicingPermissions.Invoices.Read)
+            .AllowHostAccess();
 
         group.MapGet("/invoices/{id:guid}/pdf", DownloadInvoicePdfAsync)
             .WithName("DownloadInvoicePdf")
@@ -36,7 +38,8 @@ internal static class InvoiceEndpoints
                 "Returns 404 if the invoice does not exist.")
             .Produces(StatusCodes.Status200OK, contentType: "application/pdf")
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(InvoicingPermissions.Invoices.Download);
+            .RequireAuthorization(InvoicingPermissions.Invoices.Download)
+            .AllowHostAccess();
 
         group.MapPost("/invoices", CreateInvoiceAsync)
             .WithName("CreateInvoice")

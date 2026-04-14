@@ -1,5 +1,6 @@
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Domain.ValueObjects;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.CustomerBalance.EntityFrameworkCore.Internal;
 
 internal sealed class EfBalanceAccountStore(
-    IDbContextFactory<CustomerBalanceDbContext> contextFactory)
-    : EfStoreBase<BalanceAccount, CustomerBalanceDbContext>(contextFactory),
+    IDbContextFactory<CustomerBalanceDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<BalanceAccount, CustomerBalanceDbContext>(contextFactory, currentTenant),
       IBalanceAccountReader, IBalanceAccountWriter
 {
     private readonly IDbContextFactory<CustomerBalanceDbContext> _contextFactory = contextFactory;

@@ -21,6 +21,7 @@ public sealed class ApiKeysEntityFrameworkCoreServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
+        services.AddSingleton(Substitute.For<ICurrentTenant>());
 
         services.AddGranitApiKeysEntityFrameworkCore(
             options => options.UseSqlite("DataSource=:memory:"));

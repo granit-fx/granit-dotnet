@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
@@ -26,7 +27,8 @@ internal static class TransactionEndpoints
                 + "Each transaction includes its refunds and disputes. "
                 + "Requires the Payments.Transactions.Read permission.")
             .Produces<IReadOnlyList<PaymentTransactionResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Transactions.Read);
+            .RequireAuthorization(PaymentsPermissions.Transactions.Read)
+            .AllowHostAccess();
 
         group.MapGet("/transactions/{id:guid}", GetByIdAsync)
             .WithName("GetPaymentTransaction")
@@ -37,7 +39,8 @@ internal static class TransactionEndpoints
                 + "Returns 404 if the transaction does not exist.")
             .Produces<PaymentTransactionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Transactions.Read);
+            .RequireAuthorization(PaymentsPermissions.Transactions.Read)
+            .AllowHostAccess();
 
         group.MapPost("/charge", ChargeAsync)
             .WithName("InitiatePaymentCharge")

@@ -6,9 +6,11 @@
 // =============================================================================
 
 using System.Text.Json;
+using Granit.MultiTenancy;
 using Granit.Notifications.Domain;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Granit.QueryEngine;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -21,7 +23,7 @@ public sealed class EfCoreUserNotificationStoreTests : IDisposable
 
     public EfCoreUserNotificationStoreTests()
     {
-        _store = new EfCoreUserNotificationStore(_factory);
+        _store = new EfCoreUserNotificationStore(_factory, Substitute.For<ICurrentTenant>());
     }
 
     public void Dispose() => _factory.Dispose();

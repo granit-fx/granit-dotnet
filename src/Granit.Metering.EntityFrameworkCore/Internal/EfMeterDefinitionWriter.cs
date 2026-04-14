@@ -1,12 +1,14 @@
 using Granit.Metering.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Metering.EntityFrameworkCore.Internal;
 
 internal sealed class EfMeterDefinitionWriter(
-    IDbContextFactory<MeteringDbContext> contextFactory)
-    : EfStoreBase<MeterDefinition, MeteringDbContext>(contextFactory),
+    IDbContextFactory<MeteringDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<MeterDefinition, MeteringDbContext>(contextFactory, currentTenant),
       IMeterDefinitionWriter
 {
     Task IMeterDefinitionWriter.AddAsync(MeterDefinition definition, CancellationToken cancellationToken) =>

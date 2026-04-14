@@ -1,7 +1,9 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -15,7 +17,7 @@ public sealed class EfCoreApiKeyAdminStoreTests : IDisposable
     public EfCoreApiKeyAdminStoreTests()
     {
         _factory = TestDbContextFactory.Create();
-        _sut = new EfCoreApiKeyAdminStore(_factory);
+        _sut = new EfCoreApiKeyAdminStore(_factory, Substitute.For<ICurrentTenant>());
     }
 
     public void Dispose() => _factory.Dispose();

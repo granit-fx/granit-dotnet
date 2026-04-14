@@ -1,6 +1,8 @@
 using Granit.Localization.EntityFrameworkCore.Entities;
 using Granit.Localization.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -25,7 +27,7 @@ public sealed class EfCoreLocalizationOverrideStoreTests
     }
 
     private static EfCoreLocalizationOverrideStore CreateStore(string dbName) =>
-        new(new InMemoryContextFactory(dbName));
+        new(new InMemoryContextFactory(dbName), Substitute.For<ICurrentTenant>());
 
     private static async Task SeedAsync(
         string dbName,

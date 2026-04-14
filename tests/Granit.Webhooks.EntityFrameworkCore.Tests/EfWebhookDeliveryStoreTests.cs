@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.EntityFrameworkCore.Internal;
@@ -28,7 +29,7 @@ public sealed class EfWebhookDeliveryStoreTests : IAsyncDisposable
             .Options;
 
         _contextFactory = new TestWebhooksDbContextFactory(_options);
-        _sut = new EfWebhookDeliveryStore(_contextFactory, _clock, new SimpleGuidGenerator());
+        _sut = new EfWebhookDeliveryStore(_contextFactory, Substitute.For<ICurrentTenant>(), _clock, new SimpleGuidGenerator());
     }
 
     public async ValueTask DisposeAsync()
@@ -294,7 +295,7 @@ public sealed class EfWebhookDeliveryStoreDeleteTests : IDisposable
         clock.Now.Returns(_ => new DateTimeOffset(2026, 3, 1, 12, 0, 0, TimeSpan.Zero));
 
         _factory = TestWebhooksSqliteFactory.Create();
-        _sut = new EfWebhookDeliveryStore(_factory, clock, new SimpleGuidGenerator());
+        _sut = new EfWebhookDeliveryStore(_factory, Substitute.For<ICurrentTenant>(), clock, new SimpleGuidGenerator());
     }
 
     public void Dispose() => _factory.Dispose();

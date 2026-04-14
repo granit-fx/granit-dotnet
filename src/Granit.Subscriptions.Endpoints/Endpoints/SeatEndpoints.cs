@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
+using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
@@ -22,6 +23,7 @@ internal static class SeatEndpoints
             .WithSummary("Returns all seat assignments for a subscription.")
             .WithDescription("Lists users assigned to seats on the specified subscription.")
             .Produces<IReadOnlyList<SeatResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(SubscriptionsPermissions.Seats.Read);
 
@@ -31,6 +33,7 @@ internal static class SeatEndpoints
             .WithDescription("Adds a user to the subscription. Fails if the seat limit is reached.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<SeatResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(SubscriptionsPermissions.Seats.Manage);
@@ -41,6 +44,7 @@ internal static class SeatEndpoints
             .WithDescription("Removes the user's seat assignment from the subscription.")
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(SubscriptionsPermissions.Seats.Manage);
 
@@ -50,12 +54,23 @@ internal static class SeatEndpoints
     private static async Task<Results<Ok<IReadOnlyList<SeatResponse>>, ProblemHttpResult>> ListSeatsAsync(
         Guid id,
         [FromServices] ISubscriptionReader reader,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         Subscription? sub = await reader
             .GetByIdAsync(SubscriptionId.Create(id), cancellationToken).ConfigureAwait(false);
 
         if (sub is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (sub.TenantId != currentTenant.Id!.Value)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
@@ -69,14 +84,25 @@ internal static class SeatEndpoints
         SeatAssignRequest request,
         [FromServices] ISubscriptionReader reader,
         [FromServices] ISubscriptionWriter writer,
+        [FromServices] ICurrentTenant currentTenant,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         Subscription? sub = await reader
             .GetByIdAsync(SubscriptionId.Create(id), cancellationToken).ConfigureAwait(false);
 
         if (sub is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (sub.TenantId != currentTenant.Id!.Value)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
@@ -102,12 +128,23 @@ internal static class SeatEndpoints
         Guid userId,
         [FromServices] ISubscriptionReader reader,
         [FromServices] ISubscriptionWriter writer,
+        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         Subscription? sub = await reader
             .GetByIdAsync(SubscriptionId.Create(id), cancellationToken).ConfigureAwait(false);
 
         if (sub is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (sub.TenantId != currentTenant.Id!.Value)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }

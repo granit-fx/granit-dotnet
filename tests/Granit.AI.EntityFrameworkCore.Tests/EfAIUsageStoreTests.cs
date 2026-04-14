@@ -2,8 +2,10 @@ using System.Diagnostics.Metrics;
 using Granit.AI.Diagnostics;
 using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using Shouldly;
 
 namespace Granit.AI.EntityFrameworkCore.Tests;
@@ -26,7 +28,7 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
         AIMetrics metrics = new(_sp.GetRequiredService<IMeterFactory>());
 
         _factory = new TestDbContextFactory(options);
-        _store = new EfAIUsageStore(_factory, metrics);
+        _store = new EfAIUsageStore(_factory, Substitute.For<ICurrentTenant>(), metrics);
     }
 
     public async ValueTask DisposeAsync()

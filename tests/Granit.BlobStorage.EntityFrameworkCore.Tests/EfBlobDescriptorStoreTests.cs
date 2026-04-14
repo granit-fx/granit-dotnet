@@ -51,8 +51,11 @@ public sealed class EfBlobDescriptorStoreTests
         await store.UpdateAsync(u, TestContext.Current.CancellationToken);
     }
 
-    private static EfBlobDescriptorStore CreateStore(string dbName, Guid? tenantId = null) =>
-        new(new InMemoryContextFactory(dbName, MakeTenant(tenantId ?? TenantId)));
+    private static EfBlobDescriptorStore CreateStore(string dbName, Guid? tenantId = null)
+    {
+        ICurrentTenant tenant = MakeTenant(tenantId ?? TenantId);
+        return new(new InMemoryContextFactory(dbName, tenant), tenant);
+    }
 
     private static BlobDescriptor MakeDescriptor(
         Guid? id = null,
@@ -273,7 +276,7 @@ public sealed class EfBlobDescriptorStoreTests
         noTenant.IsAvailable.Returns(false);
         noTenant.Id.Returns((Guid?)null);
         EfBlobDescriptorStore store = new(
-            new InMemoryContextFactory(Guid.NewGuid().ToString(), noTenant));
+            new InMemoryContextFactory(Guid.NewGuid().ToString(), noTenant), noTenant);
 
         BlobDescriptor? result = await store.FindAsync(
             Guid.NewGuid(), TestContext.Current.CancellationToken);

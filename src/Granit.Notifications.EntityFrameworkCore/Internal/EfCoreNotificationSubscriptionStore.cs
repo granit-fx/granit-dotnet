@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Persistence.EntityFrameworkCore;
@@ -12,8 +13,9 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfCoreNotificationSubscriptionStore(
     IDbContextFactory<NotificationsDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     IGuidGenerator guidGenerator)
-    : EfStoreBase<NotificationSubscription, NotificationsDbContext>(contextFactory), INotificationSubscriptionReader, INotificationSubscriptionWriter
+    : EfStoreBase<NotificationSubscription, NotificationsDbContext>(contextFactory, currentTenant), INotificationSubscriptionReader, INotificationSubscriptionWriter
 {
     /// <inheritdoc/>
     public Task SubscribeAsync(string userId, string notificationTypeName, Guid? tenantId, CancellationToken cancellationToken = default) =>
