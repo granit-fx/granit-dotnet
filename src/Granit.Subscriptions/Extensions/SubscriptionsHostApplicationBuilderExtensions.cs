@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Metering;
 using Granit.Subscriptions.Definitions;
 using Granit.Subscriptions.Diagnostics;
 using Granit.Subscriptions.Internal;
@@ -35,6 +36,7 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         builder.Services.TryAddTransient<ISubscriptionProviderSyncService, DefaultSubscriptionProviderSyncService>();
         builder.Services.TryAddTransient<IUsageInvoiceOrchestrator, DefaultUsageInvoiceOrchestrator>();
         builder.Services.TryAddTransient<IBillingCycleInvoiceOrchestrator, DefaultBillingCycleInvoiceOrchestrator>();
+        builder.Services.AddScoped<IBillingPeriodProvider, SubscriptionBillingPeriodProvider>();
         GranitActivitySourceRegistry.Register(SubscriptionsActivitySource.Name);
 
         return builder;

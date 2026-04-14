@@ -24,6 +24,7 @@ public static class MeteringHostApplicationBuilderExtensions
 
         builder.Services.TryAddSingleton<MeteringMetrics>();
         builder.Services.TryAddSingleton<IQuotaLimitProvider, UnlimitedQuotaLimitProvider>();
+        builder.Services.TryAddScoped<IBillingPeriodProvider, CalendarMonthBillingPeriodProvider>();
         GranitActivitySourceRegistry.Register(MeteringActivitySource.Name);
 
         return builder;
