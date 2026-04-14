@@ -5,8 +5,8 @@
       "Microsoft.AspNetCore.SignalR.StackExchangeRedis": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "NxljwAYV+RhXF75p9uoeYevn6JsAck0aA0KItFOdaVOy/N9mUiTMfnh7oCewegB0q3hAyYG2nRaS9RwTi9XGqA==",
+        "resolved": "10.0.6",
+        "contentHash": "ZFVMwxhszVfkdT3uPM8x0eFL4AbO3hZTjpxrbcvbzOhyUV1sa/quys2fnXZDFUl99nFuTwjUE5N5GJXEgS9qxQ==",
         "dependencies": {
           "MessagePack": "2.5.187",
           "StackExchange.Redis": "2.7.27"

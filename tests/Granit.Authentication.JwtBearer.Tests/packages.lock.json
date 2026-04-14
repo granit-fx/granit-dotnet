@@ -317,8 +317,8 @@
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "fZzXogChrwQ/SfifQJgeW7AtR8hUv5+LH9oLWjm5OqfnVt3N8MwcMHHMdawvqqdjP79lIZgetnSpj77BLsSI1g==",
+        "resolved": "10.0.6",
+        "contentHash": "JVPyTTr5J/Z5PikptDP2g8qwNJBJ09GZ7yHpaPDAMZ0qKeA2ZKqpZhUNJk1clBqZJeMj2T7gZ5o6oOrmLxuBdw==",
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "8.0.1"
         }
