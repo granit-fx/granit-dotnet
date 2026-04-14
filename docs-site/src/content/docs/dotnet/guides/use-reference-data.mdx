@@ -211,12 +211,17 @@ services.AddTransient<IReferenceDataSeeder<Country>, CountrySeeder>();
 <TabItem label="Strongly-typed">
 
 ```csharp
+// Routes: /reference-data/countries, /reference-data/currencies
 app.MapGranitReferenceData<Country>();
 app.MapGranitReferenceData<Currency>(opts =>
 {
     opts.RoutePrefix = "api/ref";
     opts.TagName = "Currencies";
 });
+
+// Override the auto-pluralized segment for irregular nouns
+app.MapGranitReferenceData<Person>(opts =>
+    opts.EntitySegment = "people");
 ```
 
 </TabItem>
@@ -237,24 +242,28 @@ app.MapGranitReferenceData("Categories", opts =>
 
 ### Available endpoints
 
+Entity type names are auto-pluralized and kebab-cased: `Country` → `countries`,
+`ProductCategory` → `product-categories`.
+
 **Read (requires `ReferenceData.Entries.Read`):**
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| `GET` | `/{prefix}/{entity}` | Filtered, paginated list |
-| `GET` | `/{prefix}/{entity}/{code}` | Single entry by code |
-| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children (hierarchical types) |
+| `GET` | `/{prefix}/{entities}` | QueryEngine-powered paginated list |
+| `GET` | `/{prefix}/{entities}/meta` | Query metadata (columns, filters, sorts) |
+| `GET` | `/{prefix}/{entities}/{code}` | Single entry by code |
+| `GET` | `/{prefix}/{entities}/{code}/children` | Direct children (hierarchical types) |
 
-Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending`,
-`page`, `pageSize`.
+The list endpoint uses the QueryEngine. Query parameters follow standard syntax:
+`filter[code.contains]=BE`, `sort=LabelEn`, `search=belg`, `page=1`, `pageSize=20`.
 
 **Admin (requires `ReferenceData.Entries.Create` / `ReferenceData.Entries.Manage`):**
 
 | Method | Route | Permission | Description |
 |--------|-------|------------|-------------|
-| `POST` | `/{prefix}/{entity}` | `Entries.Create` | Create an entry |
-| `PUT` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Update an entry |
-| `DELETE` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
+| `POST` | `/{prefix}/{entities}` | `Entries.Create` | Create an entry |
+| `PUT` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Update an entry |
+| `DELETE` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
 
 Create and update requests accept optional `ExtraProperties` (max 50 entries) and `ParentCode`.
 The `Code` field must match `^[A-Za-z0-9_.\-]+$`.

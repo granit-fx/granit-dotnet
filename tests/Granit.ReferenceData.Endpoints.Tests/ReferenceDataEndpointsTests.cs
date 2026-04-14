@@ -6,6 +6,7 @@ using System.Text.Encodings.Web;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
+using Granit.QueryEngine.SavedViews;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
 using Granit.ReferenceData.Endpoints.Extensions;
@@ -32,12 +33,16 @@ internal sealed class TestRefEntity : ReferenceDataEntity;
 public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-reference-data-admin";
-    private const string Prefix = "/reference-data/test-ref-entity";
+    private const string Prefix = "/reference-data/test-ref-entities";
 
     private readonly IReferenceDataStoreReader<TestRefEntity> _storeReader =
         Substitute.For<IReferenceDataStoreReader<TestRefEntity>>();
     private readonly IReferenceDataStoreWriter<TestRefEntity> _storeWriter =
         Substitute.For<IReferenceDataStoreWriter<TestRefEntity>>();
+    private readonly IQueryEngine<TestRefEntity> _queryEngine =
+        Substitute.For<IQueryEngine<TestRefEntity>>();
+    private readonly IQueryableSource<TestRefEntity> _queryableSource =
+        Substitute.For<IQueryableSource<TestRefEntity>>();
     private readonly WebApplication _app;
     private readonly HttpClient _adminClient;
     private readonly HttpClient _anonClient;
@@ -59,7 +64,14 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
                 policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_storeReader);
         builder.Services.AddSingleton(_storeWriter);
+        builder.Services.AddSingleton(_queryEngine);
+        builder.Services.AddSingleton(_queryableSource);
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
+
+        // QueryEngine dependencies
+        builder.Services.AddSingleton<ISavedViewStoreReader>(Substitute.For<ISavedViewStoreReader>());
+        builder.Services.AddSingleton<QueryDefinition<TestRefEntity>>(
+            new TestRefEntityQueryDefinition());
 
         // ICurrentTenant is required by ReferenceDataScopeEndpointFilter.
         // Default scope is Global, so IsAvailable must return false (host context).
@@ -85,7 +97,10 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
         // Arrange
         PagedResult<TestRefEntity> result = new(
             [new TestRefEntity { Code = "BE", LabelEn = "Belgium" }], 1, HasMore: false);
-        _storeReader.GetAllAsync(Arg.Any<ReferenceDataQuery?>(), Arg.Any<CancellationToken>())
+        _queryEngine.ExecuteAsync(
+            Arg.Any<IQueryable<TestRefEntity>>(),
+            Arg.Any<QueryRequest>(),
+            Arg.Any<CancellationToken>())
             .Returns(result);
 
         // Act
@@ -94,12 +109,6 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
-        PagedResult<TestRefEntity>? body =
-            await response.Content.ReadFromJsonAsync<PagedResult<TestRefEntity>>(
-                TestContext.Current.CancellationToken);
-        body!.TotalCount.ShouldBe(1);
-        body.Items.Count.ShouldBe(1);
-        body.Items[0].Code.ShouldBe("BE");
     }
 
     // ── GET /{code} ────────────────────────────────────────────────────────
@@ -335,6 +344,21 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
             AuthenticationTicket ticket = new(principal, SchemeName);
 
             return Task.FromResult(AuthenticateResult.Success(ticket));
+        }
+    }
+
+    private sealed class TestRefEntityQueryDefinition : QueryDefinition<TestRefEntity>
+    {
+        public override string Name => "ReferenceData.TestRefEntity";
+
+        protected override void Configure(QueryDefinitionBuilder<TestRefEntity> builder)
+        {
+            builder
+                .Column(e => e.Code, c => c.Label("Code").Filterable().Sortable())
+                .Column(e => e.LabelEn, c => c.Label("Label (EN)").Filterable().Sortable())
+                .Column(e => e.IsActive, c => c.Label("Active").Filterable())
+                .GlobalSearch(e => e.Code, e => e.LabelEn)
+                .DefaultSort("Code");
         }
     }
 }

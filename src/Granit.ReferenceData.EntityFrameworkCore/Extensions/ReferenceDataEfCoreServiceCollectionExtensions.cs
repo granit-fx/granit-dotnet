@@ -49,6 +49,17 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
 
+        // Register IQueryableSource and QueryDefinition for QueryEngine integration
+        services.TryAddScoped<IQueryableSource<TEntity>>(sp =>
+            new ReferenceDataQueryableSource<TEntity, TDbContext>(
+                sp.GetRequiredService<IDbContextFactory<TDbContext>>(),
+                scope));
+
+        services.TryAddSingleton<QueryDefinition<TEntity>>(
+            _ => new GenericReferenceDataQueryDefinition<TEntity>());
+        services.TryAddSingleton<IQueryDefinitionDescriptor>(sp =>
+            sp.GetRequiredService<QueryDefinition<TEntity>>());
+
         // Register seeder as Host or Tenant contributor based on scope
         if (scope == ReferenceDataScope.Tenant)
         {

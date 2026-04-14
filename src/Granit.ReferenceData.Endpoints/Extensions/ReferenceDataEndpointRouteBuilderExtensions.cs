@@ -32,11 +32,13 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
     /// <para>
     /// Registers read endpoints (GET) accessible to all authenticated users and
     /// admin endpoints (POST, PUT, DELETE) protected by a configurable authorization policy.
+    /// The list endpoint uses the QueryEngine for filtering, sorting, and pagination.
     /// </para>
     /// <para>
-    /// The entity type name is converted to a kebab-case segment appended to the route prefix.
-    /// For example, <c>MapGranitReferenceData&lt;Country&gt;()</c> creates routes under
-    /// <c>/reference-data/country</c>.
+    /// The entity type name is pluralized and converted to a kebab-case segment appended to
+    /// the route prefix. For example, <c>MapGranitReferenceData&lt;Country&gt;()</c> creates
+    /// routes under <c>/reference-data/countries</c>. Use
+    /// <see cref="ReferenceDataEndpointsOptions.EntitySegment"/> to override.
     /// </para>
     /// <para>Call from your application:</para>
     /// <code>
@@ -53,13 +55,14 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         ReferenceDataEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        string entitySegment = ToKebabCase(typeof(TEntity).Name);
+        string entitySegment = options.EntitySegment
+            ?? ToKebabCase(NaivePluralizer.Pluralize(typeof(TEntity).Name));
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup($"{options.RoutePrefix}/{entitySegment}")
             .WithTags(options.TagName);
 
-        group.MapReadEndpoints<TEntity>();
+        group.MapReadEndpoints<TEntity>(options.IncludeMetaEndpoint);
         group.MapAdminEndpoints<TEntity>(scope);
 
         return group;
@@ -87,7 +90,7 @@ public static class ReferenceDataEndpointRouteBuilderExtensions
         ReferenceDataEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        string entitySegment = ToKebabCase(typeName);
+        string entitySegment = options.EntitySegment ?? ToKebabCase(typeName);
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup($"{options.RoutePrefix}/{entitySegment}")

@@ -22,4 +22,19 @@ public sealed class ReferenceDataEndpointsOptionsTests
         options.TagName.ShouldBe("Reference Data");
     }
 
+    [Fact]
+    public void Default_EntitySegment_Is_Null()
+    {
+        ReferenceDataEndpointsOptions options = new();
+
+        options.EntitySegment.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Default_IncludeMetaEndpoint_Is_True()
+    {
+        ReferenceDataEndpointsOptions options = new();
+
+        options.IncludeMetaEndpoint.ShouldBeTrue();
+    }
 }

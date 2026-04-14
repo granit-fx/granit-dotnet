@@ -27,7 +27,7 @@ automatic label resolution based on `CurrentUICulture`, and an extensible
 |---------|------|------------|
 | `Granit.ReferenceData` | `IReferenceDataStoreReader/Writer<T>`, `ReferenceDataEntity`, `ReferenceDataRegistry` | `Granit`, `Granit.QueryEngine` |
 | `Granit.ReferenceData.EntityFrameworkCore` | EF Core store, seeding, dynamic column mapping, `QueryDefinition` | `Granit.ReferenceData`, `Granit.Persistence`, `Granit.Caching` |
-| `Granit.ReferenceData.Endpoints` | Generic + dynamic CRUD endpoints, hierarchical children endpoint | `Granit.ReferenceData`, `Granit.Validation`, `Granit.Guids` |
+| `Granit.ReferenceData.Endpoints` | Generic + dynamic CRUD endpoints, QueryEngine-powered listing, hierarchical children | `Granit.ReferenceData`, `Granit.QueryEngine.AspNetCore`, `Granit.Validation`, `Granit.Guids` |
 
 ## Entity structure
 
@@ -184,7 +184,7 @@ This exposes an additional endpoint:
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children of a parent entry |
+| `GET` | `/{prefix}/{entities}/{code}/children` | Direct children of a parent entry |
 
 ```csharp
 // In code, use the reader
@@ -224,24 +224,37 @@ public interface IReferenceDataStoreWriter<in TEntity>
 
 ## Endpoints
 
+:::note[Route pluralization]
+Entity type names are automatically **pluralized** and kebab-cased:
+`MapGranitReferenceData<Country>()` → `/reference-data/countries`,
+`MapGranitReferenceData<ProductCategory>()` → `/reference-data/product-categories`.
+Use `EntitySegment` to override irregular plurals (e.g., `Person` → `"people"`).
+:::
+
 ### Read (requires `ReferenceData.Entries.Read`)
 
 | Method | Route | Description |
 |--------|-------|-------------|
-| `GET` | `/{prefix}/{entity}` | Filtered, paginated list |
-| `GET` | `/{prefix}/{entity}/{code}` | Single entry by code |
-| `GET` | `/{prefix}/{entity}/{code}/children` | Direct children (hierarchical types) |
+| `GET` | `/{prefix}/{entities}` | QueryEngine-powered paginated list |
+| `GET` | `/{prefix}/{entities}/meta` | Query metadata (columns, filters, sorts) |
+| `GET` | `/{prefix}/{entities}/{code}` | Single entry by code |
+| `GET` | `/{prefix}/{entities}/{code}/children` | Direct children (hierarchical types) |
 
-Query parameters: `activeOnly` (default `true`), `search`, `sortBy`, `descending`,
-`page`, `pageSize`.
+The list endpoint (`GET /`) uses the Granit QueryEngine. Query parameters follow the
+standard QueryEngine syntax: `filter[code.contains]=BE`, `sort=LabelEn`,
+`search=belg`, `page=1`, `pageSize=20`. See [QueryEngine](/dotnet/business/query-engine/)
+for full syntax.
+
+The `/meta` endpoint returns column definitions, available filters, and sort options
+for building dynamic query UIs. Disable with `IncludeMetaEndpoint = false`.
 
 ### Admin (requires `ReferenceData.Entries.Create` / `ReferenceData.Entries.Manage`)
 
 | Method | Route | Permission | Description |
 |--------|-------|------------|-------------|
-| `POST` | `/{prefix}/{entity}` | `Entries.Create` | Create an entry |
-| `PUT` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Update an entry |
-| `DELETE` | `/{prefix}/{entity}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
+| `POST` | `/{prefix}/{entities}` | `Entries.Create` | Create an entry |
+| `PUT` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Update an entry |
+| `DELETE` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
 
 Create and update requests accept `ExtraProperties` (max 50 entries) and `ParentCode`.
 
@@ -261,7 +274,8 @@ key-value pairs (keys max 50 chars, values max 4 000 chars).
 
 ## QueryEngine integration
 
-Dynamic reference data types automatically generate a `QueryDefinition` that declares:
+Both strongly-typed and dynamic reference data types automatically generate a
+`QueryDefinition` that declares:
 
 - Base columns: `Code`, `LabelEn`, `LabelFr`, `LabelNl`, `LabelDe`, `IsActive`, `SortOrder`, `ValidFrom`, `ValidTo`
 - Shadow property columns declared via `MapProperty<T>()` with `isFilterable` / `isSortable`
