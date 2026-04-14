@@ -88,6 +88,7 @@ UsageAggregate
 | `IQuotaChecker` | Query | `CheckAsync → QuotaStatus` |
 | `IQuotaLimitProvider` | Query | `GetLimitAsync` — returns plan limit (default: unlimited) |
 | `IAggregationRunner` | Command | `RunAsync` — aggregates pending events for all active meters |
+| `IBillingPeriodProvider` | Query | `GetCurrentPeriodAsync` — billing period boundaries for quota checks |
 
 ## Watermark-based aggregation
 
@@ -128,6 +129,28 @@ var status = await quotaChecker.CheckAsync(tenantId, meterId, ct);
 QuotaStatus.Unlimited("API Calls", 500m);           // No limit
 QuotaStatus.WithLimit("API Calls", 800m, 1000m);    // 80%, not exceeded
 ```
+
+### Billing period resolution
+
+Quota checks sum **hourly aggregates** within the current billing period.
+The period boundaries are resolved via `IBillingPeriodProvider`:
+
+```csharp
+public interface IBillingPeriodProvider
+{
+    Task<BillingPeriodBoundaries?> GetCurrentPeriodAsync(
+        Guid tenantId, CancellationToken cancellationToken = default);
+}
+```
+
+| Provider | Package | Resolution |
+|----------|---------|------------|
+| `CalendarMonthBillingPeriodProvider` | `Granit.Metering` | 1st to last day of the current month (default) |
+| `SubscriptionBillingPeriodProvider` | `Granit.Subscriptions` | `Subscription.CurrentPeriodStart` / `CurrentPeriodEnd` |
+
+When `Granit.Subscriptions` is loaded, it overrides the default with the actual
+subscription billing cycle. Without it (standalone metering), the calendar month
+is used as fallback.
 
 ### Threshold alerts
 
@@ -241,6 +264,10 @@ Table prefix: `metering_` (configurable via `GranitMeteringDbProperties.DbTableP
 | PUT | `/api/granit/metering/meters/{id}` | `Metering.Meters.Manage` |
 | GET | `/api/granit/metering/usage` | `Metering.Usage.Read` |
 | GET | `/api/granit/metering/quota/{meterId}` | `Metering.Usage.Read` |
+| POST | `/api/granit/metering/events` | `Metering.Usage.Record` |
+
+All usage endpoints require tenant context. `POST /events` validates that each
+`MeterDefinitionId` in the batch belongs to the current tenant and is active.
 
 ## See also
 

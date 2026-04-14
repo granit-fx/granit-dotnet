@@ -226,17 +226,29 @@ InvoicePaidEto → InvoicePaidHandler
 Retry attempts use the **exact same provider and method type** as the original
 payment (propagated via `ProviderName` + `MethodType` in the retry chain).
 
+:::note[Concurrency safety]
+`PaymentFailedHandler` catches `DbUpdateConcurrencyException` — if two webhook
+deliveries arrive simultaneously for the same invoice, only one dunning increment
+is processed. The other is safely skipped with a warning log.
+:::
+
 ## Seat management
 
 ```csharp
-// Assign a seat
-subscription.AssignSeat(SubscriptionSeat.Create(Guid.NewGuid(), userId));
+// Assign a seat (seatLimit from the plan prevents over-allocation)
+var seat = SubscriptionSeat.Create(Guid.NewGuid(), userId, clock.Now);
+subscription.AssignSeat(seat, plan.SeatLimit);
 
 // Revoke a seat
 subscription.RevokeSeat(userId);
-
-// Seat limit enforced by Plan.SeatLimit
 ```
+
+`AssignSeat` enforces two invariants:
+
+1. **Duplicate guard** — a user cannot hold two seats on the same subscription
+   (backed by a unique DB index on `(SubscriptionId, UserId)`)
+2. **Seat limit** — when `seatLimit` is provided, the current seat count is
+   checked before adding
 
 CQRS split: `ISeatReader` (query) / `ISeatWriter` (command).
 
@@ -271,6 +283,13 @@ creation, payment retry dispatch) are internal to their respective
 `Granit.Subscriptions.Features` implements `IPlanIdProvider` and `IPlanFeatureStore`
 from `Granit.Features`. This enables automatic feature resolution per plan — existing
 feature flag cascade works without any additional configuration.
+
+### Cache invalidation on lifecycle changes
+
+When a subscription is suspended, cancelled, or expired, a Wolverine handler
+(`SubscriptionLifecycleCacheInvalidationHandler`) automatically expires **all**
+cached feature values for the affected tenant. This prevents a suspended tenant
+from retaining premium feature access through stale cache entries.
 
 ## Admin API
 
