@@ -96,14 +96,25 @@ internal sealed partial class AutoTenantProvisioner(
         // scoped interceptors that singleton factories cannot.
         var dbContext = (DbContext)sp.GetRequiredService(dbContextType);
 
-        // Create tenant schema if SchemaPerTenant — uses the DbContext's own connection
-        // so each context resolves its configured connection string (no hardcoded name).
+        // Create tenant schema if SchemaPerTenant.
+        // CRITICAL: use the connectionString overload — NOT the DbContext overload.
+        // The DbContext overload opens the raw ADO.NET connection, which prevents
+        // TenantSchemaConnectionInterceptor from firing on the subsequent MigrateAsync
+        // (it only triggers on ConnectionOpened, and the connection is already open).
+        // The connectionString overload creates a temporary connection, matching
+        // GranitMigrationRunner.MigratePerTenantAsync behavior.
         if (schemaProvider is not null)
         {
             string schema = await schemaProvider.GetSchemaNameAsync(tenantId, cancellationToken)
                 .ConfigureAwait(false);
-            await SchemaEnsurer.EnsureSchemasAsync(dbContext, cancellationToken, schema)
-                .ConfigureAwait(false);
+            string? connectionString = dbContext.Database.GetConnectionString();
+            if (connectionString is not null)
+            {
+                await SchemaEnsurer.EnsureSchemasAsync(
+                    connectionString, cancellationToken: cancellationToken,
+                    schemas: schema).ConfigureAwait(false);
+            }
+
             LogSchemaEnsured(tenantId, schema);
         }
 

@@ -136,13 +136,13 @@ public sealed class AutoTenantProvisionerTests : IDisposable
 
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
-        // Act — SQLite doesn't support CREATE SCHEMA, so SchemaEnsurer will throw.
+        // Act — SchemaEnsurer uses DbProviderFactories.GetFactory("Npgsql") which is
+        // not registered in unit tests. The connectionString overload will throw.
         // We verify the schema provider was consulted by catching the expected exception.
-        DbException ex = await Should.ThrowAsync<DbException>(
+        await Should.ThrowAsync<Exception>(
             () => sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken));
 
-        // Assert — schema provider was consulted (error proves schema creation was attempted)
-        ex.Message.ShouldContain("SCHEMA");
+        // Assert — schema provider was consulted before the factory error
 #pragma warning disable CA2012
         await schemaProvider.Received(1).GetSchemaNameAsync(TenantId, Arg.Any<CancellationToken>());
 #pragma warning restore CA2012

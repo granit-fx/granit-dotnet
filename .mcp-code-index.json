@@ -1699,6 +1699,7 @@
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.Guids",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.ReferenceData",
         "Granit.Validation"
       ],
@@ -33623,6 +33624,12 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "EntitySegment",
+          "kind": "property",
+          "signature": "string? EntitySegment",
+          "returnType": "string?"
         }
       ]
     },
