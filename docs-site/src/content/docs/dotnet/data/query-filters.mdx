@@ -123,8 +123,72 @@ enum-to-string conversions, and JSON columns. Always use SQLite or Testcontainer
 (PostgreSQL) for tests that depend on converters or query filters.
 :::
 
+## Host admin bypass — `EfStoreBase.Query(db)`
+
+In host context (no active tenant), the `MultiTenant` filter produces
+`WHERE TenantId IS NULL` — which returns no tenant data. This is the correct
+**safe default**, but host administrators need cross-tenant visibility.
+
+`EfStoreBase` solves this with its `Query(db)` helper method:
+
+```csharp
+// Inside EfStoreBase<TEntity, TContext>
+protected IQueryable<TEntity> Query(TContext db) =>
+    _bypassTenantFilter
+        ? db.Set<TEntity>().IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+        : db.Set<TEntity>();
+```
+
+The bypass activates **only** when:
+
+1. `TEntity` implements `IMultiTenant`
+2. `ICurrentTenant.IsAvailable` is `false` (no tenant header)
+3. The subclass passes `ICurrentTenant` to the base constructor
+
+All built-in read methods (`FindByIdAsync`, `FirstOrDefaultAsync`, `ListAsync`,
+`PagedAsync`, `CountAsync`, `AnyAsync`) use `Query(db)` automatically.
+
+```csharp
+// Subclass opt-in — just pass ICurrentTenant to base
+internal sealed class EfInvoiceStore(
+    IDbContextFactory<InvoicingDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<Invoice, InvoicingDbContext>(contextFactory, currentTenant),
+      IInvoiceReader, IInvoiceWriter
+{
+    // All read methods automatically bypass MultiTenant filter in host context.
+    // Write methods (Add, Update, Delete) are unaffected — entities keep their TenantId.
+}
+```
+
+For custom queries via `ReadAsync` (raw `DbContext` access), use `Query(db)` explicitly:
+
+```csharp
+return await ReadAsync(async db =>
+    await Query(db)
+        .Include(e => e.Lines)
+        .FirstOrDefaultAsync(e => e.Id == id, ct)
+        .ConfigureAwait(false),
+    ct).ConfigureAwait(false);
+```
+
+### Defense in depth
+
+The data layer bypass is one of three security layers. See
+[Authorization — Host access](/dotnet/security/authorization/#host-admin-access)
+for the full architecture.
+
+:::tip[Per-query, not per-scope]
+Unlike `IDataFilter.Disable<IMultiTenant>()` which mutates `AsyncLocal` state for
+the entire async flow, `Query(db)` applies `IgnoreQueryFilters` **per query**.
+No side effects on other services in the same request. Background jobs are
+unaffected — they must explicitly use `IDataFilter.Disable<IMultiTenant>()` when
+cross-tenant access is needed.
+:::
+
 ## See also
 
 - [Persistence overview](./persistence/) — setup, isolated DbContext, host-owned migrations
 - [Interceptors](./interceptors/) — audit, soft delete, concurrency, events
 - [Zero-downtime migrations](./migrations/) — Expand & Contract pattern
+- [Authorization — Host access](/dotnet/security/authorization/#host-admin-access) — endpoint-level defense

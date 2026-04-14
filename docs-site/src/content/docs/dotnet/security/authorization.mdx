@@ -266,6 +266,58 @@ in the dependency graph, it will not be found. Verify with a breakpoint in
 `DefinePermissions`.
 :::
 
+## Host admin access
+
+Multi-tenant endpoints default to **tenant-only mode**: without an `X-Tenant-Id`
+header, the `MultiTenant` query filter produces `WHERE TenantId IS NULL` — returning
+no tenant data. Host administrators need cross-tenant visibility on specific
+endpoints.
+
+### `.AllowHostAccess()` marker
+
+Chain `.AllowHostAccess()` after `.RequireAuthorization()` on endpoints that should
+support host admin access:
+
+```csharp
+group.MapGet("/{id:guid}", GetByIdAsync)
+    .WithName("GetSubscription")
+    .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
+    .AllowHostAccess();  // Host admin can see any tenant's subscription
+```
+
+The `RequireHostContextEndpointFilter` behind `.AllowHostAccess()` checks:
+
+- **Tenant context active** — filter is a no-op, normal tenant-scoped access
+- **No tenant context** — verifies the caller is authenticated (defense in depth)
+
+Permission checks are handled by `.RequireAuthorization()` which already calls
+`IPermissionChecker` with the contextual cache key
+`perm:global:{role}:{permission}` in host context. No need to repeat the
+permission in `.AllowHostAccess()`.
+
+### Three-layer defense
+
+| Layer | Component | Role |
+|-------|-----------|------|
+| **Endpoint** | `.AllowHostAccess()` | Authentication gate for host requests |
+| **Authorization** | `.RequireAuthorization(perm)` | Permission check (`global` scope in host context) |
+| **Data** | `EfStoreBase.Query(db)` | `IgnoreQueryFilters([MultiTenant])` per query |
+
+A tenant user who omits the `X-Tenant-Id` header gets **no data** (safe default)
+on endpoints without `.AllowHostAccess()`, and **403 Forbidden** from the
+authorization layer on endpoints with `.AllowHostAccess()` (no global permissions).
+
+### When to use
+
+Add `.AllowHostAccess()` on **read** endpoints where host administrators need
+cross-tenant visibility: GET by ID, list, and admin dashboards.
+
+Do **not** add it on:
+
+- **Tenant-only writes** — `CreateSubscription`, `AssignSeat` (require tenant context)
+- **Endpoints with explicit tenant checks** — already return 400 if `!currentTenant.IsAvailable`
+- **QueryEngine endpoints** — `IQueryableSource` implementations handle the bypass separately
+
 ## Testing authorization
 
 Mock `IPermissionChecker` in unit tests to isolate business logic from the permission system:

@@ -186,6 +186,40 @@ Schema: tenant_3fa85f6456954b5ab7d9c4f11f0b7f5e
 └── (application-specific tables)
 ```
 
+## Host admin cross-tenant access
+
+By default, host context (no `X-Tenant-Id` header) results in the `MultiTenant`
+query filter matching `TenantId IS NULL` — returning only host-level entities.
+This is a safe default, but host administrators need to see data across all tenants.
+
+Granit provides a **3-layer defense-in-depth** architecture for this:
+
+1. **Endpoint layer** — `.AllowHostAccess()` marks endpoints that support host admin.
+   Verifies the caller is authenticated.
+2. **Authorization layer** — `.RequireAuthorization(permission)` checks permissions
+   using the `perm:global:{role}:{permission}` cache key in host context.
+3. **Data layer** — `EfStoreBase.Query(db)` bypasses the `MultiTenant` named query
+   filter per-query via `IgnoreQueryFilters`, without affecting other filters.
+
+```csharp
+// Endpoint: opt-in to host admin access
+group.MapGet("/{id:guid}", GetByIdAsync)
+    .RequireAuthorization(InvoicingPermissions.Invoices.Read)
+    .AllowHostAccess();
+
+// Store: pass ICurrentTenant to EfStoreBase for automatic bypass
+internal sealed class EfInvoiceStore(
+    IDbContextFactory<InvoicingDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<Invoice, InvoicingDbContext>(contextFactory, currentTenant),
+      IInvoiceReader, IInvoiceWriter
+{ }
+```
+
+For detailed API and security scenarios, see
+[Authorization — Host access](/dotnet/security/authorization/#host-admin-access)
+and [Query Filters — Host admin bypass](/dotnet/data/query-filters/#host-admin-bypass--efstorebasequery-db).
+
 ## See also
 
 - [Isolation Strategies](./isolation/) — the three strategies and how they interact
@@ -193,3 +227,5 @@ Schema: tenant_3fa85f6456954b5ab7d9c4f11f0b7f5e
 - [Cache Isolation](./cache/) — tenant-scoped cache keys
 - [Multi-tenancy concept](/dotnet/concepts/multi-tenancy/) — query filters, soft
   dependency rule
+- [Authorization — Host access](/dotnet/security/authorization/#host-admin-access) — endpoint-level defense
+- [Query Filters — Host bypass](/dotnet/data/query-filters/#host-admin-bypass--efstorebasequery-db) — data-level bypass
