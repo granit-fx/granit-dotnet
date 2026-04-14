@@ -69,6 +69,7 @@ internal static class SeatEndpoints
         SeatAssignRequest request,
         [FromServices] ISubscriptionReader reader,
         [FromServices] ISubscriptionWriter writer,
+        [FromServices] IPlanReader planReader,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IClock clock,
         CancellationToken cancellationToken)
@@ -83,8 +84,12 @@ internal static class SeatEndpoints
 
         try
         {
+            Plan? plan = await planReader
+                .GetByIdAsync(PlanId.Create(sub.PlanId.Value), cancellationToken)
+                .ConfigureAwait(false);
+
             var seat = SubscriptionSeat.Create(guidGenerator.Create(), request.UserId, clock.Now);
-            sub.AssignSeat(seat);
+            sub.AssignSeat(seat, plan?.SeatLimit);
             await writer.UpdateAsync(sub, cancellationToken).ConfigureAwait(false);
 
             return TypedResults.Created(

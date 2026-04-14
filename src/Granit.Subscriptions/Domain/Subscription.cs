@@ -303,9 +303,22 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     // ── Seat management ────────────────────────────────────────────────
 
     /// <summary>Assigns a seat to a user.</summary>
-    public void AssignSeat(SubscriptionSeat seat)
+    public void AssignSeat(SubscriptionSeat seat, int? seatLimit = null)
     {
         ArgumentNullException.ThrowIfNull(seat);
+
+        if (_seats.Any(s => s.UserId == seat.UserId))
+        {
+            throw new InvalidOperationException(
+                $"User '{seat.UserId}' already has a seat on subscription '{Id}'.");
+        }
+
+        if (seatLimit.HasValue && _seats.Count >= seatLimit.Value)
+        {
+            throw new InvalidOperationException(
+                $"Seat limit ({seatLimit.Value}) reached for subscription '{Id}'.");
+        }
+
         _seats.Add(seat);
     }
 
