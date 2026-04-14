@@ -36092,6 +36092,34 @@
       ]
     },
     {
+      "name": "SubscriptionLifecycleCacheInvalidationHandler",
+      "fqn": "Granit.Subscriptions.Features.Handlers.SubscriptionLifecycleCacheInvalidationHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Features",
+      "file": "src/Granit.Subscriptions.Features/Handlers/SubscriptionLifecycleCacheInvalidationHandler.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SubscriptionSuspendedEto eto, IFeatureDefinitionStore definitionStore, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SubscriptionCancelledEto eto, IFeatureDefinitionStore definitionStore, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SubscriptionExpiredEto eto, IFeatureDefinitionStore definitionStore, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "GranitSubscriptionsModule",
       "fqn": "Granit.Subscriptions.GranitSubscriptionsModule",
       "kind": "class",
