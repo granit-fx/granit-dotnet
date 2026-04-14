@@ -8,6 +8,7 @@
     <Project Path="src/Granit.Diagnostics.Endpoints/Granit.Diagnostics.Endpoints.csproj" />
     <Project Path="src/Granit.Diagnostics/Granit.Diagnostics.csproj" />
     <Project Path="src/Granit.Guids/Granit.Guids.csproj" />
+    <Project Path="src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj" />
     <Project Path="src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj" />
     <Project Path="src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj" />
     <Project Path="src/Granit.Http.Bulkhead/Granit.Http.Bulkhead.csproj" />
@@ -117,6 +118,7 @@
     <Project Path="src/Granit.Templating.AI/Granit.Templating.AI.csproj" />
     <Project Path="src/Granit.Templating.Endpoints/Granit.Templating.Endpoints.csproj" />
     <Project Path="src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Templating.Mjml/Granit.Templating.Mjml.csproj" />
     <Project Path="src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj" />
     <Project Path="src/Granit.Templating.Workflow/Granit.Templating.Workflow.csproj" />
     <Project Path="src/Granit.Templating/Granit.Templating.csproj" />
@@ -182,6 +184,7 @@
     <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
     <Project Path="src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj" />
     <Project Path="src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj" />
+    <Project Path="src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Privacy.Regulations/Granit.Privacy.Regulations.csproj" />
     <Project Path="src/Granit.Privacy/Granit.Privacy.csproj" />
   </Folder>
@@ -266,10 +269,6 @@
     <Project Path="src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj" />
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
-  <Folder Name="/src/">
-    <Project Path="src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Templating.Mjml/Granit.Templating.Mjml.csproj" />
-  </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
@@ -300,6 +299,7 @@
     <Project Path="tests/Granit.Diagnostics.Endpoints.Tests/Granit.Diagnostics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Diagnostics.Tests/Granit.Diagnostics.Tests.csproj" />
     <Project Path="tests/Granit.Guids.Tests/Granit.Guids.Tests.csproj" />
+    <Project Path="tests/Granit.Http.Abstractions.Tests/Granit.Http.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj" />
     <Project Path="tests/Granit.Http.ApiVersioning.Tests/Granit.Http.ApiVersioning.Tests.csproj" />
     <Project Path="tests/Granit.Http.Bulkhead.Tests/Granit.Http.Bulkhead.Tests.csproj" />
@@ -412,6 +412,7 @@
     <Project Path="tests/Granit.Templating.AI.Tests/Granit.Templating.AI.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Endpoints.Tests/Granit.Templating.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Templating.EntityFrameworkCore.Tests/Granit.Templating.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Templating.Mjml.Tests/Granit.Templating.Mjml.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Scriban.Tests/Granit.Templating.Scriban.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Tests/Granit.Templating.Tests.csproj" />
     <Project Path="tests/Granit.Templating.Workflow.Tests/Granit.Templating.Workflow.Tests.csproj" />
@@ -482,6 +483,7 @@
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Regulations.Tests/Granit.Privacy.Regulations.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Tests/Granit.Privacy.Tests.csproj" />
   </Folder>
@@ -565,10 +567,6 @@
     <Project Path="tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Templating.Mjml.Tests/Granit.Templating.Mjml.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

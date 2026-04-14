@@ -32,6 +32,7 @@
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Events/Granit.Events.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
+      "src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj",
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
