@@ -32,6 +32,7 @@ public static class JwtBearerEndpointRouteBuilderExtensions
 
         endpoints
             .MapPost(options.BackChannelLogout.EndpointPath, BackChannelLogoutEndpoint.HandleAsync)
+            .AddEndpointFilter<FormContentTypeEndpointFilter>()
             .AllowAnonymous()
             .ExcludeFromDescription();
 

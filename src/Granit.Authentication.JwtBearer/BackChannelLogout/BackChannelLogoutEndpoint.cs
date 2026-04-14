@@ -25,14 +25,6 @@ internal static partial class BackChannelLogoutEndpoint
         [FromServices] ILogger<BackChannelLogoutTokenValidator> logger,
         CancellationToken cancellationToken)
     {
-        if (!request.HasFormContentType)
-        {
-            LogInvalidContentType(logger);
-            return TypedResults.Problem(
-                detail: "Expected application/x-www-form-urlencoded content type.",
-                statusCode: StatusCodes.Status400BadRequest);
-        }
-
         IFormCollection form = await request.ReadFormAsync(cancellationToken).ConfigureAwait(false);
         string logoutToken = form["logout_token"].ToString();
 
@@ -60,9 +52,6 @@ internal static partial class BackChannelLogoutEndpoint
 
         return TypedResults.Ok();
     }
-
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Back-channel logout request rejected: invalid content type.")]
-    private static partial void LogInvalidContentType(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Back-channel logout request rejected: missing 'logout_token' parameter.")]
     private static partial void LogMissingLogoutToken(ILogger logger);

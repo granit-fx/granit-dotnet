@@ -37,22 +37,6 @@ public sealed class BackChannelLogoutEndpointAdditionalTests
     }
 
     [Fact]
-    public async Task HandleAsync_NonFormContentType_Returns400()
-    {
-        // Arrange — request without form content type
-        DefaultHttpContext context = new();
-        context.Request.ContentType = "application/json";
-
-        // Act
-        Results<Ok, ProblemHttpResult> result = await BackChannelLogoutEndpoint.HandleAsync(
-            context.Request, _validator, _store, _options, _logger, TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Result.ShouldBeAssignableTo<IStatusCodeHttpResult>()!
-            .StatusCode.ShouldBe(400);
-    }
-
-    [Fact]
     public async Task HandleAsync_CustomTtl_PassesConfiguredTtlToStore()
     {
         // Arrange
@@ -81,5 +65,50 @@ public sealed class BackChannelLogoutEndpointAdditionalTests
         context.Request.ContentType = "application/x-www-form-urlencoded";
         context.Request.Form = form;
         return context.Request;
+    }
+}
+
+public sealed class FormContentTypeEndpointFilterTests
+{
+    [Fact]
+    public async Task InvokeAsync_NonFormContentType_Returns400()
+    {
+        // Arrange
+        FormContentTypeEndpointFilter filter = new();
+        DefaultHttpContext httpContext = new();
+        httpContext.Request.ContentType = "application/json";
+
+        EndpointFilterInvocationContext context = new DefaultEndpointFilterInvocationContext(httpContext);
+        EndpointFilterDelegate next = _ => ValueTask.FromResult<object?>(TypedResults.Ok());
+
+        // Act
+        object? result = await filter.InvokeAsync(context, next);
+
+        // Assert
+        result.ShouldBeOfType<ProblemHttpResult>()
+            .StatusCode.ShouldBe(400);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_FormContentType_CallsNext()
+    {
+        // Arrange
+        FormContentTypeEndpointFilter filter = new();
+        DefaultHttpContext httpContext = new();
+        httpContext.Request.ContentType = "application/x-www-form-urlencoded";
+
+        EndpointFilterInvocationContext context = new DefaultEndpointFilterInvocationContext(httpContext);
+        bool nextCalled = false;
+        EndpointFilterDelegate next = _ =>
+        {
+            nextCalled = true;
+            return ValueTask.FromResult<object?>(TypedResults.Ok());
+        };
+
+        // Act
+        await filter.InvokeAsync(context, next);
+
+        // Assert
+        nextCalled.ShouldBeTrue();
     }
 }

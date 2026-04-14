@@ -55,17 +55,9 @@ internal static class IdentityWebhookEndpoints
         [FromServices] IUserLookupService lookupService,
         CancellationToken cancellationToken)
     {
-        // Reject oversized payloads before buffering (VULN-101)
-        if (request.ContentLength > MaxWebhookBodySize)
-        {
-            return TypedResults.Problem(
-                detail: "Payload too large.",
-                statusCode: StatusCodes.Status413PayloadTooLarge);
-        }
-
-        // Read raw body for signature validation
+        // Read raw body for signature validation (server-verified size check)
         request.EnableBuffering();
-        using var ms = new MemoryStream(capacity: (int)Math.Min(request.ContentLength ?? 1024, MaxWebhookBodySize));
+        using var ms = new MemoryStream(capacity: 1024);
         await request.Body.CopyToAsync(ms, cancellationToken).ConfigureAwait(false);
 
         if (ms.Length > MaxWebhookBodySize)
