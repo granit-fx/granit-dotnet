@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "Reference Data",
     "Permission:ReferenceData.Entries.Read": "View reference data entries",
-    "Permission:ReferenceData.Entries.Create": "Create reference data entries",
-    "Permission:ReferenceData.Entries.Manage": "Manage reference data entries (update, deactivate)"
+    "Permission:ReferenceData.Entries.Manage": "Manage reference data entries (create, update, deactivate)"
   }
 }

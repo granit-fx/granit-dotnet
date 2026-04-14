@@ -28,11 +28,6 @@ internal sealed class ReferenceDataPermissionDefinitionProvider : IPermissionDef
                 "Permission:ReferenceData.Entries.Read"));
 
         group.AddPermission(
-            ReferenceDataPermissions.Entries.Create,
-            LocalizableString.Create<ReferenceDataEndpointsLocalizationResource>(
-                "Permission:ReferenceData.Entries.Create"));
-
-        group.AddPermission(
             ReferenceDataPermissions.Entries.Manage,
             LocalizableString.Create<ReferenceDataEndpointsLocalizationResource>(
                 "Permission:ReferenceData.Entries.Manage"));

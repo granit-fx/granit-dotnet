@@ -68,7 +68,7 @@ internal static class ReferenceDataDynamicEndpoints
 
         group.MapPost("/", CreateAsync)
             .AddEndpointFilter(scopeFilter)
-            .RequireAuthorization(ReferenceDataPermissions.Entries.Create)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Create{typeName}")
             .WithSummary($"Creates a new {typeName} entry.")
             .WithDescription($"Creates a new {typeName} reference data entry with a unique code and localized labels.")

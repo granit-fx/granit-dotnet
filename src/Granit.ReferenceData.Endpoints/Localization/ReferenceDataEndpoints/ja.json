@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "参照データ",
     "Permission:ReferenceData.Entries.Read": "参照データエントリの表示",
-    "Permission:ReferenceData.Entries.Create": "参照データエントリの作成",
-    "Permission:ReferenceData.Entries.Manage": "参照データエントリの管理（更新、無効化）"
+    "Permission:ReferenceData.Entries.Manage": "参照データエントリの管理（作成、更新、無効化）"
   }
 }

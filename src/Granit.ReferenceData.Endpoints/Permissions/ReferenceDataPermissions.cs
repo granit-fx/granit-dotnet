@@ -10,7 +10,6 @@ public static class ReferenceDataPermissions
     public static class Entries
     {
         public const string Read = "ReferenceData.Entries.Read";
-        public const string Create = "ReferenceData.Entries.Create";
         public const string Manage = "ReferenceData.Entries.Manage";
     }
 }

@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "Referenzdaten",
     "Permission:ReferenceData.Entries.Read": "Referenzdaten anzeigen",
-    "Permission:ReferenceData.Entries.Create": "Referenzdaten erstellen",
-    "Permission:ReferenceData.Entries.Manage": "Referenzdaten verwalten (aktualisieren, deaktivieren)"
+    "Permission:ReferenceData.Entries.Manage": "Referenzdaten verwalten (erstellen, aktualisieren, deaktivieren)"
   }
 }

@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "Referenční data",
     "Permission:ReferenceData.Entries.Read": "Zobrazení položek referenčních dat",
-    "Permission:ReferenceData.Entries.Create": "Vytváření položek referenčních dat",
-    "Permission:ReferenceData.Entries.Manage": "Správa položek referenčních dat (aktualizace, deaktivace)"
+    "Permission:ReferenceData.Entries.Manage": "Správa položek referenčních dat (vytváření, aktualizace, deaktivace)"
   }
 }

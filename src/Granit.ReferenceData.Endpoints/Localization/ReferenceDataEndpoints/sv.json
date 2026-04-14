@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "Referensdata",
     "Permission:ReferenceData.Entries.Read": "Visa referensdataposter",
-    "Permission:ReferenceData.Entries.Create": "Skapa referensdataposter",
-    "Permission:ReferenceData.Entries.Manage": "Hantera referensdataposter (uppdatera, inaktivera)"
+    "Permission:ReferenceData.Entries.Manage": "Hantera referensdataposter (skapa, uppdatera, inaktivera)"
   }
 }

@@ -3,7 +3,6 @@
   "texts": {
     "PermissionGroup:ReferenceData": "Referans verileri",
     "Permission:ReferenceData.Entries.Read": "Referans veri kayıtlarını görüntüle",
-    "Permission:ReferenceData.Entries.Create": "Referans veri kayıtları oluştur",
-    "Permission:ReferenceData.Entries.Manage": "Referans veri kayıtlarını yönet (güncelle, devre dışı bırak)"
+    "Permission:ReferenceData.Entries.Manage": "Referans veri kayıtlarını yönet (oluştur, güncelle, devre dışı bırak)"
   }
 }

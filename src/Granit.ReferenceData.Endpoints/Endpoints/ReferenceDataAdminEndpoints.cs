@@ -31,7 +31,7 @@ internal static class ReferenceDataAdminEndpoints
 
         group.MapPost("/", CreateAsync<TEntity>)
             .AddEndpointFilter(scopeFilter)
-            .RequireAuthorization(ReferenceDataPermissions.Entries.Create)
+            .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Create{typeof(TEntity).Name}")
             .WithSummary($"Creates a new {typeof(TEntity).Name} entry.")
             .WithDescription($"Creates a new {typeof(TEntity).Name} reference data entry with a unique code and localized labels for all supported languages. The entry is active by default. Optional validity date range can restrict when the entry is selectable.")
