@@ -2,6 +2,7 @@ using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
 using Granit.Subscriptions.Endpoints.Permissions;
+using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -54,6 +55,11 @@ internal static class PlanReadEndpoints
             .GetByIdAsync(PlanId.Create(id), cancellationToken).ConfigureAwait(false);
 
         if (plan is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        if (plan.LifecycleStatus == WorkflowLifecycleStatus.Draft)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }

@@ -25,10 +25,16 @@ internal sealed partial class EfAggregationRunner(
 {
     public async Task RunAsync(CancellationToken cancellationToken = default)
     {
+        if (dataFilter is null)
+        {
+            Log.DataFilterUnavailable(logger);
+            return;
+        }
+
         // Disable tenant filter for the entire aggregation flow: the job runs
         // without tenant context and must enumerate definitions across all tenants,
         // then query each tenant's events with explicit TenantId predicates.
-        using IDisposable? _ = dataFilter?.Disable<IMultiTenant>();
+        using IDisposable? _ = dataFilter.Disable<IMultiTenant>();
 
         IReadOnlyList<MeterDefinition> definitions = await definitionReader
             .GetActiveAsync(cancellationToken).ConfigureAwait(false);
@@ -174,5 +180,9 @@ internal sealed partial class EfAggregationRunner(
             Message = "Aggregation batch for meter '{MeterName}' skipped due to duplicate key collision; a concurrent runner already committed the same period.")]
         public static partial void AggregationCollisionIgnored(
             ILogger logger, string meterName, Exception exception);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Aggregation runner skipped: IDataFilter is not registered. Without the data filter, cross-tenant queries cannot be safely executed.")]
+        public static partial void DataFilterUnavailable(ILogger logger);
     }
 }

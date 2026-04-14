@@ -52,7 +52,7 @@ public sealed partial class TrialExpirationScanner(
                     {
                         int daysRemaining = (int)(sub.TrialEndsAt!.Value - now).TotalDays;
                         await messageBus.PublishAsync(
-                            new TrialExpiringEvent(sub.Id, sub.PlanId, daysRemaining)).ConfigureAwait(false);
+                            new TrialExpiringEvent(sub.Id, sub.PlanId, sub.TenantId!.Value, daysRemaining)).ConfigureAwait(false);
                         Log.TrialExpiring(logger, sub.Id, daysRemaining);
                     }
                 }
