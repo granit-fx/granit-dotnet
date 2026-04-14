@@ -11,15 +11,10 @@ internal sealed partial class DefaultSubscriptionReactivationService(
     public async Task<bool> TryReactivateAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         Subscription? subscription = await subscriptionReader
-            .GetActiveForTenantAsync(tenantId, cancellationToken)
+            .GetPastDueForTenantAsync(tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         if (subscription is null)
-        {
-            return false;
-        }
-
-        if (subscription.Status != SubscriptionStatus.PastDue)
         {
             return false;
         }

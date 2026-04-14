@@ -106,7 +106,15 @@ internal sealed partial class EfAggregationRunner(
 
         watermark.Advance(events[^1].Id, now);
 
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateException ex) when (IsDuplicateKeyException(ex))
+        {
+            Log.AggregationCollision(logger, definition.Id);
+            return;
+        }
 
         metrics.RecordAggregation(
             definition.TenantId?.ToString(),
@@ -114,6 +122,35 @@ internal sealed partial class EfAggregationRunner(
             events.Count);
 
         Log.AggregationBatchCompleted(logger, definition.Name, events.Count);
+    }
+
+    /// <summary>
+    /// Provider-agnostic duplicate key detection. Matches error codes when available,
+    /// falls back to phrase matching for other providers.
+    /// </summary>
+    private static bool IsDuplicateKeyException(DbUpdateException ex)
+    {
+        if (ex.InnerException is null)
+        {
+            return false;
+        }
+
+        Type innerType = ex.InnerException.GetType();
+
+        if (innerType.GetProperty("SqlState")?.GetValue(ex.InnerException) is "23505")
+        {
+            return true; // PostgreSQL unique_violation
+        }
+
+        if (innerType.GetProperty("Number")?.GetValue(ex.InnerException) is int and (2601 or 2627))
+        {
+            return true; // SQL Server unique index / unique constraint
+        }
+
+        string? message = ex.InnerException.Message;
+        return message?.Contains("duplicate key", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("unique constraint", StringComparison.OrdinalIgnoreCase) == true
+            || message?.Contains("UNIQUE constraint failed", StringComparison.OrdinalIgnoreCase) == true;
     }
 
     private static decimal Aggregate(AggregationType type, List<MeterEvent> events) =>
@@ -132,5 +169,9 @@ internal sealed partial class EfAggregationRunner(
             Message = "Aggregation batch completed for meter '{MeterName}': {EventCount} events")]
         public static partial void AggregationBatchCompleted(
             ILogger logger, string meterName, int eventCount);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Aggregation collision for meter {MeterDefinitionId}, another instance already processed this period")]
+        public static partial void AggregationCollision(ILogger logger, Guid meterDefinitionId);
     }
 }
