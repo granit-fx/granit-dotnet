@@ -26,6 +26,7 @@ internal static class UsageEndpoints
                 + "The meterId, periodStart, and periodEnd query parameters are required. "
                 + "Returns 404 if no aggregate exists for the given parameters.")
             .Produces<UsageAggregateResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(MeteringPermissions.Usage.Read);
 
@@ -37,6 +38,7 @@ internal static class UsageEndpoints
                 + "Returns the current usage, limit, percentage used, and whether the quota is exceeded. "
                 + "Meters without a defined quota are reported as unlimited.")
             .Produces<MeteringQuotaStatusResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization(MeteringPermissions.Usage.Read);
 
         group.MapPost("/events", RecordUsageEventsAsync)
@@ -49,6 +51,9 @@ internal static class UsageEndpoints
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(MeteringPermissions.Usage.Record);
 
         return group;
@@ -62,6 +67,11 @@ internal static class UsageEndpoints
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         UsageAggregate? aggregate = await usageReader
             .GetForPeriodAsync(
                 currentTenant.Id!.Value,
@@ -76,12 +86,17 @@ internal static class UsageEndpoints
             : TypedResults.Ok(UsageAggregateResponse.FromEntity(aggregate));
     }
 
-    private static async Task<Ok<MeteringQuotaStatusResponse>> CheckQuotaAsync(
+    private static async Task<Results<Ok<MeteringQuotaStatusResponse>, ProblemHttpResult>> CheckQuotaAsync(
         Guid meterId,
         [FromServices] IQuotaChecker quotaChecker,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
         QuotaStatus status = await quotaChecker
             .CheckAsync(currentTenant.Id!.Value, MeterDefinitionId.Create(meterId), cancellationToken)
             .ConfigureAwait(false);
@@ -89,12 +104,41 @@ internal static class UsageEndpoints
         return TypedResults.Ok(MeteringQuotaStatusResponse.FromQuotaStatus(status));
     }
 
-    private static async Task<NoContent> RecordUsageEventsAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> RecordUsageEventsAsync(
         RecordUsageRequest request,
         [FromServices] IMeterEventRecorder recorder,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IMeterDefinitionReader definitionReader,
         CancellationToken cancellationToken)
     {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        var meterIds = request.Events.Select(e => e.MeterDefinitionId).Distinct().ToList();
+        foreach (Guid mid in meterIds)
+        {
+            MeterDefinition? def = await definitionReader
+                .GetByIdAsync(MeterDefinitionId.Create(mid), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (def is null)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+
+            if (!def.IsActive)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' is deactivated.",
+                    statusCode: StatusCodes.Status409Conflict);
+            }
+        }
+
         var events = request.Events
             .Select(e => MeterEvent.Create(
                 guidGenerator.Create(),
