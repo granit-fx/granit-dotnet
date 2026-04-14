@@ -11,7 +11,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
-import { join, relative, extname, dirname } from 'node:path';
+import { join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dir = dirname(fileURLToPath(import.meta.url));

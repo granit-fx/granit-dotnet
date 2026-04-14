@@ -41,7 +41,8 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
         // Act & Assert — should complete without throwing
-        await sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(
+            () => sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -57,7 +58,7 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         await sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken);
 
         // Assert — the test context's Database.MigrateAsync would have been called.
-        // Since we use InMemory, we verify the context was resolved (no exception thrown)
+        // Since we use SQLite in-memory, we verify the context was resolved (no exception thrown)
         // and the isolator was called.
         ITenantDbIsolator isolator = sp.GetRequiredService<ITenantDbIsolator>();
         await isolator.Received(1).IsolateAsync(
@@ -92,7 +93,8 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
         // Act & Assert — should not throw
-        await sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(
+            () => sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -158,7 +160,8 @@ public sealed class AutoTenantProvisionerTests : IDisposable
         AutoTenantProvisioner sut = CreateProvisioner(sp);
 
         // Act & Assert — should complete without error (schema step skipped)
-        await sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken);
+        await Should.NotThrowAsync(
+            () => sut.ProvisionAsync(TenantId, TenantName, TestContext.Current.CancellationToken));
     }
 
     private static AutoTenantProvisioner CreateProvisioner(ServiceProvider sp) =>
@@ -191,6 +194,6 @@ public sealed class AutoTenantProvisionerTests : IDisposable
 
 /// <summary>
 /// Minimal DbContext for testing AutoTenantProvisioner.
-/// Uses InMemory provider (MigrateAsync is a no-op with InMemory).
+/// Uses SQLite in-memory provider so MigrateAsync works with a relational backend.
 /// </summary>
 internal sealed class TestTenantDbContext(DbContextOptions<TestTenantDbContext> options) : DbContext(options);

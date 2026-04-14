@@ -23,7 +23,7 @@ public sealed class TenantPartitionedBulkheadTests : IDisposable
     private readonly ConcurrencyLimiterRegistry _registry;
     private readonly IMeterFactory _meterFactory;
 
-    private GranitBulkheadOptions _options = new()
+    private readonly GranitBulkheadOptions _options = new()
     {
         Enabled = true,
         Policies = new Dictionary<string, BulkheadPolicyOptions>(StringComparer.OrdinalIgnoreCase)

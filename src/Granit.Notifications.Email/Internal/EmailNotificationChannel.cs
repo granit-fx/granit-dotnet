@@ -420,7 +420,7 @@ internal sealed partial class EmailNotificationChannel(
         }
 
         string result = html;
-        foreach (IRenderedContentTransformer transformer in transformers.OrderBy(t => t.Order).Where(t => t.CanTransform(DocumentFormat.Html)))
+        foreach (IRenderedContentTransformer transformer in transformers.Where(t => t.CanTransform(DocumentFormat.Html)).OrderBy(t => t.Order))
         {
             result = await transformer.TransformAsync(result, DocumentFormat.Html, cancellationToken).ConfigureAwait(false);
         }

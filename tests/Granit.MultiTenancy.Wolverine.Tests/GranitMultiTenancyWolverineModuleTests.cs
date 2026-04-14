@@ -45,8 +45,6 @@ public sealed class GranitMultiTenancyWolverineModuleTests
     }
 
     [Fact]
-    public void Module_ShouldBeSealed()
-    {
+    public void Module_ShouldBeSealed() =>
         typeof(GranitMultiTenancyWolverineModule).IsSealed.ShouldBeTrue();
-    }
 }

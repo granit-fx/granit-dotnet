@@ -22,7 +22,7 @@ public sealed class TenantPartitionedRateLimiterTests : IDisposable
     private readonly ICurrentUserService _currentUser = Substitute.For<ICurrentUserService>();
     private readonly IMeterFactory _meterFactory;
 
-    private GranitRateLimitingOptions _options = new()
+    private readonly GranitRateLimitingOptions _options = new()
     {
         Enabled = true,
         KeyPrefix = "rl",

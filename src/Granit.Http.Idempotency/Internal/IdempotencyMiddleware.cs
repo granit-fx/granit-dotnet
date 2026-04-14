@@ -244,7 +244,7 @@ internal sealed partial class IdempotencyMiddleware(
             }
         }
 
-        byte[] responseBody = captureStream.ToArray();
+        byte[] responseBody = captureStream.GetReadOnlySequence().ToArray();
 
         TimeSpan completedTtl = meta.CompletedTtlSeconds > 0
             ? TimeSpan.FromSeconds(meta.CompletedTtlSeconds)

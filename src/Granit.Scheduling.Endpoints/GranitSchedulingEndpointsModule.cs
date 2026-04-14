@@ -25,8 +25,6 @@ namespace Granit.Scheduling.Endpoints;
 public sealed class GranitSchedulingEndpointsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddQueryDefinition<ScheduledAction, ScheduledActionQueryDefinition>();
-    }
 }

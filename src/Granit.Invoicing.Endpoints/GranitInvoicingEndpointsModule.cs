@@ -16,8 +16,6 @@ namespace Granit.Invoicing.Endpoints;
     typeof(GranitValidationModule))]
 public sealed class GranitInvoicingEndpointsModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
-    }
 }

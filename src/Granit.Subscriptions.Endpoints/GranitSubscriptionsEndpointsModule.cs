@@ -18,8 +18,6 @@ namespace Granit.Subscriptions.Endpoints;
     typeof(GranitValidationModule))]
 public sealed class GranitSubscriptionsEndpointsModule : GranitModule
 {
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddQueryDefinition<Subscription, SubscriptionQueryDefinition>();
-    }
 }

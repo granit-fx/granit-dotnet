@@ -16,8 +16,6 @@ namespace Granit.AI.Endpoints;
 public sealed class GranitAIEndpointsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.AddQueryDefinition<AIUsageRecord, AIUsageRecordQueryDefinition>();
-    }
 }
