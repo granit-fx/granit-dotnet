@@ -142,7 +142,7 @@ internal sealed partial class ViesValidator(
         [property: JsonPropertyName("vatNumber")] string VatNumber);
 
     private sealed record ViesResponse(
-        [property: JsonPropertyName("isValid")] bool IsValid,
+        [property: JsonPropertyName("valid")] bool IsValid,
         [property: JsonPropertyName("name")] string? Name,
         [property: JsonPropertyName("address")] string? Address,
         [property: JsonPropertyName("requestIdentifier")] string? RequestIdentifier);

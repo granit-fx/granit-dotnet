@@ -103,7 +103,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
         SetupHttpClient(HttpStatusCode.OK, new
         {
-            isValid = true,
+            valid = true,
             name = "ACME BVBA",
             address = "RUE TEST 1",
             requestIdentifier = "WAPI-12345",
@@ -128,7 +128,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
         SetupHttpClient(HttpStatusCode.OK, new
         {
-            isValid = false,
+            valid = false,
             name = (string?)null,
             address = (string?)null,
             requestIdentifier = "WAPI-99999",
@@ -190,7 +190,7 @@ public sealed class ViesValidatorTests : IDisposable
         string? capturedBody = null;
         FakeHttpMessageHandler handler = new(HttpStatusCode.OK, new
         {
-            isValid = true,
+            valid = true,
             name = "GREEK CORP",
             address = "ATHENS",
             requestIdentifier = "WAPI-GR-001",
@@ -236,7 +236,7 @@ public sealed class ViesValidatorTests : IDisposable
         SetupCachePassthrough();
         SetupHttpClient(HttpStatusCode.OK, new
         {
-            isValid = true,
+            valid = true,
             name = "NORM CORP",
             address = "STREET",
             requestIdentifier = "WAPI-NORM",
