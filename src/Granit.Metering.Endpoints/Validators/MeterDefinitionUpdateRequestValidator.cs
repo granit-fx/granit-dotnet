@@ -9,7 +9,7 @@ internal sealed class MeterDefinitionUpdateRequestValidator : AbstractValidator<
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .MaximumLength(256);
+            .MaximumLength(200);
 
         RuleFor(x => x.Unit)
             .NotEmpty()

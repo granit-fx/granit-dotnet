@@ -9,7 +9,7 @@ namespace Granit.Subscriptions.Endpoints.Validators;
 /// </summary>
 internal sealed class SubscriptionCancelRequestValidator : GranitValidator<SubscriptionCancelRequest>
 {
-    internal const int MaxReasonLength = 1000;
+    internal const int MaxReasonLength = 500;
 
     public SubscriptionCancelRequestValidator()
     {

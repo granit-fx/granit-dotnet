@@ -1,23 +1,29 @@
 using FluentValidation;
 using Granit.Metering.Endpoints.Dtos;
+using Granit.Timing;
+using Granit.Validation.Extensions;
 
 namespace Granit.Metering.Endpoints.Validators;
 
 internal sealed class RecordUsageRequestValidator : AbstractValidator<RecordUsageRequest>
 {
-    public RecordUsageRequestValidator()
+    internal const int MaxBatchSize = 1000;
+
+    public RecordUsageRequestValidator(IClock clock)
     {
         RuleFor(x => x.Events)
-            .NotEmpty();
+            .NotEmpty()
+            .Must(events => events.Count <= MaxBatchSize)
+            .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.Events)
-            .SetValidator(new MeterEventRequestValidator());
+            .SetValidator(new MeterEventRequestValidator(clock));
     }
 }
 
 internal sealed class MeterEventRequestValidator : AbstractValidator<MeterEventRequest>
 {
-    public MeterEventRequestValidator()
+    public MeterEventRequestValidator(IClock clock)
     {
         RuleFor(x => x.MeterDefinitionId)
             .NotEmpty();
@@ -30,6 +36,12 @@ internal sealed class MeterEventRequestValidator : AbstractValidator<MeterEventR
             .GreaterThan(0);
 
         RuleFor(x => x.Timestamp)
-            .NotEmpty();
+            .NotEmpty()
+            .LessThanOrEqualTo(clock.Now.AddMinutes(5))
+            .GreaterThan(clock.Now.AddDays(-7));
+
+        RuleFor(x => x.Metadata)
+            .MaximumLength(4000)
+            .When(x => x.Metadata is not null);
     }
 }
