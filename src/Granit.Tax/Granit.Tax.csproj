@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Tax.Tests" />
-    <InternalsVisibleTo Include="Granit.Tax.Internal" />
+    <InternalsVisibleTo Include="Granit.Tax.Builtin" />
     <InternalsVisibleTo Include="Granit.Tax.EntityFrameworkCore" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

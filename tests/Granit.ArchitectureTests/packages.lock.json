@@ -2231,6 +2231,14 @@
           "WolverineFx": "[5.*, )"
         }
       },
+      "granit.invoicing.builtin": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DocumentGeneration": "[0.1.0-dev, )",
+          "Granit.Invoicing": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
+        }
+      },
       "granit.invoicing.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -2248,14 +2256,6 @@
           "Granit.Invoicing": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.invoicing.internal": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.DocumentGeneration": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )"
         }
       },
       "granit.invoicing.notifications": {
@@ -2762,16 +2762,16 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.payments.sepadirectdebit.builtin": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
+        }
+      },
       "granit.payments.sepadirectdebit.gocardless": {
         "type": "Project",
         "dependencies": {
           "GoCardless": "[7.*, )",
-          "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
-        }
-      },
-      "granit.payments.sepadirectdebit.internal": {
-        "type": "Project",
-        "dependencies": {
           "Granit.Payments.SepaDirectDebit": "[0.1.0-dev, )"
         }
       },
@@ -3087,6 +3087,12 @@
           "WolverineFx": "[5.*, )"
         }
       },
+      "granit.subscriptions.builtin": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Subscriptions": "[0.1.0-dev, )"
+        }
+      },
       "granit.subscriptions.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -3110,12 +3116,6 @@
         "type": "Project",
         "dependencies": {
           "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Subscriptions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.subscriptions.internal": {
-        "type": "Project",
-        "dependencies": {
           "Granit.Subscriptions": "[0.1.0-dev, )"
         }
       },
@@ -3146,6 +3146,16 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.tax.builtin": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Resilience": "[0.1.0-dev, )",
+          "Granit.Invoicing": "[0.1.0-dev, )",
+          "Granit.Tax": "[0.1.0-dev, )",
+          "Granit.Validation.Europe": "[0.1.0-dev, )"
+        }
+      },
       "granit.tax.endpoints": {
         "type": "Project",
         "dependencies": {
@@ -3160,16 +3170,6 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Tax": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
-        }
-      },
-      "granit.tax.internal": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Http.Resilience": "[0.1.0-dev, )",
-          "Granit.Invoicing": "[0.1.0-dev, )",
-          "Granit.Tax": "[0.1.0-dev, )",
-          "Granit.Validation.Europe": "[0.1.0-dev, )"
         }
       },
       "granit.tax.stripe": {

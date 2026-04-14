@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Payments.SepaDirectDebit.Builtin</PackageId>
+    <Description>Self-hosted SEPA Direct Debit provider. PAIN.008.001.08 XML generation for bank submission, offline mandate management, and IPaymentProvider bridge. Zero external dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Builtin.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Payments.SepaDirectDebit\Granit.Payments.SepaDirectDebit.csproj" />
+  </ItemGroup>
+
+</Project>

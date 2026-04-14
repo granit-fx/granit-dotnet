@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Tests" />
-    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Internal" />
+    <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Builtin" />
     <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.GoCardless" />
     <InternalsVisibleTo Include="Granit.Payments.SepaDirectDebit.Twikey" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

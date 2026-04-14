@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Tax.Internal" />
+    <InternalsVisibleTo Include="Granit.Tax.Builtin" />
     <InternalsVisibleTo Include="Granit.Validation.Europe.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

@@ -143,7 +143,7 @@
     <ProjectReference Include="..\..\src\Granit.Invoicing.BackgroundJobs\Granit.Invoicing.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Endpoints\Granit.Invoicing.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.EntityFrameworkCore\Granit.Invoicing.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Invoicing.Internal\Granit.Invoicing.Internal.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Invoicing.Builtin\Granit.Invoicing.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Notifications\Granit.Invoicing.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Odoo\Granit.Invoicing.Odoo.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Wolverine\Granit.Invoicing.Wolverine.csproj" />
@@ -198,7 +198,7 @@
     <ProjectReference Include="..\..\src\Granit.Payments.Notifications\Granit.Payments.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit\Granit.Payments.SepaDirectDebit.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.GoCardless\Granit.Payments.SepaDirectDebit.GoCardless.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.Internal\Granit.Payments.SepaDirectDebit.Internal.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.Builtin\Granit.Payments.SepaDirectDebit.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.Twikey\Granit.Payments.SepaDirectDebit.Twikey.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaTransfer\Granit.Payments.SepaTransfer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.Stripe\Granit.Payments.Stripe.csproj" />
@@ -245,7 +245,7 @@
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Endpoints\Granit.Subscriptions.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.EntityFrameworkCore\Granit.Subscriptions.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Features\Granit.Subscriptions.Features.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Subscriptions.Internal\Granit.Subscriptions.Internal.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Subscriptions.Builtin\Granit.Subscriptions.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Notifications\Granit.Subscriptions.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Wolverine\Granit.Subscriptions.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating\Granit.Templating.csproj" />
@@ -258,7 +258,7 @@
     <ProjectReference Include="..\..\src\Granit.Tax\Granit.Tax.csproj" />
     <ProjectReference Include="..\..\src\Granit.Tax.Endpoints\Granit.Tax.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Tax.EntityFrameworkCore\Granit.Tax.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Tax.Internal\Granit.Tax.Internal.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Tax.Builtin\Granit.Tax.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Tax.Stripe\Granit.Tax.Stripe.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />

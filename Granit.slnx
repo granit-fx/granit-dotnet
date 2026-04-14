@@ -227,7 +227,7 @@
     <Project Path="src/Granit.Invoicing.BackgroundJobs/Granit.Invoicing.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Invoicing.Endpoints/Granit.Invoicing.Endpoints.csproj" />
     <Project Path="src/Granit.Invoicing.EntityFrameworkCore/Granit.Invoicing.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Invoicing.Internal/Granit.Invoicing.Internal.csproj" />
+    <Project Path="src/Granit.Invoicing.Builtin/Granit.Invoicing.Builtin.csproj" />
     <Project Path="src/Granit.Invoicing.Notifications/Granit.Invoicing.Notifications.csproj" />
     <Project Path="src/Granit.Invoicing.Odoo/Granit.Invoicing.Odoo.csproj" />
     <Project Path="src/Granit.Invoicing.Wolverine/Granit.Invoicing.Wolverine.csproj" />
@@ -243,7 +243,7 @@
     <Project Path="src/Granit.Payments.Mollie/Granit.Payments.Mollie.csproj" />
     <Project Path="src/Granit.Payments.Notifications/Granit.Payments.Notifications.csproj" />
     <Project Path="src/Granit.Payments.SepaDirectDebit.GoCardless/Granit.Payments.SepaDirectDebit.GoCardless.csproj" />
-    <Project Path="src/Granit.Payments.SepaDirectDebit.Internal/Granit.Payments.SepaDirectDebit.Internal.csproj" />
+    <Project Path="src/Granit.Payments.SepaDirectDebit.Builtin/Granit.Payments.SepaDirectDebit.Builtin.csproj" />
     <Project Path="src/Granit.Payments.SepaDirectDebit.Twikey/Granit.Payments.SepaDirectDebit.Twikey.csproj" />
     <Project Path="src/Granit.Payments.SepaDirectDebit/Granit.Payments.SepaDirectDebit.csproj" />
     <Project Path="src/Granit.Payments.SepaTransfer/Granit.Payments.SepaTransfer.csproj" />
@@ -259,13 +259,13 @@
     <Project Path="src/Granit.Subscriptions.Endpoints/Granit.Subscriptions.Endpoints.csproj" />
     <Project Path="src/Granit.Subscriptions.EntityFrameworkCore/Granit.Subscriptions.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Subscriptions.Features/Granit.Subscriptions.Features.csproj" />
-    <Project Path="src/Granit.Subscriptions.Internal/Granit.Subscriptions.Internal.csproj" />
+    <Project Path="src/Granit.Subscriptions.Builtin/Granit.Subscriptions.Builtin.csproj" />
     <Project Path="src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj" />
     <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
     <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
     <Project Path="src/Granit.Tax.Endpoints/Granit.Tax.Endpoints.csproj" />
     <Project Path="src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Tax.Internal/Granit.Tax.Internal.csproj" />
+    <Project Path="src/Granit.Tax.Builtin/Granit.Tax.Builtin.csproj" />
     <Project Path="src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj" />
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
@@ -526,7 +526,7 @@
     <Project Path="tests/Granit.Invoicing.BackgroundJobs.Tests/Granit.Invoicing.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Endpoints.Tests/Granit.Invoicing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.EntityFrameworkCore.Tests/Granit.Invoicing.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Invoicing.Internal.Tests/Granit.Invoicing.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Invoicing.Builtin.Tests/Granit.Invoicing.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Notifications.Tests/Granit.Invoicing.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Odoo.Tests/Granit.Invoicing.Odoo.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Tests/Granit.Invoicing.Tests.csproj" />
@@ -542,7 +542,7 @@
     <Project Path="tests/Granit.Payments.Mollie.Tests/Granit.Payments.Mollie.Tests.csproj" />
     <Project Path="tests/Granit.Payments.Notifications.Tests/Granit.Payments.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Payments.SepaDirectDebit.GoCardless.Tests/Granit.Payments.SepaDirectDebit.GoCardless.Tests.csproj" />
-    <Project Path="tests/Granit.Payments.SepaDirectDebit.Internal.Tests/Granit.Payments.SepaDirectDebit.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Payments.SepaDirectDebit.Builtin.Tests/Granit.Payments.SepaDirectDebit.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Payments.SepaDirectDebit.Tests/Granit.Payments.SepaDirectDebit.Tests.csproj" />
     <Project Path="tests/Granit.Payments.SepaDirectDebit.Twikey.Tests/Granit.Payments.SepaDirectDebit.Twikey.Tests.csproj" />
     <Project Path="tests/Granit.Payments.SepaTransfer.Tests/Granit.Payments.SepaTransfer.Tests.csproj" />
@@ -558,13 +558,13 @@
     <Project Path="tests/Granit.Subscriptions.Endpoints.Tests/Granit.Subscriptions.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.EntityFrameworkCore.Tests/Granit.Subscriptions.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Features.Tests/Granit.Subscriptions.Features.Tests.csproj" />
-    <Project Path="tests/Granit.Subscriptions.Internal.Tests/Granit.Subscriptions.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Subscriptions.Builtin.Tests/Granit.Subscriptions.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Tests/Granit.Subscriptions.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Endpoints.Tests/Granit.Tax.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Tax.EntityFrameworkCore.Tests/Granit.Tax.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Tax.Internal.Tests/Granit.Tax.Internal.Tests.csproj" />
+    <Project Path="tests/Granit.Tax.Builtin.Tests/Granit.Tax.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Stripe.Tests/Granit.Tax.Stripe.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>

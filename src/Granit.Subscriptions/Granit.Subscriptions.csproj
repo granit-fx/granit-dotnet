@@ -11,7 +11,7 @@
     <InternalsVisibleTo Include="Granit.Subscriptions.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Subscriptions.Wolverine" />
     <InternalsVisibleTo Include="Granit.Subscriptions.Features" />
-    <InternalsVisibleTo Include="Granit.Subscriptions.Internal" />
+    <InternalsVisibleTo Include="Granit.Subscriptions.Builtin" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

@@ -909,6 +909,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Invoicing.Builtin",
+      "deps": [
+        "Granit.DocumentGeneration",
+        "Granit.Invoicing",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Invoicing.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -925,15 +934,6 @@
         "Granit.Guids",
         "Granit.Invoicing",
         "Granit.Persistence.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Invoicing.Internal",
-      "deps": [
-        "Granit.DocumentGeneration",
-        "Granit.Invoicing",
-        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -1453,14 +1453,14 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Payments.SepaDirectDebit.GoCardless",
+      "name": "Granit.Payments.SepaDirectDebit.Builtin",
       "deps": [
         "Granit.Payments.SepaDirectDebit"
       ],
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Payments.SepaDirectDebit.Internal",
+      "name": "Granit.Payments.SepaDirectDebit.GoCardless",
       "deps": [
         "Granit.Payments.SepaDirectDebit"
       ],
@@ -1799,6 +1799,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Subscriptions.Builtin",
+      "deps": [
+        "Granit.Subscriptions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Subscriptions.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -1822,13 +1829,6 @@
       "name": "Granit.Subscriptions.Features",
       "deps": [
         "Granit.Features",
-        "Granit.Subscriptions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Subscriptions.Internal",
-      "deps": [
         "Granit.Subscriptions"
       ],
       "framework": "net10.0"
@@ -1863,6 +1863,17 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Tax.Builtin",
+      "deps": [
+        "Granit.Caching",
+        "Granit.Http.Resilience",
+        "Granit.Invoicing",
+        "Granit.Tax",
+        "Granit.Validation.Europe"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Tax.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -1876,17 +1887,6 @@
       "deps": [
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Tax.Internal",
-      "deps": [
-        "Granit.Caching",
-        "Granit.Http.Resilience",
-        "Granit.Invoicing",
-        "Granit.Tax",
-        "Granit.Validation.Europe"
       ],
       "framework": "net10.0"
     },
@@ -18993,6 +18993,22 @@
       "members": []
     },
     {
+      "name": "GranitInvoicingBuiltinModule",
+      "fqn": "Granit.Invoicing.Builtin.GranitInvoicingBuiltinModule",
+      "kind": "class",
+      "project": "Granit.Invoicing.Builtin",
+      "file": "src/Granit.Invoicing.Builtin/GranitInvoicingBuiltinModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "CreateInvoiceCommand",
       "fqn": "Granit.Invoicing.Commands.CreateInvoiceCommand",
       "kind": "record",
@@ -19833,22 +19849,6 @@
           "kind": "method",
           "signature": "CalculateAsync(TaxRequest request, CancellationToken cancellationToken = default)",
           "returnType": "string Name { get; } Task<TaxResult>"
-        }
-      ]
-    },
-    {
-      "name": "GranitInvoicingInternalModule",
-      "fqn": "Granit.Invoicing.Internal.GranitInvoicingInternalModule",
-      "kind": "class",
-      "project": "Granit.Invoicing.Internal",
-      "file": "src/Granit.Invoicing.Internal/GranitInvoicingInternalModule.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
         }
       ]
     },
@@ -28306,6 +28306,62 @@
       ]
     },
     {
+      "name": "GranitPaymentsSepaDirectDebitBuiltinModule",
+      "fqn": "Granit.Payments.SepaDirectDebit.Builtin.GranitPaymentsSepaDirectDebitBuiltinModule",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Builtin",
+      "file": "src/Granit.Payments.SepaDirectDebit.Builtin/GranitPaymentsSepaDirectDebitBuiltinModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SepaDirectDebitBuiltinOptions",
+      "fqn": "Granit.Payments.SepaDirectDebit.Builtin.Options.SepaDirectDebitBuiltinOptions",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit.Builtin",
+      "file": "src/Granit.Payments.SepaDirectDebit.Builtin/Options/SepaDirectDebitBuiltinOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreditorIban",
+          "kind": "property",
+          "signature": "string CreditorIban",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorBic",
+          "kind": "property",
+          "signature": "string CreditorBic",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorName",
+          "kind": "property",
+          "signature": "string CreditorName",
+          "returnType": "string"
+        },
+        {
+          "name": "CreditorId",
+          "kind": "property",
+          "signature": "string CreditorId",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultScheme",
+          "kind": "property",
+          "signature": "Domain.SddScheme DefaultScheme",
+          "returnType": "Domain.SddScheme"
+        }
+      ]
+    },
+    {
       "name": "CollectionFileResult",
       "fqn": "Granit.Payments.SepaDirectDebit.Contracts.CollectionFileResult",
       "kind": "record",
@@ -28616,62 +28672,6 @@
           "kind": "method",
           "signature": "UpdateAsync(Mandate mandate, CancellationToken cancellationToken = default)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "GranitPaymentsSepaDirectDebitInternalModule",
-      "fqn": "Granit.Payments.SepaDirectDebit.Internal.GranitPaymentsSepaDirectDebitInternalModule",
-      "kind": "class",
-      "project": "Granit.Payments.SepaDirectDebit.Internal",
-      "file": "src/Granit.Payments.SepaDirectDebit.Internal/GranitPaymentsSepaDirectDebitInternalModule.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "SepaDirectDebitInternalOptions",
-      "fqn": "Granit.Payments.SepaDirectDebit.Internal.Options.SepaDirectDebitInternalOptions",
-      "kind": "class",
-      "project": "Granit.Payments.SepaDirectDebit.Internal",
-      "file": "src/Granit.Payments.SepaDirectDebit.Internal/Options/SepaDirectDebitInternalOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "CreditorIban",
-          "kind": "property",
-          "signature": "string CreditorIban",
-          "returnType": "string"
-        },
-        {
-          "name": "CreditorBic",
-          "kind": "property",
-          "signature": "string CreditorBic",
-          "returnType": "string"
-        },
-        {
-          "name": "CreditorName",
-          "kind": "property",
-          "signature": "string CreditorName",
-          "returnType": "string"
-        },
-        {
-          "name": "CreditorId",
-          "kind": "property",
-          "signature": "string CreditorId",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultScheme",
-          "kind": "property",
-          "signature": "Domain.SddScheme DefaultScheme",
-          "returnType": "Domain.SddScheme"
         }
       ]
     },
@@ -35185,6 +35185,22 @@
       ]
     },
     {
+      "name": "GranitSubscriptionsBuiltinModule",
+      "fqn": "Granit.Subscriptions.Builtin.GranitSubscriptionsBuiltinModule",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Builtin",
+      "file": "src/Granit.Subscriptions.Builtin/GranitSubscriptionsBuiltinModule.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "CreateUsageInvoiceRequest",
       "fqn": "Granit.Subscriptions.CreateUsageInvoiceRequest",
       "kind": "record",
@@ -36323,22 +36339,6 @@
       ]
     },
     {
-      "name": "GranitSubscriptionsInternalModule",
-      "fqn": "Granit.Subscriptions.Internal.GranitSubscriptionsInternalModule",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Internal",
-      "file": "src/Granit.Subscriptions.Internal/GranitSubscriptionsInternalModule.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "CancellationConfirmedNotificationData",
       "fqn": "Granit.Subscriptions.Notifications.CancellationConfirmedNotificationData",
       "kind": "record",
@@ -36724,6 +36724,54 @@
       ]
     },
     {
+      "name": "GranitTaxBuiltinModule",
+      "fqn": "Granit.Tax.Builtin.GranitTaxBuiltinModule",
+      "kind": "class",
+      "project": "Granit.Tax.Builtin",
+      "file": "src/Granit.Tax.Builtin/GranitTaxBuiltinModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EuVatRateOptions",
+      "fqn": "Granit.Tax.Builtin.Options.EuVatRateOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Builtin",
+      "file": "src/Granit.Tax.Builtin/Options/EuVatRateOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "StandardRates",
+          "kind": "property",
+          "signature": "Dictionary<string, decimal> StandardRates",
+          "returnType": "Dictionary<string, decimal>"
+        }
+      ]
+    },
+    {
+      "name": "ViesOptions",
+      "fqn": "Granit.Tax.Builtin.Options.ViesOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Builtin",
+      "file": "src/Granit.Tax.Builtin/Options/ViesOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(\"https://ec.europa.eu/taxation_customs/vies/rest-api/\")",
+          "returnType": "Uri BaseUrl { get; set; } ="
+        }
+      ]
+    },
+    {
       "name": "TaxMetrics",
       "fqn": "Granit.Tax.Diagnostics.TaxMetrics",
       "kind": "class",
@@ -37066,54 +37114,6 @@
           "kind": "method",
           "signature": "IsEuMember(string countryCode)",
           "returnType": "bool"
-        }
-      ]
-    },
-    {
-      "name": "GranitTaxInternalModule",
-      "fqn": "Granit.Tax.Internal.GranitTaxInternalModule",
-      "kind": "class",
-      "project": "Granit.Tax.Internal",
-      "file": "src/Granit.Tax.Internal/GranitTaxInternalModule.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "EuVatRateOptions",
-      "fqn": "Granit.Tax.Internal.Options.EuVatRateOptions",
-      "kind": "class",
-      "project": "Granit.Tax.Internal",
-      "file": "src/Granit.Tax.Internal/Options/EuVatRateOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "StandardRates",
-          "kind": "property",
-          "signature": "Dictionary<string, decimal> StandardRates",
-          "returnType": "Dictionary<string, decimal>"
-        }
-      ]
-    },
-    {
-      "name": "ViesOptions",
-      "fqn": "Granit.Tax.Internal.Options.ViesOptions",
-      "kind": "class",
-      "project": "Granit.Tax.Internal",
-      "file": "src/Granit.Tax.Internal/Options/ViesOptions.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(\"https://ec.europa.eu/taxation_customs/vies/rest-api/\")",
-          "returnType": "Uri BaseUrl { get; set; } ="
         }
       ]
     },

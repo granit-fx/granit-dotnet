@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Invoicing.Builtin</PackageId>
+    <Description>Self-hosted invoice PDF generation for Granit.Invoicing. Implements IInvoiceDocumentGenerator using Granit.Templating (Scriban) and Granit.DocumentGeneration.Pdf for HTML-to-PDF conversion. Tenant-brandable templates.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Invoicing.Builtin.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.DocumentGeneration\Granit.DocumentGeneration.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+
+</Project>

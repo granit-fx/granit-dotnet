@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Tax.Builtin</PackageId>
+    <Description>Self-hosted EU VAT tax calculator for Granit. Implements ITaxCalculator with EU VAT rules (reverse charge, OSS, export), VIES online validation with offline fallback, and configurable tax rates for all 27 EU member states.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Tax.Builtin.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit.Http.Resilience\Granit.Http.Resilience.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+    <ProjectReference Include="..\Granit.Tax\Granit.Tax.csproj" />
+    <ProjectReference Include="..\Granit.Validation.Europe\Granit.Validation.Europe.csproj" />
+  </ItemGroup>
+
+</Project>
