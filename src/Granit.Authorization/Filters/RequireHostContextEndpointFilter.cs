@@ -34,11 +34,11 @@ internal sealed class RequireHostContextEndpointFilter : IEndpointFilter
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
-        ICurrentTenant currentTenant = context.HttpContext.RequestServices
-            .GetRequiredService<ICurrentTenant>();
+        ICurrentTenant? currentTenant = context.HttpContext.RequestServices
+            .GetService<ICurrentTenant>();
 
-        // Tenant mode — always allowed, no extra check needed.
-        if (currentTenant.IsAvailable)
+        // No multi-tenancy module or tenant is active — pass through.
+        if (currentTenant is null || currentTenant.IsAvailable)
         {
             return next(context);
         }
