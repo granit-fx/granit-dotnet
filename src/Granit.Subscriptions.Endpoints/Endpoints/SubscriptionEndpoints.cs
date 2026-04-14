@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -33,7 +34,8 @@ internal static class SubscriptionEndpoints
             .WithDescription("Returns the full subscription details including seat count and dunning status.")
             .Produces<SubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
+            .AllowHostAccess();
 
         group.MapPost("/subscriptions", CreateSubscriptionAsync)
             .WithName("CreateSubscription")

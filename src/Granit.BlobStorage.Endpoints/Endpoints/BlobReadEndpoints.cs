@@ -1,5 +1,7 @@
+using Granit.Authorization.Extensions;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Endpoints.Dtos;
+using Granit.BlobStorage.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +22,8 @@ internal static class BlobReadEndpoints
                 + "and validation results. The containerName query parameter is required. "
                 + "Returns 404 if the blob does not exist in the specified container.")
             .Produces<BlobDescriptorResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .AllowHostAccess();
 
         return group;
     }

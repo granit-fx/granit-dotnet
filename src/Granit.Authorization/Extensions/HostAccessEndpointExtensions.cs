@@ -11,28 +11,23 @@ public static class HostAccessEndpointExtensions
 {
     /// <summary>
     /// Marks the endpoint as accessible from host context (no active tenant) in addition
-    /// to normal tenant-scoped access. When the caller has no tenant context, the specified
-    /// <paramref name="hostPermission"/> is checked before the handler executes.
+    /// to normal tenant-scoped access.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// Endpoints without this filter only serve tenant-scoped data. In host context
+    /// Endpoints without this marker only serve tenant-scoped data. In host context
     /// (no <c>X-Tenant-Id</c> header), the multi-tenant query filter produces
     /// <c>WHERE TenantId IS NULL</c> which returns no tenant data — a safe default.
     /// </para>
     /// <para>
     /// Adding <c>.AllowHostAccess()</c> enables the endpoint to serve cross-tenant data
-    /// by bypassing the multi-tenant query filter, but <b>only after verifying</b> the
-    /// caller has the required host-level permission.
+    /// by bypassing the multi-tenant query filter. Permission checks are handled by the
+    /// existing <c>.RequireAuthorization(permission)</c> — no need to repeat the permission.
     /// </para>
     /// </remarks>
     /// <param name="builder">The route handler builder.</param>
-    /// <param name="hostPermission">
-    /// The permission name to check in host context (e.g. <c>"Subscriptions.Subscriptions.Read"</c>).
-    /// </param>
     /// <returns>The <see cref="RouteHandlerBuilder"/> for further chaining.</returns>
     public static RouteHandlerBuilder AllowHostAccess(
-        this RouteHandlerBuilder builder, string hostPermission) =>
-        builder.AddEndpointFilter(
-            new RequireHostContextEndpointFilter(hostPermission));
+        this RouteHandlerBuilder builder) =>
+        builder.AddEndpointFilter(new RequireHostContextEndpointFilter());
 }

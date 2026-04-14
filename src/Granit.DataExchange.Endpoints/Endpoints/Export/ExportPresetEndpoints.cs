@@ -1,7 +1,9 @@
+using Granit.Authorization.Extensions;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Internal.Export;
 using Granit.DataExchange.Endpoints.Internal.Import;
+using Granit.DataExchange.Endpoints.Permissions;
 using Granit.DataExchange.Export;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -26,7 +28,8 @@ internal static class ExportPresetEndpoints
             .WithName("ListExportPresets")
             .WithSummary("Lists saved export presets for a given definition.")
             .WithDescription("Returns all saved export presets for the given export definition. Presets store a reusable field selection, output format, and sorting configuration so users can quickly re-export without reconfiguring.")
-            .Produces<IReadOnlyList<ExportPresetResponse>>();
+            .Produces<IReadOnlyList<ExportPresetResponse>>()
+            .AllowHostAccess();
 
         group.MapPost("/presets", SavePresetAsync)
             .WithName("SaveExportPreset")

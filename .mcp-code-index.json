@@ -6097,7 +6097,7 @@
         {
           "name": "AllowHostAccess",
           "kind": "method",
-          "signature": "AllowHostAccess(this RouteHandlerBuilder builder, string hostPermission)",
+          "signature": "AllowHostAccess(this RouteHandlerBuilder builder)",
           "returnType": "RouteHandlerBuilder"
         }
       ]

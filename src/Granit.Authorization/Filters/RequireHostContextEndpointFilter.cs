@@ -6,33 +6,31 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Granit.Authorization.Filters;
 
 /// <summary>
-/// Endpoint filter that validates host-level authorization on endpoints supporting
-/// cross-tenant administration.
+/// Endpoint filter that marks an endpoint as accessible from host context (no active tenant).
 /// </summary>
 /// <remarks>
 /// <para>
-/// Apply this filter to endpoints that should be accessible from both tenant and host
-/// contexts. When a tenant context is active, the filter is a no-op — the endpoint
-/// executes normally with standard tenant-scoped data access. When no tenant context
-/// is active (host mode), the filter verifies the caller has the specified host-level
-/// permission before proceeding.
+/// When a tenant context is active, the filter is a no-op — the endpoint executes normally
+/// with standard tenant-scoped data access. When no tenant context is active (host mode),
+/// the filter verifies the caller is authenticated before proceeding.
 /// </para>
 /// <para>
-/// This implements <b>defense in depth</b>: even if the data layer bypasses the
-/// multi-tenant query filter in host context, unauthorized callers are rejected here
-/// before reaching the handler.
+/// Permission checks are handled by the existing <c>.RequireAuthorization(permission)</c>
+/// chain which delegates to <see cref="IPermissionChecker"/> — this already uses
+/// <c>perm:global:{role}:{permission}</c> in host context. This filter does NOT duplicate
+/// that check; it only ensures no anonymous caller reaches host endpoints.
 /// </para>
 /// </remarks>
 /// <example>
 /// <code>
 /// group.MapGet("/{id:guid}", GetByIdAsync)
-///     .AllowHostAccess(SubscriptionsPermissions.Subscriptions.Read);
+///     .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
+///     .AllowHostAccess();
 /// </code>
 /// </example>
-internal sealed class RequireHostContextEndpointFilter(
-    string hostPermission) : IEndpointFilter
+internal sealed class RequireHostContextEndpointFilter : IEndpointFilter
 {
-    public async ValueTask<object?> InvokeAsync(
+    public ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
@@ -42,20 +40,19 @@ internal sealed class RequireHostContextEndpointFilter(
         // Tenant mode — always allowed, no extra check needed.
         if (currentTenant.IsAvailable)
         {
-            return await next(context).ConfigureAwait(false);
+            return next(context);
         }
 
-        // Host mode — verify caller has host-level permission.
-        IPermissionChecker checker = context.HttpContext.RequestServices
-            .GetRequiredService<IPermissionChecker>();
-
-        if (!await checker.IsGrantedAsync(hostPermission).ConfigureAwait(false))
+        // Host mode — ensure caller is authenticated (defense in depth).
+        // Permission checks are already handled by RequireAuthorization().
+        if (context.HttpContext.User.Identity?.IsAuthenticated != true)
         {
-            return TypedResults.Problem(
-                detail: "Host-level authorization required for this operation.",
-                statusCode: StatusCodes.Status403Forbidden);
+            return new ValueTask<object?>(
+                TypedResults.Problem(
+                    detail: "Authentication required for host-level access.",
+                    statusCode: StatusCodes.Status401Unauthorized));
         }
 
-        return await next(context).ConfigureAwait(false);
+        return next(context);
     }
 }
