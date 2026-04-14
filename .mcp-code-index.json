@@ -1090,6 +1090,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.MultiTenancy.Wolverine",
+      "deps": [
+        "Granit.MultiTenancy",
+        "Granit.Persistence.EntityFrameworkCore.Hosting",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications",
       "deps": [
         "Granit.Encryption",
@@ -13181,7 +13190,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Extensions/GranitHostBuilderExtensions.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "AddGranit",
@@ -20145,7 +20154,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Json/SingleValueObjectJsonConverterFactory.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "CanConvert",
@@ -22749,6 +22758,31 @@
       "file": "src/Granit/MultiTenancy/TenantUrlStrategy.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "GranitMultiTenancyWolverineModule",
+      "fqn": "Granit.MultiTenancy.Wolverine.GranitMultiTenancyWolverineModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Wolverine",
+      "file": "src/Granit.MultiTenancy.Wolverine/GranitMultiTenancyWolverineModule.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "TenantProvisioningHandler",
+      "fqn": "Granit.MultiTenancy.Wolverine.Handlers.TenantProvisioningHandler",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Wolverine",
+      "file": "src/Granit.MultiTenancy.Wolverine/Handlers/TenantProvisioningHandler.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TenantCreatedEvent evt, ITenantProvisioner provisioner, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "NotificationsAIHostApplicationBuilderExtensions",
@@ -28989,6 +29023,12 @@
           "returnType": "Task"
         },
         {
+          "name": "SeedTenantAsync",
+          "kind": "method",
+          "signature": "SeedTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
           "name": "SeedAsync",
           "kind": "method",
           "signature": "SeedAsync(DataSeedContext context, CancellationToken cancellationToken = default)",
@@ -29265,7 +29305,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/Extensions/PersistenceHostingHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitMigrateSupport",
@@ -29368,6 +29408,22 @@
           "kind": "method",
           "signature": "typeof(TContext)",
           "returnType": "Type IMigratableModule.DbContextType =>"
+        }
+      ]
+    },
+    {
+      "name": "ITenantProvisioner",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Hosting.ITenantProvisioner",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Hosting",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Hosting/ITenantProvisioner.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "ProvisionAsync",
+          "kind": "method",
+          "signature": "ProvisionAsync(Guid tenantId, string tenantName, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },

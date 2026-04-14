@@ -11,8 +11,9 @@ namespace Granit.Json;
 /// <c>{"value":"text/html"}</c>.
 /// </summary>
 /// <remarks>
-/// Register globally via <c>JsonSerializerOptions.Converters.Add(new SingleValueObjectJsonConverterFactory())</c>
-/// or through <c>GranitJsonDefaults</c>.
+/// Automatically registered for minimal API endpoints by <c>AddGranit()</c>.
+/// For other serialization contexts, add manually via
+/// <c>JsonSerializerOptions.Converters.Add(new SingleValueObjectJsonConverterFactory())</c>.
 /// </remarks>
 public sealed class SingleValueObjectJsonConverterFactory : JsonConverterFactory
 {

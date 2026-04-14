@@ -1,6 +1,9 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
+using Granit.Json;
 using Granit.Modularity;
 using Granit.MultiTenancy;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -99,6 +102,8 @@ public static class GranitHostBuilderExtensions
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
+        ConfigureJsonDefaults(builder);
+
         application.ConfigureServices(context);
 
         builder.Services.AddSingleton(application);
@@ -122,12 +127,41 @@ public static class GranitHostBuilderExtensions
 
         builder.Services.TryAddSingleton<ICurrentTenant>(NullTenantContext.Instance);
 
+        ConfigureJsonDefaults(builder);
+
         await application.ConfigureServicesAsync(context).ConfigureAwait(false);
 
         builder.Services.AddSingleton(application);
 
         return builder;
     }
+
+    /// <summary>
+    /// Configures JSON defaults for minimal API endpoints: enum-as-string serialization
+    /// and <see cref="SingleValueObjectJsonConverterFactory"/> for domain value objects.
+    /// Guarded against duplicate registration (safe if <c>AddGranit()</c> is called multiple times).
+    /// </summary>
+    private static void ConfigureJsonDefaults(IHostApplicationBuilder builder)
+    {
+        // ConfigureHttpJsonOptions is additive — guard to prevent duplicate converters.
+        if (builder.Services.Any(d => d.ServiceType == typeof(GranitJsonDefaultsMarker)))
+        {
+            return;
+        }
+
+        builder.Services.AddSingleton<GranitJsonDefaultsMarker>();
+
+        builder.Services.ConfigureHttpJsonOptions(options =>
+        {
+            options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.SerializerOptions.Converters.Add(new SingleValueObjectJsonConverterFactory());
+        });
+    }
+
+    /// <summary>
+    /// Marker type to prevent duplicate JSON converter registration.
+    /// </summary>
+    private sealed class GranitJsonDefaultsMarker;
 
     private static IReadOnlyList<Assembly> GetDistinctModuleAssemblies(
         IReadOnlyList<ModuleDescriptor> modules) =>
