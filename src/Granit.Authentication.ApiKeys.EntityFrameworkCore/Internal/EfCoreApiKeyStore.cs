@@ -1,4 +1,5 @@
 using Granit.Authentication.ApiKeys.Domain;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,8 +12,9 @@ namespace Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed partial class EfCoreApiKeyStore(
     IDbContextFactory<AuthenticationApiKeysDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     ILogger<EfCoreApiKeyStore> logger)
-    : EfStoreBase<ApiKeyEntry, AuthenticationApiKeysDbContext>(contextFactory), IApiKeyStore
+    : EfStoreBase<ApiKeyEntry, AuthenticationApiKeysDbContext>(contextFactory, currentTenant), IApiKeyStore
 {
     /// <inheritdoc/>
     public Task<ApiKeyEntry?> FindByHashAsync(string hashedKey, CancellationToken cancellationToken = default) =>

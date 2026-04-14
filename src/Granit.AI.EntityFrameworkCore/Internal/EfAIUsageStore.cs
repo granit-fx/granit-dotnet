@@ -1,5 +1,6 @@
 using Granit.AI.Diagnostics;
 using Granit.AI.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,8 +15,9 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class EfAIUsageStore(
     IDbContextFactory<AIDbContext> contextFactory,
+    ICurrentTenant currentTenant,
     AIMetrics metrics)
-    : EfStoreBase<AIUsageRecordEntity, AIDbContext>(contextFactory), IAIUsageTracker
+    : EfStoreBase<AIUsageRecordEntity, AIDbContext>(contextFactory, currentTenant), IAIUsageTracker
 {
     /// <inheritdoc/>
     public async Task RecordAsync(

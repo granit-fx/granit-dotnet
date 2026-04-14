@@ -1,5 +1,6 @@
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Metering.EntityFrameworkCore.Internal;
 
 internal sealed class EfMeterDefinitionReader(
-    IDbContextFactory<MeteringDbContext> contextFactory)
-    : EfStoreBase<MeterDefinition, MeteringDbContext>(contextFactory),
+    IDbContextFactory<MeteringDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<MeterDefinition, MeteringDbContext>(contextFactory, currentTenant),
       IMeterDefinitionReader
 {
     public Task<MeterDefinition?> GetByIdAsync(MeterDefinitionId id, CancellationToken cancellationToken = default) =>

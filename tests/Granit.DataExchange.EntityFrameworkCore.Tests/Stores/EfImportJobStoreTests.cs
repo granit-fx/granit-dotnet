@@ -3,7 +3,9 @@ using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Tests.Infrastructure;
 using Granit.DataExchange.Import.Domain;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +16,7 @@ public sealed class EfImportJobStoreTests
     private static string NewDb() => Guid.NewGuid().ToString();
 
     private static EfImportJobStore CreateStore(string dbName) =>
-        new(new InMemoryDataExchangeContextFactory(dbName));
+        new(new InMemoryDataExchangeContextFactory(dbName), Substitute.For<ICurrentTenant>());
 
     private static ImportJob CreateJob(Guid? id = null) =>
         CreateJobWithTenant(tenantId: null, id);

@@ -1,4 +1,5 @@
 using Granit.Guids;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
@@ -35,7 +36,7 @@ public sealed class EfWebhookSubscriptionStoreTests : IAsyncDisposable
         clock.Now.Returns(Now);
 
         _contextFactory = new TestWebhooksDbContextFactory(_options);
-        _sut = new EfWebhookSubscriptionStore(_contextFactory, guidGenerator, secretProtector, clock);
+        _sut = new EfWebhookSubscriptionStore(_contextFactory, Substitute.For<ICurrentTenant>(), guidGenerator, secretProtector, clock);
     }
 
     public async ValueTask DisposeAsync()

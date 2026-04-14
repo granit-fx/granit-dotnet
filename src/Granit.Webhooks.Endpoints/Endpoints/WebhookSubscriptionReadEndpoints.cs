@@ -1,6 +1,8 @@
+using Granit.Authorization.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints.Dtos;
+using Granit.Webhooks.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,7 +22,8 @@ internal static class WebhookSubscriptionReadEndpoints
                 "Fetches the full details of a single webhook subscription including its current status, "
                 + "target URL, event type, and delivery statistics. Returns 404 if the subscription does not exist.")
             .Produces<WebhookSubscriptionResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .AllowHostAccess();
 
         return group;
     }

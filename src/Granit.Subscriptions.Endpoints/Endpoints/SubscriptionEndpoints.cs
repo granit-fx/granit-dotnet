@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -34,7 +35,8 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
+            .AllowHostAccess();
 
         group.MapPost("/subscriptions", CreateSubscriptionAsync)
             .WithName("CreateSubscription")

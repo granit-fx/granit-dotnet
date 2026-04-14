@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Scheduling.Domain;
@@ -17,8 +18,9 @@ namespace Granit.Scheduling.EntityFrameworkCore.Internal;
 /// be Scoped to avoid captive dependency violations.
 /// </remarks>
 internal sealed class EfScheduledActionStore(
-    IDbContextFactory<SchedulingDbContext> contextFactory)
-    : EfStoreBase<ScheduledAction, SchedulingDbContext>(contextFactory),
+    IDbContextFactory<SchedulingDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<ScheduledAction, SchedulingDbContext>(contextFactory, currentTenant),
       IScheduledActionReader, IScheduledActionWriter
 {
     /// <inheritdoc/>

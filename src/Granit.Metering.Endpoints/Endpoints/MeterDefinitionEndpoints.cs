@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Metering.Domain;
@@ -24,7 +25,8 @@ internal static class MeterDefinitionEndpoints
                 + "Inactive meters are excluded from the results. "
                 + "Use the GET by ID endpoint to retrieve a specific meter regardless of status.")
             .Produces<IReadOnlyList<MeterDefinitionResponse>>()
-            .RequireAuthorization(MeteringPermissions.Meters.Read);
+            .RequireAuthorization(MeteringPermissions.Meters.Read)
+            .AllowHostAccess();
 
         group.MapGet("/meters/{id:guid}", GetMeterByIdAsync)
             .WithName("GetMeterDefinition")
@@ -34,7 +36,8 @@ internal static class MeterDefinitionEndpoints
                 + "and active status. Returns 404 if the meter does not exist.")
             .Produces<MeterDefinitionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(MeteringPermissions.Meters.Read);
+            .RequireAuthorization(MeteringPermissions.Meters.Read)
+            .AllowHostAccess();
 
         group.MapPost("/meters", CreateMeterAsync)
             .WithName("CreateMeterDefinition")

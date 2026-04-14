@@ -6087,6 +6087,22 @@
       ]
     },
     {
+      "name": "HostAccessEndpointExtensions",
+      "fqn": "Granit.Authorization.Extensions.HostAccessEndpointExtensions",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Extensions/HostAccessEndpointExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AllowHostAccess",
+          "kind": "method",
+          "signature": "AllowHostAccess(this RouteHandlerBuilder builder)",
+          "returnType": "RouteHandlerBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitAuthorizationModule",
       "fqn": "Granit.Authorization.GranitAuthorizationModule",
       "kind": "class",
@@ -29084,7 +29100,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 27,
+      "line": 42,
       "members": []
     },
     {

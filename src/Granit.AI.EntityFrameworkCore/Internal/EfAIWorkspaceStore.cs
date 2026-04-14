@@ -1,5 +1,6 @@
 using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.Workspaces;
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +15,9 @@ namespace Granit.AI.EntityFrameworkCore.Internal;
 /// query filter applied by <c>ApplyGranitConventions</c> on <see cref="AIDbContext"/>.
 /// </remarks>
 internal sealed class EfAIWorkspaceStore(
-    IDbContextFactory<AIDbContext> contextFactory)
-    : EfStoreBase<AIWorkspaceEntity, AIDbContext>(contextFactory), IAIWorkspaceStoreReader, IAIWorkspaceStoreWriter
+    IDbContextFactory<AIDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<AIWorkspaceEntity, AIDbContext>(contextFactory, currentTenant), IAIWorkspaceStoreReader, IAIWorkspaceStoreWriter
 {
     /// <inheritdoc/>
     public async Task<AIWorkspace?> FindAsync(

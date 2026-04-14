@@ -1,3 +1,4 @@
+using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine.SavedViews;
@@ -11,8 +12,9 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Internal;
 /// Performs CRUD operations on <see cref="SavedView"/> via <see cref="QueryEngineDbContext"/>.
 /// </summary>
 internal sealed class EfCoreSavedViewStore(
-    IDbContextFactory<QueryEngineDbContext> contextFactory)
-    : EfStoreBase<SavedView, QueryEngineDbContext>(contextFactory), ISavedViewStoreReader, ISavedViewStoreWriter
+    IDbContextFactory<QueryEngineDbContext> contextFactory,
+    ICurrentTenant currentTenant)
+    : EfStoreBase<SavedView, QueryEngineDbContext>(contextFactory, currentTenant), ISavedViewStoreReader, ISavedViewStoreWriter
 {
     /// <inheritdoc/>
     public Task<IReadOnlyList<SavedView>> GetListAsync(

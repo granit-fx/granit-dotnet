@@ -1,5 +1,6 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.EntityFrameworkCore.Internal;
+using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -17,7 +18,7 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
     public EfCoreApiKeyStoreTests()
     {
         _factory = TestDbContextFactory.Create();
-        _sut = new EfCoreApiKeyStore(_factory, NullLogger<EfCoreApiKeyStore>.Instance);
+        _sut = new EfCoreApiKeyStore(_factory, Substitute.For<ICurrentTenant>(), NullLogger<EfCoreApiKeyStore>.Instance);
     }
 
     public void Dispose() => _factory.Dispose();
@@ -81,7 +82,7 @@ public sealed class EfCoreApiKeyStoreTests : IDisposable
             .Returns<AuthenticationApiKeysDbContext>(_ => throw new DbUpdateException("Simulated failure"));
 
         ILogger<EfCoreApiKeyStore> logger = Substitute.For<ILogger<EfCoreApiKeyStore>>();
-        var failingSut = new EfCoreApiKeyStore(mockFactory, logger);
+        var failingSut = new EfCoreApiKeyStore(mockFactory, Substitute.For<ICurrentTenant>(), logger);
 
         // Should not throw — the exception is caught and logged
         await Should.NotThrowAsync(
