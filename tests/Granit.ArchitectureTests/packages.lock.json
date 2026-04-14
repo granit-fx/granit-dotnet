@@ -3075,6 +3075,7 @@
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
+          "Granit.Metering": "[0.1.0-dev, )",
           "Granit.Scheduling": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
@@ -3137,6 +3138,7 @@
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Subscriptions": "[0.1.0-dev, )",
           "Granit.Wolverine": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )",
           "WolverineFx": "[5.*, )"
         }
       },
