@@ -5,8 +5,8 @@
       "Microsoft.AspNetCore.OutputCaching.StackExchangeRedis": {
         "type": "Direct",
         "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "JTImL13xKz/bfeMA9ZG2SueBqjlJnAD0imv94XWa0vrY5qLGuolNd+wdq6cVVQEtjoqsirjtCnuLWIuuKxPJAg==",
+        "resolved": "10.0.6",
+        "contentHash": "92Y6+hxR8nTOQ7Gqic4I3U+6PTSRW2/e4YvsN3g62P43jLp4jD2d9yfJ1648WeasYr4Q996ZtIheOVVTJMMUTg==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }
@@ -74,8 +74,8 @@
       "Microsoft.Extensions.Caching.StackExchangeRedis": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.0.5",
-        "contentHash": "zXb143/TpEKOLQuWGw2CkJgb9F4XXh2XbevMvppzsIHr1/pjML0zjc+vzXcpCV8YUwpW5NIaScZhzFSm621B3Q==",
+        "resolved": "10.0.6",
+        "contentHash": "26xccg2/iKzDb3SYcI/bsQoujno5bb8pUp1WSRZ5BP43qk2L25XgY80cDO0dr2qeu152mcF2Qn2FjLeZn1yZZQ==",
         "dependencies": {
           "StackExchange.Redis": "2.7.27"
         }
