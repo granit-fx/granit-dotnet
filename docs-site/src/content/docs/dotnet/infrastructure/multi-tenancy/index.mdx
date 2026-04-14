@@ -24,6 +24,8 @@ caching, messaging — automatically scope their operations to the active tenant
 - **Host/tenant schema separation** — configurable via `appsettings.json`
 - **Message propagation** — Wolverine automatically carries tenant context
   across async boundaries
+- **Automatic provisioning** — new tenants get schema creation, EF Core
+  migrations, and data seeding out of the box
 
 ## Package structure
 
@@ -32,6 +34,7 @@ caching, messaging — automatically scope their operations to the active tenant
 - Granit.MultiTenancy.EntityFrameworkCore — Tenant store, EF Core persistence
 - Granit.MultiTenancy.Endpoints — Tenant admin API endpoints
 - Granit.Persistence.EntityFrameworkCore — Isolation strategies, GranitDbDefaults, SchemaEnsurer
+- Granit.MultiTenancy.Wolverine — Automatic tenant provisioning handler
 - Granit.Caching — TenantAwareFusionCache decorator
 </FileTree>
 
@@ -40,6 +43,8 @@ caching, messaging — automatically scope their operations to the active tenant
 | `Granit.MultiTenancy` | Resolvers, `CurrentTenant`, middleware, options |
 | `Granit.MultiTenancy.EntityFrameworkCore` | `ITenantReader`/`ITenantWriter`, tenant aggregate, EF persistence |
 | `Granit.Persistence.EntityFrameworkCore` | `GranitDbDefaults`, `SchemaEnsurer`, isolation strategy factories |
+| `Granit.MultiTenancy.Wolverine` | `TenantProvisioningHandler` — automatic tenant provisioning on creation |
+| `Granit.Persistence.EntityFrameworkCore.Hosting` | `ITenantProvisioner`, `AutoTenantProvisioner` — schema + migration + seeding |
 | `Granit.Caching` | `TenantAwareFusionCache` — automatic cache key isolation |
 
 ## Architecture
@@ -102,6 +107,8 @@ This section covers multi-tenancy in depth:
   from tenant data using `GranitDbDefaults`
 - [**Cache Isolation**](./cache/) — automatic tenant-scoped cache keys with
   `TenantAwareFusionCache`
+- [**Automatic Provisioning**](./isolation/#automatic-tenant-provisioning) —
+  zero-config schema creation, migrations, and seeding for new tenants
 
 ## See also
 

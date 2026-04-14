@@ -135,7 +135,7 @@ When operating in a tenant context and needing to access host-level data, use th
 semantic `ChangeToHost()` extension:
 
 ```csharp
-public class TenantProvisioningService(
+public class TenantInfoService(
     ICurrentTenant currentTenant,
     ITenantReader tenantReader)
 {
@@ -151,6 +151,12 @@ public class TenantProvisioningService(
     }
 }
 ```
+
+:::note[Provisioning is automatic]
+You no longer need to write a manual `TenantProvisioningService` — the framework's
+`AutoTenantProvisioner` handles schema creation, migrations, and seeding automatically
+when a tenant is created. See [Automatic Tenant Provisioning](/dotnet/infrastructure/multi-tenancy/isolation/#automatic-tenant-provisioning).
+:::
 
 `ChangeToHost()` is a semantic wrapper around `currentTenant.Change(null)` — it
 communicates the intent clearly ("I'm accessing host data") rather than using a

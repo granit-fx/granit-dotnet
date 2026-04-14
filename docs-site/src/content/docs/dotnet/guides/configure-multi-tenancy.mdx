@@ -375,6 +375,34 @@ factory.WithWebHostBuilder(builder =>
 });
 ```
 
+## Step 8 -- Enable automatic tenant provisioning (recommended)
+
+When a tenant is created at runtime, the framework can automatically provision its
+database resources (schema, tables, seed data). Install the Wolverine integration:
+
+```bash
+dotnet add package Granit.MultiTenancy.Wolverine
+```
+
+Add the module dependency:
+
+```csharp
+[DependsOn(
+    typeof(GranitMultiTenancyWolverineModule),
+    // ... other dependencies
+)]
+public sealed class AppHostModule : GranitModule { }
+```
+
+That's it. When `TenantCreatedEvent` fires, the `AutoTenantProvisioner` discovers
+all `DbContext` types registered via `AddGranitIsolatedDbContext<T>()`, creates
+schemas, runs migrations, and executes `ITenantDataSeedContributor` implementations.
+
+:::tip[Custom provisioning]
+Replace `ITenantProvisioner` in DI to add application-specific logic (external
+registry calls, per-tenant configuration). Register **before** `AddGranitMigrateSupport()`.
+:::
+
 ## Verify
 
 Confirm tenant isolation is working by sending requests with different tenant headers:

@@ -267,6 +267,18 @@ public class ReportService(ICurrentTenant currentTenant)
 }
 ```
 
+## Automatic tenant provisioning
+
+When a tenant is created at runtime, the framework automatically provisions its
+database resources. `Granit.MultiTenancy.Wolverine` provides a handler that listens
+to `TenantCreatedEvent` and delegates to `ITenantProvisioner`, which discovers all
+isolated DbContexts, creates schemas, runs migrations, and seeds tenant data.
+
+No application code is needed — install the package, add the module dependency,
+and tenant provisioning works out of the box. See
+[Automatic Tenant Provisioning](/dotnet/infrastructure/multi-tenancy/isolation/#automatic-tenant-provisioning)
+for the full reference.
+
 ## Further reading
 
 - [Multi-Tenancy reference](/dotnet/infrastructure/multi-tenancy/) — overview,

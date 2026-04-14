@@ -135,18 +135,91 @@ Call `SchemaEnsurer.EnsureSchemasAsync()` at application startup, before any mig
 await SchemaEnsurer.EnsureSchemasAsync(context, cancellationToken, "host");
 ```
 
-For tenant provisioning, create the tenant schema **before** running migrations:
+For tenant provisioning, the `AutoTenantProvisioner` handles schema creation and
+migration order automatically. If you need manual control:
 
 ```csharp
-// In tenant provisioning workflow
+// Manual provisioning (rare — prefer AutoTenantProvisioner)
 await SchemaEnsurer.EnsureSchemasAsync(context, ct, $"tenant_{tenantId:N}");
 await context.Database.MigrateAsync(ct); // search_path already activated
 ```
 
 :::caution[Provisioning order is critical]
 If migrations start with a `search_path` pointing to a non-existent schema,
-Npgsql throws a fatal error before creating the first table. Always create the
-schema first.
+Npgsql throws a fatal error before creating the first table.
+`AutoTenantProvisioner` handles this ordering automatically.
+:::
+
+## Automatic tenant provisioning
+
+When a new tenant is created at runtime (via the admin API), `TenantCreatedEvent` is
+dispatched as a domain event. The `Granit.MultiTenancy.Wolverine` package provides a
+framework-level handler that **automatically provisions** the tenant — no application
+code needed:
+
+1. **Schema creation** — calls `SchemaEnsurer.EnsureSchemasAsync()` for SchemaPerTenant
+2. **EF Core migrations** — runs `MigrateAsync()` on every isolated DbContext discovered
+   via `IsolatedDbContextMarker`
+3. **Data seeding** — executes all `ITenantDataSeedContributor` implementations for the
+   new tenant
+
+```mermaid
+sequenceDiagram
+    participant API as Admin API
+    participant EF as EF Core SaveChanges
+    participant WV as Wolverine
+    participant TP as AutoTenantProvisioner
+
+    API->>EF: CreateAsync(tenant)
+    EF-->>WV: TenantCreatedEvent (domain event)
+    WV->>TP: HandleAsync → ProvisionAsync
+    TP->>TP: Discover IsolatedDbContextMarker(s)
+    TP->>TP: CREATE SCHEMA IF NOT EXISTS
+    TP->>TP: MigrateAsync per DbContext
+    TP->>TP: SeedTenantAsync (contributors)
+```
+
+### Zero-configuration setup
+
+Install the package and add the module dependency:
+
+```bash
+dotnet add package Granit.MultiTenancy.Wolverine
+```
+
+```csharp
+[DependsOn(typeof(GranitMultiTenancyWolverineModule))]
+public sealed class AppHostModule : GranitModule { }
+```
+
+The handler is auto-discovered by Wolverine. All `DbContext` types registered via
+`AddGranitIsolatedDbContext<T>()` are provisioned automatically — no manual listing needed.
+
+### Custom provisioning
+
+Replace the default `ITenantProvisioner` to add application-specific logic (e.g.,
+external registry calls, per-tenant configuration seeding):
+
+```csharp
+// Register before AddGranitMigrateSupport() — TryAddSingleton won't override
+builder.Services.AddSingleton<ITenantProvisioner, MyCustomTenantProvisioner>();
+```
+
+### Cold-start vs runtime
+
+| Path | When | Who provisions |
+|------|------|---------------|
+| `--migrate` | First deploy / schema changes | `GranitMigrationRunner` (re-migration pass after host seeding) |
+| Runtime | Admin creates tenant via API | `TenantProvisioningHandler` → `AutoTenantProvisioner` |
+
+Both paths are **idempotent**: `CREATE SCHEMA IF NOT EXISTS`, EF Core migration tracking,
+and seed contributors that guard against duplicate inserts. Wolverine's retry policies
+can safely replay provisioning messages.
+
+:::tip[Idempotent by design]
+If the application crashes mid-provisioning and Wolverine replays the
+`TenantCreatedEvent`, all already-completed steps are skipped automatically.
+No cleanup or compensation logic is needed.
 :::
 
 ## Hybrid model

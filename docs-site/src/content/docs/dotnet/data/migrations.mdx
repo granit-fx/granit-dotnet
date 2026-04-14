@@ -242,6 +242,15 @@ await foreach (Guid tenantId in tenantEnumerator.GetActiveTenantIdsAsync(ct))
 
 See [Multi-tenancy](/dotnet/concepts/multi-tenancy/) for how to implement these interfaces.
 
+#### Runtime provisioning
+
+The `--migrate` runner handles **cold-start** provisioning (first deploy). For tenants
+created **at runtime** (via the admin API), `Granit.MultiTenancy.Wolverine` provides
+an automatic `TenantProvisioningHandler` that listens to `TenantCreatedEvent` and
+delegates to `ITenantProvisioner`. See
+[Automatic Tenant Provisioning](/dotnet/infrastructure/multi-tenancy/isolation/#automatic-tenant-provisioning)
+for details.
+
 ### Data seeding
 
 `AddGranitMigrateSupport()` **disables** `DataSeedingHostedService` at normal startup
@@ -270,7 +279,7 @@ this option is enabled.
 | **K8s init container** | `args: ["--migrate"]` in the init container spec; pods start only after init succeeds |
 | **K8s rolling update** | `--migrate` applies Expand migration; Expand & Contract backfills at runtime |
 | **Microservice** | Same — typically one `IMigratableModule<T>` per service |
-| **SaaS schema-per-tenant** | `ITenantEnumerator` iterates tenants; `ITenantDbIsolator` sets `search_path` |
+| **SaaS schema-per-tenant** | `ITenantEnumerator` iterates tenants; `ITenantDbIsolator` sets `search_path`; runtime: `AutoTenantProvisioner` |
 | **Integration tests** | No `--migrate` arg → `HasGranitMigrateFlag()` returns `false` → no-op; `WebApplicationFactory` works normally |
 
 ### Safety rules

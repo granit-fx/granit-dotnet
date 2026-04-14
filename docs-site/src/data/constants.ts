@@ -1,5 +1,5 @@
 /** Single source of truth for documentation-wide constants. */
-export const PACKAGE_COUNT = 258;
+export const PACKAGE_COUNT = 259;
 export const FRONTEND_PACKAGE_COUNT = 49;
 export const CULTURE_COUNT = 18;
 export const BASE_LANGUAGE_COUNT = 15;
