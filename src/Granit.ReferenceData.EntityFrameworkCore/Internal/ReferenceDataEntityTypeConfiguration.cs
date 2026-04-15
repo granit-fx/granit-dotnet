@@ -2,7 +2,7 @@ using Granit.ReferenceData.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
+namespace Granit.ReferenceData.EntityFrameworkCore;
 
 /// <summary>
 /// Base EF Core Fluent API configuration for reference data entities.
@@ -88,7 +88,7 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
                .HasMaxLength(250)
                .IsRequired();
 
-        // Translation labels (13 supported locales besides English)
+        // Translation labels (14 supported locales besides English)
         builder.Property(e => e.LabelFr).HasMaxLength(250);
         builder.Property(e => e.LabelNl).HasMaxLength(250);
         builder.Property(e => e.LabelDe).HasMaxLength(250);
@@ -102,6 +102,7 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
         builder.Property(e => e.LabelKo).HasMaxLength(250);
         builder.Property(e => e.LabelSv).HasMaxLength(250);
         builder.Property(e => e.LabelCs).HasMaxLength(250);
+        builder.Property(e => e.LabelHi).HasMaxLength(250);
 
         // IsActive — indexed for global query filter performance
         builder.HasIndex(e => e.IsActive)

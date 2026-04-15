@@ -1,3 +1,4 @@
+using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
@@ -43,7 +44,8 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                 sp.GetRequiredService<IFusionCache>(),
                 sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
                 scope,
-                sp.GetRequiredService<ICurrentTenant>()));
+                sp.GetRequiredService<ICurrentTenant>(),
+                sp.GetRequiredService<IGuidGenerator>()));
         services.AddScoped<IReferenceDataStoreReader<TEntity>>(sp =>
             sp.GetRequiredService<EfCoreReferenceDataStore<TEntity, TDbContext>>());
         services.AddScoped<IReferenceDataStoreWriter<TEntity>>(sp =>
@@ -156,7 +158,8 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                     sp.GetRequiredService<IFusionCache>(),
                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
                     registrationScope,
-                    sp.GetRequiredService<ICurrentTenant>()));
+                    sp.GetRequiredService<ICurrentTenant>(),
+                    sp.GetRequiredService<IGuidGenerator>()));
 
             services.AddKeyedScoped<IReferenceDataStoreWriter<DynamicReferenceDataEntity>>(
                 registration.TypeName,
@@ -165,7 +168,8 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                     sp.GetRequiredService<IFusionCache>(),
                     sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ReferenceDataOptions>>(),
                     registrationScope,
-                    sp.GetRequiredService<ICurrentTenant>()));
+                    sp.GetRequiredService<ICurrentTenant>(),
+                    sp.GetRequiredService<IGuidGenerator>()));
 
             // 2. Register ExtraProperty mappings for shadow columns
             if (registration.Options.PropertyMappings.Count > 0)

@@ -25,6 +25,7 @@ internal sealed class GenericReferenceDataQueryDefinition<TEntity>
             .Column(e => e.LabelFr, c => c.Label("Label (FR)").Filterable())
             .Column(e => e.LabelNl, c => c.Label("Label (NL)").Filterable())
             .Column(e => e.LabelDe, c => c.Label("Label (DE)").Filterable())
+            .Column(e => e.LabelHi, c => c.Label("Label (HI)").Filterable())
             .Column(e => e.IsActive, c => c.Label("Active").Filterable())
             .Column(e => e.SortOrder, c => c.Label("Sort Order").Sortable())
             .Column(e => e.ValidFrom, c => c.Label("Valid From").Filterable().Sortable())

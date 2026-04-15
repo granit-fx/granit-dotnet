@@ -263,7 +263,7 @@ internal static partial class BffLoginEndpoints
             .ConfigureAwait(false);
 
         metrics.RecordLogin(null);
-        LogLoginSuccess(logger, MaskSessionId(sessionId), frontend.Name);
+        LogLoginSuccess(logger, BffSessionEndpoints.MaskSessionId(sessionId), frontend.Name);
 
         // Redirect to the original URL the user requested, or fall back to the configured post-login path
         string redirectUrl = !string.IsNullOrEmpty(pkceState.ReturnUrl)
@@ -549,9 +549,6 @@ internal static partial class BffLoginEndpoints
             return null;
         }
     }
-
-    internal static string MaskSessionId(string sessionId) =>
-        sessionId.Length > 8 ? $"{sessionId[..4]}...{sessionId[^4..]}" : "****";
 
     /// <summary>
     /// Validates a caller-supplied <c>returnUrl</c> to prevent open-redirect attacks.

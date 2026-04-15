@@ -5,6 +5,7 @@ using Granit.Http.ApiDocumentation;
 using Granit.Http.Cookies;
 using Granit.Modularity;
 using Granit.Validation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +31,12 @@ public sealed class GranitBffEndpointsModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        // Auto-bind BFF options from the "Bff" configuration section so consumers
+        // don't need to call Configure<GranitBffOptions> manually. Idempotent if
+        // AddGranitBffYarp also binds from the same section.
+        context.Services.Configure<GranitBffOptions>(
+            context.Builder!.Configuration.GetSection(GranitBffOptions.SectionName));
+
         context.Services.TryAddScoped<IBffLogoutOrchestrator, DefaultBffLogoutOrchestrator>();
 
         bool isDevelopment = context.Builder!.Environment.IsDevelopment();

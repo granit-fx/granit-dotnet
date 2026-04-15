@@ -1,6 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
+using Granit.ReferenceData.EntityFrameworkCore;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -52,7 +53,8 @@ public sealed class EfCoreReferenceDataStoreTests
             cache,
             options,
             ReferenceDataScope.Global,
-            Substitute.For<ICurrentTenant>());
+            Substitute.For<ICurrentTenant>(),
+            Substitute.For<Granit.Guids.IGuidGenerator>());
     }
 
     private static async Task SeedAsync(
@@ -366,7 +368,7 @@ public sealed class EfCoreReferenceDataStoreTests
         ServiceProvider sp = services.BuildServiceProvider();
         IServiceScopeFactory scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
 
-        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, ReferenceDataScope.Global, Substitute.For<ICurrentTenant>());
+        EfCoreReferenceDataStore<TestEntity, TestDbContext> store = new(scopeFactory, cache, opts, ReferenceDataScope.Global, Substitute.For<ICurrentTenant>(), Substitute.For<Granit.Guids.IGuidGenerator>());
 
         // Populate cache by querying
         await store.GetByCodeAsync("DE", TestContext.Current.CancellationToken);

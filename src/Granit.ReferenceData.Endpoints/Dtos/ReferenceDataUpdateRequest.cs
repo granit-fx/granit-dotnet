@@ -19,6 +19,7 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="LabelKo">Updated Korean display label.</param>
 /// <param name="LabelSv">Updated Swedish display label.</param>
 /// <param name="LabelCs">Updated Czech display label.</param>
+/// <param name="LabelHi">Updated Hindi display label.</param>
 /// <param name="SortOrder">Updated display order.</param>
 /// <param name="IsActive">Updated active status.</param>
 /// <param name="ValidFrom">Updated start of validity period.</param>
@@ -40,6 +41,7 @@ public sealed record ReferenceDataUpdateRequest(
     string LabelKo = "",
     string LabelSv = "",
     string LabelCs = "",
+    string LabelHi = "",
     int SortOrder = 0,
     bool IsActive = true,
     DateTimeOffset? ValidFrom = null,

@@ -33,6 +33,7 @@ internal static class ReferenceDataMapper
             entity.LabelKo,
             entity.LabelSv,
             entity.LabelCs,
+            entity.LabelHi,
             entity.IsActive,
             entity.SortOrder,
             entity.ValidFrom,

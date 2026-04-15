@@ -38,6 +38,7 @@ public static class ReferenceDataServiceCollectionExtensions
 
         // Ensure singleton registry + initializer exist (idempotent for multiple AddReferenceData calls)
         services.TryAddSingleton<ReferenceDataRegistry>();
+        services.TryAddSingleton<ReferenceDataMetrics>();
         services.TryAddEnumerable(
             ServiceDescriptor.Singleton<IHostedService, ReferenceDataRegistryInitializer>());
 

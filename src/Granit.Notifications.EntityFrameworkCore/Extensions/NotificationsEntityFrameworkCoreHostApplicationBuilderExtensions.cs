@@ -17,7 +17,7 @@ namespace Granit.Notifications.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for enabling EF Core persistence in Granit.Notifications.
 /// </summary>
-public static class NotificationsEfCoreHostApplicationBuilderExtensions
+public static class NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Replaces the default InMemory/no-op stores with durable EF Core implementations

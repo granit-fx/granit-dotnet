@@ -45,6 +45,7 @@ internal sealed class ReferenceDataMutableFieldsValidator<T> : GranitValidator<T
         RuleFor(x => x.LabelKo).MaximumLength(MaxLabelLength);
         RuleFor(x => x.LabelSv).MaximumLength(MaxLabelLength);
         RuleFor(x => x.LabelCs).MaximumLength(MaxLabelLength);
+        RuleFor(x => x.LabelHi).MaximumLength(MaxLabelLength);
 
         RuleFor(x => x.SortOrder)
             .GreaterThanOrEqualTo(0);

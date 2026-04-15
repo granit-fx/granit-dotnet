@@ -13,7 +13,7 @@ namespace Granit.ReferenceData.Domain;
 /// <remarks>
 /// <para>
 /// Each reference data entity has a unique <see cref="Code"/> (business key) and labels
-/// for the 14 supported locales (en, fr, nl, de, es, it, pt, zh, ja, pl, tr, ko, sv, cs).
+/// for the 15 supported locales (en, fr, nl, de, es, it, pt, zh, ja, pl, tr, ko, sv, cs, hi).
 /// The virtual <see cref="Label"/> property resolves the appropriate label based on
 /// <see cref="CultureInfo.CurrentUICulture"/>, falling back to <see cref="LabelEn"/>
 /// when the requested locale has no value.
@@ -85,6 +85,9 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraPro
     /// <summary>Czech display label.</summary>
     public string LabelCs { get; set; } = string.Empty;
 
+    /// <summary>Hindi display label.</summary>
+    public string LabelHi { get; set; } = string.Empty;
+
     /// <summary>
     /// Resolved display label for the current UI culture. Returns the locale-specific
     /// label when available, falling back to <see cref="LabelEn"/> when the translation
@@ -110,6 +113,7 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraPro
         "ko" when LabelKo.Length > 0 => LabelKo,
         "sv" when LabelSv.Length > 0 => LabelSv,
         "cs" when LabelCs.Length > 0 => LabelCs,
+        "hi" when LabelHi.Length > 0 => LabelHi,
         _ => LabelEn,
     };
 

@@ -12,8 +12,9 @@ namespace Granit.Notifications.EntityFrameworkCore;
 /// <c>AddGranitNotificationsEntityFrameworkCore(opts => opts.UseYourProvider(connectionString))</c>
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
-[DependsOn(typeof(GranitNotificationsModule))]
-[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreModule))]
+[DependsOn(
+    typeof(GranitNotificationsModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitNotificationsEntityFrameworkCoreModule : GranitModule
 {
     // Services are registered via AddGranitNotificationsEntityFrameworkCore() extension method
