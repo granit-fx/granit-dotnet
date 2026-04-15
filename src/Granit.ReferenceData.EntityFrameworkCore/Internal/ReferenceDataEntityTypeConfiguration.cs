@@ -2,7 +2,7 @@ using Granit.ReferenceData.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.ReferenceData.EntityFrameworkCore;
+namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Base EF Core Fluent API configuration for reference data entities.

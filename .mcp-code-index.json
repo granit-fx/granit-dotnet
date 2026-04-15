@@ -33804,7 +33804,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ModelBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": []
     },
     {
@@ -33827,7 +33827,7 @@
     },
     {
       "name": "ReferenceDataEntityTypeConfiguration",
-      "fqn": "Granit.ReferenceData.EntityFrameworkCore.ReferenceDataEntityTypeConfiguration",
+      "fqn": "Granit.ReferenceData.EntityFrameworkCore.Internal.ReferenceDataEntityTypeConfiguration",
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Internal/ReferenceDataEntityTypeConfiguration.cs",

@@ -15,7 +15,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Tests;
 public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
 {
     private sealed class TestEntityConfiguration
-        : Granit.ReferenceData.EntityFrameworkCore.ReferenceDataEntityTypeConfiguration<TestEntity>
+        : Granit.ReferenceData.EntityFrameworkCore.Internal.ReferenceDataEntityTypeConfiguration<TestEntity>
     {
         public TestEntityConfiguration() : base("ref_test_entities") { }
     }
