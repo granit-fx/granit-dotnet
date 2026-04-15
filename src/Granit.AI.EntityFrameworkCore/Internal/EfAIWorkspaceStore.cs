@@ -44,7 +44,7 @@ internal sealed class EfAIWorkspaceStore(
     }
 
     /// <inheritdoc/>
-    public async Task SaveAsync(
+    public async Task CreateAsync(
         AIWorkspace workspace,
         CancellationToken cancellationToken = default)
     {

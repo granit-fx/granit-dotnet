@@ -3524,9 +3524,9 @@
       "line": 10,
       "members": [
         {
-          "name": "SaveAsync",
+          "name": "CreateAsync",
           "kind": "method",
-          "signature": "SaveAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)",
+          "signature": "CreateAsync(AIWorkspace workspace, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {

@@ -7,7 +7,7 @@ namespace Granit.AI.Internal;
 /// </summary>
 internal sealed class NullAIWorkspaceStoreWriter : IAIWorkspaceStoreWriter
 {
-    public Task SaveAsync(AIWorkspace workspace, CancellationToken cancellationToken = default) =>
+    public Task CreateAsync(AIWorkspace workspace, CancellationToken cancellationToken = default) =>
         Task.CompletedTask;
 
     public Task UpdateAsync(AIWorkspace workspace, CancellationToken cancellationToken = default) =>

@@ -10,7 +10,7 @@ namespace Granit.AI.Workspaces;
 public interface IAIWorkspaceStoreWriter
 {
     /// <inheritdoc cref="IAIWorkspaceManager.CreateAsync"/>
-    Task SaveAsync(AIWorkspace workspace, CancellationToken cancellationToken = default);
+    Task CreateAsync(AIWorkspace workspace, CancellationToken cancellationToken = default);
 
     /// <inheritdoc cref="IAIWorkspaceManager.UpdateAsync"/>
     Task UpdateAsync(AIWorkspace workspace, CancellationToken cancellationToken = default);

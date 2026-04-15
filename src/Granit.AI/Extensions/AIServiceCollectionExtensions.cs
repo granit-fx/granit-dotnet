@@ -40,6 +40,7 @@ public static class AIServiceCollectionExtensions
         builder.Services.TryAddScoped<IAIWorkspaceProvider, DefaultAIWorkspaceProvider>();
         builder.Services.TryAddScoped<IAIWorkspaceStoreReader, NullAIWorkspaceStoreReader>();
         builder.Services.TryAddScoped<IAIWorkspaceStoreWriter, NullAIWorkspaceStoreWriter>();
+        builder.Services.TryAddScoped<IAIWorkspaceManager, DefaultAIWorkspaceManager>();
 
         // Factories (Scoped — depend on IAIWorkspaceProvider which may consume scoped stores)
         builder.Services.TryAddScoped<IAIChatClientFactory, DefaultAIChatClientFactory>();
