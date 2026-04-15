@@ -19,6 +19,7 @@ integrate with Wolverine for durable outbox-backed execution when installed.
 
 <FileTree>
 - Granit.DataExchange/ Core: import/export pipelines, fluent definitions, mapping suggestion engine
+  - Granit.DataExchange.BlobStorage Bridges IDataExchangeFileProvider to IBlobStoreProvider (S3, Azure, FileSystem)
   - Granit.DataExchange.Csv CSV parser (Sep SIMD) and writer (semicolon separator)
   - Granit.DataExchange.Excel Excel parser (Sylvan.Data.Excel) and writer (ClosedXML)
   - Granit.DataExchange.EntityFrameworkCore DataExchangeDbContext, EF executor, identity resolvers, stores
@@ -30,6 +31,7 @@ integrate with Wolverine for durable outbox-backed execution when installed.
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.DataExchange` | Import/export pipelines, mapping suggestions, fluent definitions | `Granit.Timing`, `Granit.Validation` |
+| `Granit.DataExchange.BlobStorage` | Bridges file operations to blob storage providers | `Granit.DataExchange`, `Granit.BlobStorage` |
 | `Granit.DataExchange.Csv` | Sep-based CSV parser, semicolon CSV writer | `Granit.DataExchange` |
 | `Granit.DataExchange.Excel` | Sylvan streaming Excel reader, ClosedXML writer | `Granit.DataExchange` |
 | `Granit.DataExchange.EntityFrameworkCore` | DataExchangeDbContext, EF executor, identity resolvers | `Granit.DataExchange`, `Granit.Persistence` |
@@ -43,6 +45,8 @@ integrate with Wolverine for durable outbox-backed execution when installed.
 graph TD
     DX[Granit.DataExchange] --> T[Granit.Timing]
     DX --> V[Granit.Validation]
+    BS[Granit.DataExchange.BlobStorage] --> DX
+    BS --> B[Granit.BlobStorage]
     CSV[Granit.DataExchange.Csv] --> DX
     XLS[Granit.DataExchange.Excel] --> DX
     EF[Granit.DataExchange.EntityFrameworkCore] --> DX
@@ -61,6 +65,7 @@ graph TD
 ```csharp
 [DependsOn(
     typeof(GranitDataExchangeEntityFrameworkCoreModule),
+    typeof(GranitDataExchangeBlobStorageModule),
     typeof(GranitDataExchangeEndpointsModule),
     typeof(GranitDataExchangeCsvModule),
     typeof(GranitDataExchangeExcelModule),
@@ -149,6 +154,49 @@ No EF Core, no endpoints. Useful for CLI tools or custom orchestration.
 
 </TabItem>
 </Tabs>
+
+## File storage
+
+Both import and export pipelines need to store files (uploaded CSV/Excel for import,
+generated output for export). The `IDataExchangeFileProvider` interface abstracts
+this concern with three operations: `OpenAsync`, `SaveAsync`, and `DeleteAsync`.
+
+By default, a null-object implementation is registered that throws
+`NotImplementedException` — the application must provide a concrete implementation.
+
+### Using the BlobStorage adapter
+
+The simplest approach is to add `Granit.DataExchange.BlobStorage`, which bridges
+`IDataExchangeFileProvider` to the registered blob storage provider (S3, Azure Blob,
+FileSystem, etc.):
+
+```csharp
+[DependsOn(typeof(GranitDataExchangeBlobStorageModule))]
+public class AppModule : GranitModule { }
+```
+
+```json
+{
+  "Granit:DataExchange:BlobStorage": {
+    "ContainerName": "data-exchange"
+  }
+}
+```
+
+| Property | Default | Description |
+|----------|---------|-------------|
+| `ContainerName` | `data-exchange` | Logical blob container for import/export files |
+| `DefaultContentType` | `application/octet-stream` | MIME type for stored export files |
+
+### Custom implementation
+
+For scenarios where blob storage is not available (CLI tools, local file system,
+in-memory testing), implement `IDataExchangeFileProvider` directly and register
+it as a scoped service:
+
+```csharp
+services.Replace(ServiceDescriptor.Scoped<IDataExchangeFileProvider, MyFileProvider>());
+```
 
 ## Import pipeline
 
@@ -575,7 +623,7 @@ dispatchers with Wolverine's `IMessageBus` for durable outbox-backed execution:
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Module | `GranitDataExchangeModule`, `GranitDataExchangeCsvModule`, `GranitDataExchangeExcelModule`, `GranitDataExchangeEntityFrameworkCoreModule`, `GranitDataExchangeEndpointsModule`, `GranitDataExchangeWolverineModule` | --- |
+| Module | `GranitDataExchangeModule`, `GranitDataExchangeBlobStorageModule`, `GranitDataExchangeCsvModule`, `GranitDataExchangeExcelModule`, `GranitDataExchangeEntityFrameworkCoreModule`, `GranitDataExchangeEndpointsModule`, `GranitDataExchangeWolverineModule` | --- |
 | Import pipeline | `IImportOrchestrator`, `IMappingSuggestionService`, `IFileParser`, `IDataMapper`, `IRowValidator`, `IImportExecutor` | `Granit.DataExchange` |
 | Import definition | `ImportDefinition<T>`, `ImportDefinitionBuilder<T>`, `PropertyMappingBuilder` | `Granit.DataExchange` |
 | Import identity | `IRecordIdentityResolver`, `RecordIdentity`, `RecordOperation` | `Granit.DataExchange` |
@@ -587,6 +635,7 @@ dispatchers with Wolverine's `IMessageBus` for durable outbox-backed execution:
 | Export presets | `IExportPresetReader`, `IExportPresetWriter` | `Granit.DataExchange` |
 | Pre-built defs | `GranitDataExchangeDefinitionsModule`, `AddGranitExportDefinitions()` | `Granit.DataExchange.Definitions` |
 | Mapping | `MappingConfidence`, `ImportColumnMapping`, `ISemanticMappingService` | `Granit.DataExchange` |
+| File storage | `IDataExchangeFileProvider`, `DataExchangeBlobStorageOptions` | `Granit.DataExchange`, `Granit.DataExchange.BlobStorage` |
 | Options | `ImportOptions`, `ExportOptions`, `ImportExecutionOptions` | `Granit.DataExchange` |
 | Permissions | `DataExchangePermissions.Imports.{Read,Execute}`, `DataExchangePermissions.Exports.{Read,Execute}` | `Granit.DataExchange.Endpoints` |
 | Extensions | `AddImportDefinition<T, TDef>()`, `AddExportDefinition<T, TDef>()`, `AddSemanticMappingService<T>()`, `MapGranitDataExchange()` | --- |
