@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- NuGet audit: low-severity CVEs are warnings, moderate+ are errors -->
+    <NuGetAuditLevel>moderate</NuGetAuditLevel>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <NoWarn>CA1848;CA1873;CA1707;CA1305;CA1861;CS1591;CS1574;CS1734</NoWarn>
