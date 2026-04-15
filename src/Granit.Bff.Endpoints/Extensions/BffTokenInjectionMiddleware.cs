@@ -306,16 +306,16 @@ public sealed partial class BffTokenInjectionMiddleware
     private static partial void LogCsrfRejection(ILogger logger, string method, string path, string frontendName);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "BFF middleware: session {MaskedSession} expired or not found for frontend {FrontendName}")]
-    private static partial void LogExpiredSession(ILogger logger, string maskedSession, string frontendName);
+        Message = "BFF middleware: session {SessionId} expired or not found for frontend {FrontendName}")]
+    private static partial void LogExpiredSession(ILogger logger, string sessionId, string frontendName);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "BFF middleware: token refreshed for session {MaskedSession} on frontend {FrontendName}")]
-    private static partial void LogTokenRefreshed(ILogger logger, string maskedSession, string frontendName);
+        Message = "BFF middleware: token refreshed for session {SessionId} on frontend {FrontendName}")]
+    private static partial void LogTokenRefreshed(ILogger logger, string sessionId, string frontendName);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "BFF middleware: token refresh failed for session {MaskedSession} on frontend {FrontendName}")]
-    private static partial void LogTokenRefreshFailed(ILogger logger, string maskedSession, string frontendName);
+        Message = "BFF middleware: token refresh failed for session {SessionId} on frontend {FrontendName}")]
+    private static partial void LogTokenRefreshFailed(ILogger logger, string sessionId, string frontendName);
 
     [LoggerMessage(Level = LogLevel.Error,
         Message = "BFF middleware: token refresh failed with exception for frontend {FrontendName}")]
