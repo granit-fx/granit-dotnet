@@ -566,8 +566,8 @@
       "Microsoft.Extensions.AI.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
-        "resolved": "10.4.1",
-        "contentHash": "ZxhU/wg9BOc3ohibhLl18toPLWm96ysQoE+3OhCgrZ0TUPZd7bsUmGteeatz08yweyuPIEhtyUzEZTF+3bMWEQ=="
+        "resolved": "10.5.0",
+        "contentHash": "bb2wQ1HGatf5zdBxE28zrN4jaEVmpC+IJYChcqABTfu77YtFcJe/A4ZChjVZ0V1OF+UPYSOY8mUDI/fwEljcIA=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
@@ -639,8 +639,8 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.30.0",
-        "contentHash": "2ttDgTC66TgoM6MSCxVVbHSkGVMt+muHdwLBFVOkQKmTjPigj69JTW4bV6AQHMFX7fBQ6NknEl9OU48saLFmuA==",
+        "resolved": "5.31.0",
+        "contentHash": "3TTtKa66qOdgyeXQJukiQ6yJX2vgOj+Es+mV1iNBThBc3ayBd5Oreo0s5t5qx4BsF7ak8ZSIRxxtOFFZBGqZIg==",
         "dependencies": {
           "JasperFx": "1.24.1",
           "JasperFx.Events": "1.27.0",
