@@ -13,7 +13,10 @@ public sealed class DataExchangeBlobStorageOptions
     public const string SectionName = "Granit:DataExchange:BlobStorage";
 
     /// <summary>
-    /// Logical container name used for data exchange files (import uploads and export outputs).
+    /// Logical container name used as a key-prefix segment in the object key path
+    /// (e.g. <c>{tenantId}/data-exchange/2026/04/{blobId}</c>).
+    /// This is NOT a physical bucket — the physical bucket is resolved by
+    /// <c>IBlobKeyStrategy.ResolveBucketName</c> (typically <c>S3BlobOptions.DefaultBucket</c>).
     /// </summary>
     [Required]
     public string ContainerName { get; set; } = "data-exchange";
