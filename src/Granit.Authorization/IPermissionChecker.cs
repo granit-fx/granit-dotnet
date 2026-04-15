@@ -13,4 +13,13 @@ public interface IPermissionChecker
     /// Thrown if <paramref name="permissionName"/> has not been declared via <see cref="IPermissionDefinitionProvider"/>.
     /// </exception>
     Task<bool> IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the subset of <paramref name="permissionNames"/> that are granted to the current user.
+    /// More efficient than calling <see cref="IsGrantedAsync"/> in a loop — queries the store
+    /// with a single <c>WHERE IN</c> clause per role when cache misses occur.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetGrantedAsync(
+        IReadOnlyList<string> permissionNames,
+        CancellationToken cancellationToken = default);
 }

@@ -5843,10 +5843,10 @@
     {
       "name": "PermissionGrantCacheItem",
       "fqn": "Granit.Authorization.Cache.PermissionGrantCacheItem",
-      "kind": "class",
+      "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Cache/PermissionGrantCacheItem.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -6132,6 +6132,12 @@
           "kind": "method",
           "signature": "IsGrantedAsync(string permissionName, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetGrantedAsync",
+          "kind": "method",
+          "signature": "GetGrantedAsync(IReadOnlyList<string> permissionNames, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
     },
@@ -6219,6 +6225,12 @@
           "name": "GetGrantedPermissionsAsync",
           "kind": "method",
           "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "GetGrantedAsync",
+          "kind": "method",
+          "signature": "GetGrantedAsync(string roleName, IReadOnlyList<string> permissionNames, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         },
         {

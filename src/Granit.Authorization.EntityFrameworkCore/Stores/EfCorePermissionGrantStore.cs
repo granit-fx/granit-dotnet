@@ -41,6 +41,20 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<string>> GetGrantedAsync(
+        string roleName,
+        IReadOnlyList<string> permissionNames,
+        Guid? tenantId,
+        CancellationToken cancellationToken = default) =>
+        await context.PermissionGrants
+            .AsNoTracking()
+            .Where(g => g.TenantId == tenantId
+                && g.RoleName == roleName
+                && permissionNames.Contains(g.Name))
+            .Select(g => g.Name)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+    /// <inheritdoc />
     public async Task<IReadOnlyList<string>> GetGrantedRolesAsync(
         string permissionName,
         Guid? tenantId,

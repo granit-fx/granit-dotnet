@@ -100,13 +100,16 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task GetMe_WithAuthenticatedUser_Returns200WithGrantedPermissions()
     {
-        // Arrange — grant two out of three permissions.
-        _permissionChecker.IsGrantedAsync("Invoices.Read", Arg.Any<CancellationToken>())
-            .Returns(true);
-        _permissionChecker.IsGrantedAsync("Invoices.Create", Arg.Any<CancellationToken>())
-            .Returns(true);
-        _permissionChecker.IsGrantedAsync("Invoices.Delete", Arg.Any<CancellationToken>())
-            .Returns(false);
+        // Arrange — grant two out of three permissions via batch method.
+        _permissionChecker.GetGrantedAsync(
+                Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns(callInfo =>
+            {
+                IReadOnlyList<string> requested = callInfo.Arg<IReadOnlyList<string>>();
+                HashSet<string> granted = ["Invoices.Read", "Invoices.Create"];
+                return Task.FromResult<IReadOnlyList<string>>(
+                    requested.Where(granted.Contains).ToList());
+            });
 
         // Act
         HttpResponseMessage response = await _userClient.GetAsync(
@@ -134,7 +137,10 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task GetMe_WhenNoPermissionsGranted_Returns200WithEmptyList()
     {
-        // Arrange — all permissions denied (default).
+        // Arrange — all permissions denied.
+        _permissionChecker.GetGrantedAsync(
+                Arg.Any<IReadOnlyList<string>>(), Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IReadOnlyList<string>>([]));
 
         // Act
         HttpResponseMessage response = await _userClient.GetAsync(
@@ -284,6 +290,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     {
         // Arrange
         _definitionManager.Exists("Invoices.Read").Returns(true);
+        _permissionChecker.IsGrantedAsync("Invoices.Read", Arg.Any<CancellationToken>()).Returns(true);
 
         // Act
         HttpResponseMessage response = await _adminClient.DeleteAsync(

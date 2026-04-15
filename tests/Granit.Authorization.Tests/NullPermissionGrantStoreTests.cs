@@ -6,6 +6,7 @@
 // =============================================================================
 
 using Granit.Authorization.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +18,7 @@ public sealed class NullPermissionGrantStoreTests
     public async Task IsGrantedAsync_AlwaysReturnsFalse()
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
 
         // Act
         bool result = await store.IsGrantedAsync(
@@ -40,7 +41,7 @@ public sealed class NullPermissionGrantStoreTests
         string? tenantIdString)
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
         Guid? tenantId = tenantIdString is null ? null : Guid.Parse(tenantIdString);
 
         // Act
@@ -58,7 +59,7 @@ public sealed class NullPermissionGrantStoreTests
     public async Task GetGrantedPermissionsAsync_ReturnsEmpty()
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
 
         // Act
         IReadOnlyList<string> result = await store.GetGrantedPermissionsAsync(
@@ -72,7 +73,7 @@ public sealed class NullPermissionGrantStoreTests
     public async Task GetGrantedRolesAsync_ReturnsEmpty()
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
 
         // Act
         IReadOnlyList<string> result = await store.GetGrantedRolesAsync(
@@ -86,7 +87,7 @@ public sealed class NullPermissionGrantStoreTests
     public async Task GrantAsync_ReturnsFalse()
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
 
         // Act
         bool result = await store.GrantAsync(
@@ -100,7 +101,7 @@ public sealed class NullPermissionGrantStoreTests
     public async Task RevokeAsync_ReturnsFalse()
     {
         // Arrange
-        NullPermissionGrantStore store = new();
+        NullPermissionGrantStore store = new(NullLogger<NullPermissionGrantStore>.Instance);
 
         // Act
         bool result = await store.RevokeAsync(

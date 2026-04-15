@@ -10,7 +10,9 @@
 // =============================================================================
 
 using Granit.Authorization.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -18,7 +20,8 @@ namespace Granit.Authorization.Tests.Options;
 
 public sealed class GranitAuthorizationOptionsValidatorTests
 {
-    private readonly GranitAuthorizationOptionsValidator _validator = new();
+    private readonly GranitAuthorizationOptionsValidator _validator = new(
+        CreateHostEnvironment(Environments.Development));
 
     // =========================================================================
     // Valid options
@@ -279,10 +282,59 @@ public sealed class GranitAuthorizationOptionsValidatorTests
     }
 
     // =========================================================================
+    // AlwaysAllow production guard
+    // =========================================================================
+
+    [Fact]
+    public void Validate_AlwaysAllowInDevelopment_ReturnsSuccess()
+    {
+        GranitAuthorizationOptionsValidator devValidator = new(
+            CreateHostEnvironment(Environments.Development));
+        GranitAuthorizationOptions options = new() { AlwaysAllow = true };
+
+        ValidateOptionsResult result = devValidator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Validate_AlwaysAllowInProduction_ReturnsFail()
+    {
+        GranitAuthorizationOptionsValidator prodValidator = new(
+            CreateHostEnvironment(Environments.Production));
+        GranitAuthorizationOptions options = new() { AlwaysAllow = true };
+
+        ValidateOptionsResult result = prodValidator.Validate(null, options);
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("AlwaysAllow");
+        result.FailureMessage.ShouldContain("production");
+    }
+
+    [Fact]
+    public void Validate_AlwaysAllowFalseInProduction_ReturnsSuccess()
+    {
+        GranitAuthorizationOptionsValidator prodValidator = new(
+            CreateHostEnvironment(Environments.Production));
+        GranitAuthorizationOptions options = new() { AlwaysAllow = false };
+
+        ValidateOptionsResult result = prodValidator.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue();
+    }
+
+    // =========================================================================
     // Interface conformance
     // =========================================================================
 
     [Fact]
     public void ImplementsIValidateOptions() =>
         _validator.ShouldBeAssignableTo<IValidateOptions<GranitAuthorizationOptions>>();
+
+    private static IHostEnvironment CreateHostEnvironment(string environmentName)
+    {
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns(environmentName);
+        return env;
+    }
 }

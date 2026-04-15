@@ -68,9 +68,11 @@ internal sealed class PermissionChecker(
         {
             PermissionGrantCacheItem result = await cache.GetOrSetAsync<PermissionGrantCacheItem>(
                 BuildCacheKey(tenantId, role, permissionName),
-                async (_, ct) => new PermissionGrantCacheItem
+                async (_, ct) =>
                 {
-                    IsGranted = await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct).ConfigureAwait(false)
+                    metrics.RecordCacheMiss(tenantIdStr);
+                    return new PermissionGrantCacheItem(
+                        await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct).ConfigureAwait(false));
                 },
                 new FusionCacheEntryOptions { Duration = opts.CacheDuration },
                 token: cancellationToken).ConfigureAwait(false);
@@ -83,6 +85,99 @@ internal sealed class PermissionChecker(
 
         metrics.RecordCheckDenied(tenantIdStr);
         return false;
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<string>> GetGrantedAsync(
+        IReadOnlyList<string> permissionNames,
+        CancellationToken cancellationToken = default)
+    {
+        GranitAuthorizationOptions opts = options.Value;
+
+        if (!currentUserService.IsAuthenticated)
+        {
+            return [];
+        }
+
+        if (opts.AlwaysAllow)
+        {
+            return permissionNames;
+        }
+
+        IReadOnlyList<string> roles = currentUserService.GetRoles();
+
+        if (opts.AdminRoles.Any(adminRole => roles.Any(
+            r => string.Equals(r, adminRole, StringComparison.OrdinalIgnoreCase))))
+        {
+            return permissionNames;
+        }
+
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        string tenantIdStr = tenantId?.ToString() ?? "global";
+
+        // Partition into cached hits and uncached misses
+        HashSet<string> granted = new(StringComparer.Ordinal);
+        List<string> uncached = [];
+
+        foreach (string permissionName in permissionNames)
+        {
+            if (!definitionManager.Exists(permissionName))
+            {
+                continue;
+            }
+
+            bool found = false;
+            foreach (string role in roles)
+            {
+                MaybeValue<PermissionGrantCacheItem> cached = await cache.TryGetAsync<PermissionGrantCacheItem>(
+                    BuildCacheKey(tenantId, role, permissionName),
+                    token: cancellationToken).ConfigureAwait(false);
+
+                if (cached.HasValue)
+                {
+                    if (cached.Value.IsGranted)
+                    {
+                        granted.Add(permissionName);
+                        found = true;
+                    }
+                }
+                else if (!found)
+                {
+                    uncached.Add(permissionName);
+                    found = true; // only add once to uncached list
+                }
+            }
+        }
+
+        if (uncached.Count == 0)
+        {
+            return [.. granted];
+        }
+
+        // Batch query the store for all uncached permissions per role
+        foreach (string role in roles)
+        {
+            IReadOnlyList<string> roleGrants = await grantStore.GetGrantedAsync(
+                role, uncached, tenantId, cancellationToken).ConfigureAwait(false);
+
+            foreach (string perm in roleGrants)
+            {
+                granted.Add(perm);
+            }
+
+            // Populate cache for all queried permissions in this role
+            foreach (string perm in uncached)
+            {
+                bool isGranted = roleGrants.Contains(perm);
+                await cache.SetAsync(
+                    BuildCacheKey(tenantId, role, perm),
+                    new PermissionGrantCacheItem(isGranted),
+                    new FusionCacheEntryOptions { Duration = opts.CacheDuration },
+                    token: cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return [.. granted];
     }
 
     internal static string BuildCacheKey(Guid? tenantId, string roleName, string permissionName) =>

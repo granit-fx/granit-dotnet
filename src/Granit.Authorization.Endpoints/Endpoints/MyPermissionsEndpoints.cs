@@ -33,16 +33,11 @@ internal static class MyPermissionsEndpoints
         [FromServices] IPermissionChecker permissionChecker,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<PermissionDefinition> allPermissions = definitionManager.GetAll();
-        List<string> granted = [];
+        var allNames = definitionManager.GetAll().Select(p => p.Name).ToList();
 
-        foreach (string permissionName in allPermissions.Select(permission => permission.Name))
-        {
-            if (await permissionChecker.IsGrantedAsync(permissionName, cancellationToken).ConfigureAwait(false))
-            {
-                granted.Add(permissionName);
-            }
-        }
+        IReadOnlyList<string> granted = await permissionChecker
+            .GetGrantedAsync(allNames, cancellationToken)
+            .ConfigureAwait(false);
 
         return TypedResults.Ok(new MyPermissionsResponse(granted));
     }

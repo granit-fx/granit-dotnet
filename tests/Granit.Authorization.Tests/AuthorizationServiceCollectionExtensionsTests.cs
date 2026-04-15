@@ -39,6 +39,7 @@ public sealed class AuthorizationServiceCollectionExtensionsTests
         // Arrange
         ServiceCollection services = new();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddLogging();
 
         // Act
         services.AddGranitAuthorization();

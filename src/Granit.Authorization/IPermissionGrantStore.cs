@@ -26,6 +26,16 @@ public interface IPermissionGrantStore
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns the subset of <paramref name="permissionNames"/> that are explicitly granted
+    /// to the role in the given tenant. Filters with a single <c>WHERE IN</c> clause.
+    /// </summary>
+    Task<IReadOnlyList<string>> GetGrantedAsync(
+        string roleName,
+        IReadOnlyList<string> permissionNames,
+        Guid? tenantId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Returns all role names that have been explicitly granted the permission in the given tenant.
     /// </summary>
     Task<IReadOnlyList<string>> GetGrantedRolesAsync(

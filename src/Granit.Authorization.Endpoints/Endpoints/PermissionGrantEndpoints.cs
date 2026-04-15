@@ -43,9 +43,10 @@ internal static partial class PermissionGrantEndpoints
         adminGroup.MapDelete("/{roleName}/{permissionName}", RevokePermissionAsync)
             .WithName("RevokePermission")
             .WithSummary("Revokes a permission from a role. No-op if not granted.")
-            .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). Idempotent — revoking a non-granted permission is a no-op.")
+            .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being revoked (privilege escalation prevention). Idempotent — revoking a non-granted permission is a no-op.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status403Forbidden);
 
         return group;
     }
@@ -118,11 +119,12 @@ internal static partial class PermissionGrantEndpoints
         return TypedResults.NoContent();
     }
 
-    private static async Task<Results<NoContent, ValidationProblem>> RevokePermissionAsync(
+    private static async Task<Results<NoContent, ValidationProblem, ProblemHttpResult>> RevokePermissionAsync(
         string roleName,
         string permissionName,
         [FromServices] IPermissionManagerWriter permissionManagerWriter,
         [FromServices] IPermissionDefinitionManager definitionManager,
+        [FromServices] IPermissionChecker permissionChecker,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -142,6 +144,15 @@ internal static partial class PermissionGrantEndpoints
                 {
                     ["permissionName"] = ["The specified permission is not registered."]
                 });
+        }
+
+        // VULN-101 fix: prevent privilege escalation — callers can only revoke
+        // permissions they themselves hold (symmetric with GrantPermissionAsync).
+        if (!await permissionChecker.IsGrantedAsync(permissionName, cancellationToken).ConfigureAwait(false))
+        {
+            return TypedResults.Problem(
+                detail: "Cannot revoke a permission that the current user does not hold.",
+                statusCode: StatusCodes.Status403Forbidden);
         }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;

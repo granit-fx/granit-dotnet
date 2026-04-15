@@ -152,7 +152,7 @@ public sealed class PermissionCheckerTests
                 Arg.Any<Func<FusionCacheFactoryExecutionContext<PermissionGrantCacheItem>, CancellationToken, Task<PermissionGrantCacheItem>>>(),
                 Arg.Any<FusionCacheEntryOptions?>(),
                 Arg.Any<CancellationToken>())
-            .ReturnsForAnyArgs(new PermissionGrantCacheItem { IsGranted = true });
+            .ReturnsForAnyArgs(new PermissionGrantCacheItem(true));
 
         PermissionChecker checker = BuildChecker(
             isAuthenticated: true,
