@@ -11,7 +11,7 @@ namespace Granit.Timeline.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for enabling EF Core persistence in Granit.Timeline.
 /// </summary>
-public static class TimelineEfCoreHostApplicationBuilderExtensions
+public static class TimelineEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Replaces the default InMemory stores with durable EF Core implementations

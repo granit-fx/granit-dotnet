@@ -14,7 +14,7 @@ namespace Granit.DataExchange.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for registering the DataExchange EF Core persistence layer on <see cref="IHostApplicationBuilder"/>.
 /// </summary>
-public static class DataExchangeEfCoreHostBuilderExtensions
+public static class DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers the DataExchange EF Core persistence layer, including the isolated

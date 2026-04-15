@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 namespace Granit.CustomerBalance.EntityFrameworkCore.Extensions;
 
 /// <summary>Extension methods for registering EF Core persistence for Granit.CustomerBalance.</summary>
-public static class CustomerBalanceEfCoreHostApplicationBuilderExtensions
+public static class CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>Registers EF Core persistence for Granit customer balance.</summary>
     public static IHostApplicationBuilder AddGranitCustomerBalanceEntityFrameworkCore(

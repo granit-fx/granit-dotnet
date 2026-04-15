@@ -7,6 +7,6 @@ namespace Granit.Metering.EntityFrameworkCore;
 /// Granit module for EF Core persistence of metering data.
 /// </summary>
 [DependsOn(
-    typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitMeteringModule))]
+    typeof(GranitMeteringModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitMeteringEntityFrameworkCoreModule : GranitModule;

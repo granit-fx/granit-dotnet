@@ -11,7 +11,7 @@ namespace Granit.QueryEngine.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for registering the QueryEngine EF Core persistence layer on <see cref="IHostApplicationBuilder"/>.
 /// </summary>
-public static class QueryEngineEfCoreHostApplicationBuilderExtensions
+public static class QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers the QueryEngine EF Core persistence layer, including the isolated

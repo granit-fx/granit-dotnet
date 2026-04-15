@@ -13,7 +13,7 @@ namespace Granit.Webhooks.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for enabling EF Core persistence in Granit.Webhooks.
 /// </summary>
-public static class WebhooksEfCoreHostApplicationBuilderExtensions
+public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Replaces the default InMemory/no-op stores with durable EF Core implementations

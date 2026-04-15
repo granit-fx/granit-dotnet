@@ -1,6 +1,6 @@
-// =============================================================================
-// AuditingEntityFrameworkCoreServiceCollectionExtensionsTests — DI registration
-// =============================================================================
+// ====================================================================================
+// AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsTests — DI registration
+// ====================================================================================
 // Verifies:
 //   - AddGranitAuditingEntityFrameworkCore registers all expected services
 //   - Publisher factory resolves async vs strict mode correctly
@@ -26,12 +26,12 @@ using Xunit;
 
 namespace Granit.Auditing.EntityFrameworkCore.Tests.Extensions;
 
-public sealed class AuditingEntityFrameworkCoreServiceCollectionExtensionsTests : IDisposable
+public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsTests : IDisposable
 {
     private readonly HostApplicationBuilder _builder;
     private readonly ServiceProvider _sp;
 
-    public AuditingEntityFrameworkCoreServiceCollectionExtensionsTests()
+    public AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsTests()
     {
         _builder = Host.CreateEmptyApplicationBuilder(null);
         _builder.Services.AddMetrics();

@@ -17,7 +17,7 @@ namespace Granit.Auditing.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for registering EF Core persistence for Granit audit logging.
 /// </summary>
-public static class AuditingEntityFrameworkCoreServiceCollectionExtensions
+public static class AuditingEntityFrameworkCoreHostApplicationBuilderExtensions
 {
     /// <summary>
     /// Registers EF Core persistence for the Granit audit log module.

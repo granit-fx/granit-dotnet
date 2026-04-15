@@ -10,7 +10,7 @@ namespace Granit.DataExchange.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Extension methods for per-entity registration of import executors and identity resolvers.
 /// </summary>
-public static class DataExchangeEfCoreServiceCollectionExtensions
+public static class DataExchangeEntityFrameworkCoreServiceCollectionExtensions
 {
     /// <summary>
     /// Registers an <see cref="IImportExecutor{TEntity}"/> backed by EF Core.

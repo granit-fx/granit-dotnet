@@ -4129,11 +4129,11 @@
       "members": []
     },
     {
-      "name": "AuditingEntityFrameworkCoreServiceCollectionExtensions",
-      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditingEntityFrameworkCoreServiceCollectionExtensions",
+      "name": "AuditingEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Auditing.EntityFrameworkCore.Extensions.AuditingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
-      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 20,
       "members": [
         {
@@ -4794,22 +4794,6 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
       "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitApiKeysDbProperties.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitAuthenticationApiKeysDbProperties",
-      "fqn": "Granit.Authentication.ApiKeys.EntityFrameworkCore.GranitAuthenticationApiKeysDbProperties",
-      "kind": "class",
-      "project": "Granit.Authentication.ApiKeys.EntityFrameworkCore",
-      "file": "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/GranitAuthenticationApiKeysDbProperties.cs",
       "line": 21,
       "members": [
         {
@@ -9295,11 +9279,11 @@
       "members": []
     },
     {
-      "name": "CustomerBalanceEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.Extensions.CustomerBalanceEfCoreHostApplicationBuilderExtensions",
+      "name": "CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.CustomerBalance.EntityFrameworkCore.Extensions.CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.CustomerBalance.EntityFrameworkCore",
-      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceEfCoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 11,
       "members": [
         {
@@ -9836,11 +9820,11 @@
       "members": []
     },
     {
-      "name": "DataExchangeEfCoreHostBuilderExtensions",
-      "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEfCoreHostBuilderExtensions",
+      "name": "DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
-      "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEfCoreHostBuilderExtensions.cs",
+      "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 17,
       "members": [
         {
@@ -9852,11 +9836,11 @@
       ]
     },
     {
-      "name": "DataExchangeEfCoreServiceCollectionExtensions",
-      "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEfCoreServiceCollectionExtensions",
+      "name": "DataExchangeEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.EntityFrameworkCore.Extensions.DataExchangeEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.DataExchange.EntityFrameworkCore",
-      "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEfCoreServiceCollectionExtensions.cs",
+      "file": "src/Granit.DataExchange.EntityFrameworkCore/Extensions/DataExchangeEntityFrameworkCoreServiceCollectionExtensions.cs",
       "line": 13,
       "members": []
     },
@@ -24039,11 +24023,11 @@
       ]
     },
     {
-      "name": "NotificationsEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Notifications.EntityFrameworkCore.Extensions.NotificationsEfCoreHostApplicationBuilderExtensions",
+      "name": "NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Notifications.EntityFrameworkCore.Extensions.NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
-      "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEfCoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Notifications.EntityFrameworkCore/Extensions/NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 20,
       "members": [
         {
@@ -24092,7 +24076,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsEntityFrameworkCoreModule.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -32513,11 +32497,11 @@
       "members": []
     },
     {
-      "name": "QueryEngineEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineEfCoreHostApplicationBuilderExtensions",
+      "name": "QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.QueryEngine.EntityFrameworkCore",
-      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineEfCoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 14,
       "members": [
         {
@@ -39089,11 +39073,11 @@
       "members": []
     },
     {
-      "name": "TimelineEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Timeline.EntityFrameworkCore.Extensions.TimelineEfCoreHostApplicationBuilderExtensions",
+      "name": "TimelineEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Timeline.EntityFrameworkCore.Extensions.TimelineEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Timeline.EntityFrameworkCore",
-      "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEfCoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Timeline.EntityFrameworkCore/Extensions/TimelineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 14,
       "members": [
         {
@@ -41533,11 +41517,11 @@
       ]
     },
     {
-      "name": "WebhooksEfCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Webhooks.EntityFrameworkCore.Extensions.WebhooksEfCoreHostApplicationBuilderExtensions",
+      "name": "WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Webhooks.EntityFrameworkCore.Extensions.WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
-      "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEfCoreHostApplicationBuilderExtensions.cs",
+      "file": "src/Granit.Webhooks.EntityFrameworkCore/Extensions/WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
       "line": 16,
       "members": [
         {
@@ -41586,15 +41570,8 @@
       "kind": "class",
       "project": "Granit.Webhooks.EntityFrameworkCore",
       "file": "src/Granit.Webhooks.EntityFrameworkCore/GranitWebhooksEntityFrameworkCoreModule.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 17,
+      "members": []
     },
     {
       "name": "WebhookDeliveryFailureThresholdExceededEto",
