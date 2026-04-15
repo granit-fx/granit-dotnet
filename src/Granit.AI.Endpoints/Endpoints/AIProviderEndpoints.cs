@@ -16,7 +16,8 @@ internal static class AIProviderEndpoints
             .WithSummary("Lists all registered AI providers.")
             .WithDescription(
                 "Returns every AI provider registered via dependency injection, "
-                + "along with an indication of whether each provider supports chat and embedding capabilities.");
+                + "along with an indication of whether each provider supports chat and embedding capabilities.")
+            .Produces<IReadOnlyList<AIProviderResponse>>();
 
         group.MapGet("/providers/{providerName}", ListProviderModelsAsync)
             .WithName("ListAIProviderModels")
