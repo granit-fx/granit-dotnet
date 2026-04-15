@@ -19,7 +19,7 @@ internal static class AIProviderEndpoints
                 + "along with an indication of whether each provider supports chat and embedding capabilities.")
             .Produces<IReadOnlyList<AIProviderResponse>>();
 
-        group.MapGet("/providers/{providerName}", ListProviderModelsAsync)
+        group.MapGet("/providers/{providerName}/models", ListProviderModelsAsync)
             .WithName("ListAIProviderModels")
             .WithSummary("Lists the models available from a specific AI provider.")
             .WithDescription(
