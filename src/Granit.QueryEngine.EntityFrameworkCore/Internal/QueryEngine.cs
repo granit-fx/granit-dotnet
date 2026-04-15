@@ -10,6 +10,7 @@ using Granit.QueryEngine.Options;
 using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.Search;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,7 +27,8 @@ internal sealed class QueryEngine<TEntity>(
     IOptions<QueryEngineOptions> engineOptions,
     IGlobalSearchStrategy<TEntity>? searchStrategy = null,
     QueryEngineMetrics? metrics = null,
-    ICurrentTenant? currentTenant = null) : IQueryEngine<TEntity>
+    ICurrentTenant? currentTenant = null,
+    IStringLocalizerFactory? localizerFactory = null) : IQueryEngine<TEntity>
     where TEntity : class
 {
     private static readonly string EntityTypeName = typeof(TEntity).Name;
@@ -220,12 +222,15 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <inheritdoc/>
-    public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null) =>
-        new()
+    public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null)
+    {
+        IStringLocalizer? localizer = ResolveLocalizer();
+
+        return new()
         {
             Columns = _builder.Columns.Select(c => new ColumnDefinition(
                 c.PropertyName,
-                c.Label ?? c.PropertyName,
+                ResolveLabel(c, localizer),
                 c.ClrType.Name,
                 c.Order,
                 c.IsSortable,
@@ -268,6 +273,32 @@ internal sealed class QueryEngine<TEntity>(
                 _builder.CursorPropertyName is not null),
             DefaultSort = _builder.DefaultSortValue,
         };
+    }
+
+    private static string ResolveLabel(ColumnDescriptor column, IStringLocalizer? localizer)
+    {
+        if (localizer is not null && column.LabelKey is not null)
+        {
+            LocalizedString localized = localizer[column.LabelKey];
+            if (!localized.ResourceNotFound)
+            {
+                return localized.Value;
+            }
+        }
+
+        return column.Label ?? column.PropertyName;
+    }
+
+    private IStringLocalizer? ResolveLocalizer()
+    {
+        Type? resourceType = definition.LocalizationResourceType;
+        if (localizerFactory is null || resourceType is null)
+        {
+            return null;
+        }
+
+        return localizerFactory.Create(resourceType);
+    }
 
     private async Task<PagedResult<TProjection>> ApplyCursorPaginationWithProjectionAsync<TProjection>(
         IQueryable<TEntity> sortedSource,

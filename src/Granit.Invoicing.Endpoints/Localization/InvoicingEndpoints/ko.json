@@ -6,6 +6,17 @@
     "Permission:Invoicing.Invoices.Manage": "청구서 관리 (생성, 확정, 무효화)",
     "Permission:Invoicing.Invoices.Download": "청구서 문서 다운로드 (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "대변기표 조회",
-    "Permission:Invoicing.CreditNotes.Manage": "대변기표 관리 (생성, 무효화)"
+    "Permission:Invoicing.CreditNotes.Manage": "대변기표 관리 (생성, 무효화)",
+    "Invoicing.Columns.Tenant": "Tenant",
+    "Invoicing.Columns.InvoiceNumber": "Invoice Number",
+    "Invoicing.Columns.DocumentType": "Document Type",
+    "Invoicing.Columns.Status": "Status",
+    "Invoicing.Columns.Currency": "Currency",
+    "Invoicing.Columns.Total": "Total",
+    "Invoicing.Columns.AmountRemaining": "Amount Remaining",
+    "Invoicing.Columns.IssuedAt": "Issued At",
+    "Invoicing.Columns.DueAt": "Due At",
+    "Invoicing.Columns.PaidAt": "Paid At",
+    "Invoicing.Columns.BillingReason": "Billing Reason"
   }
 }

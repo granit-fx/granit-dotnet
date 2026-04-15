@@ -14,6 +14,9 @@ public sealed class ColumnDescriptor
     /// <summary>User-facing label, or <c>null</c> to use the property name.</summary>
     public string? Label { get; init; }
 
+    /// <summary>Localization key for the label, or <c>null</c> to skip localization.</summary>
+    public string? LabelKey { get; init; }
+
     /// <summary>Display order in the UI (lower values first).</summary>
     public int Order { get; init; }
 

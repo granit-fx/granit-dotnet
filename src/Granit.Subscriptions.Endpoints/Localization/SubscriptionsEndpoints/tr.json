@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Fiyat sürüm geçmişini görüntüle",
     "Permission:Subscriptions.Prices.Manage": "Fiyatları yönet (sür��m oluştur, abonelikleri taşı)",
     "Permission:Subscriptions.Seats.Read": "Koltuk atamalarını görüntüle",
-    "Permission:Subscriptions.Seats.Manage": "Koltuk atamalarını yönet (ata, iptal et)"
+    "Permission:Subscriptions.Seats.Manage": "Koltuk atamalarını yönet (ata, iptal et)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

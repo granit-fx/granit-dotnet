@@ -8,6 +8,14 @@
     "Permission:AI.Chat.Execute": "Execute AI chat completions",
     "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
     "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
-    "AIEndpoints:Workspace:DuplicateName": "A workspace named '{0}' already exists."
+    "AIEndpoints:Workspace:DuplicateName": "A workspace named '{0}' already exists.",
+    "AI.Columns.Workspace": "Arbeitsbereich",
+    "AI.Columns.Provider": "Anbieter",
+    "AI.Columns.Model": "Modell",
+    "AI.Columns.InputTokens": "Eingabe-Token",
+    "AI.Columns.OutputTokens": "Ausgabe-Token",
+    "AI.Columns.EstimatedCostUsd": "Geschätzte Kosten (USD)",
+    "AI.Columns.Timestamp": "Zeitstempel",
+    "AI.Columns.Duration": "Dauer"
   }
 }

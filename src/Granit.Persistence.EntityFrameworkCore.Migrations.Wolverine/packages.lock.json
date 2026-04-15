@@ -11,8 +11,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.30.0",
-        "contentHash": "2ttDgTC66TgoM6MSCxVVbHSkGVMt+muHdwLBFVOkQKmTjPigj69JTW4bV6AQHMFX7fBQ6NknEl9OU48saLFmuA==",
+        "resolved": "5.31.0",
+        "contentHash": "3TTtKa66qOdgyeXQJukiQ6yJX2vgOj+Es+mV1iNBThBc3ayBd5Oreo0s5t5qx4BsF7ak8ZSIRxxtOFFZBGqZIg==",
         "dependencies": {
           "JasperFx": "1.24.1",
           "JasperFx.Events": "1.27.0",
@@ -342,11 +342,6 @@
           "Microsoft.Extensions.Logging.EventSource": "10.0.0",
           "Microsoft.Extensions.Options": "10.0.0"
         }
-      },
-      "Microsoft.Extensions.Localization.Abstractions": {
-        "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
       },
       "Microsoft.Extensions.Logging": {
         "type": "Transitive",
@@ -777,6 +772,12 @@
           "Microsoft.Extensions.Options": "10.0.6"
         }
       },
+      "Microsoft.Extensions.Localization.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.6",
+        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
+      },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
@@ -833,11 +834,11 @@
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.30.0",
-        "contentHash": "HCcc7LiNWnUQShjmzlAifDTKIdeYxg+p1xEM9uzb3BNK1WHqg4mB+tRIsmUuDj0bnVnCGpOHRdUb0Yd0kxBApA==",
+        "resolved": "5.31.0",
+        "contentHash": "8XHfGrMGK5CxN5YPfXY0Nkoa0E3esbD6akWBU9DpmbJXmDv6Z/BO54p6slkhgkWUZrTC8XhGvPzSdkF2q+twZw==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.30.0"
+          "WolverineFx": "5.31.0"
         }
       },
       "ZiggyCreatures.FusionCache": {

@@ -6,6 +6,17 @@
     "Permission:Invoicing.Invoices.Manage": "Gestire le fatture (creare, finalizzare, annullare)",
     "Permission:Invoicing.Invoices.Download": "Scaricare i documenti di fattura (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Visualizzare le note di credito",
-    "Permission:Invoicing.CreditNotes.Manage": "Gestire le note di credito (creare, annullare)"
+    "Permission:Invoicing.CreditNotes.Manage": "Gestire le note di credito (creare, annullare)",
+    "Invoicing.Columns.Tenant": "Tenant",
+    "Invoicing.Columns.InvoiceNumber": "Invoice Number",
+    "Invoicing.Columns.DocumentType": "Document Type",
+    "Invoicing.Columns.Status": "Status",
+    "Invoicing.Columns.Currency": "Currency",
+    "Invoicing.Columns.Total": "Total",
+    "Invoicing.Columns.AmountRemaining": "Amount Remaining",
+    "Invoicing.Columns.IssuedAt": "Issued At",
+    "Invoicing.Columns.DueAt": "Due At",
+    "Invoicing.Columns.PaidAt": "Paid At",
+    "Invoicing.Columns.BillingReason": "Billing Reason"
   }
 }

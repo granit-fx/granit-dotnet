@@ -3,6 +3,17 @@
   "texts": {
     "PermissionGroup:BlobStorage": "Bestandsopslag",
     "Permission:BlobStorage.Administration.Read": "Bestandsopslagbeheer bekijken (lijst, descriptors, query)",
-    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)"
+    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "Bestandsnaam",
+    "BlobStorage.Columns.ContentType": "Inhoudstype",
+    "BlobStorage.Columns.VerifiedContentType": "Geverifieerd inhoudstype",
+    "BlobStorage.Columns.SizeBytes": "Grootte (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Aangemaakt op",
+    "BlobStorage.Columns.ValidatedAt": "Gevalideerd op",
+    "BlobStorage.Columns.DeletedAt": "Verwijderd op",
+    "BlobStorage.Columns.RejectionReason": "Reden van afwijzing"
   }
 }

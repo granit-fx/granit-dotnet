@@ -3,6 +3,17 @@
   "texts": {
     "PermissionGroup:BlobStorage": "파일 저장소",
     "Permission:BlobStorage.Administration.Read": "파일 저장소 관리 조회 (목록, 설명자, 쿼리)",
-    "Permission:BlobStorage.Administration.Manage": "파일 저장소 관리 (업로드, 다운로드, 삭제, 확인, 정리)"
+    "Permission:BlobStorage.Administration.Manage": "파일 저장소 관리 (업로드, 다운로드, 삭제, 확인, 정리)",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.ContentType": "Content Type",
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.ValidatedAt": "Validated At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
   }
 }

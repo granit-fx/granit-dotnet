@@ -3,6 +3,14 @@
   "texts": {
     "PermissionGroup:Scheduling": "스케줄링",
     "Permission:Scheduling.Actions.Read": "예약된 작업 보기 (목록, 상세)",
-    "Permission:Scheduling.Actions.Manage": "예약된 작업 관리 (취소, 재예약)"
+    "Permission:Scheduling.Actions.Manage": "예약된 작업 관리 (취소, 재예약)",
+    "Scheduling.Columns.Tenant": "Tenant",
+    "Scheduling.Columns.PayloadType": "Payload Type",
+    "Scheduling.Columns.Status": "Status",
+    "Scheduling.Columns.ExecuteAt": "Scheduled For",
+    "Scheduling.Columns.ExecutedAt": "Executed At",
+    "Scheduling.Columns.CorrelationId": "Correlation ID",
+    "Scheduling.Columns.CancelledBy": "Cancelled By",
+    "Scheduling.Columns.FailureReason": "Failure Reason"
   }
 }

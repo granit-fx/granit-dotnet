@@ -7,6 +7,7 @@ namespace Granit.QueryEngine;
 public sealed class ColumnBuilder<TEntity> where TEntity : class
 {
     internal string? LabelValue { get; private set; }
+    internal string? LabelKeyValue { get; private set; }
     internal int OrderValue { get; private set; }
     internal bool IsSortableValue { get; private set; }
     internal bool IsFilterableValue { get; private set; }
@@ -20,6 +21,18 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     public ColumnBuilder<TEntity> Label(string label)
     {
         LabelValue = label;
+        return this;
+    }
+
+    /// <summary>
+    /// Sets a localization key for the column label. When a localizer is available,
+    /// this key is resolved to a culture-specific string. Falls back to <see cref="Label"/>
+    /// or the property name if the key is not found.
+    /// </summary>
+    /// <param name="key">The localization key (e.g. <c>"Scheduling.Columns.PayloadType"</c>).</param>
+    public ColumnBuilder<TEntity> LabelKey(string key)
+    {
+        LabelKeyValue = key;
         return this;
     }
 

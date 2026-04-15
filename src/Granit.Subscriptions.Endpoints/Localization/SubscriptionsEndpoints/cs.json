@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Zobrazit historii verzí cen",
     "Permission:Subscriptions.Prices.Manage": "Spravovat ceny (vytvářet verze, migrovat předplatné)",
     "Permission:Subscriptions.Seats.Read": "Zobrazit přiřazení míst",
-    "Permission:Subscriptions.Seats.Manage": "Spravovat přiřazení míst (přiřadit, odvolat)"
+    "Permission:Subscriptions.Seats.Manage": "Spravovat přiřazení míst (přiřadit, odvolat)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

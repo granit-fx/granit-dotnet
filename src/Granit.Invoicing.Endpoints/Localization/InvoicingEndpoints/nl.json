@@ -6,6 +6,17 @@
     "Permission:Invoicing.Invoices.Manage": "Facturen beheren (aanmaken, afronden, annuleren)",
     "Permission:Invoicing.Invoices.Download": "Factuurdocumenten downloaden (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Creditnota's bekijken",
-    "Permission:Invoicing.CreditNotes.Manage": "Creditnota's beheren (aanmaken, annuleren)"
+    "Permission:Invoicing.CreditNotes.Manage": "Creditnota's beheren (aanmaken, annuleren)",
+    "Invoicing.Columns.Tenant": "Tenant",
+    "Invoicing.Columns.InvoiceNumber": "Factuurnummer",
+    "Invoicing.Columns.DocumentType": "Documenttype",
+    "Invoicing.Columns.Status": "Status",
+    "Invoicing.Columns.Currency": "Valuta",
+    "Invoicing.Columns.Total": "Totaal",
+    "Invoicing.Columns.AmountRemaining": "Resterend bedrag",
+    "Invoicing.Columns.IssuedAt": "Uitgegeven op",
+    "Invoicing.Columns.DueAt": "Vervaldatum",
+    "Invoicing.Columns.PaidAt": "Betaald op",
+    "Invoicing.Columns.BillingReason": "Factuurreden"
   }
 }

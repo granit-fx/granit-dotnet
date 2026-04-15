@@ -3,6 +3,17 @@
   "texts": {
     "PermissionGroup:BlobStorage": "Archiviazione file",
     "Permission:BlobStorage.Administration.Read": "Visualizzare l'amministrazione dell'archiviazione file (elenco, descrittori, query)",
-    "Permission:BlobStorage.Administration.Manage": "Gestire l'archiviazione file (caricare, scaricare, eliminare, confermare, pulire)"
+    "Permission:BlobStorage.Administration.Manage": "Gestire l'archiviazione file (caricare, scaricare, eliminare, confermare, pulire)",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.ContentType": "Content Type",
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.ValidatedAt": "Validated At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
   }
 }

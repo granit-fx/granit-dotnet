@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Wyświetl historię wersji cen",
     "Permission:Subscriptions.Prices.Manage": "Zarządzaj cenami (twórz wersje, migruj subskrypcje)",
     "Permission:Subscriptions.Seats.Read": "Wyświetlanie przypisań miejsc",
-    "Permission:Subscriptions.Seats.Manage": "Zarządzanie przypisaniami miejsc (przypisywanie, cofanie)"
+    "Permission:Subscriptions.Seats.Manage": "Zarządzanie przypisaniami miejsc (przypisywanie, cofanie)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

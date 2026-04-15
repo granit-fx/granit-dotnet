@@ -47,6 +47,14 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     public Type EntityType => typeof(TEntity);
 
     /// <summary>
+    /// The localization resource type used to resolve <see cref="ColumnDescriptor.LabelKey"/> values.
+    /// Override in derived classes to point to the module's localization resource marker class.
+    /// When <c>null</c>, no localization is attempted and <see cref="ColumnDescriptor.Label"/>
+    /// (or the property name) is used as-is.
+    /// </summary>
+    public virtual Type? LocalizationResourceType => null;
+
+    /// <summary>
     /// Configures the query definition using the fluent builder.
     /// Called once at startup.
     /// </summary>

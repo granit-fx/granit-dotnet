@@ -7,6 +7,20 @@
     "Granit:Validation:InvalidWebhookUrl": "目标 URL 必须是有效的 HTTPS URL",
     "Granit:Validation:WebhookUrlPrivateAddress": "不允许使用私有、本地或保留的 IP 地址",
     "Granit:Validation:WebhookUrlBlockedTld": "不允许使用内部域名（.local、.internal、.localhost、.onion）",
-    "Granit:Validation:UnknownWebhookEventType": "指定的事件类型未注册。请使用 GET /event-types 获取可用类型。"
+    "Granit:Validation:UnknownWebhookEventType": "指定的事件类型未注册。请使用 GET /event-types 获取可用类型。",
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.SuspendedAt": "Suspended At",
+    "Webhooks.Columns.SuspendedBy": "Suspended By",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
+    "Webhooks.Columns.Success": "Success",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message"
   }
 }

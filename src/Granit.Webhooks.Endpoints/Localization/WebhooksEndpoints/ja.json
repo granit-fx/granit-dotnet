@@ -7,6 +7,20 @@
     "Granit:Validation:InvalidWebhookUrl": "ターゲット URL は有効な HTTPS URL である必要があります",
     "Granit:Validation:WebhookUrlPrivateAddress": "プライベート、ローカル、または予約済みの IP アドレスは許可されていません",
     "Granit:Validation:WebhookUrlBlockedTld": "内部ドメイン名（.local、.internal、.localhost、.onion）は許可されていません",
-    "Granit:Validation:UnknownWebhookEventType": "指定されたイベントタイプは登録されていません。GET /event-types で利用可能なタイプを確認してください。"
+    "Granit:Validation:UnknownWebhookEventType": "指定されたイベントタイプは登録されていません。GET /event-types で利用可能なタイプを確認してください。",
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.SuspendedAt": "Suspended At",
+    "Webhooks.Columns.SuspendedBy": "Suspended By",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
+    "Webhooks.Columns.Success": "Success",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message"
   }
 }

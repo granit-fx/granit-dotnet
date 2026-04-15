@@ -1,6 +1,6 @@
 using Granit.QueryEngine;
-using Granit.QueryEngine.Filtering;
 using Granit.Subscriptions.Domain;
+using Granit.Subscriptions.Endpoints.Internal;
 
 namespace Granit.Subscriptions.Endpoints.Queries;
 
@@ -14,17 +14,20 @@ public sealed class SubscriptionQueryDefinition : QueryDefinition<Subscription>
     public override string Name => "Subscriptions.Subscriptions";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(SubscriptionsEndpointsLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<Subscription> builder)
     {
         builder
-            .Column(s => s.TenantId, c => c.Label("Tenant").Filterable().Sortable())
-            .Column(s => s.PlanId, c => c.Label("Plan").Filterable().Sortable())
-            .Column(s => s.Status, c => c.Label("Status").Filterable().Sortable())
-            .Column(s => s.Currency, c => c.Label("Currency").Filterable().Sortable())
-            .Column(s => s.CurrentPeriodStart, c => c.Label("Period Start").Sortable())
-            .Column(s => s.CurrentPeriodEnd, c => c.Label("Period End").Sortable())
-            .Column(s => s.CancelAtPeriodEnd, c => c.Label("Cancel at Period End").Filterable())
-            .Column(s => s.TrialEndsAt, c => c.Label("Trial Ends At").Sortable())
+            .Column(s => s.TenantId, c => c.Label("Tenant").LabelKey("Subscriptions.Columns.Tenant").Filterable().Sortable())
+            .Column(s => s.PlanId, c => c.Label("Plan").LabelKey("Subscriptions.Columns.Plan").Filterable().Sortable())
+            .Column(s => s.Status, c => c.Label("Status").LabelKey("Subscriptions.Columns.Status").Filterable().Sortable())
+            .Column(s => s.Currency, c => c.Label("Currency").LabelKey("Subscriptions.Columns.Currency").Filterable().Sortable())
+            .Column(s => s.CurrentPeriodStart, c => c.Label("Period Start").LabelKey("Subscriptions.Columns.PeriodStart").Sortable())
+            .Column(s => s.CurrentPeriodEnd, c => c.Label("Period End").LabelKey("Subscriptions.Columns.PeriodEnd").Sortable())
+            .Column(s => s.CancelAtPeriodEnd, c => c.Label("Cancel at Period End").LabelKey("Subscriptions.Columns.CancelAtPeriodEnd").Filterable())
+            .Column(s => s.TrialEndsAt, c => c.Label("Trial Ends At").LabelKey("Subscriptions.Columns.TrialEndsAt").Sortable())
             .GlobalSearch(s => s.Currency)
             .DateFilter(s => s.CurrentPeriodStart)
             .DefaultSort("-currentPeriodEnd")

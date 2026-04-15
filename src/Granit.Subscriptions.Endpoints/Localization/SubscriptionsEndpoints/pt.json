@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Ver hist��rico de versões de preços",
     "Permission:Subscriptions.Prices.Manage": "Gerir preços (criar versões, migrar assinaturas)",
     "Permission:Subscriptions.Seats.Read": "Ver atribuições de lugares",
-    "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)"
+    "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

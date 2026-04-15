@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Prijsversiegeschiedenis bekijken",
     "Permission:Subscriptions.Prices.Manage": "Prijzen beheren (versies aanmaken, abonnementen migreren)",
     "Permission:Subscriptions.Seats.Read": "Stoeltoewijzingen bekijken",
-    "Permission:Subscriptions.Seats.Manage": "Stoeltoewijzingen beheren (toewijzen, intrekken)"
+    "Permission:Subscriptions.Seats.Manage": "Stoeltoewijzingen beheren (toewijzen, intrekken)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Valuta",
+    "Subscriptions.Columns.PeriodStart": "Periodestart",
+    "Subscriptions.Columns.PeriodEnd": "Periode-einde",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Annuleren aan einde periode",
+    "Subscriptions.Columns.TrialEndsAt": "Proefperiode eindigt op"
   }
 }

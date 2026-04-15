@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "मूल्य संस्करण इतिहास देखें",
     "Permission:Subscriptions.Prices.Manage": "मूल्य प्रबंधित करें (संस्करण बनाएँ, सब्सक्रिप्शन माइग्रेट करें)",
     "Permission:Subscriptions.Seats.Read": "सीट असाइनमेंट देखें",
-    "Permission:Subscriptions.Seats.Manage": "सीट असाइनमेंट प्रबंधित करें (असाइन करें, निरस्त करें)"
+    "Permission:Subscriptions.Seats.Manage": "सीट असाइनमेंट प्रबंधित करें (असाइन करें, निरस्त करें)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

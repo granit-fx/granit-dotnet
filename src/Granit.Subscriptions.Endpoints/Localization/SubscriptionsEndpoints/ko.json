@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "가격 버전 이력 조회",
     "Permission:Subscriptions.Prices.Manage": "가격 관리 (버��� 생성, 구독 마이그레이션)",
     "Permission:Subscriptions.Seats.Read": "시트 할당 보기",
-    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)"
+    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

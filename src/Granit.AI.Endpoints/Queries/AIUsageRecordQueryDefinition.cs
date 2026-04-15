@@ -1,3 +1,4 @@
+using Granit.AI.Endpoints.Internal;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
 
@@ -13,17 +14,20 @@ public sealed class AIUsageRecordQueryDefinition : QueryDefinition<AIUsageRecord
     public override string Name => "AI.UsageRecords";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(AIEndpointsLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<AIUsageRecord> builder)
     {
         builder
-            .Column(r => r.WorkspaceName, c => c.Label("Workspace").Filterable().Sortable())
-            .Column(r => r.Provider, c => c.Label("Provider").Filterable().Sortable())
-            .Column(r => r.Model, c => c.Label("Model").Filterable().Sortable())
-            .Column(r => r.InputTokens, c => c.Label("Input Tokens").Sortable())
-            .Column(r => r.OutputTokens, c => c.Label("Output Tokens").Sortable())
-            .Column(r => r.EstimatedCostUsd, c => c.Label("Estimated Cost (USD)").Sortable())
-            .Column(r => r.Timestamp, c => c.Label("Timestamp").Sortable())
-            .Column(r => r.Duration, c => c.Label("Duration"))
+            .Column(r => r.WorkspaceName, c => c.Label("Workspace").LabelKey("AI.Columns.Workspace").Filterable().Sortable())
+            .Column(r => r.Provider, c => c.Label("Provider").LabelKey("AI.Columns.Provider").Filterable().Sortable())
+            .Column(r => r.Model, c => c.Label("Model").LabelKey("AI.Columns.Model").Filterable().Sortable())
+            .Column(r => r.InputTokens, c => c.Label("Input Tokens").LabelKey("AI.Columns.InputTokens").Sortable())
+            .Column(r => r.OutputTokens, c => c.Label("Output Tokens").LabelKey("AI.Columns.OutputTokens").Sortable())
+            .Column(r => r.EstimatedCostUsd, c => c.Label("Estimated Cost (USD)").LabelKey("AI.Columns.EstimatedCostUsd").Sortable())
+            .Column(r => r.Timestamp, c => c.Label("Timestamp").LabelKey("AI.Columns.Timestamp").Sortable())
+            .Column(r => r.Duration, c => c.Label("Duration").LabelKey("AI.Columns.Duration"))
             .GlobalSearch(r => r.WorkspaceName, r => r.Provider, r => r.Model)
             .DateFilter(r => r.Timestamp)
             .AllowGroupBy(r => r.WorkspaceName)

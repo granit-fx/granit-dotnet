@@ -7,6 +7,20 @@
     "Granit:Validation:InvalidWebhookUrl": "Hedef URL geçerli bir HTTPS URL olmalıdır",
     "Granit:Validation:WebhookUrlPrivateAddress": "Özel, yerel veya ayrılmış IP adreslerine izin verilmez",
     "Granit:Validation:WebhookUrlBlockedTld": "Dahili alan adlarına (.local, .internal, .localhost, .onion) izin verilmez",
-    "Granit:Validation:UnknownWebhookEventType": "Belirtilen olay türü kayıtlı değil. Kullanılabilir türler için GET /event-types kullanın."
+    "Granit:Validation:UnknownWebhookEventType": "Belirtilen olay türü kayıtlı değil. Kullanılabilir türler için GET /event-types kullanın.",
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.SuspendedAt": "Suspended At",
+    "Webhooks.Columns.SuspendedBy": "Suspended By",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
+    "Webhooks.Columns.Success": "Success",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message"
   }
 }

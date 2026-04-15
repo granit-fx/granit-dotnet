@@ -3,6 +3,17 @@
   "texts": {
     "PermissionGroup:BlobStorage": "Blob Storage",
     "Permission:BlobStorage.Administration.Read": "View blob storage administration (list, descriptors, query)",
-    "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)"
+    "Permission:BlobStorage.Administration.Manage": "Manage blob storage (upload, download, delete, confirm, cleanup)",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.ContentType": "Content Type",
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.ValidatedAt": "Validated At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
   }
 }

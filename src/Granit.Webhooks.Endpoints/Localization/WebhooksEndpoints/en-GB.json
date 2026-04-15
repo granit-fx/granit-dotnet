@@ -1,4 +1,19 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.SuspendedAt": "Suspended At",
+    "Webhooks.Columns.SuspendedBy": "Suspended By",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
+    "Webhooks.Columns.Success": "Success",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message"
+  }
 }

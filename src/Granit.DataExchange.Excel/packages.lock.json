@@ -24,8 +24,8 @@
       "Sylvan.Data.Excel": {
         "type": "Direct",
         "requested": "[0.5.*, )",
-        "resolved": "0.5.4",
-        "contentHash": "LKaVx9Gz37ck3EdFvQgK5lY91cHMtTtm7SGZX2HCfqylcAzjqAK3st2jGxzm7+7UpV3KZjcxMpOX0oRIfm/J4g=="
+        "resolved": "0.5.5",
+        "contentHash": "HBsTVzAupf2tg/koLNEalzsJfWRl0sbtFOaTSdrweujeyEx3zO5BxcxTzW55TD2db9sn1xpRcSLP04tUG0v/jQ=="
       },
       "ClosedXML.Parser": {
         "type": "Transitive",
@@ -69,11 +69,6 @@
         "dependencies": {
           "Microsoft.Extensions.Primitives": "10.0.6"
         }
-      },
-      "Microsoft.Extensions.Localization.Abstractions": {
-        "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
       },
       "Microsoft.Extensions.Primitives": {
         "type": "Transitive",
@@ -271,6 +266,12 @@
           "Microsoft.Extensions.Logging.Abstractions": "10.0.6",
           "Microsoft.Extensions.Options": "10.0.6"
         }
+      },
+      "Microsoft.Extensions.Localization.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.6",
+        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "CentralTransitive",

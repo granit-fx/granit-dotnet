@@ -129,11 +129,6 @@
           "Polly.Extensions.Http": "3.0.0"
         }
       },
-      "Microsoft.Extensions.Localization.Abstractions": {
-        "type": "Transitive",
-        "resolved": "10.0.6",
-        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
-      },
       "Microsoft.Extensions.Logging": {
         "type": "Transitive",
         "resolved": "10.0.6",
@@ -402,26 +397,6 @@
       "granit": {
         "type": "Project"
       },
-      "granit.ai": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
-          "Microsoft.Extensions.AI.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
-        }
-      },
-      "granit.ai.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.AI": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
-        }
-      },
       "granit.auditing": {
         "type": "Project",
         "dependencies": {
@@ -519,22 +494,6 @@
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
-        }
-      },
-      "granit.features": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Caching": "[0.1.0-dev, )",
-          "Granit.Localization": "[0.1.0-dev, )"
-        }
-      },
-      "granit.features.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Events": "[0.1.0-dev, )",
-          "Granit.Features": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
       "granit.guids": {
@@ -908,12 +867,6 @@
           "Microsoft.Extensions.Logging": "10.0.6"
         }
       },
-      "Microsoft.Extensions.AI.Abstractions": {
-        "type": "CentralTransitive",
-        "requested": "[10.*, )",
-        "resolved": "10.5.0",
-        "contentHash": "bb2wQ1HGatf5zdBxE28zrN4jaEVmpC+IJYChcqABTfu77YtFcJe/A4ZChjVZ0V1OF+UPYSOY8mUDI/fwEljcIA=="
-      },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",
@@ -1024,6 +977,12 @@
           "Microsoft.Extensions.Logging.Abstractions": "10.0.6",
           "Microsoft.Extensions.Options": "10.0.6"
         }
+      },
+      "Microsoft.Extensions.Localization.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.6",
+        "contentHash": "eXchxdBgomnydhkgk1jCoCgiYL5dYp0TKVPhLSClGirmkEMAW5j8yJQjIoIwoRN5nmER/OYglYxc+wO15zuRkQ=="
       },
       "Microsoft.Extensions.Logging.Abstractions": {
         "type": "CentralTransitive",

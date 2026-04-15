@@ -9,6 +9,14 @@
     "Permission:Subscriptions.Prices.Read": "Visa prisversionshistorik",
     "Permission:Subscriptions.Prices.Manage": "Hantera priser (skapa versioner, migrera prenumerationer)",
     "Permission:Subscriptions.Seats.Read": "Visa platstilldelningar",
-    "Permission:Subscriptions.Seats.Manage": "Hantera platstilldelningar (tilldela, återkalla)"
+    "Permission:Subscriptions.Seats.Manage": "Hantera platstilldelningar (tilldela, återkalla)",
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Currency",
+    "Subscriptions.Columns.PeriodStart": "Period Start",
+    "Subscriptions.Columns.PeriodEnd": "Period End",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
+    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
   }
 }

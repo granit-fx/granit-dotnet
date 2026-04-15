@@ -2627,13 +2627,19 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Queries/AIUsageRecordQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(AIEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -8066,13 +8072,19 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/Queries/BlobDescriptorQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(BlobStorageEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -20287,6 +20299,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(InvoicingEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -33745,6 +33763,12 @@
           "returnType": "string Name { get; } public Type EntityType =>"
         },
         {
+          "name": "LocalizationResourceType",
+          "kind": "property",
+          "signature": "Type? LocalizationResourceType",
+          "returnType": "Type?"
+        },
+        {
           "name": "GetFilterGroups",
           "kind": "method",
           "signature": "GetFilterGroups()",
@@ -35005,13 +35029,19 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/Queries/ScheduledActionQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(SchedulingEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -36711,6 +36741,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(SubscriptionsEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -42273,13 +42309,19 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookDeliveryAttemptQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(WebhooksEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -42289,13 +42331,19 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookSubscriptionQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(WebhooksEndpointsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },

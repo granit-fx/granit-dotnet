@@ -7,6 +7,20 @@
     "Granit:Validation:InvalidWebhookUrl": "लक्ष्य URL एक मान्य HTTPS URL होना चाहिए",
     "Granit:Validation:WebhookUrlPrivateAddress": "निजी, स्थानीय या आरक्षित IP पते अनुमत नहीं हैं",
     "Granit:Validation:WebhookUrlBlockedTld": "आंतरिक डोमेन नाम (.local, .internal, .localhost, .onion) अनुमत नहीं हैं",
-    "Granit:Validation:UnknownWebhookEventType": "निर्दिष्ट इवेंट प्रकार पंजीकृत नहीं है। उपलब्ध प्रकारों के लिए GET /event-types का उपयोग करें।"
+    "Granit:Validation:UnknownWebhookEventType": "निर्दिष्ट इवेंट प्रकार पंजीकृत नहीं है। उपलब्ध प्रकारों के लिए GET /event-types का उपयोग करें।",
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.SuspendedAt": "Suspended At",
+    "Webhooks.Columns.SuspendedBy": "Suspended By",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
+    "Webhooks.Columns.Success": "Success",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message"
   }
 }

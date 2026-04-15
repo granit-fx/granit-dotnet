@@ -7,6 +7,20 @@
     "Granit:Validation:InvalidWebhookUrl": "De doel-URL moet een geldige HTTPS-URL zijn",
     "Granit:Validation:WebhookUrlPrivateAddress": "Privé-, lokale of gereserveerde IP-adressen zijn niet toegestaan",
     "Granit:Validation:WebhookUrlBlockedTld": "Interne domeinnamen (.local, .internal, .localhost, .onion) zijn niet toegestaan",
-    "Granit:Validation:UnknownWebhookEventType": "Het opgegeven gebeurtenistype is niet geregistreerd. Gebruik GET /event-types voor beschikbare typen."
+    "Granit:Validation:UnknownWebhookEventType": "Het opgegeven gebeurtenistype is niet geregistreerd. Gebruik GET /event-types voor beschikbare typen.",
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Webhooks.Columns.EventType": "Gebeurtenistype",
+    "Webhooks.Columns.TargetUrl": "Doel-URL",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.ConsecutiveFailures": "Opeenvolgende fouten",
+    "Webhooks.Columns.LastSuccessAt": "Laatst succesvol op",
+    "Webhooks.Columns.SuspendedAt": "Opgeschort op",
+    "Webhooks.Columns.SuspendedBy": "Opgeschort door",
+    "Webhooks.Columns.Subscription": "Abonnement",
+    "Webhooks.Columns.HttpStatus": "HTTP-status",
+    "Webhooks.Columns.Success": "Succes",
+    "Webhooks.Columns.OccurredAt": "Opgetreden op",
+    "Webhooks.Columns.DurationMs": "Duur (ms)",
+    "Webhooks.Columns.ErrorMessage": "Foutmelding"
   }
 }

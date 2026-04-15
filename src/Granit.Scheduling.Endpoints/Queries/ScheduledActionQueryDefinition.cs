@@ -1,5 +1,6 @@
 using Granit.QueryEngine;
 using Granit.Scheduling.Domain;
+using Granit.Scheduling.Endpoints.Internal;
 
 namespace Granit.Scheduling.Endpoints.Queries;
 
@@ -13,17 +14,20 @@ public sealed class ScheduledActionQueryDefinition : QueryDefinition<ScheduledAc
     public override string Name => "Scheduling.ScheduledActions";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(SchedulingEndpointsLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<ScheduledAction> builder)
     {
         builder
-            .Column(a => a.TenantId, c => c.Label("Tenant").Filterable().Sortable())
-            .Column(a => a.PayloadType, c => c.Label("Payload Type").Filterable().Sortable())
-            .Column(a => a.Status, c => c.Label("Status").Filterable().Sortable())
-            .Column(a => a.ExecuteAt, c => c.Label("Execute At").Filterable().Sortable())
-            .Column(a => a.ExecutedAt, c => c.Label("Executed At").Sortable())
-            .Column(a => a.CorrelationId, c => c.Label("Correlation ID").Filterable())
-            .Column(a => a.CancelledBy, c => c.Label("Cancelled By").Filterable())
-            .Column(a => a.FailureReason, c => c.Label("Failure Reason"))
+            .Column(a => a.TenantId, c => c.Label("Tenant").LabelKey("Scheduling.Columns.Tenant").Filterable().Sortable())
+            .Column(a => a.PayloadType, c => c.Label("Payload Type").LabelKey("Scheduling.Columns.PayloadType").Filterable().Sortable())
+            .Column(a => a.Status, c => c.Label("Status").LabelKey("Scheduling.Columns.Status").Filterable().Sortable())
+            .Column(a => a.ExecuteAt, c => c.Label("Execute At").LabelKey("Scheduling.Columns.ExecuteAt").Filterable().Sortable())
+            .Column(a => a.ExecutedAt, c => c.Label("Executed At").LabelKey("Scheduling.Columns.ExecutedAt").Sortable())
+            .Column(a => a.CorrelationId, c => c.Label("Correlation ID").LabelKey("Scheduling.Columns.CorrelationId").Filterable())
+            .Column(a => a.CancelledBy, c => c.Label("Cancelled By").LabelKey("Scheduling.Columns.CancelledBy").Filterable())
+            .Column(a => a.FailureReason, c => c.Label("Failure Reason").LabelKey("Scheduling.Columns.FailureReason"))
             .GlobalSearch(a => a.PayloadType, a => a.CorrelationId)
             .DateFilter(a => a.ExecuteAt)
             .DefaultSort("-executeAt")
