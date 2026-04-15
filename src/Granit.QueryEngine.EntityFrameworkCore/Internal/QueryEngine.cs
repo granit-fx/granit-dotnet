@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.Diagnostics;
@@ -184,6 +185,32 @@ internal sealed class QueryEngine<TEntity>(
         GroupedResult<TEntity> result = await query.ApplyGroupByAsync(
             request.GroupBy, _builder, engineOptions.Value.MaxGroupCount, cancellationToken)
             .ConfigureAwait(false);
+
+        // Populate items per group: sort the filtered set, materialize, then distribute by group key
+        if (result.Groups.Count > 0)
+        {
+            IQueryable<TEntity> sorted = query.ApplySort(request.Sort, _builder);
+            List<TEntity> allItems = await sorted
+                .Take(_builder.MaxPageSizeValue * result.Groups.Count)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            PropertyInfo? groupProp = typeof(TEntity).GetProperty(
+                request.GroupBy,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+            if (groupProp is not null)
+            {
+                ILookup<string, TEntity> itemsByKey = allItems
+                    .ToLookup(e => groupProp.GetValue(e)?.ToString() ?? "(null)");
+
+                var populated = result.Groups
+                    .Select(g => g with { Items = itemsByKey[g.Value?.ToString() ?? "(null)"].ToList() })
+                    .ToList();
+
+                result = new GroupedResult<TEntity>(populated, result.TotalCount);
+            }
+        }
 
         RecordMetrics("grouped", startTimestamp);
         return result;
