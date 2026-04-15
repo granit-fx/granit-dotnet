@@ -33786,7 +33786,7 @@
       "fqn": "Granit.ReferenceData.EntityFrameworkCore.ReferenceDataEntityTypeConfiguration",
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
-      "file": "src/Granit.ReferenceData.EntityFrameworkCore/ReferenceDataEntityTypeConfiguration.cs",
+      "file": "src/Granit.ReferenceData.EntityFrameworkCore/Internal/ReferenceDataEntityTypeConfiguration.cs",
       "line": 33,
       "members": []
     },
