@@ -48,6 +48,10 @@ public static class DataExchangeEntityFrameworkCoreHostApplicationBuilderExtensi
         builder.Services.TryAddScoped(typeof(IExportDataSource<>), typeof(DbContextExportDataSource<>));
         builder.Services.TryAddSingleton<IAutoExportDefinitionSource, DbContextAutoExportDefinitionSource>();
 
+        // Extra property support: replaces null-object defaults from Granit.DataExchange
+        builder.Services.AddSingleton<IExtraExportFieldProvider, EfCoreExtraExportFieldProvider>();
+        builder.Services.AddScoped<IExportExtraValueResolver, EfCoreExportExtraValueResolver>();
+
         return builder;
     }
 }

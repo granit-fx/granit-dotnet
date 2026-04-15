@@ -121,6 +121,10 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IExportPresetReader, NullExportPresetStore>();
         services.TryAddScoped<IExportPresetWriter, NullExportPresetStore>();
 
+        // Extra property support: defaults replaced by EF Core layer
+        services.TryAddSingleton<IExtraExportFieldProvider, NullExtraExportFieldProvider>();
+        services.TryAddScoped<IExportExtraValueResolver, NullExportExtraValueResolver>();
+
         // Diagnostics
         services.TryAddSingleton<DataExchangeMetrics>();
         GranitActivitySourceRegistry.Register(DataExchangeActivitySource.Name);

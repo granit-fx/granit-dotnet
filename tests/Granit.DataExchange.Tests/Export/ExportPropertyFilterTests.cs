@@ -92,19 +92,19 @@ public sealed class ExportPropertyFilterTests
     }
 
     [Fact]
-    public void BuildFields_includes_sensitive_internal()
+    public void BuildFields_excludes_sensitive_internal()
     {
         IReadOnlyList<ExportFieldDescriptor> fields = ExportPropertyFilter.BuildFields(typeof(SensitiveEntity));
 
-        fields.ShouldContain(f => f.PropertyPath == "DisplayName");
+        fields.ShouldNotContain(f => f.PropertyPath == "DisplayName");
     }
 
     [Fact]
-    public void BuildFields_includes_sensitive_mask()
+    public void BuildFields_excludes_sensitive_mask()
     {
         IReadOnlyList<ExportFieldDescriptor> fields = ExportPropertyFilter.BuildFields(typeof(SensitiveEntity));
 
-        fields.ShouldContain(f => f.PropertyPath == "Email");
+        fields.ShouldNotContain(f => f.PropertyPath == "Email");
     }
 
     // ---- AuditIgnore attribute (by name) --------------------------------

@@ -57,6 +57,7 @@
         "tests/Granit.DataExchange.EntityFrameworkCore.Tests",
         "tests/Granit.DataExchange.Excel.Tests",
         "tests/Granit.DataExchange.Tests",
+        "tests/Granit.DataExchange.Definitions.Tests",
         "tests/Granit.DataExchange.Wolverine.Tests",
         "tests/Granit.DocumentGeneration.Excel.Tests",
         "tests/Granit.DocumentGeneration.Pdf.Tests",
