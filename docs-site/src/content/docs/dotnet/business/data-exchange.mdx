@@ -161,8 +161,9 @@ Both import and export pipelines need to store files (uploaded CSV/Excel for imp
 generated output for export). The `IDataExchangeFileProvider` interface abstracts
 this concern with three operations: `OpenAsync`, `SaveAsync`, and `DeleteAsync`.
 
-By default, a null-object implementation is registered that throws
-`NotImplementedException` — the application must provide a concrete implementation.
+By default, an in-memory implementation is registered — suitable for tests, CLI
+tools, and development. Data is lost on process restart. For production workloads,
+register `Granit.DataExchange.BlobStorage` or a custom implementation.
 
 ### Using the BlobStorage adapter
 

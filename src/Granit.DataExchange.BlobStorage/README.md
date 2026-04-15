@@ -25,7 +25,7 @@ Configure the container name (optional, defaults to `data-exchange`):
 
 ## How it works
 
-This package replaces the default null-object `IDataExchangeFileProvider` with
+This package replaces the default in-memory `IDataExchangeFileProvider` with
 `BlobStorageFileProvider`, which delegates to `IBlobStoreProvider` (the internal
 streaming interface implemented by every blob storage provider).
 

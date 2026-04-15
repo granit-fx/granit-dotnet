@@ -7,7 +7,7 @@ namespace Granit.DataExchange.BlobStorage;
 
 /// <summary>
 /// Bridges <c>Granit.DataExchange</c> file operations to <c>Granit.BlobStorage</c>.
-/// Replaces the default null-object <see cref="IDataExchangeFileProvider"/> with a
+/// Replaces the default in-memory <see cref="IDataExchangeFileProvider"/> with a
 /// concrete implementation backed by the registered <c>IBlobStoreProvider</c>.
 /// </summary>
 [DependsOn(typeof(GranitDataExchangeModule))]

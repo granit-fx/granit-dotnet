@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Registers <see cref="BlobStorageFileProvider"/> as the <see cref="IDataExchangeFileProvider"/>
-    /// implementation, replacing the default null-object fallback.
+    /// implementation, replacing the default in-memory fallback.
     /// </summary>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
