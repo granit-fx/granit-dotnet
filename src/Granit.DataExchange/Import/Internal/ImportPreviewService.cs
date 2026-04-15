@@ -13,7 +13,7 @@ namespace Granit.DataExchange.Import.Internal;
 internal sealed class ImportPreviewService(
     IImportJobReader jobReader,
     IImportJobWriter jobWriter,
-    IImportFileProvider fileProvider,
+    IDataExchangeFileProvider fileProvider,
     IMappingSuggestionService mappingService,
     IServiceProvider serviceProvider) : IImportPreviewService
 {

@@ -24,7 +24,7 @@ namespace Granit.DataExchange.Import.Internal;
 internal sealed class ImportOrchestrator(
     IImportJobReader jobReader,
     IImportJobWriter jobWriter,
-    IImportFileProvider fileProvider,
+    IDataExchangeFileProvider fileProvider,
     IServiceProvider serviceProvider,
     IClock clock,
     ILocalEventBus eventBus,
@@ -123,8 +123,13 @@ internal sealed class ImportOrchestrator(
         IFileParser? parser = parsers.FirstOrDefault(p => p.CanParse(job.MimeType));
         if (parser is null)
         {
+            string registered = parsers.Any()
+                ? string.Join(", ", parsers.Select(p => p.GetType().Name))
+                : "none";
             throw new InvalidOperationException(
-                $"No IFileParser registered for MIME type '{job.MimeType}'.");
+                $"No IFileParser registered for MIME type '{job.MimeType}'. " +
+                $"Registered parsers: [{registered}]. " +
+                $"Ensure the corresponding module is added: GranitDataExchangeCsvModule for CSV, GranitDataExchangeExcelModule for Excel.");
         }
 
         // Deserialize the confirmed column mappings

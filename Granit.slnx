@@ -270,6 +270,7 @@
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
     <Project Path="src/Granit.MultiTenancy.Wolverine/Granit.MultiTenancy.Wolverine.csproj" />
   </Folder>
   <Folder Name="/src/AI/">

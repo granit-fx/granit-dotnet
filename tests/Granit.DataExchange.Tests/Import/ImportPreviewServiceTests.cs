@@ -14,7 +14,7 @@ public sealed class ImportPreviewServiceTests
 {
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IMappingSuggestionService _mappingService = Substitute.For<IMappingSuggestionService>();
     private readonly IImportDefinitionDescriptor _descriptor = Substitute.For<IImportDefinitionDescriptor>();
     private readonly IFileParser _parser = Substitute.For<IFileParser>();

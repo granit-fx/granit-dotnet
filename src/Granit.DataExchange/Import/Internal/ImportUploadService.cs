@@ -9,11 +9,11 @@ namespace Granit.DataExchange.Import.Internal;
 
 /// <summary>
 /// Validates an uploaded file against the import definition constraints,
-/// stores it via <see cref="IImportFileProvider"/>, and creates an <see cref="ImportJob"/>.
+/// stores it via <see cref="IDataExchangeFileProvider"/>, and creates an <see cref="ImportJob"/>.
 /// </summary>
 internal sealed partial class ImportUploadService(
     IServiceProvider serviceProvider,
-    IImportFileProvider fileProvider,
+    IDataExchangeFileProvider fileProvider,
     IImportJobWriter jobWriter,
     IGuidGenerator guidGenerator,
     IClock clock,

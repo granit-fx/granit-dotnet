@@ -59,6 +59,7 @@
       "src/Granit.CustomerBalance.Wolverine/Granit.CustomerBalance.Wolverine.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
+      "src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj",
       "src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj",
       "src/Granit.DataExchange.Definitions/Granit.DataExchange.Definitions.csproj",
       "src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj",

@@ -5,7 +5,6 @@ using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Messages;
-using Granit.DataExchange.Import.Pipeline;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
@@ -29,7 +28,7 @@ internal sealed partial class ExportOrchestrator(
     IExportJobReader jobReader,
     IExportJobWriter jobWriter,
     IExportCommandDispatcher dispatcher,
-    IImportFileProvider fileProvider,
+    IDataExchangeFileProvider fileProvider,
     IClock clock,
     IGuidGenerator guidGenerator,
     ILocalEventBus eventBus,
@@ -192,8 +191,18 @@ internal sealed partial class ExportOrchestrator(
     private IExportWriter ResolveWriter(string format)
     {
         IExportWriter? writer = writers.FirstOrDefault(w => w.CanWrite(format));
-        return writer ?? throw new InvalidOperationException(
-            $"No export writer registered for format '{format}'.");
+        if (writer is not null)
+        {
+            return writer;
+        }
+
+        string registered = writers.Any()
+            ? string.Join(", ", writers.Select(w => w.GetType().Name))
+            : "none";
+        throw new InvalidOperationException(
+            $"No export writer registered for format '{format}'. " +
+            $"Registered writers: [{registered}]. " +
+            $"Ensure the corresponding module is added: GranitDataExchangeCsvModule for 'csv', GranitDataExchangeExcelModule for 'xlsx'.");
     }
 
     private IReadOnlyList<ExportFieldDescriptor> ResolveFields(

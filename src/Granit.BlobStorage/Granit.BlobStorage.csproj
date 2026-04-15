@@ -22,6 +22,8 @@
     <InternalsVisibleTo Include="Granit.BlobStorage.GoogleCloud.Tests" />
     <InternalsVisibleTo Include="Granit.BlobStorage.Proxy" />
     <InternalsVisibleTo Include="Granit.BlobStorage.Proxy.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.BlobStorage" />
+    <InternalsVisibleTo Include="Granit.DataExchange.BlobStorage.Tests" />
     <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

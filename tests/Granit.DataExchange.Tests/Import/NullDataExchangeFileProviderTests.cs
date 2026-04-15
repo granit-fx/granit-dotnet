@@ -1,12 +1,12 @@
-using Granit.DataExchange.Import.Internal;
+using Granit.DataExchange.Internal;
 using Shouldly;
 using Xunit;
 
 namespace Granit.DataExchange.Tests.Import;
 
-public sealed class NullImportFileProviderTests
+public sealed class NullDataExchangeFileProviderTests
 {
-    private readonly NullImportFileProvider _provider = new();
+    private readonly NullDataExchangeFileProvider _provider = new();
 
     [Fact]
     public async Task OpenAsync_ThrowsNotImplementedException()
@@ -35,6 +35,6 @@ public sealed class NullImportFileProviderTests
         NotImplementedException ex = await Should.ThrowAsync<NotImplementedException>(() =>
             _provider.OpenAsync("ref", TestContext.Current.CancellationToken));
 
-        ex.Message.ShouldContain("IImportFileProvider");
+        ex.Message.ShouldContain("IDataExchangeFileProvider");
     }
 }

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataExchange.BlobStorage</PackageId>
+    <Description>Bridges Granit.DataExchange file operations to Granit.BlobStorage, providing a ready-made IDataExchangeFileProvider backed by IBlobStoreProvider.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.BlobStorage.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -6,7 +6,6 @@ using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
-using Granit.DataExchange.Import.Pipeline;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
@@ -28,7 +27,7 @@ public sealed class ExportOrchestratorTests
     private readonly IExportJobReader _jobReader = Substitute.For<IExportJobReader>();
     private readonly IExportJobWriter _jobWriter = Substitute.For<IExportJobWriter>();
     private readonly IExportCommandDispatcher _dispatcher = Substitute.For<IExportCommandDispatcher>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();

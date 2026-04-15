@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using Granit.DataExchange;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
@@ -33,7 +34,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
     private const string Prefix = "/data-exchange/import";
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly ICorrectionFileGenerator _correctionGenerator = Substitute.For<ICorrectionFileGenerator>();
     private readonly WebApplication _app;
     private readonly HttpClient _adminClient;

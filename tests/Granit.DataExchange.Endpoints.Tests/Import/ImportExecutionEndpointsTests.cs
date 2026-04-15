@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Granit.DataExchange;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
@@ -36,7 +37,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
     private readonly IImportCommandDispatcher _dispatcher = Substitute.For<IImportCommandDispatcher>();
     private readonly IImportOrchestrator _orchestrator = Substitute.For<IImportOrchestrator>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly WebApplication _app;
     private readonly HttpClient _adminClient;
     private readonly HttpClient _anonClient;

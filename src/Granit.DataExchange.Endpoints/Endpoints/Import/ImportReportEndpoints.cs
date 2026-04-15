@@ -65,7 +65,7 @@ internal static class ImportReportEndpoints
     private static async Task<Results<FileStreamHttpResult, NoContent, ProblemHttpResult>> GetCorrectionFileAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
-        [FromServices] IImportFileProvider fileProvider,
+        [FromServices] IDataExchangeFileProvider fileProvider,
         [FromServices] IServiceProvider serviceProvider,
         CancellationToken cancellationToken)
     {

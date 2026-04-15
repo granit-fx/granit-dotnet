@@ -14,7 +14,7 @@ namespace Granit.DataExchange.Tests.Import;
 
 public sealed class ImportUploadServiceTests
 {
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();

@@ -19,7 +19,7 @@ public sealed class ImportOrchestratorTests
 {
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
     private readonly DataExchangeMetrics _metrics;

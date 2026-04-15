@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.DataExchange;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
 using Granit.DataExchange.Endpoints.Permissions;
@@ -50,7 +51,7 @@ public sealed class ImportJobListEndpointsTests : IAsyncDisposable
             .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(Substitute.For<IImportJobWriter>());
-        builder.Services.AddSingleton(Substitute.For<IImportFileProvider>());
+        builder.Services.AddSingleton(Substitute.For<IDataExchangeFileProvider>());
         builder.Services.AddSingleton(Substitute.For<IMappingSuggestionService>());
         builder.Services.AddSingleton(Substitute.For<IClock>());
         builder.Services.AddSingleton(Substitute.For<IImportDefinitionDescriptor>());

@@ -490,6 +490,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.DataExchange.BlobStorage",
+      "deps": [
+        "Granit.DataExchange",
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange.Csv",
       "deps": [
         "Granit.DataExchange"
@@ -9683,6 +9691,60 @@
       ]
     },
     {
+      "name": "DataExchangeBlobStorageOptions",
+      "fqn": "Granit.DataExchange.BlobStorage.DataExchangeBlobStorageOptions",
+      "kind": "class",
+      "project": "Granit.DataExchange.BlobStorage",
+      "file": "src/Granit.DataExchange.BlobStorage/DataExchangeBlobStorageOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ContainerName",
+          "kind": "property",
+          "signature": "string ContainerName",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultContentType",
+          "kind": "property",
+          "signature": "string DefaultContentType",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.BlobStorage.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.BlobStorage",
+      "file": "src/Granit.DataExchange.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitDataExchangeBlobStorage",
+          "kind": "method",
+          "signature": "AddGranitDataExchangeBlobStorage(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataExchangeBlobStorageModule",
+      "fqn": "Granit.DataExchange.BlobStorage.GranitDataExchangeBlobStorageModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.BlobStorage",
+      "file": "src/Granit.DataExchange.BlobStorage/GranitDataExchangeBlobStorageModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.Csv.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -11112,7 +11174,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Extensions/ServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitDataImport",
@@ -11135,6 +11197,34 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDataExchangeFileProvider",
+      "fqn": "Granit.DataExchange.IDataExchangeFileProvider",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/IDataExchangeFileProvider.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "OpenAsync",
+          "kind": "method",
+          "signature": "OpenAsync(string blobReference, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        },
+        {
+          "name": "SaveAsync",
+          "kind": "method",
+          "signature": "SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(string blobReference, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -11727,34 +11817,6 @@
           "name": "DispatchAsync",
           "kind": "method",
           "signature": "DispatchAsync(ExecuteImportCommand command, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IImportFileProvider",
-      "fqn": "Granit.DataExchange.Import.Pipeline.IImportFileProvider",
-      "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Pipeline/IImportFileProvider.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "OpenAsync",
-          "kind": "method",
-          "signature": "OpenAsync(string blobReference, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Stream>"
-        },
-        {
-          "name": "SaveAsync",
-          "kind": "method",
-          "signature": "SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
-        },
-        {
-          "name": "DeleteAsync",
-          "kind": "method",
-          "signature": "DeleteAsync(string blobReference, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]

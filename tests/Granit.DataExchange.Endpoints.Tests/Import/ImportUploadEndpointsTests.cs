@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using Granit.DataExchange;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Endpoints.Extensions;
@@ -39,7 +40,7 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
-    private readonly IImportFileProvider _fileProvider = Substitute.For<IImportFileProvider>();
+    private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IMappingSuggestionService _mappingService = Substitute.For<IMappingSuggestionService>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IImportDefinitionDescriptor _descriptor = Substitute.For<IImportDefinitionDescriptor>();

@@ -123,7 +123,7 @@ internal static class ImportExecutionEndpoints
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
         [FromServices] IImportJobWriter jobWriter,
-        [FromServices] IImportFileProvider fileProvider,
+        [FromServices] IDataExchangeFileProvider fileProvider,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);

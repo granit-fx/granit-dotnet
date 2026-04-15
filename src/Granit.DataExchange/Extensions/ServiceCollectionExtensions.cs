@@ -8,6 +8,7 @@ using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.DataExchange.Internal;
 using Granit.Diagnostics;
 using Granit.Events.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ public static class ServiceCollectionExtensions
     ///   <item><see cref="IMappingSuggestionService"/> (scoped) — 4-tier mapping facade.</item>
     ///   <item><see cref="ISemanticMappingService"/> (singleton) — null-object default.</item>
     ///   <item><see cref="IImportJobReader"/> / <see cref="IImportJobWriter"/> (scoped) — null-object default.</item>
-    ///   <item><see cref="IImportFileProvider"/> (scoped) — null-object default.</item>
+    ///   <item><see cref="IDataExchangeFileProvider"/> (scoped) — null-object default.</item>
     ///   <item><see cref="IImportOrchestrator"/> (scoped) — pipeline orchestrator.</item>
     ///   <item><see cref="IImportCommandDispatcher"/> (singleton) — channel-based dispatch.</item>
     /// </list>
@@ -51,7 +52,7 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<IMappingSuggestionService, MappingSuggestionService>();
         services.TryAddScoped<IImportJobReader, NullImportJobStore>();
         services.TryAddScoped<IImportJobWriter, NullImportJobStore>();
-        services.TryAddScoped<IImportFileProvider, NullImportFileProvider>();
+        services.TryAddScoped<IDataExchangeFileProvider, NullDataExchangeFileProvider>();
         services.TryAddScoped<IImportOrchestrator, ImportOrchestrator>();
         services.TryAddScoped<IImportUploadService, ImportUploadService>();
         services.TryAddScoped<IImportPreviewService, ImportPreviewService>();
