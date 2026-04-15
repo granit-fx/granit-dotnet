@@ -2,12 +2,12 @@ namespace Granit.DataExchange;
 
 /// <summary>
 /// Provides file streams for data exchange jobs (import and export).
-/// The application registers an implementation that retrieves or stores files
-/// via its blob storage or any other file system.
 /// </summary>
 /// <remarks>
-/// A concrete implementation is typically registered in the host application,
-/// bridging <c>IBlobStorage</c> or a local file system to the data exchange pipeline.
+/// A default in-memory implementation is registered automatically — suitable for
+/// tests, CLI tools, and development. For production workloads, register
+/// <c>Granit.DataExchange.BlobStorage</c> to delegate to the configured blob
+/// storage provider (S3, Azure Blob, FileSystem, etc.).
 /// </remarks>
 public interface IDataExchangeFileProvider
 {
