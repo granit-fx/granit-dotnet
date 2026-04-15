@@ -7089,7 +7089,7 @@
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
       "file": "src/Granit.Bff.Endpoints/Extensions/BffTokenInjectionMiddleware.cs",
-      "line": 33,
+      "line": 34,
       "members": []
     },
     {

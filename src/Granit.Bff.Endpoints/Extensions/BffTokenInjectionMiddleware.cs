@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Granit.Bff.Diagnostics;
 using Granit.Bff.Options;
+using Granit.Http.Cookies;
 using Granit.Oidc.ClientAuthentication;
 using Granit.Oidc.ClientAuthentication.Internal;
 using Granit.Oidc.DPoP;
@@ -57,6 +58,7 @@ public sealed partial class BffTokenInjectionMiddleware
         IOptions<GranitBffOptions> options,
         IBffTokenStore tokenStore,
         IBffCsrfTokenGenerator csrfGenerator,
+        IGranitCookieManager cookieManager,
         BffMetrics metrics,
         IClock clock,
         ILogger<BffTokenInjectionMiddleware> logger)
@@ -101,9 +103,14 @@ public sealed partial class BffTokenInjectionMiddleware
 
         if (tokens is null)
         {
+            // Session no longer exists (server restart, cache eviction, expiry).
+            // Clear the stale cookie so subsequent requests don't repeat this path,
+            // then continue as unauthenticated — the endpoint's own authorization
+            // policy decides whether to challenge or allow the request.
             LogExpiredSession(logger, MaskSessionId(sessionId), frontend.Name);
             metrics.RecordProxyError(null, "expired_session");
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            cookieManager.DeleteCookie(context, frontend.SessionCookieName);
+            await _next(context).ConfigureAwait(false);
             return;
         }
 
@@ -126,9 +133,11 @@ public sealed partial class BffTokenInjectionMiddleware
             }
             else
             {
+                // Refresh failed — clear the stale session and continue as unauthenticated.
                 LogTokenRefreshFailed(logger, MaskSessionId(sessionId), frontend.Name);
                 metrics.RecordProxyError(null, "refresh_failed");
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                cookieManager.DeleteCookie(context, frontend.SessionCookieName);
+                await _next(context).ConfigureAwait(false);
                 return;
             }
         }
