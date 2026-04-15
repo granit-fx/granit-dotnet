@@ -18,6 +18,8 @@ internal sealed partial class ExpiredSessionCleanupService(
         await using BffDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        // ExecuteDeleteAsync intentional — BffSessionEntity is neither audited nor soft-deletable,
+        // so bypassing interceptors is safe and avoids loading expired rows into memory.
         int deleted = await db.Sessions
             .Where(s => s.ExpiresAt <= clock.Now)
             .ExecuteDeleteAsync(cancellationToken)
