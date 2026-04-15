@@ -113,7 +113,6 @@ internal sealed class PermissionChecker(
         }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        string tenantIdStr = tenantId?.ToString() ?? "global";
 
         // Partition into cached hits and uncached misses
         HashSet<string> granted = new(StringComparer.Ordinal);
