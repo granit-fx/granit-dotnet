@@ -39,13 +39,16 @@ internal static class ExportDefinitionEndpoints
     }
 
     private static Ok<IReadOnlyList<ExportDefinitionResponse>> ListDefinitionsAsync(
-        [FromServices] IServiceProvider serviceProvider)
+        [FromServices] IServiceProvider serviceProvider,
+        [FromServices] IEnumerable<IExportWriter> writers)
     {
+        IExportWriter[] writerArray = writers.ToArray();
+
         IEnumerable<IExportDefinitionDescriptor> descriptors =
             ExportDefinitionResolver.GetAll(serviceProvider);
 
         IReadOnlyList<ExportDefinitionResponse> response = descriptors
-            .Select(ExportDefinitionResponse.FromDescriptor)
+            .Select(d => ExportDefinitionResponse.FromDescriptor(d, writerArray))
             .ToList()
             .AsReadOnly();
 
