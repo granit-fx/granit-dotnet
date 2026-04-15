@@ -53,6 +53,12 @@ public static class AIEndpointRouteBuilderExtensions
             .RequireAuthorization(AIPermissions.Usage.Read);
         usageGroup.MapGranitQuery<AIUsageRecord>();
 
+        // Discovery endpoints — provider and model listing
+        RouteGroupBuilder providerGroup = group.MapGranitGroup("")
+            .WithTags(options.ProvidersTagName)
+            .RequireAuthorization(AIPermissions.Workspaces.Read);
+        providerGroup.MapProviderEndpoints();
+
         // User endpoints — chat completion proxy
         RouteGroupBuilder chatGroup = group.MapGranitGroup("")
             .WithTags(options.InferenceTagName)

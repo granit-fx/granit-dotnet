@@ -16,7 +16,7 @@ namespace Granit.AI.AzureOpenAI.Internal;
 /// instances backed by <see cref="AzureOpenAIClient"/>. Supports API key authentication
 /// (dev/staging) and <see cref="DefaultAzureCredential"/> / Managed Identity (production).
 /// </remarks>
-internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOptions> options) : IAIProviderFactory
+internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOptions> options) : IAIProviderFactory, IAIModelCatalog
 {
     private readonly AzureOpenAIProviderOptions _options = options.Value;
 
@@ -39,6 +39,19 @@ internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOpt
         string deployment = _options.DefaultEmbeddingDeployment;
 
         return client.GetEmbeddingClient(deployment).AsIEmbeddingGenerator();
+    }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<AIModelInfo>> GetAvailableModelsAsync(CancellationToken cancellationToken = default)
+    {
+        // Azure OpenAI uses deployment names configured per-resource — expose the configured defaults.
+        IReadOnlyList<AIModelInfo> models =
+        [
+            new(_options.DefaultDeployment, _options.DefaultDeployment, new AIModelCapabilities(Chat: true, Embeddings: false)),
+            new(_options.DefaultEmbeddingDeployment, _options.DefaultEmbeddingDeployment, new AIModelCapabilities(Chat: false, Embeddings: true)),
+        ];
+
+        return Task.FromResult(models);
     }
 
     private AzureOpenAIClient CreateClient()

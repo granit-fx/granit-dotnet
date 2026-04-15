@@ -12,7 +12,7 @@ public sealed class OllamaProviderFactoryAdditionalTests
     private static OllamaProviderFactory CreateFactory(OllamaOptions? options = null)
     {
         OllamaOptions opts = options ?? new OllamaOptions();
-        return new OllamaProviderFactory(Microsoft.Extensions.Options.Options.Create(opts));
+        return new OllamaProviderFactory(Microsoft.Extensions.Options.Options.Create(opts), TimeProvider.System);
     }
 
     private static AIWorkspace CreateWorkspace(string? model = "llama3.2") =>

@@ -2299,6 +2299,24 @@
       "members": []
     },
     {
+      "name": "AIModelCapabilities",
+      "fqn": "Granit.AI.AIModelCapabilities",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/AIModelCapabilities.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "AIModelInfo",
+      "fqn": "Granit.AI.AIModelInfo",
+      "kind": "record",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/AIModelInfo.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "AIQuotaResult",
       "fqn": "Granit.AI.AIQuotaResult",
       "kind": "record",
@@ -2462,6 +2480,24 @@
       "members": []
     },
     {
+      "name": "AIProviderModelResponse",
+      "fqn": "Granit.AI.Endpoints.Dtos.AIProviderModelResponse",
+      "kind": "record",
+      "project": "Granit.AI.Endpoints",
+      "file": "src/Granit.AI.Endpoints/Dtos/AIProviderModelResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AIProviderResponse",
+      "fqn": "Granit.AI.Endpoints.Dtos.AIProviderResponse",
+      "kind": "record",
+      "project": "Granit.AI.Endpoints",
+      "file": "src/Granit.AI.Endpoints/Dtos/AIProviderResponse.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "AIWorkspaceCreateRequest",
       "fqn": "Granit.AI.Endpoints.Dtos.AIWorkspaceCreateRequest",
       "kind": "record",
@@ -2550,6 +2586,12 @@
           "name": "RoutePrefix",
           "kind": "property",
           "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "ProvidersTagName",
+          "kind": "property",
+          "signature": "string ProvidersTagName",
           "returnType": "string"
         },
         {
@@ -2897,6 +2939,22 @@
           "kind": "method",
           "signature": "CreateAsync(string? workspaceName = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<IEmbeddingGenerator<string, Embedding<float>>>"
+        }
+      ]
+    },
+    {
+      "name": "IAIModelCatalog",
+      "fqn": "Granit.AI.IAIModelCatalog",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/IAIModelCatalog.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetAvailableModelsAsync",
+          "kind": "method",
+          "signature": "GetAvailableModelsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AIModelInfo>>"
         }
       ]
     },

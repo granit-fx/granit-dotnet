@@ -15,6 +15,12 @@ public sealed class AIEndpointsOptions
     public string RoutePrefix { get; set; } = "ai";
 
     /// <summary>
+    /// OpenAPI tag name for provider discovery endpoints.
+    /// Default: <c>"AI Providers"</c>.
+    /// </summary>
+    public string ProvidersTagName { get; set; } = "AI Providers";
+
+    /// <summary>
     /// OpenAPI tag name for workspace management endpoints.
     /// Default: <c>"AI Workspaces"</c>.
     /// </summary>

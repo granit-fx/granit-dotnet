@@ -23,7 +23,7 @@ public sealed class OpenAIProviderFactoryTests
             DefaultEmbeddingModel = defaultEmbeddingModel,
         });
 
-        return new OpenAIProviderFactory(options);
+        return new OpenAIProviderFactory(options, TimeProvider.System);
     }
 
     private static AIWorkspace CreateWorkspace(string model = "gpt-4o") =>
