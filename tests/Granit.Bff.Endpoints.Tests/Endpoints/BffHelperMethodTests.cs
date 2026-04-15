@@ -142,34 +142,6 @@ public sealed class BffHelperMethodTests
         result.ShouldBeNull();
     }
 
-    // ──── MaskSessionId (BffLoginEndpoints) ────
-
-    [Fact]
-    public void MaskSessionId_Login_LongSessionId_MasksMiddlePortion()
-    {
-        string result = BffLoginEndpoints.MaskSessionId("abcdefghijklmnop");
-
-        result.ShouldStartWith("abcd");
-        result.ShouldEndWith("mnop");
-        result.ShouldContain("...");
-    }
-
-    [Fact]
-    public void MaskSessionId_Login_ShortSessionId_ReturnsFullMask()
-    {
-        string result = BffLoginEndpoints.MaskSessionId("abcd1234");
-
-        result.ShouldBe("****");
-    }
-
-    [Fact]
-    public void MaskSessionId_Login_ExactlyNineChars_MasksMiddle()
-    {
-        string result = BffLoginEndpoints.MaskSessionId("123456789");
-
-        result.ShouldBe("1234...6789");
-    }
-
     // ──── MaskSessionId (BffSessionEndpoints) ────
 
     [Fact]

@@ -7025,8 +7025,8 @@
       "fqn": "Granit.Bff.Endpoints.Extensions.BffSecurityHeadersMiddleware",
       "kind": "class",
       "project": "Granit.Bff.Endpoints",
-      "file": "src/Granit.Bff.Endpoints/Extensions/BffEndpointRouteBuilderExtensions.cs",
-      "line": 172,
+      "file": "src/Granit.Bff.Endpoints/Extensions/BffSecurityHeadersMiddleware.cs",
+      "line": 9,
       "members": [
         {
           "name": "InvokeAsync",

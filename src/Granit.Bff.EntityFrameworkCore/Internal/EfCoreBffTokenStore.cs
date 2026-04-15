@@ -103,6 +103,8 @@ internal sealed partial class EfCoreBffTokenStore(
         await using BffDbContext db = await dbContextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        // ExecuteDeleteAsync intentional — BffSessionEntity is neither audited nor soft-deletable,
+        // so bypassing interceptors is safe and avoids loading the entity into memory.
         await db.Sessions
             .Where(s => s.FrontendName == frontendName && s.SessionId == sessionId)
             .ExecuteDeleteAsync(cancellationToken)
