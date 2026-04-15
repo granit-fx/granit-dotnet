@@ -36,20 +36,20 @@ public static class AIServiceCollectionExtensions
             .AddOptions<GranitAIOptions>()
             .BindConfiguration(GranitAIOptions.SectionName);
 
-        // Workspace infrastructure
-        builder.Services.TryAddSingleton<IAIWorkspaceProvider, DefaultAIWorkspaceProvider>();
-        builder.Services.TryAddSingleton<IAIWorkspaceStoreReader, NullAIWorkspaceStoreReader>();
-        builder.Services.TryAddSingleton<IAIWorkspaceStoreWriter, NullAIWorkspaceStoreWriter>();
+        // Workspace infrastructure (Scoped — EF Core persistence overrides with scoped stores)
+        builder.Services.TryAddScoped<IAIWorkspaceProvider, DefaultAIWorkspaceProvider>();
+        builder.Services.TryAddScoped<IAIWorkspaceStoreReader, NullAIWorkspaceStoreReader>();
+        builder.Services.TryAddScoped<IAIWorkspaceStoreWriter, NullAIWorkspaceStoreWriter>();
 
-        // Factories
-        builder.Services.TryAddSingleton<IAIChatClientFactory, DefaultAIChatClientFactory>();
-        builder.Services.TryAddSingleton<IAIEmbeddingGeneratorFactory, DefaultAIEmbeddingGeneratorFactory>();
+        // Factories (Scoped — depend on IAIWorkspaceProvider which may consume scoped stores)
+        builder.Services.TryAddScoped<IAIChatClientFactory, DefaultAIChatClientFactory>();
+        builder.Services.TryAddScoped<IAIEmbeddingGeneratorFactory, DefaultAIEmbeddingGeneratorFactory>();
 
         // Metrics
         builder.Services.TryAddSingleton<AIMetrics>();
 
         // Usage tracking (no-op by default, overridden by EF Core package)
-        builder.Services.TryAddSingleton<IAIUsageTracker, NullAIUsageTracker>();
+        builder.Services.TryAddScoped<IAIUsageTracker, NullAIUsageTracker>();
 
         // Quota guard: InMemory by default (no-op when MaxRequestsPerTenantPerHour=0)
         builder.Services
