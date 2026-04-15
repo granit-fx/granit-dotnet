@@ -1,5 +1,6 @@
-using System.Reflection;
 using Granit.DataExchange.Export;
+using Granit.Domain;
+using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,8 +17,11 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 /// so that explicit per-entity <c>IExportDataSource&lt;T&gt;</c> registrations always take precedence.
 /// </para>
 /// <para>
-/// The queryable is returned with <c>AsNoTracking()</c> for export performance —
-/// no change tracking is needed for read-only export.
+/// When the entity implements <see cref="IHasExtraProperties"/> and has mapped extra
+/// properties in the <see cref="IExtraPropertyMappingRegistry"/>, tracking is enabled
+/// so shadow property values can be read via <c>DbContext.Entry()</c>. The caller
+/// (orchestrator) is responsible for periodic <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker"/>
+/// clearing to prevent memory bloat.
 /// </para>
 /// <para>
 /// Navigation properties are NOT auto-included. The reflection-based fallback
@@ -27,49 +31,20 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 /// </para>
 /// </remarks>
 internal sealed class DbContextExportDataSource<TEntity>(
-    IServiceProvider serviceProvider) : IExportDataSource<TEntity>
+    IServiceProvider serviceProvider,
+    IExtraPropertyMappingRegistry registry) : IExportDataSource<TEntity>
     where TEntity : class
 {
     /// <inheritdoc/>
     public IQueryable<TEntity> GetQueryable()
     {
-        DbContext context = ResolveDbContext();
-        return context.Set<TEntity>().AsNoTracking();
-    }
+        DbContext context = DbContextResolver.Resolve(serviceProvider, typeof(TEntity));
 
-    private DbContext ResolveDbContext()
-    {
-        // Scan loaded Granit assemblies for DbContext subclasses
-        IEnumerable<Type> dbContextTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
-            .SelectMany(a =>
-            {
-                try { return a.GetTypes(); }
-                catch (ReflectionTypeLoadException ex)
-                {
-                    return ex.Types.Where(t => t is not null).Cast<Type>();
-                }
-            })
-            .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(DbContext)));
+        bool needsTracking = typeof(IHasExtraProperties).IsAssignableFrom(typeof(TEntity))
+                             && registry.GetMappedPropertyNames(typeof(TEntity)).Count > 0;
 
-        foreach (Type dbContextType in dbContextTypes)
-        {
-            if (serviceProvider.GetService(dbContextType) is not DbContext context)
-            {
-                continue;
-            }
-
-            if (context.Model.FindEntityType(typeof(TEntity)) is not null)
-            {
-                return context;
-            }
-
-            context.Dispose();
-        }
-
-        throw new InvalidOperationException(
-            $"No registered DbContext contains entity type '{typeof(TEntity).Name}'. " +
-            $"Register an explicit IExportDataSource<{typeof(TEntity).Name}> or ensure " +
-            $"the entity is mapped in a DbContext.");
+        return needsTracking
+            ? context.Set<TEntity>()
+            : context.Set<TEntity>().AsNoTracking();
     }
 }

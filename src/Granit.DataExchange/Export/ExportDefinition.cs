@@ -100,4 +100,12 @@ public abstract class ExportDefinition<TEntity> : IExportDefinitionDescriptor
     /// Gets whether business key columns should be included for roundtrip import.
     /// </summary>
     public bool GetIncludeBusinessKey() => GetBuilder().IncludeBusinessKeyFlag;
+
+    /// <summary>
+    /// Gets whether mapped extra properties should be appended to the export fields.
+    /// </summary>
+    public bool GetIncludeExtraProperties() => GetBuilder().IncludeExtraPropertiesFlag;
+
+    /// <inheritdoc/>
+    bool IExportDefinitionDescriptor.IncludeExtraProperties => GetIncludeExtraProperties();
 }

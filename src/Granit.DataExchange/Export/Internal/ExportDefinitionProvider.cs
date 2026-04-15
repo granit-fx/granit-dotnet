@@ -21,7 +21,8 @@ namespace Granit.DataExchange.Export.Internal;
 /// </remarks>
 internal sealed class ExportDefinitionProvider(
     IServiceProvider serviceProvider,
-    IEnumerable<IAutoExportDefinitionSource> sources) : IExportDefinitionProvider
+    IEnumerable<IAutoExportDefinitionSource> sources,
+    IExtraExportFieldProvider extraFieldProvider) : IExportDefinitionProvider
 {
     private IReadOnlyList<IExportDefinitionDescriptor>? _allDefinitions;
 
@@ -81,7 +82,7 @@ internal sealed class ExportDefinitionProvider(
         {
             foreach (Type entityType in source.GetEntityTypes())
             {
-                autoDefinitions.Add(new ReflectionExportDefinition(entityType));
+                autoDefinitions.Add(new ReflectionExportDefinition(entityType, extraFieldProvider));
             }
         }
 

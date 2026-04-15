@@ -529,6 +529,8 @@ public sealed class ExportOrchestratorTests
             _eventBus,
             _distributedEventBus,
             _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
 
@@ -641,6 +643,8 @@ public sealed class ExportOrchestratorTests
             _eventBus,
             _distributedEventBus,
             _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }
@@ -670,6 +674,8 @@ public sealed class ExportOrchestratorTests
             _eventBus,
             _distributedEventBus,
             _currentTenant,
+            new NullExtraExportFieldProvider(),
+            new NullExportExtraValueResolver(),
             _metrics,
             NullLogger<ExportOrchestrator>.Instance);
     }

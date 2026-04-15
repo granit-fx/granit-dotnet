@@ -595,4 +595,6 @@
     <Project Path="tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj" />
     <Project Path="tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj" />
   </Folder>
+  <Project Path="src/Granit.DataExchange.Definitions/Granit.DataExchange.Definitions.csproj" />
+  <Project Path="tests/Granit.DataExchange.Definitions.Tests/Granit.DataExchange.Definitions.Tests.csproj" />
 </Solution>

@@ -60,6 +60,7 @@
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
       "src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj",
+      "src/Granit.DataExchange.Definitions/Granit.DataExchange.Definitions.csproj",
       "src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj",
       "src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj",
       "src/Granit.DataExchange.Excel/Granit.DataExchange.Excel.csproj",

@@ -17,8 +17,7 @@ namespace Granit.DataExchange.Export;
 /// Security filtering reuses existing framework attributes — no dedicated
 /// <c>[ExportIgnore]</c> attribute is needed:
 /// <list type="bullet">
-///   <item><see cref="SensitiveDataAttribute"/> with <see cref="SensitiveDataMode.Omit"/> → excluded</item>
-///   <item><see cref="SensitiveDataAttribute"/> with <see cref="Sensitivity.Restricted"/> → excluded</item>
+///   <item><see cref="SensitiveDataAttribute"/> (any level, any mode) → excluded (GDPR Art. 25)</item>
 ///   <item><c>[AuditIgnore]</c> (checked by type name — no <c>Granit.Auditing</c> reference) → excluded</item>
 ///   <item><c>[Encrypted(KeyIsolation = true)]</c> (checked by type name — no <c>Granit.Encryption</c> reference) → excluded</item>
 /// </list>
@@ -121,10 +120,8 @@ internal static class ExportPropertyFilter
             return true;
         }
 
-        // 5. [SensitiveData] with Omit mode or Restricted level (direct attribute check)
-        SensitiveDataAttribute? sensitiveAttr = prop.GetCustomAttribute<SensitiveDataAttribute>();
-        if (sensitiveAttr is not null &&
-            (sensitiveAttr.Mode == SensitiveDataMode.Omit || sensitiveAttr.Level == Sensitivity.Restricted))
+        // 5. [SensitiveData] — any level or mode excludes the property from export (GDPR Art. 25)
+        if (prop.GetCustomAttribute<SensitiveDataAttribute>() is not null)
         {
             return true;
         }

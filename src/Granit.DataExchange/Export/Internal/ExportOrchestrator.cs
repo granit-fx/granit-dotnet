@@ -35,6 +35,8 @@ internal sealed partial class ExportOrchestrator(
     ILocalEventBus eventBus,
     IDistributedEventBus distributedEventBus,
     ICurrentTenant currentTenant,
+    IExtraExportFieldProvider extraFieldProvider,
+    IExportExtraValueResolver extraValueResolver,
     DataExchangeMetrics metrics,
     ILogger<ExportOrchestrator> logger) : IExportOrchestrator
 {
@@ -194,11 +196,31 @@ internal sealed partial class ExportOrchestrator(
             $"No export writer registered for format '{format}'.");
     }
 
-    private static IReadOnlyList<ExportFieldDescriptor> ResolveFields(
+    private IReadOnlyList<ExportFieldDescriptor> ResolveFields(
         IExportDefinitionDescriptor definition,
         IReadOnlyList<string>? selectedFields)
     {
-        IReadOnlyList<ExportFieldDescriptor> allFields = definition.GetFields();
+        IReadOnlyList<ExportFieldDescriptor> definitionFields = definition.GetFields();
+
+        // Merge extra property fields when IncludeExtraProperties is enabled
+        IReadOnlyList<ExportFieldDescriptor> allFields;
+        if (definition.IncludeExtraProperties)
+        {
+            IReadOnlyList<ExportFieldDescriptor> extraFields = extraFieldProvider.GetExtraFields(definition.EntityType);
+            if (extraFields.Count > 0)
+            {
+                List<ExportFieldDescriptor> merged = [.. definitionFields, .. extraFields];
+                allFields = merged.AsReadOnly();
+            }
+            else
+            {
+                allFields = definitionFields;
+            }
+        }
+        else
+        {
+            allFields = definitionFields;
+        }
 
         if (selectedFields is null or { Count: 0 })
         {
@@ -275,11 +297,23 @@ internal sealed partial class ExportOrchestrator(
             typedIterator = (IAsyncEnumerable<object>)enumerateMethod.Invoke(null, [queryable, cancellationToken])!;
         }
 
+        // Build set of extra property names for fast lookup during row extraction
+        HashSet<string>? extraPropertyNames = null;
+        if (definition.IncludeExtraProperties)
+        {
+            IReadOnlyList<ExportFieldDescriptor> extraFields = extraFieldProvider.GetExtraFields(definition.EntityType);
+            if (extraFields.Count > 0)
+            {
+                extraPropertyNames = new HashSet<string>(
+                    extraFields.Select(f => f.PropertyPath), StringComparer.Ordinal);
+            }
+        }
+
         int count = 0;
         await foreach (object entity in typedIterator.WithCancellation(cancellationToken).ConfigureAwait(false))
         {
             count++;
-            yield return ExtractRow(entity, fields);
+            yield return ExtractRow(entity, fields, extraPropertyNames);
         }
 
         setRowCount(count);
@@ -317,14 +351,23 @@ internal sealed partial class ExportOrchestrator(
         }
     }
 
-    private static Dictionary<string, object?> ExtractRow(
-        object entity, IReadOnlyList<ExportFieldDescriptor> fields)
+    private Dictionary<string, object?> ExtractRow(
+        object entity,
+        IReadOnlyList<ExportFieldDescriptor> fields,
+        HashSet<string>? extraPropertyNames)
     {
         Dictionary<string, object?> row = new(fields.Count);
 
         foreach (string propertyPath in fields.Select(field => field.PropertyPath))
         {
-            row[propertyPath] = ResolvePropertyValue(entity, propertyPath);
+            if (extraPropertyNames is not null && extraPropertyNames.Contains(propertyPath))
+            {
+                row[propertyPath] = extraValueResolver.ResolveExtraValue(entity, propertyPath);
+            }
+            else
+            {
+                row[propertyPath] = ResolvePropertyValue(entity, propertyPath);
+            }
         }
 
         return row;

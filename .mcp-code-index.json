@@ -497,6 +497,37 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.DataExchange.Definitions",
+      "deps": [
+        "Granit.DataExchange",
+        "Granit.MultiTenancy.EntityFrameworkCore",
+        "Granit.Identity.Local",
+        "Granit.Identity.Federated",
+        "Granit.Authorization.EntityFrameworkCore",
+        "Granit.ReferenceData",
+        "Granit.OpenIddict",
+        "Granit.Subscriptions",
+        "Granit.Invoicing",
+        "Granit.Payments",
+        "Granit.Payments.SepaDirectDebit",
+        "Granit.CustomerBalance",
+        "Granit.Metering",
+        "Granit.Tax",
+        "Granit.Auditing",
+        "Granit.BackgroundJobs",
+        "Granit.BlobStorage",
+        "Granit.Notifications",
+        "Granit.Timeline",
+        "Granit.Webhooks",
+        "Granit.Settings.EntityFrameworkCore",
+        "Granit.Localization.EntityFrameworkCore",
+        "Granit.Scheduling",
+        "Granit.Workflow",
+        "Granit.QueryEngine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange.Endpoints",
       "deps": [
         "Granit.Http.ApiDocumentation",
@@ -9672,6 +9703,646 @@
       ]
     },
     {
+      "name": "AuditEntityChangeExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Auditing.AuditEntityChangeExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Auditing/AuditEntityChangeExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AuditEntryExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Auditing.AuditEntryExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Auditing/AuditEntryExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PermissionGrantExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Authorization.PermissionGrantExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Authorization/PermissionGrantExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BackgroundJobDefinitionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.BackgroundJobs.BackgroundJobDefinitionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/BackgroundJobs/BackgroundJobDefinitionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BlobDescriptorExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.BlobStorage.BlobDescriptorExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/BlobStorage/BlobDescriptorExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BalanceAccountExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.CustomerBalance.BalanceAccountExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/CustomerBalance/BalanceAccountExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BalanceTransactionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.CustomerBalance.BalanceTransactionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/CustomerBalance/BalanceTransactionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExportJobExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.DataExchange.ExportJobExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/DataExchange/ExportJobExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ImportJobExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.DataExchange.ImportJobExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/DataExchange/ImportJobExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DataExchangeDefinitionsServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.Definitions.Extensions.DataExchangeDefinitionsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Extensions/DataExchangeDefinitionsServiceCollectionExtensions.cs",
+      "line": 59,
+      "members": [
+        {
+          "name": "AddGranitExportDefinitions",
+          "kind": "method",
+          "signature": "AddGranitExportDefinitions(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataExchangeDefinitionsModule",
+      "fqn": "Granit.DataExchange.Definitions.GranitDataExchangeDefinitionsModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/GranitDataExchangeDefinitionsModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitRoleExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Identity.GranitRoleExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Identity/GranitRoleExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserGroupExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Identity.GranitUserGroupExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Identity/GranitUserGroupExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheEntryExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Identity.UserCacheEntryExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Identity/UserCacheEntryExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "InvoiceExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Invoicing.InvoiceExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Invoicing/InvoiceExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "LocalizationOverrideExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Localization.LocalizationOverrideExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Localization/LocalizationOverrideExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MeterDefinitionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Metering.MeterDefinitionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Metering/MeterDefinitionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UsageAggregateExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Metering.UsageAggregateExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Metering/UsageAggregateExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TenantExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.MultiTenancy.TenantExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/MultiTenancy/TenantExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "NotificationPreferenceExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Notifications.NotificationPreferenceExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Notifications/NotificationPreferenceExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UserNotificationExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Notifications.UserNotificationExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Notifications/UserNotificationExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "OpenIddictApplicationExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.OpenIddict.OpenIddictApplicationExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/OpenIddict/OpenIddictApplicationExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "OpenIddictScopeExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.OpenIddict.OpenIddictScopeExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/OpenIddict/OpenIddictScopeExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DisputeExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Payments.DisputeExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Payments/DisputeExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "MandateExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Payments.MandateExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Payments/MandateExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Payments.PaymentMethodExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Payments/PaymentMethodExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PaymentTransactionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Payments.PaymentTransactionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Payments/PaymentTransactionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "RefundExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Payments.RefundExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Payments/RefundExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SavedViewExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.QueryEngine.SavedViewExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/QueryEngine/SavedViewExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DynamicReferenceDataEntityExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.ReferenceData.DynamicReferenceDataEntityExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/ReferenceData/DynamicReferenceDataEntityExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledActionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Scheduling.ScheduledActionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Scheduling/ScheduledActionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SettingRecordExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Settings.SettingRecordExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Settings/SettingRecordExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Subscriptions.PlanExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Subscriptions/PlanExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanPriceExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Subscriptions.PlanPriceExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Subscriptions/PlanPriceExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Subscriptions.SubscriptionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Subscriptions/SubscriptionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TaxRateOverrideExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Tax.TaxRateOverrideExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Tax/TaxRateOverrideExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TimelineEntryExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Timeline.TimelineEntryExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Timeline/TimelineEntryExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliveryAttemptExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Webhooks.WebhookDeliveryAttemptExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Webhooks/WebhookDeliveryAttemptExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSubscriptionExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Webhooks.WebhookSubscriptionExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Webhooks/WebhookSubscriptionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowTransitionRecordExportDefinition",
+      "fqn": "Granit.DataExchange.Definitions.Workflow.WorkflowTransitionRecordExportDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange.Definitions",
+      "file": "src/Granit.DataExchange.Definitions/Workflow/WorkflowTransitionRecordExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "DataExchangeMetrics",
       "fqn": "Granit.DataExchange.Diagnostics.DataExchangeMetrics",
       "kind": "class",
@@ -10034,6 +10705,12 @@
           "kind": "method",
           "signature": "GetIncludeBusinessKey()",
           "returnType": "bool"
+        },
+        {
+          "name": "GetIncludeExtraProperties",
+          "kind": "method",
+          "signature": "GetIncludeExtraProperties()",
+          "returnType": "bool"
         }
       ]
     },
@@ -10192,6 +10869,12 @@
           "kind": "property",
           "signature": "bool IsAutoGenerated",
           "returnType": "bool"
+        },
+        {
+          "name": "IncludeExtraProperties",
+          "kind": "property",
+          "signature": "bool IncludeExtraProperties",
+          "returnType": "bool"
         }
       ]
     },
@@ -10214,6 +10897,22 @@
           "kind": "method",
           "signature": "GetAll()",
           "returnType": "IReadOnlyList<IExportDefinitionDescriptor>"
+        }
+      ]
+    },
+    {
+      "name": "IExportExtraValueResolver",
+      "fqn": "Granit.DataExchange.Export.IExportExtraValueResolver",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/IExportExtraValueResolver.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ResolveExtraValue",
+          "kind": "method",
+          "signature": "ResolveExtraValue(object entity, string propertyName)",
+          "returnType": "object?"
         }
       ]
     },
@@ -10358,6 +11057,22 @@
           "kind": "method",
           "signature": "WriteAsync(Stream output, IReadOnlyList<ExportFieldDescriptor> fields, IAsyncEnumerable<IReadOnlyDictionary<string, object?>> rows, CancellationToken cancellationToken = default)",
           "returnType": "string MimeType { get; } string FileExtension { get; } Task"
+        }
+      ]
+    },
+    {
+      "name": "IExtraExportFieldProvider",
+      "fqn": "Granit.DataExchange.Export.IExtraExportFieldProvider",
+      "kind": "interface",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Export/IExtraExportFieldProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetExtraFields",
+          "kind": "method",
+          "signature": "GetExtraFields(Type entityType)",
+          "returnType": "IReadOnlyList<ExportFieldDescriptor>"
         }
       ]
     },

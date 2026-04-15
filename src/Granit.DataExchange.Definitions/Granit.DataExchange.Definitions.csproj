@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataExchange.Definitions</PackageId>
+    <Description>Pre-built ExportDefinition implementations for all Granit framework entities. Provides curated, security-audited field whitelists for CSV/XLSX export of admin-visible entities.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.Definitions.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Core export infrastructure -->
+    <ProjectReference Include="..\Granit.DataExchange\Granit.DataExchange.csproj" />
+
+    <!-- Priority 1: Core admin entities -->
+    <ProjectReference Include="..\Granit.MultiTenancy.EntityFrameworkCore\Granit.MultiTenancy.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
+    <ProjectReference Include="..\Granit.Authorization.EntityFrameworkCore\Granit.Authorization.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.ReferenceData\Granit.ReferenceData.csproj" />
+    <ProjectReference Include="..\Granit.OpenIddict\Granit.OpenIddict.csproj" />
+
+    <!-- Priority 2: Business & SaaS -->
+    <ProjectReference Include="..\Granit.Subscriptions\Granit.Subscriptions.csproj" />
+    <ProjectReference Include="..\Granit.Invoicing\Granit.Invoicing.csproj" />
+    <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
+    <ProjectReference Include="..\Granit.Payments.SepaDirectDebit\Granit.Payments.SepaDirectDebit.csproj" />
+    <ProjectReference Include="..\Granit.CustomerBalance\Granit.CustomerBalance.csproj" />
+    <ProjectReference Include="..\Granit.Metering\Granit.Metering.csproj" />
+    <ProjectReference Include="..\Granit.Tax\Granit.Tax.csproj" />
+
+    <!-- Priority 3: Operations & infrastructure -->
+    <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+    <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
+    <ProjectReference Include="..\Granit.Timeline\Granit.Timeline.csproj" />
+    <ProjectReference Include="..\Granit.Webhooks\Granit.Webhooks.csproj" />
+    <ProjectReference Include="..\Granit.Settings.EntityFrameworkCore\Granit.Settings.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Localization.EntityFrameworkCore\Granit.Localization.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Scheduling\Granit.Scheduling.csproj" />
+
+    <!-- Priority 4: Domain-specific -->
+    <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+  </ItemGroup>
+
+</Project>
