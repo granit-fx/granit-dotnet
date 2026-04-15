@@ -43,6 +43,12 @@
     <None Include="$(MSBuildProjectDirectory)/README.md" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
+  <!-- Suppress known NuGet audit CVEs with no upstream fix available.
+       Remove entries when a patched version is released. -->
+  <ItemGroup>
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-98cp-rj9f-6v5g" />
+  </ItemGroup>
+
   <!-- BannedApiAnalyzers: compile-time enforcement of banned APIs (RS0030) -->
   <ItemGroup Condition="!$(MSBuildProjectName.Contains('Analyzers')) And
                         !$(MSBuildProjectName.Contains('SourceGenerator'))">
