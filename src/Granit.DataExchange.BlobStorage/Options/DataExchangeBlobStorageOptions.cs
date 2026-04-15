@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.DataExchange.BlobStorage;
+namespace Granit.DataExchange.BlobStorage.Options;
 
 /// <summary>
 /// Configuration for the blob-storage-backed <see cref="IDataExchangeFileProvider"/>.

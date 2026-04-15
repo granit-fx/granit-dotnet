@@ -96,6 +96,7 @@
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj",
+      "tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj",
       "tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj",
       "tests/Granit.DataExchange.Definitions.Tests/Granit.DataExchange.Definitions.Tests.csproj",
       "tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj",

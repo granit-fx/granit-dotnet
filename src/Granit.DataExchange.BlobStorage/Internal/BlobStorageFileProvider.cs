@@ -1,9 +1,10 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Internal;
+using Granit.DataExchange.BlobStorage.Options;
 using Granit.Guids;
 using Microsoft.Extensions.Options;
 
-namespace Granit.DataExchange.BlobStorage;
+namespace Granit.DataExchange.BlobStorage.Internal;
 
 /// <summary>
 /// <see cref="IDataExchangeFileProvider"/> implementation backed by <see cref="IBlobStoreProvider"/>.

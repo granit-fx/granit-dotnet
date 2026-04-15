@@ -1,3 +1,5 @@
+using Granit.DataExchange.BlobStorage.Internal;
+using Granit.DataExchange.BlobStorage.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

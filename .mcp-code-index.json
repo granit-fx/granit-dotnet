@@ -9691,34 +9691,12 @@
       ]
     },
     {
-      "name": "DataExchangeBlobStorageOptions",
-      "fqn": "Granit.DataExchange.BlobStorage.DataExchangeBlobStorageOptions",
-      "kind": "class",
-      "project": "Granit.DataExchange.BlobStorage",
-      "file": "src/Granit.DataExchange.BlobStorage/DataExchangeBlobStorageOptions.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "ContainerName",
-          "kind": "property",
-          "signature": "string ContainerName",
-          "returnType": "string"
-        },
-        {
-          "name": "DefaultContentType",
-          "kind": "property",
-          "signature": "string DefaultContentType",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.BlobStorage.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.DataExchange.BlobStorage",
       "file": "src/Granit.DataExchange.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitDataExchangeBlobStorage",
@@ -9741,6 +9719,28 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DataExchangeBlobStorageOptions",
+      "fqn": "Granit.DataExchange.BlobStorage.Options.DataExchangeBlobStorageOptions",
+      "kind": "class",
+      "project": "Granit.DataExchange.BlobStorage",
+      "file": "src/Granit.DataExchange.BlobStorage/Options/DataExchangeBlobStorageOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ContainerName",
+          "kind": "property",
+          "signature": "string ContainerName",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultContentType",
+          "kind": "property",
+          "signature": "string DefaultContentType",
+          "returnType": "string"
         }
       ]
     },

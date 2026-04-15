@@ -573,6 +573,7 @@
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Wolverine.Tests/Granit.MultiTenancy.Wolverine.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">

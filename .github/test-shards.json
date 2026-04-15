@@ -52,6 +52,7 @@
       "name": "business",
       "label": "Business Features",
       "projects": [
+        "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",
         "tests/Granit.DataExchange.Endpoints.Tests",
         "tests/Granit.DataExchange.EntityFrameworkCore.Tests",
