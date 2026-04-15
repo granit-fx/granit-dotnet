@@ -1,4 +1,5 @@
 using Granit.DataExchange.EntityFrameworkCore.Internal;
+using Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Export.Stores;
 using Granit.DataExchange.EntityFrameworkCore.Internal.Import.Stores;
 using Granit.DataExchange.Export;
@@ -7,6 +8,7 @@ using Granit.DataExchange.Import.Pipeline;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Extensions;
@@ -41,6 +43,10 @@ public static class DataExchangeEfCoreHostBuilderExtensions
         builder.Services.AddScoped<IExportJobWriter, EfExportJobStore>();
         builder.Services.AddScoped<IExportPresetReader, EfExportPresetStore>();
         builder.Services.AddScoped<IExportPresetWriter, EfExportPresetStore>();
+
+        // Auto-export fallback: generic data source + entity type discovery
+        builder.Services.TryAddScoped(typeof(IExportDataSource<>), typeof(DbContextExportDataSource<>));
+        builder.Services.TryAddSingleton<IAutoExportDefinitionSource, DbContextAutoExportDefinitionSource>();
 
         return builder;
     }

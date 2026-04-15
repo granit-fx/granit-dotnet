@@ -161,11 +161,29 @@ internal sealed partial class ExportOrchestrator(
 
     private IExportDefinitionDescriptor ResolveDefinition(string definitionName)
     {
-        IExportDefinitionDescriptor? descriptor = serviceProvider
-            .GetServices<IExportDefinitionDescriptor>()
-            .FirstOrDefault(d => string.Equals(d.Name, definitionName, StringComparison.OrdinalIgnoreCase));
+        IExportDefinitionProvider? provider = serviceProvider.GetService<IExportDefinitionProvider>();
+        if (provider is not null)
+        {
+            IExportDefinitionDescriptor? descriptor = provider.FindByName(definitionName);
+            if (descriptor is not null)
+            {
+                return descriptor;
+            }
+        }
+        else
+        {
+            // Backward compat: no provider registered (no EF Core module)
+            IExportDefinitionDescriptor? descriptor = serviceProvider
+                .GetServices<IExportDefinitionDescriptor>()
+                .FirstOrDefault(d => string.Equals(d.Name, definitionName, StringComparison.OrdinalIgnoreCase));
 
-        return descriptor ?? throw new InvalidOperationException(
+            if (descriptor is not null)
+            {
+                return descriptor;
+            }
+        }
+
+        throw new InvalidOperationException(
             $"Export definition '{definitionName}' not found.");
     }
 

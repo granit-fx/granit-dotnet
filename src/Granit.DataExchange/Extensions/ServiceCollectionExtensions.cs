@@ -115,6 +115,7 @@ public static class ServiceCollectionExtensions
             .ValidateOnStart();
 
         services.TryAddScoped<IExportOrchestrator, ExportOrchestrator>();
+        services.TryAddScoped<IExportDefinitionProvider, ExportDefinitionProvider>();
         services.TryAddScoped<IExportJobReader, NullExportJobStore>();
         services.TryAddScoped<IExportJobWriter, NullExportJobStore>();
         services.TryAddScoped<IExportPresetReader, NullExportPresetStore>();

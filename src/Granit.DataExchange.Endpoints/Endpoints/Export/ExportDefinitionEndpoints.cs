@@ -42,7 +42,7 @@ internal static class ExportDefinitionEndpoints
         [FromServices] IServiceProvider serviceProvider)
     {
         IEnumerable<IExportDefinitionDescriptor> descriptors =
-            serviceProvider.GetServices<IExportDefinitionDescriptor>();
+            ExportDefinitionResolver.GetAll(serviceProvider);
 
         IReadOnlyList<ExportDefinitionResponse> response = descriptors
             .Select(ExportDefinitionResponse.FromDescriptor)
