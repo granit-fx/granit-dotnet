@@ -2,6 +2,7 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <PropertyGroup>
+    <IsPackable>false</IsPackable>
     <!-- Granit analyzers target production code — test projects legitimately use
          Guid.NewGuid(), DateTimeOffset.UtcNow, and test secrets for setup/assertions. -->
     <NoWarn>$(NoWarn);GRSEC001;GRSEC002;GRSEC003;GRSEC004;GREF001;RS0030</NoWarn>
