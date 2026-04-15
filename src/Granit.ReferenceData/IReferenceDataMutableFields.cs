@@ -48,6 +48,9 @@ public interface IReferenceDataMutableFields
     /// <summary>Czech display label.</summary>
     string LabelCs { get; }
 
+    /// <summary>Hindi display label.</summary>
+    string LabelHi { get; }
+
     /// <summary>Display order (lower values first).</summary>
     int SortOrder { get; }
 

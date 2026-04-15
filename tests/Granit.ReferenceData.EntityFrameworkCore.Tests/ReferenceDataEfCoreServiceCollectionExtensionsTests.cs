@@ -15,7 +15,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Tests;
 public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
 {
     private sealed class TestEntityConfiguration
-        : Granit.ReferenceData.EntityFrameworkCore.Internal.ReferenceDataEntityTypeConfiguration<TestEntity>
+        : Granit.ReferenceData.EntityFrameworkCore.ReferenceDataEntityTypeConfiguration<TestEntity>
     {
         public TestEntityConfiguration() : base("ref_test_entities") { }
     }
@@ -42,6 +42,7 @@ public sealed class ReferenceDataEfCoreServiceCollectionExtensionsTests
             Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()));
         services.AddLogging();
         services.AddSingleton(Substitute.For<ICurrentTenant>());
+        services.AddSingleton(Substitute.For<Granit.Guids.IGuidGenerator>());
         services.AddReferenceDataStore<TestEntity, TestDbContext>();
 
         return services.BuildServiceProvider();

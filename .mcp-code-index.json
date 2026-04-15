@@ -33499,7 +33499,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Diagnostics/ReferenceDataMetrics.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "RecordEntryUpdated",

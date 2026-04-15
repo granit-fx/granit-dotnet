@@ -1,5 +1,4 @@
 using Granit.ReferenceData.Domain;
-using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.ReferenceData.EntityFrameworkCore.Extensions;

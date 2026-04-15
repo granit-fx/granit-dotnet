@@ -1,5 +1,6 @@
 using Granit.MultiTenancy;
 using Granit.ReferenceData.Domain;
+using Granit.ReferenceData.EntityFrameworkCore;
 using Granit.ReferenceData.EntityFrameworkCore.Extensions;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Options;
@@ -121,7 +122,8 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
             new FusionCache(new FusionCacheOptions()),
             Microsoft.Extensions.Options.Options.Create(new ReferenceDataOptions()),
             ReferenceDataScope.Global,
-            Substitute.For<ICurrentTenant>());
+            Substitute.For<ICurrentTenant>(),
+            Substitute.For<Granit.Guids.IGuidGenerator>());
 
     [Fact]
     public async Task CreateAsync_ConcurrentInsert_RecoveredGracefully()

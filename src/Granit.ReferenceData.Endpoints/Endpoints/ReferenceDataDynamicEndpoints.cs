@@ -211,6 +211,7 @@ internal static class ReferenceDataDynamicEndpoints
             LabelKo = request.LabelKo,
             LabelSv = request.LabelSv,
             LabelCs = request.LabelCs,
+            LabelHi = request.LabelHi,
             SortOrder = request.SortOrder,
             ValidFrom = request.ValidFrom,
             ValidTo = request.ValidTo,
@@ -264,6 +265,7 @@ internal static class ReferenceDataDynamicEndpoints
         existing.LabelKo = request.LabelKo;
         existing.LabelSv = request.LabelSv;
         existing.LabelCs = request.LabelCs;
+        existing.LabelHi = request.LabelHi;
         existing.SortOrder = request.SortOrder;
         existing.IsActive = request.IsActive;
         existing.ValidFrom = request.ValidFrom;

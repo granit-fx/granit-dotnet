@@ -1,3 +1,4 @@
+using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.QueryEngine;
@@ -38,7 +39,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     IFusionCache cache,
     IOptions<ReferenceDataOptions> options,
     ReferenceDataScope scope,
-    ICurrentTenant currentTenant) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
+    ICurrentTenant currentTenant,
+    IGuidGenerator guidGenerator) : IReferenceDataStoreReader<TEntity>, IReferenceDataStoreWriter<TEntity>
     where TEntity : ReferenceDataEntity
     where TDbContext : DbContext
 {
@@ -49,6 +51,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     private readonly ReferenceDataOptions _options = options.Value;
     private readonly ReferenceDataScope _scope = scope;
     private readonly ICurrentTenant _currentTenant = currentTenant;
+    private readonly IGuidGenerator _guidGenerator = guidGenerator;
 
     private string AllCacheKey => _scope == ReferenceDataScope.Global
         ? $"refdata:{EntityName}:host:all"
@@ -106,7 +109,8 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
                 EF.Functions.Like(e.LabelTr, $"%{term}%") ||
                 EF.Functions.Like(e.LabelKo, $"%{term}%") ||
                 EF.Functions.Like(e.LabelSv, $"%{term}%") ||
-                EF.Functions.Like(e.LabelCs, $"%{term}%"));
+                EF.Functions.Like(e.LabelCs, $"%{term}%") ||
+                EF.Functions.Like(e.LabelHi, $"%{term}%"));
         }
 
         // Total count before pagination
@@ -177,6 +181,12 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
     /// <inheritdoc/>
     public async Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
+        // Ensure a sequential GUID is assigned when callers (e.g. seeders) don't set one.
+        if (entity.Id == Guid.Empty)
+        {
+            entity.Id = _guidGenerator.Create();
+        }
+
         // For Global scope, neutralize the tenant context so that AuditedEntityInterceptor
         // does not auto-inject a TenantId. TenantId must remain null for global entries.
         using IDisposable? tenantOverride = _scope == ReferenceDataScope.Global
