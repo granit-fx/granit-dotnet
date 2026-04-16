@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Avviare pagamenti",
     "Permission:Payments.Refunds.Execute": "Elaborare rimborsi",
     "Permission:Payments.Methods.Read": "Consultare i metodi di pagamento",
-    "Permission:Payments.Methods.Manage": "Gestire i metodi di pagamento (aggiungere, rimuovere)"
+    "Permission:Payments.Methods.Manage": "Gestire i metodi di pagamento (aggiungere, rimuovere)",
+    "Permission:Payments.Configuration.Manage": "Gestire la configurazione dei metodi di pagamento"
   }
 }

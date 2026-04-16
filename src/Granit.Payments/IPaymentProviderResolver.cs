@@ -9,8 +9,10 @@ namespace Granit.Payments;
 public interface IPaymentProviderResolver
 {
     /// <summary>Resolves the provider for a specific payment method type.</summary>
-    IPaymentProvider Resolve(Guid tenantId, string methodType);
+    Task<IPaymentProvider> ResolveAsync(Guid tenantId, string methodType,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Returns all available payment methods for a tenant (for checkout UI).</summary>
-    IReadOnlyList<PaymentAvailableMethod> GetAvailableProviders(Guid tenantId);
+    Task<IReadOnlyList<PaymentAvailableMethod>> GetAvailableProvidersAsync(Guid tenantId,
+        CancellationToken cancellationToken = default);
 }

@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Inicjowanie płatności",
     "Permission:Payments.Refunds.Execute": "Przetwarzanie zwrotów",
     "Permission:Payments.Methods.Read": "Przeglądanie metod płatności",
-    "Permission:Payments.Methods.Manage": "Zarządzanie metodami płatności (dodawanie, usuwanie)"
+    "Permission:Payments.Methods.Manage": "Zarządzanie metodami płatności (dodawanie, usuwanie)",
+    "Permission:Payments.Configuration.Manage": "Zarządzanie konfiguracją metod płatności"
   }
 }

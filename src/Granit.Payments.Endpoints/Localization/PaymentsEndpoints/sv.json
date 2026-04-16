@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Initiera betalningar",
     "Permission:Payments.Refunds.Execute": "Behandla återbetalningar",
     "Permission:Payments.Methods.Read": "Visa betalningsmetoder",
-    "Permission:Payments.Methods.Manage": "Hantera betalningsmetoder (lägga till, ta bort)"
+    "Permission:Payments.Methods.Manage": "Hantera betalningsmetoder (lägga till, ta bort)",
+    "Permission:Payments.Configuration.Manage": "Hantera konfiguration av betalningsmetoder"
   }
 }

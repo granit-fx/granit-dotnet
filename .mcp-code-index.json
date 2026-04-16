@@ -1440,6 +1440,7 @@
     {
       "name": "Granit.Payments",
       "deps": [
+        "Granit.Caching",
         "Granit",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments.Abstractions",
@@ -28327,6 +28328,52 @@
       "members": []
     },
     {
+      "name": "PaymentMethodConfiguration",
+      "fqn": "Granit.Payments.Domain.PaymentMethodConfiguration",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodConfiguration.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string methodType, string displayLabel)",
+          "returnType": "PaymentMethodConfiguration"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "DisplayLabel",
+          "kind": "property",
+          "signature": "string DisplayLabel",
+          "returnType": "string"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "PaymentMethodCategory Category { get; private set; } public bool IsActive { get; private set; } public void"
+        },
+        {
+          "name": "Deactivate",
+          "kind": "method",
+          "signature": "Deactivate()",
+          "returnType": "void"
+        },
+        {
+          "name": "UpdateDisplayLabel",
+          "kind": "method",
+          "signature": "UpdateDisplayLabel(string displayLabel)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "PaymentMethods",
       "fqn": "Granit.Payments.Domain.PaymentMethods",
       "kind": "class",
@@ -28550,6 +28597,15 @@
       ]
     },
     {
+      "name": "CreatePaymentMethodConfigurationRequest",
+      "fqn": "Granit.Payments.Endpoints.Dtos.CreatePaymentMethodConfigurationRequest",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "PaymentAttachMethodRequest",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAttachMethodRequest",
       "kind": "record",
@@ -28601,6 +28657,15 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
       "line": 44,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodConfigurationResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodConfigurationResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 6,
       "members": []
     },
     {
@@ -28671,6 +28736,15 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "Configuration",
+      "fqn": "Granit.Payments.Endpoints.Permissions.Configuration",
+      "kind": "class",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
+      "line": 29,
       "members": []
     },
     {
@@ -28892,6 +28966,68 @@
       ]
     },
     {
+      "name": "IPaymentMethodConfigurationReader",
+      "fqn": "Granit.Payments.IPaymentMethodConfigurationReader",
+      "kind": "interface",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/IPaymentMethodConfigurationReader.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "GetAllAsync",
+          "kind": "method",
+          "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentMethodConfiguration>>"
+        },
+        {
+          "name": "GetActiveAsync",
+          "kind": "method",
+          "signature": "GetActiveAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentMethodConfiguration>>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PaymentMethodConfiguration?>"
+        },
+        {
+          "name": "FindAsync",
+          "kind": "method",
+          "signature": "FindAsync(string providerName, string methodType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PaymentMethodConfiguration?>"
+        }
+      ]
+    },
+    {
+      "name": "IPaymentMethodConfigurationWriter",
+      "fqn": "Granit.Payments.IPaymentMethodConfigurationWriter",
+      "kind": "interface",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/IPaymentMethodConfigurationWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IPaymentMethodManager",
       "fqn": "Granit.Payments.IPaymentMethodManager",
       "kind": "interface",
@@ -29012,16 +29148,16 @@
       "line": 9,
       "members": [
         {
-          "name": "Resolve",
+          "name": "ResolveAsync",
           "kind": "method",
-          "signature": "Resolve(Guid tenantId, string methodType)",
-          "returnType": "IPaymentProvider"
+          "signature": "ResolveAsync(Guid tenantId, string methodType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IPaymentProvider>"
         },
         {
-          "name": "GetAvailableProviders",
+          "name": "GetAvailableProvidersAsync",
           "kind": "method",
-          "signature": "GetAvailableProviders(Guid tenantId)",
-          "returnType": "IReadOnlyList<PaymentAvailableMethod>"
+          "signature": "GetAvailableProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentAvailableMethod>>"
         }
       ]
     },

@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "发起收款",
     "Permission:Payments.Refunds.Execute": "处理退款",
     "Permission:Payments.Methods.Read": "查看支付方式",
-    "Permission:Payments.Methods.Manage": "管理支付方式（添加、移除）"
+    "Permission:Payments.Methods.Manage": "管理支付方式（添加、移除）",
+    "Permission:Payments.Configuration.Manage": "管理支付方式配置"
   }
 }

@@ -22,5 +22,7 @@ internal sealed class PaymentsPermissionDefinitionProvider : IPermissionDefiniti
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Methods.Read"));
         group.AddPermission(PaymentsPermissions.Methods.Manage,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Methods.Manage"));
+        group.AddPermission(PaymentsPermissions.Configuration.Manage,
+            LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Configuration.Manage"));
     }
 }

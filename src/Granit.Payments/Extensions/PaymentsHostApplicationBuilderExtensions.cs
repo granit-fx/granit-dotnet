@@ -19,6 +19,9 @@ public static class PaymentsHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IInvoicePrePaymentProcessor, PassThroughPrePaymentProcessor>();
         builder.Services.TryAddTransient<IWebhookProcessor, DefaultWebhookProcessor>();
         GranitActivitySourceRegistry.Register(PaymentsActivitySource.Name);
+
+        builder.Services.TryAddScoped<IPaymentProviderResolver, DefaultPaymentProviderResolver>();
+
         return builder;
     }
 }

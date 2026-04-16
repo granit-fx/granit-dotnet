@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Zahájit platby",
     "Permission:Payments.Refunds.Execute": "Zpracovat vrácení plateb",
     "Permission:Payments.Methods.Read": "Zobrazit platební metody",
-    "Permission:Payments.Methods.Manage": "Spravovat platební metody (přidat, odebrat)"
+    "Permission:Payments.Methods.Manage": "Spravovat platební metody (přidat, odebrat)",
+    "Permission:Payments.Configuration.Manage": "Spravovat konfiguraci platebních metod"
   }
 }

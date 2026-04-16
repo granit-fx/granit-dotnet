@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Zahlungen einleiten",
     "Permission:Payments.Refunds.Execute": "Rückerstattungen verarbeiten",
     "Permission:Payments.Methods.Read": "Zahlungsmethoden anzeigen",
-    "Permission:Payments.Methods.Manage": "Zahlungsmethoden verwalten (hinzufügen, entfernen)"
+    "Permission:Payments.Methods.Manage": "Zahlungsmethoden verwalten (hinzufügen, entfernen)",
+    "Permission:Payments.Configuration.Manage": "Zahlungsmethoden-Konfiguration verwalten"
   }
 }

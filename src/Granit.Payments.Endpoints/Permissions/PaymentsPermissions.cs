@@ -25,4 +25,9 @@ public static class PaymentsPermissions
         public const string Read = "Payments.Methods.Read";
         public const string Manage = "Payments.Methods.Manage";
     }
+
+    public static class Configuration
+    {
+        public const string Manage = "Payments.Configuration.Manage";
+    }
 }

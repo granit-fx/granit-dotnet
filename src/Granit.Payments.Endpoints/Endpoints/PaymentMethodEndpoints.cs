@@ -30,7 +30,7 @@ internal static class PaymentMethodEndpoints
             .RequireAuthorization(PaymentsPermissions.Methods.Read)
             .AllowHostAccess();
 
-        group.MapGet("/methods/available", GetAvailable)
+        group.MapGet("/methods/available", GetAvailableAsync)
             .WithName("GetAvailablePaymentMethods")
             .WithSummary("Lists payment methods available for the current tenant.")
             .WithDescription(
@@ -87,13 +87,15 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static Ok<IReadOnlyList<PaymentAvailableMethodResponse>> GetAvailable(
+    private static async Task<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>> GetAvailableAsync(
         [FromServices] IPaymentProviderResolver resolver,
-        [FromServices] ICurrentTenant currentTenant)
+        [FromServices] ICurrentTenant currentTenant,
+        CancellationToken cancellationToken)
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
 
-        IReadOnlyList<PaymentAvailableMethod> available = resolver.GetAvailableProviders(tenantId);
+        IReadOnlyList<PaymentAvailableMethod> available =
+            await resolver.GetAvailableProvidersAsync(tenantId, cancellationToken).ConfigureAwait(false);
 
         IReadOnlyList<PaymentAvailableMethodResponse> response = available
             .Select(a => new PaymentAvailableMethodResponse(
