@@ -49,7 +49,16 @@ internal sealed class EfAIWorkspaceStore(
         CancellationToken cancellationToken = default)
     {
         var entity = AIWorkspaceEntity.FromRecord(workspace);
-        await AddAsync(entity, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            await AddAsync(entity, cancellationToken).ConfigureAwait(false);
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is System.Data.Common.DbException { SqlState: "23505" })
+        {
+            throw new InvalidOperationException(
+                $"A workspace named '{workspace.Name}' already exists.", ex);
+        }
     }
 
     /// <inheritdoc/>
