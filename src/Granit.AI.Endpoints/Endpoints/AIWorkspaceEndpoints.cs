@@ -195,6 +195,6 @@ internal static class AIWorkspaceEndpoints
         workspace.SystemPrompt,
         workspace.Temperature,
         workspace.MaxOutputTokens,
-        workspace.Kind.ToString(),
+        workspace.Kind,
         workspace.IsActive);
 }

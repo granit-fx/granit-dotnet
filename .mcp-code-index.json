@@ -2521,7 +2521,7 @@
       "kind": "record",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Dtos/AIWorkspaceResponse.cs",
-      "line": 14,
+      "line": 16,
       "members": []
     },
     {
