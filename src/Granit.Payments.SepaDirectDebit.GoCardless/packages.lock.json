@@ -4,10 +4,11 @@
     "net10.0": {
       "GoCardless": {
         "type": "Direct",
-        "requested": "[7.*, )",
-        "resolved": "7.11.2",
-        "contentHash": "/hlG74K2bb4Qbus9eYfGpslusirsHbylvwn/xiex0UKbGbO1gQcpOdailIBzX17CmAlTLxT9pUA1eNbl/+JOWg==",
+        "requested": "[9.*, )",
+        "resolved": "9.5.0",
+        "contentHash": "8GDtfOgWV4QGE9XFVvPuURpUEX5c43GA7GkpIu2T2ZCFixUItnFsQ9KPGEBuML3rPegP+CpslF8ubWu+7ku25A==",
         "dependencies": {
+          "BouncyCastle.Cryptography": "2.6.1",
           "Newtonsoft.Json": "13.0.3"
         }
       },
@@ -30,6 +31,11 @@
           "Microsoft.Extensions.Logging.Abstractions": "10.0.6",
           "Microsoft.Extensions.Options": "10.0.6"
         }
+      },
+      "BouncyCastle.Cryptography": {
+        "type": "Transitive",
+        "resolved": "2.6.1",
+        "contentHash": "vZsG2YILhthgRqO+ZVgRff4ZFKKTl0v7kqaVBLCtRvpREhfBP33pcWrdA3PRYgWuFL1RxiUFvjMUHTdBZlJcoA=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",

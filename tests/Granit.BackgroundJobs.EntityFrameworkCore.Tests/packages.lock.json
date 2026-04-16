@@ -376,7 +376,7 @@
       "granit.backgroundjobs": {
         "type": "Project",
         "dependencies": {
-          "Cronos": "[0.11.*, )",
+          "Cronos": "[0.12.*, )",
           "Granit": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -446,9 +446,9 @@
       },
       "Cronos": {
         "type": "CentralTransitive",
-        "requested": "[0.11.*, )",
-        "resolved": "0.11.1",
-        "contentHash": "5Ug+giPQITSAdTp/METAsofRSSUi3I5p7t4dlcXnzUgUzwZb4HkOBcYfpHuPwAHrnKJjmyW8amVzLD6mfLpaBg=="
+        "requested": "[0.12.*, )",
+        "resolved": "0.12.0",
+        "contentHash": "rOBW2cimLtkRoyLIZWZx1uM300cNI2wUKOUbLbGLnNQRly5R/YK3VdC1mk3Wvt24J4k9PY5j+9WL4smv0RIZvA=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",

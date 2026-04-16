@@ -28,8 +28,8 @@
     <PackageVersion Include="OllamaSharp" Version="5.*" />
   </ItemGroup>
   <ItemGroup Label="Model Context Protocol">
-    <PackageVersion Include="ModelContextProtocol" Version="1.1.*" />
-    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="1.1.*" />
+    <PackageVersion Include="ModelContextProtocol" Version="1.2.*" />
+    <PackageVersion Include="ModelContextProtocol.AspNetCore" Version="1.2.*" />
   </ItemGroup>
   <ItemGroup Label="ASP.NET Core">
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.*" />
@@ -58,7 +58,7 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
   </ItemGroup>
   <ItemGroup Label="Background Jobs">
-    <PackageVersion Include="Cronos" Version="0.11.*" />
+    <PackageVersion Include="Cronos" Version="0.12.*" />
   </ItemGroup>
   <ItemGroup Label="Validation">
     <PackageVersion Include="FluentValidation" Version="12.*" />
@@ -114,9 +114,9 @@
     <PackageVersion Include="Google.Cloud.SecretManager.V1" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Payments">
-    <PackageVersion Include="GoCardless" Version="7.*" />
+    <PackageVersion Include="GoCardless" Version="9.*" />
     <PackageVersion Include="Mollie.Api" Version="4.*" />
-    <PackageVersion Include="Stripe.net" Version="47.*" />
+    <PackageVersion Include="Stripe.net" Version="51.*" />
   </ItemGroup>
   <!-- Security patches: transitive dependency version overrides -->
   <!-- MimeKit 4.15.0 is vulnerable to GHSA-g7hc-96xr-gvvx (Moderate); -->
@@ -161,6 +161,10 @@
     <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.*" />
   </ItemGroup>
   <ItemGroup Label="Roslyn Analyzers">
+    <!-- Pinned to Roslyn 5.0 / Analyzers 3.x: bumping to 5.3 / 5.x pulls
+         System.Composition.AttributedModel 10.x, which breaks `dotnet format`
+         (the SDK ships with 9.x and fails to load the 10.x attribute assembly).
+         Revisit once dotnet format bundles a compatible System.Composition. -->
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.*" />
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.*" />
@@ -184,6 +188,8 @@
     <PackageVersion Include="TngTech.ArchUnitNET" Version="0.13.*" />
     <PackageVersion Include="TngTech.ArchUnitNET.xUnit" Version="0.13.*" />
     <PackageVersion Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.*" />
+    <!-- Pinned to 7.* — JunitXml.TestLogger 8.0 requires Microsoft.Testing.Platform 2.0.2+,
+         incompatible with xunit.v3 3.2.x (pulls 1.9.1). Revisit when xunit.v3 bumps. -->
     <PackageVersion Include="JunitXml.TestLogger" Version="7.*" />
   </ItemGroup>
 </Project>
