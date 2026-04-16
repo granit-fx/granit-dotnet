@@ -1,3 +1,4 @@
+using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 
 namespace Granit.Subscriptions;
@@ -6,12 +7,14 @@ namespace Granit.Subscriptions;
 public interface ISeatWriter
 {
     /// <summary>Assigns a seat to a user within a subscription.</summary>
-    /// <exception cref="Granit.Features.Exceptions.FeatureLimitExceededException">
-    /// Thrown when the seat limit for the plan is reached.
+    /// <returns>The created seat assignment.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the user already has a seat or the seat limit is reached.
     /// </exception>
-    Task AssignSeatAsync(
+    Task<SubscriptionSeat> AssignSeatAsync(
         SubscriptionId subscriptionId,
         Guid userId,
+        int? seatLimit = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>Revokes a seat from a user within a subscription.</summary>

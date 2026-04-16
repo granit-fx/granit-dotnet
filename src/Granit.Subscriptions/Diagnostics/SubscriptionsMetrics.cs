@@ -21,6 +21,9 @@ public sealed class SubscriptionsMetrics
     private readonly Counter<long> _subscriptionsExpired;
     private readonly Counter<long> _planChanges;
     private readonly Counter<long> _periodAdvances;
+    private readonly Counter<long> _priceVersionsCreated;
+    private readonly Counter<long> _priceVersionsReplaced;
+    private readonly Counter<long> _priceMigrations;
 
     /// <summary>Initializes subscription metrics using the specified meter factory.</summary>
     public SubscriptionsMetrics(IMeterFactory meterFactory)
@@ -50,6 +53,18 @@ public sealed class SubscriptionsMetrics
         _periodAdvances = meter.CreateCounter<long>(
             "granit.subscriptions.period.advanced",
             description: "Number of billing period advances.");
+
+        _priceVersionsCreated = meter.CreateCounter<long>(
+            "granit.subscriptions.price.created",
+            description: "Number of plan price versions created.");
+
+        _priceVersionsReplaced = meter.CreateCounter<long>(
+            "granit.subscriptions.price.replaced",
+            description: "Number of plan prices replaced by newer versions.");
+
+        _priceMigrations = meter.CreateCounter<long>(
+            "granit.subscriptions.price.migrated",
+            description: "Number of subscription price migrations.");
     }
 
     /// <summary>Records a subscription creation.</summary>
@@ -92,5 +107,26 @@ public sealed class SubscriptionsMetrics
     {
         var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
         _periodAdvances.Add(1, tags);
+    }
+
+    /// <summary>Records a plan price version creation.</summary>
+    public void RecordPriceCreated(string? tenantId)
+    {
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
+        _priceVersionsCreated.Add(1, tags);
+    }
+
+    /// <summary>Records a plan price replacement (grandfathering).</summary>
+    public void RecordPriceReplaced(string? tenantId)
+    {
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
+        _priceVersionsReplaced.Add(1, tags);
+    }
+
+    /// <summary>Records a subscription price migration.</summary>
+    public void RecordPriceMigrated(string? tenantId)
+    {
+        var tags = new TagList { { TenantIdTag, tenantId ?? GlobalTenant } };
+        _priceMigrations.Add(1, tags);
     }
 }

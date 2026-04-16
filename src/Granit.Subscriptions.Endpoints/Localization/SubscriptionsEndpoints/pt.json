@@ -6,17 +6,17 @@
     "Permission:Subscriptions.Plans.Manage": "Gerir planos de subscrição (criar, publicar, arquivar)",
     "Permission:Subscriptions.Subscriptions.Read": "Ver subscrições",
     "Permission:Subscriptions.Subscriptions.Manage": "Gerir subscrições (criar, cancelar, alterar plano)",
-    "Permission:Subscriptions.Prices.Read": "Ver hist��rico de versões de preços",
+    "Permission:Subscriptions.Prices.Read": "Ver histórico de versões de preços",
     "Permission:Subscriptions.Prices.Manage": "Gerir preços (criar versões, migrar assinaturas)",
     "Permission:Subscriptions.Seats.Read": "Ver atribuições de lugares",
     "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)",
-    "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Currency",
-    "Subscriptions.Columns.PeriodStart": "Period Start",
-    "Subscriptions.Columns.PeriodEnd": "Period End",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
-    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
+    "Subscriptions.Columns.Tenant": "Inquilino",
+    "Subscriptions.Columns.Plan": "Plano",
+    "Subscriptions.Columns.Status": "Estado",
+    "Subscriptions.Columns.Currency": "Moeda",
+    "Subscriptions.Columns.PeriodStart": "Início do período",
+    "Subscriptions.Columns.PeriodEnd": "Fim do período",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancelar no fim do período",
+    "Subscriptions.Columns.TrialEndsAt": "Fim do período de teste"
   }
 }

@@ -28327,52 +28327,6 @@
       "members": []
     },
     {
-      "name": "PaymentMethodConfiguration",
-      "fqn": "Granit.Payments.Domain.PaymentMethodConfiguration",
-      "kind": "class",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Domain/PaymentMethodConfiguration.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, string providerName, string methodType, string displayLabel)",
-          "returnType": "PaymentMethodConfiguration"
-        },
-        {
-          "name": "ProviderName",
-          "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
-        },
-        {
-          "name": "DisplayLabel",
-          "kind": "property",
-          "signature": "string DisplayLabel",
-          "returnType": "string"
-        },
-        {
-          "name": "Activate",
-          "kind": "method",
-          "signature": "Activate()",
-          "returnType": "PaymentMethodCategory Category { get; private set; } public bool IsActive { get; private set; } public void"
-        },
-        {
-          "name": "Deactivate",
-          "kind": "method",
-          "signature": "Deactivate()",
-          "returnType": "void"
-        },
-        {
-          "name": "UpdateDisplayLabel",
-          "kind": "method",
-          "signature": "UpdateDisplayLabel(string displayLabel)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
       "name": "PaymentMethods",
       "fqn": "Granit.Payments.Domain.PaymentMethods",
       "kind": "class",
@@ -28596,15 +28550,6 @@
       ]
     },
     {
-      "name": "CreatePaymentMethodConfigurationRequest",
-      "fqn": "Granit.Payments.Endpoints.Dtos.CreatePaymentMethodConfigurationRequest",
-      "kind": "record",
-      "project": "Granit.Payments.Endpoints",
-      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
-      "line": 15,
-      "members": []
-    },
-    {
       "name": "PaymentAttachMethodRequest",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAttachMethodRequest",
       "kind": "record",
@@ -28656,15 +28601,6 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/TransactionResponse.cs",
       "line": 44,
-      "members": []
-    },
-    {
-      "name": "PaymentMethodConfigurationResponse",
-      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodConfigurationResponse",
-      "kind": "record",
-      "project": "Granit.Payments.Endpoints",
-      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
-      "line": 6,
       "members": []
     },
     {
@@ -28735,15 +28671,6 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
       "line": 13,
-      "members": []
-    },
-    {
-      "name": "Configuration",
-      "fqn": "Granit.Payments.Endpoints.Permissions.Configuration",
-      "kind": "class",
-      "project": "Granit.Payments.Endpoints",
-      "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
-      "line": 29,
       "members": []
     },
     {
@@ -28890,7 +28817,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitPayments",
@@ -28960,68 +28887,6 @@
           "name": "SendAsync",
           "kind": "method",
           "signature": "SendAsync(InitiatePaymentCommand command, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IPaymentMethodConfigurationReader",
-      "fqn": "Granit.Payments.IPaymentMethodConfigurationReader",
-      "kind": "interface",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/IPaymentMethodConfigurationReader.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "GetAllAsync",
-          "kind": "method",
-          "signature": "GetAllAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<PaymentMethodConfiguration>>"
-        },
-        {
-          "name": "GetActiveAsync",
-          "kind": "method",
-          "signature": "GetActiveAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<PaymentMethodConfiguration>>"
-        },
-        {
-          "name": "GetByIdAsync",
-          "kind": "method",
-          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PaymentMethodConfiguration?>"
-        },
-        {
-          "name": "FindAsync",
-          "kind": "method",
-          "signature": "FindAsync(string providerName, string methodType, CancellationToken cancellationToken = default)",
-          "returnType": "Task<PaymentMethodConfiguration?>"
-        }
-      ]
-    },
-    {
-      "name": "IPaymentMethodConfigurationWriter",
-      "fqn": "Granit.Payments.IPaymentMethodConfigurationWriter",
-      "kind": "interface",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/IPaymentMethodConfigurationWriter.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "AddAsync",
-          "kind": "method",
-          "signature": "AddAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "UpdateAsync",
-          "kind": "method",
-          "signature": "UpdateAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "DeleteAsync",
-          "kind": "method",
-          "signature": "DeleteAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -36893,6 +36758,15 @@
       "members": []
     },
     {
+      "name": "BulkMigratePriceResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.BulkMigratePriceResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "CreatePriceVersionRequest",
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.CreatePriceVersionRequest",
       "kind": "record",
@@ -36951,8 +36825,8 @@
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatAssignRequest",
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 19,
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SeatDtos.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -36960,8 +36834,8 @@
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatResponse",
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 23,
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SeatDtos.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -36998,15 +36872,6 @@
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionResponse.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "BulkMigratePriceResponse",
-      "fqn": "Granit.Subscriptions.Endpoints.Endpoints.BulkMigratePriceResponse",
-      "kind": "record",
-      "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Endpoints/PriceVersioningEndpoints.cs",
-      "line": 215,
       "members": []
     },
     {
@@ -37513,13 +37378,13 @@
       "kind": "interface",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/ISeatWriter.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "AssignSeatAsync",
           "kind": "method",
-          "signature": "AssignSeatAsync(SubscriptionId subscriptionId, Guid userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "signature": "AssignSeatAsync(SubscriptionId subscriptionId, Guid userId, int? seatLimit = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SubscriptionSeat>"
         },
         {
           "name": "RevokeSeatAsync",

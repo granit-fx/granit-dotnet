@@ -96,11 +96,6 @@ internal static class SubscriptionEndpoints
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
-        if (!currentTenant.IsAvailable)
-        {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
-        }
-
         Subscription? sub = await reader
             .GetByIdAsync(SubscriptionId.Create(id), cancellationToken).ConfigureAwait(false);
 
@@ -109,7 +104,9 @@ internal static class SubscriptionEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        if (sub.TenantId != currentTenant.Id!.Value)
+        // Host context (AllowHostAccess): bypass tenant ownership check.
+        // Tenant context: verify the subscription belongs to the current tenant.
+        if (currentTenant.IsAvailable && sub.TenantId != currentTenant.Id!.Value)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
@@ -120,6 +117,7 @@ internal static class SubscriptionEndpoints
     private static async Task<Results<Created<SubscriptionResponse>, ValidationProblem, ProblemHttpResult>> CreateSubscriptionAsync(
         SubscriptionCreateRequest request,
         [FromServices] ISubscriptionWriter writer,
+        [FromServices] IPlanReader planReader,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IClock clock,
@@ -130,14 +128,36 @@ internal static class SubscriptionEndpoints
             return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
         }
 
+        Plan? plan = await planReader
+            .GetByIdAsync(PlanId.Create(request.PlanId), cancellationToken).ConfigureAwait(false);
+
+        if (plan is null)
+        {
+            return TypedResults.Problem(
+                detail: $"Plan '{request.PlanId}' not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
         DateTimeOffset now = clock.Now;
+        DateTimeOffset periodEnd = plan.DefaultInterval switch
+        {
+            BillingInterval.Monthly => now.AddMonths(1),
+            BillingInterval.Quarterly => now.AddMonths(3),
+            BillingInterval.Yearly => now.AddYears(1),
+            _ => now.AddMonths(1),
+        };
+
+        // Pin to the current active price for the requested currency and default interval.
+        PlanPrice? activePrice = plan.GetActivePrice(request.Currency, plan.DefaultInterval);
+
         var sub = Subscription.Create(
             guidGenerator.Create(),
             currentTenant.Id!.Value,
             PlanId.Create(request.PlanId),
             request.Currency,
-            new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
-            trialEndsAt: request.TrialEndsAt);
+            new SubscriptionPeriod(now, periodEnd, BillingCycleAnchor: now),
+            trialEndsAt: request.TrialEndsAt,
+            planPriceId: activePrice?.Id);
 
         await writer.AddAsync(sub, cancellationToken).ConfigureAwait(false);
 

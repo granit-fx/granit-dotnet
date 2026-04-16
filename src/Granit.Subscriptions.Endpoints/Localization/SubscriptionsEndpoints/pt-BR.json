@@ -10,13 +10,13 @@
     "Permission:Subscriptions.Prices.Manage": "Gerenciar preços (criar versões, migrar assinaturas)",
     "Permission:Subscriptions.Seats.Read": "Visualizar atribuições de assentos",
     "Permission:Subscriptions.Seats.Manage": "Gerenciar atribuições de assentos (atribuir, revogar)",
-    "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Tenant": "Inquilino",
+    "Subscriptions.Columns.Plan": "Plano",
     "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Currency",
-    "Subscriptions.Columns.PeriodStart": "Period Start",
-    "Subscriptions.Columns.PeriodEnd": "Period End",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
-    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
+    "Subscriptions.Columns.Currency": "Moeda",
+    "Subscriptions.Columns.PeriodStart": "Início do período",
+    "Subscriptions.Columns.PeriodEnd": "Fim do período",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancelar no fim do período",
+    "Subscriptions.Columns.TrialEndsAt": "Fim do período de teste"
   }
 }

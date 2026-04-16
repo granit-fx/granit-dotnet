@@ -33,6 +33,7 @@ internal static class PlanWriteEndpoints
             .Produces<PlanResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Plans.Manage);
 
         group.MapPost("/plans/{id:guid}/publish", PublishPlanAsync)

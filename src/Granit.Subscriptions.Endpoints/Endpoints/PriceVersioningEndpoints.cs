@@ -210,6 +210,3 @@ internal static class PriceVersioningEndpoints
         return TypedResults.Ok(new BulkMigratePriceResponse(migrated));
     }
 }
-
-/// <summary>Response for bulk price migration.</summary>
-public sealed record BulkMigratePriceResponse(int MigratedCount);

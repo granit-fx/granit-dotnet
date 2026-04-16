@@ -10,13 +10,13 @@
     "Permission:Subscriptions.Prices.Manage": "Zarządzaj cenami (twórz wersje, migruj subskrypcje)",
     "Permission:Subscriptions.Seats.Read": "Wyświetlanie przypisań miejsc",
     "Permission:Subscriptions.Seats.Manage": "Zarządzanie przypisaniami miejsc (przypisywanie, cofanie)",
-    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Tenant": "Najemca",
     "Subscriptions.Columns.Plan": "Plan",
     "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Currency",
-    "Subscriptions.Columns.PeriodStart": "Period Start",
-    "Subscriptions.Columns.PeriodEnd": "Period End",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
-    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
+    "Subscriptions.Columns.Currency": "Waluta",
+    "Subscriptions.Columns.PeriodStart": "Początek okresu",
+    "Subscriptions.Columns.PeriodEnd": "Koniec okresu",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Anuluj na koniec okresu",
+    "Subscriptions.Columns.TrialEndsAt": "Koniec okresu próbnego"
   }
 }

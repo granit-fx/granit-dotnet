@@ -10,13 +10,13 @@
     "Permission:Subscriptions.Prices.Manage": "管理价格（创建版本、迁移订阅）",
     "Permission:Subscriptions.Seats.Read": "查看席位分配",
     "Permission:Subscriptions.Seats.Manage": "管理席位分配（分配、撤销）",
-    "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Currency",
-    "Subscriptions.Columns.PeriodStart": "Period Start",
-    "Subscriptions.Columns.PeriodEnd": "Period End",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
-    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
+    "Subscriptions.Columns.Tenant": "租户",
+    "Subscriptions.Columns.Plan": "计划",
+    "Subscriptions.Columns.Status": "状态",
+    "Subscriptions.Columns.Currency": "货币",
+    "Subscriptions.Columns.PeriodStart": "周期开始",
+    "Subscriptions.Columns.PeriodEnd": "周期结束",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "周期结束时取消",
+    "Subscriptions.Columns.TrialEndsAt": "试用结束时间"
   }
 }

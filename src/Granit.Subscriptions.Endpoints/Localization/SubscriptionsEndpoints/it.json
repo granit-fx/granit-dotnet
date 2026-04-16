@@ -11,12 +11,12 @@
     "Permission:Subscriptions.Seats.Read": "Visualizzare le assegnazioni dei posti",
     "Permission:Subscriptions.Seats.Manage": "Gestire le assegnazioni dei posti (assegnare, revocare)",
     "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Currency",
-    "Subscriptions.Columns.PeriodStart": "Period Start",
-    "Subscriptions.Columns.PeriodEnd": "Period End",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancel at Period End",
-    "Subscriptions.Columns.TrialEndsAt": "Trial Ends At"
+    "Subscriptions.Columns.Plan": "Piano",
+    "Subscriptions.Columns.Status": "Stato",
+    "Subscriptions.Columns.Currency": "Valuta",
+    "Subscriptions.Columns.PeriodStart": "Inizio periodo",
+    "Subscriptions.Columns.PeriodEnd": "Fine periodo",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Annulla a fine periodo",
+    "Subscriptions.Columns.TrialEndsAt": "Fine prova"
   }
 }

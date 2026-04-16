@@ -14,3 +14,6 @@ public sealed record BulkMigratePriceRequest(
     Guid PlanId,
     Guid NewPlanPriceId,
     Guid? OldPlanPriceId = null);
+
+/// <summary>Response for bulk price migration.</summary>
+public sealed record BulkMigratePriceResponse(int MigratedCount);

@@ -11,9 +11,10 @@ internal sealed class EfSeatWriter(
     IGuidGenerator guidGenerator,
     IClock clock) : ISeatWriter
 {
-    public async Task AssignSeatAsync(
+    public async Task<SubscriptionSeat> AssignSeatAsync(
         SubscriptionId subscriptionId,
         Guid userId,
+        int? seatLimit = null,
         CancellationToken cancellationToken = default)
     {
         await using SubscriptionsDbContext context = await contextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
@@ -24,9 +25,10 @@ internal sealed class EfSeatWriter(
             .ConfigureAwait(false);
 
         var seat = SubscriptionSeat.Create(guidGenerator.Create(), userId, clock.Now);
-        subscription.AssignSeat(seat);
+        subscription.AssignSeat(seat, seatLimit);
 
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return seat;
     }
 
     public async Task<bool> RevokeSeatAsync(
