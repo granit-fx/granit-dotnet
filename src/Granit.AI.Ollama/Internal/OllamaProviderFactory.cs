@@ -16,7 +16,8 @@ namespace Granit.AI.Ollama.Internal;
 /// <see cref="OllamaApiClient"/> natively supports the <c>Microsoft.Extensions.AI</c>
 /// abstractions. Each call creates a new client pointing at the configured
 /// endpoint with the workspace model (or the default model from options).
-/// Model catalog is fetched dynamically via <c>GET /api/tags</c> and cached for 30 seconds.
+/// Model catalog is fetched dynamically via <c>GET /api/tags</c> and enriched
+/// with per-model capabilities via <c>GET /api/show</c>. Cached for 30 seconds.
 /// </remarks>
 internal sealed class OllamaProviderFactory(
     IOptions<OllamaOptions> options,
@@ -70,12 +71,15 @@ internal sealed class OllamaProviderFactory(
             .ListLocalModelsAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        IReadOnlyList<AIModelInfo> models = localModels
-            .Select(m => new AIModelInfo(
-                m.Name,
-                m.Name,
-                new AIModelCapabilities { Embeddings = true }))
-            .ToList();
+        List<AIModelInfo> models = [];
+
+        foreach (Model model in localModels)
+        {
+            AIModelCapabilities capabilities = await ResolveCapabilitiesAsync(client, model.Name, cancellationToken)
+                .ConfigureAwait(false);
+
+            models.Add(new AIModelInfo(model.Name, model.Name, capabilities));
+        }
 
         lock (_lock)
         {
@@ -84,5 +88,44 @@ internal sealed class OllamaProviderFactory(
         }
 
         return models;
+    }
+
+    /// <summary>
+    /// Resolves capabilities for a specific model via <c>GET /api/show</c>.
+    /// Ollama returns capabilities as a string list (e.g. <c>completion</c>, <c>vision</c>, <c>tools</c>, <c>embedding</c>).
+    /// </summary>
+    private static async Task<AIModelCapabilities> ResolveCapabilitiesAsync(
+        OllamaApiClient client,
+        string modelName,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            ShowModelResponse details = await client
+                .ShowModelAsync(new ShowModelRequest { Model = modelName }, cancellationToken)
+                .ConfigureAwait(false);
+
+            IEnumerable<string>? caps = details.Capabilities;
+
+            if (caps is null)
+            {
+                return new AIModelCapabilities { Embeddings = true };
+            }
+
+            HashSet<string> capSet = new(caps, StringComparer.OrdinalIgnoreCase);
+
+            return new AIModelCapabilities
+            {
+                Chat = capSet.Contains("completion"),
+                Embeddings = capSet.Contains("embedding"),
+                Vision = capSet.Contains("vision"),
+                ToolUse = capSet.Contains("tools"),
+            };
+        }
+        catch
+        {
+            // Fallback if /api/show fails (older Ollama versions)
+            return new AIModelCapabilities { Embeddings = true };
+        }
     }
 }
