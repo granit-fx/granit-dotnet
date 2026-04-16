@@ -1,4 +1,5 @@
 using Granit.Auditing.EntityFrameworkCore.Internal.Services;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -29,7 +30,7 @@ namespace Granit.Auditing.EntityFrameworkCore.Interceptors;
 /// state are already applied when we read them.
 /// </para>
 /// </remarks>
-public sealed class AuditingChangeTrackingInterceptor : SaveChangesInterceptor
+public sealed class AuditingChangeTrackingInterceptor : SaveChangesInterceptor, IGranitAutoInterceptor
 {
     /// <inheritdoc/>
     public override InterceptionResult<int> SavingChanges(

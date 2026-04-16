@@ -4315,7 +4315,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Extensions/AuditingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitAuditingEntityFrameworkCore",
@@ -4388,7 +4388,7 @@
       "kind": "class",
       "project": "Granit.Auditing.EntityFrameworkCore",
       "file": "src/Granit.Auditing.EntityFrameworkCore/Interceptors/AuditingChangeTrackingInterceptor.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "SavingChanges",
@@ -30601,6 +30601,15 @@
           "returnType": "InterceptionResult<int>"
         }
       ]
+    },
+    {
+      "name": "IGranitAutoInterceptor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Interceptors.IGranitAutoInterceptor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Interceptors/IGranitAutoInterceptor.cs",
+      "line": 31,
+      "members": []
     },
     {
       "name": "SoftDeleteInterceptor",

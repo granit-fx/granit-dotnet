@@ -17,6 +17,7 @@ using Granit.Auditing.Extensions;
 using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -172,6 +173,26 @@ public sealed class AuditingEntityFrameworkCoreHostApplicationBuilderExtensionsT
 
         descriptor.ShouldNotBeNull();
         descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void Registers_IGranitAutoInterceptor_AsScoped()
+    {
+        ServiceDescriptor? descriptor = _builder.Services
+            .FirstOrDefault(d => d.ServiceType == typeof(IGranitAutoInterceptor));
+
+        descriptor.ShouldNotBeNull();
+        descriptor.Lifetime.ShouldBe(ServiceLifetime.Scoped);
+    }
+
+    [Fact]
+    public void Resolves_IGranitAutoInterceptor_AsAuditingChangeTrackingInterceptor()
+    {
+        using IServiceScope scope = _sp.CreateScope();
+        IGranitAutoInterceptor interceptor = scope.ServiceProvider
+            .GetRequiredService<IGranitAutoInterceptor>();
+
+        interceptor.ShouldBeOfType<AuditingChangeTrackingInterceptor>();
     }
 
     [Fact]

@@ -5,6 +5,7 @@ using Granit.Auditing.EntityFrameworkCore.Internal.Services;
 using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -66,7 +67,11 @@ public static class AuditingEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         // Interceptor + capture service (scoped — host DbContext resolves from its SP).
+        // Registered as both concrete type (for UseGranitAuditingInterceptor backward compat)
+        // and IGranitAutoInterceptor (for automatic wiring via UseGranitInterceptors).
         builder.Services.AddScoped<AuditingChangeTrackingInterceptor>();
+        builder.Services.AddScoped<IGranitAutoInterceptor>(sp =>
+            sp.GetRequiredService<AuditingChangeTrackingInterceptor>());
         builder.Services.AddScoped<ChangeTrackingCaptureService>();
 
         return builder;

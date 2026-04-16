@@ -68,6 +68,14 @@ public static class DbContextOptionsBuilderExtensions
         AddInterceptorIfRegistered<EntityLifecycleEventInterceptor>(options, serviceProvider);
         AddInterceptorIfRegistered<SoftDeleteInterceptor>(options, serviceProvider);
 
+        // Module-provided interceptors registered via IGranitAutoInterceptor.
+        // These run after the standard interceptors so they can observe the final
+        // entity state (audit fields set, soft-delete applied, events collected).
+        foreach (IGranitAutoInterceptor additional in serviceProvider.GetServices<IGranitAutoInterceptor>())
+        {
+            options.AddInterceptors(additional);
+        }
+
         return options;
     }
 

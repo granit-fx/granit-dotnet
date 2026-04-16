@@ -42,6 +42,29 @@ public sealed class DbContextOptionsBuilderExtensionsTests
     }
 
     [Fact]
+    public void UseGranitInterceptors_AddsAutoInterceptors()
+    {
+        // Arrange
+        ServiceCollection services = new();
+        FakeAutoInterceptor autoInterceptor = new();
+        services.AddSingleton<IGranitAutoInterceptor>(autoInterceptor);
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        DbContextOptionsBuilder builder = new();
+
+        // Act
+        builder.UseGranitInterceptors(sp);
+
+        // Assert
+        DbContextOptions options = builder.Options;
+        IEnumerable<IInterceptor> interceptors = options.Extensions
+            .OfType<Microsoft.EntityFrameworkCore.Infrastructure.CoreOptionsExtension>()
+            .SelectMany(e => e.Interceptors ?? []);
+
+        interceptors.ShouldContain(i => i is FakeAutoInterceptor);
+    }
+
+    [Fact]
     public void UseGranitInterceptors_SkipsUnregisteredInterceptors()
     {
         // Arrange — empty service provider with no interceptors registered
@@ -164,4 +187,7 @@ public sealed class DbContextOptionsBuilderExtensionsTests
     /// <summary>Minimal test DbContext for AddGranitDbContext tests.</summary>
     private sealed class TestDbContext(DbContextOptions<TestDbContext> options)
         : DbContext(options);
+
+    /// <summary>Fake auto-interceptor for testing IGranitAutoInterceptor resolution.</summary>
+    private sealed class FakeAutoInterceptor : SaveChangesInterceptor, IGranitAutoInterceptor;
 }
