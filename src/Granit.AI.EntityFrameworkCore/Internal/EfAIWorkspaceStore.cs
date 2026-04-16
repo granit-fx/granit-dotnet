@@ -3,6 +3,7 @@ using Granit.AI.Workspaces;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.AI.EntityFrameworkCore.Internal;
@@ -54,7 +55,7 @@ internal sealed class EfAIWorkspaceStore(
         {
             await AddAsync(entity, cancellationToken).ConfigureAwait(false);
         }
-        catch (DbUpdateException ex) when (ex.InnerException is System.Data.Common.DbException { SqlState: "23505" })
+        catch (DbUpdateException ex) when (DbUpdateExceptionHelper.IsDuplicateKeyException(ex))
         {
             throw new InvalidOperationException(
                 $"A workspace named '{workspace.Name}' already exists.", ex);

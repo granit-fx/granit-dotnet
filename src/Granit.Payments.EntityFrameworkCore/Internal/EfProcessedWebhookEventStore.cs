@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.Payments.Domain;
+using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ internal sealed partial class EfProcessedWebhookEventStore(
             await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
             return true;
         }
-        catch (DbUpdateException ex) when (ex.InnerException is System.Data.Common.DbException { SqlState: "23505" })
+        catch (DbUpdateException ex) when (DbUpdateExceptionHelper.IsDuplicateKeyException(ex))
         {
             Log.WebhookDuplicate(logger, providerName, providerEventId);
             return false;

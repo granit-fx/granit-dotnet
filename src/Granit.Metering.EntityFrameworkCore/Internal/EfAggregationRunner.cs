@@ -3,6 +3,7 @@ using Granit.Domain;
 using Granit.Guids;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
+using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -116,7 +117,7 @@ internal sealed partial class EfAggregationRunner(
         {
             await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
-        catch (DbUpdateException ex) when (IsDuplicateKeyException(ex))
+        catch (DbUpdateException ex) when (DbUpdateExceptionHelper.IsDuplicateKeyException(ex))
         {
             Log.AggregationCollisionIgnored(logger, definition.Name, ex);
             return;
@@ -139,35 +140,6 @@ internal sealed partial class EfAggregationRunner(
             AggregationType.Last => events[^1].Quantity,
             _ => events.Sum(e => e.Quantity),
         };
-
-    /// <summary>
-    /// Provider-agnostic duplicate key detection. Mirrors the implementation in
-    /// <see cref="EfMeterEventStore"/> to avoid a hard dependency between the two stores.
-    /// </summary>
-    private static bool IsDuplicateKeyException(DbUpdateException ex)
-    {
-        if (ex.InnerException is null)
-        {
-            return false;
-        }
-
-        Type innerType = ex.InnerException.GetType();
-
-        if (innerType.GetProperty("SqlState")?.GetValue(ex.InnerException) is "23505")
-        {
-            return true; // PostgreSQL unique_violation
-        }
-
-        if (innerType.GetProperty("Number")?.GetValue(ex.InnerException) is int and (2601 or 2627))
-        {
-            return true; // SQL Server unique index / unique constraint
-        }
-
-        string? message = ex.InnerException.Message;
-        return message?.Contains("duplicate key", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("unique constraint", StringComparison.OrdinalIgnoreCase) == true
-            || message?.Contains("UNIQUE constraint failed", StringComparison.OrdinalIgnoreCase) == true;
-    }
 
     private static partial class Log
     {

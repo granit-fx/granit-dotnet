@@ -30048,6 +30048,22 @@
       "members": []
     },
     {
+      "name": "DbUpdateExceptionHelper",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.ExceptionHandling.DbUpdateExceptionHelper",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/ExceptionHandling/DbUpdateExceptionHelper.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "IsDuplicateKeyException",
+          "kind": "method",
+          "signature": "IsDuplicateKeyException(DbUpdateException ex)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "DbContextOptionsBuilderExtensions",
       "fqn": "Granit.Persistence.EntityFrameworkCore.Extensions.DbContextOptionsBuilderExtensions",
       "kind": "class",
