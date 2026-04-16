@@ -119,9 +119,10 @@
     <PackageVersion Include="Stripe.net" Version="47.*" />
   </ItemGroup>
   <!-- Security patches: transitive dependency version overrides -->
-  <!-- MimeKit 4.15.0 is vulnerable to GHSA-g7hc-96xr-gvvx (Moderate) -->
+  <!-- MimeKit 4.15.0 is vulnerable to GHSA-g7hc-96xr-gvvx (Moderate); -->
+  <!-- bumped to 4.16.0 to align with MailKit 4.16.0's transitive requirement. -->
   <ItemGroup Label="Security overrides">
-    <PackageVersion Include="MimeKit" Version="4.15.1" />
+    <PackageVersion Include="MimeKit" Version="4.16.0" />
   </ItemGroup>
   <ItemGroup Label="Notifications">
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.*" />
