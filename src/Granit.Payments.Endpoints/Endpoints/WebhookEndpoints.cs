@@ -1,5 +1,7 @@
 using Granit.Payments.Commands;
 using Granit.Payments.Contracts;
+using Granit.Payments.Endpoints.Permissions;
+using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -23,7 +25,8 @@ internal static class WebhookEndpoints
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .AllowAnonymous();
+            .AllowAnonymous()
+            .RequireGranitRateLimiting(PaymentsRateLimitPolicies.Webhook);
 
         return group;
     }

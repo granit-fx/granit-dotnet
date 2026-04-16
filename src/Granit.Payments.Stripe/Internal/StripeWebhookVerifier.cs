@@ -13,7 +13,7 @@ namespace Granit.Payments.Stripe.Internal;
 /// Validates HMAC-SHA256 signature and 5-minute timestamp tolerance.
 /// </summary>
 internal sealed partial class StripeWebhookVerifier(
-    IOptions<StripeOptions> options,
+    IOptionsMonitor<StripeOptions> options,
     ILogger<StripeWebhookVerifier> logger) : IPaymentWebhookVerifier
 {
     /// <inheritdoc/>
@@ -34,7 +34,7 @@ internal sealed partial class StripeWebhookVerifier(
         {
             string json = Encoding.UTF8.GetString(body);
             Event stripeEvent = EventUtility.ConstructEvent(
-                json, signature, options.Value.WebhookSecret);
+                json, signature, options.CurrentValue.WebhookSecret);
 
             JsonElement payload = JsonSerializer.Deserialize<JsonElement>(json);
 

@@ -63,6 +63,7 @@ public sealed class Mandate : AuditedAggregateRoot, IMultiTenant
     public string DebtorIban { get; private set; } = string.Empty;
 
     /// <summary>Debtor BIC/SWIFT (optional).</summary>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string? DebtorBic { get; private set; }
 
     /// <summary>SEPA Creditor Identifier.</summary>

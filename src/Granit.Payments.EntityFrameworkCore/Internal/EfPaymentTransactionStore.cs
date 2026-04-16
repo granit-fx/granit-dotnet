@@ -26,6 +26,10 @@ internal sealed class EfPaymentTransactionStore(
         Guid invoiceId, CancellationToken cancellationToken = default) =>
         ListAsync(Spec.For<PaymentTransaction>().Where(t => t.InvoiceId == invoiceId), cancellationToken);
 
+    public Task<IReadOnlyList<PaymentTransaction>> GetForTenantAsync(
+        CancellationToken cancellationToken = default) =>
+        ListAsync(Spec.For<PaymentTransaction>(), cancellationToken);
+
     Task IPaymentTransactionWriter.AddAsync(PaymentTransaction transaction, CancellationToken cancellationToken) =>
         base.AddAsync(transaction, cancellationToken);
 

@@ -1462,6 +1462,7 @@
         "Granit.Guids",
         "Granit.Http.Abstractions",
         "Granit.Payments",
+        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1542,6 +1543,7 @@
     {
       "name": "Granit.Payments.Wolverine",
       "deps": [
+        "Granit.Guids",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments",
         "Granit.Wolverine"
@@ -28726,7 +28728,7 @@
       "kind": "class",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/GranitPaymentsEndpointsModule.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {
@@ -28763,6 +28765,15 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentsRateLimitPolicies",
+      "fqn": "Granit.Payments.Endpoints.Permissions.PaymentsRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsRateLimitPolicies.cs",
+      "line": 16,
       "members": []
     },
     {
@@ -28864,7 +28875,7 @@
       "kind": "record",
       "project": "Granit.Payments.Abstractions",
       "file": "src/Granit.Payments.Abstractions/Events/PaymentFailedEto.cs",
-      "line": 6,
+      "line": 7,
       "members": []
     },
     {
@@ -29185,6 +29196,12 @@
           "name": "GetForInvoiceAsync",
           "kind": "method",
           "signature": "GetForInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentTransaction>>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PaymentTransaction>>"
         }
       ]
@@ -30108,6 +30125,22 @@
       ]
     },
     {
+      "name": "InitiatePaymentCommandHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.InitiatePaymentCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/InitiatePaymentCommandHandler.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InitiatePaymentCommand command, IPaymentProviderResolver providerResolver, IEnumerable<IPaymentProvider> providers, IPaymentTransactionWriter transactionWriter, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<InitiatePaymentCommandHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ProcessWebhookCommandHandler",
       "fqn": "Granit.Payments.Wolverine.Handlers.ProcessWebhookCommandHandler",
       "kind": "class",
@@ -30119,6 +30152,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(ProcessWebhookCommand command, IWebhookProcessor processor, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RequestRefundCommandHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.RequestRefundCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/RequestRefundCommandHandler.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RequestRefundCommand command, IPaymentTransactionReader transactionReader, IPaymentTransactionWriter transactionWriter, IEnumerable<IPaymentProvider> providers, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<RequestRefundCommandHandler> logger, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]

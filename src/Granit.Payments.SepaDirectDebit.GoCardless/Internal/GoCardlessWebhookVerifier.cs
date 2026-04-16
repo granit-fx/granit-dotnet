@@ -44,35 +44,56 @@ internal sealed partial class GoCardlessWebhookVerifier(
 
         JsonElement payload = JsonSerializer.Deserialize<JsonElement>(body);
 
-        // Extract event ID from the payload for deduplication
-        string? eventId = payload.TryGetProperty("events", out JsonElement events)
+        // Extract a deterministic composite event ID covering all events in the batch.
+        // GoCardless sends batched events — using only the first ID would silently lose
+        // subsequent events on replay and break deduplication for partial overlaps.
+        string compositeEventId;
+        string eventType;
+
+        if (payload.TryGetProperty("events", out JsonElement events)
             && events.ValueKind == JsonValueKind.Array
-            && events.GetArrayLength() > 0
-            && events[0].TryGetProperty("id", out JsonElement id)
-                ? id.GetString()
-                : null;
+            && events.GetArrayLength() > 0)
+        {
+            var eventIds = new List<string>();
+            string? firstAction = null;
 
-        string? eventType = payload.TryGetProperty("events", out JsonElement evts)
-            && evts.ValueKind == JsonValueKind.Array
-            && evts.GetArrayLength() > 0
-            && evts[0].TryGetProperty("action", out JsonElement action)
-                ? $"gocardless.{action.GetString()}"
-                : "gocardless.webhook";
+            foreach (JsonElement evt in events.EnumerateArray())
+            {
+                if (evt.TryGetProperty("id", out JsonElement id) && id.GetString() is string eid)
+                {
+                    eventIds.Add(eid);
+                }
 
-        Log.WebhookVerified(logger, eventId);
+                firstAction ??= evt.TryGetProperty("action", out JsonElement action)
+                    ? action.GetString()
+                    : null;
+            }
+
+            compositeEventId = eventIds.Count == 1
+                ? eventIds[0]
+                : string.Join('+', eventIds);
+            eventType = firstAction is not null ? $"gocardless.{firstAction}" : "gocardless.webhook";
+        }
+        else
+        {
+            compositeEventId = "";
+            eventType = "gocardless.webhook";
+        }
+
+        Log.WebhookVerified(logger, compositeEventId, events.GetArrayLength());
 
         return Task.FromResult(new PaymentWebhookVerificationResult(
             IsValid: true,
             EventType: eventType,
-            ProviderEventId: eventId,
+            ProviderEventId: compositeEventId,
             Payload: payload,
             RejectionReason: null));
     }
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless webhook verified (event: {EventId})")]
-        public static partial void WebhookVerified(ILogger logger, string? eventId);
+        [LoggerMessage(Level = LogLevel.Information, Message = "GoCardless webhook verified (event: {EventId}, batch size: {BatchSize})")]
+        public static partial void WebhookVerified(ILogger logger, string eventId, int batchSize);
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "GoCardless webhook rejected: {Reason}")]
         public static partial void WebhookRejected(ILogger logger, string reason);

@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Events;
 
 namespace Granit.Payments.Events;
@@ -7,4 +8,4 @@ public sealed record PaymentFailedEto(
     Guid TransactionId, Guid InvoiceId, Guid TenantId,
     decimal Amount, string Currency,
     string ProviderName, string MethodType,
-    string? FailureCode, string? FailureMessage) : IIntegrationEvent;
+    string? FailureCode, [property: SensitiveData] string? FailureMessage) : IIntegrationEvent;

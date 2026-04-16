@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Modularity;
+using Granit.RateLimiting;
 using Granit.Validation;
 
 namespace Granit.Payments.Endpoints;
@@ -8,5 +9,6 @@ namespace Granit.Payments.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitPaymentsModule),
+    typeof(GranitRateLimitingModule),
     typeof(GranitValidationModule))]
 public sealed class GranitPaymentsEndpointsModule : GranitModule;

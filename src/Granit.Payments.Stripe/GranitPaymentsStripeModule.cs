@@ -30,6 +30,6 @@ public sealed class GranitPaymentsStripeModule : GranitModule
         context.Services.AddScoped<IPaymentProvider, StripePaymentProvider>();
         context.Services.AddScoped<ICheckoutSessionFactory, StripeCheckoutSessionFactory>();
         context.Services.AddScoped<IPaymentMethodManager, StripePaymentMethodManager>();
-        context.Services.AddSingleton<IPaymentWebhookVerifier, StripeWebhookVerifier>();
+        context.Services.AddScoped<IPaymentWebhookVerifier, StripeWebhookVerifier>();
     }
 }

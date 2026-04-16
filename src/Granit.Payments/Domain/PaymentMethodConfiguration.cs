@@ -8,7 +8,7 @@ namespace Granit.Payments.Domain;
 /// (e.g., <c>stripe</c>). Only active configurations are exposed to tenants via
 /// <see cref="IPaymentProviderResolver"/>.
 /// </summary>
-public sealed class PaymentMethodConfiguration : Entity
+public sealed class PaymentMethodConfiguration : AuditedEntity
 {
     private PaymentMethodConfiguration() { }
 
