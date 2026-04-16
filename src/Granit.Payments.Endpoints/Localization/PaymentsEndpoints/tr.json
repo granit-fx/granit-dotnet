@@ -6,6 +6,7 @@
     "Permission:Payments.Charges.Execute": "Ödeme başlat",
     "Permission:Payments.Refunds.Execute": "İade işle",
     "Permission:Payments.Methods.Read": "Ödeme yöntemlerini görüntüle",
-    "Permission:Payments.Methods.Manage": "Ödeme yöntemlerini yönet (ekle, kaldır)"
+    "Permission:Payments.Methods.Manage": "Ödeme yöntemlerini yönet (ekle, kaldır)",
+    "Permission:Payments.Configuration.Manage": "Ödeme yöntemi yapılandırmasını yönet"
   }
 }

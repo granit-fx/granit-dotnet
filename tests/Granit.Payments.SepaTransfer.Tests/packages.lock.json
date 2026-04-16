@@ -294,6 +294,7 @@
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
@@ -316,6 +317,15 @@
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "Microsoft.Extensions.Caching.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.6",
+        "contentHash": "Ilr690V+E1H116ncF00KIlvRloKXBdCExaNqcT9BvCcS5nFGR1pcTamSA2EI8pOXbNp0DHZm8K8h6Wl1hMSbIQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "10.0.6"
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {

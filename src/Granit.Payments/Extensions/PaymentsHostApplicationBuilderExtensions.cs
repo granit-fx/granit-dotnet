@@ -2,6 +2,7 @@ using Granit.Diagnostics;
 using Granit.Invoicing;
 using Granit.Payments.Diagnostics;
 using Granit.Payments.Internal;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -19,6 +20,11 @@ public static class PaymentsHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IInvoicePrePaymentProcessor, PassThroughPrePaymentProcessor>();
         builder.Services.TryAddTransient<IWebhookProcessor, DefaultWebhookProcessor>();
         GranitActivitySourceRegistry.Register(PaymentsActivitySource.Name);
+
+        // Default resolver: reads active PaymentMethodConfiguration records + matches DI providers
+        builder.Services.TryAddSingleton<IMemoryCache, MemoryCache>();
+        builder.Services.TryAddScoped<IPaymentProviderResolver, DefaultPaymentProviderResolver>();
+
         return builder;
     }
 }

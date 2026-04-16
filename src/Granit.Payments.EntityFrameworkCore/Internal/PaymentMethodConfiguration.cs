@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Granit.Payments.EntityFrameworkCore.Internal;
 
-internal sealed class PaymentMethodConfiguration : IEntityTypeConfiguration<PaymentMethod>
+internal sealed class PaymentMethodEntityTypeConfiguration : IEntityTypeConfiguration<PaymentMethod>
 {
     public void Configure(EntityTypeBuilder<PaymentMethod> builder)
     {

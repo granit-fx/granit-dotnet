@@ -13,7 +13,12 @@ internal sealed class EfPlanReader(
       IPlanReader
 {
     public Task<Plan?> GetByIdAsync(PlanId id, CancellationToken cancellationToken = default) =>
-        FindByIdAsync(id.Value, cancellationToken);
+        ReadAsync(
+            async db => await Query(db)
+                .Include(p => p.Prices)
+                .FirstOrDefaultAsync(p => p.Id == id.Value, cancellationToken)
+                .ConfigureAwait(false),
+            cancellationToken);
 
     public Task<IReadOnlyList<Plan>> GetAvailablePlansAsync(CancellationToken cancellationToken = default) =>
         ListAsync(

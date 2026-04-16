@@ -26,6 +26,7 @@ public static class PaymentsEndpointRouteBuilderExtensions
 
         group.MapTransactionEndpoints();
         group.MapPaymentMethodEndpoints();
+        group.MapPaymentMethodConfigurationEndpoints();
         group.MapWebhookEndpoints();
 
         return group;

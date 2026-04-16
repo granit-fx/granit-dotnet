@@ -9,11 +9,12 @@ public static class PaymentsModelBuilderExtensions
     public static ModelBuilder ConfigurePaymentsModule(this ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PaymentTransactionConfiguration());
-        modelBuilder.ApplyConfiguration(new PaymentMethodConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMethodEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new RefundConfiguration());
         modelBuilder.ApplyConfiguration(new DisputeConfiguration());
         modelBuilder.ApplyConfiguration(new ProcessedWebhookEventConfiguration());
         modelBuilder.ApplyConfiguration(new ProviderCustomerMappingConfiguration());
+        modelBuilder.ApplyConfiguration(new PaymentMethodConfigurationEntityTypeConfiguration());
         return modelBuilder;
     }
 }
