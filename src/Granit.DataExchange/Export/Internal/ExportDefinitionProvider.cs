@@ -63,13 +63,8 @@ internal sealed class ExportDefinitionProvider(
 
         // Add auto-generated definitions only for entity types without explicit ones
         List<IExportDefinitionDescriptor> all = [.. explicits];
-        foreach (ReflectionExportDefinition auto in GetAutoDefinitions())
-        {
-            if (!explicitEntityTypes.Contains(auto.EntityType))
-            {
-                all.Add(auto);
-            }
-        }
+        all.AddRange(GetAutoDefinitions()
+            .Where(auto => !explicitEntityTypes.Contains(auto.EntityType)));
 
         _allDefinitions = all.AsReadOnly();
         return _allDefinitions;

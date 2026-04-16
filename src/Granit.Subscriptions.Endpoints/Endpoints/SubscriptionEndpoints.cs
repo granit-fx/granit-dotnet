@@ -17,6 +17,8 @@ namespace Granit.Subscriptions.Endpoints.Endpoints;
 
 internal static class SubscriptionEndpoints
 {
+    private const string TenantContextRequiredMessage = "Tenant context required.";
+
     internal static RouteGroupBuilder MapSubscriptionEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/subscriptions/active", GetActiveSubscriptionAsync)
@@ -79,7 +81,7 @@ internal static class SubscriptionEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader
@@ -125,7 +127,7 @@ internal static class SubscriptionEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Plan? plan = await planReader
@@ -176,7 +178,7 @@ internal static class SubscriptionEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader
@@ -222,7 +224,7 @@ internal static class SubscriptionEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader

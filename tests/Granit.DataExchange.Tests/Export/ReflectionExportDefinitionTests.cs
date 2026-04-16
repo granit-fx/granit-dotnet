@@ -71,10 +71,8 @@ public sealed class ReflectionExportDefinitionTests
     }
 
     [Fact]
-    public void Constructor_throws_for_null_type()
-    {
+    public void Constructor_throws_for_null_type() =>
         Should.Throw<ArgumentNullException>(() => new ReflectionExportDefinition(null!));
-    }
 
     // ---- Test helpers ---------------------------------------------------
 

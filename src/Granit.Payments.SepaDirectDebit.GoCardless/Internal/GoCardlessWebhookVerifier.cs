@@ -27,14 +27,7 @@ internal sealed partial class GoCardlessWebhookVerifier(
                 Payload: default, RejectionReason: "Missing Webhook-Signature header."));
         }
 
-        // HMAC-SHA256 verification
-        byte[] key = Encoding.UTF8.GetBytes(options.Value.WebhookSecret);
-        byte[] computedHash = HMACSHA256.HashData(key, body);
-        string computedSignature = Convert.ToHexStringLower(computedHash);
-
-        if (!CryptographicOperations.FixedTimeEquals(
-            Encoding.UTF8.GetBytes(computedSignature),
-            Encoding.UTF8.GetBytes(signature)))
+        if (!IsSignatureValid(body, signature))
         {
             Log.WebhookRejected(logger, "Invalid signature");
             return Task.FromResult(new PaymentWebhookVerificationResult(
@@ -43,44 +36,9 @@ internal sealed partial class GoCardlessWebhookVerifier(
         }
 
         JsonElement payload = JsonSerializer.Deserialize<JsonElement>(body);
+        (string compositeEventId, string eventType, int batchSize) = ExtractBatchMetadata(payload);
 
-        // Extract a deterministic composite event ID covering all events in the batch.
-        // GoCardless sends batched events — using only the first ID would silently lose
-        // subsequent events on replay and break deduplication for partial overlaps.
-        string compositeEventId;
-        string eventType;
-
-        if (payload.TryGetProperty("events", out JsonElement events)
-            && events.ValueKind == JsonValueKind.Array
-            && events.GetArrayLength() > 0)
-        {
-            var eventIds = new List<string>();
-            string? firstAction = null;
-
-            foreach (JsonElement evt in events.EnumerateArray())
-            {
-                if (evt.TryGetProperty("id", out JsonElement id) && id.GetString() is string eid)
-                {
-                    eventIds.Add(eid);
-                }
-
-                firstAction ??= evt.TryGetProperty("action", out JsonElement action)
-                    ? action.GetString()
-                    : null;
-            }
-
-            compositeEventId = eventIds.Count == 1
-                ? eventIds[0]
-                : string.Join('+', eventIds);
-            eventType = firstAction is not null ? $"gocardless.{firstAction}" : "gocardless.webhook";
-        }
-        else
-        {
-            compositeEventId = "";
-            eventType = "gocardless.webhook";
-        }
-
-        Log.WebhookVerified(logger, compositeEventId, events.GetArrayLength());
+        Log.WebhookVerified(logger, compositeEventId, batchSize);
 
         return Task.FromResult(new PaymentWebhookVerificationResult(
             IsValid: true,
@@ -88,6 +46,50 @@ internal sealed partial class GoCardlessWebhookVerifier(
             ProviderEventId: compositeEventId,
             Payload: payload,
             RejectionReason: null));
+    }
+
+    private bool IsSignatureValid(byte[] body, string signature)
+    {
+        byte[] key = Encoding.UTF8.GetBytes(options.Value.WebhookSecret);
+        byte[] computedHash = HMACSHA256.HashData(key, body);
+        string computedSignature = Convert.ToHexStringLower(computedHash);
+
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(computedSignature),
+            Encoding.UTF8.GetBytes(signature));
+    }
+
+    // Extracts a deterministic composite event ID covering all events in the batch.
+    // GoCardless sends batched events — using only the first ID would silently lose
+    // subsequent events on replay and break deduplication for partial overlaps.
+    private static (string CompositeEventId, string EventType, int BatchSize) ExtractBatchMetadata(JsonElement payload)
+    {
+        if (!payload.TryGetProperty("events", out JsonElement events)
+            || events.ValueKind != JsonValueKind.Array
+            || events.GetArrayLength() == 0)
+        {
+            return ("", "gocardless.webhook", 0);
+        }
+
+        List<string> eventIds = [];
+        string? firstAction = null;
+
+        foreach (JsonElement evt in events.EnumerateArray())
+        {
+            if (evt.TryGetProperty("id", out JsonElement id) && id.GetString() is string eid)
+            {
+                eventIds.Add(eid);
+            }
+
+            firstAction ??= evt.TryGetProperty("action", out JsonElement action)
+                ? action.GetString()
+                : null;
+        }
+
+        string compositeEventId = eventIds.Count == 1 ? eventIds[0] : string.Join('+', eventIds);
+        string eventType = firstAction is not null ? $"gocardless.{firstAction}" : "gocardless.webhook";
+
+        return (compositeEventId, eventType, events.GetArrayLength());
     }
 
     private static partial class Log

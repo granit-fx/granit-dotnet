@@ -36,7 +36,15 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
 
         RouteGroupBuilder tenantsGroup = group.MapGranitGroup("tenants");
 
-        MapListEndpoint(tenantsGroup);
+        // Note: Tenant listing is handled by Granit.QueryEngine. Consumers should register
+        // a query endpoint at the same prefix, e.g.:
+        //   api.MapGranitQuery<Tenant>(
+        //       sp => sp.GetRequiredService<IQueryableSource<Tenant>>().GetQueryable(),
+        //       "admin/tenants",
+        //       opts => opts.AuthorizationPolicy = MultiTenancyPermissions.Tenants.Read);
+        //
+        // This keeps Granit.MultiTenancy.Endpoints decoupled from EF Core and the query engine,
+        // while letting consumers customize the queryable source, projections, and authorization.
         MapGetByIdEndpoint(tenantsGroup);
         MapCreateEndpoint(tenantsGroup);
         MapUpdateEndpoint(tenantsGroup);
@@ -44,20 +52,6 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         MapDeactivateEndpoint(tenantsGroup);
 
         return group;
-    }
-
-    // -------------------------------------------------------------------------
-    // GET / — List all tenants
-    // -------------------------------------------------------------------------
-
-    private static void MapListEndpoint(RouteGroupBuilder group)
-    {
-        group.MapGet("/", HandleListAsync)
-             .RequireAuthorization(MultiTenancyPermissions.Tenants.Read)
-             .WithName("ListTenants")
-             .WithSummary("Returns all tenants.")
-             .WithDescription("Returns all registered tenants ordered by name. Requires the MultiTenancy.Tenants.Read permission. This is a host-level operation — tenants are not themselves multi-tenant.")
-             .Produces<IReadOnlyList<TenantResponse>>();
     }
 
     // -------------------------------------------------------------------------
@@ -139,18 +133,6 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
     // Handlers
     // -------------------------------------------------------------------------
-
-    private static async Task<Ok<IReadOnlyList<TenantResponse>>> HandleListAsync(
-        [FromServices] ITenantReader reader,
-        CancellationToken cancellationToken)
-    {
-        IReadOnlyList<TenantData> tenants = await reader
-            .GetAllAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        IReadOnlyList<TenantResponse> response = tenants.Select(ToResponse).ToList();
-        return TypedResults.Ok(response);
-    }
 
     private static async Task<Results<Ok<TenantResponse>, ProblemHttpResult>> HandleGetByIdAsync(
         Guid id,

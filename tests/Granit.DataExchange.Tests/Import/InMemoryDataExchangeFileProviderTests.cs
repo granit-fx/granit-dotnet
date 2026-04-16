@@ -52,10 +52,9 @@ public sealed class InMemoryDataExchangeFileProviderTests
     }
 
     [Fact]
-    public async Task DeleteAsync_UnknownReference_DoesNotThrow()
-    {
-        await _provider.DeleteAsync("nonexistent", TestContext.Current.CancellationToken);
-    }
+    public async Task DeleteAsync_UnknownReference_DoesNotThrow() =>
+        await Should.NotThrowAsync(() =>
+            _provider.DeleteAsync("nonexistent", TestContext.Current.CancellationToken));
 
     [Fact]
     public async Task SaveAsync_GeneratesUniqueReferences()

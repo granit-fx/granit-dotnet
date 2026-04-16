@@ -5,6 +5,8 @@ namespace Granit.DataExchange.Definitions.Invoicing;
 
 public sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
 {
+    private const string MoneyFormat = "#,##0.00";
+
     public override string Name => "Granit.Invoicing.InvoiceExport";
 
     protected override void Configure(ExportDefinitionBuilder<Invoice> builder)
@@ -17,13 +19,13 @@ public sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
             .Field(i => i.CollectionMethod)
             .Field(i => i.BillingReason)
             .Field(i => i.Currency)
-            .Field(i => i.Subtotal, f => f.Format("#,##0.00"))
-            .Field(i => i.TaxTotal, f => f.Format("#,##0.00"))
-            .Field(i => i.Total, f => f.Format("#,##0.00"))
-            .Field(i => i.AmountPaid, f => f.Format("#,##0.00"))
-            .Field(i => i.AmountCredited, f => f.Format("#,##0.00"))
-            .Field(i => i.AmountRemaining, f => f.Format("#,##0.00"))
-            .Field(i => i.Overpayment, f => f.Format("#,##0.00"))
+            .Field(i => i.Subtotal, f => f.Format(MoneyFormat))
+            .Field(i => i.TaxTotal, f => f.Format(MoneyFormat))
+            .Field(i => i.Total, f => f.Format(MoneyFormat))
+            .Field(i => i.AmountPaid, f => f.Format(MoneyFormat))
+            .Field(i => i.AmountCredited, f => f.Format(MoneyFormat))
+            .Field(i => i.AmountRemaining, f => f.Format(MoneyFormat))
+            .Field(i => i.Overpayment, f => f.Format(MoneyFormat))
             .Field(i => i.IssuedAt, f => f.Format("O"))
             .Field(i => i.DueAt, f => f.Format("O"))
             .Field(i => i.PaidAt, f => f.Format("O"))

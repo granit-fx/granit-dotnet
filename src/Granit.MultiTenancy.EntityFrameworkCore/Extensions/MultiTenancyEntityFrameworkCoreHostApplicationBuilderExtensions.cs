@@ -1,8 +1,10 @@
 using Granit.Events.Extensions;
+using Granit.MultiTenancy.EntityFrameworkCore.Entities;
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -37,6 +39,9 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
         // Replace NullTenantEnumerator with EF Core implementation for per-tenant migrations.
         // Singleton: uses IServiceScopeFactory to resolve scoped ITenantReader on each call.
         builder.Services.Replace(ServiceDescriptor.Singleton<ITenantEnumerator, EfCoreTenantEnumerator>());
+
+        // Queryable source for the Granit query engine (filtering, pagination, sort over Tenant).
+        builder.Services.TryAddScoped<IQueryableSource<Tenant>, EfTenantQueryableSource>();
 
         return builder;
     }

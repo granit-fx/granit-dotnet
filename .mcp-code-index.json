@@ -23280,7 +23280,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitMultiTenancyEntityFrameworkCore",

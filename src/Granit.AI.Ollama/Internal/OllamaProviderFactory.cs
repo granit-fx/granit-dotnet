@@ -71,15 +71,12 @@ internal sealed class OllamaProviderFactory(
             .ListLocalModelsAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        List<AIModelInfo> models = [];
-
-        foreach (Model model in localModels)
+        AIModelInfo[] models = await Task.WhenAll(localModels.Select(async model =>
         {
             AIModelCapabilities capabilities = await ResolveCapabilitiesAsync(client, model.Name, cancellationToken)
                 .ConfigureAwait(false);
-
-            models.Add(new AIModelInfo(model.Name, model.Name, capabilities));
-        }
+            return new AIModelInfo(model.Name, model.Name, capabilities);
+        })).ConfigureAwait(false);
 
         lock (_lock)
         {

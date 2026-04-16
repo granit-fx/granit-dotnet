@@ -75,7 +75,7 @@ internal static class AIWorkspaceEndpoints
         IReadOnlyList<AIWorkspace> workspaces = await provider.GetAllAsync(cancellationToken).ConfigureAwait(false);
 
         // Batch-resolve capabilities grouped by provider to avoid redundant catalog calls.
-        Dictionary<(string Provider, string Model), AIModelCapabilities?> capabilitiesByProviderModel = new();
+        Dictionary<(string Provider, string Model), AIModelCapabilities?> capabilitiesByProviderModel = [];
 
         foreach (AIWorkspace workspace in workspaces)
         {

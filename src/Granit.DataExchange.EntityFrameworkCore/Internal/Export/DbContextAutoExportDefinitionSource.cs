@@ -45,91 +45,83 @@ internal sealed partial class DbContextAutoExportDefinitionSource(
 
         foreach (Type dbContextType in dbContextTypes)
         {
-            try
-            {
-                if (scope.ServiceProvider.GetService(dbContextType) is not DbContext context)
-                {
-                    continue;
-                }
-
-                using (context)
-                {
-                    foreach (IEntityType entityType in context.Model.GetEntityTypes())
-                    {
-                        // Skip owned types, shadow types, and keyless types
-                        if (entityType.IsOwned())
-                        {
-                            continue;
-                        }
-
-                        if (entityType.FindPrimaryKey() is null)
-                        {
-                            continue;
-                        }
-
-                        Type clrType = entityType.ClrType;
-                        if (clrType.IsAbstract)
-                        {
-                            continue;
-                        }
-
-                        entityTypes.Add(clrType);
-                    }
-                }
-            }
-            catch (Exception ex) when (ex is not OutOfMemoryException)
-            {
-                LogDbContextScanFailed(logger, dbContextType.Name, ex);
-            }
+            ScanDbContext(scope.ServiceProvider, dbContextType, entityTypes, logger);
         }
 
         LogDiscoveredEntityTypes(logger, entityTypes.Count, dbContextTypes.Count);
         return entityTypes.ToList().AsReadOnly();
     }
 
+    private static void ScanDbContext(
+        IServiceProvider scopedProvider,
+        Type dbContextType,
+        HashSet<Type> entityTypes,
+        ILogger logger)
+    {
+        try
+        {
+            if (scopedProvider.GetService(dbContextType) is not DbContext context)
+            {
+                return;
+            }
+
+            using (context)
+            {
+                entityTypes.UnionWith(context.Model.GetEntityTypes()
+                    .Where(IsExportableEntity)
+                    .Select(e => e.ClrType));
+            }
+        }
+        catch (Exception ex) when (ex is not OutOfMemoryException)
+        {
+            LogDbContextScanFailed(logger, dbContextType.Name, ex);
+        }
+    }
+
+    // Excludes owned types, keyless types, and abstract CLR types.
+    private static bool IsExportableEntity(IEntityType entityType) =>
+        !entityType.IsOwned()
+        && entityType.FindPrimaryKey() is not null
+        && !entityType.ClrType.IsAbstract;
+
     private static ReadOnlyCollection<Type> FindDbContextTypes(IServiceProvider sp)
     {
         // Scan service descriptors for DbContext registrations.
         // DbContexts are registered directly (via AddDbContextFactory)
         // and resolved as their concrete type.
-        HashSet<Type> contextTypes = [];
-
         IServiceCollection? services = sp.GetService<IServiceCollection>();
-        if (services is not null)
-        {
-            foreach (ServiceDescriptor descriptor in services)
-            {
-                if (descriptor.ServiceType.IsGenericType &&
-                    descriptor.ServiceType.GetGenericTypeDefinition() == typeof(IDbContextFactory<>))
-                {
-                    Type dbContextType = descriptor.ServiceType.GetGenericArguments()[0];
-                    contextTypes.Add(dbContextType);
-                }
-            }
-        }
+        HashSet<Type> contextTypes = services is not null
+            ? [.. services
+                .Where(d => d.ServiceType.IsGenericType
+                    && d.ServiceType.GetGenericTypeDefinition() == typeof(IDbContextFactory<>))
+                .Select(d => d.ServiceType.GetGenericArguments()[0])]
+            : [];
 
         // Fallback: scan loaded assemblies for DbContext subclasses if no service collection
         if (contextTypes.Count == 0)
         {
-            foreach (Type type in AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
-                .SelectMany(a =>
-                {
-                    try { return a.GetTypes(); }
-                    catch (ReflectionTypeLoadException ex)
-                    {
-                        return ex.Types.Where(t => t is not null).Cast<Type>();
-                    }
-                }))
-            {
-                if (!type.IsAbstract && type.IsSubclassOf(typeof(DbContext)))
-                {
-                    contextTypes.Add(type);
-                }
-            }
+            contextTypes.UnionWith(ScanAssembliesForDbContexts());
         }
 
         return contextTypes.ToList().AsReadOnly();
+    }
+
+    private static IEnumerable<Type> ScanAssembliesForDbContexts() =>
+        AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true)
+            .SelectMany(GetAssemblyTypes)
+            .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(DbContext)));
+
+    private static IEnumerable<Type> GetAssemblyTypes(Assembly assembly)
+    {
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            return ex.Types.Where(t => t is not null).Cast<Type>();
+        }
     }
 
     [LoggerMessage(1, LogLevel.Warning, "Failed to scan DbContext '{DbContextName}' for entity types")]

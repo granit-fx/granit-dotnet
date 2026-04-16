@@ -161,7 +161,7 @@ public static class GranitHostBuilderExtensions
     /// <summary>
     /// Marker type to prevent duplicate JSON converter registration.
     /// </summary>
-    private sealed class GranitJsonDefaultsMarker;
+    private sealed record GranitJsonDefaultsMarker;
 
     private static IReadOnlyList<Assembly> GetDistinctModuleAssemblies(
         IReadOnlyList<ModuleDescriptor> modules) =>

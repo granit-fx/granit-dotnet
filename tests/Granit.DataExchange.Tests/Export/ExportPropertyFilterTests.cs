@@ -159,10 +159,8 @@ public sealed class ExportPropertyFilterTests
     // ---- Null argument --------------------------------------------------
 
     [Fact]
-    public void BuildFields_throws_for_null_type()
-    {
+    public void BuildFields_throws_for_null_type() =>
         Should.Throw<ArgumentNullException>(() => ExportPropertyFilter.BuildFields(null!));
-    }
 
     // ---- Test helpers ---------------------------------------------------
 
