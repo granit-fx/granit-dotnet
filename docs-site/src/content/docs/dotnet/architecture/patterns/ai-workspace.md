@@ -119,6 +119,32 @@ When `Granit.MultiTenancy` is registered, `IAIChatClientFactory` resolves the
 workspace configuration for the current tenant automatically — overriding the
 application-level default with a tenant-specific provider or model.
 
+### Model capabilities
+
+Each workspace response includes computed `AIModelCapabilities` resolved from the
+provider's model catalog at read time. Core capabilities are strongly typed; provider-specific
+features use an extensible `Extensions` set:
+
+```csharp
+public sealed record AIModelCapabilities
+{
+    public bool Chat { get; init; } = true;
+    public bool Embeddings { get; init; }
+    public bool Vision { get; init; }
+    public bool ImageGeneration { get; init; }
+    public bool Audio { get; init; }
+    public bool ToolUse { get; init; }
+    public bool Streaming { get; init; } = true;
+    public bool StructuredOutput { get; init; }
+
+    // Provider-specific extensions (web search, code interpreter, etc.)
+    public IReadOnlySet<string> Extensions { get; init; } = new HashSet<string>();
+}
+```
+
+The frontend can use these capabilities to conditionally enable or disable UI features
+(e.g., hide the file attachment button when `Vision` is `false`).
+
 ### Module setup
 
 ```csharp

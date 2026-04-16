@@ -13,6 +13,7 @@ namespace Granit.AI.Endpoints.Dtos;
 /// <param name="MaxOutputTokens">Maximum tokens to generate.</param>
 /// <param name="Kind">Whether this workspace is <see cref="AIWorkspaceKind.System"/> or <see cref="AIWorkspaceKind.Dynamic"/>.</param>
 /// <param name="IsActive">Whether this workspace is active.</param>
+/// <param name="Capabilities">Model capabilities resolved from the provider catalog, or <c>null</c> if unavailable.</param>
 public sealed record AIWorkspaceResponse(
     string Name,
     string Provider,
@@ -21,4 +22,5 @@ public sealed record AIWorkspaceResponse(
     float? Temperature,
     int? MaxOutputTokens,
     AIWorkspaceKind Kind,
-    bool IsActive);
+    bool IsActive,
+    AIModelCapabilities? Capabilities);

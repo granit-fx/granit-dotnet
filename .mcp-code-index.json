@@ -2272,6 +2272,15 @@
   ],
   "symbols": [
     {
+      "name": "AICapabilityExtensions",
+      "fqn": "Granit.AI.AICapabilityExtensions",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/AICapabilityExtensions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "AIChatCompletionResult",
       "fqn": "Granit.AI.AIChatCompletionResult",
       "kind": "record",
@@ -2304,8 +2313,27 @@
       "kind": "record",
       "project": "Granit.AI",
       "file": "src/Granit.AI/AIModelCapabilities.cs",
-      "line": 8,
-      "members": []
+      "line": 11,
+      "members": [
+        {
+          "name": "Chat",
+          "kind": "property",
+          "signature": "bool Chat",
+          "returnType": "bool"
+        },
+        {
+          "name": "Embeddings",
+          "kind": "property",
+          "signature": "bool Embeddings",
+          "returnType": "bool"
+        },
+        {
+          "name": "StructuredOutput",
+          "kind": "property",
+          "signature": "bool StructuredOutput",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "AIModelInfo",
@@ -2521,7 +2549,7 @@
       "kind": "record",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/Dtos/AIWorkspaceResponse.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -3410,6 +3438,22 @@
       "file": "src/Granit.AI/Workspaces/AIWorkspaceKind.cs",
       "line": 7,
       "members": []
+    },
+    {
+      "name": "IAIWorkspaceCapabilityResolver",
+      "fqn": "Granit.AI.Workspaces.IAIWorkspaceCapabilityResolver",
+      "kind": "interface",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Workspaces/IAIWorkspaceCapabilityResolver.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(string providerName, string modelId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AIModelCapabilities?>"
+        }
+      ]
     },
     {
       "name": "IAIWorkspaceDefinitionContext",

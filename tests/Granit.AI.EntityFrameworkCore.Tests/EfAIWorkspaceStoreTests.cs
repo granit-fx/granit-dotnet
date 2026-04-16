@@ -38,9 +38,9 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     };
 
     [Fact]
-    public async Task SaveAsync_ThenFindAsync_ReturnsWorkspace()
+    public async Task CreateAsync_ThenFindAsync_ReturnsWorkspace()
     {
-        await _store.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         AIWorkspace? result = await _store.FindAsync("test-ws", TestContext.Current.CancellationToken);
 
@@ -62,8 +62,8 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     [Fact]
     public async Task GetAllAsync_ReturnsOnlyActiveWorkspaces()
     {
-        await _store.SaveAsync(CreateWorkspace("active"), TestContext.Current.CancellationToken);
-        await _store.SaveAsync(CreateWorkspace("inactive") with { IsActive = false }, TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace("active"), TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace("inactive") with { IsActive = false }, TestContext.Current.CancellationToken);
 
         IReadOnlyList<AIWorkspace> results = await _store.GetAllAsync(TestContext.Current.CancellationToken);
 
@@ -74,7 +74,7 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     [Fact]
     public async Task UpdateAsync_ModifiesExistingWorkspace()
     {
-        await _store.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         AIWorkspace updated = CreateWorkspace() with { Model = "gpt-4o-mini" };
         await _store.UpdateAsync(updated, TestContext.Current.CancellationToken);
@@ -87,7 +87,7 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     [Fact]
     public async Task DeleteAsync_RemovesWorkspace()
     {
-        await _store.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace(), TestContext.Current.CancellationToken);
 
         await _store.DeleteAsync("test-ws", TestContext.Current.CancellationToken);
 

@@ -74,7 +74,7 @@ internal sealed class OllamaProviderFactory(
             .Select(m => new AIModelInfo(
                 m.Name,
                 m.Name,
-                new AIModelCapabilities(Chat: true, Embeddings: true)))
+                new AIModelCapabilities { Embeddings = true }))
             .ToList();
 
         lock (_lock)

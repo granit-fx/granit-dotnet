@@ -33,8 +33,8 @@ public sealed class NullAIWorkspaceStoreWriterTests
         new() { Name = "test", Provider = "OpenAI", Model = "gpt-4o" };
 
     [Fact]
-    public Task SaveAsync_DoesNotThrow() =>
-        Should.NotThrowAsync(() => _sut.SaveAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
+    public Task CreateAsync_DoesNotThrow() =>
+        Should.NotThrowAsync(() => _sut.CreateAsync(CreateWorkspace(), TestContext.Current.CancellationToken));
 
     [Fact]
     public Task UpdateAsync_DoesNotThrow() =>

@@ -37,16 +37,16 @@ internal sealed class OpenAIProviderFactory(
     private static readonly FrozenDictionary<string, (string DisplayName, AIModelCapabilities Capabilities, int? MaxContextTokens)> KnownModels =
         new Dictionary<string, (string, AIModelCapabilities, int?)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["gpt-4o"] = ("GPT-4o", new AIModelCapabilities(Chat: true, Embeddings: false), 128_000),
-            ["gpt-4o-mini"] = ("GPT-4o Mini", new AIModelCapabilities(Chat: true, Embeddings: false), 128_000),
-            ["gpt-4.1"] = ("GPT-4.1", new AIModelCapabilities(Chat: true, Embeddings: false), 1_047_576),
-            ["gpt-4.1-mini"] = ("GPT-4.1 Mini", new AIModelCapabilities(Chat: true, Embeddings: false), 1_047_576),
-            ["gpt-4.1-nano"] = ("GPT-4.1 Nano", new AIModelCapabilities(Chat: true, Embeddings: false), 1_047_576),
-            ["o3"] = ("o3", new AIModelCapabilities(Chat: true, Embeddings: false), 200_000),
-            ["o3-mini"] = ("o3 Mini", new AIModelCapabilities(Chat: true, Embeddings: false), 200_000),
-            ["o4-mini"] = ("o4 Mini", new AIModelCapabilities(Chat: true, Embeddings: false), 200_000),
-            ["text-embedding-3-small"] = ("Text Embedding 3 Small", new AIModelCapabilities(Chat: false, Embeddings: true), 8_191),
-            ["text-embedding-3-large"] = ("Text Embedding 3 Large", new AIModelCapabilities(Chat: false, Embeddings: true), 8_191),
+            ["gpt-4o"] = ("GPT-4o", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 128_000),
+            ["gpt-4o-mini"] = ("GPT-4o Mini", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 128_000),
+            ["gpt-4.1"] = ("GPT-4.1", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 1_047_576),
+            ["gpt-4.1-mini"] = ("GPT-4.1 Mini", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 1_047_576),
+            ["gpt-4.1-nano"] = ("GPT-4.1 Nano", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 1_047_576),
+            ["o3"] = ("o3", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 200_000),
+            ["o3-mini"] = ("o3 Mini", new AIModelCapabilities { ToolUse = true, StructuredOutput = true }, 200_000),
+            ["o4-mini"] = ("o4 Mini", new AIModelCapabilities { Vision = true, ToolUse = true, StructuredOutput = true }, 200_000),
+            ["text-embedding-3-small"] = ("Text Embedding 3 Small", new AIModelCapabilities { Chat = false, Embeddings = true, Streaming = false }, 8_191),
+            ["text-embedding-3-large"] = ("Text Embedding 3 Large", new AIModelCapabilities { Chat = false, Embeddings = true, Streaming = false }, 8_191),
         }.ToFrozenDictionary(StringComparer.OrdinalIgnoreCase);
 
     /// <inheritdoc/>
@@ -109,8 +109,8 @@ internal sealed class OpenAIProviderFactory(
         }
 
         AIModelCapabilities capabilities = modelId.Contains("embedding", StringComparison.OrdinalIgnoreCase)
-            ? new AIModelCapabilities(Chat: false, Embeddings: true)
-            : new AIModelCapabilities(Chat: true, Embeddings: false);
+            ? new AIModelCapabilities { Chat = false, Embeddings = true, Streaming = false }
+            : new AIModelCapabilities();
 
         return new AIModelInfo(modelId, modelId, capabilities);
     }

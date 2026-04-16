@@ -69,12 +69,27 @@ internal static class AIWorkspaceEndpoints
 
     private static async Task<Ok<AIWorkspaceListResponse>> ListAllAsync(
         [FromServices] IAIWorkspaceProvider provider,
+        [FromServices] IAIWorkspaceCapabilityResolver capabilityResolver,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<AIWorkspace> workspaces = await provider.GetAllAsync(cancellationToken).ConfigureAwait(false);
 
+        // Batch-resolve capabilities grouped by provider to avoid redundant catalog calls.
+        Dictionary<(string Provider, string Model), AIModelCapabilities?> capabilitiesByProviderModel = new();
+
+        foreach (AIWorkspace workspace in workspaces)
+        {
+            (string Provider, string Model) key = (workspace.Provider, workspace.Model);
+            if (!capabilitiesByProviderModel.ContainsKey(key))
+            {
+                capabilitiesByProviderModel[key] = await capabilityResolver
+                    .ResolveAsync(workspace.Provider, workspace.Model, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
         var items = workspaces
-            .Select(MapToResponse)
+            .Select(ws => MapToResponse(ws, capabilitiesByProviderModel[(ws.Provider, ws.Model)]))
             .ToList();
 
         return TypedResults.Ok(new AIWorkspaceListResponse(items, items.Count));
@@ -83,6 +98,7 @@ internal static class AIWorkspaceEndpoints
     private static async Task<Results<Ok<AIWorkspaceResponse>, ProblemHttpResult>> GetByNameAsync(
         string name,
         [FromServices] IAIWorkspaceProvider provider,
+        [FromServices] IAIWorkspaceCapabilityResolver capabilityResolver,
         CancellationToken cancellationToken)
     {
         AIWorkspace? workspace = await provider.GetAsync(name, cancellationToken).ConfigureAwait(false);
@@ -92,13 +108,18 @@ internal static class AIWorkspaceEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        return TypedResults.Ok(MapToResponse(workspace));
+        AIModelCapabilities? capabilities = await capabilityResolver
+            .ResolveAsync(workspace.Provider, workspace.Model, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok(MapToResponse(workspace, capabilities));
     }
 
     private static async Task<Results<Created<AIWorkspaceResponse>, ProblemHttpResult>> CreateAsync(
         AIWorkspaceCreateRequest request,
         [FromServices] IAIWorkspaceManager manager,
         [FromServices] IAIWorkspaceProvider provider,
+        [FromServices] IAIWorkspaceCapabilityResolver capabilityResolver,
         CancellationToken cancellationToken)
     {
         AIWorkspace workspace = new()
@@ -124,7 +145,12 @@ internal static class AIWorkspaceEndpoints
         }
 
         AIWorkspace? created = await provider.GetAsync(request.Name, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Created($"/workspaces/{request.Name}", MapToResponse(created!));
+
+        AIModelCapabilities? capabilities = await capabilityResolver
+            .ResolveAsync(request.Provider, request.Model, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Created($"/workspaces/{request.Name}", MapToResponse(created!, capabilities));
     }
 
     private static async Task<Results<Ok<AIWorkspaceResponse>, ProblemHttpResult>> UpdateAsync(
@@ -132,6 +158,7 @@ internal static class AIWorkspaceEndpoints
         AIWorkspaceUpdateRequest request,
         [FromServices] IAIWorkspaceManager manager,
         [FromServices] IAIWorkspaceProvider provider,
+        [FromServices] IAIWorkspaceCapabilityResolver capabilityResolver,
         CancellationToken cancellationToken)
     {
         AIWorkspace? existing = await provider.GetAsync(name, cancellationToken).ConfigureAwait(false);
@@ -161,7 +188,12 @@ internal static class AIWorkspaceEndpoints
         await manager.UpdateAsync(updated, cancellationToken).ConfigureAwait(false);
 
         AIWorkspace? refreshed = await provider.GetAsync(name, cancellationToken).ConfigureAwait(false);
-        return TypedResults.Ok(MapToResponse(refreshed!));
+
+        AIModelCapabilities? capabilities = await capabilityResolver
+            .ResolveAsync(request.Provider, request.Model, cancellationToken)
+            .ConfigureAwait(false);
+
+        return TypedResults.Ok(MapToResponse(refreshed!, capabilities));
     }
 
     private static async Task<Results<NoContent, ProblemHttpResult>> DeleteAsync(
@@ -188,7 +220,7 @@ internal static class AIWorkspaceEndpoints
         return TypedResults.NoContent();
     }
 
-    private static AIWorkspaceResponse MapToResponse(AIWorkspace workspace) => new(
+    private static AIWorkspaceResponse MapToResponse(AIWorkspace workspace, AIModelCapabilities? capabilities) => new(
         workspace.Name,
         workspace.Provider,
         workspace.Model,
@@ -196,5 +228,6 @@ internal static class AIWorkspaceEndpoints
         workspace.Temperature,
         workspace.MaxOutputTokens,
         workspace.Kind,
-        workspace.IsActive);
+        workspace.IsActive,
+        capabilities);
 }

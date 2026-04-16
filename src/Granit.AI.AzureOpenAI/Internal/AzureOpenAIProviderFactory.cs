@@ -47,8 +47,8 @@ internal sealed class AzureOpenAIProviderFactory(IOptions<AzureOpenAIProviderOpt
         // Azure OpenAI uses deployment names configured per-resource — expose the configured defaults.
         IReadOnlyList<AIModelInfo> models =
         [
-            new(_options.DefaultDeployment, _options.DefaultDeployment, new AIModelCapabilities(Chat: true, Embeddings: false)),
-            new(_options.DefaultEmbeddingDeployment, _options.DefaultEmbeddingDeployment, new AIModelCapabilities(Chat: false, Embeddings: true)),
+            new(_options.DefaultDeployment, _options.DefaultDeployment, new AIModelCapabilities()),
+            new(_options.DefaultEmbeddingDeployment, _options.DefaultEmbeddingDeployment, new AIModelCapabilities { Chat = false, Embeddings = true, Streaming = false }),
         ];
 
         return Task.FromResult(models);
