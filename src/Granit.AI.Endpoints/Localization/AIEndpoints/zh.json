@@ -8,7 +8,7 @@
     "Permission:AI.Chat.Execute": "Execute AI chat completions",
     "Permission:AI.Embeddings.Execute": "Generate AI embeddings",
     "AIEndpoints:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified or deleted.",
-    "AIEndpoints:Workspace:DuplicateName": "名为"{0}"的工作区已存在。",
+    "AIEndpoints:Workspace:DuplicateName": "名为\"{0}\"的工作区已存在。",
     "AI.Workspaces.Kind.Dynamic": "动态",
     "AI.Workspaces.Kind.System": "系统",
     "AI.Workspaces.Kind.System:Hint": "系统工作区为只读，无法修改或删除。",
