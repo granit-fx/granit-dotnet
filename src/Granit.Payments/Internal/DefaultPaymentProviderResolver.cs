@@ -1,6 +1,6 @@
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
-using Microsoft.Extensions.Caching.Memory;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Payments.Internal;
 
@@ -10,22 +10,24 @@ namespace Granit.Payments.Internal;
 /// registered <see cref="IPaymentProvider"/> instances in DI.
 /// </summary>
 /// <remarks>
-/// Active configurations are cached in <see cref="IMemoryCache"/> for 5 minutes to avoid
+/// Active configurations are cached in <see cref="IFusionCache"/> for 5 minutes to avoid
 /// hitting the database on every request. The cache expires automatically; no explicit
 /// invalidation is needed for v1.
 /// </remarks>
 internal sealed class DefaultPaymentProviderResolver(
     IPaymentMethodConfigurationReader configReader,
     IEnumerable<IPaymentProvider> providers,
-    IMemoryCache cache) : IPaymentProviderResolver
+    IFusionCache cache) : IPaymentProviderResolver
 {
     private const string CacheKey = "granit:payments:active-configs";
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
 
     /// <inheritdoc/>
-    public IPaymentProvider Resolve(Guid tenantId, string methodType)
+    public async Task<IPaymentProvider> ResolveAsync(Guid tenantId, string methodType,
+        CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<PaymentMethodConfiguration> configs = GetActiveConfigsCached();
+        IReadOnlyList<PaymentMethodConfiguration> configs =
+            await GetActiveConfigsCachedAsync(cancellationToken).ConfigureAwait(false);
 
         PaymentMethodConfiguration? config = configs.FirstOrDefault(
             c => c.MethodType.Equals(methodType, StringComparison.OrdinalIgnoreCase));
@@ -50,9 +52,11 @@ internal sealed class DefaultPaymentProviderResolver(
     }
 
     /// <inheritdoc/>
-    public IReadOnlyList<PaymentAvailableMethod> GetAvailableProviders(Guid tenantId)
+    public async Task<IReadOnlyList<PaymentAvailableMethod>> GetAvailableProvidersAsync(
+        Guid tenantId, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<PaymentMethodConfiguration> configs = GetActiveConfigsCached();
+        IReadOnlyList<PaymentMethodConfiguration> configs =
+            await GetActiveConfigsCachedAsync(cancellationToken).ConfigureAwait(false);
 
         HashSet<string> registeredProviders = new(
             providers.Select(p => p.Name),
@@ -65,10 +69,11 @@ internal sealed class DefaultPaymentProviderResolver(
             .ToList();
     }
 
-    private IReadOnlyList<PaymentMethodConfiguration> GetActiveConfigsCached() =>
-        cache.GetOrCreate(CacheKey, entry =>
-        {
-            entry.AbsoluteExpirationRelativeToNow = CacheDuration;
-            return configReader.GetActiveAsync().GetAwaiter().GetResult();
-        })!;
+    private Task<IReadOnlyList<PaymentMethodConfiguration>> GetActiveConfigsCachedAsync(
+        CancellationToken cancellationToken) =>
+        cache.GetOrSetAsync<IReadOnlyList<PaymentMethodConfiguration>>(
+            CacheKey,
+            async (_, ct) => await configReader.GetActiveAsync(ct).ConfigureAwait(false),
+            new FusionCacheEntryOptions(CacheDuration),
+            token: cancellationToken).AsTask();
 }

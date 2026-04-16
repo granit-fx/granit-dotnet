@@ -87,13 +87,10 @@ internal static class TransactionEndpoints
 
     private static async Task<Ok<IReadOnlyList<PaymentTransactionResponse>>> GetForTenantAsync(
         [FromServices] IPaymentTransactionReader reader,
-        [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
-        Guid tenantId = currentTenant.Id ?? Guid.Empty;
-
         IReadOnlyList<PaymentTransaction> transactions = await reader
-            .GetForInvoiceAsync(tenantId, cancellationToken)
+            .GetForTenantAsync(cancellationToken)
             .ConfigureAwait(false);
 
         IReadOnlyList<PaymentTransactionResponse> response = transactions
@@ -146,10 +143,23 @@ internal static class TransactionEndpoints
     private static async Task<Results<Accepted, ProblemHttpResult>> RefundAsync(
         PaymentRefundRequest request,
         [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
-        [FromServices] IMessageBus messageBus)
+        [FromServices] IPaymentTransactionReader reader,
+        [FromServices] IMessageBus messageBus,
+        [FromServices] ICurrentTenant currentTenant,
+        CancellationToken cancellationToken)
     {
+        PaymentTransaction? transaction = await reader
+            .GetByIdAsync(request.TransactionId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (transaction is null || transaction.TenantId != currentTenant.Id)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
         var command = new RequestRefundCommand(
             request.TransactionId,
+            currentTenant.Id!.Value,
             request.Amount,
             request.Reason,
             idempotencyKey);
@@ -168,7 +178,8 @@ internal static class TransactionEndpoints
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
         string providerName = request.ProviderName
-            ?? resolver.Resolve(tenantId, request.MethodType).Name;
+            ?? (await resolver.ResolveAsync(tenantId, request.MethodType, cancellationToken)
+                .ConfigureAwait(false)).Name;
 
         ICheckoutSessionFactory? factory = factories
             .FirstOrDefault(f => f.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));

@@ -1440,6 +1440,7 @@
     {
       "name": "Granit.Payments",
       "deps": [
+        "Granit.Caching",
         "Granit",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments.Abstractions",
@@ -1461,6 +1462,7 @@
         "Granit.Guids",
         "Granit.Http.Abstractions",
         "Granit.Payments",
+        "Granit.RateLimiting",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -1541,6 +1543,7 @@
     {
       "name": "Granit.Payments.Wolverine",
       "deps": [
+        "Granit.Guids",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments",
         "Granit.Wolverine"
@@ -28725,7 +28728,7 @@
       "kind": "class",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/GranitPaymentsEndpointsModule.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {
@@ -28762,6 +28765,15 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsPermissions.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentsRateLimitPolicies",
+      "fqn": "Granit.Payments.Endpoints.Permissions.PaymentsRateLimitPolicies",
+      "kind": "class",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Permissions/PaymentsRateLimitPolicies.cs",
+      "line": 16,
       "members": []
     },
     {
@@ -28863,7 +28875,7 @@
       "kind": "record",
       "project": "Granit.Payments.Abstractions",
       "file": "src/Granit.Payments.Abstractions/Events/PaymentFailedEto.cs",
-      "line": 6,
+      "line": 7,
       "members": []
     },
     {
@@ -28890,7 +28902,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitPayments",
@@ -29147,16 +29159,16 @@
       "line": 9,
       "members": [
         {
-          "name": "Resolve",
+          "name": "ResolveAsync",
           "kind": "method",
-          "signature": "Resolve(Guid tenantId, string methodType)",
-          "returnType": "IPaymentProvider"
+          "signature": "ResolveAsync(Guid tenantId, string methodType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IPaymentProvider>"
         },
         {
-          "name": "GetAvailableProviders",
+          "name": "GetAvailableProvidersAsync",
           "kind": "method",
-          "signature": "GetAvailableProviders(Guid tenantId)",
-          "returnType": "IReadOnlyList<PaymentAvailableMethod>"
+          "signature": "GetAvailableProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentAvailableMethod>>"
         }
       ]
     },
@@ -29184,6 +29196,12 @@
           "name": "GetForInvoiceAsync",
           "kind": "method",
           "signature": "GetForInvoiceAsync(Guid invoiceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<PaymentTransaction>>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PaymentTransaction>>"
         }
       ]
@@ -30107,6 +30125,22 @@
       ]
     },
     {
+      "name": "InitiatePaymentCommandHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.InitiatePaymentCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/InitiatePaymentCommandHandler.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InitiatePaymentCommand command, IPaymentProviderResolver providerResolver, IEnumerable<IPaymentProvider> providers, IPaymentTransactionWriter transactionWriter, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<InitiatePaymentCommandHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ProcessWebhookCommandHandler",
       "fqn": "Granit.Payments.Wolverine.Handlers.ProcessWebhookCommandHandler",
       "kind": "class",
@@ -30118,6 +30152,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(ProcessWebhookCommand command, IWebhookProcessor processor, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RequestRefundCommandHandler",
+      "fqn": "Granit.Payments.Wolverine.Handlers.RequestRefundCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments.Wolverine",
+      "file": "src/Granit.Payments.Wolverine/Handlers/RequestRefundCommandHandler.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RequestRefundCommand command, IPaymentTransactionReader transactionReader, IPaymentTransactionWriter transactionWriter, IEnumerable<IPaymentProvider> providers, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<RequestRefundCommandHandler> logger, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -36893,6 +36943,15 @@
       "members": []
     },
     {
+      "name": "BulkMigratePriceResponse",
+      "fqn": "Granit.Subscriptions.Endpoints.Dtos.BulkMigratePriceResponse",
+      "kind": "record",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "CreatePriceVersionRequest",
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.CreatePriceVersionRequest",
       "kind": "record",
@@ -36951,8 +37010,8 @@
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatAssignRequest",
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 19,
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SeatDtos.cs",
+      "line": 4,
       "members": []
     },
     {
@@ -36960,8 +37019,8 @@
       "fqn": "Granit.Subscriptions.Endpoints.Dtos.SeatResponse",
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 23,
+      "file": "src/Granit.Subscriptions.Endpoints/Dtos/SeatDtos.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -36998,15 +37057,6 @@
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionResponse.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "BulkMigratePriceResponse",
-      "fqn": "Granit.Subscriptions.Endpoints.Endpoints.BulkMigratePriceResponse",
-      "kind": "record",
-      "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Endpoints/PriceVersioningEndpoints.cs",
-      "line": 215,
       "members": []
     },
     {
@@ -37513,13 +37563,13 @@
       "kind": "interface",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/ISeatWriter.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "AssignSeatAsync",
           "kind": "method",
-          "signature": "AssignSeatAsync(SubscriptionId subscriptionId, Guid userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "signature": "AssignSeatAsync(SubscriptionId subscriptionId, Guid userId, int? seatLimit = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SubscriptionSeat>"
         },
         {
           "name": "RevokeSeatAsync",
