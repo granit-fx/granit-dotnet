@@ -8,7 +8,7 @@ namespace Granit.AI;
 /// These constants cover features that are not universally available across providers.
 /// Providers may register additional custom extension strings beyond these.
 /// </remarks>
-public static class AICapabilityExtensions
+public static class WellKnownAICapabilities
 {
     /// <summary>The model can search the web for real-time information.</summary>
     public const string WebSearch = "web-search";

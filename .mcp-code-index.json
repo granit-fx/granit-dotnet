@@ -2272,15 +2272,6 @@
   ],
   "symbols": [
     {
-      "name": "AICapabilityExtensions",
-      "fqn": "Granit.AI.AICapabilityExtensions",
-      "kind": "class",
-      "project": "Granit.AI",
-      "file": "src/Granit.AI/AICapabilityExtensions.cs",
-      "line": 11,
-      "members": []
-    },
-    {
       "name": "AIChatCompletionResult",
       "fqn": "Granit.AI.AIChatCompletionResult",
       "kind": "record",
@@ -3406,6 +3397,15 @@
       "project": "Granit.AI.VectorData",
       "file": "src/Granit.AI.VectorData/VectorSearchResult.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "WellKnownAICapabilities",
+      "fqn": "Granit.AI.WellKnownAICapabilities",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/WellKnownAICapabilities.cs",
+      "line": 11,
       "members": []
     },
     {

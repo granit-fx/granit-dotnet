@@ -36,7 +36,7 @@ public sealed record AIModelCapabilities
 
     /// <summary>
     /// Provider-specific capability extensions not covered by core properties.
-    /// Use <see cref="AICapabilityExtensions"/> constants for well-known extensions.
+    /// Use <see cref="WellKnownAICapabilities"/> constants for well-known extensions.
     /// </summary>
     public IReadOnlySet<string> Extensions { get; init; } = new HashSet<string>();
 }
