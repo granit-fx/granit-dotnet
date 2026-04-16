@@ -1,7 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +22,6 @@ public sealed class GranitQueryEngineEntityFrameworkCoreModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddScoped(typeof(IQueryEngine<>), typeof(QueryEngine<>));
-        context.Services.TryAddSingleton<QueryEngineMetrics>();
         GranitActivitySourceRegistry.Register(QueryEngineEfCoreActivitySource.Name);
     }
 }

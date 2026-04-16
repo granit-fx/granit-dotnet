@@ -16,17 +16,20 @@ grid — no duplication.
 ## Package structure
 
 <FileTree>
-- Granit.QueryEngine/ QueryDefinition, IQueryEngine, QueryRequest/Response abstractions
-  - Granit.QueryEngine.EntityFrameworkCore EF Core IQueryEngine implementation
-  - Granit.QueryEngine.AspNetCore Generic search endpoint
+- Granit.QueryEngine.Abstractions/ Contracts: QueryRequest, PagedResult, ISavedViewStore, SavedView
+  - Granit.QueryEngine/ QueryDefinition builder, DI wiring, null-object defaults
+    - Granit.QueryEngine.EntityFrameworkCore EF Core IQueryEngine implementation
+    - Granit.QueryEngine.AspNetCore Generic search endpoint, query binding, saved view CRUD
+  - Granit.QueryEngine.AI NL-to-query translation via LLM
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
-| `Granit.QueryEngine` | `IQueryEngine<T>`, `QueryDefinition<T>`, `QueryRequest`, `PagedResult<T>` | `Granit` |
-| `Granit.QueryEngine.EntityFrameworkCore` | EF Core query executor | `Granit.QueryEngine`, `Granit.Persistence` |
+| `Granit.QueryEngine.Abstractions` | `QueryRequest`, `PagedResult<T>`, `ISavedViewStoreReader/Writer`, `SavedView` | `Granit` |
+| `Granit.QueryEngine` | `QueryDefinition<T>`, `IQueryEngine<T>`, DI wiring, null-object defaults | `Granit.QueryEngine.Abstractions` |
+| `Granit.QueryEngine.EntityFrameworkCore` | EF Core query executor, `EfCoreSavedViewStore` | `Granit.QueryEngine`, `Granit.Persistence` |
 | `Granit.QueryEngine.AspNetCore` | `MapGranitQuery<T>()` generic search endpoint | `Granit.QueryEngine` |
-| `Granit.QueryEngine.AI` | NL-to-query translation via LLM | `Granit.QueryEngine`, `Granit.AI` |
+| `Granit.QueryEngine.AI` | NL-to-query translation via LLM | `Granit.QueryEngine.Abstractions`, `Granit.AI` |
 
 ## Security hardening
 

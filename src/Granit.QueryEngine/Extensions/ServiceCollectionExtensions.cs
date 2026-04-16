@@ -1,3 +1,4 @@
+using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.Options;
 using Granit.QueryEngine.SavedViews;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,8 @@ public static class ServiceCollectionExtensions
 
         services.TryAddSingleton(sp =>
             sp.GetRequiredService<IOptions<QueryEngineOptions>>().Value);
+
+        services.TryAddSingleton<QueryEngineMetrics>();
 
         return services;
     }

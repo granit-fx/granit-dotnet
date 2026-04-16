@@ -116,7 +116,9 @@ public static class QueryEndpointRouteBuilderExtensions
         .WithName($"Query{entityName}")
         .WithSummary($"Returns a filtered, sorted, and paginated list of {entityName} entries.")
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult by default. When the groupBy query parameter is specified, returns a GroupedResult instead (same status code, different shape).")
-        .Produces<PagedResult<TEntity>>();
+        .Produces<PagedResult<TEntity>>()
+        .Produces<GroupedResult<TEntity>>(StatusCodes.Status200OK)
+        .ProducesValidationProblem();
 
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
