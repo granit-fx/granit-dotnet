@@ -17,7 +17,8 @@
     "AI.Columns.Model": "Model",
     "AI.Columns.InputTokens": "Input Tokens",
     "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCostUsd": "Estimated Cost (USD)",
+    "AI.Columns.EstimatedCost": "Odhadované náklady",
+    "AI.Columns.CostCurrency": "Měna",
     "AI.Columns.Timestamp": "Timestamp",
     "AI.Columns.Duration": "Duration"
   }

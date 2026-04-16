@@ -20,8 +20,10 @@ public sealed record AIChatResponse(
 /// </summary>
 /// <param name="InputTokens">Number of input tokens consumed.</param>
 /// <param name="OutputTokens">Number of output tokens generated.</param>
-/// <param name="EstimatedCostUsd">Estimated cost in USD, if available.</param>
+/// <param name="EstimatedCost">Estimated cost, if available.</param>
+/// <param name="CostCurrency">ISO 4217 currency code for <paramref name="EstimatedCost"/>.</param>
 public sealed record AIChatUsageResponse(
     int InputTokens,
     int OutputTokens,
-    decimal? EstimatedCostUsd);
+    decimal? EstimatedCost,
+    string? CostCurrency);

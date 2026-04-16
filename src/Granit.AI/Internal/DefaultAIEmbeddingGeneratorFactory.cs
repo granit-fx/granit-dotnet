@@ -26,6 +26,11 @@ internal sealed class DefaultAIEmbeddingGeneratorFactory(
         AIWorkspace workspace = await workspaceProvider.GetAsync(name, cancellationToken).ConfigureAwait(false)
             ?? throw new AIWorkspaceNotFoundException(name);
 
+        if (!workspace.IsActive)
+        {
+            throw new AIWorkspaceNotActiveException(name);
+        }
+
         if (!_providers.TryGetValue(workspace.Provider, out IAIProviderFactory? providerFactory))
         {
             throw new AIProviderNotRegisteredException(workspace.Provider);

@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Granit.AI.Workspaces;
-using Granit.Guids;
 using Microsoft.Extensions.AI;
 
 namespace Granit.AI.Internal;
@@ -13,8 +12,7 @@ internal sealed class DefaultAIChatCompletionService(
     IAIChatClientFactory chatClientFactory,
     IAIWorkspaceProvider workspaceProvider,
     IAIUsageTracker usageTracker,
-    TimeProvider timeProvider,
-    IGuidGenerator guidGenerator) : IAIChatCompletionService
+    IAIUsageRecordFactory usageRecordFactory) : IAIChatCompletionService
 {
     /// <inheritdoc/>
     public async Task<AIChatCompletionResult?> CompleteAsync(
@@ -58,17 +56,15 @@ internal sealed class DefaultAIChatCompletionService(
             inputTokens = (int)(usage.InputTokenCount ?? 0);
             outputTokens = (int)(usage.OutputTokenCount ?? 0);
 
-            await usageTracker.RecordAsync(new AIUsageRecord
-            {
-                Id = guidGenerator.Create(),
-                WorkspaceName = workspaceName,
-                Provider = workspace.Provider,
-                Model = workspace.Model,
-                InputTokens = inputTokens.Value,
-                OutputTokens = outputTokens.Value,
-                Timestamp = timeProvider.GetUtcNow(),
-                Duration = stopwatch.Elapsed,
-            }, cancellationToken).ConfigureAwait(false);
+            AIUsageRecord usageRecord = usageRecordFactory.Create(
+                workspaceName,
+                workspace.Provider,
+                workspace.Model,
+                inputTokens.Value,
+                outputTokens.Value,
+                stopwatch.Elapsed);
+
+            await usageTracker.RecordAsync(usageRecord, cancellationToken).ConfigureAwait(false);
         }
 
         return new AIChatCompletionResult(

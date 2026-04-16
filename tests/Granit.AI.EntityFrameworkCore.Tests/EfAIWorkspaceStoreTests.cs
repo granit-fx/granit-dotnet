@@ -60,15 +60,26 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task GetAllAsync_ReturnsOnlyActiveWorkspaces()
+    public async Task FindAsync_ReturnsInactiveWorkspace()
+    {
+        await _store.CreateAsync(CreateWorkspace() with { IsActive = false }, TestContext.Current.CancellationToken);
+
+        AIWorkspace? result = await _store.FindAsync("test-ws", TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.IsActive.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task GetAllAsync_ReturnsActiveAndInactiveWorkspaces()
     {
         await _store.CreateAsync(CreateWorkspace("active"), TestContext.Current.CancellationToken);
         await _store.CreateAsync(CreateWorkspace("inactive") with { IsActive = false }, TestContext.Current.CancellationToken);
 
         IReadOnlyList<AIWorkspace> results = await _store.GetAllAsync(TestContext.Current.CancellationToken);
 
-        results.Count.ShouldBe(1);
-        results[0].Name.ShouldBe("active");
+        results.Count.ShouldBe(2);
+        results.Select(r => r.Name).ShouldBe(["active", "inactive"]);
     }
 
     [Fact]

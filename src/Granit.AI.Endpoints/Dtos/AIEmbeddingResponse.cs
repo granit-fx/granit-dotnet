@@ -6,10 +6,12 @@ namespace Granit.AI.Endpoints.Dtos;
 /// <param name="WorkspaceName">Workspace that processed the request.</param>
 /// <param name="Model">Model used for embedding generation.</param>
 /// <param name="Embeddings">Generated embedding vectors.</param>
+/// <param name="Usage">Token usage details, if available.</param>
 public sealed record AIEmbeddingResponse(
     string WorkspaceName,
     string Model,
-    IReadOnlyList<AIEmbeddingDataResponse> Embeddings);
+    IReadOnlyList<AIEmbeddingDataResponse> Embeddings,
+    AIEmbeddingUsageResponse? Usage);
 
 /// <summary>
 /// A single embedding vector with its index.
@@ -19,3 +21,9 @@ public sealed record AIEmbeddingResponse(
 public sealed record AIEmbeddingDataResponse(
     int Index,
     IReadOnlyList<float> Vector);
+
+/// <summary>
+/// Token usage details for an embedding generation.
+/// </summary>
+/// <param name="InputTokens">Number of input tokens consumed.</param>
+public sealed record AIEmbeddingUsageResponse(int InputTokens);

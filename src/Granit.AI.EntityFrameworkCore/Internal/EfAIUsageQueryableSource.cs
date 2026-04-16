@@ -38,7 +38,8 @@ internal sealed class EfAIUsageQueryableSource(
             Model = e.Model,
             InputTokens = e.InputTokens,
             OutputTokens = e.OutputTokens,
-            EstimatedCostUsd = e.EstimatedCostUsd,
+            EstimatedCost = e.EstimatedCost,
+            CostCurrency = e.CostCurrency,
             Timestamp = e.CreatedAt,
             Duration = e.Duration,
         });

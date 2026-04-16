@@ -41,9 +41,12 @@ internal sealed class AIUsageRecordEntityConfiguration : IEntityTypeConfiguratio
         builder.Property(e => e.OutputTokens)
             .IsRequired();
 
-        // Precision 18,8 for accurate cost tracking (e.g. $0.00000150 per token).
-        builder.Property(e => e.EstimatedCostUsd)
+        // Precision 18,8 for accurate cost tracking (e.g. 0.00000150 per token).
+        builder.Property(e => e.EstimatedCost)
             .HasPrecision(18, 8);
+
+        builder.Property(e => e.CostCurrency)
+            .HasMaxLength(3);
 
         builder.Property(e => e.Duration);
 

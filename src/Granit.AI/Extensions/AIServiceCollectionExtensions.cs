@@ -52,6 +52,7 @@ public static class AIServiceCollectionExtensions
 
         // Usage tracking (no-op by default, overridden by EF Core package)
         builder.Services.TryAddScoped<IAIUsageTracker, NullAIUsageTracker>();
+        builder.Services.TryAddScoped<IAIUsageRecordFactory, AIUsageRecordFactory>();
 
         // Quota guard: InMemory by default (no-op when MaxRequestsPerTenantPerHour=0)
         builder.Services

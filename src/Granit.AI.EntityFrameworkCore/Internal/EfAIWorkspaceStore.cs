@@ -26,7 +26,7 @@ internal sealed class EfAIWorkspaceStore(
         CancellationToken cancellationToken = default)
     {
         AIWorkspaceEntity? entity = await FirstOrDefaultAsync(
-            w => w.Name == workspaceName && w.IsActive, cancellationToken).ConfigureAwait(false);
+            w => w.Name == workspaceName, cancellationToken).ConfigureAwait(false);
 
         return entity?.ToRecord();
     }
@@ -37,7 +37,6 @@ internal sealed class EfAIWorkspaceStore(
     {
         IReadOnlyList<AIWorkspaceEntity> entities = await ListAsync(
             Spec.For<AIWorkspaceEntity>()
-                .Where(w => w.IsActive)
                 .OrderBy(w => (object)w.Name),
             cancellationToken).ConfigureAwait(false);
 

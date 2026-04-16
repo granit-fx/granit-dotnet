@@ -16,13 +16,14 @@ public sealed class AIUsageRecordQueryDefinitionTests
     public void Declares_expected_columns()
     {
         System.Collections.Generic.IReadOnlyList<Granit.QueryEngine.ColumnDescriptor> columns = _definition.GetColumns();
-        columns.Count.ShouldBe(8);
+        columns.Count.ShouldBe(9);
         columns.Select(c => c.PropertyName).ShouldContain("WorkspaceName");
         columns.Select(c => c.PropertyName).ShouldContain("Provider");
         columns.Select(c => c.PropertyName).ShouldContain("Model");
         columns.Select(c => c.PropertyName).ShouldContain("InputTokens");
         columns.Select(c => c.PropertyName).ShouldContain("OutputTokens");
-        columns.Select(c => c.PropertyName).ShouldContain("EstimatedCostUsd");
+        columns.Select(c => c.PropertyName).ShouldContain("EstimatedCost");
+        columns.Select(c => c.PropertyName).ShouldContain("CostCurrency");
         columns.Select(c => c.PropertyName).ShouldContain("Timestamp");
         columns.Select(c => c.PropertyName).ShouldContain("Duration");
     }
@@ -44,7 +45,7 @@ public sealed class AIUsageRecordQueryDefinitionTests
         aggregates.Count.ShouldBe(3);
         aggregates.Select(a => a.Alias).ShouldContain("totalInputTokens");
         aggregates.Select(a => a.Alias).ShouldContain("totalOutputTokens");
-        aggregates.Select(a => a.Alias).ShouldContain("totalEstimatedCostUsd");
+        aggregates.Select(a => a.Alias).ShouldContain("totalEstimatedCost");
     }
 
     [Fact]

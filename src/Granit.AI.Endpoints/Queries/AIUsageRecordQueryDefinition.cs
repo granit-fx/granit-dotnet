@@ -25,7 +25,8 @@ public sealed class AIUsageRecordQueryDefinition : QueryDefinition<AIUsageRecord
             .Column(r => r.Model, c => c.Label("Model").LabelKey("AI.Columns.Model").Filterable().Sortable())
             .Column(r => r.InputTokens, c => c.Label("Input Tokens").LabelKey("AI.Columns.InputTokens").Sortable())
             .Column(r => r.OutputTokens, c => c.Label("Output Tokens").LabelKey("AI.Columns.OutputTokens").Sortable())
-            .Column(r => r.EstimatedCostUsd, c => c.Label("Estimated Cost (USD)").LabelKey("AI.Columns.EstimatedCostUsd").Sortable())
+            .Column(r => r.EstimatedCost, c => c.Label("Estimated Cost").LabelKey("AI.Columns.EstimatedCost").Sortable())
+            .Column(r => r.CostCurrency, c => c.Label("Currency").LabelKey("AI.Columns.CostCurrency"))
             .Column(r => r.Timestamp, c => c.Label("Timestamp").LabelKey("AI.Columns.Timestamp").Sortable())
             .Column(r => r.Duration, c => c.Label("Duration").LabelKey("AI.Columns.Duration"))
             .GlobalSearch(r => r.WorkspaceName, r => r.Provider, r => r.Model)
@@ -35,7 +36,7 @@ public sealed class AIUsageRecordQueryDefinition : QueryDefinition<AIUsageRecord
             .AllowGroupBy(r => r.Model)
             .Aggregate(r => r.InputTokens, AggregateFunction.Sum, "totalInputTokens")
             .Aggregate(r => r.OutputTokens, AggregateFunction.Sum, "totalOutputTokens")
-            .Aggregate(r => r.EstimatedCostUsd, AggregateFunction.Sum, "totalEstimatedCostUsd")
+            .Aggregate(r => r.EstimatedCost, AggregateFunction.Sum, "totalEstimatedCost")
             .DefaultSort("-timestamp")
             .DefaultPageSize(25);
     }

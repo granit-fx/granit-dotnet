@@ -29,8 +29,11 @@ public sealed record AIUsageRecord
     /// <summary>Number of output tokens generated.</summary>
     public int OutputTokens { get; init; }
 
-    /// <summary>Estimated cost in USD (based on configured pricing).</summary>
-    public decimal? EstimatedCostUsd { get; init; }
+    /// <summary>Estimated cost (based on configured pricing).</summary>
+    public decimal? EstimatedCost { get; init; }
+
+    /// <summary>ISO 4217 currency code for <see cref="EstimatedCost"/> (e.g. <c>USD</c>, <c>CNY</c>).</summary>
+    public string? CostCurrency { get; init; }
 
     /// <summary>When the interaction occurred (UTC).</summary>
     public required DateTimeOffset Timestamp { get; init; }

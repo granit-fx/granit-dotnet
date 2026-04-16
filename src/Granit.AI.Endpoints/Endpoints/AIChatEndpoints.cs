@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Internal;
@@ -25,6 +26,7 @@ internal static class AIChatEndpoints
                 + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
             .Produces<AIChatResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status502BadGateway);
 
         group.MapPost("/chat/{workspaceName}/stream", StreamAsync)
@@ -32,11 +34,15 @@ internal static class AIChatEndpoints
             .WithSummary("Streams a chat completion response via Server-Sent Events.")
             .WithDescription(
                 "Opens an SSE stream that emits incremental content chunks as they arrive from the provider. "
-                + "The stream ends with a [DONE] sentinel. "
-                + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
+                + "The stream ends with a [DONE] sentinel. If the provider returns an error after streaming has "
+                + "started, an SSE 'error' event is emitted before closing. "
+                + "Returns 404 if the workspace does not exist, 422 if the model is not found, "
+                + "or 502/503 if the provider is unavailable.")
             .Produces<string>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status502BadGateway);
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesProblem(StatusCodes.Status502BadGateway)
+            .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
 
         return group;
     }
@@ -73,7 +79,7 @@ internal static class AIChatEndpoints
         }
 
         AIChatUsageResponse? usageResponse = result.InputTokens is not null
-            ? new AIChatUsageResponse(result.InputTokens.Value, result.OutputTokens!.Value, null)
+            ? new AIChatUsageResponse(result.InputTokens.Value, result.OutputTokens!.Value, null, null)
             : null;
 
         return TypedResults.Ok(new AIChatResponse(
@@ -89,6 +95,8 @@ internal static class AIChatEndpoints
         AIChatRequest request,
         [FromServices] IAIChatClientFactory chatClientFactory,
         [FromServices] IAIWorkspaceProvider workspaceProvider,
+        [FromServices] IAIUsageTracker usageTracker,
+        [FromServices] IAIUsageRecordFactory usageRecordFactory,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -128,16 +136,71 @@ internal static class AIChatEndpoints
         httpContext.Response.Headers.CacheControl = "no-cache";
         httpContext.Response.Headers.Connection = "keep-alive";
 
-        await foreach (ChatResponseUpdate? update in chatClient.GetStreamingResponseAsync(
-            messages, cancellationToken: cancellationToken).ConfigureAwait(false))
+        var stopwatch = Stopwatch.StartNew();
+        bool headersSent = false;
+        UsageContent? accumulatedUsage = null;
+
+        try
         {
-            foreach (TextContent content in update.Contents.OfType<TextContent>())
+            await foreach (ChatResponseUpdate? update in chatClient.GetStreamingResponseAsync(
+                messages, cancellationToken: cancellationToken).ConfigureAwait(false))
             {
-                await httpContext.Response.WriteAsync(
-                    $"data: {JsonSerializer.Serialize(new { content = content.Text })}\n\n",
-                    cancellationToken).ConfigureAwait(false);
-                await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+                foreach (UsageContent usage in update.Contents.OfType<UsageContent>())
+                {
+                    accumulatedUsage = usage;
+                }
+
+                foreach (TextContent content in update.Contents.OfType<TextContent>())
+                {
+                    headersSent = true;
+                    await httpContext.Response.WriteAsync(
+                        $"data: {JsonSerializer.Serialize(new { content = content.Text })}\n\n",
+                        cancellationToken).ConfigureAwait(false);
+                    await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+                }
             }
+        }
+        catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException or IOException)
+        {
+            if (!headersSent && !httpContext.Response.HasStarted)
+            {
+                httpContext.Response.ContentType = "application/problem+json";
+                ProblemHttpResult problem = AIProviderExceptionMapper.MapException(
+                    ex, workspace.Model, workspace.Provider);
+                await problem.ExecuteAsync(httpContext).ConfigureAwait(false);
+                return;
+            }
+
+            string errorMessage = AIProviderExceptionMapper.GetErrorMessage(
+                ex, workspace.Model, workspace.Provider);
+            await httpContext.Response.WriteAsync(
+                $"event: error\ndata: {JsonSerializer.Serialize(new { error = errorMessage })}\n\n",
+                CancellationToken.None).ConfigureAwait(false);
+            await httpContext.Response.Body.FlushAsync(CancellationToken.None).ConfigureAwait(false);
+            return;
+        }
+
+        stopwatch.Stop();
+
+        if (accumulatedUsage is not null)
+        {
+            int inputTokens = (int)(accumulatedUsage.Details.InputTokenCount ?? 0);
+            int outputTokens = (int)(accumulatedUsage.Details.OutputTokenCount ?? 0);
+
+            AIUsageRecord usageRecord = usageRecordFactory.Create(
+                workspaceName,
+                workspace.Provider,
+                workspace.Model,
+                inputTokens,
+                outputTokens,
+                stopwatch.Elapsed);
+
+            await usageTracker.RecordAsync(usageRecord, CancellationToken.None).ConfigureAwait(false);
+
+            await httpContext.Response.WriteAsync(
+                $"event: usage\ndata: {JsonSerializer.Serialize(new { inputTokens, outputTokens })}\n\n",
+                cancellationToken).ConfigureAwait(false);
+            await httpContext.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
         }
 
         await httpContext.Response.WriteAsync("data: [DONE]\n\n", cancellationToken)

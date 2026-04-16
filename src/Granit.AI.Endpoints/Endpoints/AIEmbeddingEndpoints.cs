@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Internal;
 using Granit.AI.Exceptions;
@@ -34,6 +35,8 @@ internal static class AIEmbeddingEndpoints
         AIEmbeddingRequest request,
         [FromServices] IAIEmbeddingGeneratorFactory embeddingFactory,
         [FromServices] IAIWorkspaceProvider workspaceProvider,
+        [FromServices] IAIUsageTracker usageTracker,
+        [FromServices] IAIUsageRecordFactory usageRecordFactory,
         CancellationToken cancellationToken)
     {
         AIWorkspace? workspace = await workspaceProvider
@@ -57,6 +60,7 @@ internal static class AIEmbeddingEndpoints
             return AIProviderExceptionMapper.MapException(ex);
         }
 
+        var stopwatch = Stopwatch.StartNew();
         GeneratedEmbeddings<Embedding<float>> embeddings;
         try
         {
@@ -69,10 +73,30 @@ internal static class AIEmbeddingEndpoints
             return AIProviderExceptionMapper.MapException(ex);
         }
 
+        stopwatch.Stop();
+
         var data = embeddings
             .Select((e, i) => new AIEmbeddingDataResponse(i, e.Vector.ToArray().ToList()))
             .ToList();
 
-        return TypedResults.Ok(new AIEmbeddingResponse(workspaceName, workspace.Model, data));
+        AIEmbeddingUsageResponse? usageResponse = null;
+        if (embeddings.Usage is not null)
+        {
+            int inputTokens = (int)(embeddings.Usage.InputTokenCount ?? 0);
+
+            AIUsageRecord usageRecord = usageRecordFactory.Create(
+                workspaceName,
+                workspace.Provider,
+                workspace.Model,
+                inputTokens,
+                outputTokens: 0,
+                stopwatch.Elapsed);
+
+            await usageTracker.RecordAsync(usageRecord, cancellationToken).ConfigureAwait(false);
+
+            usageResponse = new AIEmbeddingUsageResponse(inputTokens);
+        }
+
+        return TypedResults.Ok(new AIEmbeddingResponse(workspaceName, workspace.Model, data, usageResponse));
     }
 }

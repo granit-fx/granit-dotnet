@@ -49,7 +49,8 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
             Model = "gpt-4o",
             InputTokens = 150,
             OutputTokens = 200,
-            EstimatedCostUsd = 0.00525m,
+            EstimatedCost = 0.00525m,
+            CostCurrency = "USD",
             Timestamp = DateTimeOffset.UtcNow,
             Duration = TimeSpan.FromMilliseconds(450),
         };
@@ -66,7 +67,8 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
         entity.Model.ShouldBe("gpt-4o");
         entity.InputTokens.ShouldBe(150);
         entity.OutputTokens.ShouldBe(200);
-        entity.EstimatedCostUsd.ShouldBe(0.00525m);
+        entity.EstimatedCost.ShouldBe(0.00525m);
+        entity.CostCurrency.ShouldBe("USD");
     }
 
     private sealed class TestDbContextFactory(DbContextOptions<AIDbContext> options) : IDbContextFactory<AIDbContext>

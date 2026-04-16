@@ -21,7 +21,9 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
 
     public int OutputTokens { get; set; }
 
-    public decimal? EstimatedCostUsd { get; set; }
+    public decimal? EstimatedCost { get; set; }
+
+    public string? CostCurrency { get; set; }
 
     public TimeSpan? Duration { get; set; }
 
@@ -35,7 +37,8 @@ internal sealed class AIUsageRecordEntity : CreationAuditedEntity, IMultiTenant
         Model = record.Model,
         InputTokens = record.InputTokens,
         OutputTokens = record.OutputTokens,
-        EstimatedCostUsd = record.EstimatedCostUsd,
+        EstimatedCost = record.EstimatedCost,
+        CostCurrency = record.CostCurrency,
         Duration = record.Duration,
     };
 }

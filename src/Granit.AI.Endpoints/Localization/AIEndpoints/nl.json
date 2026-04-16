@@ -17,7 +17,8 @@
     "AI.Columns.Model": "Model",
     "AI.Columns.InputTokens": "Invoertokens",
     "AI.Columns.OutputTokens": "Uitvoertokens",
-    "AI.Columns.EstimatedCostUsd": "Geschatte kosten (USD)",
+    "AI.Columns.EstimatedCost": "Geschatte kosten",
+    "AI.Columns.CostCurrency": "Valuta",
     "AI.Columns.Timestamp": "Tijdstempel",
     "AI.Columns.Duration": "Duur"
   }

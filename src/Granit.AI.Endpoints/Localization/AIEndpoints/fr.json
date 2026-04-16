@@ -17,7 +17,8 @@
     "AI.Columns.Model": "Modèle",
     "AI.Columns.InputTokens": "Jetons d'entrée",
     "AI.Columns.OutputTokens": "Jetons de sortie",
-    "AI.Columns.EstimatedCostUsd": "Coût estimé (USD)",
+    "AI.Columns.EstimatedCost": "Coût estimé",
+    "AI.Columns.CostCurrency": "Devise",
     "AI.Columns.Timestamp": "Horodatage",
     "AI.Columns.Duration": "Durée"
   }
