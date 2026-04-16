@@ -45,24 +45,32 @@ builder.AddGranitAuditingEntityFrameworkCore(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Auditing")));
 ```
 
-### 3. Add the interceptor to your DbContext
-
-```csharp
-services.AddDbContextFactory<AppDbContext>((sp, options) =>
-{
-    options.UseNpgsql(connectionString);
-    options.UseGranitInterceptors(sp);
-    options.UseGranitAuditingInterceptor(sp);  // AFTER UseGranitInterceptors
-}, ServiceLifetime.Scoped);
-```
-
-### 4. Map endpoints (optional)
+### 3. Map endpoints (optional)
 
 ```csharp
 app.MapGranitAuditing();
 ```
 
-That's it. Every `SaveChanges` on your `AppDbContext` now produces audit entries automatically.
+That's it. `AddGranitAuditingEntityFrameworkCore` registers the `AuditingChangeTrackingInterceptor`
+as an `IGranitAutoInterceptor`. All DbContexts created via `AddGranitDbContext<T>` (or
+multi-tenant factories) pick it up automatically through `UseGranitInterceptors` —
+no additional wiring needed.
+
+:::note[Manual wiring (advanced)]
+If your DbContext does **not** use `AddGranitDbContext<T>` (e.g. a hand-wired
+`AddDbContextFactory` call), add the interceptor explicitly:
+
+```csharp
+services.AddDbContextFactory<AppDbContext>((sp, options) =>
+{
+    options.UseNpgsql(connectionString);
+    options.UseGranitInterceptors(sp);  // includes IGranitAutoInterceptor instances
+}, ServiceLifetime.Scoped);
+```
+
+`UseGranitInterceptors` resolves both the 6 standard interceptors **and** any
+module interceptors registered via `IGranitAutoInterceptor`.
+:::
 
 ## Domain model
 
