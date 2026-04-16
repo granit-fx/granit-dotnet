@@ -648,10 +648,10 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.Caching.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },

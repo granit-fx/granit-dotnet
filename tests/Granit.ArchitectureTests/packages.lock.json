@@ -2707,6 +2707,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -2725,6 +2726,7 @@
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
+          "Granit.RateLimiting": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
@@ -2800,6 +2802,7 @@
       "granit.payments.wolverine": {
         "type": "Project",
         "dependencies": {
+          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
           "Granit.Wolverine": "[0.1.0-dev, )",
@@ -3754,10 +3757,10 @@
       "MailKit": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.15.1",
-        "contentHash": "4mLbqTbH3ctd0NlukHjVQbU3ZnNDuCtB6ttNZDLPZLWMA2Dr31rh/eCSTqOwDojUX8zfDOVaxstMgJTE9PwZNA==",
+        "resolved": "4.16.0",
+        "contentHash": "trJ82DOpAmo8i1jO1vNE+dGn4mPRyeYfy4swRcAGgMJhPoI1Kohf4OFJJf0+YIj4iUxgxPn8W+ht7e7KiYzSjg==",
         "dependencies": {
-          "MimeKit": "4.15.1"
+          "MimeKit": "4.16.0"
         }
       },
       "Microsoft.AspNetCore.Authentication.JwtBearer": {
@@ -4167,8 +4170,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.13.22",
-        "contentHash": "MN267boY7T3AEHW1mTFDpg4KHF/oiKbox7ue5Orz6/2OeqZHYF1ZQcjBHXGSwxN+lyGSYGL9/i0IRorCYyqw3Q=="
+        "resolved": "2.14.0",
+        "contentHash": "YpcCrY+FuPrmFzThm4om8HZ0Lww9vlIQUzUcBpc2Hv4n+oY8SgvFebgBSQJgnaW6y/FgG5J6FU/71HRq/wy9uQ=="
       },
       "Scriban": {
         "type": "CentralTransitive",
