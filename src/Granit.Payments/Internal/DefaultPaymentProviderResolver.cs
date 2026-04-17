@@ -5,14 +5,20 @@ using ZiggyCreatures.Caching.Fusion;
 namespace Granit.Payments.Internal;
 
 /// <summary>
-/// Default <see cref="IPaymentProviderResolver"/> that resolves available payment methods
-/// from the <see cref="PaymentMethodConfiguration"/> store and cross-references with
-/// registered <see cref="IPaymentProvider"/> instances in DI.
+/// Default <see cref="IPaymentProviderResolver"/> that cross-references activated
+/// <see cref="PaymentMethodConfiguration"/> records with registered
+/// <see cref="IPaymentProvider"/> instances (and their <c>SupportedMethods</c> descriptors).
 /// </summary>
 /// <remarks>
-/// Active configurations are cached in <see cref="IFusionCache"/> for 5 minutes to avoid
-/// hitting the database on every request. The cache expires automatically; no explicit
-/// invalidation is needed for v1.
+/// Active configurations are cached in <see cref="IFusionCache"/> for 5 minutes.
+/// The cache is proactively invalidated by the configuration endpoints on every
+/// activate/deactivate, so tenants see changes immediately.
+///
+/// <para>
+/// Display labels are returned as the raw <c>MethodType</c> identifier. Callers
+/// (typically the <c>GET /methods/available</c> endpoint) are responsible for
+/// resolving a localized label via <c>IStringLocalizer</c>.
+/// </para>
 /// </remarks>
 internal sealed class DefaultPaymentProviderResolver(
     IPaymentMethodConfigurationReader configReader,
@@ -58,15 +64,35 @@ internal sealed class DefaultPaymentProviderResolver(
         IReadOnlyList<PaymentMethodConfiguration> configs =
             await GetActiveConfigsCachedAsync(cancellationToken).ConfigureAwait(false);
 
-        HashSet<string> registeredProviders = new(
-            providers.Select(p => p.Name),
-            StringComparer.OrdinalIgnoreCase);
+        var providerByName = providers
+            .ToDictionary(p => p.Name, p => p, StringComparer.OrdinalIgnoreCase);
 
-        return configs
-            .Where(c => registeredProviders.Contains(c.ProviderName))
-            .Select(c => new PaymentAvailableMethod(
-                c.MethodType, c.Category, c.ProviderName, c.DisplayLabel))
-            .ToList();
+        List<PaymentAvailableMethod> result = [];
+
+        foreach (PaymentMethodConfiguration config in configs)
+        {
+            if (!providerByName.TryGetValue(config.ProviderName, out IPaymentProvider? provider))
+            {
+                // Provider no longer installed — skip silently
+                continue;
+            }
+
+            PaymentMethodDescriptor? descriptor = provider.SupportedMethods
+                .FirstOrDefault(d => d.MethodType.Equals(config.MethodType, StringComparison.OrdinalIgnoreCase));
+
+            if (descriptor is null)
+            {
+                // Provider no longer supports this method — skip silently
+                continue;
+            }
+
+            // Note: DisplayLabel is returned as the raw method type. The caller
+            // (endpoint) localizes via IStringLocalizer.
+            result.Add(new PaymentAvailableMethod(
+                descriptor.MethodType, descriptor.Category, provider.Name, descriptor.MethodType));
+        }
+
+        return result;
     }
 
     private Task<IReadOnlyList<PaymentMethodConfiguration>> GetActiveConfigsCachedAsync(

@@ -16,6 +16,46 @@ internal sealed partial class StripePaymentProvider(
     public string Name => "stripe";
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Covers the European surface of Stripe's PaymentIntents API. Stripe-exclusive
+    /// methods from other regions (alipay, wechat_pay, us_bank_account, ...) are
+    /// omitted because they aren't declared in <see cref="PaymentMethods"/>.
+    /// Belgian local methods (Belfius, KBC) and Alma/Paysafecard belong to other
+    /// providers — not Stripe.
+    /// </remarks>
+    public IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } =
+    [
+        // Cards
+        new(PaymentMethods.Card, PaymentMethodCategory.Card),
+
+        // Bank redirects (European local payment methods)
+        new(PaymentMethods.Bancontact, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Ideal, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Eps, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Giropay, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Przelewy24, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Blik, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Twint, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Trustly, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.MyBank, PaymentMethodCategory.BankRedirect),
+
+        // Bank transfer & direct debit
+        new(PaymentMethods.BankTransfer, PaymentMethodCategory.BankTransfer),
+        new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit),
+
+        // Wallets
+        new(PaymentMethods.ApplePay, PaymentMethodCategory.Wallet),
+        new(PaymentMethods.GooglePay, PaymentMethodCategory.Wallet),
+        new(PaymentMethods.PayPal, PaymentMethodCategory.Wallet),
+        new(PaymentMethods.Alipay, PaymentMethodCategory.Wallet),
+        new(PaymentMethods.WechatPay, PaymentMethodCategory.Wallet),
+
+        // Buy now, pay later
+        new(PaymentMethods.Klarna, PaymentMethodCategory.BuyNowPayLater),
+        new(PaymentMethods.Riverty, PaymentMethodCategory.BuyNowPayLater),
+    ];
+
+    /// <inheritdoc/>
     public async Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

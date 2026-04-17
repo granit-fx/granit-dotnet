@@ -92,4 +92,66 @@ internal sealed class EfPaymentMethodConfigurationStore(
         db.PaymentMethodConfigurations.Remove(configuration);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
+
+    public async Task UpsertActivationAsync(
+        Guid newId,
+        string providerName,
+        string methodType,
+        bool isActive,
+        CancellationToken cancellationToken = default)
+    {
+        await using PaymentsDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+            .FirstOrDefaultAsync(
+                c => c.ProviderName == providerName && c.MethodType == methodType,
+                cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            var created = PaymentMethodConfiguration
+                .Activate(newId, providerName, methodType);
+
+            if (!isActive)
+            {
+                created.Deactivate();
+            }
+
+            db.PaymentMethodConfigurations.Add(created);
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+            catch (DbUpdateException)
+            {
+                // Concurrent POST won the race — fall through to read + update.
+                db.PaymentMethodConfigurations.Remove(created);
+                db.ChangeTracker.Clear();
+
+                existing = await db.PaymentMethodConfigurations
+                    .FirstOrDefaultAsync(
+                        c => c.ProviderName == providerName && c.MethodType == methodType,
+                        cancellationToken).ConfigureAwait(false);
+
+                if (existing is null)
+                {
+                    throw;
+                }
+            }
+        }
+
+        if (isActive)
+        {
+            existing.Activate();
+        }
+        else
+        {
+            existing.Deactivate();
+        }
+
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
 }

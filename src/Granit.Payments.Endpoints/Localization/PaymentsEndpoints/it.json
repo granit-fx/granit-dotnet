@@ -7,6 +7,19 @@
     "Permission:Payments.Refunds.Execute": "Elaborare rimborsi",
     "Permission:Payments.Methods.Read": "Consultare i metodi di pagamento",
     "Permission:Payments.Methods.Manage": "Gestire i metodi di pagamento (aggiungere, rimuovere)",
-    "Permission:Payments.Configuration.Manage": "Gestire la configurazione dei metodi di pagamento"
+    "Permission:Payments.Configuration.Manage": "Gestire la configurazione dei metodi di pagamento",
+    "Payments.Methods.card": "Carta di credito / debito",
+    "Payments.Methods.bancontact": "Bancontact",
+    "Payments.Methods.ideal": "iDEAL",
+    "Payments.Methods.bank_transfer": "Bonifico SEPA",
+    "Payments.Methods.sepa_debit": "Addebito diretto SEPA",
+    "Payments.Methods.apple_pay": "Apple Pay",
+    "Payments.Methods.google_pay": "Google Pay",
+    "Payments.Methods.paypal": "PayPal",
+    "Payments.Methods.alipay": "Alipay",
+    "Payments.Methods.wechat_pay": "WeChat Pay",
+    "Payments.Methods.belfius": "Belfius Pay Button",
+    "Payments.Methods.kbc": "KBC Payment Button",
+    "Payments.Methods.paysafecard": "paysafecard"
   }
 }

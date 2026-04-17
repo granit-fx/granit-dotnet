@@ -7,6 +7,19 @@
     "Permission:Payments.Refunds.Execute": "Terugbetalingen verwerken",
     "Permission:Payments.Methods.Read": "Betaalmethoden bekijken",
     "Permission:Payments.Methods.Manage": "Betaalmethoden beheren (toevoegen, verwijderen)",
-    "Permission:Payments.Configuration.Manage": "Configuratie van betaalmethoden beheren"
+    "Permission:Payments.Configuration.Manage": "Configuratie van betaalmethoden beheren",
+    "Payments.Methods.card": "Creditcard / Debetkaart",
+    "Payments.Methods.bancontact": "Bancontact",
+    "Payments.Methods.ideal": "iDEAL",
+    "Payments.Methods.bank_transfer": "SEPA-overschrijving",
+    "Payments.Methods.sepa_debit": "SEPA-incasso",
+    "Payments.Methods.apple_pay": "Apple Pay",
+    "Payments.Methods.google_pay": "Google Pay",
+    "Payments.Methods.paypal": "PayPal",
+    "Payments.Methods.alipay": "Alipay",
+    "Payments.Methods.wechat_pay": "WeChat Pay",
+    "Payments.Methods.belfius": "Belfius Pay Button",
+    "Payments.Methods.kbc": "KBC-betaalknop",
+    "Payments.Methods.paysafecard": "paysafecard"
   }
 }

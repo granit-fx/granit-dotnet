@@ -7,6 +7,19 @@
     "Permission:Payments.Refunds.Execute": "处理退款",
     "Permission:Payments.Methods.Read": "查看支付方式",
     "Permission:Payments.Methods.Manage": "管理支付方式（添加、移除）",
-    "Permission:Payments.Configuration.Manage": "管理支付方式配置"
+    "Permission:Payments.Configuration.Manage": "管理支付方式配置",
+    "Payments.Methods.card": "信用卡 / 借记卡",
+    "Payments.Methods.bancontact": "Bancontact",
+    "Payments.Methods.ideal": "iDEAL",
+    "Payments.Methods.bank_transfer": "SEPA 银行转账",
+    "Payments.Methods.sepa_debit": "SEPA 直接借记",
+    "Payments.Methods.apple_pay": "Apple Pay",
+    "Payments.Methods.google_pay": "Google Pay",
+    "Payments.Methods.paypal": "PayPal",
+    "Payments.Methods.alipay": "支付宝",
+    "Payments.Methods.wechat_pay": "微信支付",
+    "Payments.Methods.belfius": "Belfius Pay Button",
+    "Payments.Methods.kbc": "KBC Payment Button",
+    "Payments.Methods.paysafecard": "paysafecard"
   }
 }

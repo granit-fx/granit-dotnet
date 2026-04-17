@@ -13,4 +13,16 @@ public interface IPaymentMethodConfigurationWriter
 
     /// <summary>Deletes a configuration.</summary>
     Task DeleteAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Upserts the activation state for a (providerName, methodType) pair in a race-safe way.
+    /// If no record exists, inserts one with the given id. If two concurrent calls race on
+    /// insert, the losing call silently re-reads and updates instead (no exception surfaced).
+    /// </summary>
+    Task UpsertActivationAsync(
+        Guid newId,
+        string providerName,
+        string methodType,
+        bool isActive,
+        CancellationToken cancellationToken = default);
 }

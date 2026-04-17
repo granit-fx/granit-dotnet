@@ -2,17 +2,14 @@ using Granit.Payments.Domain;
 
 namespace Granit.Payments.Endpoints.Dtos;
 
-/// <summary>Response DTO for a payment method configuration.</summary>
-public sealed record PaymentMethodConfigurationResponse(
-    Guid Id,
+/// <summary>A single payment method declared by a provider, with its activation state.</summary>
+public sealed record PaymentMethodConfigurationItem(
     string MethodType,
-    string ProviderName,
     string DisplayLabel,
     PaymentMethodCategory Category,
     bool IsActive);
 
-/// <summary>Request to create a payment method configuration.</summary>
-public sealed record CreatePaymentMethodConfigurationRequest(
-    string MethodType,
+/// <summary>All methods declared by a single provider, with their activation state.</summary>
+public sealed record PaymentProviderConfigurationResponse(
     string ProviderName,
-    string DisplayLabel);
+    IReadOnlyList<PaymentMethodConfigurationItem> Methods);

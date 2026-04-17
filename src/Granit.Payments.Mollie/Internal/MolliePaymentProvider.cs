@@ -21,6 +21,44 @@ internal sealed partial class MolliePaymentProvider(
     public string Name => "mollie";
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Covers Mollie's European surface. Mollie's strength over Stripe is direct
+    /// support for Belgian local methods (Belfius, KBC) and vouchers (Paysafecard).
+    /// </remarks>
+    public IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } =
+    [
+        // Cards
+        new(PaymentMethods.Card, PaymentMethodCategory.Card),
+
+        // Bank redirects (European local payment methods)
+        new(PaymentMethods.Bancontact, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Ideal, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Eps, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Giropay, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Przelewy24, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Twint, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Trustly, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.MyBank, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Belfius, PaymentMethodCategory.BankRedirect),
+        new(PaymentMethods.Kbc, PaymentMethodCategory.BankRedirect),
+
+        // Bank transfer & direct debit
+        new(PaymentMethods.BankTransfer, PaymentMethodCategory.BankTransfer),
+        new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit),
+
+        // Wallets
+        new(PaymentMethods.ApplePay, PaymentMethodCategory.Wallet),
+        new(PaymentMethods.PayPal, PaymentMethodCategory.Wallet),
+
+        // Buy now, pay later
+        new(PaymentMethods.Klarna, PaymentMethodCategory.BuyNowPayLater),
+        new(PaymentMethods.Riverty, PaymentMethodCategory.BuyNowPayLater),
+
+        // Vouchers
+        new(PaymentMethods.Paysafecard, PaymentMethodCategory.Voucher),
+    ];
+
+    /// <inheritdoc/>
     public async Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

@@ -28151,6 +28151,15 @@
       "members": []
     },
     {
+      "name": "PaymentMethodDescriptor",
+      "fqn": "Granit.Payments.Contracts.PaymentMethodDescriptor",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentMethodDescriptor.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "PaymentProviderChargeResult",
       "fqn": "Granit.Payments.Contracts.PaymentProviderChargeResult",
       "kind": "record",
@@ -28336,12 +28345,12 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentMethodConfiguration.cs",
-      "line": 11,
+      "line": 17,
       "members": [
         {
-          "name": "Create",
+          "name": "Activate",
           "kind": "method",
-          "signature": "Create(Guid id, string providerName, string methodType, string displayLabel)",
+          "signature": "Activate(Guid id, string providerName, string methodType)",
           "returnType": "PaymentMethodConfiguration"
         },
         {
@@ -28351,27 +28360,15 @@
           "returnType": "string"
         },
         {
-          "name": "DisplayLabel",
-          "kind": "property",
-          "signature": "string DisplayLabel",
-          "returnType": "string"
-        },
-        {
           "name": "Activate",
           "kind": "method",
           "signature": "Activate()",
-          "returnType": "PaymentMethodCategory Category { get; private set; } public bool IsActive { get; private set; } public void"
+          "returnType": "bool IsActive { get; private set; } public void"
         },
         {
           "name": "Deactivate",
           "kind": "method",
           "signature": "Deactivate()",
-          "returnType": "void"
-        },
-        {
-          "name": "UpdateDisplayLabel",
-          "kind": "method",
-          "signature": "UpdateDisplayLabel(string displayLabel)",
           "returnType": "void"
         }
       ]
@@ -28600,15 +28597,6 @@
       ]
     },
     {
-      "name": "CreatePaymentMethodConfigurationRequest",
-      "fqn": "Granit.Payments.Endpoints.Dtos.CreatePaymentMethodConfigurationRequest",
-      "kind": "record",
-      "project": "Granit.Payments.Endpoints",
-      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
-      "line": 15,
-      "members": []
-    },
-    {
       "name": "PaymentAttachMethodRequest",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentAttachMethodRequest",
       "kind": "record",
@@ -28663,8 +28651,8 @@
       "members": []
     },
     {
-      "name": "PaymentMethodConfigurationResponse",
-      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodConfigurationResponse",
+      "name": "PaymentMethodConfigurationItem",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodConfigurationItem",
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
@@ -28678,6 +28666,15 @@
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "PaymentProviderConfigurationResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentProviderConfigurationResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -29036,6 +29033,12 @@
           "kind": "method",
           "signature": "DeleteAsync(PaymentMethodConfiguration configuration, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "UpsertActivationAsync",
+          "kind": "method",
+          "signature": "UpsertActivationAsync(Guid newId, string providerName, string methodType, bool isActive, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -29135,7 +29138,7 @@
           "name": "ChargeAsync",
           "kind": "method",
           "signature": "ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "string Name { get; } Task<PaymentProviderChargeResult>"
+          "returnType": "string Name { get; } IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } Task<PaymentProviderChargeResult>"
         },
         {
           "name": "RefundAsync",

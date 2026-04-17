@@ -8,6 +8,13 @@ public interface IPaymentProvider
     /// <summary>Provider name (e.g., "stripe", "mollie", "sepa-transfer").</summary>
     string Name { get; }
 
+    /// <summary>
+    /// Payment methods this provider supports. Used by the admin to select which
+    /// methods to activate on the platform. Labels are resolved via localization
+    /// using <c>Payments.Methods.{methodType}</c> keys.
+    /// </summary>
+    IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; }
+
     /// <summary>Initiates a charge.</summary>
     Task<PaymentProviderChargeResult> ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default);
 

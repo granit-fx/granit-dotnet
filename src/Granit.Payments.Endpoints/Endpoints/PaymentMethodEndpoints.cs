@@ -5,12 +5,14 @@ using Granit.MultiTenancy;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 using Granit.Payments.Endpoints.Dtos;
+using Granit.Payments.Endpoints.Internal;
 using Granit.Payments.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using ContractAttachRequest = Granit.Payments.Contracts.PaymentAttachMethodRequest;
 
 namespace Granit.Payments.Endpoints.Endpoints;
@@ -90,6 +92,7 @@ internal static class PaymentMethodEndpoints
     private static async Task<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>> GetAvailableAsync(
         [FromServices] IPaymentProviderResolver resolver,
         [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
         CancellationToken cancellationToken)
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
@@ -99,7 +102,10 @@ internal static class PaymentMethodEndpoints
 
         IReadOnlyList<PaymentAvailableMethodResponse> response = available
             .Select(a => new PaymentAvailableMethodResponse(
-                a.MethodType, a.Category, a.ProviderName, a.DisplayLabel))
+                a.MethodType,
+                a.Category,
+                a.ProviderName,
+                PaymentMethodLabelResolver.Resolve(localizer, a.MethodType)))
             .ToList();
 
         return TypedResults.Ok(response);

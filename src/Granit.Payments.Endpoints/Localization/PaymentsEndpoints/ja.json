@@ -7,6 +7,19 @@
     "Permission:Payments.Refunds.Execute": "返金を処理",
     "Permission:Payments.Methods.Read": "決済方法を表示",
     "Permission:Payments.Methods.Manage": "決済方法を管理（追加、削除）",
-    "Permission:Payments.Configuration.Manage": "決済方法の設定を管理"
+    "Permission:Payments.Configuration.Manage": "決済方法の設定を管理",
+    "Payments.Methods.card": "クレジット / デビットカード",
+    "Payments.Methods.bancontact": "Bancontact",
+    "Payments.Methods.ideal": "iDEAL",
+    "Payments.Methods.bank_transfer": "SEPA 銀行振込",
+    "Payments.Methods.sepa_debit": "SEPA ダイレクトデビット",
+    "Payments.Methods.apple_pay": "Apple Pay",
+    "Payments.Methods.google_pay": "Google Pay",
+    "Payments.Methods.paypal": "PayPal",
+    "Payments.Methods.alipay": "Alipay",
+    "Payments.Methods.wechat_pay": "WeChat Pay",
+    "Payments.Methods.belfius": "Belfius Pay Button",
+    "Payments.Methods.kbc": "KBC Payment Button",
+    "Payments.Methods.paysafecard": "paysafecard"
   }
 }

@@ -7,6 +7,19 @@
     "Permission:Payments.Refunds.Execute": "धनवापसी प्रक्रिया करें",
     "Permission:Payments.Methods.Read": "भुगतान विधियाँ देखें",
     "Permission:Payments.Methods.Manage": "भुगतान विधियाँ प्रबंधित करें (जोड़ें, हटाएँ)",
-    "Permission:Payments.Configuration.Manage": "भुगतान विधि कॉन्फ़िगरेशन प्रबंधित करें"
+    "Permission:Payments.Configuration.Manage": "भुगतान विधि कॉन्फ़िगरेशन प्रबंधित करें",
+    "Payments.Methods.card": "क्रेडिट / डेबिट कार्ड",
+    "Payments.Methods.bancontact": "Bancontact",
+    "Payments.Methods.ideal": "iDEAL",
+    "Payments.Methods.bank_transfer": "SEPA बैंक ट्रांसफर",
+    "Payments.Methods.sepa_debit": "SEPA डायरेक्ट डेबिट",
+    "Payments.Methods.apple_pay": "Apple Pay",
+    "Payments.Methods.google_pay": "Google Pay",
+    "Payments.Methods.paypal": "PayPal",
+    "Payments.Methods.alipay": "अलीपे",
+    "Payments.Methods.wechat_pay": "विचैट पे",
+    "Payments.Methods.belfius": "Belfius Pay Button",
+    "Payments.Methods.kbc": "KBC Payment Button",
+    "Payments.Methods.paysafecard": "paysafecard"
   }
 }

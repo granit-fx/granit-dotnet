@@ -17,6 +17,12 @@ internal sealed partial class SepaDirectDebitPaymentProvider(
     public string Name => "sepa-direct-debit";
 
     /// <inheritdoc/>
+    public IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } =
+    [
+        new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit),
+    ];
+
+    /// <inheritdoc/>
     public Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

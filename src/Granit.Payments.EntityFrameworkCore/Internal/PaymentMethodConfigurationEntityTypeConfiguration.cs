@@ -17,8 +17,6 @@ internal sealed class PaymentMethodConfigurationEntityTypeConfiguration
 
         builder.Property(e => e.MethodType).HasMaxLength(64).IsRequired();
         builder.Property(e => e.ProviderName).HasMaxLength(64).IsRequired();
-        builder.Property(e => e.DisplayLabel).HasMaxLength(100).IsRequired();
-        builder.Property(e => e.Category).IsRequired();
         builder.Property(e => e.IsActive).IsRequired().HasDefaultValue(true);
 
         builder.HasIndex(e => new { e.ProviderName, e.MethodType })

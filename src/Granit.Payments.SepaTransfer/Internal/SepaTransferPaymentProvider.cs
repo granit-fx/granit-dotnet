@@ -22,6 +22,12 @@ internal sealed partial class SepaTransferPaymentProvider(
     public string Name => "sepa-transfer";
 
     /// <inheritdoc/>
+    public IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } =
+    [
+        new(PaymentMethods.BankTransfer, PaymentMethodCategory.BankTransfer),
+    ];
+
+    /// <inheritdoc/>
     public Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

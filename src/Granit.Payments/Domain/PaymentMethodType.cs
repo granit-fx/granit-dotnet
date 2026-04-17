@@ -102,6 +102,12 @@ public static class PaymentMethods
     /// <summary>PayPal.</summary>
     public const string PayPal = "paypal";
 
+    /// <summary>Alipay (China, international).</summary>
+    public const string Alipay = "alipay";
+
+    /// <summary>WeChat Pay (China).</summary>
+    public const string WechatPay = "wechat_pay";
+
     // ── Buy Now Pay Later ──────────────────────────────────────────────
 
     /// <summary>Klarna.</summary>
@@ -129,7 +135,7 @@ public static class PaymentMethods
             or Twint or Giropay or MyBank or Belfius or Kbc => PaymentMethodCategory.BankRedirect,
         BankTransfer => PaymentMethodCategory.BankTransfer,
         SepaDebit => PaymentMethodCategory.BankDebit,
-        ApplePay or GooglePay or PayPal => PaymentMethodCategory.Wallet,
+        ApplePay or GooglePay or PayPal or Alipay or WechatPay => PaymentMethodCategory.Wallet,
         Klarna or Alma or Riverty => PaymentMethodCategory.BuyNowPayLater,
         Paysafecard => PaymentMethodCategory.Voucher,
         _ => PaymentMethodCategory.Card,
