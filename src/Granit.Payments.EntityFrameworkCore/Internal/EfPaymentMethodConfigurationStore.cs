@@ -1,3 +1,4 @@
+using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -153,5 +154,83 @@ internal sealed class EfPaymentMethodConfigurationStore(
         }
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task UpsertActivationWithSnapshotAsync(
+        Guid newId,
+        string providerName,
+        string methodType,
+        PaymentMethodCapability capability,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(capability);
+
+        await using PaymentsDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+            .FirstOrDefaultAsync(
+                c => c.ProviderName == providerName && c.MethodType == methodType,
+                cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            var created = PaymentMethodConfiguration.Activate(newId, providerName, methodType);
+            created.SnapshotCapability(capability);
+
+            db.PaymentMethodConfigurations.Add(created);
+
+            try
+            {
+                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                return;
+            }
+            catch (DbUpdateException)
+            {
+                db.PaymentMethodConfigurations.Remove(created);
+                db.ChangeTracker.Clear();
+
+                existing = await db.PaymentMethodConfigurations
+                    .FirstOrDefaultAsync(
+                        c => c.ProviderName == providerName && c.MethodType == methodType,
+                        cancellationToken).ConfigureAwait(false);
+
+                if (existing is null)
+                {
+                    throw;
+                }
+            }
+        }
+
+        existing.Activate();
+        existing.SnapshotCapability(capability);
+
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<bool> UpdateCapabilitySnapshotAsync(
+        string providerName,
+        string methodType,
+        PaymentMethodCapability capability,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(capability);
+
+        await using PaymentsDbContext db = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+            .FirstOrDefaultAsync(
+                c => c.ProviderName == providerName && c.MethodType == methodType,
+                cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            return false;
+        }
+
+        existing.SnapshotCapability(capability);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return true;
     }
 }

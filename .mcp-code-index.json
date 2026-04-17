@@ -28705,6 +28705,15 @@
       "members": []
     },
     {
+      "name": "PaymentCatalogMethod",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentCatalogMethod",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 30,
+      "members": []
+    },
+    {
       "name": "PaymentChargeRequest",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentChargeRequest",
       "kind": "record",
@@ -28741,12 +28750,30 @@
       "members": []
     },
     {
+      "name": "PaymentMethodAmountBoundResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodAmountBoundResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 58,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodCapabilityResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodCapabilityResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 48,
+      "members": []
+    },
+    {
       "name": "PaymentMethodConfigurationItem",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentMethodConfigurationItem",
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
-      "line": 6,
+      "line": 11,
       "members": []
     },
     {
@@ -28759,12 +28786,21 @@
       "members": []
     },
     {
+      "name": "PaymentProviderCatalogResponse",
+      "fqn": "Granit.Payments.Endpoints.Dtos.PaymentProviderCatalogResponse",
+      "kind": "record",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
+      "line": 39,
+      "members": []
+    },
+    {
       "name": "PaymentProviderConfigurationResponse",
       "fqn": "Granit.Payments.Endpoints.Dtos.PaymentProviderConfigurationResponse",
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodConfigurationDtos.cs",
-      "line": 13,
+      "line": 19,
       "members": []
     },
     {
@@ -29104,7 +29140,7 @@
       "kind": "interface",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/IPaymentMethodConfigurationWriter.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "AddAsync",
@@ -29129,6 +29165,18 @@
           "kind": "method",
           "signature": "UpsertActivationAsync(Guid newId, string providerName, string methodType, bool isActive, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "UpsertActivationWithSnapshotAsync",
+          "kind": "method",
+          "signature": "UpsertActivationWithSnapshotAsync(Guid newId, string providerName, string methodType, PaymentMethodCapability capability, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateCapabilitySnapshotAsync",
+          "kind": "method",
+          "signature": "UpdateCapabilitySnapshotAsync(string providerName, string methodType, PaymentMethodCapability capability, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },

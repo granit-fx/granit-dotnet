@@ -31,19 +31,32 @@ internal static class PaymentMethodConfigurationEndpoints
             .WithDescription(
                 "Returns the fused view of all payment methods supported by registered IPaymentProvider "
                 + "instances, grouped by provider. Each method shows its localized display label, category "
-                + "and current activation state. Use the /{provider}/{method}/activate and /deactivate "
-                + "endpoints to toggle a method.")
+                + "and current activation state plus the capability snapshot captured at activation time.")
             .Produces<IReadOnlyList<PaymentProviderConfigurationResponse>>()
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
+            .AllowHostAccess();
+
+        config.MapGet("/catalog", GetCatalogAsync)
+            .WithName("GetPaymentProviderCatalog")
+            .WithSummary("Returns the live catalog of a specific provider with activation state.")
+            .WithDescription(
+                "Calls IPaymentProvider.GetCatalogAsync on the named provider and cross-references the "
+                + "result with the current activation records. Use this endpoint to power admin UIs where "
+                + "new provider methods should appear automatically (before any activation has snapshotted "
+                + "them). Returns 404 if the provider is not registered.")
+            .Produces<PaymentProviderCatalogResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
             .AllowHostAccess();
 
         config.MapPost("/{providerName}/{methodType}/activate", ActivateAsync)
             .WithName("ActivatePaymentMethodConfiguration")
-            .WithSummary("Activates a payment method for the platform.")
+            .WithSummary("Activates a payment method for the platform and snapshots its capability.")
             .WithDescription(
-                "Marks the method declared by the given provider as active. Idempotent: calling on an "
-                + "already-active method returns 200 OK with no change. Returns 404 if the provider is "
-                + "not registered, 400 if the provider does not declare the given method type.")
+                "Marks the method declared by the given provider as active and captures its current "
+                + "capability (countries, currencies, amount bounds, sequence types) on the activation "
+                + "record. Idempotent. Returns 404 if the provider is not registered, 400 if the provider "
+                + "no longer offers the given method type.")
             .Produces<PaymentMethodConfigurationItem>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -56,7 +69,21 @@ internal static class PaymentMethodConfigurationEndpoints
             .WithSummary("Deactivates a payment method for the platform.")
             .WithDescription(
                 "Marks the method as inactive. Tenants will no longer see it in GET /methods/available. "
-                + "Idempotent: calling on an already-inactive (or never-activated) method returns 200 OK.")
+                + "The capability snapshot is preserved so a future reactivation does not require a re-sync.")
+            .Produces<PaymentMethodConfigurationItem>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
+            .AllowHostAccess();
+
+        config.MapPost("/{providerName}/{methodType}/resync", ResyncAsync)
+            .WithName("ResyncPaymentMethodConfiguration")
+            .WithSummary("Re-fetches the provider catalog and updates the capability snapshot.")
+            .WithDescription(
+                "Calls IPaymentProvider.GetCatalogAsync and overwrites the capability snapshot on the "
+                + "existing activation record. Use this to propagate provider-side changes (added "
+                + "countries, updated amount bounds) without deactivating/reactivating the method.")
             .Produces<PaymentMethodConfigurationItem>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -80,78 +107,44 @@ internal static class PaymentMethodConfigurationEndpoints
         IReadOnlyList<PaymentMethodConfiguration> configs = await reader
             .GetAllAsync(cancellationToken).ConfigureAwait(false);
 
-        var activeByKey = configs.ToDictionary(
+        var configsByKey = configs.ToDictionary(
             c => (c.ProviderName, c.MethodType),
-            c => c.IsActive,
+            c => c,
             new ProviderMethodKeyComparer());
 
-        var response = providers
-            .Select(p => new PaymentProviderConfigurationResponse(
-                p.Name,
-                p.SupportedMethods
-                    .Select(d => new PaymentMethodConfigurationItem(
-                        d.MethodType,
-                        PaymentMethodLabelResolver.Resolve(localizer, d.MethodType),
-                        d.Category,
-                        activeByKey.TryGetValue((p.Name, d.MethodType), out bool active) && active))
-                    .ToList()))
-            .OrderBy(g => g.ProviderName)
-            .ToList();
+        List<PaymentProviderConfigurationResponse> response = [];
+        foreach (IPaymentProvider provider in providers.OrderBy(p => p.Name, StringComparer.Ordinal))
+        {
+            List<PaymentMethodConfigurationItem> methods = [];
+            foreach (PaymentMethodDescriptor descriptor in provider.SupportedMethods)
+            {
+                configsByKey.TryGetValue((provider.Name, descriptor.MethodType), out PaymentMethodConfiguration? config);
+                PaymentMethodCapability? snapshot = config?.GetCapabilitySnapshot();
+
+                methods.Add(new PaymentMethodConfigurationItem(
+                    MethodType: descriptor.MethodType,
+                    DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, descriptor.MethodType),
+                    Category: descriptor.Category,
+                    IsActive: config?.IsActive ?? false,
+                    CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponseOrNull(snapshot)));
+            }
+
+            response.Add(new PaymentProviderConfigurationResponse(provider.Name, methods));
+        }
 
         return TypedResults.Ok<IReadOnlyList<PaymentProviderConfigurationResponse>>(response);
     }
 
     // -------------------------------------------------------------------------
-    // POST /{provider}/{method}/activate
+    // GET /catalog?providerName=
     // -------------------------------------------------------------------------
 
-    private static Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ActivateAsync(
-        string providerName,
-        string methodType,
+    private static async Task<Results<Ok<PaymentProviderCatalogResponse>, ProblemHttpResult>> GetCatalogAsync(
+        [FromQuery] string providerName,
         [FromServices] IEnumerable<IPaymentProvider> providers,
         [FromServices] IPaymentMethodConfigurationReader reader,
-        [FromServices] IPaymentMethodConfigurationWriter writer,
-        [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
-        [FromServices] IFusionCache cache,
-        CancellationToken cancellationToken) =>
-        ToggleAsync(providerName, methodType, activate: true,
-            providers, reader, writer, guidGenerator, localizer, cache, cancellationToken);
-
-    // -------------------------------------------------------------------------
-    // POST /{provider}/{method}/deactivate
-    // -------------------------------------------------------------------------
-
-    private static Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> DeactivateAsync(
-        string providerName,
-        string methodType,
-        [FromServices] IEnumerable<IPaymentProvider> providers,
-        [FromServices] IPaymentMethodConfigurationReader reader,
-        [FromServices] IPaymentMethodConfigurationWriter writer,
-        [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
-        [FromServices] IFusionCache cache,
-        CancellationToken cancellationToken) =>
-        ToggleAsync(providerName, methodType, activate: false,
-            providers, reader, writer, guidGenerator, localizer, cache, cancellationToken);
-
-    // -------------------------------------------------------------------------
-    // Shared toggle logic
-    // -------------------------------------------------------------------------
-
-    private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ToggleAsync(
-        string providerName,
-        string methodType,
-        bool activate,
-        [FromServices] IEnumerable<IPaymentProvider> providers,
-        [FromServices] IPaymentMethodConfigurationReader reader,
-        [FromServices] IPaymentMethodConfigurationWriter writer,
-        [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
-        [FromServices] IFusionCache cache,
         CancellationToken cancellationToken)
     {
-        // 1. Validate provider exists in DI
         IPaymentProvider? provider = providers
             .FirstOrDefault(p => p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
 
@@ -162,7 +155,112 @@ internal static class PaymentMethodConfigurationEndpoints
                 detail: $"Payment provider '{providerName}' is not registered.");
         }
 
-        // 2. Validate method is declared by the provider
+        IReadOnlyList<PaymentMethodCatalogEntry> catalog = await provider
+            .GetCatalogAsync(cancellationToken).ConfigureAwait(false);
+
+        IReadOnlyList<PaymentMethodConfiguration> allConfigs = await reader
+            .GetAllAsync(cancellationToken).ConfigureAwait(false);
+
+        var configsForProvider = allConfigs
+            .Where(c => c.ProviderName.Equals(provider.Name, StringComparison.OrdinalIgnoreCase))
+            .ToDictionary(c => c.MethodType, c => c, StringComparer.OrdinalIgnoreCase);
+
+        List<PaymentCatalogMethod> methods = [];
+        foreach (PaymentMethodCatalogEntry entry in catalog)
+        {
+            configsForProvider.TryGetValue(entry.MethodType, out PaymentMethodConfiguration? config);
+
+            methods.Add(new PaymentCatalogMethod(
+                MethodType: entry.MethodType,
+                Category: entry.Category,
+                DisplayLabel: entry.DisplayLabel,
+                Capability: PaymentMethodCapabilityMapper.ToResponse(entry.Capability),
+                IsActive: config?.IsActive ?? false,
+                HasSnapshot: config?.GetCapabilitySnapshot() is not null));
+        }
+
+        return TypedResults.Ok(new PaymentProviderCatalogResponse(provider.Name, methods));
+    }
+
+    // -------------------------------------------------------------------------
+    // POST /{provider}/{method}/activate
+    // -------------------------------------------------------------------------
+
+    private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ActivateAsync(
+        string providerName,
+        string methodType,
+        [FromServices] IEnumerable<IPaymentProvider> providers,
+        [FromServices] IPaymentMethodConfigurationWriter writer,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
+        [FromServices] IFusionCache cache,
+        CancellationToken cancellationToken)
+    {
+        IPaymentProvider? provider = providers
+            .FirstOrDefault(p => p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+
+        if (provider is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Payment provider '{providerName}' is not registered.");
+        }
+
+        IReadOnlyList<PaymentMethodCatalogEntry> catalog = await provider
+            .GetCatalogAsync(cancellationToken).ConfigureAwait(false);
+
+        PaymentMethodCatalogEntry? entry = catalog
+            .FirstOrDefault(e => e.MethodType.Equals(methodType, StringComparison.OrdinalIgnoreCase));
+
+        if (entry is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: $"Provider '{providerName}' does not currently offer method type '{methodType}'.");
+        }
+
+        await writer.UpsertActivationWithSnapshotAsync(
+            guidGenerator.Create(),
+            provider.Name,
+            entry.MethodType,
+            entry.Capability,
+            cancellationToken).ConfigureAwait(false);
+
+        await cache.RemoveAsync(ResolverCacheKey, token: cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(new PaymentMethodConfigurationItem(
+            MethodType: entry.MethodType,
+            DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, entry.MethodType),
+            Category: entry.Category,
+            IsActive: true,
+            CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponse(entry.Capability)));
+    }
+
+    // -------------------------------------------------------------------------
+    // POST /{provider}/{method}/deactivate
+    // -------------------------------------------------------------------------
+
+    private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> DeactivateAsync(
+        string providerName,
+        string methodType,
+        [FromServices] IEnumerable<IPaymentProvider> providers,
+        [FromServices] IPaymentMethodConfigurationReader reader,
+        [FromServices] IPaymentMethodConfigurationWriter writer,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
+        [FromServices] IFusionCache cache,
+        CancellationToken cancellationToken)
+    {
+        IPaymentProvider? provider = providers
+            .FirstOrDefault(p => p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+
+        if (provider is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Payment provider '{providerName}' is not registered.");
+        }
+
         PaymentMethodDescriptor? descriptor = provider.SupportedMethods
             .FirstOrDefault(d => d.MethodType.Equals(methodType, StringComparison.OrdinalIgnoreCase));
 
@@ -173,25 +271,85 @@ internal static class PaymentMethodConfigurationEndpoints
                 detail: $"Provider '{providerName}' does not support method type '{methodType}'.");
         }
 
-        // 3. Race-safe upsert — the store handles DbUpdateException internally
         await writer.UpsertActivationAsync(
             guidGenerator.Create(),
             provider.Name,
             descriptor.MethodType,
-            activate,
+            isActive: false,
             cancellationToken).ConfigureAwait(false);
 
-        // 4. Proactive cache invalidation — tenants see the change immediately
         await cache.RemoveAsync(ResolverCacheKey, token: cancellationToken).ConfigureAwait(false);
 
-        // 5. Return the merged view for this method
-        var item = new PaymentMethodConfigurationItem(
-            descriptor.MethodType,
-            PaymentMethodLabelResolver.Resolve(localizer, descriptor.MethodType),
-            descriptor.Category,
-            activate);
+        PaymentMethodConfiguration? config = await reader
+            .FindAsync(provider.Name, descriptor.MethodType, cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(item);
+        return TypedResults.Ok(new PaymentMethodConfigurationItem(
+            MethodType: descriptor.MethodType,
+            DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, descriptor.MethodType),
+            Category: descriptor.Category,
+            IsActive: false,
+            CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponseOrNull(config?.GetCapabilitySnapshot())));
+    }
+
+    // -------------------------------------------------------------------------
+    // POST /{provider}/{method}/resync
+    // -------------------------------------------------------------------------
+
+    private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ResyncAsync(
+        string providerName,
+        string methodType,
+        [FromServices] IEnumerable<IPaymentProvider> providers,
+        [FromServices] IPaymentMethodConfigurationReader reader,
+        [FromServices] IPaymentMethodConfigurationWriter writer,
+        [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
+        [FromServices] IFusionCache cache,
+        CancellationToken cancellationToken)
+    {
+        IPaymentProvider? provider = providers
+            .FirstOrDefault(p => p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase));
+
+        if (provider is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Payment provider '{providerName}' is not registered.");
+        }
+
+        PaymentMethodConfiguration? existing = await reader
+            .FindAsync(provider.Name, methodType, cancellationToken).ConfigureAwait(false);
+
+        if (existing is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"No configuration exists for '{providerName}'/'{methodType}'. Activate it first.");
+        }
+
+        IReadOnlyList<PaymentMethodCatalogEntry> catalog = await provider
+            .GetCatalogAsync(cancellationToken).ConfigureAwait(false);
+
+        PaymentMethodCatalogEntry? entry = catalog
+            .FirstOrDefault(e => e.MethodType.Equals(methodType, StringComparison.OrdinalIgnoreCase));
+
+        if (entry is null)
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status400BadRequest,
+                detail: $"Provider '{providerName}' no longer offers method type '{methodType}'.");
+        }
+
+        await writer.UpdateCapabilitySnapshotAsync(
+            provider.Name, entry.MethodType, entry.Capability, cancellationToken)
+            .ConfigureAwait(false);
+
+        await cache.RemoveAsync(ResolverCacheKey, token: cancellationToken).ConfigureAwait(false);
+
+        return TypedResults.Ok(new PaymentMethodConfigurationItem(
+            MethodType: entry.MethodType,
+            DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, entry.MethodType),
+            Category: entry.Category,
+            IsActive: existing.IsActive,
+            CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponse(entry.Capability)));
     }
 
     private sealed class ProviderMethodKeyComparer : IEqualityComparer<(string Provider, string Method)>

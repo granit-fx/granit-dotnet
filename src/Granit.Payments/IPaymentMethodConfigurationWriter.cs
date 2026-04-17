@@ -1,3 +1,4 @@
+using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 
 namespace Granit.Payments;
@@ -24,5 +25,26 @@ public interface IPaymentMethodConfigurationWriter
         string providerName,
         string methodType,
         bool isActive,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Upserts a configuration as active, capturing the provider's capability snapshot in the
+    /// same transaction. Race-safe on insert (same semantics as <see cref="UpsertActivationAsync"/>).
+    /// </summary>
+    Task UpsertActivationWithSnapshotAsync(
+        Guid newId,
+        string providerName,
+        string methodType,
+        PaymentMethodCapability capability,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the capability snapshot on an existing configuration. Returns
+    /// <see langword="false"/> when no configuration exists for (providerName, methodType).
+    /// </summary>
+    Task<bool> UpdateCapabilitySnapshotAsync(
+        string providerName,
+        string methodType,
+        PaymentMethodCapability capability,
         CancellationToken cancellationToken = default);
 }
