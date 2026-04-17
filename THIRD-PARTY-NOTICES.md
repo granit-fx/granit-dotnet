@@ -83,12 +83,12 @@ Dernière mise à jour : 2026-04-16
 | Sylvan.Data.Excel | 0.5.4 | Copyright (c) Mark Pflug |
 | System.Composition.AttributedModel | 9.0.14 | (c) Microsoft Corporation |
 | System.Text.Json | 9.0.14 | (c) Microsoft Corporation |
-| WolverineFx | 5.24.0 | JasperFx Contributors |
-| WolverineFx.EntityFrameworkCore | 5.24.0 | JasperFx Contributors |
-| WolverineFx.FluentValidation | 5.24.0 | JasperFx Contributors |
-| WolverineFx.Http.FluentValidation | 5.24.0 | JasperFx Contributors |
-| WolverineFx.Postgresql | 5.24.0 | JasperFx Contributors |
-| WolverineFx.SqlServer | 5.24.0 | JasperFx Contributors |
+| WolverineFx | 5.31.1 | JasperFx Contributors |
+| WolverineFx.EntityFrameworkCore | 5.31.1 | JasperFx Contributors |
+| WolverineFx.FluentValidation | 5.31.1 | JasperFx Contributors |
+| WolverineFx.Http.FluentValidation | 5.31.1 | JasperFx Contributors |
+| WolverineFx.Postgresql | 5.31.1 | JasperFx Contributors |
+| WolverineFx.SqlServer | 5.31.1 | JasperFx Contributors |
 | Yarp.ReverseProxy | 2.3.0 | (c) Microsoft Corporation |
 | ZiggyCreatures.FusionCache | 2.6.0 | Copyright (c) Jody Donetti |
 | ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis | 2.6.0 | Copyright (c) Jody Donetti |
