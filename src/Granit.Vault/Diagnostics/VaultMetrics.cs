@@ -18,6 +18,8 @@ public sealed class VaultMetrics
     private readonly Counter<long> _operationsErrors;
     private readonly Histogram<double> _operationDuration;
     private readonly Counter<long> _rotationsDetected;
+    private readonly Counter<long> _secretReads;
+    private readonly Counter<long> _secretCacheHits;
 
     public VaultMetrics(IMeterFactory meterFactory)
     {
@@ -39,6 +41,14 @@ public sealed class VaultMetrics
         _rotationsDetected = meter.CreateCounter<long>(
             "granit.vault.rotations.detected",
             description: "Number of key rotations detected.");
+
+        _secretReads = meter.CreateCounter<long>(
+            "granit.vault.secret.read",
+            description: "Number of ISecretStore.GetSecretAsync calls, tagged with provider, outcome and cached flag.");
+
+        _secretCacheHits = meter.CreateCounter<long>(
+            "granit.vault.secret.cache_hit",
+            description: "Number of secret reads served from the FusionCache decorator without touching the provider.");
     }
 
     public void RecordOperationCompleted(string? tenantId, string operation, string provider, string status) =>
@@ -68,6 +78,28 @@ public sealed class VaultMetrics
 
     public void RecordRotationDetected(string? tenantId, string provider) =>
         _rotationsDetected.Add(1, new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
+            { "provider", provider },
+        });
+
+    /// <summary>
+    /// Records a secret read. Always emitted at the boundary seen by callers — when a cache
+    /// decorator is installed, only the decorator calls this (providers stay silent to avoid
+    /// double-counting; their ActivitySource spans already capture the SDK call).
+    /// </summary>
+    public void RecordSecretRead(string? tenantId, string provider, string outcome, bool cached) =>
+        _secretReads.Add(1, new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenantValue },
+            { "provider", provider },
+            { "outcome", outcome },
+            { "cached", cached ? "true" : "false" },
+        });
+
+    /// <summary>Records a cache-served secret read (complementary to <see cref="RecordSecretRead"/> with <c>cached=true</c>).</summary>
+    public void RecordSecretCacheHit(string? tenantId, string provider) =>
+        _secretCacheHits.Add(1, new TagList
         {
             { TenantIdTag, tenantId ?? GlobalTenantValue },
             { "provider", provider },

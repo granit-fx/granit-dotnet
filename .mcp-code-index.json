@@ -2130,6 +2130,7 @@
     {
       "name": "Granit.Vault",
       "deps": [
+        "Granit.Caching",
         "Granit.Encryption"
       ],
       "framework": "net10.0"
@@ -41782,6 +41783,18 @@
           "kind": "method",
           "signature": "RecordRotationDetected(string? tenantId, string provider)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordSecretRead",
+          "kind": "method",
+          "signature": "RecordSecretRead(string? tenantId, string provider, string outcome, bool cached)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordSecretCacheHit",
+          "kind": "method",
+          "signature": "RecordSecretCacheHit(string? tenantId, string provider)",
+          "returnType": "void"
         }
       ]
     },
@@ -41800,6 +41813,88 @@
           "returnType": "string KeyVersion { get; } public"
         }
       ]
+    },
+    {
+      "name": "SecretAccessDeniedException",
+      "fqn": "Granit.Vault.Exceptions.SecretAccessDeniedException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/SecretAccessDeniedException.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "SecretAccessDeniedException",
+          "kind": "method",
+          "signature": "SecretAccessDeniedException(string secretName, Exception? innerException = null)",
+          "returnType": "string SecretName { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SecretNotFoundException",
+      "fqn": "Granit.Vault.Exceptions.SecretNotFoundException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/SecretNotFoundException.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "SecretNotFoundException",
+          "kind": "method",
+          "signature": "SecretNotFoundException(string secretName, string? version = null, Exception? innerException = null)",
+          "returnType": "string SecretName { get; } public string? Version { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SecretVaultConfigurationException",
+      "fqn": "Granit.Vault.Exceptions.SecretVaultConfigurationException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/SecretVaultConfigurationException.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "SecretVaultConfigurationException",
+          "kind": "method",
+          "signature": "SecretVaultConfigurationException(string errorCode, string message, Exception? innerException = null)",
+          "returnType": "string ErrorCode { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SecretVaultException",
+      "fqn": "Granit.Vault.Exceptions.SecretVaultException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/SecretVaultException.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "SecretVaultTransientException",
+      "fqn": "Granit.Vault.Exceptions.SecretVaultTransientException",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Exceptions/SecretVaultTransientException.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "SecretVaultTransientException",
+          "kind": "method",
+          "signature": "SecretVaultTransientException(string secretName, string message, Exception? innerException = null)",
+          "returnType": "string SecretName { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "SecretStoreServiceCollectionExtensions",
+      "fqn": "Granit.Vault.Extensions.SecretStoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Extensions/SecretStoreServiceCollectionExtensions.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "GoogleCloudVaultServiceCollectionExtensions",
@@ -41891,7 +41986,7 @@
       "kind": "class",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/GranitVaultModule.cs",
-      "line": 25,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42029,6 +42124,28 @@
       "members": []
     },
     {
+      "name": "ISecretStore",
+      "fqn": "Granit.Vault.ISecretStore",
+      "kind": "interface",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/ISecretStore.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "GetSecretAsync",
+          "kind": "method",
+          "signature": "GetSecretAsync(SecretRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SecretDescriptor>"
+        },
+        {
+          "name": "TryGetSecretAsync",
+          "kind": "method",
+          "signature": "TryGetSecretAsync(SecretRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<SecretDescriptor?>"
+        }
+      ]
+    },
+    {
       "name": "ITransitEncryptionService",
       "fqn": "Granit.Vault.ITransitEncryptionService",
       "kind": "interface",
@@ -42083,6 +42200,75 @@
           "returnType": "int"
         }
       ]
+    },
+    {
+      "name": "SecretStoreOptions",
+      "fqn": "Granit.Vault.Options.SecretStoreOptions",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Options/SecretStoreOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "CacheSeconds",
+          "kind": "property",
+          "signature": "int CacheSeconds",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "SecretDescriptor",
+      "fqn": "Granit.Vault.SecretDescriptor",
+      "kind": "record",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/SecretDescriptor.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "required string Name",
+          "returnType": "required string"
+        },
+        {
+          "name": "FromString",
+          "kind": "method",
+          "signature": "FromString(string name, string value, string? version = null, string? contentType = null, DateTimeOffset? createdAt = null, DateTimeOffset? expiresOn = null, DateTimeOffset? notBefore = null, IReadOnlyDictionary<string, string>? tags = null)",
+          "returnType": "SecretDescriptor"
+        }
+      ]
+    },
+    {
+      "name": "SecretRequest",
+      "fqn": "Granit.Vault.SecretRequest",
+      "kind": "record",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/SecretRequest.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Latest",
+          "kind": "method",
+          "signature": "Latest(string name)",
+          "returnType": "SecretRequest"
+        },
+        {
+          "name": "At",
+          "kind": "method",
+          "signature": "At(string name, string version)",
+          "returnType": "SecretRequest"
+        }
+      ]
+    },
+    {
+      "name": "SecretVersion",
+      "fqn": "Granit.Vault.SecretVersion",
+      "kind": "record",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/SecretVersion.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "VaultLocalizationResource",
