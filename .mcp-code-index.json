@@ -41902,7 +41902,7 @@
       "kind": "class",
       "project": "Granit.Vault.GoogleCloud",
       "file": "src/Granit.Vault.GoogleCloud/Extensions/GoogleCloudVaultServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitVaultGoogleCloud",

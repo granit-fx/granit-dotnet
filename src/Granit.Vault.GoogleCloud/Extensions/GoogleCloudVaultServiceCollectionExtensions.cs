@@ -3,6 +3,7 @@ using Google.Cloud.Kms.V1;
 using Google.Cloud.SecretManager.V1;
 using Granit.Diagnostics;
 using Granit.Encryption;
+using Granit.Vault.Extensions;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.HealthChecks;
 using Granit.Vault.GoogleCloud.Options;
@@ -74,6 +75,9 @@ public static class GoogleCloudVaultServiceCollectionExtensions
         services.AddSingleton<IDatabaseCredentialProvider>(sp =>
             sp.GetRequiredService<SecretManagerCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<SecretManagerCredentialProvider>());
+
+        // ISecretStore for arbitrary secret retrieval
+        services.AddGranitSecretStore<GoogleCloudSecretStore>("gcp");
 
         GranitActivitySourceRegistry.Register(VaultGoogleCloudActivitySource.Name);
 
