@@ -23,6 +23,17 @@ internal sealed partial class SepaDirectDebitPaymentProvider(
     ];
 
     /// <inheritdoc/>
+    public Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default)
+    {
+        // TODO(phase-2b): declare real capabilities — SEPA zone countries, {EUR}, First|Recurring.
+        IReadOnlyList<PaymentMethodCatalogEntry> catalog =
+        [
+            new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit, "SEPA Direct Debit", PaymentMethodCapability.Wildcard),
+        ];
+        return Task.FromResult(catalog);
+    }
+
+    /// <inheritdoc/>
     public Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

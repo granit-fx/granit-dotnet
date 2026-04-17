@@ -59,6 +59,19 @@ internal sealed partial class MolliePaymentProvider(
     ];
 
     /// <inheritdoc/>
+    public Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default)
+    {
+        // TODO(phase-2b): call IMethodClient.GetMethodListAsync(include: "pricing") and
+        // map pricing / min / max / countries / sequenceType into real capabilities.
+        IReadOnlyList<PaymentMethodCatalogEntry> catalog =
+        [
+            .. SupportedMethods.Select(m => new PaymentMethodCatalogEntry(
+                m.MethodType, m.Category, m.MethodType, PaymentMethodCapability.Wildcard)),
+        ];
+        return Task.FromResult(catalog);
+    }
+
+    /// <inheritdoc/>
     public async Task<PaymentProviderChargeResult> ChargeAsync(
         PaymentChargeRequest request, CancellationToken cancellationToken = default)
     {

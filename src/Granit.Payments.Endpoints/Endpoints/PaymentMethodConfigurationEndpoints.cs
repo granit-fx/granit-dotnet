@@ -1,5 +1,6 @@
 using Granit.Authorization.Extensions;
 using Granit.Guids;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 using Granit.Payments.Endpoints.Dtos;
@@ -46,6 +47,7 @@ internal static class PaymentMethodConfigurationEndpoints
             .Produces<PaymentMethodConfigurationItem>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
             .AllowHostAccess();
 
@@ -58,6 +60,7 @@ internal static class PaymentMethodConfigurationEndpoints
             .Produces<PaymentMethodConfigurationItem>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
             .AllowHostAccess();
 

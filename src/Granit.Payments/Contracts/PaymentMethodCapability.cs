@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Granit.Payments.Domain;
 
 namespace Granit.Payments.Contracts;
@@ -18,4 +19,17 @@ public sealed record PaymentMethodCapability(
     IReadOnlySet<string> SupportedCountries,
     IReadOnlySet<string> SupportedCurrencies,
     PaymentMethodSequenceType SupportedSequenceTypes,
-    IReadOnlyDictionary<string, PaymentMethodAmountBound> AmountBounds);
+    IReadOnlyDictionary<string, PaymentMethodAmountBound> AmountBounds)
+{
+    /// <summary>
+    /// Capability with no country/currency/amount constraints and all sequence modes allowed.
+    /// Use when the real capability is unknown or being deferred to a later phase.
+    /// </summary>
+    public static PaymentMethodCapability Wildcard { get; } = new(
+        SupportedCountries: ImmutableHashSet<string>.Empty,
+        SupportedCurrencies: ImmutableHashSet<string>.Empty,
+        SupportedSequenceTypes: PaymentMethodSequenceType.OneOff
+            | PaymentMethodSequenceType.First
+            | PaymentMethodSequenceType.Recurring,
+        AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty);
+}

@@ -15,6 +15,18 @@ public interface IPaymentProvider
     /// </summary>
     IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; }
 
+    /// <summary>
+    /// Fetches the live catalog of methods from the provider, with capability metadata
+    /// (supported countries, currencies, amount bounds, sequence types).
+    /// </summary>
+    /// <remarks>
+    /// Called by the admin activation flow to snapshot capability into
+    /// <c>PaymentMethodConfiguration</c>. External-API-backed providers (Mollie, Stripe)
+    /// should honor the provider's current account state (enabled methods in the provider
+    /// dashboard). Built-in providers (SEPA) return a static catalog.
+    /// </remarks>
+    Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default);
+
     /// <summary>Initiates a charge.</summary>
     Task<PaymentProviderChargeResult> ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default);
 

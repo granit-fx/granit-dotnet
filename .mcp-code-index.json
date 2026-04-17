@@ -28165,7 +28165,23 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentMethodCapability.cs",
-      "line": 17,
+      "line": 18,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(SupportedCountries: ImmutableHashSet<string>.Empty, SupportedCurrencies: ImmutableHashSet<string>.Empty, SupportedSequenceTypes: PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring, AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)",
+          "returnType": "PaymentMethodCapability Wildcard { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodCatalogEntry",
+      "fqn": "Granit.Payments.Contracts.PaymentMethodCatalogEntry",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentMethodCatalogEntry.cs",
+      "line": 18,
       "members": []
     },
     {
@@ -29171,10 +29187,16 @@
       "line": 6,
       "members": [
         {
+          "name": "GetCatalogAsync",
+          "kind": "method",
+          "signature": "GetCatalogAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string Name { get; } IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } Task<IReadOnlyList<PaymentMethodCatalogEntry>>"
+        },
+        {
           "name": "ChargeAsync",
           "kind": "method",
           "signature": "ChargeAsync(PaymentChargeRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "string Name { get; } IReadOnlyList<PaymentMethodDescriptor> SupportedMethods { get; } Task<PaymentProviderChargeResult>"
+          "returnType": "Task<PaymentProviderChargeResult>"
         },
         {
           "name": "RefundAsync",
