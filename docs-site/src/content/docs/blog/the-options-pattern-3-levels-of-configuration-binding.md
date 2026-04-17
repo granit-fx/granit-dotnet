@@ -362,6 +362,6 @@ The default choice should be `IOptions<T>`. Upgrade to `IOptionsMonitor<T>` when
 
 ## Further reading
 
-- [Configuration & Settings reference](/dotnet/core/configuration/) — Granit configuration architecture, provider chain, environment overrides
+- [Configuration & Settings reference](/dotnet/concepts/configuration/) — Granit configuration architecture, provider chain, environment overrides
 - [[LoggerMessage] Over String Interpolation](/blog/loggermessage-over-string-interpolation/) — another "the framework gives you better tools" best-practice
 - [Guard Clauses Done Right](/blog/guard-clauses-done-right/) — fail-fast validation at the method level, complementing fail-fast at the config level
