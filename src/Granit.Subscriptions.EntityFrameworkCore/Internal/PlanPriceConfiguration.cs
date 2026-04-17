@@ -22,8 +22,8 @@ internal sealed class PlanPriceConfiguration : IEntityTypeConfiguration<PlanPric
 
         builder.HasIndex(e => new { e.ReplacedByPriceId })
             .HasFilter("\"ReplacedByPriceId\" IS NULL")
-            .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}plan_prices_active");
+            .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}plan_prices_current");
 
-        builder.Ignore(e => e.IsActive);
+        builder.Ignore(e => e.IsCurrent);
     }
 }

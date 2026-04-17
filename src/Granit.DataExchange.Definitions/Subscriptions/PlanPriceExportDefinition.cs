@@ -17,6 +17,6 @@ public sealed class PlanPriceExportDefinition : ExportDefinition<PlanPrice>
             .Field(p => p.EffectiveFrom, f => f.Format("O"))
             .Field(p => p.ReplacedByPriceId)
             .Field(p => p.ReplacedAt, f => f.Format("O"))
-            .Field(p => p.IsActive);
+            .Field(p => p.IsCurrent);
     }
 }

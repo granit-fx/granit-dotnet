@@ -42,8 +42,12 @@ public sealed class PlanPrice : Entity
     /// <summary>When this price was replaced by a newer version. Null if still current.</summary>
     public DateTimeOffset? ReplacedAt { get; private set; }
 
-    /// <summary>Whether this price is the current active version (not replaced).</summary>
-    public bool IsActive => ReplacedByPriceId is null;
+    /// <summary>
+    /// Whether this price is the current version in the timeline (not replaced by a newer
+    /// version). Computed from <see cref="ReplacedByPriceId"/> — there is no backing column
+    /// and no admin toggle; the state flips only when <see cref="MarkReplaced"/> runs.
+    /// </summary>
+    public bool IsCurrent => ReplacedByPriceId is null;
 
     /// <summary>Marks this price as replaced by a newer version.</summary>
     internal void MarkReplaced(Guid replacedByPriceId, DateTimeOffset replacedAt)

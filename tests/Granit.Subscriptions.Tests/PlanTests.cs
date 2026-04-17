@@ -92,7 +92,7 @@ public sealed class PlanTests
         replaced.ShouldBeNull();
         plan.Prices.Count.ShouldBe(1);
         plan.Prices[0].Amount.ShouldBe(29.99m);
-        plan.Prices[0].IsActive.ShouldBeTrue();
+        plan.Prices[0].IsCurrent.ShouldBeTrue();
     }
 
     [Fact]
@@ -106,12 +106,12 @@ public sealed class PlanTests
 
         replaced.ShouldNotBeNull();
         replaced!.Amount.ShouldBe(29.99m);
-        replaced.IsActive.ShouldBeFalse();
+        replaced.IsCurrent.ShouldBeFalse();
         replaced.ReplacedByPriceId.ShouldBe(newPrice.Id);
         replaced.ReplacedAt.ShouldBe(now);
 
         plan.Prices.Count.ShouldBe(2);
-        plan.GetActivePrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(39.99m);
+        plan.GetCurrentPrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(39.99m);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public sealed class PlanTests
 
         replaced.ShouldBeNull();
         plan.Prices.Count.ShouldBe(2);
-        plan.GetActivePrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(29.99m);
-        plan.GetActivePrice("USD", BillingInterval.Monthly)!.Amount.ShouldBe(34.99m);
+        plan.GetCurrentPrice("EUR", BillingInterval.Monthly)!.Amount.ShouldBe(29.99m);
+        plan.GetCurrentPrice("USD", BillingInterval.Monthly)!.Amount.ShouldBe(34.99m);
     }
 
     [Fact]

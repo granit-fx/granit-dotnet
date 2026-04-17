@@ -36,11 +36,11 @@ public sealed record PlanPriceResponse(
     string Currency,
     string Interval,
     DateTimeOffset EffectiveFrom,
-    bool IsActive,
+    bool IsCurrent,
     Guid? ReplacedByPriceId = null,
     DateTimeOffset? ReplacedAt = null)
 {
     internal static PlanPriceResponse FromEntity(PlanPrice price) =>
         new(price.Id, price.Amount, price.Currency, price.Interval.ToString(),
-            price.EffectiveFrom, price.IsActive, price.ReplacedByPriceId, price.ReplacedAt);
+            price.EffectiveFrom, price.IsCurrent, price.ReplacedByPriceId, price.ReplacedAt);
 }
