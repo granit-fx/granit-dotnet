@@ -9,6 +9,7 @@ using Granit.Vault.Azure.HealthChecks;
 using Granit.Vault.Azure.Options;
 using Granit.Vault.Azure.Providers;
 using Granit.Vault.Azure.Services;
+using Granit.Vault.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -61,6 +62,9 @@ public static class AzureKeyVaultServiceCollectionExtensions
         services.AddSingleton<IDatabaseCredentialProvider>(sp =>
             sp.GetRequiredService<AzureSecretsCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<AzureSecretsCredentialProvider>());
+
+        // ISecretStore for arbitrary secret retrieval
+        services.AddGranitSecretStore<AzureSecretStore>("azure");
 
         GranitActivitySourceRegistry.Register(VaultAzureActivitySource.Name);
 

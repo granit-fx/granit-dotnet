@@ -41686,7 +41686,7 @@
       "kind": "class",
       "project": "Granit.Vault.Azure",
       "file": "src/Granit.Vault.Azure/Extensions/AzureKeyVaultServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitVaultAzure",
