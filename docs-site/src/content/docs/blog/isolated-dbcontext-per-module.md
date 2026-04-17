@@ -66,7 +66,7 @@ The constructor accepts `ICurrentTenant?` and `IDataFilter?` as **optional param
 The call to `modelBuilder.ApplyGranitConventions(currentTenant, dataFilter)` at the end of `OnModelCreating` is where the framework applies **global query filters** for five marker interfaces:
 
 - **`ISoftDeletable`** — filters out records where `IsDeleted == true`
-- **`IActive`** — filters out records where `IsActive == false`
+- **`IActive`** — filters out records where `Activated == false`
 - **`IProcessingRestrictable`** — filters out GDPR-restricted records
 - **`IMultiTenant`** — scopes queries to `currentTenant.Id`
 - **`IPublishable`** — filters out unpublished records

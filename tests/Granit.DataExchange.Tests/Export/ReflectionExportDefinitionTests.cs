@@ -56,7 +56,7 @@ public sealed class ReflectionExportDefinitionTests
         fields.Count.ShouldBe(3);
         fields.ShouldContain(f => f.PropertyPath == "Id");
         fields.ShouldContain(f => f.PropertyPath == "Name");
-        fields.ShouldContain(f => f.PropertyPath == "IsActive");
+        fields.ShouldContain(f => f.PropertyPath == "Activated");
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class ReflectionExportDefinitionTests
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public bool IsActive { get; set; }
+        public bool Activated { get; set; }
         public List<string> Tags { get; set; } = []; // excluded (collection)
     }
 }

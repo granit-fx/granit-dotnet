@@ -21,12 +21,12 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
                 .Column(p => p.Name, c => c.Label("Name").Sortable().Filterable())
                 .Column(p => p.Price, c => c.Label("Price").Sortable().Filterable())
                 .Column(p => p.Category, c => c.Label("Category").Filterable())
-                .Column(p => p.IsActive, c => c.Label("Active").Filterable().Visible(false))
+                .Column(p => p.Activated, c => c.Label("Active").Filterable().Visible(false))
                 .GlobalSearch(p => p.Name)
                 .DateFilter(p => p.CreatedAt, DatePeriod.ThisMonth)
                 .AllowGroupBy(p => p.Category)
                 .Aggregate(p => p.Price, AggregateFunction.Sum, "totalPrice")
-                .QuickFilter("Active", p => p.IsActive, isDefault: true)
+                .QuickFilter("Active", p => p.Activated, isDefault: true)
                 .SupportsCursorPagination(p => p.Id)
                 .DefaultPageSize(10)
                 .MaxPageSize(50)
@@ -42,11 +42,11 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
         _db = new TestDbContext(options);
 
         _db.Products.AddRange(
-            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, IsActive = true, Category = ProductCategory.Books },
-            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, IsActive = false, Category = ProductCategory.Clothing },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, IsActive = true, Category = ProductCategory.Electronics });
+            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, Activated = true, Category = ProductCategory.Books },
+            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, Activated = false, Category = ProductCategory.Clothing },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, Activated = true, Category = ProductCategory.Electronics });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
@@ -197,7 +197,7 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
 
         QueryMetadata metadata = engine.GetMetadata();
 
-        ColumnDefinition activeCol = metadata.Columns.First(c => c.Name == "IsActive");
+        ColumnDefinition activeCol = metadata.Columns.First(c => c.Name == "Activated");
         activeCol.IsVisible.ShouldBeFalse();
     }
 
@@ -261,6 +261,6 @@ public sealed class QueryEngineAdditionalTests : IAsyncLifetime
         protected override void Configure(QueryDefinitionBuilder<TestProduct> builder) =>
             builder
                 .Column(p => p.Name, c => c.Sortable())
-                .FilterGroup("Status", g => g.Preset("Active", p => p.IsActive));
+                .FilterGroup("Status", g => g.Preset("Active", p => p.Activated));
     }
 }

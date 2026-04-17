@@ -15,7 +15,7 @@ by default and can be temporarily disabled via an `IDisposable` scope.
 Granit supports three filters:
 
 - `ISoftDeletable` -- `WHERE IsDeleted = false`
-- `IActive` -- `WHERE IsActive = true`
+- `IActive` -- `WHERE Activated = true`
 - `IMultiTenant` -- `WHERE TenantId = @currentTenantId`
 
 ## Diagram
@@ -25,7 +25,7 @@ flowchart TD
     Q[EF Core query] --> FB{Active filters?}
 
     FB -->|ISoftDeletable| F1["WHERE IsDeleted = false<br/>(or bypass if disabled)"]
-    FB -->|IActive| F2["WHERE IsActive = true<br/>(or bypass if disabled)"]
+    FB -->|IActive| F2["WHERE Activated = true<br/>(or bypass if disabled)"]
     FB -->|IMultiTenant| F3["WHERE TenantId = @tid<br/>(or bypass if disabled)"]
 
     F1 --> COMB["Combined expression<br/>AND"]

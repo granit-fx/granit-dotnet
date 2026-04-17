@@ -18,9 +18,9 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
             builder
                 .Column(p => p.Name, c => c.Label("Name"))
                 .Column(p => p.Category, c => c.Label("Category"))
-                .Column(p => p.IsActive, c => c.Label("Active"))
+                .Column(p => p.Activated, c => c.Label("Active"))
                 .AllowGroupBy(p => p.Category)
-                .AllowGroupBy(p => p.IsActive);
+                .AllowGroupBy(p => p.Activated);
     }
 
     public async ValueTask InitializeAsync()
@@ -32,11 +32,11 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
         _db = new TestDbContext(options);
 
         _db.Products.AddRange(
-            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, IsActive = false, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, IsActive = true, Category = ProductCategory.Books },
-            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, IsActive = true, Category = ProductCategory.Clothing });
+            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, Activated = false, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, Activated = true, Category = ProductCategory.Books },
+            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, Activated = true, Category = ProductCategory.Clothing });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
@@ -72,7 +72,7 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
 
         GroupedResult<TestProduct> result = await engine.ExecuteGroupedAsync(
             _db.Products.AsQueryable(),
-            new QueryRequest { GroupBy = "IsActive" },
+            new QueryRequest { GroupBy = "Activated" },
             TestContext.Current.CancellationToken);
 
         result.Groups.Count.ShouldBe(2);

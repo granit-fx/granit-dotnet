@@ -110,7 +110,7 @@ public sealed class TenantTests
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void Deactivate_SetsIsActiveFalse()
+    public void Deactivate_SetsActivatedFalse()
     {
         var tenant = Tenant.Create(Guid.NewGuid(), "Acme", "acme");
         tenant.ClearDomainEvents();
@@ -147,7 +147,7 @@ public sealed class TenantTests
     }
 
     [Fact]
-    public void Activate_AfterDeactivate_SetsIsActiveTrue()
+    public void Activate_AfterDeactivate_SetsActivatedTrue()
     {
         var tenant = Tenant.Create(Guid.NewGuid(), "Acme", "acme");
         tenant.Deactivate();

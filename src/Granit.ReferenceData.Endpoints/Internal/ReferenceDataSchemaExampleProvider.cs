@@ -38,7 +38,7 @@ internal sealed class ReferenceDataSchemaExampleProvider : ISchemaExampleProvide
                 ["labelIt"] = Europa,
                 ["labelPt"] = Europa,
                 ["sortOrder"] = 1,
-                ["isActive"] = true,
+                ["activated"] = true,
             },
         };
 }

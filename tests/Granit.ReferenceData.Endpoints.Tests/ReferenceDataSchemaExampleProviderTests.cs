@@ -58,12 +58,12 @@ public sealed class ReferenceDataSchemaExampleProviderTests
     }
 
     [Fact]
-    public void GetExamples_UpdateRequest_HasIsActiveProperty()
+    public void GetExamples_UpdateRequest_HasActivatedProperty()
     {
         IReadOnlyDictionary<Type, JsonNode> examples = _provider.GetExamples();
         JsonNode updateExample = examples[typeof(ReferenceDataUpdateRequest)];
 
-        updateExample["isActive"]!.GetValue<bool>().ShouldBeTrue();
+        updateExample["activated"]!.GetValue<bool>().ShouldBeTrue();
     }
 
     [Fact]

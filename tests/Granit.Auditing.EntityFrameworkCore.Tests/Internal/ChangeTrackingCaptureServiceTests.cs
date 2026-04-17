@@ -652,7 +652,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         // Arrange
         _options.EnablePropertyTracking = true;
         ChangeTrackingCaptureService service = CreateService();
-        _dbContext.Add(new TypedEntity { Id = 1, IsActive = true });
+        _dbContext.Add(new TypedEntity { Id = 1, Activated = true });
 
         // Act
         service.Capture(_dbContext);
@@ -662,7 +662,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
         await _publisher.Received(1).PublishAsync(
             Arg.Is<AuditingBatch>(b =>
                 b.EntityChanges[0].PropertyChanges.Any(p =>
-                    p.PropertyName == "IsActive" && p.NewValue == "True")),
+                    p.PropertyName == "Activated" && p.NewValue == "True")),
             Arg.Any<CancellationToken>());
     }
 
@@ -877,7 +877,7 @@ public sealed class ChangeTrackingCaptureServiceTests : IDisposable
     {
         public int Id { get; set; }
         public Guid GuidProp { get; set; }
-        public bool IsActive { get; set; }
+        public bool Activated { get; set; }
         public int IntProp { get; set; }
     }
 

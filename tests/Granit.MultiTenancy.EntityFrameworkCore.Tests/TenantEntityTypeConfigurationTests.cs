@@ -75,14 +75,14 @@ public sealed class TenantEntityTypeConfigurationTests
     }
 
     [Fact]
-    public void Model_IsActive_IsRequired()
+    public void Model_Activated_IsRequired()
     {
         using MultiTenancyDbContext ctx = CreateInMemory();
         IEntityType entityType = ctx.Model.FindEntityType(typeof(Tenant))!;
 
-        IProperty isActive = entityType.FindProperty(nameof(Tenant.Activated))!;
+        IProperty activated = entityType.FindProperty(nameof(Tenant.Activated))!;
 
-        isActive.IsNullable.ShouldBeFalse();
+        activated.IsNullable.ShouldBeFalse();
     }
 
     [Fact]

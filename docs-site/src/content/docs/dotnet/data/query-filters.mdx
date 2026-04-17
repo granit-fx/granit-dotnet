@@ -13,7 +13,7 @@ without affecting the others.
 | Interface | Filter key (`GranitFilterNames`) | Filter expression | Default |
 |-----------|----------------------------------|------------------|---------|
 | `ISoftDeletable` | `SoftDelete` | `!e.IsDeleted` | Enabled |
-| `IActive` | `Active` | `e.IsActive` | Enabled |
+| `IActive` | `Active` | `e.Activated` | Enabled |
 | `IProcessingRestrictable` | `ProcessingRestrictable` | `!e.IsProcessingRestricted` | Enabled |
 | `IMultiTenant` | `MultiTenant` | `e.TenantId == currentTenant.Id` | Enabled |
 | `IPublishable` | `Publishable` | `e.IsPublished` | Enabled |

@@ -162,13 +162,13 @@ public sealed class FilterExpressionBuilderTests
     [Fact]
     public void Eq_on_bool()
     {
-        FilterCriteria criteria = new("IsActive", FilterOperator.Eq, "true");
+        FilterCriteria criteria = new("Activated", FilterOperator.Eq, "true");
 
         Expression<Func<TestProduct, bool>>? expr = FilterExpressionBuilder.Build<TestProduct>(criteria);
 
         Func<TestProduct, bool> compiled = expr!.Compile();
-        compiled(new TestProduct { Name = "A", IsActive = true }).ShouldBeTrue();
-        compiled(new TestProduct { Name = "B", IsActive = false }).ShouldBeFalse();
+        compiled(new TestProduct { Name = "A", Activated = true }).ShouldBeTrue();
+        compiled(new TestProduct { Name = "B", Activated = false }).ShouldBeFalse();
     }
 
     [Fact]
@@ -245,7 +245,7 @@ public sealed class TestProduct
     public string Name { get; set; } = string.Empty;
     public int Price { get; set; }
     public decimal Amount { get; set; }
-    public bool IsActive { get; set; }
+    public bool Activated { get; set; }
     public ProductCategory Category { get; set; }
     public DateTimeOffset? CreatedAt { get; set; }
 }

@@ -40,11 +40,11 @@ public sealed class QueryEngineTests : IAsyncLifetime
         _db = new TestDbContext(options);
 
         _db.Products.AddRange(
-            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, IsActive = true, Category = ProductCategory.Books },
-            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, IsActive = true, Category = ProductCategory.Clothing },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, IsActive = true, Category = ProductCategory.Electronics });
+            new TestProduct { Id = Guid.NewGuid(), Name = "Laptop", Price = 1000, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Novel", Price = 15, Activated = true, Category = ProductCategory.Books },
+            new TestProduct { Id = Guid.NewGuid(), Name = "T-Shirt", Price = 25, Activated = true, Category = ProductCategory.Clothing },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Phone", Price = 800, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "Headset", Price = 200, Activated = true, Category = ProductCategory.Electronics });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
@@ -217,7 +217,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
             new QueryRequest(),
             TestContext.Current.CancellationToken);
 
-        result.Items.ShouldAllBe(p => p.IsActive);
+        result.Items.ShouldAllBe(p => p.Activated);
         result.TotalCount.ShouldBe(5); // All test products are active
     }
 
@@ -233,7 +233,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
             new QueryRequest { QuickFilters = ["Expensive", "Active"] },
             TestContext.Current.CancellationToken);
 
-        result.Items.ShouldAllBe(p => p.Price >= 500 && p.IsActive);
+        result.Items.ShouldAllBe(p => p.Price >= 500 && p.Activated);
     }
 
     [Fact]
@@ -280,7 +280,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
             builder
                 .Column(p => p.Name, c => c.Label("Name").Sortable().Filterable())
                 .Column(p => p.Price, c => c.Label("Price").Sortable().Filterable())
-                .QuickFilter("Active", "Actifs uniquement", p => p.IsActive, isDefault: true)
+                .QuickFilter("Active", "Actifs uniquement", p => p.Activated, isDefault: true)
                 .QuickFilter("Expensive", p => p.Price >= 500)
                 .DefaultPageSize(10)
                 .MaxPageSize(50);

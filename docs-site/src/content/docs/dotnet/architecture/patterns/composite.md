@@ -46,7 +46,7 @@ classDiagram
     }
 
     class IActive {
-        +IsActive : bool
+        +Activated : bool
     }
 
     Entity <|-- CreationAuditedEntity
@@ -65,7 +65,7 @@ classDiagram
 | `FullAuditedEntity` | `src/Granit/Domain/FullAuditedEntity.cs` | `IsDeleted`, `DeletedAt`, `DeletedBy` (ISoftDeletable) |
 | `ISoftDeletable` | `src/Granit/Domain/ISoftDeletable.cs` | Soft delete marker |
 | `IMultiTenant` | `src/Granit/Domain/IMultiTenant.cs` | `TenantId` isolation |
-| `IActive` | `src/Granit/Domain/IActive.cs` | `IsActive` filtering |
+| `IActive` | `src/Granit/Domain/IActive.cs` | `Activated` filtering |
 
 The marker interfaces (`ISoftDeletable`, `IMultiTenant`, `IActive`) are
 composable with the inheritance hierarchy. EF Core interceptors and query

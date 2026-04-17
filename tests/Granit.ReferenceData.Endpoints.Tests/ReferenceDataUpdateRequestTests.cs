@@ -43,7 +43,7 @@ public sealed class ReferenceDataUpdateRequestTests
     }
 
     [Fact]
-    public void Default_IsActive_Is_True()
+    public void Default_Activated_Is_True()
     {
         ReferenceDataUpdateRequest request = new("Belgium");
 

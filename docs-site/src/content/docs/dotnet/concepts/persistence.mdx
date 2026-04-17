@@ -117,7 +117,7 @@ independent and individually bypassable:
 | Interface | Filter key | SQL condition |
 |-----------|------------|---------------|
 | `ISoftDeletable` | `SoftDelete` | `WHERE IsDeleted = false` |
-| `IActive` | `Active` | `WHERE IsActive = true` |
+| `IActive` | `Active` | `WHERE Activated = true` |
 | `IMultiTenant` | `MultiTenant` | `WHERE TenantId = @currentTenantId` |
 | `IProcessingRestrictable` | `ProcessingRestrictable` | `WHERE IsProcessingRestricted = false` |
 | `IPublishable` | `Publishable` | `WHERE IsPublished = true` |

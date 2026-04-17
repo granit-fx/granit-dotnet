@@ -231,7 +231,7 @@ public sealed record PatientEto(
     string FirstName,
     string LastName,
     DateOnly DateOfBirth,
-    bool IsActive);
+    bool Activated);
 
 // ❌ BAD — lazy-loaded navigation, not serializable
 public sealed record PatientEto(

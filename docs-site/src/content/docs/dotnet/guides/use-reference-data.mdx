@@ -36,7 +36,7 @@ dotnet add package Granit.ReferenceData.Endpoints
 <TabItem label="Strongly-typed (subclass)">
 
 Every reference data type inherits from `ReferenceDataEntity`, which provides
-`Code`, 14 label properties, `Label` (culture-resolved), `IsActive`, `SortOrder`,
+`Code`, 14 label properties, `Label` (culture-resolved), `Activated`, `SortOrder`,
 `ValidFrom`, `ValidTo`, `ExtraPropertiesJson`, and `ParentCode`.
 
 Add domain-specific properties to the subclass:
@@ -76,7 +76,7 @@ fallback: fr-CA resolves to `LabelFr`, en-GB to `LabelEn`, pt-BR to `LabelPt`.
 
 Create a configuration class inheriting from `ReferenceDataEntityTypeConfiguration<T>`.
 The base class configures the primary key, unique index on `Code`, label columns,
-audit columns, and the `IsActive` filter.
+audit columns, and the `Activated` filter.
 
 ```csharp
 namespace MyApp.Persistence;

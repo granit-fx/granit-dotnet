@@ -31,7 +31,7 @@ classDiagram
 
     class IActive {
         <<marker>>
-        +IsActive : bool
+        +Activated : bool
     }
 
     class IDomainEvent {
@@ -102,15 +102,18 @@ filter -- no additional code required.
 // The entity declares its characteristics via markers
 public sealed class MedicalRecord : FullAuditedEntity, IMultiTenant, IActive
 {
-    public Guid? TenantId { get; set; }       // <- IMultiTenant
-    public bool IsActive { get; set; } = true; // <- IActive
+    public Guid? TenantId { get; set; }          // <- IMultiTenant
+    public bool Activated { get; private set; } = true; // <- IActive
+
+    public void Activate() => Activated = true;
+    public void Deactivate() => Activated = false;
     // ISoftDeletable is inherited from FullAuditedEntity
 
     public string Diagnosis { get; set; } = string.Empty;
 }
 
 // The framework detects markers and automatically applies:
-// - Query filter: WHERE IsDeleted=false AND IsActive=true AND TenantId=@tid
+// - Query filter: WHERE IsDeleted=false AND Activated=true AND TenantId=@tid
 // - Audit interceptor: CreatedAt/By, ModifiedAt/By, TenantId
 // - Soft delete interceptor: DELETE -> UPDATE IsDeleted=true
 ```

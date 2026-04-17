@@ -1572,7 +1572,7 @@ public sealed class TemplatingEndpointsTests : IAsyncDisposable
     {
         public string ContextName => "test";
 
-        public object Resolve() => new { FirstName = "John", Age = 42, IsActive = true };
+        public object Resolve() => new { FirstName = "John", Age = 42, Activated = true };
     }
 
     // =========================================================================

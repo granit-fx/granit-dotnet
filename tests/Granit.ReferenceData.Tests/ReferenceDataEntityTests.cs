@@ -28,7 +28,7 @@ public sealed class ReferenceDataEntityTests
     }
 
     [Fact]
-    public void Default_IsActive_Is_True()
+    public void Default_Activated_Is_True()
     {
         TestEntity entity = new();
 

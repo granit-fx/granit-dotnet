@@ -46,7 +46,7 @@ public abstract class ReferenceDataEntity
     // Resolved at runtime via CurrentUICulture (not mapped to DB)
     public virtual string Label { get; }
 
-    public bool IsActive { get; set; }
+    public bool Activated { get; set; }
     public int SortOrder { get; set; }
     public DateTimeOffset? ValidFrom { get; set; }
     public DateTimeOffset? ValidTo { get; set; }
@@ -277,7 +277,7 @@ key-value pairs (keys max 50 chars, values max 4 000 chars).
 Both strongly-typed and dynamic reference data types automatically generate a
 `QueryDefinition` that declares:
 
-- Base columns: `Code`, `LabelEn`, `LabelFr`, `LabelNl`, `LabelDe`, `IsActive`, `SortOrder`, `ValidFrom`, `ValidTo`
+- Base columns: `Code`, `LabelEn`, `LabelFr`, `LabelNl`, `LabelDe`, `Activated`, `SortOrder`, `ValidFrom`, `ValidTo`
 - Shadow property columns declared via `MapProperty<T>()` with `isFilterable` / `isSortable`
 - Global search on `Code`, `LabelEn`, `LabelFr`
 - Default sort by `SortOrder`, then `Code`

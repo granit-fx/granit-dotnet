@@ -18,11 +18,11 @@ public sealed class QueryablePaginationExtensionsTests : IAsyncLifetime
         _db = new TestDbContext(options);
 
         _db.Products.AddRange(
-            new TestProduct { Id = Guid.NewGuid(), Name = "A", Price = 10, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "B", Price = 20, IsActive = true, Category = ProductCategory.Books },
-            new TestProduct { Id = Guid.NewGuid(), Name = "C", Price = 30, IsActive = true, Category = ProductCategory.Clothing },
-            new TestProduct { Id = Guid.NewGuid(), Name = "D", Price = 40, IsActive = true, Category = ProductCategory.Electronics },
-            new TestProduct { Id = Guid.NewGuid(), Name = "E", Price = 50, IsActive = true, Category = ProductCategory.Electronics });
+            new TestProduct { Id = Guid.NewGuid(), Name = "A", Price = 10, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "B", Price = 20, Activated = true, Category = ProductCategory.Books },
+            new TestProduct { Id = Guid.NewGuid(), Name = "C", Price = 30, Activated = true, Category = ProductCategory.Clothing },
+            new TestProduct { Id = Guid.NewGuid(), Name = "D", Price = 40, Activated = true, Category = ProductCategory.Electronics },
+            new TestProduct { Id = Guid.NewGuid(), Name = "E", Price = 50, Activated = true, Category = ProductCategory.Electronics });
 
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
     }

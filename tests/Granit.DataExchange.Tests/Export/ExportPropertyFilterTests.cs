@@ -17,7 +17,7 @@ public sealed class ExportPropertyFilterTests
         fields.ShouldContain(f => f.PropertyPath == "Name" && f.ClrTypeName == "String");
         fields.ShouldContain(f => f.PropertyPath == "Age" && f.ClrTypeName == "Int32");
         fields.ShouldContain(f => f.PropertyPath == "Id" && f.ClrTypeName == "Guid");
-        fields.ShouldContain(f => f.PropertyPath == "IsActive" && f.ClrTypeName == "Boolean");
+        fields.ShouldContain(f => f.PropertyPath == "Activated" && f.ClrTypeName == "Boolean");
         fields.ShouldContain(f => f.PropertyPath == "CreatedAt" && f.ClrTypeName == "DateTimeOffset");
         fields.ShouldContain(f => f.PropertyPath == "BirthDate" && f.ClrTypeName == "DateOnly");
         fields.ShouldContain(f => f.PropertyPath == "Amount" && f.ClrTypeName == "Decimal");
@@ -169,7 +169,7 @@ public sealed class ExportPropertyFilterTests
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Age { get; set; }
-        public bool IsActive { get; set; }
+        public bool Activated { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public DateOnly BirthDate { get; set; }
         public decimal Amount { get; set; }

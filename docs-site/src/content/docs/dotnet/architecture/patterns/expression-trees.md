@@ -24,7 +24,7 @@ flowchart TD
     SCAN --> CHECK{Which interfaces implemented?}
 
     CHECK -->|ISoftDeletable| E1["Expression: !e.IsDeleted<br/>or !proxy.SoftDeleteEnabled"]
-    CHECK -->|IActive| E2["Expression: e.IsActive<br/>or !proxy.ActiveEnabled"]
+    CHECK -->|IActive| E2["Expression: e.Activated<br/>or !proxy.ActiveEnabled"]
     CHECK -->|IMultiTenant| E3["Expression: e.TenantId == proxy.CurrentTenantId<br/>or !proxy.MultiTenantEnabled"]
 
     E1 --> COMBINE["Expression.AndAlso()<br/>Combine all conditions"]

@@ -471,12 +471,12 @@ public sealed class ClosedXmlExportWriterTests
         // Arrange
         List<ExportFieldDescriptor> fields =
         [
-            new("IsActive", "Boolean", null, null, 0, false),
+            new("Activated", "Boolean", null, null, 0, false),
         ];
 
         List<IReadOnlyDictionary<string, object?>> rows =
         [
-            new Dictionary<string, object?> { ["IsActive"] = value },
+            new Dictionary<string, object?> { ["Activated"] = value },
         ];
 
         using MemoryStream stream = new();

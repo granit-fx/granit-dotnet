@@ -25,13 +25,13 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_applies_default_when_none_specified()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive, isDefault: true);
+        builder.QuickFilter("Active", p => p.Activated, isDefault: true);
         builder.QuickFilter("Expensive", p => p.Price >= 500);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true, Price = 100 },
-            new() { Name = "B", IsActive = false, Price = 100 },
+            new() { Name = "A", Activated = true, Price = 100 },
+            new() { Name = "B", Activated = false, Price = 100 },
         ];
 
         var result = source.AsQueryable()
@@ -46,12 +46,12 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_applies_empty_list_uses_defaults()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive, isDefault: true);
+        builder.QuickFilter("Active", p => p.Activated, isDefault: true);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         var result = source.AsQueryable()
@@ -66,13 +66,13 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_applies_explicit_filter()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive, isDefault: true);
+        builder.QuickFilter("Active", p => p.Activated, isDefault: true);
         builder.QuickFilter("Expensive", p => p.Price >= 500);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true, Price = 100 },
-            new() { Name = "B", IsActive = true, Price = 600 },
+            new() { Name = "A", Activated = true, Price = 100 },
+            new() { Name = "B", Activated = true, Price = 600 },
         ];
 
         var result = source.AsQueryable()
@@ -87,14 +87,14 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_AND_semantics_for_multiple()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive);
+        builder.QuickFilter("Active", p => p.Activated);
         builder.QuickFilter("Expensive", p => p.Price >= 500);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true, Price = 100 },
-            new() { Name = "B", IsActive = true, Price = 600 },
-            new() { Name = "C", IsActive = false, Price = 600 },
+            new() { Name = "A", Activated = true, Price = 100 },
+            new() { Name = "B", Activated = true, Price = 600 },
+            new() { Name = "C", Activated = false, Price = 600 },
         ];
 
         var result = source.AsQueryable()
@@ -109,12 +109,12 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_case_insensitive_name_matching()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive);
+        builder.QuickFilter("Active", p => p.Activated);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         var result = source.AsQueryable()
@@ -128,12 +128,12 @@ public sealed class ApplyQuickFiltersTests
     public void ApplyQuickFilters_unknown_filter_name_is_ignored()
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
-        builder.QuickFilter("Active", p => p.IsActive);
+        builder.QuickFilter("Active", p => p.Activated);
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         var result = source.AsQueryable()
@@ -152,13 +152,13 @@ public sealed class ApplyPresetsAdditionalTests
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
         builder.FilterGroup("Status", g => g
-            .Preset("Active", p => p.IsActive, isDefault: true)
-            .Preset("Inactive", p => !p.IsActive));
+            .Preset("Active", p => p.Activated, isDefault: true)
+            .Preset("Inactive", p => !p.Activated));
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         var result = source.AsQueryable()
@@ -176,13 +176,13 @@ public sealed class ApplyPresetsAdditionalTests
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
         builder.FilterGroup("Status", g => g
-            .Preset("Active", p => p.IsActive)
-            .Preset("Inactive", p => !p.IsActive));
+            .Preset("Active", p => p.Activated)
+            .Preset("Inactive", p => !p.Activated));
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         // No defaults set, no explicit presets
@@ -198,9 +198,9 @@ public sealed class ApplyPresetsAdditionalTests
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
         builder.FilterGroup("Status", g => g
-            .Preset("Active", p => p.IsActive));
+            .Preset("Active", p => p.Activated));
 
-        List<TestProduct> source = [new() { Name = "A", IsActive = true }];
+        List<TestProduct> source = [new() { Name = "A", Activated = true }];
 
         Dictionary<string, string> presets = new() { ["NonExistentGroup"] = "Active" };
 
@@ -216,12 +216,12 @@ public sealed class ApplyPresetsAdditionalTests
     {
         QueryDefinitionBuilder<TestProduct> builder = new();
         builder.FilterGroup("Status", g => g
-            .Preset("Active", p => p.IsActive));
+            .Preset("Active", p => p.Activated));
 
         List<TestProduct> source =
         [
-            new() { Name = "A", IsActive = true },
-            new() { Name = "B", IsActive = false },
+            new() { Name = "A", Activated = true },
+            new() { Name = "B", Activated = false },
         ];
 
         Dictionary<string, string> presets = new() { ["Status"] = "NonExistent" };
