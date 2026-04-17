@@ -56,18 +56,14 @@ internal sealed partial class StripePaymentProvider(
     ];
 
     /// <inheritdoc/>
-    public Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default)
-    {
-        // TODO(phase-2b): call PaymentMethodConfigurationService to honor the merchant's
-        // active payment method configuration (display_preference.value == "on") and map
-        // real capabilities.
-        IReadOnlyList<PaymentMethodCatalogEntry> catalog =
-        [
-            .. SupportedMethods.Select(m => new PaymentMethodCatalogEntry(
-                m.MethodType, m.Category, m.MethodType, PaymentMethodCapability.Wildcard)),
-        ];
-        return Task.FromResult(catalog);
-    }
+    /// <remarks>
+    /// Returns a static catalog curated from Stripe's payment method support matrix
+    /// (<see cref="StripeCatalog"/>). A future enhancement can call
+    /// <c>PaymentMethodConfigurationService.GetAsync()</c> to honor the merchant's
+    /// dashboard toggles dynamically.
+    /// </remarks>
+    public Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default) =>
+        Task.FromResult(StripeCatalog.Entries);
 
     /// <inheritdoc/>
     public async Task<PaymentProviderChargeResult> ChargeAsync(

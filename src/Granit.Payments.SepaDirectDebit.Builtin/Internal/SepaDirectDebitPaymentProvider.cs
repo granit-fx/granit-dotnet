@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Granit.Guids;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
@@ -25,10 +26,17 @@ internal sealed partial class SepaDirectDebitPaymentProvider(
     /// <inheritdoc/>
     public Task<IReadOnlyList<PaymentMethodCatalogEntry>> GetCatalogAsync(CancellationToken cancellationToken = default)
     {
-        // TODO(phase-2b): declare real capabilities — SEPA zone countries, {EUR}, First|Recurring.
         IReadOnlyList<PaymentMethodCatalogEntry> catalog =
         [
-            new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit, "SEPA Direct Debit", PaymentMethodCapability.Wildcard),
+            new(
+                MethodType: PaymentMethods.SepaDebit,
+                Category: PaymentMethodCategory.BankDebit,
+                DisplayLabel: "SEPA Direct Debit",
+                Capability: new PaymentMethodCapability(
+                    SupportedCountries: PaymentMethodCountries.SepaZone,
+                    SupportedCurrencies: PaymentMethodCurrencies.EurOnly,
+                    SupportedSequenceTypes: PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring,
+                    AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)),
         ];
         return Task.FromResult(catalog);
     }

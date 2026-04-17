@@ -28417,6 +28417,38 @@
       ]
     },
     {
+      "name": "PaymentMethodCountries",
+      "fqn": "Granit.Payments.Domain.PaymentMethodCountries",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodCountries.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(StringComparer.Ordinal, \"AT\", \"BE\", \"BG\", \"CY\", \"CZ\", \"DE\", \"DK\", \"EE\", \"ES\", \"FI\", \"FR\", \"GR\", \"HR\", \"HU\", \"IE\", \"IT\", \"LT\", \"LU\", \"LV\", \"MT\", \"NL\", \"PL\", \"PT\", \"RO\", \"SE\", \"SI\", \"SK\", \"IS\", \"LI\", \"NO\", \"CH\", \"GB\", \"AD\", \"MC\", \"SM\", \"VA\")",
+          "returnType": "ImmutableHashSet<string> SepaZone { get; } = ImmutableHashSet."
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodCurrencies",
+      "fqn": "Granit.Payments.Domain.PaymentMethodCurrencies",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodCurrencies.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(StringComparer.Ordinal, \"EUR\")",
+          "returnType": "ImmutableHashSet<string> EurOnly { get; } = ImmutableHashSet."
+        }
+      ]
+    },
+    {
       "name": "PaymentMethodSequenceType",
       "fqn": "Granit.Payments.Domain.PaymentMethodSequenceType",
       "kind": "enum",
