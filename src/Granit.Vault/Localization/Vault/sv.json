@@ -2,6 +2,7 @@
   "culture": "sv",
   "texts": {
     "Vault:UnknownAuthMethod": "Okänd Vault-autentiseringsmetod: '{0}'. Tillåtna värden: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "Vault-token krävs för tokenautentisering. Konfigurera Vault:Token i konfigurationen."
+    "Vault:TokenRequired": "Vault-token krävs för tokenautentisering. Konfigurera Vault:Token i konfigurationen.",
+    "Vault:Secret:NotFound": "Den begärda hemligheten '{0}' hittades inte i det konfigurerade valvet."
   }
 }

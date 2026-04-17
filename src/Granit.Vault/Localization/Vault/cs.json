@@ -2,6 +2,7 @@
   "culture": "cs",
   "texts": {
     "Vault:UnknownAuthMethod": "Neznámá metoda ověření Vault: '{0}'. Povolené hodnoty: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "Pro ověření tokenem je vyžadován Vault token. Nakonfigurujte Vault:Token v konfiguraci."
+    "Vault:TokenRequired": "Pro ověření tokenem je vyžadován Vault token. Nakonfigurujte Vault:Token v konfiguraci.",
+    "Vault:Secret:NotFound": "Požadované tajemství „{0}\" nebylo v nakonfigurovaném trezoru nalezeno."
   }
 }

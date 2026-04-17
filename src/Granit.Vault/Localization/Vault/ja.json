@@ -2,6 +2,7 @@
   "culture": "ja",
   "texts": {
     "Vault:UnknownAuthMethod": "不明な Vault 認証方式：'{0}'。許可される値：'Kubernetes'、'Token'。",
-    "Vault:TokenRequired": "トークン認証には Vault トークンが必要です。構成で Vault:Token を設定してください。"
+    "Vault:TokenRequired": "トークン認証には Vault トークンが必要です。構成で Vault:Token を設定してください。",
+    "Vault:Secret:NotFound": "要求されたシークレット「{0}」は構成済みボルトで見つかりません。"
   }
 }

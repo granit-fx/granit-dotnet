@@ -2,6 +2,7 @@
   "culture": "nl",
   "texts": {
     "Vault:UnknownAuthMethod": "Onbekende Vault-authenticatiemethode: '{0}'. Toegestane waarden: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "Vault-token is vereist voor tokenauthenticatie. Configureer Vault:Token in de configuratie."
+    "Vault:TokenRequired": "Vault-token is vereist voor tokenauthenticatie. Configureer Vault:Token in de configuratie.",
+    "Vault:Secret:NotFound": "Het gevraagde geheim '{0}' is niet gevonden in de geconfigureerde vault."
   }
 }

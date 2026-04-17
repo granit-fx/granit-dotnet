@@ -2,6 +2,7 @@
   "culture": "ko",
   "texts": {
     "Vault:UnknownAuthMethod": "알 수 없는 Vault 인증 방식: '{0}'. 허용되는 값: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "토큰 인증에는 Vault 토큰이 필요합니다. 구성에서 Vault:Token을 설정하세요."
+    "Vault:TokenRequired": "토큰 인증에는 Vault 토큰이 필요합니다. 구성에서 Vault:Token을 설정하세요.",
+    "Vault:Secret:NotFound": "요청한 비밀 '{0}'을(를) 구성된 볼트에서 찾을 수 없습니다."
   }
 }

@@ -2,6 +2,7 @@
   "culture": "pl",
   "texts": {
     "Vault:UnknownAuthMethod": "Nieznana metoda uwierzytelniania Vault: '{0}'. Dozwolone wartości: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "Token Vault jest wymagany do uwierzytelniania tokenem. Skonfiguruj Vault:Token w konfiguracji."
+    "Vault:TokenRequired": "Token Vault jest wymagany do uwierzytelniania tokenem. Skonfiguruj Vault:Token w konfiguracji.",
+    "Vault:Secret:NotFound": "Nie znaleziono żądanego sekretu „{0}\" w skonfigurowanym magazynie."
   }
 }

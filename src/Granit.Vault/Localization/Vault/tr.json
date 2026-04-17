@@ -2,6 +2,7 @@
   "culture": "tr",
   "texts": {
     "Vault:UnknownAuthMethod": "Bilinmeyen Vault kimlik doğrulama yöntemi: '{0}'. İzin verilen değerler: 'Kubernetes', 'Token'.",
-    "Vault:TokenRequired": "Token kimlik doğrulaması için Vault tokeni gereklidir. Yapılandırmada Vault:Token ayarını yapın."
+    "Vault:TokenRequired": "Token kimlik doğrulaması için Vault tokeni gereklidir. Yapılandırmada Vault:Token ayarını yapın.",
+    "Vault:Secret:NotFound": "İstenen '{0}' gizli değeri yapılandırılmış kasada bulunamadı."
   }
 }

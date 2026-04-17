@@ -136,9 +136,10 @@ When `ProviderName` is `"Vault"`, `IStringEncryptionService` delegates to
 
 ## Granit.Vault
 
-`Granit.Vault` is the abstraction package. It defines `ITransitEncryptionService` and
-`IDatabaseCredentialProvider` — provider packages (`Granit.Vault.HashiCorp`,
-`Granit.Vault.Azure`, `Granit.Vault.Aws`) supply the implementations.
+`Granit.Vault` is the abstraction package. It defines `ITransitEncryptionService`,
+`IDatabaseCredentialProvider` and `ISecretStore` — provider packages (`Granit.Vault.HashiCorp`,
+`Granit.Vault.Azure`, `Granit.Vault.Aws`, `Granit.Vault.GoogleCloud`) supply the
+implementations.
 
 ### ITransitEncryptionService
 
@@ -193,6 +194,101 @@ public class HealthRecordService(ITransitEncryptionService transit)
     }
 }
 ```
+
+---
+
+## Retrieving arbitrary secrets — `ISecretStore`
+
+Beyond transit encryption and database credentials, applications often need to read
+other secrets at runtime — mTLS client certificates, JWT signing keys, SMTP passwords,
+third-party API keys. `ISecretStore` provides a single, provider-agnostic API for that.
+
+```csharp
+public sealed class MqttBridge(ISecretStore secrets)
+{
+    public async Task<X509Certificate2> LoadClientCertAsync(CancellationToken ct)
+    {
+        SecretDescriptor descriptor = await secrets.GetSecretAsync(
+            SecretRequest.Latest("mqtt/client-cert"), ct);
+
+        // ExpiresOn comes from Azure Key Vault / HashiCorp metadata when available —
+        // use it to schedule a proactive reload before the certificate expires.
+        return X509CertificateLoader.LoadPkcs12(descriptor.AsBytes(), password: null);
+    }
+}
+```
+
+### Addressing
+
+| Provider | `SecretRequest.Name` is… |
+| -------- | ------------------------ |
+| HashiCorp KV v2 | Path relative to `Vault:KvMountPoint` (e.g. `"mqtt/client-cert"`) |
+| Azure Key Vault | Secret name (e.g. `"mqtt-client-cert"`) |
+| AWS Secrets Manager | Name or ARN |
+| GCP Secret Manager | Secret id, or full `projects/.../secrets/.../versions/...` resource |
+
+### Binary vs text payloads
+
+`SecretDescriptor.StringValue` and `SecretDescriptor.BinaryValue` are mutually exclusive.
+
+- **AWS / GCP**: binary is native (`SecretBinary`, `ByteString`) — no conversion.
+- **Azure**: Base64-decoded into `BinaryValue` when `ContentType == "application/octet-stream"`.
+- **HashiCorp KV v2**: a convention — if the KV entry contains a `__binary` field with a
+  Base64 value, it is decoded into `BinaryValue`. Otherwise a `value` field (or the full
+  JSON) becomes `StringValue`.
+
+Both `AsBytes()` and `AsString()` helpers bridge the two.
+
+### Error model
+
+| Exception | When | Use |
+| --------- | ---- | --- |
+| `SecretNotFoundException` | Secret does not exist | Decide between creating it or bubbling a 404 |
+| `SecretAccessDeniedException` | 401/403 / `PermissionDenied` | Usually fatal — misconfigured IAM |
+| `SecretVaultTransientException` | 429 / 5xx / `Unavailable` / `DeadlineExceeded` | Candidate for retry with your own Polly pipeline |
+| `SecretVaultConfigurationException` | Missing options, invalid version identifier, bad resource name | Dev-facing — fix the configuration |
+
+`TryGetSecretAsync` returns `null` **only** for `SecretNotFoundException`. Access-denied
+and transient failures propagate — the store never masks an infra failure as a missing
+secret.
+
+### Caching — opt-in
+
+Secrets are **not cached by default**. To enable an L1 FusionCache decorator:
+
+```jsonc
+"Vault": {
+  "SecretStore": {
+    "CacheSeconds": 60,              // 0 disables caching (default)
+    "MaxCachedBinarySizeBytes": 65536 // Bypass cache for binaries above this size (LOH guard)
+  }
+}
+```
+
+When `CacheSeconds > 0`, the decorator wraps the provider store transparently and emits
+`granit.vault.secret.read` / `granit.vault.secret.cache_hit` counters. When disabled,
+FusionCache remains a zero-cost transitive dependency.
+
+Recommended TTL: ≤ 300 s. Longer values delay the visibility of rotations performed
+at the provider level — there is no push-based invalidation.
+
+### Retry policy — explicitly not included
+
+`ISecretStore` performs no automatic retry. Transient failures are surfaced via
+`SecretVaultTransientException` so callers can apply a context-appropriate policy
+(startup bootstrap, hot-path MQTT ingestion, and batch jobs all need different retry
+budgets). Wrap the call in a Polly `ResiliencePipeline` when retry is needed.
+
+### Observability
+
+- Counter `granit.vault.secret.read` — tags: `provider`, `outcome`
+  (`ok` \| `not_found` \| `denied` \| `transient` \| `error`), `cached` (`true` \| `false`), `tenant_id`.
+- Counter `granit.vault.secret.cache_hit` — tags: `provider`, `tenant_id`.
+- `ActivitySource` span per provider (`vault.kv.read` / `akv.get-secret` /
+  `secrets.obtain` / `secretmanager.obtain`).
+
+Counters are emitted **only at the decorator boundary** — providers never raise them
+directly, which guarantees correct accounting even when cache hits bypass the SDK.
 
 ---
 

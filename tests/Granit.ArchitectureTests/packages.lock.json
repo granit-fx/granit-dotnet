@@ -3361,6 +3361,7 @@
       "granit.vault": {
         "type": "Project",
         "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )"
         }
       },
@@ -3528,8 +3529,8 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.10",
-        "contentHash": "Rg6p+EwuEJxGptp765AmC5lyxjMHJx1ZR+O3NYopDBMg80sBXHBUdSxe+lK4zh/LMF08yv4mi03rwTIYYC+Ftw==",
+        "resolved": "4.0.7",
+        "contentHash": "PopIGBY8BoT+JrFJgmbn6Gfek4NCdwAvJ+U0APw/e6b9kY7ot7ZzPqTBpnrV9SuGuSjAvu6IbNwXiflCNfbXuQ==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.3.29, 5.0.0)"
         }
@@ -3546,8 +3547,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.21.1",
-        "contentHash": "SCXThk+p+32EqsJIQDtz4Ni0ny9MRV2o0UvorVbqQuUt7MUVgpm+fwouZ6rG4AUg2U+h8/Ixx22WUg0dP2bsBA==",
+        "resolved": "4.0.21.2",
+        "contentHash": "3Yeh5DjpfnmKKW8z1684LxUWBVau1ozmLY9vpLhwv9uqCa2S3wk6xK7KCBSlM2i6RQ14Wabyqfqo1Y27etE00Q==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.3.29, 5.0.0)"
         }
@@ -4183,8 +4184,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.12.3",
-        "contentHash": "xuQjdQ4c7A3yfJz6vzOy8T9KirByt8nmmVouhLDi9JYvoSQg4kOUdw9kQfThPOJ0N2MbTokSqF0Xr20RqeDQFQ==",
+        "resolved": "0.12.4",
+        "contentHash": "9d8BQepYsyjnwxqRv2V+KQ0IfST3jWK+ufhcafNbrZ2duZxBR4/g33t0rFBtc9dL8/gtMvWsd+U/b6RRHp/8Pw==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }
