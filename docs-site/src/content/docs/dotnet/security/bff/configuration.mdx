@@ -319,7 +319,7 @@ Each cluster defines one or more backend destinations:
 
 <Aside type="caution" title="Client secret in production">
 Never store `ClientSecret` in `appsettings.Production.json`. Use
-[Granit.Vault](/dotnet/data/vault-encryption/) or environment variables:
+[Granit.Vault](/dotnet/data/vault/) or environment variables:
 
 ```bash
 export Bff__ClientSecret="secret-from-vault"

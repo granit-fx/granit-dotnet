@@ -220,7 +220,7 @@ builder.AddGranitAIEntityFrameworkCore(options =>
 
 :::caution
 Never store API keys in `appsettings.json` for production. Inject credentials from
-[Granit.Vault](/dotnet/data/vault-encryption/) with dynamic rotation.
+[Granit.Vault](/dotnet/data/vault/) with dynamic rotation.
 :::
 
 ## Workspace architecture
@@ -550,6 +550,6 @@ import `Granit.AI.PromptBuilder` and follow the same pattern.
 - [Data Exchange](/dotnet/business/data-exchange/) — import/export module where AI mapping plugs in
 - [QueryEngine](/dotnet/business/query-engine/) — query engine where NLQ translates natural language
 - [Persistence](/dotnet/data/persistence/) — isolated DbContext pattern, `ApplyGranitConventions`
-- [Vault & Encryption](/dotnet/data/vault-encryption/) — secure API key storage with rotation
+- [Vault & Encryption](/dotnet/data/vault/) — secure API key storage with rotation
 - [Observability](/dotnet/core/observability/) — OpenTelemetry integration for AI call tracing
 - [Multi-tenancy](/dotnet/infrastructure/multi-tenancy/) — tenant-scoped workspace isolation

@@ -1,0 +1,348 @@
+---
+title: "Configure HashiCorp Vault, Azure Key Vault, AWS, GCP in a .NET app"
+description: Authentication, configuration reference, and health checks for Granit.Vault's four provider packages — HashiCorp Vault, Azure Key Vault, AWS KMS/Secrets Manager, and Google Cloud KMS/Secret Manager. Pick a provider, copy the config, ship.
+sidebar:
+  order: 4
+  label: Providers
+---
+
+import { Tabs, TabItem, Aside, CardGrid, LinkCard } from "@astrojs/starlight/components";
+
+## Which provider should I pick?
+
+All four expose the same three abstractions (`ITransitEncryptionService`,
+`ISecretStore`, `IDatabaseCredentialProvider`). Pick based on where the rest of
+your infrastructure lives:
+
+| | HashiCorp | Azure Key Vault | AWS | GCP |
+| - | :-: | :-: | :-: | :-: |
+| Package | `Granit.Vault.HashiCorp` | `Granit.Vault.Azure` | `Granit.Vault.Aws` | `Granit.Vault.GoogleCloud` |
+| Encryption backend | Transit engine | RSA-OAEP-256 | KMS | Cloud KMS (AES-256-GCM) |
+| Ciphertext carries version | ✅ `vault:v{N}:…` | ❌ opaque | ❌ opaque | ❌ opaque |
+| Server-side rewrap | ✅ `/transit/rewrap` | ❌ (decrypt+encrypt) | ❌ (decrypt+encrypt) | ❌ (decrypt+encrypt) |
+| Secrets engine for `ISecretStore` | KV v2 | Secret | Secrets Manager | Secret Manager |
+| Native binary payload | via `__binary` convention | via `application/octet-stream` | ✅ `SecretBinary` | ✅ `ByteString` |
+| Dynamic DB creds | ✅ lease-aware | via secret polling | via secret polling | via secret polling |
+| Auth for production | Kubernetes JWT | Managed Identity | IAM role | Workload Identity |
+
+All four modules auto-disable in `Development` — you don't need a running vault
+locally.
+
+## HashiCorp Vault
+
+### Setup
+
+```csharp
+[DependsOn(typeof(GranitVaultHashiCorpModule))]
+public class AppModule : GranitModule { }
+```
+
+### How do I authenticate?
+
+<Tabs>
+<TabItem label="Kubernetes (production)">
+
+```jsonc
+{
+  "Vault": {
+    "Address": "https://vault.example.com",
+    "AuthMethod": "Kubernetes",
+    "KubernetesRole": "my-backend"
+  }
+}
+```
+
+Uses the Kubernetes service account token mounted at
+`/var/run/secrets/kubernetes.io/serviceaccount/token`.
+
+</TabItem>
+<TabItem label="Token (local dev)">
+
+```jsonc
+{
+  "Vault": {
+    "Address": "http://localhost:8200",
+    "AuthMethod": "Token",
+    "Token": "hvs.dev-only-token"
+  }
+}
+```
+
+Token auth is intended for local Vault dev servers only. **Never** commit a token.
+
+</TabItem>
+</Tabs>
+
+### Full configuration
+
+```jsonc
+{
+  "Vault": {
+    "Address": "https://vault.example.com",
+    "AuthMethod": "Kubernetes",
+    "KubernetesRole": "my-backend",
+    "KubernetesTokenPath": "/var/run/secrets/kubernetes.io/serviceaccount/token",
+    "DatabaseMountPoint": "database",
+    "DatabaseRoleName": "readwrite",
+    "TransitMountPoint": "transit",
+    "KvMountPoint": "secret",
+    "LeaseRenewalThreshold": 0.75,
+    "SecretStore": {
+      "CacheSeconds": 0,
+      "HealthCheckSecretName": "healthcheck/probe"
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Address` | — | Vault server URL |
+| `AuthMethod` | `"Kubernetes"` | `"Kubernetes"` or `"Token"` |
+| `KubernetesRole` | `"my-backend"` | Vault Kubernetes auth role |
+| `DatabaseMountPoint` | `"database"` | Database secrets engine mount |
+| `DatabaseRoleName` | `"readwrite"` | Database role for dynamic credentials |
+| `TransitMountPoint` | `"transit"` | Transit secrets engine mount |
+| `KvMountPoint` | `"secret"` | KV v2 secrets engine mount (used by `ISecretStore`) |
+| `LeaseRenewalThreshold` | `0.75` | Renew lease at this fraction of TTL |
+
+### Health checks
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitVaultHashiCorpHealthCheck()       // Vault sys/health probe
+    .AddGranitSecretStoreHealthCheck();          // ISecretStore canary
+```
+
+The first check verifies Vault connectivity and authentication. The second (shared
+across all four providers) reads
+`Vault:SecretStore:HealthCheckSecretName` through `ISecretStore` — see
+[Secret retrieval → Liveness probe](/dotnet/data/vault/secrets/#liveness-probe--is-my-vault-reachable).
+
+## Azure Key Vault
+
+### Setup
+
+```csharp
+[DependsOn(typeof(GranitVaultAzureModule))]
+public class AppModule : GranitModule { }
+```
+
+### How do I authenticate?
+
+Uses `DefaultAzureCredential` — Managed Identity in AKS, `az login` locally.
+No credentials in configuration.
+
+```jsonc
+{
+  "Vault": {
+    "Azure": {
+      "VaultUri": "https://my-vault.vault.azure.net/"
+    }
+  }
+}
+```
+
+### Full configuration
+
+```jsonc
+{
+  "Vault": {
+    "Azure": {
+      "VaultUri": "https://my-vault.vault.azure.net/",
+      "EncryptionKeyName": "string-encryption",
+      "EncryptionAlgorithm": "RSA-OAEP-256",
+      "DatabaseSecretName": "db-credentials",
+      "RotationCheckIntervalMinutes": 5,
+      "TimeoutSeconds": 30
+    },
+    "SecretStore": {
+      "CacheSeconds": 0,
+      "HealthCheckSecretName": "healthcheck/probe"
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Vault:Azure:VaultUri` | — | Azure Key Vault URI (required) |
+| `Vault:Azure:EncryptionKeyName` | `"string-encryption"` | Key name for encrypt/decrypt |
+| `Vault:Azure:EncryptionAlgorithm` | `"RSA-OAEP-256"` | `"RSA-OAEP-256"` or `"RSA-OAEP"` |
+| `Vault:Azure:DatabaseSecretName` | `null` | Secret name for DB credentials (omit to disable) |
+| `Vault:Azure:RotationCheckIntervalMinutes` | `5` | DB secret rotation polling interval |
+| `Vault:Azure:TimeoutSeconds` | `30` | Azure SDK operation timeout |
+
+### Health checks
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitAzureKeyVaultHealthCheck()   // GetKey probe on EncryptionKeyName
+    .AddGranitSecretStoreHealthCheck();     // ISecretStore canary
+```
+
+## AWS (KMS + Secrets Manager)
+
+### Setup
+
+```csharp
+[DependsOn(typeof(GranitVaultAwsModule))]
+public class AppModule : GranitModule { }
+```
+
+### How do I authenticate?
+
+When `AccessKeyId` / `SecretAccessKey` are `null` (recommended), the AWS SDK uses
+its **default credential chain** — IAM role on ECS/EKS, environment variables,
+EC2 instance profile, or shared credentials file (local dev only).
+
+```jsonc
+{
+  "Vault": {
+    "Aws": {
+      "Region": "eu-west-1",
+      "KmsKeyId": "alias/granit-encryption"
+    }
+  }
+}
+```
+
+Set `AccessKeyId` / `SecretAccessKey` explicitly only for local dev against
+LocalStack or when the credential chain can't find usable credentials.
+
+### Full configuration
+
+```jsonc
+{
+  "Vault": {
+    "Aws": {
+      "Region": "eu-west-1",
+      "KmsKeyId": "alias/granit-encryption",
+      "DatabaseSecretArn": "arn:aws:secretsmanager:eu-west-1:123…:secret:db-credentials",
+      "RotationCheckIntervalMinutes": 5,
+      "AccessKeyId": null,
+      "SecretAccessKey": null,
+      "TimeoutSeconds": 30
+    },
+    "SecretStore": {
+      "CacheSeconds": 0,
+      "HealthCheckSecretName": "healthcheck/probe"
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Vault:Aws:Region` | — | AWS region endpoint (required) |
+| `Vault:Aws:KmsKeyId` | — | KMS key ARN or alias for transit encryption (required) |
+| `Vault:Aws:DatabaseSecretArn` | `null` | Secrets Manager ARN for DB credentials (omit to disable) |
+| `Vault:Aws:RotationCheckIntervalMinutes` | `5` | DB secret rotation polling interval |
+| `Vault:Aws:AccessKeyId` | `null` | Override; defaults to SDK credential chain |
+| `Vault:Aws:SecretAccessKey` | `null` | Override; defaults to SDK credential chain |
+| `Vault:Aws:TimeoutSeconds` | `30` | API call timeout |
+
+<Aside type="caution" title="Prefer IAM roles in production">
+Hardcoded `AccessKeyId` / `SecretAccessKey` in configuration defeat the point of
+dynamic credentials. Production workloads should use IAM roles for ECS tasks, EKS
+service accounts, or EC2 instance profiles — leave these two options `null`.
+</Aside>
+
+### Health checks
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitKmsHealthCheck()                 // DescribeKey on KmsKeyId
+    .AddGranitSecretStoreHealthCheck();         // ISecretStore canary
+```
+
+## Google Cloud (KMS + Secret Manager)
+
+### Setup
+
+```csharp
+[DependsOn(typeof(GranitVaultGoogleCloudModule))]
+public class AppModule : GranitModule { }
+```
+
+### How do I authenticate?
+
+Uses Application Default Credentials — Workload Identity in GKE, `gcloud auth
+application-default login` locally. Override only for a service account JSON file.
+
+```jsonc
+{
+  "Vault": {
+    "GoogleCloud": {
+      "ProjectId": "my-project",
+      "Location": "europe-west1",
+      "KeyRing": "my-keyring",
+      "CryptoKey": "string-encryption"
+    }
+  }
+}
+```
+
+### Full configuration
+
+```jsonc
+{
+  "Vault": {
+    "GoogleCloud": {
+      "ProjectId": "my-project",
+      "Location": "europe-west1",
+      "KeyRing": "my-keyring",
+      "CryptoKey": "string-encryption",
+      "DatabaseSecretName": "db-credentials",
+      "RotationCheckIntervalMinutes": 5,
+      "CredentialFilePath": null,
+      "TimeoutSeconds": 30
+    },
+    "SecretStore": {
+      "CacheSeconds": 0,
+      "HealthCheckSecretName": "healthcheck/probe"
+    }
+  }
+}
+```
+
+| Property | Default | Description |
+| -------- | ------- | ----------- |
+| `Vault:GoogleCloud:ProjectId` | — | GCP project id (required) |
+| `Vault:GoogleCloud:Location` | — | Cloud KMS location, e.g. `"europe-west1"` (required) |
+| `Vault:GoogleCloud:KeyRing` | — | Cloud KMS key ring name (required) |
+| `Vault:GoogleCloud:CryptoKey` | — | Cloud KMS crypto key for transit encryption (required) |
+| `Vault:GoogleCloud:DatabaseSecretName` | `null` | Secret Manager secret name for DB credentials (omit to disable) |
+| `Vault:GoogleCloud:RotationCheckIntervalMinutes` | `5` | DB secret rotation polling interval |
+| `Vault:GoogleCloud:CredentialFilePath` | `null` | Service account key JSON; ADC when null |
+| `Vault:GoogleCloud:TimeoutSeconds` | `30` | API call timeout |
+
+### Health checks
+
+```csharp
+builder.Services.AddHealthChecks()
+    .AddGranitCloudKmsHealthCheck()            // Verifies KMS key accessibility
+    .AddGranitSecretStoreHealthCheck();         // ISecretStore canary
+```
+
+## Public API summary
+
+| Category | Types | Package |
+| -------- | ----- | ------- |
+| Modules | `GranitEncryptionModule`, `GranitVaultHashiCorpModule`, `GranitVaultAzureModule`, `GranitVaultAwsModule`, `GranitVaultGoogleCloudModule` | — |
+| Encryption | `IStringEncryptionService`, `IStringEncryptionProvider`, `AesStringEncryptionProvider` | `Granit.Encryption` |
+| Transit | `ITransitEncryptionService`, `ReEncryptionOptions`, `RetiredKeyVersionException` | `Granit.Vault` |
+| Secrets | `ISecretStore`, `SecretRequest`, `SecretVersion`, `SecretDescriptor`, `SecretMetadata`, `SecretStoreOptions`, `SecretVaultException` + subclasses | `Granit.Vault` |
+| Credentials | `IDatabaseCredentialProvider` | `Granit.Vault` |
+| Observability | `VaultMetrics`, `SecretStoreActivityTags` | `Granit.Vault` |
+| Health checks | `SecretStoreHealthCheck`, `VaultHealthCheck`, `AzureKeyVaultHealthCheck`, `KmsHealthCheck`, `CloudKmsHealthCheck` | per-provider |
+| Extensions | `AddGranitEncryption()`, `AddGranitVaultHashiCorp()`, `AddGranitVaultAzure()`, `AddGranitVaultAws()`, `AddGranitVaultGoogleCloud()`, `AddGranitSecretStore<T>()`, `AddGranitSecretStoreHealthCheck()` | — |
+
+## See also
+
+<CardGrid>
+  <LinkCard title="Transit encryption" href="/dotnet/data/vault/encryption/" description="Encrypt columns, rotate keys, retire ciphertext" />
+  <LinkCard title="Secret retrieval" href="/dotnet/data/vault/secrets/" description="ISecretStore for certs, API keys, signing keys" />
+  <LinkCard title="Database credentials" href="/dotnet/data/vault/credentials/" description="Short-lived DB passwords, lease renewal" />
+  <LinkCard title="Field-level encryption" href="/dotnet/data/encryption/" description="[Encrypted] attribute, EF Core convention, re-encryption job" />
+</CardGrid>

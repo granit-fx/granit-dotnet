@@ -19,7 +19,7 @@ resolution, authorization checks.
 | You need to verify who is calling your API | [Authentication](/dotnet/security/authentication/) | Always — choose the provider package matching your identity platform (Keycloak, Entra ID, or Cognito) |
 | Users/roles need different access levels | [Authorization](/dotnet/security/authorization/) | When permissions change at runtime or differ per tenant |
 | You store PII that must be encrypted at rest | [Field-level Encryption](/dotnet/data/encryption/) | GDPR Art. 32, ISO 27001 A.8.24 — national IDs, medical records, bank accounts |
-| You need external secret/key management | [Vault & Encryption](/dotnet/data/vault-encryption/) | Production environments — never store encryption keys in config files |
+| You need external secret/key management | [Vault & Encryption](/dotnet/data/vault/) | Production environments — never store encryption keys in config files |
 | You manage user accounts (CRUD, sync) | [Identity](/dotnet/security/identity/) | When your API owns user lifecycle (registration, deactivation, profile sync) |
 | Users can request data export or deletion | [Privacy](/dotnet/compliance/privacy/) | GDPR Art. 15–18 — any app handling EU personal data |
 | Your SPA uses cookie-based auth with consent | [Cookies](/dotnet/compliance/cookies/) | Browser-based apps with GDPR cookie consent requirements |

@@ -1,0 +1,208 @@
+---
+title: "Encrypt strings and EF Core columns in .NET with Granit"
+description: Encrypt sensitive fields (email, national ID, health records) with a provider-agnostic .NET API. Works locally with AES-256-CBC, in production with HashiCorp Vault Transit, Azure Key Vault, AWS KMS, or Google Cloud KMS — and rotates keys with zero downtime.
+sidebar:
+  order: 1
+  label: Transit encryption
+---
+
+import { Tabs, TabItem, Aside } from "@astrojs/starlight/components";
+
+## I need to encrypt a field — which API do I reach for?
+
+Two questions decide which interface you inject:
+
+1. **Is the value stored in an EF Core column?** → Use `[Encrypted]` on the property.
+   Granit's `EncryptedStringConverter` encrypts on save and decrypts on load; you never
+   touch the crypto yourself. [See the field-level encryption guide](/dotnet/data/encryption/).
+2. **Is it an ad-hoc value in code (a token, a payload, an audit trail fragment)?**
+   → Inject [`IStringEncryptionService`](#istringencryptionservice--sync-one-key-per-app)
+   for synchronous string-to-string, or
+   [`ITransitEncryptionService`](#itransitencryptionservice--async-per-call-key-name) when
+   you need explicit control over the key name and the cancellation token.
+
+Both delegate to the same provider chain; you choose based on ergonomics, not
+capability.
+
+## `IStringEncryptionService` — sync, one key per app
+
+The highest-level API: one passphrase or Vault key for the whole app, synchronous
+calls, `string?` return on decrypt failure. Ideal when "encrypt this single field
+consistently everywhere" is the whole requirement.
+
+```csharp
+public interface IStringEncryptionService
+{
+    string Encrypt(string plainText);
+    string? Decrypt(string cipherText);
+}
+
+public class PatientNoteService(IStringEncryptionService encryption)
+{
+    public string ProtectNote(string note) => encryption.Encrypt(note);
+    public string? RevealNote(string cipher) => encryption.Decrypt(cipher);
+}
+```
+
+`Encrypt` returns Base64; `Decrypt` returns the original or `null` on corruption /
+wrong key. Provider selection is a one-liner at config time:
+
+```jsonc
+{
+  "Encryption": {
+    "ProviderName": "Aes",                   // "Aes" | "Vault" | "AzureKeyVault"
+    "PassPhrase": "<from-secrets-manager>",
+    "KeySize": 256
+  }
+}
+```
+
+<Aside type="caution" title="Never hardcode PassPhrase">
+`PassPhrase` must come from a Configuration provider backed by a vault or a secrets
+manager — not from source control, not from a plain env var pushed to CI.
+</Aside>
+
+| Provider value | Backend | Notes |
+| -------------- | ------- | ----- |
+| `"Aes"` (default) | Local AES-256-CBC with PBKDF2 key derivation | 16-byte random IV per call. Dev and tests. |
+| `"Vault"` | HashiCorp Vault Transit | Requires `Granit.Vault.HashiCorp`. Ciphertext format `vault:v{N}:...`. |
+| `"AzureKeyVault"` | Azure Key Vault RSA-OAEP-256 | Requires `Granit.Vault.Azure`. |
+
+## `ITransitEncryptionService` — async, per-call key name
+
+Multiple keys per app (e.g. `health-records` vs `pii-data`), explicit async, and
+access to the rotation primitives:
+
+```csharp
+public interface ITransitEncryptionService
+{
+    Task<string> EncryptAsync(string keyName, string plaintext, CancellationToken ct = default);
+    Task<string> DecryptAsync(string keyName, string ciphertext, CancellationToken ct = default);
+    Task<string> RewrapAsync(string keyName, string ciphertext, CancellationToken ct = default);
+    string? GetKeyVersion(string ciphertext);
+}
+```
+
+Typical usage — one key namespace per data domain:
+
+```csharp
+public class HealthRecordService(ITransitEncryptionService transit)
+{
+    public Task<string> EncryptDiagnosisAsync(string diagnosis, CancellationToken ct) =>
+        // HashiCorp returns "vault:v3:AbCdEf..." — version embedded in prefix
+        transit.EncryptAsync("health-records", diagnosis, ct);
+
+    public Task<string> DecryptDiagnosisAsync(string ciphertext, CancellationToken ct) =>
+        transit.DecryptAsync("health-records", ciphertext, ct);
+}
+```
+
+HashiCorp Vault ciphertext carries the key version in the prefix (`vault:v{N}:...`).
+Azure Key Vault, AWS KMS, and GCP KMS produce opaque Base64 — `GetKeyVersion` returns
+`null` for those, so the rotation detection flow (below) only works with HashiCorp.
+
+## How do I rotate the encryption key without downtime?
+
+The "rotation" you actually want is: keep the old ciphertext valid, start emitting
+new ciphertext under a newer key version, and eventually retire the old version. Three
+primitives cover the flow.
+
+### 1. `RewrapAsync` — re-encrypt to the current key version
+
+Vault Transit's `/transit/rewrap` endpoint runs entirely server-side — the plaintext
+never touches your process:
+
+```csharp
+public async Task MigrateHealthRecordAsync(string oldCiphertext, CancellationToken ct)
+{
+    // "vault:v1:..." → "vault:v3:..."
+    string newCiphertext = await transit.RewrapAsync("health-records", oldCiphertext, ct);
+    // Persist newCiphertext in the database
+}
+```
+
+For AWS KMS, Azure Key Vault, and GCP KMS (no native rewrap endpoint), `RewrapAsync`
+falls back to `DecryptAsync` + `EncryptAsync`. Same outcome, but the plaintext briefly
+exists in process memory.
+
+### 2. `GetKeyVersion` — find rows that still use an old key
+
+```csharp
+foreach (string ciphertext in ciphertexts)
+{
+    string? version = transit.GetKeyVersion(ciphertext);
+    if (version is "v1" or "v2")
+    {
+        string rewrapped = await transit.RewrapAsync("pii-data", ciphertext, ct);
+        // update DB row with rewrapped
+    }
+}
+```
+
+In practice you schedule this via `IReEncryptionJob` from
+`Granit.Encryption.ReEncryption` — see
+[Field-level encryption](/dotnet/data/encryption/#full-key-rotation-workflow) for
+the batched, restartable job pattern.
+
+### 3. `ReEncryptionOptions` — make escaped rows fail loudly
+
+After the re-encryption job finishes, declare the retired versions so any row the
+job missed surfaces immediately on decrypt:
+
+```jsonc
+{
+  "ReEncryption": {
+    "RetiredKeyVersions": ["v1", "v2"],
+    "BatchSize": 500
+  }
+}
+```
+
+```csharp
+builder.Services.Configure<ReEncryptionOptions>(
+    builder.Configuration.GetSection(ReEncryptionOptions.SectionName));
+
+try
+{
+    string plaintext = encryptionService.Decrypt(row.NationalId);
+}
+catch (RetiredKeyVersionException ex)
+{
+    // A row escaped the re-encryption job — fix before retiring the Vault key
+    logger.LogError("Retired key version {Version} still in use", ex.KeyVersion);
+    throw;
+}
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `RetiredKeyVersions` | `ISet<string>` | `{}` | Versions that trigger `RetiredKeyVersionException` on decrypt |
+| `BatchSize` | `int` | `500` | Default batch size for `IReEncryptionJob` |
+
+<Aside type="note" title="HashiCorp-only enforcement">
+`RetiredKeyVersions` is **only enforced by the HashiCorp Vault provider**. AWS KMS,
+Azure Key Vault, and GCP KMS produce opaque ciphertext with no embedded version —
+`GetKeyVersion` always returns `null`, so the retired-version check is silently
+skipped. If you switch providers, remove `RetiredKeyVersions` from configuration to
+avoid false confidence.
+</Aside>
+
+## What about the local dev AES provider?
+
+When `ProviderName = "Aes"`, Granit derives a 256-bit key from `PassPhrase` via
+PBKDF2 and encrypts with AES-256-CBC, generating a random 16-byte IV per call.
+
+This is the default in `Development` — provider modules (`GranitVaultHashiCorpModule`,
+`GranitVaultAzureModule`, …) auto-disable when `IHostEnvironment.IsDevelopment()`, so
+the same codebase runs locally without a vault server. No code change, no conditional
+wiring.
+
+For production, switch `ProviderName` to `"Vault"`, `"AzureKeyVault"`, or install the
+AWS/GCP provider and the interface resolves to the cloud backend — see
+[Providers](/dotnet/data/vault/providers/).
+
+## See also
+
+- [Secret retrieval (`ISecretStore`)](/dotnet/data/vault/secrets/) — read certs, API keys, SMTP credentials
+- [Field-level encryption](/dotnet/data/encryption/) — `[Encrypted]` attribute, EF Core convention, re-encryption job
+- [Providers](/dotnet/data/vault/providers/) — HashiCorp / Azure / AWS / GCP setup

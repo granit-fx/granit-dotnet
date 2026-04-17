@@ -312,7 +312,7 @@ HashiCorp Vault is the only provider that supports **server-side rewrap** — th
 
 ## Further reading
 
-- [Vault module reference](/dotnet/data/vault-encryption/) — full option reference, provider comparison, configuration examples
+- [Vault module reference](/dotnet/data/vault/) — full option reference, provider comparison, configuration examples
 - [Crypto-Shredding: GDPR Erasure Without Deleting Rows](/blog/crypto-shredding-gdpr-erasure-without-deleting-rows/) — deep dive into per-entity key isolation
 - [GDPR by Design](/blog/gdpr-by-design/) — how Granit modules implement privacy controls
 - [NIS2-Ready .NET Applications](/blog/nis2-ready-dotnet-applications/) — compliance patterns including encryption at rest
