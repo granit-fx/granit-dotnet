@@ -1,0 +1,268 @@
+---
+title: "Availability & provider catalog"
+description: Provider-driven method catalogue, capability snapshots on PaymentMethodConfiguration, and runtime filtering of GET /methods/available by country, currency, amount, and sequence type.
+sidebar:
+  label: Availability
+  order: 2
+---
+
+import { Aside, Tabs, TabItem } from "@astrojs/starlight/components";
+
+## Why filter at all
+
+Without availability filtering, the checkout shows every activated method regardless
+of whether the provider will actually accept the charge. The symptoms:
+
+- A Belgian EUR checkout offers **iDEAL** — NL-only — and the provider rejects the
+  charge at the last click.
+- A 0.50 € cart offers **Klarna** — which has a ~10 € floor — and the customer hits
+  an inscrutable rejection after entering their details.
+- A recurring subscription checkout proposes a **OneOff** method — the setup flow
+  fails mid-way with no mandate.
+
+Each of these is a UX failure *caused by the back-end proposing a method the
+provider does not support*. The fix is to honour the provider's availability rules
+before the method reaches the checkout UI.
+
+## Design — two paths, one source of truth
+
+Providers themselves know the truth (Mollie exposes `GET /v2/methods`, Stripe exposes
+`payment_method_configurations`). Granit splits the work into a **cold admin path**
+and a **hot checkout path**:
+
+```text
+    Provider API (Mollie /v2/methods, Stripe /payment_method_configs)
+                             │
+                             │ GetCatalogAsync() — cold, admin only
+                             ▼
+    Admin UI — activate method + refresh catalogue
+                             │
+                             │ snapshot capability
+                             ▼
+    paym_payment_method_configurations (DB)
+    • SupportedCountries, SupportedCurrencies
+    • SupportedSequenceTypes, AmountBounds
+    • IsActive
+                             │
+                             │ GET /methods/available — hot, checkout
+                             ▼
+    IPaymentMethodAvailabilityFilter (pure)
+       capability snapshot ∩ request context
+```
+
+- **Admin path**: when an admin activates a method, the provider's current catalogue
+  is fetched live and the capability is captured as a snapshot on the activation
+  record. Newly added provider methods appear in the admin UI automatically — no
+  Granit release required.
+- **Hot path**: `GET /methods/available` reads only the DB snapshot plus the request
+  context. Zero latency on the provider, offline-capable, deterministic.
+
+<Aside type="note" title="No tightening overrides">
+The admin cannot *further* restrict a method beyond what the provider declares.
+The capability snapshot is the contract. If you need a Granit-level restriction
+(sanctioned countries, tenant-specific lockdown) that is stricter than the provider
+dashboard, that is a separate feature and not yet built.
+</Aside>
+
+## Capability shape
+
+A `PaymentMethodCapability` carries four independent axes:
+
+```csharp
+public sealed record PaymentMethodCapability(
+    IReadOnlySet<string> SupportedCountries,
+    IReadOnlySet<string> SupportedCurrencies,
+    PaymentMethodSequenceType SupportedSequenceTypes,
+    IReadOnlyDictionary<string, PaymentMethodAmountBound> AmountBounds);
+```
+
+| Axis | Semantics | Wildcard |
+|------|-----------|----------|
+| `SupportedCountries` | ISO-3166 alpha-2 codes (upper) | empty set = global |
+| `SupportedCurrencies` | ISO-4217 alpha-3 codes (upper) | empty set = all |
+| `SupportedSequenceTypes` | `[Flags]` — `OneOff` / `First` / `Recurring` | must be non-zero |
+| `AmountBounds` | per-currency `(CurrencyCode, Min?, Max?)` | empty dict = no bounds |
+
+The sequence axis mirrors Mollie's `sequenceType`: **OneOff** for standalone
+payments, **First** for the initial payment of a mandate-backed sequence,
+**Recurring** for subsequent off-session charges. The filter does not chain modes
+automatically — a caller that needs mandate setup requests `First`, later charges
+request `Recurring`.
+
+## Provider catalogue
+
+Each provider implements `GetCatalogAsync` and declares the real capability per
+method. The shipped providers maintain a static catalogue in code:
+
+```csharp
+// Excerpt from MollieCatalog.cs
+new(PaymentMethods.Bancontact, PaymentMethodCategory.BankRedirect, "Bancontact",
+    new(Set("BE"), PaymentMethodCurrencies.EurOnly,
+        PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First, NoBounds)),
+
+new(PaymentMethods.Klarna, PaymentMethodCategory.BuyNowPayLater, "Klarna",
+    new(
+        Set("AT", "BE", "CH", "CZ", "DE", "DK", "ES", "FI", "FR", "GB", "IE",
+            "IT", "NL", "NO", "PL", "PT", "SE", "US"),
+        Set("EUR", "GBP", "SEK", "DKK", "NOK", "CHF", "USD"),
+        PaymentMethodSequenceType.OneOff,
+        Bounds(
+            ("EUR", 1m, 10_000m),
+            ("GBP", 1m, 10_000m),
+            ("SEK", 10m, 100_000m),
+            ("DKK", 10m, 75_000m)))),
+```
+
+Shared constants live in `PaymentMethodCountries.SepaZone` and
+`PaymentMethodCurrencies.EurOnly` so SEPA-constrained methods align across
+providers.
+
+<Aside type="tip" title="Why static, not a live API call">
+Mollie's `/v2/methods` endpoint does not expose per-method country lists or stable
+sequence type flags, and the data is extremely stable in practice (iDEAL will not
+stop being NL-only). Bounds and pricing can drift, so a future iteration can
+replace these static catalogues with live calls. The interface is already async
+to support that transition without touching consumers.
+</Aside>
+
+## Admin workflow
+
+Three admin endpoints cover the activation lifecycle. All three require
+`Payments.Configuration.Manage`.
+
+### 1. Browse the live catalogue
+
+```http
+GET /api/payments/configuration/catalog?providerName=mollie
+```
+
+Calls `IPaymentProvider.GetCatalogAsync` on the named provider and cross-references
+with the existing activation records. Each entry reports `isActive` and
+`hasSnapshot`, so the admin UI can distinguish **not activated**, **activated (no
+snapshot yet)**, and **activated with snapshot**.
+
+Returns `404` when the provider is not registered in DI.
+
+### 2. Activate and snapshot
+
+```http
+POST /api/payments/configuration/{providerName}/{methodType}/activate
+```
+
+Refetches the provider catalogue, extracts the entry matching `methodType`, calls
+`PaymentMethodConfiguration.SnapshotCapability(capability)`, and persists. Race-safe
+on the unique `(ProviderName, MethodType)` index — concurrent activations converge.
+
+Returns `400` if the provider no longer offers the requested method (the method
+was removed from the provider's dashboard).
+
+### 3. Resync an existing activation
+
+```http
+POST /api/payments/configuration/{providerName}/{methodType}/resync
+```
+
+Overwrites the capability snapshot with the current provider catalogue — used to
+propagate provider-side changes (added countries, updated bounds) without a
+deactivate / reactivate cycle. Returns `404` when no activation record exists.
+
+## Runtime filtering
+
+The hot path reads the DB snapshot and intersects it with the request context:
+
+```http
+GET /api/payments/methods/available?country=BE&currency=EUR&amount=25&sequenceType=oneoff
+```
+
+| Query param | Validation | Default |
+|-------------|-----------|---------|
+| `country` | `^[A-Z]{2}$`, case-insensitive | no country filter |
+| `currency` | `^[A-Z]{3}$`, case-insensitive | no currency filter |
+| `amount` | decimal ≥ 0 | no amount filter |
+| `sequenceType` | `oneoff` / `first` / `recurring` (case-insensitive) | `oneoff` |
+
+A malformed value returns `400 ProblemDetails` before any store read. Any absent
+axis is treated as a wildcard on that axis.
+
+The response carries the capability snapshot alongside each available method, so
+the front-end can render tooltips ("Klarna requires ≥ 1 €"), country badges
+("available in BE only"), and hide impossible combinations without a second
+round-trip:
+
+```json
+[
+  {
+    "methodType": "bancontact",
+    "category": "BankRedirect",
+    "providerName": "mollie",
+    "displayLabel": "Bancontact",
+    "capability": {
+      "supportedCountries": ["BE"],
+      "supportedCurrencies": ["EUR"],
+      "supportedSequenceTypes": ["oneoff", "first"],
+      "amountBounds": []
+    }
+  }
+]
+```
+
+## Filtering semantics
+
+The filter is a pure predicate (`IPaymentMethodAvailabilityFilter`) that rejects a
+method when *any* axis fails. Sequence type uses a **bitwise containment** test —
+`(capability.SupportedSequenceTypes & requested) == requested` — meaning:
+
+- A caller requesting `Recurring` against a method that supports only `OneOff` is
+  **rejected**. Mandate setup flows are chained explicitly by the caller; the
+  filter does not synthesise a `First` step.
+- A caller requesting `First` against a method that supports `OneOff | First` is
+  accepted.
+- A caller requesting `OneOff` against a method that supports
+  `First | Recurring` is **rejected** — mandate-based methods typically cannot
+  accept a one-shot charge.
+
+Amount bounds apply **only** when the request currency matches a declared bound.
+A Klarna capability with `{EUR: (1, 10000)}` offers no constraint on a GBP
+request, because Klarna exposes its GBP bound separately. An absent bound means
+unrestricted for that currency.
+
+## Backward compatibility
+
+`PaymentMethodConfiguration` rows created before snapshotting existed have
+`SupportedCountries` / `SupportedCurrencies` / `SupportedSequenceTypes` /
+`AmountBounds` all `NULL`. The resolver treats this as **wildcard** — the legacy
+record is returned regardless of context. An admin `POST /resync` populates the
+snapshot and the record starts being filtered properly.
+
+## EF persistence
+
+Snapshot columns are additive and nullable. Host applications running
+`dotnet ef migrations add` on the `PaymentsDbContext` pick up the new columns
+automatically:
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `SupportedCountries` | `nvarchar(512)` | CSV, sorted |
+| `SupportedCurrencies` | `nvarchar(256)` | CSV, sorted |
+| `SupportedSequenceTypes` | `int` | flags |
+| `AmountBounds` | JSON | per-currency `{min?, max?}` dictionary |
+
+The `ValueComparer` for the immutable sets uses `SetEquals` for equality and
+returns the same reference for the snapshot — immutable collections do not need to
+be deep-copied for change tracking.
+
+## What's intentionally not built
+
+- **Admin tightening overrides** — YAGNI until a concrete cross-cutting restriction
+  (sanctioned countries, tenant lockdown) is on the table. Provider dashboards
+  already cover most merchant-level restrictions.
+- **`ITenantInfo.CountryCode`** — the country at checkout is a transactional
+  attribute, not a tenant-global one. It comes from the invoice's
+  [`BillingAddress.Country`](/dotnet/saas/invoicing/) and is passed through the
+  query string.
+- **Self-healing snapshot on provider rejection** — a reactive resync triggered by
+  `ChargeAsync` rejecting on capability grounds (e.g., Mollie returning
+  `amount_too_high` after lowering the Klarna bound). Considered for a later
+  iteration; in the meantime an admin `POST /resync` catches drift manually.
+- **Periodic background resync** — same rationale; add when observed drift becomes
+  a pain point.

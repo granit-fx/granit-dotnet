@@ -6,12 +6,25 @@ sidebar:
   order: 3
 ---
 
-import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
+import { FileTree, LinkCard, CardGrid } from "@astrojs/starlight/components";
 
 Granit.Payments provides provider-agnostic payment processing with a **multi-provider
 per tenant** model. A single tenant can route Card payments to Stripe, iDEAL to Mollie,
 and bank transfers to SEPA — all simultaneously. No card data ever touches Granit
 (hosted payment pages only, PCI DSS compliant).
+
+<CardGrid>
+  <LinkCard
+    title="Providers"
+    description="IPaymentProvider contract, Stripe implementation, Mollie, SEPA Transfer, SEPA Direct Debit. How to wire a new provider."
+    href="/dotnet/saas/payments/providers/"
+  />
+  <LinkCard
+    title="Availability & provider catalog"
+    description="Provider-driven method catalogue, capability snapshots, and runtime filtering by country / currency / amount / sequence type."
+    href="/dotnet/saas/payments/availability/"
+  />
+</CardGrid>
 
 ## Package structure
 
@@ -21,10 +34,10 @@ and bank transfers to SEPA — all simultaneously. No card data ever touches Gra
   - Granit.Payments.Endpoints Checkout, payment methods, webhooks (AllowAnonymous + signature)
   - Granit.Payments.Wolverine InvoiceFinalizedHandler (auto-charge), webhook dispatch
   - Granit.Payments.Stripe Stripe provider (PaymentIntent API, Checkout, WebhookVerifier)
-  - Granit.Payments.Mollie Mollie EU-sovereign provider (Phase 2)
+  - Granit.Payments.Mollie Mollie EU-sovereign provider
   - Granit.Payments.Notifications Payment lifecycle notifications (5 types)
-  - Granit.Payments.SepaTransfer Bank transfer + reconciliation (Phase 2)
-  - Granit.Payments.SepaDirectDebit Mandate management + SDD collection (Phase 2)
+  - Granit.Payments.SepaTransfer Bank transfer + reconciliation
+  - Granit.Payments.SepaDirectDebit Mandate management + SDD collection
 </FileTree>
 
 ## Payment transaction FSM
@@ -54,10 +67,21 @@ stateDiagram-v2
 ```csharp
 public interface IPaymentProviderResolver
 {
-    IPaymentProvider Resolve(Guid tenantId, PaymentMethodType methodType);
-    IReadOnlyList<AvailablePaymentMethod> GetAvailableProviders(Guid tenantId);
+    Task<IPaymentProvider> ResolveAsync(Guid tenantId, string methodType,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<PaymentAvailableMethod>> GetAvailableProvidersAsync(
+        Guid tenantId,
+        PaymentAvailabilityContext? context = null,
+        CancellationToken cancellationToken = default);
 }
 ```
+
+The resolver reads the active `PaymentMethodConfiguration` records and returns the
+methods each registered `IPaymentProvider` can handle. Passing a
+`PaymentAvailabilityContext` filters the result against the capability snapshot
+captured at activation time — see
+[Availability & provider catalog](/dotnet/saas/payments/availability/).
 
 Configuration per tenant:
 
@@ -156,69 +180,24 @@ changes between the original payment and a retry 14 days later.
 ## Checkout flow
 
 ```csharp
-// 1. Customer selects payment method type
-var methods = providerResolver.GetAvailableProviders(tenantId);
-// → [Card (Stripe), BankTransfer (SEPA), iDEAL (Mollie)]
+// 1. Customer selects a payment method type — filtered by context
+var context = new PaymentAvailabilityContext(
+    CountryCode: "BE",
+    CurrencyCode: "EUR",
+    Amount: 25m,
+    SequenceType: PaymentMethodSequenceType.OneOff);
 
-// 2. Resolve provider for selected method
-var provider = providerResolver.Resolve(tenantId, PaymentMethodType.Card);
+var methods = await resolver.GetAvailableProvidersAsync(tenantId, context, ct);
+// → only methods whose capability snapshot accepts (BE, EUR, 25€, OneOff)
 
-// 3. Create checkout session (hosted page)
+// 2. Resolve the provider for the selected method
+var provider = await resolver.ResolveAsync(tenantId, "card", ct);
+
+// 3. Create a checkout session (hosted page)
 var session = await checkoutFactory.CreateAsync(
     invoiceId, amount, currency, returnUrl, ct);
 // → { Url: "https://checkout.stripe.com/...", SessionId: "cs_xxx" }
 ```
-
-## Stripe implementation
-
-`Granit.Payments.Stripe` provides a full implementation using the Stripe.net SDK
-and the PaymentIntent API:
-
-| Class | Stripe API | Purpose |
-|-------|-----------|---------|
-| `StripePaymentProvider` | PaymentIntent | Charge, refund, status check |
-| `StripeCheckoutSessionFactory` | Checkout Session | Hosted payment pages |
-| `StripePaymentMethodManager` | Customer + PaymentMethod | List, attach, detach |
-| `StripeWebhookVerifier` | EventUtility | HMAC-SHA256 signature validation |
-
-### StripeClientFactory (no static config)
-
-`StripeConfiguration.ApiKey` is **never used** (global static, unsafe for multi-tenant).
-Instead, `StripeClientFactory` creates an `IStripeClient` per request via `IHttpClientFactory`:
-
-```csharp
-// DI registration (in GranitPaymentsStripeModule)
-services.AddScoped<IStripeClient>(sp =>
-    sp.GetRequiredService<StripeClientFactory>().Create());
-```
-
-This enables future Stripe Connect (per-tenant API keys) and integrates with
-`IHttpClientFactory` lifecycle (pooling, logging, resilience policies).
-
-### Provider customer mapping
-
-`ProviderCustomerMapping` maps Granit TenantId → provider customer ID (e.g., `cus_xxx`).
-Generic entity reusable by any provider (Stripe, Mollie). Auto-created on first
-`AttachAsync()` call.
-
-### Configuration
-
-```json
-{
-  "Payments": {
-    "Stripe": {
-      "SecretKey": "sk_test_xxx",
-      "WebhookSecret": "whsec_xxx",
-      "PublishableKey": "pk_test_xxx"
-    }
-  }
-}
-```
-
-### Amount conversion
-
-`StripeAmountConverter` handles zero-decimal currencies (JPY, KRW, VND, etc.)
-automatically — Stripe uses cents for EUR/USD but major units for JPY.
 
 ## Notifications
 
@@ -242,15 +221,26 @@ automatically — Stripe uses cents for EUR/USD but major units for JPY.
 | POST | `/api/payments/refund` | `Payments.Refunds.Execute` |
 | POST | `/api/payments/checkout` | `Payments.Charges.Execute` |
 | GET | `/api/payments/methods` | `Payments.Methods.Read` |
+| GET | `/api/payments/methods/available` | `Payments.Methods.Read` |
 | POST | `/api/payments/methods` | `Payments.Methods.Manage` |
 | DELETE | `/api/payments/methods/{id}` | `Payments.Methods.Manage` |
+| GET | `/api/payments/configuration` | `Payments.Configuration.Manage` |
+| GET | `/api/payments/configuration/catalog` | `Payments.Configuration.Manage` |
+| POST | `/api/payments/configuration/{p}/{m}/activate` | `Payments.Configuration.Manage` |
+| POST | `/api/payments/configuration/{p}/{m}/deactivate` | `Payments.Configuration.Manage` |
+| POST | `/api/payments/configuration/{p}/{m}/resync` | `Payments.Configuration.Manage` |
 | POST | `/api/payments/webhooks/{provider}` | `[AllowAnonymous]` |
 
 Charge and checkout endpoints use `Granit.Http.Idempotency` (`[Idempotent]`)
-to prevent double charges.
+to prevent double charges. Configuration endpoints (activate / deactivate / resync) are
+also idempotent. The `/methods/available` endpoint accepts
+`?country=&currency=&amount=&sequenceType=` query params — details in
+[Availability & provider catalog](/dotnet/saas/payments/availability/).
 
 ## See also
 
+- [Providers](/dotnet/saas/payments/providers/) — `IPaymentProvider` contract, Stripe, Mollie, SEPA
+- [Availability & provider catalog](/dotnet/saas/payments/availability/) — method catalog, capability snapshots, runtime filtering
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography
 - [Invoicing](/dotnet/saas/invoicing/) — invoice lifecycle and partial payments
 - [Subscriptions](/dotnet/saas/subscriptions/) — billing cycle orchestration
