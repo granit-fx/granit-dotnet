@@ -35,6 +35,7 @@ coverage-report/
 # --- AI tools (Claude Code) ---
 # Commit settings.json and skills (shared with all contributors), ignore local overrides
 .claude/settings.local.json
+.claude/worktrees/
 
 # --- OS ---
 .DS_Store
