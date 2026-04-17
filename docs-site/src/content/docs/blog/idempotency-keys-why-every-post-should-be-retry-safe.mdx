@@ -56,20 +56,33 @@ All three produce the same symptom: **duplicate side effects**. The fix is the s
 
 `Granit.Http.Idempotency` implements the full Stripe-style idempotency pattern as ASP.NET Core middleware. The state machine has three states:
 
-```text
-Request arrives
-    │
-    ├─ Key absent ──────────────> Execute normally (no idempotency)
-    │
-    └─ Key present
-         │
-         ├─ State: Absent ─────> SET NX (acquire lock) ──> Execute ──> Cache response
-         │
-         ├─ State: InProgress ─> Return 409 Conflict + Retry-After header
-         │
-         └─ State: Completed ──> Verify payload hash
-                                    ├─ Match ──> Return cached response (replay)
-                                    └─ Mismatch ─> Return 422 (key reuse with different body)
+```mermaid
+flowchart TD
+    Start([Request arrives])
+    HasKey{Idempotency-Key<br/>header present?}
+    Normal[Execute normally<br/>no idempotency]
+    State{Cached state?}
+    Absent[SET NX — acquire lock<br/>Execute handler<br/>Cache response]
+    InProgress[Return 409 Conflict<br/>+ Retry-After header]
+    Completed{Payload hash<br/>matches?}
+    Replay[Return cached response<br/>replay]
+    Mismatch[Return 422<br/>key reuse, different body]
+
+    Start --> HasKey
+    HasKey -- no --> Normal
+    HasKey -- yes --> State
+    State -- Absent --> Absent
+    State -- InProgress --> InProgress
+    State -- Completed --> Completed
+    Completed -- match --> Replay
+    Completed -- mismatch --> Mismatch
+
+    style Start fill:#e8f0ff,stroke:#1f4e8c,color:#0b1c38
+    style Normal fill:#e2f5e2,stroke:#1a7a1a,color:#0b3a0b
+    style Absent fill:#e2f5e2,stroke:#1a7a1a,color:#0b3a0b
+    style InProgress fill:#fff4e0,stroke:#a15c00,color:#3a2000
+    style Replay fill:#e2f5e2,stroke:#1a7a1a,color:#0b3a0b
+    style Mismatch fill:#fde2e2,stroke:#a31515,color:#3a0000
 ```
 
 ### Mark an endpoint as idempotent
