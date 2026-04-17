@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Encryption;
+using Granit.Vault.Extensions;
 using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.HealthChecks;
 using Granit.Vault.HashiCorp.Options;
@@ -45,6 +46,9 @@ public static class HashiCorpVaultServiceCollectionExtensions
 
         // Per-entity key isolation for crypto-shredding (GDPR Art. 17)
         services.TryAddScoped<IEntityEncryptionKeyStore, HashiCorpEntityEncryptionKeyStore>();
+
+        // ISecretStore for arbitrary secret retrieval (mTLS certs, signing keys, etc.)
+        services.AddGranitSecretStore<HashiCorpSecretStore>("hashicorp");
 
         GranitActivitySourceRegistry.Register(VaultHashiCorpActivitySource.Name);
 

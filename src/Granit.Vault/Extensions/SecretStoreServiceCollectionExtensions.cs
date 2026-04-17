@@ -2,6 +2,7 @@ using Granit.Vault.Diagnostics;
 using Granit.Vault.Internal;
 using Granit.Vault.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
@@ -34,6 +35,15 @@ public static class SecretStoreServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName);
+
+        // Self-sufficient registration: ensure VaultMetrics and SecretStoreOptions are available
+        // even when the extension is called outside the GranitVaultModule pipeline (e.g. tests
+        // that stand up a ServiceCollection manually).
+        services.TryAddSingleton<VaultMetrics>();
+        services
+            .AddOptions<SecretStoreOptions>()
+            .BindConfiguration(SecretStoreOptions.SectionName)
+            .ValidateDataAnnotations();
 
         services.AddSingleton<TStore>();
 

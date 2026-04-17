@@ -1,3 +1,5 @@
+using Granit.Caching.Extensions;
+using Granit.Vault;
 using Granit.Vault.HashiCorp.Extensions;
 using Granit.Vault.HashiCorp.HealthChecks;
 using Granit.Vault.HashiCorp.Options;
@@ -124,6 +126,52 @@ public sealed class HashiCorpVaultServiceCollectionExtensionsTests
         registration.ShouldNotBeNull();
         registration!.Tags.ShouldContain("readiness");
         registration.Tags.ShouldContain("startup");
+    }
+
+    [Fact]
+    public void AddGranitVaultHashiCorp_RegistersSecretStore_WithoutCache_ByDefault()
+    {
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddMetrics();
+        services.AddSingleton<IConfiguration>(CreateVaultConfiguration());
+        services.AddGranitCaching();
+
+        services.AddGranitVaultHashiCorp();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        ISecretStore store = sp.GetRequiredService<ISecretStore>();
+        store.ShouldNotBeNull();
+        // SecretCacheSeconds defaults to 0 → no FusionCache decorator is inserted.
+        store.GetType().Name.ShouldBe("ProviderTaggingSecretStore");
+    }
+
+    [Fact]
+    public void AddGranitVaultHashiCorp_WithCacheEnabled_WrapsInCachedDecorator()
+    {
+        ServiceCollection services = new();
+        services.AddLogging();
+        services.AddMetrics();
+
+        IConfiguration config = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                ["Vault:Address"] = "https://vault.test.com",
+                ["Vault:AuthMethod"] = "Token",
+                ["Vault:Token"] = "test-token",
+                ["Vault:SecretStore:CacheSeconds"] = "60",
+            })
+            .Build();
+        services.AddSingleton(config);
+        services.AddGranitCaching();
+
+        services.AddGranitVaultHashiCorp();
+
+        using ServiceProvider sp = services.BuildServiceProvider();
+
+        ISecretStore store = sp.GetRequiredService<ISecretStore>();
+        store.GetType().Name.ShouldBe("CachedSecretStore");
     }
 
     [Fact]

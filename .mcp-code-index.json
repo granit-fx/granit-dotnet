@@ -41893,7 +41893,7 @@
       "kind": "class",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/Extensions/SecretStoreServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -42018,7 +42018,7 @@
       "kind": "class",
       "project": "Granit.Vault.HashiCorp",
       "file": "src/Granit.Vault.HashiCorp/Extensions/HashiCorpVaultServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitVaultHashiCorp",
