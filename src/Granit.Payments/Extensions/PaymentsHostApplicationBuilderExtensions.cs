@@ -21,6 +21,7 @@ public static class PaymentsHostApplicationBuilderExtensions
         GranitActivitySourceRegistry.Register(PaymentsActivitySource.Name);
 
         builder.Services.TryAddScoped<IPaymentProviderResolver, DefaultPaymentProviderResolver>();
+        builder.Services.TryAddSingleton<IPaymentMethodAvailabilityFilter, DefaultPaymentMethodAvailabilityFilter>();
 
         return builder;
     }

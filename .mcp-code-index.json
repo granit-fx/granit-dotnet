@@ -28115,6 +28115,15 @@
       "members": []
     },
     {
+      "name": "PaymentAvailabilityContext",
+      "fqn": "Granit.Payments.Contracts.PaymentAvailabilityContext",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentAvailabilityContext.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "PaymentAvailableMethod",
       "fqn": "Granit.Payments.Contracts.PaymentAvailableMethod",
       "kind": "record",
@@ -28148,6 +28157,15 @@
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentCheckoutSessionRequest.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "PaymentMethodCapability",
+      "fqn": "Granit.Payments.Contracts.PaymentMethodCapability",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Contracts/PaymentMethodCapability.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -28331,6 +28349,15 @@
       ]
     },
     {
+      "name": "PaymentMethodAmountBound",
+      "fqn": "Granit.Payments.Domain.PaymentMethodAmountBound",
+      "kind": "record",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodAmountBound.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "PaymentMethodCategory",
       "fqn": "Granit.Payments.Domain.PaymentMethodCategory",
       "kind": "enum",
@@ -28372,6 +28399,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "PaymentMethodSequenceType",
+      "fqn": "Granit.Payments.Domain.PaymentMethodSequenceType",
+      "kind": "enum",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Domain/PaymentMethodSequenceType.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "PaymentMethods",
@@ -29299,6 +29335,22 @@
           "kind": "method",
           "signature": "ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPaymentMethodAvailabilityFilter",
+      "fqn": "Granit.Payments.Internal.IPaymentMethodAvailabilityFilter",
+      "kind": "interface",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Internal/IPaymentMethodAvailabilityFilter.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "IsAvailable",
+          "kind": "method",
+          "signature": "IsAvailable(PaymentMethodCapability capability, PaymentAvailabilityContext context)",
+          "returnType": "bool"
         }
       ]
     },
