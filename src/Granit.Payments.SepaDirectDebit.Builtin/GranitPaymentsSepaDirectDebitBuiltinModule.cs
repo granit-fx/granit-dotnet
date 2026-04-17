@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Payments.HealthChecks;
 using Granit.Payments.SepaDirectDebit.Builtin.Internal;
 using Granit.Payments.SepaDirectDebit.Builtin.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,5 +22,7 @@ public sealed class GranitPaymentsSepaDirectDebitBuiltinModule : GranitModule
         context.Services.TryAddScoped<IDirectDebitProvider, BuiltinDirectDebitProvider>();
         context.Services.TryAddScoped<ICollectionFileGenerator, Pain008Generator>();
         context.Services.AddScoped<IPaymentProvider, SepaDirectDebitPaymentProvider>();
+
+        context.Services.AddHealthChecks().AddGranitPaymentProviderHealthCheck("sepa-direct-debit");
     }
 }

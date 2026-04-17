@@ -29053,6 +29053,38 @@
       ]
     },
     {
+      "name": "PaymentProviderHealthCheck",
+      "fqn": "Granit.Payments.HealthChecks.PaymentProviderHealthCheck",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/HealthChecks/PaymentProviderHealthCheck.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "CheckHealthAsync",
+          "kind": "method",
+          "signature": "CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)",
+          "returnType": "Task<HealthCheckResult>"
+        }
+      ]
+    },
+    {
+      "name": "PaymentProviderHealthCheckBuilderExtensions",
+      "fqn": "Granit.Payments.HealthChecks.PaymentProviderHealthCheckBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/HealthChecks/PaymentProviderHealthCheckBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitPaymentProviderHealthCheck",
+          "kind": "method",
+          "signature": "AddGranitPaymentProviderHealthCheck(this IHealthChecksBuilder builder, string providerName)",
+          "returnType": "IHealthChecksBuilder"
+        }
+      ]
+    },
+    {
       "name": "IAutoChargeService",
       "fqn": "Granit.Payments.IAutoChargeService",
       "kind": "interface",
@@ -29468,7 +29500,7 @@
       "kind": "class",
       "project": "Granit.Payments.Mollie",
       "file": "src/Granit.Payments.Mollie/GranitPaymentsMollieModule.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29701,7 +29733,7 @@
       "kind": "class",
       "project": "Granit.Payments.SepaDirectDebit.Builtin",
       "file": "src/Granit.Payments.SepaDirectDebit.Builtin/GranitPaymentsSepaDirectDebitBuiltinModule.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30136,7 +30168,7 @@
       "kind": "class",
       "project": "Granit.Payments.SepaTransfer",
       "file": "src/Granit.Payments.SepaTransfer/GranitPaymentsSepaTransferModule.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
@@ -30224,7 +30256,7 @@
       "kind": "class",
       "project": "Granit.Payments.Stripe",
       "file": "src/Granit.Payments.Stripe/GranitPaymentsStripeModule.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "ConfigureServices",

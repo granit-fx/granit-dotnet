@@ -1,6 +1,7 @@
 using Granit.Http.Resilience;
 using Granit.Http.Resilience.Extensions;
 using Granit.Modularity;
+using Granit.Payments.HealthChecks;
 using Granit.Payments.Stripe.Internal;
 using Granit.Payments.Stripe.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,5 +32,7 @@ public sealed class GranitPaymentsStripeModule : GranitModule
         context.Services.AddScoped<ICheckoutSessionFactory, StripeCheckoutSessionFactory>();
         context.Services.AddScoped<IPaymentMethodManager, StripePaymentMethodManager>();
         context.Services.AddScoped<IPaymentWebhookVerifier, StripeWebhookVerifier>();
+
+        context.Services.AddHealthChecks().AddGranitPaymentProviderHealthCheck("stripe");
     }
 }

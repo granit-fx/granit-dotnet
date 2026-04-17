@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Payments.HealthChecks;
 using Granit.Payments.Mollie.Internal;
 using Granit.Payments.Mollie.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,5 +38,7 @@ public sealed class GranitPaymentsMollieModule : GranitModule
         context.Services.AddScoped<ICheckoutSessionFactory, MollieCheckoutSessionFactory>();
         context.Services.AddSingleton<IPaymentMethodManager, MolliePaymentMethodManager>();
         context.Services.AddScoped<IPaymentWebhookVerifier, MollieWebhookVerifier>();
+
+        context.Services.AddHealthChecks().AddGranitPaymentProviderHealthCheck("mollie");
     }
 }

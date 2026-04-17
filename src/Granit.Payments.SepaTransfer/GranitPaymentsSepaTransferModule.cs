@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.Payments.HealthChecks;
 using Granit.Payments.SepaTransfer.Internal;
 using Granit.Payments.SepaTransfer.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,5 +28,7 @@ public sealed class GranitPaymentsSepaTransferModule : GranitModule
 
         // Register CAMT.053 parser
         context.Services.AddSingleton<IBankStatementParser, Camt053Parser>();
+
+        context.Services.AddHealthChecks().AddGranitPaymentProviderHealthCheck("sepa-transfer");
     }
 }
