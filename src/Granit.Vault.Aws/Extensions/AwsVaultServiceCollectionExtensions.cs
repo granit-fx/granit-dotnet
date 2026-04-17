@@ -9,6 +9,7 @@ using Granit.Vault.Aws.HealthChecks;
 using Granit.Vault.Aws.Options;
 using Granit.Vault.Aws.Providers;
 using Granit.Vault.Aws.Services;
+using Granit.Vault.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
@@ -71,6 +72,9 @@ public static class AwsVaultServiceCollectionExtensions
         services.AddSingleton<IDatabaseCredentialProvider>(sp =>
             sp.GetRequiredService<AwsSecretsCredentialProvider>());
         services.AddHostedService(sp => sp.GetRequiredService<AwsSecretsCredentialProvider>());
+
+        // ISecretStore for arbitrary secret retrieval
+        services.AddGranitSecretStore<AwsSecretStore>("aws");
 
         GranitActivitySourceRegistry.Register(VaultAwsActivitySource.Name);
 
