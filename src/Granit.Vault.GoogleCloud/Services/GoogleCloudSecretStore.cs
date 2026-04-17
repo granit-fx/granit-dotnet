@@ -1,5 +1,8 @@
 using System.Diagnostics;
+using System.Text;
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;
@@ -59,30 +62,55 @@ internal sealed partial class GoogleCloudSecretStore(
         catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "not_found");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "not_found");
             throw new SecretNotFoundException(request.Name, request.Version?.Identifier, ex);
         }
         catch (RpcException ex) when (ex.StatusCode is StatusCode.PermissionDenied or StatusCode.Unauthenticated)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "denied");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "denied");
             LogAccessDenied(logger, request.Name);
             throw new SecretAccessDeniedException(request.Name, ex);
         }
         catch (RpcException ex) when (IsTransient(ex.StatusCode))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "transient");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "transient");
             throw new SecretVaultTransientException(
                 request.Name,
                 $"Transient GCP Secret Manager failure ({ex.StatusCode}).",
                 ex);
         }
 
-        byte[] bytes = response.Payload.Data.ToByteArray();
-        string? resolvedVersion = ExtractVersion(response.Name);
+        activity?.SetTag(SecretStoreActivityTags.Outcome, "ok");
+        ByteString payload = response.Payload.Data;
+        var metadata = new SecretMetadata(Version: ExtractVersion(response.Name));
 
-        return SecretDescriptor.FromBinary(
-            request.Name,
-            bytes,
-            version: resolvedVersion);
+        // GCP payloads are always binary natively. When the body is valid UTF-8 and no binary
+        // content type is hinted, surface the payload as StringValue so consumers of text
+        // secrets don't have to call AsString(). Callers who explicitly want raw bytes
+        // (certificates, binary blobs) use AsBytes() regardless of which facet is set.
+        if (TryDecodeUtf8(payload, out string? text))
+        {
+            return SecretDescriptor.FromString(request.Name, text!, metadata);
+        }
+
+        return SecretDescriptor.FromBinary(request.Name, payload.ToByteArray(), metadata);
+    }
+
+    private static bool TryDecodeUtf8(ByteString payload, out string? text)
+    {
+        try
+        {
+            var decoder = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+            text = decoder.GetString(payload.Span);
+            return true;
+        }
+        catch (DecoderFallbackException)
+        {
+            text = null;
+            return false;
+        }
     }
 
     private SecretVersionName BuildVersionName(SecretRequest request)

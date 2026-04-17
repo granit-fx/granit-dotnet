@@ -3,7 +3,12 @@ using ArchUnitNET.Domain;
 using ArchUnitNET.Fluent;
 using ArchUnitNET.xUnit;
 using Granit.Vault;
+using Granit.Vault.Aws;
+using Granit.Vault.Azure;
 using Granit.Vault.Exceptions;
+using Granit.Vault.GoogleCloud;
+using Granit.Vault.HashiCorp;
+using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
@@ -17,6 +22,17 @@ namespace Granit.ArchitectureTests;
 public sealed class VaultConventionTests
 {
     private static readonly ArchUnitNET.Domain.Architecture Architecture = GranitArchitecture.Instance;
+
+    // Force-load every provider assembly so reflection-based scans below (and the
+    // AppDomain.CurrentDomain.GetAssemblies() call in the TryGetSecretAsync check)
+    // find the concrete store types without depending on xUnit test ordering.
+    private static readonly System.Reflection.Assembly[] ProviderAssemblies =
+    [
+        typeof(GranitVaultHashiCorpModule).Assembly,
+        typeof(GranitVaultAzureModule).Assembly,
+        typeof(GranitVaultAwsModule).Assembly,
+        typeof(GranitVaultGoogleCloudModule).Assembly,
+    ];
 
     private static readonly IObjectProvider<Class> ConcreteSecretStores =
         Classes().That().ImplementInterface(typeof(ISecretStore))
@@ -91,10 +107,9 @@ public sealed class VaultConventionTests
         // Default interface method on ISecretStore centralises the anti-footgun contract:
         // only SecretNotFoundException → null; every other failure bubbles. Providers must
         // NOT reimplement it, or they risk swallowing 403/503 under the guise of "missing".
-        Type[] concrete = typeof(ISecretStore).Assembly.GetTypes()
-            .Concat(AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => a.GetName().Name!.StartsWith("Granit.Vault.", StringComparison.Ordinal))
-                .SelectMany(a => a.GetTypes()))
+        Type[] concrete = ProviderAssemblies
+            .Append(typeof(ISecretStore).Assembly)
+            .SelectMany(a => a.GetTypes())
             .Distinct()
             .Where(t => t.IsClass && !t.IsAbstract && typeof(ISecretStore).IsAssignableFrom(t))
             .ToArray();
@@ -135,6 +150,33 @@ public sealed class VaultConventionTests
         rendered.ShouldNotContain("super-sensitive-token-value",
             Case.Sensitive,
             "SecretDescriptor.ToString() must redact the payload to protect against logger sinks that ignore [SensitiveData]");
+    }
+
+    [Fact]
+    public void Every_vault_provider_module_should_register_an_ISecretStore()
+    {
+        // Scans each Granit.Vault.{Provider} assembly for a public `AddGranitVault{Provider}`
+        // extension method on IServiceCollection, invokes it, and asserts that an
+        // `ISecretStore` binding exists afterwards. This is the structural guarantee that
+        // the provider wired up the shared `AddGranitSecretStore<T>` helper.
+        foreach (System.Reflection.Assembly providerAssembly in ProviderAssemblies)
+        {
+            MethodInfo? addMethod = providerAssembly.GetTypes()
+                .Where(t => t.IsAbstract && t.IsSealed && t.IsPublic && t.Name.EndsWith("ServiceCollectionExtensions", StringComparison.Ordinal))
+                .SelectMany(t => t.GetMethods(BindingFlags.Public | BindingFlags.Static))
+                .FirstOrDefault(m => m.Name.StartsWith("AddGranitVault", StringComparison.Ordinal)
+                    && m.GetParameters() is { Length: 1 } p
+                    && p[0].ParameterType == typeof(IServiceCollection));
+
+            addMethod.ShouldNotBeNull(
+                $"{providerAssembly.GetName().Name} must expose an AddGranitVault* extension on IServiceCollection");
+
+            ServiceCollection services = [];
+            addMethod!.Invoke(obj: null, parameters: [services]);
+
+            services.Any(d => d.ServiceType == typeof(ISecretStore)).ShouldBeTrue(
+                $"{providerAssembly.GetName().Name}.{addMethod.Name} must register an ISecretStore implementation");
+        }
     }
 
     [Fact]

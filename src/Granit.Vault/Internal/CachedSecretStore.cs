@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Granit.Vault.Options;
@@ -45,7 +44,7 @@ internal sealed partial class CachedSecretStore(
         ArgumentNullException.ThrowIfNull(request);
 
         string cacheKey = BuildCacheKey(request);
-        string? tenantId = ResolveTenantId();
+        string? tenantId = SecretStoreDiagnostics.ResolveTenantId(serviceProvider);
 
         MaybeValue<SecretDescriptor> cached = await cache
             .TryGetAsync<SecretDescriptor>(cacheKey, token: cancellationToken)
@@ -63,24 +62,9 @@ internal sealed partial class CachedSecretStore(
         {
             descriptor = await inner.GetSecretAsync(request, cancellationToken).ConfigureAwait(false);
         }
-        catch (SecretNotFoundException)
+        catch (SecretVaultException ex)
         {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "not_found", cached: false);
-            throw;
-        }
-        catch (SecretAccessDeniedException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "denied", cached: false);
-            throw;
-        }
-        catch (SecretVaultTransientException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "transient", cached: false);
-            throw;
-        }
-        catch (SecretVaultException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "error", cached: false);
+            SecretStoreDiagnostics.RecordAndThrow(metrics, tenantId, providerName, cached: false, ex);
             throw;
         }
 
@@ -110,12 +94,6 @@ internal sealed partial class CachedSecretStore(
         }
 
         return true;
-    }
-
-    private string? ResolveTenantId()
-    {
-        var currentTenant = serviceProvider.GetService(typeof(ICurrentTenant)) as ICurrentTenant;
-        return currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
     }
 
     private string BuildCacheKey(SecretRequest request) =>

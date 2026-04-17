@@ -1,4 +1,3 @@
-using Granit.MultiTenancy;
 using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 
@@ -23,7 +22,7 @@ internal sealed class ProviderTaggingSecretStore(
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        string? tenantId = ResolveTenantId();
+        string? tenantId = SecretStoreDiagnostics.ResolveTenantId(serviceProvider);
 
         try
         {
@@ -31,31 +30,10 @@ internal sealed class ProviderTaggingSecretStore(
             metrics.RecordSecretRead(tenantId, providerName, outcome: "ok", cached: false);
             return descriptor;
         }
-        catch (SecretNotFoundException)
+        catch (SecretVaultException ex)
         {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "not_found", cached: false);
+            SecretStoreDiagnostics.RecordAndThrow(metrics, tenantId, providerName, cached: false, ex);
             throw;
         }
-        catch (SecretAccessDeniedException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "denied", cached: false);
-            throw;
-        }
-        catch (SecretVaultTransientException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "transient", cached: false);
-            throw;
-        }
-        catch (SecretVaultException)
-        {
-            metrics.RecordSecretRead(tenantId, providerName, outcome: "error", cached: false);
-            throw;
-        }
-    }
-
-    private string? ResolveTenantId()
-    {
-        var currentTenant = serviceProvider.GetService(typeof(ICurrentTenant)) as ICurrentTenant;
-        return currentTenant?.IsAvailable == true ? currentTenant.Id?.ToString() : null;
     }
 }

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Net;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
@@ -67,24 +68,28 @@ internal sealed partial class HashiCorpSecretStore(
         catch (VaultApiException ex) when (ex.HttpStatusCode == HttpStatusCode.NotFound)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "not_found");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "not_found");
             throw new SecretNotFoundException(request.Name, request.Version?.Identifier, ex);
         }
         catch (VaultApiException ex) when (
             ex.HttpStatusCode is HttpStatusCode.Forbidden or HttpStatusCode.Unauthorized)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "denied");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "denied");
             LogAccessDenied(logger, request.Name);
             throw new SecretAccessDeniedException(request.Name, ex);
         }
         catch (VaultApiException ex) when (IsTransient(ex.HttpStatusCode))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "transient");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "transient");
             throw new SecretVaultTransientException(
                 request.Name,
                 $"Transient HashiCorp Vault failure (HTTP {(int)ex.HttpStatusCode}).",
                 ex);
         }
 
+        activity?.SetTag(SecretStoreActivityTags.Outcome, "ok");
         IDictionary<string, object> data = secret.Data.Data;
         string? resolvedVersion = secret.Data.Metadata?.Version.ToString(CultureInfo.InvariantCulture);
         DateTimeOffset? createdAt = TryParseIso(secret.Data.Metadata?.CreatedTime);
@@ -95,9 +100,10 @@ internal sealed partial class HashiCorpSecretStore(
             return SecretDescriptor.FromBinary(
                 request.Name,
                 bytes,
-                version: resolvedVersion,
-                contentType: "application/octet-stream",
-                createdAt: createdAt);
+                new SecretMetadata(
+                    Version: resolvedVersion,
+                    ContentType: "application/octet-stream",
+                    CreatedAt: createdAt));
         }
 
         string stringValue = data.TryGetValue(ValueKey, out object? valueRaw) && valueRaw is not null
@@ -107,8 +113,7 @@ internal sealed partial class HashiCorpSecretStore(
         return SecretDescriptor.FromString(
             request.Name,
             stringValue,
-            version: resolvedVersion,
-            createdAt: createdAt);
+            new SecretMetadata(Version: resolvedVersion, CreatedAt: createdAt));
     }
 
     private static int? ParseVersion(SecretRequest request)

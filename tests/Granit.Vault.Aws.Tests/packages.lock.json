@@ -384,7 +384,8 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Diagnostics.HealthChecks": "[10.*, )"
         }
       },
       "granit.vault.aws": {
