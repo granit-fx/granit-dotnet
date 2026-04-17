@@ -7,6 +7,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Security
+
+- `Granit.Vault.{HashiCorp,Azure,Aws,GoogleCloud}` — dynamic database credentials (`IDatabaseCredentialProvider.Username` / `Password`) are now stored in `byte[]` buffers and zeroized via `CryptographicOperations.ZeroMemory` on every rotation, mitigating credential residency in process memory (CWE-522 / GDPR Art. 32). Shared helper: `Granit.Vault.Internal.ZeroizingCredentialStore`.
+- `Granit.Vault.HashiCorp` — `HashiCorpSecretStore` now gates the decoded size of KV v2 `__binary` payloads before allocation, protecting the host from OOM triggered by a misconfigured or compromised vault (CWE-400 / CWE-770). New option `Vault:SecretStore:MaxBinaryPayloadBytes` (default 16 MiB).
+- `Granit.Encryption` — `AesStringEncryptionProvider` raises PBKDF2-SHA256 iterations from 100 000 to 600 000 to align with OWASP 2023. **Breaking for existing encrypted data:** payloads encrypted with the previous iteration count can no longer be decrypted. No production deployments are affected at this pre-1.0 stage; re-encrypt any persisted ciphertext before upgrading.
+
 ### Added
 
 - Initialisation du repository granit-dotnet

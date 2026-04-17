@@ -45,9 +45,13 @@ public sealed class HashiCorpSecretStoreTests
             KvMountPoint = "secret",
         });
 
+        IOptions<Granit.Vault.Options.SecretStoreOptions> secretStoreOptions =
+            Microsoft.Extensions.Options.Options.Create(new Granit.Vault.Options.SecretStoreOptions());
+
         _concrete = new HashiCorpSecretStore(
             _vaultClient,
             options,
+            secretStoreOptions,
             NullLogger<HashiCorpSecretStore>.Instance);
         _sut = _concrete;
     }
@@ -93,6 +97,38 @@ public sealed class HashiCorpSecretStoreTests
         descriptor.BinaryValue!.Value.ToArray().ShouldBe(payload);
         descriptor.StringValue.ShouldBeNull();
         descriptor.ContentType.ShouldBe("application/octet-stream");
+    }
+
+    [Fact]
+    public async Task GetSecretAsync_WhenBinaryPayloadExceedsMaxBytes_ThrowsConfigurationException()
+    {
+        // Build a SecretStore with a tight 4 KiB ceiling (minimum allowed by options validation).
+        IOptions<HashiCorpVaultOptions> options = Microsoft.Extensions.Options.Options.Create(new HashiCorpVaultOptions
+        {
+            KvMountPoint = "secret",
+        });
+        IOptions<Granit.Vault.Options.SecretStoreOptions> tightOptions = Microsoft.Extensions.Options.Options.Create(
+            new Granit.Vault.Options.SecretStoreOptions { MaxBinaryPayloadBytes = 4096 });
+
+        var sut = new HashiCorpSecretStore(
+            _vaultClient,
+            options,
+            tightOptions,
+            NullLogger<HashiCorpSecretStore>.Instance);
+
+        // 8 KiB of random bytes → 10.7 KB base64 string, decodes to 8 KB > 4 KB cap.
+        byte[] oversized = new byte[8192];
+        Random.Shared.NextBytes(oversized);
+
+        _kvV2.ReadSecretAsync("huge/blob", null, "secret")
+            .Returns(Task.FromResult(CreateSecret(
+                data: new Dictionary<string, object> { ["__binary"] = Convert.ToBase64String(oversized) },
+                version: 1)));
+
+        SecretVaultConfigurationException ex = await Should.ThrowAsync<SecretVaultConfigurationException>(
+            () => sut.GetSecretAsync(SecretRequest.Latest("huge/blob"), TestContext.Current.CancellationToken));
+
+        ex.ErrorCode.ShouldBe("Vault:Secret:BinaryTooLarge");
     }
 
     [Fact]

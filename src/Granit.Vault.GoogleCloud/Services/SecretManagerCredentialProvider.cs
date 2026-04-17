@@ -3,6 +3,7 @@ using Google.Cloud.SecretManager.V1;
 using Granit.Diagnostics;
 using Granit.Vault.GoogleCloud.Diagnostics;
 using Granit.Vault.GoogleCloud.Options;
+using Granit.Vault.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,19 +20,18 @@ internal sealed partial class SecretManagerCredentialProvider(
     ILogger<SecretManagerCredentialProvider> logger) : BackgroundService, IDatabaseCredentialProvider
 {
     private readonly GoogleCloudVaultOptions _options = options.Value;
+    private readonly ZeroizingCredentialStore _store = new();
 
-    private volatile string _username = string.Empty;
-    private volatile string _password = string.Empty;
     private volatile string _versionName = string.Empty;
 
     /// <inheritdoc />
-    public string Username => _username;
+    public string Username => _store.Username;
 
     /// <inheritdoc />
-    public string Password => _password;
+    public string Password => _store.Password;
 
     /// <inheritdoc />
-    public bool IsReady => !string.IsNullOrEmpty(_username);
+    public bool IsReady => _store.IsReady;
 
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -109,11 +109,13 @@ internal sealed partial class SecretManagerCredentialProvider(
         using var doc = JsonDocument.Parse(secretPayload);
         JsonElement root = doc.RootElement;
 
-        _username = root.GetProperty("username").GetString() ?? string.Empty;
-        _password = root.GetProperty("password").GetString() ?? string.Empty;
+        string username = root.GetProperty("username").GetString() ?? string.Empty;
+        string password = root.GetProperty("password").GetString() ?? string.Empty;
+
+        _store.Apply(username, password);
         _versionName = response.Name;
 
-        LogCredentialsObtained(LogRedaction.Username(_username), _versionName);
+        LogCredentialsObtained(LogRedaction.Username(username), _versionName);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Secret Manager credential manager")]

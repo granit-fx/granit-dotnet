@@ -13,6 +13,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Vault.Tests" />
+    <InternalsVisibleTo Include="Granit.Vault.Aws" />
+    <InternalsVisibleTo Include="Granit.Vault.Azure" />
+    <InternalsVisibleTo Include="Granit.Vault.GoogleCloud" />
+    <InternalsVisibleTo Include="Granit.Vault.HashiCorp" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

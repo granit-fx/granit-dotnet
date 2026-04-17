@@ -4,6 +4,7 @@ using Amazon.SecretsManager.Model;
 using Granit.Diagnostics;
 using Granit.Vault.Aws.Diagnostics;
 using Granit.Vault.Aws.Options;
+using Granit.Vault.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,19 +21,18 @@ internal sealed partial class AwsSecretsCredentialProvider(
     ILogger<AwsSecretsCredentialProvider> logger) : BackgroundService, IDatabaseCredentialProvider
 {
     private readonly AwsVaultOptions _options = options.Value;
+    private readonly ZeroizingCredentialStore _store = new();
 
-    private volatile string _username = string.Empty;
-    private volatile string _password = string.Empty;
     private volatile string _versionId = string.Empty;
 
     /// <inheritdoc />
-    public string Username => _username;
+    public string Username => _store.Username;
 
     /// <inheritdoc />
-    public string Password => _password;
+    public string Password => _store.Password;
 
     /// <inheritdoc />
-    public bool IsReady => !string.IsNullOrEmpty(_username);
+    public bool IsReady => _store.IsReady;
 
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -111,11 +111,13 @@ internal sealed partial class AwsSecretsCredentialProvider(
         using var doc = JsonDocument.Parse(response.SecretString);
         JsonElement root = doc.RootElement;
 
-        _username = root.GetProperty("username").GetString() ?? string.Empty;
-        _password = root.GetProperty("password").GetString() ?? string.Empty;
+        string username = root.GetProperty("username").GetString() ?? string.Empty;
+        string password = root.GetProperty("password").GetString() ?? string.Empty;
+
+        _store.Apply(username, password);
         _versionId = response.VersionId;
 
-        LogCredentialsObtained(LogRedaction.Username(_username), _versionId);
+        LogCredentialsObtained(LogRedaction.Username(username), _versionId);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting AWS Secrets Manager credential manager")]

@@ -29,6 +29,17 @@ public sealed class SecretStoreOptions
     public int MaxCachedBinarySizeBytes { get; set; } = 64 * 1024;
 
     /// <summary>
+    /// Hard upper bound on the decoded size (bytes) of a secret payload returned by a
+    /// provider. Payloads above this threshold are rejected with
+    /// <see cref="Exceptions.SecretVaultConfigurationException"/> before any allocation,
+    /// protecting the host from OOM triggered by a misconfigured or compromised vault
+    /// (CWE-400 / CWE-770). Default: 16 MiB — generous for PFX bundles and CA chains,
+    /// orders of magnitude below process memory limits.
+    /// </summary>
+    [Range(4096, 134_217_728)]
+    public int MaxBinaryPayloadBytes { get; set; } = 16 * 1024 * 1024;
+
+    /// <summary>
     /// Optional canary secret name used by <c>AddGranitSecretStoreHealthCheck()</c>.
     /// When <c>null</c> or empty, the health check is a no-op — use a dedicated non-critical,
     /// read-only secret (e.g. <c>healthcheck/probe</c>) specifically for liveness probing;

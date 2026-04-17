@@ -3,6 +3,7 @@ using Azure.Security.KeyVault.Secrets;
 using Granit.Diagnostics;
 using Granit.Vault.Azure.Diagnostics;
 using Granit.Vault.Azure.Options;
+using Granit.Vault.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,19 +20,18 @@ internal sealed partial class AzureSecretsCredentialProvider(
     ILogger<AzureSecretsCredentialProvider> logger) : BackgroundService, IDatabaseCredentialProvider
 {
     private readonly AzureKeyVaultOptions _options = options.Value;
+    private readonly ZeroizingCredentialStore _store = new();
 
-    private volatile string _username = string.Empty;
-    private volatile string _password = string.Empty;
     private volatile string _version = string.Empty;
 
     /// <inheritdoc />
-    public string Username => _username;
+    public string Username => _store.Username;
 
     /// <inheritdoc />
-    public string Password => _password;
+    public string Password => _store.Password;
 
     /// <inheritdoc />
-    public bool IsReady => !string.IsNullOrEmpty(_username);
+    public bool IsReady => _store.IsReady;
 
     /// <inheritdoc />
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -105,11 +105,13 @@ internal sealed partial class AzureSecretsCredentialProvider(
         using var doc = JsonDocument.Parse(secret.Value);
         JsonElement root = doc.RootElement;
 
-        _username = root.GetProperty("username").GetString() ?? string.Empty;
-        _password = root.GetProperty("password").GetString() ?? string.Empty;
+        string username = root.GetProperty("username").GetString() ?? string.Empty;
+        string password = root.GetProperty("password").GetString() ?? string.Empty;
+
+        _store.Apply(username, password);
         _version = secret.Properties.Version ?? string.Empty;
 
-        LogCredentialsObtained(LogRedaction.Username(_username), _version);
+        LogCredentialsObtained(LogRedaction.Username(username), _version);
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Starting Azure Key Vault Secrets credential manager")]

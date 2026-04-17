@@ -42223,6 +42223,12 @@
           "kind": "property",
           "signature": "int CacheSeconds",
           "returnType": "int"
+        },
+        {
+          "name": "MaxBinaryPayloadBytes",
+          "kind": "property",
+          "signature": "int MaxBinaryPayloadBytes",
+          "returnType": "int"
         }
       ]
     },

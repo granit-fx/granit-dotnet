@@ -1,5 +1,6 @@
 using Granit.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
+using Granit.Vault.Internal;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,15 +21,14 @@ internal sealed partial class VaultCredentialLeaseManager(
     ILogger<VaultCredentialLeaseManager> logger) : BackgroundService, IDatabaseCredentialProvider
 {
     private readonly HashiCorpVaultOptions _options = options.Value;
+    private readonly ZeroizingCredentialStore _store = new();
 
-    private volatile string _username = string.Empty;
-    private volatile string _password = string.Empty;
     private volatile string _leaseId = string.Empty;
     private volatile int _leaseDurationSeconds;
 
-    public string Username => _username;
-    public string Password => _password;
-    public bool IsReady => !string.IsNullOrEmpty(_username);
+    public string Username => _store.Username;
+    public string Password => _store.Password;
+    public bool IsReady => _store.IsReady;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -70,12 +70,11 @@ internal sealed partial class VaultCredentialLeaseManager(
             _options.DatabaseRoleName,
             mountPoint: _options.DatabaseMountPoint).WaitAsync(cancellationToken).ConfigureAwait(false);
 
-        _username = secret.Data.Username;
-        _password = secret.Data.Password;
+        _store.Apply(secret.Data.Username, secret.Data.Password);
         _leaseId = secret.LeaseId;
         _leaseDurationSeconds = secret.LeaseDurationSeconds;
 
-        LogCredentialsObtained(logger, LogRedaction.Username(_username), _leaseDurationSeconds);
+        LogCredentialsObtained(logger, LogRedaction.Username(secret.Data.Username), _leaseDurationSeconds);
     }
 
     private async Task RenewLeaseAsync(CancellationToken cancellationToken)

@@ -33,7 +33,11 @@ public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvi
         0x74, 0x69, 0x6F, 0x6E, 0x45, 0x6E, 0x63, 0x72
     ];
 
-    private const int KeyDerivationIterations = 100_000;
+    // PBKDF2-SHA256 iteration count — OWASP 2023 recommends ≥ 600_000 for SHA-256
+    // (https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
+    // Changing this value invalidates all previously encrypted data — only raise when you
+    // are willing to re-encrypt existing payloads.
+    private const int KeyDerivationIterations = 600_000;
     private const int IvSize = 16;
     private const int HmacSize = 32; // HMAC-SHA256
 

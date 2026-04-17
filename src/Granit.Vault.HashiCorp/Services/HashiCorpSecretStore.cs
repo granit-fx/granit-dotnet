@@ -5,6 +5,7 @@ using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Granit.Vault.HashiCorp.Diagnostics;
 using Granit.Vault.HashiCorp.Options;
+using Granit.Vault.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using VaultSharp;
@@ -36,12 +37,14 @@ namespace Granit.Vault.HashiCorp.Services;
 internal sealed partial class HashiCorpSecretStore(
     IVaultClient vaultClient,
     IOptions<HashiCorpVaultOptions> options,
+    IOptions<SecretStoreOptions> secretStoreOptions,
     ILogger<HashiCorpSecretStore> logger) : ISecretStore
 {
     private const string BinaryKey = "__binary";
     private const string ValueKey = "value";
 
     private readonly string _mountPoint = options.Value.KvMountPoint;
+    private readonly int _maxBinaryPayloadBytes = secretStoreOptions.Value.MaxBinaryPayloadBytes;
 
     /// <inheritdoc />
     public async Task<SecretDescriptor> GetSecretAsync(
@@ -96,6 +99,17 @@ internal sealed partial class HashiCorpSecretStore(
 
         if (data.TryGetValue(BinaryKey, out object? binaryRaw) && binaryRaw is string base64)
         {
+            // Gate the decoded size BEFORE allocating (CWE-400). Base64 decodes to ~3/4 of
+            // its input length; compute the upper bound from the string length alone.
+            long estimatedBytes = (long)base64.Length * 3 / 4;
+            if (estimatedBytes > _maxBinaryPayloadBytes)
+            {
+                throw new SecretVaultConfigurationException(
+                    "Vault:Secret:BinaryTooLarge",
+                    $"Secret '{request.Name}' binary payload ({estimatedBytes} bytes) exceeds " +
+                    $"SecretStoreOptions.MaxBinaryPayloadBytes ({_maxBinaryPayloadBytes}).");
+            }
+
             byte[] bytes = Convert.FromBase64String(base64);
             return SecretDescriptor.FromBinary(
                 request.Name,
