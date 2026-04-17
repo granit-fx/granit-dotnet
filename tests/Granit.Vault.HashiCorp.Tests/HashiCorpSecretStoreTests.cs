@@ -71,7 +71,8 @@ public sealed class HashiCorpSecretStoreTests
         descriptor.IsBinary.ShouldBeFalse();
         descriptor.Version.ShouldBe("3");
         descriptor.CreatedAt.ShouldNotBeNull();
-        descriptor.CreatedAt.Value.Year.ShouldBe(2026);
+        DateTimeOffset createdAt = descriptor.CreatedAt!.Value;
+        createdAt.Year.ShouldBe(2026);
     }
 
     [Fact]
@@ -211,7 +212,7 @@ public sealed class HashiCorpSecretStoreTests
             .Returns(async _ =>
             {
                 await Task.Delay(TimeSpan.FromSeconds(10), cts.Token);
-                return CreateSecret(new Dictionary<string, object>(), version: 1);
+                return CreateSecret([], version: 1);
             });
 
         await Should.ThrowAsync<OperationCanceledException>(async () =>

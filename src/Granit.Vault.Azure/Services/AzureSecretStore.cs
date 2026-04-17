@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Azure;
 using Azure.Security.KeyVault.Secrets;
 using Granit.Vault.Azure.Diagnostics;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Microsoft.Extensions.Logging;
 
@@ -43,52 +44,48 @@ internal sealed partial class AzureSecretStore(
         catch (RequestFailedException ex) when (ex.Status == 404)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "not_found");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "not_found");
             throw new SecretNotFoundException(request.Name, request.Version?.Identifier, ex);
         }
         catch (RequestFailedException ex) when (ex.Status is 401 or 403)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "denied");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "denied");
             LogAccessDenied(logger, request.Name);
             throw new SecretAccessDeniedException(request.Name, ex);
         }
         catch (RequestFailedException ex) when (IsTransient(ex.Status))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "transient");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "transient");
             throw new SecretVaultTransientException(
                 request.Name,
                 $"Transient Azure Key Vault failure (HTTP {ex.Status}).",
                 ex);
         }
 
+        activity?.SetTag(SecretStoreActivityTags.Outcome, "ok");
         KeyVaultSecret secret = response.Value;
         SecretProperties props = secret.Properties;
         IReadOnlyDictionary<string, string>? tags = props.Tags is { Count: > 0 }
             ? new Dictionary<string, string>(props.Tags)
             : null;
 
+        var metadata = new SecretMetadata(
+            Version: props.Version,
+            ContentType: props.ContentType,
+            CreatedAt: props.CreatedOn,
+            ExpiresOn: props.ExpiresOn,
+            NotBefore: props.NotBefore,
+            Tags: tags);
+
         if (string.Equals(props.ContentType, OctetStreamContentType, StringComparison.OrdinalIgnoreCase))
         {
             byte[] bytes = Convert.FromBase64String(secret.Value);
-            return SecretDescriptor.FromBinary(
-                request.Name,
-                bytes,
-                version: props.Version,
-                contentType: props.ContentType,
-                createdAt: props.CreatedOn,
-                expiresOn: props.ExpiresOn,
-                notBefore: props.NotBefore,
-                tags: tags);
+            return SecretDescriptor.FromBinary(request.Name, bytes, metadata);
         }
 
-        return SecretDescriptor.FromString(
-            request.Name,
-            secret.Value,
-            version: props.Version,
-            contentType: props.ContentType,
-            createdAt: props.CreatedOn,
-            expiresOn: props.ExpiresOn,
-            notBefore: props.NotBefore,
-            tags: tags);
+        return SecretDescriptor.FromString(request.Name, secret.Value, metadata);
     }
 
     private static bool IsTransient(int status) =>

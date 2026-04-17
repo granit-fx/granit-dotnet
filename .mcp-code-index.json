@@ -41759,6 +41759,15 @@
       ]
     },
     {
+      "name": "SecretStoreActivityTags",
+      "fqn": "Granit.Vault.Diagnostics.SecretStoreActivityTags",
+      "kind": "class",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/Diagnostics/SecretStoreActivityTags.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "VaultMetrics",
       "fqn": "Granit.Vault.Diagnostics.VaultMetrics",
       "kind": "class",
@@ -41893,7 +41902,7 @@
       "kind": "class",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/Extensions/SecretStoreServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -42234,8 +42243,24 @@
         {
           "name": "FromString",
           "kind": "method",
-          "signature": "FromString(string name, string value, string? version = null, string? contentType = null, DateTimeOffset? createdAt = null, DateTimeOffset? expiresOn = null, DateTimeOffset? notBefore = null, IReadOnlyDictionary<string, string>? tags = null)",
+          "signature": "FromString(string name, string value, SecretMetadata? metadata = null)",
           "returnType": "SecretDescriptor"
+        }
+      ]
+    },
+    {
+      "name": "SecretMetadata",
+      "fqn": "Granit.Vault.SecretMetadata",
+      "kind": "record",
+      "project": "Granit.Vault",
+      "file": "src/Granit.Vault/SecretMetadata.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SecretMetadata Empty { get; } ="
         }
       ]
     },

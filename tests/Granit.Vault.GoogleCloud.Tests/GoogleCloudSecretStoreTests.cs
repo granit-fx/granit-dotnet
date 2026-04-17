@@ -40,7 +40,10 @@ public sealed class GoogleCloudSecretStoreTests
     [Fact]
     public async Task GetSecretAsync_WithShortName_BuildsLatestVersionName()
     {
-        byte[] payload = [0x10, 0x20, 0x30];
+        // Invalid UTF-8 prefix (0xFF 0xFE is not a valid UTF-8 start sequence) forces
+        // the binary facet — proves the short-name/latest path works independently of
+        // the UTF-8 heuristic.
+        byte[] payload = [0xFF, 0xFE, 0xFD];
         _client.AccessSecretVersionAsync(
                 Arg.Is<SecretVersionName>(v => v.ProjectId == TestProject
                     && v.SecretId == "api-key"
@@ -58,6 +61,23 @@ public sealed class GoogleCloudSecretStoreTests
         descriptor.IsBinary.ShouldBeTrue();
         descriptor.BinaryValue!.Value.ToArray().ShouldBe(payload);
         descriptor.Version.ShouldBe("42");
+    }
+
+    [Fact]
+    public async Task GetSecretAsync_WithUtf8Payload_ReturnsStringFacet()
+    {
+        _client.AccessSecretVersionAsync(Arg.Any<SecretVersionName>(), Arg.Any<CancellationToken>())
+            .Returns(new AccessSecretVersionResponse
+            {
+                Name = $"projects/{TestProject}/secrets/api-key/versions/1",
+                Payload = new SecretPayload { Data = ByteString.CopyFromUtf8("super-token") },
+            });
+
+        SecretDescriptor descriptor = await _sut.GetSecretAsync(
+            SecretRequest.Latest("api-key"), TestContext.Current.CancellationToken);
+
+        descriptor.StringValue.ShouldBe("super-token");
+        descriptor.IsBinary.ShouldBeFalse();
     }
 
     [Fact]
@@ -94,7 +114,8 @@ public sealed class GoogleCloudSecretStoreTests
         SecretDescriptor descriptor = await _sut.GetSecretAsync(
             SecretRequest.Latest(resource), TestContext.Current.CancellationToken);
 
-        descriptor.BinaryValue.ShouldNotBeNull();
+        // "ok" is valid UTF-8 → store prefers StringValue facet (heuristic).
+        descriptor.StringValue.ShouldBe("ok");
     }
 
     [Fact]

@@ -45,7 +45,8 @@ public sealed class AwsSecretStoreTests
         descriptor.IsBinary.ShouldBeFalse();
         descriptor.Version.ShouldBe("11111111-2222-3333-4444-555555555555");
         descriptor.CreatedAt.ShouldNotBeNull();
-        descriptor.CreatedAt.Value.Year.ShouldBe(2026);
+        DateTimeOffset createdAt = descriptor.CreatedAt!.Value;
+        createdAt.Year.ShouldBe(2026);
     }
 
     [Fact]

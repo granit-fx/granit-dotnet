@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 using Granit.Vault.Aws.Diagnostics;
+using Granit.Vault.Diagnostics;
 using Granit.Vault.Exceptions;
 using Microsoft.Extensions.Logging;
 
@@ -46,53 +47,47 @@ internal sealed partial class AwsSecretStore(
         catch (ResourceNotFoundException ex)
         {
             activity?.SetStatus(ActivityStatusCode.Error, "not_found");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "not_found");
             throw new SecretNotFoundException(request.Name, request.Version?.Identifier, ex);
         }
         catch (AmazonSecretsManagerException ex) when (IsAccessDenied(ex))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "denied");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "denied");
             LogAccessDenied(logger, request.Name);
             throw new SecretAccessDeniedException(request.Name, ex);
         }
         catch (AmazonSecretsManagerException ex) when (IsTransient(ex))
         {
             activity?.SetStatus(ActivityStatusCode.Error, "transient");
+            activity?.SetTag(SecretStoreActivityTags.Outcome, "transient");
             throw new SecretVaultTransientException(
                 request.Name,
                 $"Transient AWS Secrets Manager failure ({ex.ErrorCode}).",
                 ex);
         }
 
+        activity?.SetTag(SecretStoreActivityTags.Outcome, "ok");
         DateTimeOffset? createdAt = response.CreatedDate is { } created
             ? new DateTimeOffset(DateTime.SpecifyKind(created, DateTimeKind.Utc))
             : null;
 
+        var metadata = new SecretMetadata(Version: response.VersionId, CreatedAt: createdAt);
+
         if (response.SecretBinary is { } binaryStream)
         {
-            byte[] bytes = ToArray(binaryStream);
-            return SecretDescriptor.FromBinary(
-                request.Name,
-                bytes,
-                version: response.VersionId,
-                createdAt: createdAt);
+            // MemoryStream is always seekable; rewind defensively in case the SDK returned a
+            // stream that was already consumed by a deserializer up the call chain.
+            if (binaryStream.Position != 0)
+            {
+                binaryStream.Position = 0;
+            }
+
+            return SecretDescriptor.FromBinary(request.Name, binaryStream.ToArray(), metadata);
         }
 
         string stringValue = response.SecretString ?? string.Empty;
-        return SecretDescriptor.FromString(
-            request.Name,
-            stringValue,
-            version: response.VersionId,
-            createdAt: createdAt);
-    }
-
-    private static byte[] ToArray(MemoryStream stream)
-    {
-        if (stream.Position != 0 && stream.CanSeek)
-        {
-            stream.Position = 0;
-        }
-
-        return stream.ToArray();
+        return SecretDescriptor.FromString(request.Name, stringValue, metadata);
     }
 
     private static bool IsAccessDenied(AmazonSecretsManagerException ex) =>

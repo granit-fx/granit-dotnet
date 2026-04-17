@@ -27,4 +27,12 @@ public sealed class SecretStoreOptions
     /// </summary>
     [Range(1024, 10_485_760)]
     public int MaxCachedBinarySizeBytes { get; set; } = 64 * 1024;
+
+    /// <summary>
+    /// Optional canary secret name used by <c>AddGranitSecretStoreHealthCheck()</c>.
+    /// When <c>null</c> or empty, the health check is a no-op — use a dedicated non-critical,
+    /// read-only secret (e.g. <c>healthcheck/probe</c>) specifically for liveness probing;
+    /// NEVER reuse a business secret here.
+    /// </summary>
+    public string? HealthCheckSecretName { get; set; }
 }

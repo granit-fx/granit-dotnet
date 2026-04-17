@@ -1,8 +1,10 @@
 using Granit.Vault.Diagnostics;
+using Granit.Vault.HealthChecks;
 using Granit.Vault.Internal;
 using Granit.Vault.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
@@ -38,12 +40,17 @@ public static class SecretStoreServiceCollectionExtensions
 
         // Self-sufficient registration: ensure VaultMetrics and SecretStoreOptions are available
         // even when the extension is called outside the GranitVaultModule pipeline (e.g. tests
-        // that stand up a ServiceCollection manually).
+        // that stand up a ServiceCollection manually). Idempotent — GranitVaultModule may have
+        // registered SecretStoreOptions already, so guard against a second BindConfiguration.
         services.TryAddSingleton<VaultMetrics>();
-        services
-            .AddOptions<SecretStoreOptions>()
-            .BindConfiguration(SecretStoreOptions.SectionName)
-            .ValidateDataAnnotations();
+
+        if (!services.Any(d => d.ServiceType == typeof(IConfigureOptions<SecretStoreOptions>)))
+        {
+            services
+                .AddOptions<SecretStoreOptions>()
+                .BindConfiguration(SecretStoreOptions.SectionName)
+                .ValidateDataAnnotations();
+        }
 
         services.AddSingleton<TStore>();
 
@@ -72,5 +79,32 @@ public static class SecretStoreServiceCollectionExtensions
         });
 
         return services;
+    }
+
+    /// <summary>
+    /// Adds a provider-agnostic health check that reads the canary secret named in
+    /// <see cref="SecretStoreOptions.HealthCheckSecretName"/>. When the option is not set,
+    /// the check is a no-op and reports <see cref="HealthStatus.Healthy"/>.
+    /// </summary>
+    /// <param name="builder">Health-checks builder.</param>
+    /// <param name="name">Check name (default: <c>"vault-secret-store"</c>).</param>
+    /// <param name="failureStatus">Status on failure (default: <see cref="HealthStatus.Unhealthy"/>).</param>
+    /// <param name="timeout">Timeout (default: 10 seconds).</param>
+    public static IHealthChecksBuilder AddGranitSecretStoreHealthCheck(
+        this IHealthChecksBuilder builder,
+        string name = "vault-secret-store",
+        HealthStatus? failureStatus = null,
+        TimeSpan? timeout = null)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Services.TryAddSingleton<SecretStoreHealthCheck>();
+
+        return builder.Add(new HealthCheckRegistration(
+            name,
+            sp => sp.GetRequiredService<SecretStoreHealthCheck>(),
+            failureStatus,
+            ["readiness", "startup"],
+            timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

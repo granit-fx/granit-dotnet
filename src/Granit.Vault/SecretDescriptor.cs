@@ -53,56 +53,42 @@ public sealed record SecretDescriptor
     /// <summary>True when the payload is binary — use <see cref="BinaryValue"/> / <see cref="AsBytes"/>.</summary>
     public bool IsBinary => BinaryValue is not null;
 
-    /// <summary>Builds a descriptor for a text secret.</summary>
-    public static SecretDescriptor FromString(
-        string name,
-        string value,
-        string? version = null,
-        string? contentType = null,
-        DateTimeOffset? createdAt = null,
-        DateTimeOffset? expiresOn = null,
-        DateTimeOffset? notBefore = null,
-        IReadOnlyDictionary<string, string>? tags = null)
+    /// <summary>Builds a descriptor for a text secret. Pass <see cref="SecretMetadata.Empty"/> when no metadata is available.</summary>
+    public static SecretDescriptor FromString(string name, string value, SecretMetadata? metadata = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
         ArgumentNullException.ThrowIfNull(value);
 
+        metadata ??= SecretMetadata.Empty;
         return new SecretDescriptor
         {
             Name = name,
             StringValue = value,
-            Version = version,
-            ContentType = contentType,
-            CreatedAt = createdAt,
-            ExpiresOn = expiresOn,
-            NotBefore = notBefore,
-            Tags = tags,
+            Version = metadata.Version,
+            ContentType = metadata.ContentType,
+            CreatedAt = metadata.CreatedAt,
+            ExpiresOn = metadata.ExpiresOn,
+            NotBefore = metadata.NotBefore,
+            Tags = metadata.Tags,
         };
     }
 
-    /// <summary>Builds a descriptor for a binary secret.</summary>
-    public static SecretDescriptor FromBinary(
-        string name,
-        ReadOnlyMemory<byte> value,
-        string? version = null,
-        string? contentType = null,
-        DateTimeOffset? createdAt = null,
-        DateTimeOffset? expiresOn = null,
-        DateTimeOffset? notBefore = null,
-        IReadOnlyDictionary<string, string>? tags = null)
+    /// <summary>Builds a descriptor for a binary secret. Pass <see cref="SecretMetadata.Empty"/> when no metadata is available.</summary>
+    public static SecretDescriptor FromBinary(string name, ReadOnlyMemory<byte> value, SecretMetadata? metadata = null)
     {
         ArgumentException.ThrowIfNullOrEmpty(name);
 
+        metadata ??= SecretMetadata.Empty;
         return new SecretDescriptor
         {
             Name = name,
             BinaryValue = value,
-            Version = version,
-            ContentType = contentType,
-            CreatedAt = createdAt,
-            ExpiresOn = expiresOn,
-            NotBefore = notBefore,
-            Tags = tags,
+            Version = metadata.Version,
+            ContentType = metadata.ContentType,
+            CreatedAt = metadata.CreatedAt,
+            ExpiresOn = metadata.ExpiresOn,
+            NotBefore = metadata.NotBefore,
+            Tags = metadata.Tags,
         };
     }
 
