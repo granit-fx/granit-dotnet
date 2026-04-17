@@ -7,12 +7,13 @@ namespace Granit.Payments.Internal;
 /// <summary>
 /// Default <see cref="IPaymentProviderResolver"/> that cross-references activated
 /// <see cref="PaymentMethodConfiguration"/> records with registered
-/// <see cref="IPaymentProvider"/> instances (and their <c>SupportedMethods</c> descriptors).
+/// <see cref="IPaymentProvider"/> instances, and applies the availability filter
+/// against the persisted capability snapshot on each record.
 /// </summary>
 /// <remarks>
 /// Active configurations are cached in <see cref="IFusionCache"/> for 5 minutes.
 /// The cache is proactively invalidated by the configuration endpoints on every
-/// activate/deactivate, so tenants see changes immediately.
+/// activate / deactivate / resync, so tenants see changes immediately.
 ///
 /// <para>
 /// Display labels are returned as the raw <c>MethodType</c> identifier. Callers
@@ -23,6 +24,7 @@ namespace Granit.Payments.Internal;
 internal sealed class DefaultPaymentProviderResolver(
     IPaymentMethodConfigurationReader configReader,
     IEnumerable<IPaymentProvider> providers,
+    IPaymentMethodAvailabilityFilter availabilityFilter,
     IFusionCache cache) : IPaymentProviderResolver
 {
     private const string CacheKey = "granit:payments:active-configs";
@@ -59,7 +61,9 @@ internal sealed class DefaultPaymentProviderResolver(
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PaymentAvailableMethod>> GetAvailableProvidersAsync(
-        Guid tenantId, CancellationToken cancellationToken = default)
+        Guid tenantId,
+        PaymentAvailabilityContext? context = null,
+        CancellationToken cancellationToken = default)
     {
         IReadOnlyList<PaymentMethodConfiguration> configs =
             await GetActiveConfigsCachedAsync(cancellationToken).ConfigureAwait(false);
@@ -86,10 +90,24 @@ internal sealed class DefaultPaymentProviderResolver(
                 continue;
             }
 
+            PaymentMethodCapability? snapshot = config.GetCapabilitySnapshot();
+
+            // Filter: when a context is supplied AND a snapshot exists, apply it.
+            // No snapshot = legacy record, treated as wildcard (no filtering).
+            if (context is not null && snapshot is not null
+                && !availabilityFilter.IsAvailable(snapshot, context))
+            {
+                continue;
+            }
+
             // Note: DisplayLabel is returned as the raw method type. The caller
             // (endpoint) localizes via IStringLocalizer.
             result.Add(new PaymentAvailableMethod(
-                descriptor.MethodType, descriptor.Category, provider.Name, descriptor.MethodType));
+                descriptor.MethodType,
+                descriptor.Category,
+                provider.Name,
+                descriptor.MethodType,
+                snapshot));
         }
 
         return result;

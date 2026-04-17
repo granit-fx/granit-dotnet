@@ -34,12 +34,16 @@ internal static class PaymentMethodEndpoints
 
         group.MapGet("/methods/available", GetAvailableAsync)
             .WithName("GetAvailablePaymentMethods")
-            .WithSummary("Lists payment methods available for the current tenant.")
+            .WithSummary("Lists payment methods available for the current tenant and request context.")
             .WithDescription(
-                "Returns the payment methods that the tenant can use based on the configured "
-                + "providers. This includes method types, categories, and display labels as "
-                + "reported by the active payment providers.")
+                "Returns the payment methods that the tenant can use, filtered against the request "
+                + "context (billing country, currency, amount, sequence type). Each method returns its "
+                + "capability snapshot so the front-end can render explanatory UI "
+                + "(e.g., 'available in BE only', Klarna amount bounds). Query params are optional: an "
+                + "absent axis skips filtering on that axis. Returns 400 for malformed country/currency/"
+                + "amount/sequenceType values.")
             .Produces<IReadOnlyList<PaymentAvailableMethodResponse>>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .RequireAuthorization(PaymentsPermissions.Methods.Read)
             .AllowHostAccess();
 
@@ -89,26 +93,40 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok(response);
     }
 
-    private static async Task<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>> GetAvailableAsync(
+    private static async Task<Results<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>, ProblemHttpResult>> GetAvailableAsync(
         [FromServices] IPaymentProviderResolver resolver,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IStringLocalizer<PaymentsEndpointsLocalizationResource> localizer,
+        [FromQuery] string? country,
+        [FromQuery] string? currency,
+        [FromQuery] decimal? amount,
+        [FromQuery] string? sequenceType,
         CancellationToken cancellationToken)
     {
+        PaymentAvailabilityContext? context =
+            PaymentAvailabilityContextParser.TryParse(country, currency, amount, sequenceType, out string? error);
+
+        if (error is not null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status400BadRequest, detail: error);
+        }
+
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
 
-        IReadOnlyList<PaymentAvailableMethod> available =
-            await resolver.GetAvailableProvidersAsync(tenantId, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<PaymentAvailableMethod> available = await resolver
+            .GetAvailableProvidersAsync(tenantId, context, cancellationToken)
+            .ConfigureAwait(false);
 
         IReadOnlyList<PaymentAvailableMethodResponse> response = available
             .Select(a => new PaymentAvailableMethodResponse(
                 a.MethodType,
                 a.Category,
                 a.ProviderName,
-                PaymentMethodLabelResolver.Resolve(localizer, a.MethodType)))
+                PaymentMethodLabelResolver.Resolve(localizer, a.MethodType),
+                PaymentMethodCapabilityMapper.ToResponseOrNull(a.Capability)))
             .ToList();
 
-        return TypedResults.Ok(response);
+        return TypedResults.Ok<IReadOnlyList<PaymentAvailableMethodResponse>>(response);
     }
 
     private static async Task<Results<Created<PaymentMethodResponse>, ProblemHttpResult>> AttachAsync(

@@ -28129,7 +28129,7 @@
       "kind": "record",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Contracts/PaymentAvailableMethod.cs",
-      "line": 6,
+      "line": 11,
       "members": []
     },
     {
@@ -28701,7 +28701,7 @@
       "kind": "record",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Dtos/PaymentMethodResponse.cs",
-      "line": 21,
+      "line": 30,
       "members": []
     },
     {
@@ -29315,7 +29315,7 @@
         {
           "name": "GetAvailableProvidersAsync",
           "kind": "method",
-          "signature": "GetAvailableProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetAvailableProvidersAsync(Guid tenantId, PaymentAvailabilityContext? context = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<PaymentAvailableMethod>>"
         }
       ]
