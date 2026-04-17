@@ -150,7 +150,7 @@ internal static class SubscriptionEndpoints
         };
 
         // Pin to the current active price for the requested currency and default interval.
-        PlanPrice? activePrice = plan.GetActivePrice(request.Currency, plan.DefaultInterval);
+        PlanPrice? currentPrice = plan.GetCurrentPrice(request.Currency, plan.DefaultInterval);
 
         var sub = Subscription.Create(
             guidGenerator.Create(),
@@ -159,7 +159,7 @@ internal static class SubscriptionEndpoints
             request.Currency,
             new SubscriptionPeriod(now, periodEnd, BillingCycleAnchor: now),
             trialEndsAt: request.TrialEndsAt,
-            planPriceId: activePrice?.Id);
+            planPriceId: currentPrice?.Id);
 
         await writer.AddAsync(sub, cancellationToken).ConfigureAwait(false);
 

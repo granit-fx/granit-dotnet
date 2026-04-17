@@ -53,6 +53,6 @@ internal sealed class EfPricingResolver(IPlanReader planReader) : IPricingResolv
         }
 
         // Dynamic resolution: return the current active price for (currency, interval)
-        return plan.GetActivePrice(currency, interval);
+        return plan.GetCurrentPrice(currency, interval);
     }
 }

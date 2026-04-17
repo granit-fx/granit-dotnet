@@ -132,7 +132,7 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
 
         PlanPrice? currentPrice = _prices
             .FirstOrDefault(p =>
-                p.IsActive
+                p.IsCurrent
                 && string.Equals(p.Currency, newPrice.Currency, StringComparison.OrdinalIgnoreCase)
                 && p.Interval == newPrice.Interval);
 
@@ -199,10 +199,10 @@ public sealed class Plan : AuditedAggregateRoot, IWorkflowStateful
         LifecycleStatus = WorkflowLifecycleStatus.Archived;
     }
 
-    /// <summary>Returns the current active price for the given currency and interval, or <c>null</c>.</summary>
-    public PlanPrice? GetActivePrice(string currency, BillingInterval interval) =>
+    /// <summary>Returns the current price for the given currency and interval (not replaced), or <c>null</c>.</summary>
+    public PlanPrice? GetCurrentPrice(string currency, BillingInterval interval) =>
         _prices.FirstOrDefault(p =>
-            p.IsActive
+            p.IsCurrent
             && string.Equals(p.Currency, currency, StringComparison.OrdinalIgnoreCase)
             && p.Interval == interval);
 
