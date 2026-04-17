@@ -71,7 +71,7 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
                     Id = Guid.NewGuid(),
                     Code = code,
                     LabelEn = "Concurrent winner",
-                    IsActive = true,
+                    Activated = true,
                     SortOrder = 0,
                     CreatedAt = DateTimeOffset.UtcNow,
                     CreatedBy = "race",
@@ -143,7 +143,7 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
             Id = Guid.NewGuid(),
             Code = "RACE",
             LabelEn = "Loser",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         }, TestContext.Current.CancellationToken));
@@ -168,7 +168,7 @@ public sealed class EfCoreReferenceDataStoreConcurrencyTests : IAsyncLifetime
             Id = Guid.NewGuid(),
             Code = "VALID",
             LabelEn = "Valid",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         }, TestContext.Current.CancellationToken);

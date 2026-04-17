@@ -87,7 +87,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         // Active filter
         if (query.ActiveOnly)
         {
-            queryable = queryable.Where(e => e.IsActive);
+            queryable = queryable.Where(e => e.Activated);
         }
 
         // Search filter (Code or any label, case-insensitive)
@@ -272,7 +272,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
 
         if (entity is not null)
         {
-            entity.IsActive = isActive;
+            entity.Activated = isActive;
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
 
@@ -297,7 +297,7 @@ internal sealed class EfCoreReferenceDataStore<TEntity, TDbContext>(
         }
 
         List<TEntity> children = await queryable
-            .Where(e => e.ParentCode == parentCode && e.IsActive)
+            .Where(e => e.ParentCode == parentCode && e.Activated)
             .OrderBy(e => e.SortOrder)
             .ThenBy(e => e.Code)
             .ToListAsync(cancellationToken)

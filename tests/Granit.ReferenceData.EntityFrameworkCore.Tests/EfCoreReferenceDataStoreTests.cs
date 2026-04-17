@@ -76,7 +76,7 @@ public sealed class EfCoreReferenceDataStoreTests
             Id = Guid.NewGuid(),
             Code = code,
             LabelEn = label,
-            IsActive = isActive,
+            Activated = isActive,
             SortOrder = sortOrder,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "seed",
@@ -147,7 +147,7 @@ public sealed class EfCoreReferenceDataStoreTests
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.TotalCount.ShouldBe(1);
-        result.Items.ShouldAllBe(e => e.IsActive);
+        result.Items.ShouldAllBe(e => e.Activated);
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public sealed class EfCoreReferenceDataStoreTests
             Id = Guid.NewGuid(),
             Code = "DE",
             LabelEn = "Germany",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         };
@@ -332,7 +332,7 @@ public sealed class EfCoreReferenceDataStoreTests
             new ReferenceDataQuery(ActiveOnly: false),
             TestContext.Current.CancellationToken);
 
-        result.Items.ShouldContain(e => e.Code == "BE" && !e.IsActive);
+        result.Items.ShouldContain(e => e.Code == "BE" && !e.Activated);
     }
 
     [Fact]
@@ -347,7 +347,7 @@ public sealed class EfCoreReferenceDataStoreTests
         PagedResult<TestEntity> result = await store.GetAllAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
-        result.Items.ShouldContain(e => e.Code == "BE" && e.IsActive);
+        result.Items.ShouldContain(e => e.Code == "BE" && e.Activated);
     }
 
     // -------------------------------------------------------------------------
@@ -379,7 +379,7 @@ public sealed class EfCoreReferenceDataStoreTests
             Id = Guid.NewGuid(),
             Code = "DE",
             LabelEn = "Germany",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         }, TestContext.Current.CancellationToken);

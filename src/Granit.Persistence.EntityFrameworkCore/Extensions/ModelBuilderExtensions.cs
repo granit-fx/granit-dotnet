@@ -248,9 +248,9 @@ public static class ModelBuilderExtensions
         {
             Expression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.ActiveEnabled)));
-            Expression isActive = Expression.Property(param, nameof(IActive.IsActive));
+            Expression activated = Expression.Property(param, nameof(IActive.Activated));
             builder.HasQueryFilter(GranitFilterNames.Active,
-                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, isActive), param));
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, activated), param));
         }
 
         if (typeof(IProcessingRestrictable).IsAssignableFrom(typeof(TEntity)))

@@ -78,7 +78,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
             Code = code,
             LabelEn = label,
             LabelFr = labelFr,
-            IsActive = isActive,
+            Activated = isActive,
             SortOrder = sortOrder,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "seed",
@@ -279,7 +279,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
             Id = Guid.NewGuid(),
             Code = "BE",
             LabelEn = "Belgium (duplicate)",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         }, TestContext.Current.CancellationToken));
@@ -293,7 +293,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
     public async Task CreateAsync_DuplicateCode_InactiveRecord_IsNoOp()
     {
         // This is the exact scenario seen in production: seeder runs a second time,
-        // the existing record has IsActive=false (bypassed by the query filter in
+        // the existing record has Activated=false (bypassed by the query filter in
         // GetByCodeAsync), so the seeder calls CreateAsync which must not throw 23505.
         string db = Guid.NewGuid().ToString();
         await SeedAsync(db, "BE", "Belgium", isActive: false, cancellationToken: TestContext.Current.CancellationToken);
@@ -305,7 +305,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
             Id = Guid.NewGuid(),
             Code = "BE",
             LabelEn = "Belgium",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         }, TestContext.Current.CancellationToken));
@@ -323,13 +323,13 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
 
         EfCoreReferenceDataStore<TestEntity, TestDbContext> store = CreateStore(db);
 
-        // Should succeed even though the record is filtered out by IsActive=false
+        // Should succeed even though the record is filtered out by Activated=false
         await store.SetActiveAsync("BE", true, TestContext.Current.CancellationToken);
 
         PagedResult<TestEntity> result = await store.GetAllAsync(
             cancellationToken: TestContext.Current.CancellationToken);
 
-        result.Items.ShouldContain(e => e.Code == "BE" && e.IsActive);
+        result.Items.ShouldContain(e => e.Code == "BE" && e.Activated);
     }
 
     // -------------------------------------------------------------------------
@@ -356,7 +356,7 @@ public sealed class EfCoreReferenceDataStoreAdditionalTests
             Id = Guid.NewGuid(),
             Code = "BE",
             LabelEn = "Belgium",
-            IsActive = true,
+            Activated = true,
             CreatedAt = DateTimeOffset.UtcNow,
             CreatedBy = "test",
         };

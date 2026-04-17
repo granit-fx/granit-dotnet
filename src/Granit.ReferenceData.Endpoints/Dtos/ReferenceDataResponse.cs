@@ -21,7 +21,7 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="LabelSv">Swedish display label.</param>
 /// <param name="LabelCs">Czech display label.</param>
 /// <param name="LabelHi">Hindi display label.</param>
-/// <param name="IsActive">Whether the entry is active.</param>
+/// <param name="Activated">Whether the entry is active.</param>
 /// <param name="SortOrder">Display order (lower values first).</param>
 /// <param name="ValidFrom">Optional start of validity period.</param>
 /// <param name="ValidTo">Optional end of validity period.</param>
@@ -46,7 +46,7 @@ public sealed record ReferenceDataResponse(
     string LabelSv,
     string LabelCs,
     string LabelHi,
-    bool IsActive,
+    bool Activated,
     int SortOrder,
     DateTimeOffset? ValidFrom,
     DateTimeOffset? ValidTo,

@@ -54,9 +54,9 @@ public sealed class ReferenceDataEntityAdditionalTests
     [Fact]
     public void IsActive_CanBeSetToFalse()
     {
-        TestEntity entity = new() { IsActive = false };
+        TestEntity entity = new() { Activated = false };
 
-        entity.IsActive.ShouldBeFalse();
+        entity.Activated.ShouldBeFalse();
     }
 
     [Fact]

@@ -13068,7 +13068,7 @@
       "kind": "interface",
       "project": "Granit",
       "file": "src/Granit/Domain/IActive.cs",
-      "line": 14,
+      "line": 28,
       "members": []
     },
     {
@@ -35018,9 +35018,9 @@
           "returnType": "string"
         },
         {
-          "name": "IsActive",
+          "name": "Activated",
           "kind": "property",
-          "signature": "bool IsActive",
+          "signature": "bool Activated",
           "returnType": "bool"
         }
       ]

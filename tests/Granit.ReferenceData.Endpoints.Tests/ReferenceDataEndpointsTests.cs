@@ -356,7 +356,7 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
             builder
                 .Column(e => e.Code, c => c.Label("Code").Filterable().Sortable())
                 .Column(e => e.LabelEn, c => c.Label("Label (EN)").Filterable().Sortable())
-                .Column(e => e.IsActive, c => c.Label("Active").Filterable())
+                .Column(e => e.Activated, c => c.Label("Active").Filterable())
                 .GlobalSearch(e => e.Code, e => e.LabelEn)
                 .DefaultSort("Code");
         }

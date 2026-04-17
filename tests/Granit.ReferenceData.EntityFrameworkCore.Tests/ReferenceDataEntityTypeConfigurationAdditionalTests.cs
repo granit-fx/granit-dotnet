@@ -122,19 +122,19 @@ public sealed class ReferenceDataEntityTypeConfigurationAdditionalTests
     }
 
     // -------------------------------------------------------------------------
-    // IsActive index has expected name
+    // Activated index has expected name
     // -------------------------------------------------------------------------
 
     [Fact]
-    public void IsActive_Index_HasExpectedDatabaseName()
+    public void Activated_Index_HasExpectedDatabaseName()
     {
         IEntityType entityType = GetEntityType();
-        IProperty isActive = entityType.FindProperty(nameof(TestEntity.IsActive))!;
+        IProperty activated = entityType.FindProperty(nameof(TestEntity.Activated))!;
 
         IIndex? index = entityType.GetIndexes()
-            .FirstOrDefault(i => i.Properties.Count == 1 && i.Properties[0] == isActive);
+            .FirstOrDefault(i => i.Properties.Count == 1 && i.Properties[0] == activated);
 
         index.ShouldNotBeNull();
-        index!.GetDatabaseName().ShouldBe("ix_ref_test_entities_is_active");
+        index!.GetDatabaseName().ShouldBe("ix_ref_test_entities_activated");
     }
 }

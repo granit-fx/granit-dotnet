@@ -216,7 +216,7 @@ internal static class ReferenceDataDynamicEndpoints
             ValidFrom = request.ValidFrom,
             ValidTo = request.ValidTo,
             ParentCode = request.ParentCode,
-            IsActive = true,
+            Activated = true,
         };
 
         if (request.ExtraProperties is { Count: > 0 })
@@ -267,7 +267,7 @@ internal static class ReferenceDataDynamicEndpoints
         existing.LabelCs = request.LabelCs;
         existing.LabelHi = request.LabelHi;
         existing.SortOrder = request.SortOrder;
-        existing.IsActive = request.IsActive;
+        existing.Activated = request.Activated;
         existing.ValidFrom = request.ValidFrom;
         existing.ValidTo = request.ValidTo;
         existing.ParentCode = request.ParentCode;

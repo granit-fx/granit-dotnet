@@ -28,7 +28,7 @@ public sealed class DynamicReferenceDataEntityExportDefinition : ExportDefinitio
             .Field(e => e.LabelSv)
             .Field(e => e.LabelCs)
             .Field(e => e.LabelHi)
-            .Field(e => e.IsActive)
+            .Field(e => e.Activated)
             .Field(e => e.SortOrder)
             .Field(e => e.ValidFrom, f => f.Format("O"))
             .Field(e => e.ValidTo, f => f.Format("O"))

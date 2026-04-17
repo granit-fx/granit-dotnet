@@ -47,7 +47,7 @@ public sealed class ReferenceDataUpdateRequestTests
     {
         ReferenceDataUpdateRequest request = new("Belgium");
 
-        request.IsActive.ShouldBeTrue();
+        request.Activated.ShouldBeTrue();
     }
 
     [Fact]
@@ -86,14 +86,14 @@ public sealed class ReferenceDataUpdateRequestTests
             LabelSv: "Belgien",
             LabelCs: "Belgie",
             SortOrder: 10,
-            IsActive: false,
+            Activated: false,
             ValidFrom: now,
             ValidTo: now.AddYears(1));
 
         request.LabelFr.ShouldBe("Belgique");
         request.LabelCs.ShouldBe("Belgie");
         request.SortOrder.ShouldBe(10);
-        request.IsActive.ShouldBeFalse();
+        request.Activated.ShouldBeFalse();
         request.ValidFrom.ShouldBe(now);
         request.ValidTo.ShouldBe(now.AddYears(1));
     }

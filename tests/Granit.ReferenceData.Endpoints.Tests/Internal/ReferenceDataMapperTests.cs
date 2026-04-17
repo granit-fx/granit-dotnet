@@ -35,7 +35,7 @@ public sealed class ReferenceDataMapperTests
             LabelKo = "벨기에",
             LabelSv = "Belgien",
             LabelCs = "Belgie",
-            IsActive = true,
+            Activated = true,
             SortOrder = 5,
             ValidFrom = validFrom,
             ValidTo = validTo,
@@ -60,7 +60,7 @@ public sealed class ReferenceDataMapperTests
         response.LabelKo.ShouldBe("벨기에");
         response.LabelSv.ShouldBe("Belgien");
         response.LabelCs.ShouldBe("Belgie");
-        response.IsActive.ShouldBeTrue();
+        response.Activated.ShouldBeTrue();
         response.SortOrder.ShouldBe(5);
         response.ValidFrom.ShouldBe(validFrom);
         response.ValidTo.ShouldBe(validTo);

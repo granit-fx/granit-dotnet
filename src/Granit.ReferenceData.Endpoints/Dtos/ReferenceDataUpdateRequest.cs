@@ -21,7 +21,7 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="LabelCs">Updated Czech display label.</param>
 /// <param name="LabelHi">Updated Hindi display label.</param>
 /// <param name="SortOrder">Updated display order.</param>
-/// <param name="IsActive">Updated active status.</param>
+/// <param name="Activated">Updated active status.</param>
 /// <param name="ValidFrom">Updated start of validity period.</param>
 /// <param name="ValidTo">Updated end of validity period.</param>
 /// <param name="ParentCode">Updated parent code for hierarchical reference data.</param>
@@ -43,7 +43,7 @@ public sealed record ReferenceDataUpdateRequest(
     string LabelCs = "",
     string LabelHi = "",
     int SortOrder = 0,
-    bool IsActive = true,
+    bool Activated = true,
     DateTimeOffset? ValidFrom = null,
     DateTimeOffset? ValidTo = null,
     string? ParentCode = null,

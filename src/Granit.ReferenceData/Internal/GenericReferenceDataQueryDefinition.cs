@@ -6,7 +6,7 @@ namespace Granit.ReferenceData.Internal;
 /// <summary>
 /// Auto-generated <see cref="QueryDefinition{TEntity}"/> for strongly-typed reference data
 /// entity types. Declares the same base columns as <see cref="ReferenceDataQueryDefinition"/>
-/// (Code, Labels, IsActive, SortOrder, ValidFrom, ValidTo) for any <typeparamref name="TEntity"/>
+/// (Code, Labels, Activated, SortOrder, ValidFrom, ValidTo) for any <typeparamref name="TEntity"/>
 /// inheriting from <see cref="ReferenceDataEntity"/>.
 /// </summary>
 internal sealed class GenericReferenceDataQueryDefinition<TEntity>
@@ -26,7 +26,7 @@ internal sealed class GenericReferenceDataQueryDefinition<TEntity>
             .Column(e => e.LabelNl, c => c.Label("Label (NL)").Filterable())
             .Column(e => e.LabelDe, c => c.Label("Label (DE)").Filterable())
             .Column(e => e.LabelHi, c => c.Label("Label (HI)").Filterable())
-            .Column(e => e.IsActive, c => c.Label("Active").Filterable())
+            .Column(e => e.Activated, c => c.Label("Active").Filterable())
             .Column(e => e.SortOrder, c => c.Label("Sort Order").Sortable())
             .Column(e => e.ValidFrom, c => c.Label("Valid From").Filterable().Sortable())
             .Column(e => e.ValidTo, c => c.Label("Valid To").Filterable().Sortable())

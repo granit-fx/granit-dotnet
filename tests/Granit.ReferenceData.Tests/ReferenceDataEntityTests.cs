@@ -32,7 +32,7 @@ public sealed class ReferenceDataEntityTests
     {
         TestEntity entity = new();
 
-        entity.IsActive.ShouldBeTrue();
+        entity.Activated.ShouldBeTrue();
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public sealed class ReferenceDataEntityTests
             LabelKo = "벨기에",
             LabelSv = "Belgien",
             LabelCs = "Belgie",
-            IsActive = false,
+            Activated = false,
             SortOrder = 42,
             ValidFrom = now,
             ValidTo = now.AddYears(1)
@@ -274,7 +274,7 @@ public sealed class ReferenceDataEntityTests
         entity.LabelKo.ShouldBe("벨기에");
         entity.LabelSv.ShouldBe("Belgien");
         entity.LabelCs.ShouldBe("Belgie");
-        entity.IsActive.ShouldBeFalse();
+        entity.Activated.ShouldBeFalse();
         entity.SortOrder.ShouldBe(42);
         entity.ValidFrom.ShouldBe(now);
         entity.ValidTo.ShouldBe(now.AddYears(1));

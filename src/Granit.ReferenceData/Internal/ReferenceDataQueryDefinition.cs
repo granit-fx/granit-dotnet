@@ -6,7 +6,7 @@ namespace Granit.ReferenceData.Internal;
 
 /// <summary>
 /// Auto-generated <see cref="QueryDefinition{TEntity}"/> for a dynamically registered
-/// reference data type. Declares base columns (Code, Labels, IsActive, SortOrder, ValidFrom,
+/// reference data type. Declares base columns (Code, Labels, Activated, SortOrder, ValidFrom,
 /// ValidTo) plus any Shadow Property columns from <see cref="ReferenceDataExtensionOptions"/>.
 /// </summary>
 internal sealed class ReferenceDataQueryDefinition(
@@ -28,7 +28,7 @@ internal sealed class ReferenceDataQueryDefinition(
             .Column(e => e.LabelNl, c => c.Label("Label (NL)").Filterable())
             .Column(e => e.LabelDe, c => c.Label("Label (DE)").Filterable())
             .Column(e => e.LabelHi, c => c.Label("Label (HI)").Filterable())
-            .Column(e => e.IsActive, c => c.Label("Active").Filterable())
+            .Column(e => e.Activated, c => c.Label("Active").Filterable())
             .Column(e => e.SortOrder, c => c.Label("Sort Order").Sortable())
             .Column(e => e.ValidFrom, c => c.Label("Valid From").Filterable().Sortable())
             .Column(e => e.ValidTo, c => c.Label("Valid To").Filterable().Sortable());

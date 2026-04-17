@@ -196,8 +196,8 @@ public sealed class ModelBuilderExtensionsTests
         await using TestDbContextWithActive context = CreateContextWithActive();
         await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
 
-        context.ActiveEntities.Add(new TestActiveEntity { Name = "Active", IsActive = true });
-        context.ActiveEntities.Add(new TestActiveEntity { Name = "Inactive", IsActive = false });
+        context.ActiveEntities.Add(new TestActiveEntity { Name = "Active", Activated = true });
+        context.ActiveEntities.Add(new TestActiveEntity { Name = "Inactive", Activated = false });
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -215,8 +215,8 @@ public sealed class ModelBuilderExtensionsTests
         await using TestDbContextWithActive context = CreateContextWithActive();
         await context.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
 
-        context.ActiveEntities.Add(new TestActiveEntity { Name = "Active", IsActive = true });
-        context.ActiveEntities.Add(new TestActiveEntity { Name = "Inactive", IsActive = false });
+        context.ActiveEntities.Add(new TestActiveEntity { Name = "Active", Activated = true });
+        context.ActiveEntities.Add(new TestActiveEntity { Name = "Inactive", Activated = false });
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -275,11 +275,11 @@ public sealed class ModelBuilderExtensionsTests
 
         var compiled = (Func<TestActiveWithFilter, bool>)filter!.Compile();
 
-        compiled(new TestActiveWithFilter { IsActive = false }).ShouldBeFalse("inactive must be filtered");
-        compiled(new TestActiveWithFilter { IsActive = true }).ShouldBeTrue("active must pass");
+        compiled(new TestActiveWithFilter { Activated = false }).ShouldBeFalse("inactive must be filtered");
+        compiled(new TestActiveWithFilter { Activated = true }).ShouldBeTrue("active must pass");
 
         SharedDataFilter.SetEnabled<IActive>(false);
-        compiled(new TestActiveWithFilter { IsActive = false }).ShouldBeTrue("inactive must pass when filter disabled");
+        compiled(new TestActiveWithFilter { Activated = false }).ShouldBeTrue("inactive must pass when filter disabled");
 
         SharedDataFilter.SetEnabled<IActive>(true);
     }
@@ -753,7 +753,7 @@ internal sealed class TestActiveEntity : IActive
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public bool IsActive { get; set; }
+    public bool Activated { get; set; }
 }
 
 internal sealed class TestSoftDeleteWithFilter : ISoftDeletable
@@ -767,7 +767,7 @@ internal sealed class TestSoftDeleteWithFilter : ISoftDeletable
 internal sealed class TestActiveWithFilter : IActive
 {
     public int Id { get; set; }
-    public bool IsActive { get; set; }
+    public bool Activated { get; set; }
 }
 
 internal sealed class TestCombinedEntity : ISoftDeletable, IMultiTenant

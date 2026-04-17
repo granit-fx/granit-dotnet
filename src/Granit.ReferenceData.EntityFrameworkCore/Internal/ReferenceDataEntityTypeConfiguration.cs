@@ -6,7 +6,7 @@ namespace Granit.ReferenceData.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Base EF Core Fluent API configuration for reference data entities.
-/// Configures the common columns (Code, Label, IsActive, SortOrder, ValidFrom, ValidTo)
+/// Configures the common columns (Code, Label, Activated, SortOrder, ValidFrom, ValidTo)
 /// and the audit columns inherited from <see cref="Granit.Domain.AuditedEntity"/>.
 /// </summary>
 /// <typeparam name="TEntity">The concrete reference data entity type.</typeparam>
@@ -104,9 +104,9 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
         builder.Property(e => e.LabelCs).HasMaxLength(250);
         builder.Property(e => e.LabelHi).HasMaxLength(250);
 
-        // IsActive — indexed for global query filter performance
-        builder.HasIndex(e => e.IsActive)
-               .HasDatabaseName($"ix_{_tableName}_is_active");
+        // Activated — indexed for global query filter performance
+        builder.HasIndex(e => e.Activated)
+               .HasDatabaseName($"ix_{_tableName}_activated");
 
         // SortOrder
         builder.Property(e => e.SortOrder)

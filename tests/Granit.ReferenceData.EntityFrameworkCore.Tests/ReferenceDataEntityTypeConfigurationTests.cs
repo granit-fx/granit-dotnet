@@ -107,7 +107,7 @@ public sealed class ReferenceDataEntityTypeConfigurationTests
     public void IsActive_Has_Index()
     {
         IEntityType entityType = GetEntityType();
-        IProperty isActive = entityType.FindProperty(nameof(TestEntity.IsActive))!;
+        IProperty isActive = entityType.FindProperty(nameof(TestEntity.Activated))!;
 
         IIndex? index = entityType.GetIndexes()
             .FirstOrDefault(i => i.Properties.Count == 1 && i.Properties[0] == isActive);

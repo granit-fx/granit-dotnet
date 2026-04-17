@@ -20,7 +20,7 @@ namespace Granit.ReferenceData.Domain;
 /// Derived entities can override <see cref="Label"/> for custom resolution logic.
 /// </para>
 /// <para>
-/// Soft activation/deactivation is controlled by <see cref="IsActive"/>. Deactivated entries
+/// Soft activation/deactivation is controlled by <see cref="Activated"/>. Deactivated entries
 /// are filtered out by the EF Core global query filter unless explicitly disabled.
 /// </para>
 /// <para>
@@ -118,7 +118,7 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraPro
     };
 
     /// <inheritdoc/>
-    public bool IsActive { get; set; } = true;
+    public bool Activated { get; set; } = true;
 
     /// <summary>
     /// Display order for UI sorting. Lower values appear first. Default is 0.
