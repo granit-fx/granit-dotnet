@@ -70,24 +70,26 @@ internal sealed class PaymentMethodConfigurationEntityTypeConfiguration
             .HasConversion(boundsConverter, boundsComparer);
     }
 
+    // Empty sets / dictionaries collapse to NULL on the way to the DB — both to keep the
+    // column compact and to avoid the ambiguity between "" / {} (captured wildcard) and
+    // actually-empty provider declarations. The domain layer
+    // (PaymentMethodConfiguration.SnapshotCapability / GetCapabilitySnapshot) owns the
+    // "wildcard ↔ empty collection" semantic; these converters are purely mechanical.
+
     private static string? SetToCsv(ImmutableHashSet<string>? set) =>
-        set switch
-        {
-            null => null,
-            { Count: 0 } => string.Empty,
-            _ => string.Join(',', set.OrderBy(s => s, StringComparer.Ordinal)),
-        };
+        set is null || set.Count == 0
+            ? null
+            : string.Join(',', set.OrderBy(s => s, StringComparer.Ordinal));
 
     private static ImmutableHashSet<string>? CsvToSet(string? csv) =>
-        csv switch
-        {
-            null => null,
-            "" => [],
-            _ => [.. csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)],
-        };
+        string.IsNullOrEmpty(csv)
+            ? null
+            : [.. csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)];
 
     private static string? BoundsToJson(ImmutableDictionary<string, PaymentMethodAmountBound>? bounds) =>
-        bounds == null ? null : JsonSerializer.Serialize(bounds, JsonOptions);
+        bounds is null || bounds.Count == 0
+            ? null
+            : JsonSerializer.Serialize(bounds, JsonOptions);
 
     private static ImmutableDictionary<string, PaymentMethodAmountBound>? JsonToBounds(string? json) =>
         string.IsNullOrEmpty(json)

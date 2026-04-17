@@ -85,14 +85,27 @@ public sealed class PaymentMethodConfiguration : AuditedEntity
     /// Captures the provider's current capability for this method. Called by the admin
     /// activation and resync flows.
     /// </summary>
+    /// <remarks>
+    /// Wildcard axes (empty set, empty dictionary) are stored as <see langword="null"/> to
+    /// keep the row compact and unambiguous in the DB — callers read them back as empty
+    /// collections via <see cref="GetCapabilitySnapshot"/>. <see cref="SupportedSequenceTypes"/>
+    /// is the snapshot marker: always non-null for a snapshotted record (every capability
+    /// declares at least one sequence mode), null for legacy records predating this feature.
+    /// </remarks>
     public void SnapshotCapability(PaymentMethodCapability capability)
     {
         ArgumentNullException.ThrowIfNull(capability);
 
-        SupportedCountries = [.. capability.SupportedCountries];
-        SupportedCurrencies = [.. capability.SupportedCurrencies];
+        SupportedCountries = capability.SupportedCountries.Count == 0
+            ? null
+            : [.. capability.SupportedCountries];
+        SupportedCurrencies = capability.SupportedCurrencies.Count == 0
+            ? null
+            : [.. capability.SupportedCurrencies];
         SupportedSequenceTypes = capability.SupportedSequenceTypes;
-        AmountBounds = capability.AmountBounds.ToImmutableDictionary(StringComparer.Ordinal);
+        AmountBounds = capability.AmountBounds.Count == 0
+            ? null
+            : capability.AmountBounds.ToImmutableDictionary(StringComparer.Ordinal);
     }
 
     /// <summary>Drops the capability snapshot. Typically used when detaching a provider.</summary>
@@ -109,20 +122,22 @@ public sealed class PaymentMethodConfiguration : AuditedEntity
     /// captured yet. A null return means the runtime filter should treat this record as
     /// wildcard on every axis.
     /// </summary>
+    /// <remarks>
+    /// The presence of a snapshot is determined by <see cref="SupportedSequenceTypes"/> —
+    /// the other axes may legitimately be null (stored that way when the provider declares
+    /// wildcard / no bounds) and are hydrated back to empty collections here.
+    /// </remarks>
     public PaymentMethodCapability? GetCapabilitySnapshot()
     {
-        if (SupportedCountries is null
-            || SupportedCurrencies is null
-            || SupportedSequenceTypes is null
-            || AmountBounds is null)
+        if (SupportedSequenceTypes is null)
         {
             return null;
         }
 
         return new PaymentMethodCapability(
-            SupportedCountries,
-            SupportedCurrencies,
+            SupportedCountries ?? [],
+            SupportedCurrencies ?? [],
             SupportedSequenceTypes.Value,
-            AmountBounds);
+            AmountBounds ?? ImmutableDictionary<string, PaymentMethodAmountBound>.Empty);
     }
 }
