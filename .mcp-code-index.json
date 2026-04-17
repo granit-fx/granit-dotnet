@@ -28388,7 +28388,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Domain/PaymentMethodConfiguration.cs",
-      "line": 17,
+      "line": 25,
       "members": [
         {
           "name": "Activate",
@@ -28406,12 +28406,18 @@
           "name": "Activate",
           "kind": "method",
           "signature": "Activate()",
-          "returnType": "bool IsActive { get; private set; } public void"
+          "returnType": "bool IsActive { get; private set; } public ImmutableHashSet<string>? SupportedCountries { get; private set; } public ImmutableHashSet<string>? SupportedCurrencies { get; private set; } public PaymentMethodSequenceType? SupportedSequenceTypes { get; private set; } public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; } public void"
         },
         {
           "name": "Deactivate",
           "kind": "method",
           "signature": "Deactivate()",
+          "returnType": "void"
+        },
+        {
+          "name": "SnapshotCapability",
+          "kind": "method",
+          "signature": "SnapshotCapability(PaymentMethodCapability capability)",
           "returnType": "void"
         }
       ]
