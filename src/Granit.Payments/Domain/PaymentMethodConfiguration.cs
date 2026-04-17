@@ -22,7 +22,7 @@ namespace Granit.Payments.Domain;
 /// deterministic, offline-capable, and does not hit the provider on every request.
 /// </para>
 /// </remarks>
-public sealed class PaymentMethodConfiguration : AuditedEntity
+public sealed class PaymentMethodConfiguration : AuditedEntity, IActive
 {
     private PaymentMethodConfiguration() { }
 
@@ -37,7 +37,7 @@ public sealed class PaymentMethodConfiguration : AuditedEntity
             Id = id,
             ProviderName = providerName,
             MethodType = methodType,
-            IsActive = true,
+            Activated = true,
         };
     }
 
@@ -48,7 +48,7 @@ public sealed class PaymentMethodConfiguration : AuditedEntity
     public string ProviderName { get; private set; } = string.Empty;
 
     /// <summary>Whether this method is currently active for the platform.</summary>
-    public bool IsActive { get; private set; }
+    public bool Activated { get; private set; }
 
     /// <summary>
     /// Snapshot of the countries supported by the provider for this method.
@@ -76,10 +76,10 @@ public sealed class PaymentMethodConfiguration : AuditedEntity
     public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; }
 
     /// <summary>Marks this method as active for the platform.</summary>
-    public void Activate() => IsActive = true;
+    public void Activate() => Activated = true;
 
     /// <summary>Marks this method as inactive (tenants will no longer see it).</summary>
-    public void Deactivate() => IsActive = false;
+    public void Deactivate() => Activated = false;
 
     /// <summary>
     /// Captures the provider's current capability for this method. Called by the admin

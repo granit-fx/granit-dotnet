@@ -28406,7 +28406,7 @@
           "name": "Activate",
           "kind": "method",
           "signature": "Activate()",
-          "returnType": "bool IsActive { get; private set; } public ImmutableHashSet<string>? SupportedCountries { get; private set; } public ImmutableHashSet<string>? SupportedCurrencies { get; private set; } public PaymentMethodSequenceType? SupportedSequenceTypes { get; private set; } public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; } public void"
+          "returnType": "bool Activated { get; private set; } public ImmutableHashSet<string>? SupportedCountries { get; private set; } public ImmutableHashSet<string>? SupportedCurrencies { get; private set; } public PaymentMethodSequenceType? SupportedSequenceTypes { get; private set; } public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; } public void"
         },
         {
           "name": "Deactivate",

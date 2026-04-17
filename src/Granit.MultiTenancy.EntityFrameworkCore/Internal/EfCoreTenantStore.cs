@@ -166,7 +166,7 @@ internal sealed partial class EfCoreTenantStore(
     // -------------------------------------------------------------------------
 
     private static TenantData ToData(Tenant tenant) =>
-        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.IsActive, tenant.Jurisdiction, tenant.CreatedAt, tenant.CustomDomain);
+        new(tenant.Id, tenant.Name, tenant.Identifier, tenant.ContactEmail, tenant.Activated, tenant.Jurisdiction, tenant.CreatedAt, tenant.CustomDomain);
 
     // -------------------------------------------------------------------------
     // Logging

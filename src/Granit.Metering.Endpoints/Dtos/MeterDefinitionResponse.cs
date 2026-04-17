@@ -10,14 +10,14 @@ namespace Granit.Metering.Endpoints.Dtos;
 /// <param name="Unit">Unit of measure.</param>
 /// <param name="Description">Optional description.</param>
 /// <param name="AggregationType">How events are aggregated into rollups.</param>
-/// <param name="IsActive">Whether this meter accepts new events.</param>
+/// <param name="Activated">Whether this meter accepts new events.</param>
 public sealed record MeterDefinitionResponse(
     Guid Id,
     string Name,
     string Unit,
     string? Description,
     AggregationType AggregationType,
-    bool IsActive)
+    bool Activated)
 {
     internal static MeterDefinitionResponse FromEntity(MeterDefinition definition) => new(
         definition.Id,
@@ -25,5 +25,5 @@ public sealed record MeterDefinitionResponse(
         definition.Unit,
         definition.Description,
         definition.AggregationType,
-        definition.IsActive);
+        definition.Activated);
 }

@@ -22,7 +22,6 @@ internal sealed class EfMeterDefinitionReader(
             .ConfigureAwait(false), cancellationToken);
 
     public Task<IReadOnlyList<MeterDefinition>> GetActiveAsync(CancellationToken cancellationToken = default) =>
-        ListAsync(
-            Spec.For<MeterDefinition>().Where(m => m.IsActive),
-            cancellationToken);
+        // IActive query filter handles the Activated = true predicate.
+        ListAsync(Spec.For<MeterDefinition>(), cancellationToken);
 }

@@ -27,7 +27,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
     public string? Jurisdiction { get; private set; }
 
     /// <summary>Whether the tenant is active and can be resolved by the middleware.</summary>
-    public bool IsActive { get; private set; } = true;
+    public bool Activated { get; private set; } = true;
 
     /// <summary>
     /// Optional custom domain for this tenant (e.g., <c>"app.acme-corp.com"</c>).
@@ -71,7 +71,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
             Identifier = identifier,
             ContactEmail = contactEmail,
             Jurisdiction = jurisdiction,
-            IsActive = true,
+            Activated = true,
         };
 
         tenant.AddDomainEvent(new TenantCreatedEvent(id, name, identifier));
@@ -121,12 +121,12 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
     /// </summary>
     public void Activate()
     {
-        if (IsActive)
+        if (Activated)
         {
             return;
         }
 
-        IsActive = true;
+        Activated = true;
         AddDomainEvent(new TenantActivatedEvent(Id));
     }
 
@@ -136,12 +136,12 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
     /// </summary>
     public void Deactivate()
     {
-        if (!IsActive)
+        if (!Activated)
         {
             return;
         }
 
-        IsActive = false;
+        Activated = false;
         AddDomainEvent(new TenantDeactivatedEvent(Id));
     }
 }

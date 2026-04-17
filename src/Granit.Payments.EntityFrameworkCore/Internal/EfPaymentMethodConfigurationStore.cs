@@ -1,3 +1,5 @@
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -5,8 +7,20 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Payments.EntityFrameworkCore.Internal;
 
 /// <summary>EF Core store for host-level payment method configurations.</summary>
+/// <remarks>
+/// <para>
+/// <see cref="PaymentMethodConfiguration"/> implements <see cref="IActive"/>, so the
+/// EF Core global query filter hides deactivated rows by default. The <em>reads</em>
+/// that must see both active and inactive records (admin listing, race-safe upsert,
+/// resync) bypass the filter with
+/// <see cref="IDataFilter.Disable{TFilterMarker}"/>. The hot-path
+/// <see cref="GetActiveAsync"/> relies on the filter and carries no manual
+/// <c>.Where(c => c.Activated)</c>.
+/// </para>
+/// </remarks>
 internal sealed class EfPaymentMethodConfigurationStore(
-    IDbContextFactory<PaymentsDbContext> contextFactory)
+    IDbContextFactory<PaymentsDbContext> contextFactory,
+    IDataFilter dataFilter)
     : IPaymentMethodConfigurationReader, IPaymentMethodConfigurationWriter
 {
     // ── Reader (AsNoTracking for all reads) ─────────────────────────────
@@ -17,10 +31,13 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await db.PaymentMethodConfigurations
-            .AsNoTracking()
-            .OrderBy(c => c.ProviderName).ThenBy(c => c.MethodType)
-            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        using (dataFilter.Disable<IActive>())
+        {
+            return await db.PaymentMethodConfigurations
+                .AsNoTracking()
+                .OrderBy(c => c.ProviderName).ThenBy(c => c.MethodType)
+                .ToListAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     public async Task<IReadOnlyList<PaymentMethodConfiguration>> GetActiveAsync(
@@ -29,9 +46,9 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        // IActive query filter handles the Activated = true predicate.
         return await db.PaymentMethodConfigurations
             .AsNoTracking()
-            .Where(c => c.IsActive)
             .OrderBy(c => c.ProviderName).ThenBy(c => c.MethodType)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
     }
@@ -42,10 +59,13 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await db.PaymentMethodConfigurations
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
-            .ConfigureAwait(false);
+        using (dataFilter.Disable<IActive>())
+        {
+            return await db.PaymentMethodConfigurations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+                .ConfigureAwait(false);
+        }
     }
 
     public async Task<PaymentMethodConfiguration?> FindAsync(
@@ -54,12 +74,15 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await db.PaymentMethodConfigurations
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                c => c.ProviderName == providerName && c.MethodType == methodType,
-                cancellationToken)
-            .ConfigureAwait(false);
+        using (dataFilter.Disable<IActive>())
+        {
+            return await db.PaymentMethodConfigurations
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    c => c.ProviderName == providerName && c.MethodType == methodType,
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
     }
 
     // ── Writer ──────────────────────────────────────────────────────────
@@ -104,56 +127,59 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
-            .FirstOrDefaultAsync(
-                c => c.ProviderName == providerName && c.MethodType == methodType,
-                cancellationToken).ConfigureAwait(false);
-
-        if (existing is null)
+        using (dataFilter.Disable<IActive>())
         {
-            var created = PaymentMethodConfiguration
-                .Activate(newId, providerName, methodType);
+            PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+                .FirstOrDefaultAsync(
+                    c => c.ProviderName == providerName && c.MethodType == methodType,
+                    cancellationToken).ConfigureAwait(false);
 
-            if (!isActive)
+            if (existing is null)
             {
-                created.Deactivate();
-            }
+                var created = PaymentMethodConfiguration
+                    .Activate(newId, providerName, methodType);
 
-            db.PaymentMethodConfigurations.Add(created);
-
-            try
-            {
-                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return;
-            }
-            catch (DbUpdateException)
-            {
-                // Concurrent POST won the race — fall through to read + update.
-                db.PaymentMethodConfigurations.Remove(created);
-                db.ChangeTracker.Clear();
-
-                existing = await db.PaymentMethodConfigurations
-                    .FirstOrDefaultAsync(
-                        c => c.ProviderName == providerName && c.MethodType == methodType,
-                        cancellationToken).ConfigureAwait(false);
-
-                if (existing is null)
+                if (!isActive)
                 {
-                    throw;
+                    created.Deactivate();
+                }
+
+                db.PaymentMethodConfigurations.Add(created);
+
+                try
+                {
+                    await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+                catch (DbUpdateException)
+                {
+                    // Concurrent POST won the race — fall through to read + update.
+                    db.PaymentMethodConfigurations.Remove(created);
+                    db.ChangeTracker.Clear();
+
+                    existing = await db.PaymentMethodConfigurations
+                        .FirstOrDefaultAsync(
+                            c => c.ProviderName == providerName && c.MethodType == methodType,
+                            cancellationToken).ConfigureAwait(false);
+
+                    if (existing is null)
+                    {
+                        throw;
+                    }
                 }
             }
-        }
 
-        if (isActive)
-        {
-            existing.Activate();
-        }
-        else
-        {
-            existing.Deactivate();
-        }
+            if (isActive)
+            {
+                existing.Activate();
+            }
+            else
+            {
+                existing.Deactivate();
+            }
 
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        }
     }
 
     public async Task UpsertActivationWithSnapshotAsync(
@@ -168,44 +194,47 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
-            .FirstOrDefaultAsync(
-                c => c.ProviderName == providerName && c.MethodType == methodType,
-                cancellationToken).ConfigureAwait(false);
-
-        if (existing is null)
+        using (dataFilter.Disable<IActive>())
         {
-            var created = PaymentMethodConfiguration.Activate(newId, providerName, methodType);
-            created.SnapshotCapability(capability);
+            PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+                .FirstOrDefaultAsync(
+                    c => c.ProviderName == providerName && c.MethodType == methodType,
+                    cancellationToken).ConfigureAwait(false);
 
-            db.PaymentMethodConfigurations.Add(created);
-
-            try
+            if (existing is null)
             {
-                await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-                return;
-            }
-            catch (DbUpdateException)
-            {
-                db.PaymentMethodConfigurations.Remove(created);
-                db.ChangeTracker.Clear();
+                var created = PaymentMethodConfiguration.Activate(newId, providerName, methodType);
+                created.SnapshotCapability(capability);
 
-                existing = await db.PaymentMethodConfigurations
-                    .FirstOrDefaultAsync(
-                        c => c.ProviderName == providerName && c.MethodType == methodType,
-                        cancellationToken).ConfigureAwait(false);
+                db.PaymentMethodConfigurations.Add(created);
 
-                if (existing is null)
+                try
                 {
-                    throw;
+                    await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+                    return;
+                }
+                catch (DbUpdateException)
+                {
+                    db.PaymentMethodConfigurations.Remove(created);
+                    db.ChangeTracker.Clear();
+
+                    existing = await db.PaymentMethodConfigurations
+                        .FirstOrDefaultAsync(
+                            c => c.ProviderName == providerName && c.MethodType == methodType,
+                            cancellationToken).ConfigureAwait(false);
+
+                    if (existing is null)
+                    {
+                        throw;
+                    }
                 }
             }
+
+            existing.Activate();
+            existing.SnapshotCapability(capability);
+
+            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         }
-
-        existing.Activate();
-        existing.SnapshotCapability(capability);
-
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<bool> UpdateCapabilitySnapshotAsync(
@@ -219,18 +248,21 @@ internal sealed class EfPaymentMethodConfigurationStore(
         await using PaymentsDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
-            .FirstOrDefaultAsync(
-                c => c.ProviderName == providerName && c.MethodType == methodType,
-                cancellationToken).ConfigureAwait(false);
-
-        if (existing is null)
+        using (dataFilter.Disable<IActive>())
         {
-            return false;
-        }
+            PaymentMethodConfiguration? existing = await db.PaymentMethodConfigurations
+                .FirstOrDefaultAsync(
+                    c => c.ProviderName == providerName && c.MethodType == methodType,
+                    cancellationToken).ConfigureAwait(false);
 
-        existing.SnapshotCapability(capability);
-        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
-        return true;
+            if (existing is null)
+            {
+                return false;
+            }
+
+            existing.SnapshotCapability(capability);
+            await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            return true;
+        }
     }
 }

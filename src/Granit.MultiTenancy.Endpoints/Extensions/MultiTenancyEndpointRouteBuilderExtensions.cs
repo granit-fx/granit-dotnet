@@ -230,7 +230,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static TenantResponse ToResponse(TenantData data) =>
-        new(data.Id, data.Name, data.Identifier, data.ContactEmail, data.IsActive, data.Jurisdiction, data.CreatedAt);
+        new(data.Id, data.Name, data.Identifier, data.ContactEmail, data.Activated, data.Jurisdiction, data.CreatedAt);
 
     private static ProblemHttpResult TenantNotFound(Guid id) =>
         TypedResults.Problem(

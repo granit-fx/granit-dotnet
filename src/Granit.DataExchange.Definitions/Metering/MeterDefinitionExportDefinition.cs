@@ -15,7 +15,7 @@ public sealed class MeterDefinitionExportDefinition : ExportDefinition<MeterDefi
             .Field(m => m.Unit)
             .Field(m => m.Description)
             .Field(m => m.AggregationType)
-            .Field(m => m.IsActive)
+            .Field(m => m.Activated)
             .Field(m => m.TenantId)
             .Field(m => m.CreatedAt, f => f.Format("O"))
             .Field(m => m.CreatedBy)

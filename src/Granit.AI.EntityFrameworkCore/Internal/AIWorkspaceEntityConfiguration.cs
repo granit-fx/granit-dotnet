@@ -40,7 +40,7 @@ internal sealed class AIWorkspaceEntityConfiguration : IEntityTypeConfiguration<
 
         builder.Property(e => e.MaxOutputTokens);
 
-        builder.Property(e => e.IsActive)
+        builder.Property(e => e.Activated)
             .IsRequired()
             .HasDefaultValue(true);
 

@@ -6,13 +6,13 @@ namespace Granit.Payments.Endpoints.Dtos;
 /// <param name="MethodType">Stable method identifier (e.g., <c>card</c>, <c>bancontact</c>).</param>
 /// <param name="DisplayLabel">Localized display label for the checkout UI.</param>
 /// <param name="Category">Grouping category for the checkout UI.</param>
-/// <param name="IsActive">Whether the method is currently active on the platform.</param>
+/// <param name="Activated">Whether the method is currently active on the platform.</param>
 /// <param name="CapabilitySnapshot">Last-captured capability snapshot, or <see langword="null"/> when no snapshot has been taken yet.</param>
 public sealed record PaymentMethodConfigurationItem(
     string MethodType,
     string DisplayLabel,
     PaymentMethodCategory Category,
-    bool IsActive,
+    bool Activated,
     PaymentMethodCapabilityResponse? CapabilitySnapshot);
 
 /// <summary>All methods declared by a single provider, with their activation state.</summary>
@@ -25,14 +25,14 @@ public sealed record PaymentProviderConfigurationResponse(
 /// <param name="Category">Grouping category for the checkout UI.</param>
 /// <param name="DisplayLabel">Provider-native display label (caller can still localize).</param>
 /// <param name="Capability">Live capability metadata reported by the provider.</param>
-/// <param name="IsActive">Whether the method is currently active on the platform.</param>
+/// <param name="Activated">Whether the method is currently active on the platform.</param>
 /// <param name="HasSnapshot">Whether the activation record already carries a capability snapshot.</param>
 public sealed record PaymentCatalogMethod(
     string MethodType,
     PaymentMethodCategory Category,
     string DisplayLabel,
     PaymentMethodCapabilityResponse Capability,
-    bool IsActive,
+    bool Activated,
     bool HasSnapshot);
 
 /// <summary>Catalog response for a single provider.</summary>

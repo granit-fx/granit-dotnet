@@ -18,7 +18,7 @@ public sealed class TenantResponseTests
         response.Name.ShouldBe("Acme Corp");
         response.Identifier.ShouldBe("acme-corp");
         response.ContactEmail.ShouldBe("admin@acme.com");
-        response.IsActive.ShouldBeTrue();
+        response.Activated.ShouldBeTrue();
         response.Jurisdiction.ShouldBe("BE");
         response.CreatedAt.ShouldBe(createdAt);
     }

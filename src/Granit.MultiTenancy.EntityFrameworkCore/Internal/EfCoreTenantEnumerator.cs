@@ -42,7 +42,7 @@ internal sealed class EfCoreTenantEnumerator(IServiceScopeFactory scopeFactory) 
             yield break;
         }
 
-        foreach (TenantData tenant in tenants.Where(static t => t.IsActive))
+        foreach (TenantData tenant in tenants.Where(static t => t.Activated))
         {
             yield return tenant.Id;
         }

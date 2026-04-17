@@ -125,7 +125,7 @@ internal static class PaymentMethodConfigurationEndpoints
                     MethodType: descriptor.MethodType,
                     DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, descriptor.MethodType),
                     Category: descriptor.Category,
-                    IsActive: config?.IsActive ?? false,
+                    Activated: config?.Activated ?? false,
                     CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponseOrNull(snapshot)));
             }
 
@@ -175,7 +175,7 @@ internal static class PaymentMethodConfigurationEndpoints
                 Category: entry.Category,
                 DisplayLabel: entry.DisplayLabel,
                 Capability: PaymentMethodCapabilityMapper.ToResponse(entry.Capability),
-                IsActive: config?.IsActive ?? false,
+                Activated: config?.Activated ?? false,
                 HasSnapshot: config?.GetCapabilitySnapshot() is not null));
         }
 
@@ -232,7 +232,7 @@ internal static class PaymentMethodConfigurationEndpoints
             MethodType: entry.MethodType,
             DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, entry.MethodType),
             Category: entry.Category,
-            IsActive: true,
+            Activated: true,
             CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponse(entry.Capability)));
     }
 
@@ -287,7 +287,7 @@ internal static class PaymentMethodConfigurationEndpoints
             MethodType: descriptor.MethodType,
             DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, descriptor.MethodType),
             Category: descriptor.Category,
-            IsActive: false,
+            Activated: false,
             CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponseOrNull(config?.GetCapabilitySnapshot())));
     }
 
@@ -348,7 +348,7 @@ internal static class PaymentMethodConfigurationEndpoints
             MethodType: entry.MethodType,
             DisplayLabel: PaymentMethodLabelResolver.Resolve(localizer, entry.MethodType),
             Category: entry.Category,
-            IsActive: existing.IsActive,
+            Activated: existing.Activated,
             CapabilitySnapshot: PaymentMethodCapabilityMapper.ToResponse(entry.Capability)));
     }
 

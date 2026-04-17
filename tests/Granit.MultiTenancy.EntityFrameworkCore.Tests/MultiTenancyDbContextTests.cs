@@ -46,6 +46,6 @@ public sealed class MultiTenancyDbContextTests
         loaded.Name.ShouldBe("Acme Corp");
         loaded.Identifier.ShouldBe("acme-corp");
         loaded.ContactEmail.ShouldBe("admin@acme.com");
-        loaded.IsActive.ShouldBeTrue();
+        loaded.Activated.ShouldBeTrue();
     }
 }

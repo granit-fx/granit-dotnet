@@ -80,7 +80,7 @@ public sealed class TenantEntityTypeConfigurationTests
         using MultiTenancyDbContext ctx = CreateInMemory();
         IEntityType entityType = ctx.Model.FindEntityType(typeof(Tenant))!;
 
-        IProperty isActive = entityType.FindProperty(nameof(Tenant.IsActive))!;
+        IProperty isActive = entityType.FindProperty(nameof(Tenant.Activated))!;
 
         isActive.IsNullable.ShouldBeFalse();
     }

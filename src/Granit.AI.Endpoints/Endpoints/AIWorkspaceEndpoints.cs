@@ -182,7 +182,7 @@ internal static class AIWorkspaceEndpoints
             SystemPrompt = request.SystemPrompt,
             Temperature = request.Temperature,
             MaxOutputTokens = request.MaxOutputTokens,
-            IsActive = request.IsActive,
+            Activated = request.Activated,
         };
 
         await manager.UpdateAsync(updated, cancellationToken).ConfigureAwait(false);
@@ -228,6 +228,6 @@ internal static class AIWorkspaceEndpoints
         workspace.Temperature,
         workspace.MaxOutputTokens,
         workspace.Kind,
-        workspace.IsActive,
+        workspace.Activated,
         capabilities);
 }

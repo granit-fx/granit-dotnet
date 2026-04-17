@@ -1,6 +1,7 @@
 using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
 using Granit.AI.Workspaces;
+using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
@@ -19,8 +20,10 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
             .UseInMemoryDatabase($"ai-test-{Guid.NewGuid()}")
             .Options;
 
-        _factory = new TestDbContextFactory(options);
-        _store = new EfAIWorkspaceStore(_factory, Substitute.For<ICurrentTenant>());
+        // Share the DataFilter between the DbContext (for query-filter bypass) and the store.
+        DataFilter sharedFilter = new();
+        _factory = new TestDbContextFactory(options, sharedFilter);
+        _store = new EfAIWorkspaceStore(_factory, Substitute.For<ICurrentTenant>(), sharedFilter);
     }
 
     public async ValueTask DisposeAsync()
@@ -34,7 +37,7 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
         Name = name,
         Provider = "OpenAI",
         Model = "gpt-4o",
-        IsActive = true,
+        Activated = true,
     };
 
     [Fact]
@@ -62,19 +65,19 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     [Fact]
     public async Task FindAsync_ReturnsInactiveWorkspace()
     {
-        await _store.CreateAsync(CreateWorkspace() with { IsActive = false }, TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace() with { Activated = false }, TestContext.Current.CancellationToken);
 
         AIWorkspace? result = await _store.FindAsync("test-ws", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.IsActive.ShouldBeFalse();
+        result.Activated.ShouldBeFalse();
     }
 
     [Fact]
     public async Task GetAllAsync_ReturnsActiveAndInactiveWorkspaces()
     {
         await _store.CreateAsync(CreateWorkspace("active"), TestContext.Current.CancellationToken);
-        await _store.CreateAsync(CreateWorkspace("inactive") with { IsActive = false }, TestContext.Current.CancellationToken);
+        await _store.CreateAsync(CreateWorkspace("inactive") with { Activated = false }, TestContext.Current.CancellationToken);
 
         IReadOnlyList<AIWorkspace> results = await _store.GetAllAsync(TestContext.Current.CancellationToken);
 
@@ -113,11 +116,12 @@ public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
     /// <summary>
     /// Simple factory wrapping InMemory options for testing.
     /// </summary>
-    private sealed class TestDbContextFactory(DbContextOptions<AIDbContext> options) : IDbContextFactory<AIDbContext>
+    private sealed class TestDbContextFactory(DbContextOptions<AIDbContext> options, IDataFilter dataFilter)
+        : IDbContextFactory<AIDbContext>
     {
-        public AIDbContext CreateDbContext() => new(options);
+        public AIDbContext CreateDbContext() => new(options, dataFilter: dataFilter);
 
         public Task<AIDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new AIDbContext(options));
+            Task.FromResult(new AIDbContext(options, dataFilter: dataFilter));
     }
 }

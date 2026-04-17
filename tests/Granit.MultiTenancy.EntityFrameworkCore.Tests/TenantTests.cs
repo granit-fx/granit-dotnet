@@ -25,7 +25,7 @@ public sealed class TenantTests
         tenant.Name.ShouldBe("Acme Corp");
         tenant.Identifier.ShouldBe("acme-corp");
         tenant.ContactEmail.ShouldBe("admin@acme.com");
-        tenant.IsActive.ShouldBeTrue();
+        tenant.Activated.ShouldBeTrue();
         tenant.Jurisdiction.ShouldBeNull();
     }
 
@@ -117,7 +117,7 @@ public sealed class TenantTests
 
         tenant.Deactivate();
 
-        tenant.IsActive.ShouldBeFalse();
+        tenant.Activated.ShouldBeFalse();
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public sealed class TenantTests
 
         tenant.Activate();
 
-        tenant.IsActive.ShouldBeTrue();
+        tenant.Activated.ShouldBeTrue();
     }
 
     [Fact]

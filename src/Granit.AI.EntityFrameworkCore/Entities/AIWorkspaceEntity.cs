@@ -6,7 +6,7 @@ namespace Granit.AI.EntityFrameworkCore.Entities;
 /// <summary>
 /// EF Core entity for dynamic AI workspace configurations.
 /// </summary>
-internal sealed class AIWorkspaceEntity : AuditedEntity, IMultiTenant, ISoftDeletable
+internal sealed class AIWorkspaceEntity : AuditedEntity, IActive, IMultiTenant, ISoftDeletable
 {
     public string Name { get; set; } = string.Empty;
 
@@ -20,7 +20,7 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IMultiTenant, ISoftDele
 
     public int? MaxOutputTokens { get; set; }
 
-    public bool IsActive { get; set; } = true;
+    public bool Activated { get; set; } = true;
 
     public Guid? TenantId { get; set; }
 
@@ -40,7 +40,7 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IMultiTenant, ISoftDele
         MaxOutputTokens = MaxOutputTokens,
         Kind = AIWorkspaceKind.Dynamic,
         TenantId = TenantId,
-        IsActive = IsActive,
+        Activated = Activated,
     };
 
     public static AIWorkspaceEntity FromRecord(AIWorkspace workspace) => new()
@@ -52,6 +52,6 @@ internal sealed class AIWorkspaceEntity : AuditedEntity, IMultiTenant, ISoftDele
         Temperature = workspace.Temperature,
         MaxOutputTokens = workspace.MaxOutputTokens,
         TenantId = workspace.TenantId,
-        IsActive = workspace.IsActive,
+        Activated = workspace.Activated,
     };
 }

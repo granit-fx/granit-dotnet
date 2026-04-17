@@ -131,7 +131,7 @@ internal static class UsageEndpoints
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            if (!def.IsActive)
+            if (!def.Activated)
             {
                 return TypedResults.Problem(
                     detail: $"Meter definition '{mid}' is deactivated.",

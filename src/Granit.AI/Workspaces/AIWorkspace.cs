@@ -53,5 +53,5 @@ public sealed record AIWorkspace
     /// <summary>
     /// Whether this workspace is active and available for use.
     /// </summary>
-    public bool IsActive { get; init; } = true;
+    public bool Activated { get; init; } = true;
 }

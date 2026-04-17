@@ -12,7 +12,7 @@ namespace Granit.Metering.Domain;
 /// Meter events are recorded against a definition and aggregated into
 /// <see cref="UsageAggregate"/> rollups by background jobs.
 /// </remarks>
-public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant
+public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenant
 {
     private MeterDefinition() { }
 
@@ -34,7 +34,7 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant
             Unit = unit,
             AggregationType = aggregationType,
             Description = description,
-            IsActive = true,
+            Activated = true,
         };
     }
 
@@ -51,7 +51,7 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant
     public AggregationType AggregationType { get; private set; }
 
     /// <summary>Whether this meter accepts new events.</summary>
-    public bool IsActive { get; private set; }
+    public bool Activated { get; private set; }
 
     /// <inheritdoc/>
     public Guid? TenantId { get; private set; }
@@ -71,8 +71,8 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant
     }
 
     /// <summary>Deactivates the meter. No new events will be accepted.</summary>
-    public void Deactivate() => IsActive = false;
+    public void Deactivate() => Activated = false;
 
     /// <summary>Reactivates the meter.</summary>
-    public void Activate() => IsActive = true;
+    public void Activate() => Activated = true;
 }

@@ -17,7 +17,7 @@ public sealed class MeterDefinitionTests
         meter.Unit.ShouldBe("requests");
         meter.AggregationType.ShouldBe(AggregationType.Sum);
         meter.Description.ShouldBe("HTTP requests");
-        meter.IsActive.ShouldBeTrue();
+        meter.Activated.ShouldBeTrue();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class MeterDefinitionTests
 
         meter.Deactivate();
 
-        meter.IsActive.ShouldBeFalse();
+        meter.Activated.ShouldBeFalse();
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public sealed class MeterDefinitionTests
 
         meter.Activate();
 
-        meter.IsActive.ShouldBeTrue();
+        meter.Activated.ShouldBeTrue();
     }
 
     [Fact]

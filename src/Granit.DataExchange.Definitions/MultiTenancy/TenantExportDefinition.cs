@@ -15,7 +15,7 @@ public sealed class TenantExportDefinition : ExportDefinition<Tenant>
             .Field(t => t.Identifier)
             .Field(t => t.ContactEmail)
             .Field(t => t.Jurisdiction)
-            .Field(t => t.IsActive)
+            .Field(t => t.Activated)
             .Field(t => t.CustomDomain)
             .Field(t => t.IsDeleted)
             .Field(t => t.DeletedAt, f => f.Format("O"))

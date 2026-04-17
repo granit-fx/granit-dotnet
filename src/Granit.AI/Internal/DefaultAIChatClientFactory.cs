@@ -26,7 +26,7 @@ internal sealed class DefaultAIChatClientFactory(
         AIWorkspace workspace = await workspaceProvider.GetAsync(name, cancellationToken).ConfigureAwait(false)
             ?? throw new AIWorkspaceNotFoundException(name);
 
-        if (!workspace.IsActive)
+        if (!workspace.Activated)
         {
             throw new AIWorkspaceNotActiveException(name);
         }

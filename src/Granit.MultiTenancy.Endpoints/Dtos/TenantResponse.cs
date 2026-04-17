@@ -7,7 +7,7 @@ namespace Granit.MultiTenancy.Endpoints.Dtos;
 /// <param name="Name">Display name of the tenant.</param>
 /// <param name="Identifier">Unique slug/subdomain identifier.</param>
 /// <param name="ContactEmail">Optional contact email address.</param>
-/// <param name="IsActive">Whether the tenant is active.</param>
+/// <param name="Activated">Whether the tenant is active.</param>
 /// <param name="Jurisdiction">Privacy regulation code or ISO country code, or <c>null</c>.</param>
 /// <param name="CreatedAt">Timestamp when the tenant was created.</param>
 public sealed record TenantResponse(
@@ -15,6 +15,6 @@ public sealed record TenantResponse(
     string Name,
     string Identifier,
     string? ContactEmail,
-    bool IsActive,
+    bool Activated,
     string? Jurisdiction,
     DateTimeOffset CreatedAt);
