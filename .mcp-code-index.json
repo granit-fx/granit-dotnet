@@ -29479,22 +29479,6 @@
       ]
     },
     {
-      "name": "IPaymentMethodAvailabilityFilter",
-      "fqn": "Granit.Payments.Internal.IPaymentMethodAvailabilityFilter",
-      "kind": "interface",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Internal/IPaymentMethodAvailabilityFilter.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "IsAvailable",
-          "kind": "method",
-          "signature": "IsAvailable(PaymentMethodCapability capability, PaymentAvailabilityContext context)",
-          "returnType": "bool"
-        }
-      ]
-    },
-    {
       "name": "GranitPaymentsMollieModule",
       "fqn": "Granit.Payments.Mollie.GranitPaymentsMollieModule",
       "kind": "class",

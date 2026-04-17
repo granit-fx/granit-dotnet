@@ -6,7 +6,7 @@ namespace Granit.Payments.Internal;
 /// Pure predicate evaluating whether a <see cref="PaymentMethodCapability"/> satisfies
 /// a <see cref="PaymentAvailabilityContext"/>.
 /// </summary>
-public interface IPaymentMethodAvailabilityFilter
+internal interface IPaymentMethodAvailabilityFilter
 {
     /// <summary>
     /// Returns <see langword="true"/> when every non-null axis of <paramref name="context"/>
