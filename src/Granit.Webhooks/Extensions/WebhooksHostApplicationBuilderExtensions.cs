@@ -1,14 +1,19 @@
 using System.Threading.Channels;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
+using Granit.QueryEngine.Extensions;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Diagnostics;
+using Granit.Webhooks.Domain;
 using Granit.Webhooks.Endpoints;
+using Granit.Webhooks.Exports;
 using Granit.Webhooks.Handlers;
 using Granit.Webhooks.Internal;
 using Granit.Webhooks.Messages;
 using Granit.Webhooks.Options;
+using Granit.Webhooks.Queries;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -106,6 +111,11 @@ public static class WebhooksHostApplicationBuilderExtensions
 
         // Event type registry — immutable singleton, pre-sorted at startup.
         builder.Services.TryAddSingleton<IWebhookEventTypeRegistry, WebhookEventTypeRegistry>();
+
+        builder.Services.AddQueryDefinition<WebhookSubscription, WebhookSubscriptionQueryDefinition>();
+        builder.Services.AddQueryDefinition<WebhookDeliveryAttempt, WebhookDeliveryAttemptQueryDefinition>();
+        builder.Services.AddExportDefinition<WebhookSubscription, WebhookSubscriptionExportDefinition>();
+        builder.Services.AddExportDefinition<WebhookDeliveryAttempt, WebhookDeliveryAttemptExportDefinition>();
 
         return builder;
     }

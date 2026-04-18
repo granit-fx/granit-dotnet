@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
 using Granit.Invoicing.Domain;
 
-namespace Granit.DataExchange.Definitions.Invoicing;
+namespace Granit.Invoicing.Exports;
 
 public sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
 {

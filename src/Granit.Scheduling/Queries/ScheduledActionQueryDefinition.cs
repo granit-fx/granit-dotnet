@@ -1,8 +1,7 @@
 using Granit.QueryEngine;
 using Granit.Scheduling.Domain;
-using Granit.Scheduling.Endpoints.Internal;
 
-namespace Granit.Scheduling.Endpoints.Queries;
+namespace Granit.Scheduling.Queries;
 
 /// <summary>
 /// Query definition for scheduled actions — declares columns, filters, sorting,
@@ -11,10 +10,7 @@ namespace Granit.Scheduling.Endpoints.Queries;
 public sealed class ScheduledActionQueryDefinition : QueryDefinition<ScheduledAction>
 {
     /// <inheritdoc/>
-    public override string Name => "Scheduling.ScheduledActions";
-
-    /// <inheritdoc/>
-    public override Type? LocalizationResourceType => typeof(SchedulingEndpointsLocalizationResource);
+    public override string Name => "Granit.Scheduling.ScheduledActionsQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<ScheduledAction> builder)

@@ -327,7 +327,9 @@
       "name": "Granit.BlobStorage",
       "deps": [
         "Granit",
-        "Granit.Guids"
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -933,8 +935,10 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
         "Granit.Workflow"
       ],
@@ -1769,7 +1773,9 @@
       "name": "Granit.Scheduling",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1842,9 +1848,11 @@
       "name": "Granit.Subscriptions",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
         "Granit.Metering",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Scheduling",
         "Granit.Timing",
         "Granit.Workflow"
@@ -2175,9 +2183,11 @@
       "name": "Granit.Webhooks",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Encryption",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -8163,15 +8173,8 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 18,
+      "members": []
     },
     {
       "name": "BlobStorageEndpointsOptions",
@@ -8221,28 +8224,6 @@
       "file": "src/Granit.BlobStorage.Endpoints/Permissions/BlobStorageRateLimitPolicies.cs",
       "line": 18,
       "members": []
-    },
-    {
-      "name": "BlobDescriptorQueryDefinition",
-      "fqn": "Granit.BlobStorage.Endpoints.Queries.BlobDescriptorQueryDefinition",
-      "kind": "class",
-      "project": "Granit.BlobStorage.Endpoints",
-      "file": "src/Granit.BlobStorage.Endpoints/Queries/BlobDescriptorQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(BlobStorageEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
     },
     {
       "name": "BlobStorageEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -8370,6 +8351,22 @@
       ]
     },
     {
+      "name": "BlobDescriptorExportDefinition",
+      "fqn": "Granit.BlobStorage.Exports.BlobDescriptorExportDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Exports/BlobDescriptorExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "BlobStorageFileSystemHostApplicationBuilderExtensions",
       "fqn": "Granit.BlobStorage.FileSystem.Extensions.BlobStorageFileSystemHostApplicationBuilderExtensions",
       "kind": "class",
@@ -8478,7 +8475,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 25,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -8783,6 +8780,22 @@
           "kind": "property",
           "signature": "long MaxUploadBytes",
           "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "BlobDescriptorQueryDefinition",
+      "fqn": "Granit.BlobStorage.Queries.BlobDescriptorQueryDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Queries/BlobDescriptorQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -9989,22 +10002,6 @@
       ]
     },
     {
-      "name": "BlobDescriptorExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.BlobStorage.BlobDescriptorExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/BlobStorage/BlobDescriptorExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "BalanceAccountExportDefinition",
       "fqn": "Granit.DataExchange.Definitions.CustomerBalance.BalanceAccountExportDefinition",
       "kind": "class",
@@ -10074,7 +10071,7 @@
       "kind": "class",
       "project": "Granit.DataExchange.Definitions",
       "file": "src/Granit.DataExchange.Definitions/Extensions/DataExchangeDefinitionsServiceCollectionExtensions.cs",
-      "line": 59,
+      "line": 50,
       "members": [
         {
           "name": "AddGranitExportDefinitions",
@@ -10138,22 +10135,6 @@
       "kind": "class",
       "project": "Granit.DataExchange.Definitions",
       "file": "src/Granit.DataExchange.Definitions/Identity/UserCacheEntryExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "InvoiceExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Invoicing.InvoiceExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Invoicing/InvoiceExportDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -10405,75 +10386,11 @@
       ]
     },
     {
-      "name": "ScheduledActionExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Scheduling.ScheduledActionExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Scheduling/ScheduledActionExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "SettingRecordExportDefinition",
       "fqn": "Granit.DataExchange.Definitions.Settings.SettingRecordExportDefinition",
       "kind": "class",
       "project": "Granit.DataExchange.Definitions",
       "file": "src/Granit.DataExchange.Definitions/Settings/SettingRecordExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "PlanExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Subscriptions.PlanExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Subscriptions/PlanExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "PlanPriceExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Subscriptions.PlanPriceExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Subscriptions/PlanPriceExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "SubscriptionExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Subscriptions.SubscriptionExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Subscriptions/SubscriptionExportDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -10506,38 +10423,6 @@
       "kind": "class",
       "project": "Granit.DataExchange.Definitions",
       "file": "src/Granit.DataExchange.Definitions/Timeline/TimelineEntryExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "WebhookDeliveryAttemptExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Webhooks.WebhookDeliveryAttemptExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Webhooks/WebhookDeliveryAttemptExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "WebhookSubscriptionExportDefinition",
-      "fqn": "Granit.DataExchange.Definitions.Webhooks.WebhookSubscriptionExportDefinition",
-      "kind": "class",
-      "project": "Granit.DataExchange.Definitions",
-      "file": "src/Granit.DataExchange.Definitions/Webhooks/WebhookSubscriptionExportDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -20477,15 +20362,8 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 14,
+      "members": []
     },
     {
       "name": "CreditNotes",
@@ -20513,28 +20391,6 @@
       "file": "src/Granit.Invoicing.Endpoints/Permissions/InvoicingPermissions.cs",
       "line": 4,
       "members": []
-    },
-    {
-      "name": "InvoiceQueryDefinition",
-      "fqn": "Granit.Invoicing.Endpoints.Queries.InvoiceQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Invoicing.Endpoints",
-      "file": "src/Granit.Invoicing.Endpoints/Queries/InvoiceQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(InvoicingEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
     },
     {
       "name": "InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -20666,12 +20522,28 @@
       "members": []
     },
     {
+      "name": "InvoiceExportDefinition",
+      "fqn": "Granit.Invoicing.Exports.InvoiceExportDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Exports/InvoiceExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "InvoicingHostApplicationBuilderExtensions",
       "fqn": "Granit.Invoicing.Extensions.InvoicingHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitInvoicing",
@@ -21159,6 +21031,22 @@
       "file": "src/Granit.Invoicing.Abstractions/IInvoicePrePaymentProcessor.cs",
       "line": 33,
       "members": []
+    },
+    {
+      "name": "InvoiceQueryDefinition",
+      "fqn": "Granit.Invoicing.Queries.InvoiceQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Queries/InvoiceQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "GranitInvoicingWolverineModule",
@@ -35596,15 +35484,8 @@
       "kind": "class",
       "project": "Granit.Scheduling.Endpoints",
       "file": "src/Granit.Scheduling.Endpoints/GranitSchedulingEndpointsModule.cs",
-      "line": 25,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 22,
+      "members": []
     },
     {
       "name": "SchedulingEndpointsOptions",
@@ -35645,28 +35526,6 @@
       "file": "src/Granit.Scheduling.Endpoints/Permissions/SchedulingPermissions.cs",
       "line": 6,
       "members": []
-    },
-    {
-      "name": "ScheduledActionQueryDefinition",
-      "fqn": "Granit.Scheduling.Endpoints.Queries.ScheduledActionQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Scheduling.Endpoints",
-      "file": "src/Granit.Scheduling.Endpoints/Queries/ScheduledActionQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(SchedulingEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
     },
     {
       "name": "SchedulingEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -35753,12 +35612,28 @@
       "members": []
     },
     {
+      "name": "ScheduledActionExportDefinition",
+      "fqn": "Granit.Scheduling.Exports.ScheduledActionExportDefinition",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Exports/ScheduledActionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SchedulingHostApplicationBuilderExtensions",
       "fqn": "Granit.Scheduling.Extensions.SchedulingHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/Extensions/SchedulingHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitScheduling",
@@ -35874,6 +35749,22 @@
           "kind": "method",
           "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ScheduledActionQueryDefinition",
+      "fqn": "Granit.Scheduling.Queries.ScheduledActionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Scheduling",
+      "file": "src/Granit.Scheduling/Queries/ScheduledActionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -37296,15 +37187,8 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/GranitSubscriptionsEndpointsModule.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 16,
+      "members": []
     },
     {
       "name": "Plans",
@@ -37350,28 +37234,6 @@
       "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
       "line": 4,
       "members": []
-    },
-    {
-      "name": "SubscriptionQueryDefinition",
-      "fqn": "Granit.Subscriptions.Endpoints.Queries.SubscriptionQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Queries/SubscriptionQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(SubscriptionsEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
     },
     {
       "name": "SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions",
@@ -37539,12 +37401,60 @@
       "members": []
     },
     {
+      "name": "PlanExportDefinition",
+      "fqn": "Granit.Subscriptions.Exports.PlanExportDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Exports/PlanExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanPriceExportDefinition",
+      "fqn": "Granit.Subscriptions.Exports.PlanPriceExportDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Exports/PlanPriceExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionExportDefinition",
+      "fqn": "Granit.Subscriptions.Exports.SubscriptionExportDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Exports/SubscriptionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SubscriptionsHostApplicationBuilderExtensions",
       "fqn": "Granit.Subscriptions.Extensions.SubscriptionsHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitSubscriptions",
@@ -38167,6 +38077,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionQueryDefinition",
+      "fqn": "Granit.Subscriptions.Queries.SubscriptionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Queries/SubscriptionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -43092,15 +43018,8 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/GranitWebhooksEndpointsModule.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 15,
+      "members": []
     },
     {
       "name": "WebhooksEndpointsOptions",
@@ -43141,50 +43060,6 @@
       "file": "src/Granit.Webhooks.Endpoints/Permissions/WebhooksPermissions.cs",
       "line": 6,
       "members": []
-    },
-    {
-      "name": "WebhookDeliveryAttemptQueryDefinition",
-      "fqn": "Granit.Webhooks.Endpoints.Queries.WebhookDeliveryAttemptQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks.Endpoints",
-      "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookDeliveryAttemptQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(WebhooksEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
-    },
-    {
-      "name": "WebhookSubscriptionQueryDefinition",
-      "fqn": "Granit.Webhooks.Endpoints.Queries.WebhookSubscriptionQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Webhooks.Endpoints",
-      "file": "src/Granit.Webhooks.Endpoints/Queries/WebhookSubscriptionQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(WebhooksEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
     },
     {
       "name": "WebhookTargetUrlValidatorExtensions",
@@ -43348,12 +43223,44 @@
       "members": []
     },
     {
+      "name": "WebhookDeliveryAttemptExportDefinition",
+      "fqn": "Granit.Webhooks.Exports.WebhookDeliveryAttemptExportDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Exports/WebhookDeliveryAttemptExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSubscriptionExportDefinition",
+      "fqn": "Granit.Webhooks.Exports.WebhookSubscriptionExportDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Exports/WebhookSubscriptionExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "WebhooksHostApplicationBuilderExtensions",
       "fqn": "Granit.Webhooks.Extensions.WebhooksHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Extensions/WebhooksHostApplicationBuilderExtensions.cs",
-      "line": 23,
+      "line": 28,
       "members": [
         {
           "name": "AddGranitWebhooks",
@@ -43498,6 +43405,38 @@
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliveryAttemptQueryDefinition",
+      "fqn": "Granit.Webhooks.Queries.WebhookDeliveryAttemptQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Queries/WebhookDeliveryAttemptQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSubscriptionQueryDefinition",
+      "fqn": "Granit.Webhooks.Queries.WebhookSubscriptionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Queries/WebhookSubscriptionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

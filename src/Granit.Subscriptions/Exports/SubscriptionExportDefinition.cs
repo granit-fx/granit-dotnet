@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
 using Granit.Subscriptions.Domain;
 
-namespace Granit.DataExchange.Definitions.Subscriptions;
+namespace Granit.Subscriptions.Exports;
 
 public sealed class SubscriptionExportDefinition : ExportDefinition<Subscription>
 {

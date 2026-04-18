@@ -1,7 +1,7 @@
 using Granit.BlobStorage.Domain;
 using Granit.DataExchange.Export;
 
-namespace Granit.DataExchange.Definitions.BlobStorage;
+namespace Granit.BlobStorage.Exports;
 
 public sealed class BlobDescriptorExportDefinition : ExportDefinition<BlobDescriptor>
 {

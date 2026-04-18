@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
 using Granit.Webhooks.Domain;
 
-namespace Granit.DataExchange.Definitions.Webhooks;
+namespace Granit.Webhooks.Exports;
 
 public sealed class WebhookSubscriptionExportDefinition : ExportDefinition<WebhookSubscription>
 {

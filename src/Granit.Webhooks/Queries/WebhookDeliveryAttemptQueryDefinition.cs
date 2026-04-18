@@ -1,8 +1,7 @@
 using Granit.QueryEngine;
 using Granit.Webhooks.Domain;
-using Granit.Webhooks.Endpoints.Internal;
 
-namespace Granit.Webhooks.Endpoints.Queries;
+namespace Granit.Webhooks.Queries;
 
 /// <summary>
 /// Query definition for webhook delivery attempts — declares columns, filters, sorting,
@@ -11,10 +10,7 @@ namespace Granit.Webhooks.Endpoints.Queries;
 public sealed class WebhookDeliveryAttemptQueryDefinition : QueryDefinition<WebhookDeliveryAttempt>
 {
     /// <inheritdoc/>
-    public override string Name => "Webhooks.DeliveryAttempts";
-
-    /// <inheritdoc/>
-    public override Type? LocalizationResourceType => typeof(WebhooksEndpointsLocalizationResource);
+    public override string Name => "Granit.Webhooks.DeliveryAttemptsQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<WebhookDeliveryAttempt> builder)

@@ -1,7 +1,12 @@
 using Granit.BlobStorage.Diagnostics;
+using Granit.BlobStorage.Domain;
+using Granit.BlobStorage.Exports;
+using Granit.BlobStorage.Queries;
 using Granit.BlobStorage.Validators;
+using Granit.DataExchange.Extensions;
 using Granit.Guids;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -31,5 +36,8 @@ public sealed class GranitBlobStorageModule : GranitModule
         context.Services.AddSingleton<IBlobValidator, ContentTypeAllowlistValidator>();
         context.Services.AddSingleton<IBlobValidator, MagicBytesValidator>();
         context.Services.AddSingleton<IBlobValidator, MaxSizeValidator>();
+
+        context.Services.AddQueryDefinition<BlobDescriptor, BlobDescriptorQueryDefinition>();
+        context.Services.AddExportDefinition<BlobDescriptor, BlobDescriptorExportDefinition>();
     }
 }

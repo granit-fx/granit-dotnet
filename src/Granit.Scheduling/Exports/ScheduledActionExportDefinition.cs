@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
 using Granit.Scheduling.Domain;
 
-namespace Granit.DataExchange.Definitions.Scheduling;
+namespace Granit.Scheduling.Exports;
 
 public sealed class ScheduledActionExportDefinition : ExportDefinition<ScheduledAction>
 {

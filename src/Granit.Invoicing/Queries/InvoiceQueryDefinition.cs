@@ -1,8 +1,7 @@
 using Granit.Invoicing.Domain;
-using Granit.Invoicing.Endpoints.Internal;
 using Granit.QueryEngine;
 
-namespace Granit.Invoicing.Endpoints.Queries;
+namespace Granit.Invoicing.Queries;
 
 /// <summary>
 /// Query definition for invoices — declares columns, filters, sorting,
@@ -11,10 +10,7 @@ namespace Granit.Invoicing.Endpoints.Queries;
 public sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
 {
     /// <inheritdoc/>
-    public override string Name => "Invoicing.Invoices";
-
-    /// <inheritdoc/>
-    public override Type? LocalizationResourceType => typeof(InvoicingEndpointsLocalizationResource);
+    public override string Name => "Granit.Invoicing.InvoiceQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<Invoice> builder)

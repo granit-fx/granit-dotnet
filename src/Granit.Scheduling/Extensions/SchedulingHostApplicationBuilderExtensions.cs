@@ -1,5 +1,10 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine.Extensions;
 using Granit.Scheduling.Diagnostics;
+using Granit.Scheduling.Domain;
+using Granit.Scheduling.Exports;
+using Granit.Scheduling.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +32,9 @@ public static class SchedulingHostApplicationBuilderExtensions
 
         builder.Services.TryAddSingleton<ScheduledPayloadTypeRegistry>();
         builder.Services.TryAddSingleton<SchedulingMetrics>();
+
+        builder.Services.AddQueryDefinition<ScheduledAction, ScheduledActionQueryDefinition>();
+        builder.Services.AddExportDefinition<ScheduledAction, ScheduledActionExportDefinition>();
 
         return builder;
     }

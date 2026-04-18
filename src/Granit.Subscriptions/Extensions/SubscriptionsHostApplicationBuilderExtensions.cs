@@ -1,8 +1,13 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Metering;
+using Granit.QueryEngine.Extensions;
 using Granit.Subscriptions.Definitions;
 using Granit.Subscriptions.Diagnostics;
+using Granit.Subscriptions.Domain;
+using Granit.Subscriptions.Exports;
 using Granit.Subscriptions.Internal;
+using Granit.Subscriptions.Queries;
 using Granit.Workflow.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -39,6 +44,11 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         // Override the calendar-month default: quota must track the subscription billing period.
         builder.Services.AddScoped<IBillingPeriodProvider, SubscriptionBillingPeriodProvider>();
         GranitActivitySourceRegistry.Register(SubscriptionsActivitySource.Name);
+
+        builder.Services.AddQueryDefinition<Subscription, SubscriptionQueryDefinition>();
+        builder.Services.AddExportDefinition<Subscription, SubscriptionExportDefinition>();
+        builder.Services.AddExportDefinition<Plan, PlanExportDefinition>();
+        builder.Services.AddExportDefinition<PlanPrice, PlanPriceExportDefinition>();
 
         return builder;
     }

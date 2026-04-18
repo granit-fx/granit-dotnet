@@ -38,6 +38,7 @@
       "src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj",
       "src/Granit.CustomerBalance.Wolverine/Granit.CustomerBalance.Wolverine.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
+      "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.Diagnostics.Endpoints/Granit.Diagnostics.Endpoints.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
       "src/Granit.DocumentGeneration.Excel/Granit.DocumentGeneration.Excel.csproj",

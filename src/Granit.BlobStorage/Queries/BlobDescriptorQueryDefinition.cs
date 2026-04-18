@@ -1,8 +1,7 @@
 using Granit.BlobStorage.Domain;
-using Granit.BlobStorage.Endpoints.Internal;
 using Granit.QueryEngine;
 
-namespace Granit.BlobStorage.Endpoints.Queries;
+namespace Granit.BlobStorage.Queries;
 
 /// <summary>
 /// Query definition for blob descriptors — declares columns, filters, sorting,
@@ -11,10 +10,7 @@ namespace Granit.BlobStorage.Endpoints.Queries;
 public sealed class BlobDescriptorQueryDefinition : QueryDefinition<BlobDescriptor>
 {
     /// <inheritdoc/>
-    public override string Name => "BlobStorage.BlobDescriptors";
-
-    /// <inheritdoc/>
-    public override Type? LocalizationResourceType => typeof(BlobStorageEndpointsLocalizationResource);
+    public override string Name => "Granit.BlobStorage.BlobDescriptorsQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<BlobDescriptor> builder)
