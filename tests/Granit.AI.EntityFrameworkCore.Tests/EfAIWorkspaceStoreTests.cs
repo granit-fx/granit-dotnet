@@ -9,6 +9,18 @@ using Shouldly;
 
 namespace Granit.AI.EntityFrameworkCore.Tests;
 
+/// <summary>
+/// Collection marker to serialize tests that manipulate the static <c>AsyncLocal</c>
+/// state in <see cref="Granit.DataFiltering.DataFilter"/>. Parallel execution across
+/// test classes can race on the shared state under constrained CI CPU budgets.
+/// </summary>
+[CollectionDefinition(DataFilterSerialGroup.Name, DisableParallelization = true)]
+public sealed class DataFilterSerialGroup
+{
+    public const string Name = "DataFilter-serial";
+}
+
+[Collection(DataFilterSerialGroup.Name)]
 public sealed class EfAIWorkspaceStoreTests : IAsyncDisposable
 {
     private readonly TestDbContextFactory _factory;
