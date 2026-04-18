@@ -1,3 +1,4 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Http.Cookies;
 using Granit.Identity.Local;
@@ -5,6 +6,8 @@ using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
+using Granit.OpenIddict.Entities.OpenIddict;
+using Granit.OpenIddict.Exports;
 using Granit.OpenIddict.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Services;
@@ -89,6 +92,10 @@ public sealed class GranitOpenIddictModule : GranitModule
             Microsoft.AspNetCore.Identity.IdentityConstants.ExternalScheme,
             IdentityCookieDefinitionContributor.DefaultExternalCookieName,
             IdentityCookieDefinitionContributor.DevExternalCookieName);
+
+        // Export definitions (ADR-020: owned by the base module).
+        context.Services.AddExportDefinition<GranitOpenIddictApplication, OpenIddictApplicationExportDefinition>();
+        context.Services.AddExportDefinition<GranitOpenIddictScope, OpenIddictScopeExportDefinition>();
     }
 
     private static void PostConfigureIdentityCookie(

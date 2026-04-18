@@ -1450,6 +1450,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -1592,6 +1593,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
@@ -1601,6 +1603,7 @@
         "dependencies": {
           "Cronos": "[0.12.*, )",
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -1786,6 +1789,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -2113,6 +2117,7 @@
       "granit.identity.federated": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )"
         }
       },
@@ -2160,6 +2165,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Events": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
@@ -2320,6 +2326,7 @@
       "granit.localization.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
@@ -2351,6 +2358,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Metering.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
@@ -2405,6 +2413,7 @@
       "granit.multitenancy.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Events": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
@@ -2415,6 +2424,7 @@
       "granit.notifications": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
@@ -2659,6 +2669,7 @@
       "granit.openiddict": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
@@ -2719,6 +2730,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -2770,6 +2782,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -2942,6 +2955,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -2991,6 +3005,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       },
@@ -3080,6 +3095,7 @@
       "granit.settings.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
@@ -3164,6 +3180,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
@@ -3281,6 +3298,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -3483,6 +3501,7 @@
       "granit.workflow": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
         }

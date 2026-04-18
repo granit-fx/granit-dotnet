@@ -1,5 +1,9 @@
+using Granit.DataExchange.Extensions;
 using Granit.Modularity;
+using Granit.Payments.SepaDirectDebit.Domain;
+using Granit.Payments.SepaDirectDebit.Exports;
 using Granit.Timing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Payments.SepaDirectDebit;
 
@@ -10,4 +14,12 @@ namespace Granit.Payments.SepaDirectDebit;
 [DependsOn(
     typeof(GranitPaymentsModule),
     typeof(GranitTimingModule))]
-public sealed class GranitPaymentsSepaDirectDebitModule : GranitModule;
+public sealed class GranitPaymentsSepaDirectDebitModule : GranitModule
+{
+    /// <inheritdoc/>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        // Export definitions (ADR-020: owned by the base module).
+        context.Services.AddExportDefinition<Mandate, MandateExportDefinition>();
+    }
+}

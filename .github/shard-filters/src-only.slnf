@@ -62,7 +62,6 @@
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj",
       "src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj",
-      "src/Granit.DataExchange.Definitions/Granit.DataExchange.Definitions.csproj",
       "src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj",
       "src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj",
       "src/Granit.DataExchange.Excel/Granit.DataExchange.Excel.csproj",

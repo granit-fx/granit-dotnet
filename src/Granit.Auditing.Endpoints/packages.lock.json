@@ -38,6 +38,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
@@ -57,6 +58,12 @@
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
+        }
+      },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {
@@ -168,8 +175,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.0",
-        "contentHash": "YpcCrY+FuPrmFzThm4om8HZ0Lww9vlIQUzUcBpc2Hv4n+oY8SgvFebgBSQJgnaW6y/FgG5J6FU/71HRq/wy9uQ=="
+        "resolved": "2.14.1",
+        "contentHash": "neS3aI7YVPDY7+I9U8nYXvSnSy6lPvGyn5w52m0MCvC5COajK4HF4vsx70OO6Fw9bd7WXOUikSBdUaLfyTzw3g=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

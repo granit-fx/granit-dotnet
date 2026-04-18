@@ -331,6 +331,12 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -350,6 +356,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
@@ -366,6 +373,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Payments": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"

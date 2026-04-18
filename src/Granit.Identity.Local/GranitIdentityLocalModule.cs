@@ -1,7 +1,10 @@
+using Granit.DataExchange.Extensions;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
+using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Exports;
 using Granit.Modularity;
 using Granit.Settings;
 using Granit.Timing;
@@ -29,6 +32,12 @@ namespace Granit.Identity.Local;
 public sealed class GranitIdentityLocalModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.TryAddSingleton<IdentityLocalMetrics>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        context.Services.AddExportDefinition<GranitRole, GranitRoleExportDefinition>();
+        context.Services.AddExportDefinition<GranitUserGroup, GranitUserGroupExportDefinition>();
+    }
 }

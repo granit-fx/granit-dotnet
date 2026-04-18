@@ -1,5 +1,8 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.ReferenceData.Diagnostics;
+using Granit.ReferenceData.Domain;
+using Granit.ReferenceData.Exports;
 using Granit.ReferenceData.Internal;
 using Granit.ReferenceData.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,6 +46,9 @@ public static class ReferenceDataServiceCollectionExtensions
             ServiceDescriptor.Singleton<IHostedService, ReferenceDataRegistryInitializer>());
 
         GranitActivitySourceRegistry.Register(ReferenceDataActivitySource.Name);
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<DynamicReferenceDataEntity, DynamicReferenceDataEntityExportDefinition>();
 
         return services;
     }

@@ -1,5 +1,8 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Tax.Diagnostics;
+using Granit.Tax.Domain;
+using Granit.Tax.Exports;
 using Granit.Tax.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,6 +26,9 @@ public static class TaxHostApplicationBuilderExtensions
 
         builder.Services.TryAddSingleton<TaxMetrics>();
         GranitActivitySourceRegistry.Register(TaxActivitySource.Name);
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<TaxRateOverride, TaxRateOverrideExportDefinition>();
 
         return builder;
     }

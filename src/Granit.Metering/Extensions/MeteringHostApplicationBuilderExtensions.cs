@@ -1,5 +1,8 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Metering.Diagnostics;
+using Granit.Metering.Domain;
+using Granit.Metering.Exports;
 using Granit.Metering.Internal;
 using Granit.Metering.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +29,10 @@ public static class MeteringHostApplicationBuilderExtensions
         builder.Services.TryAddSingleton<IQuotaLimitProvider, UnlimitedQuotaLimitProvider>();
         builder.Services.TryAddScoped<IBillingPeriodProvider, CalendarMonthBillingPeriodProvider>();
         GranitActivitySourceRegistry.Register(MeteringActivitySource.Name);
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<MeterDefinition, MeterDefinitionExportDefinition>();
+        builder.Services.AddExportDefinition<UsageAggregate, UsageAggregateExportDefinition>();
 
         return builder;
     }

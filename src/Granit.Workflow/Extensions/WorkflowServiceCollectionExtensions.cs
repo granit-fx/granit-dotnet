@@ -1,5 +1,8 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Workflow.Diagnostics;
+using Granit.Workflow.Domain;
+using Granit.Workflow.Exports;
 using Granit.Workflow.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -35,6 +38,9 @@ public static class WorkflowServiceCollectionExtensions
         // Diagnostics
         services.TryAddSingleton<WorkflowMetrics>();
         GranitActivitySourceRegistry.Register(WorkflowActivitySource.Name);
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<WorkflowTransitionRecord, WorkflowTransitionRecordExportDefinition>();
 
         return services;
     }

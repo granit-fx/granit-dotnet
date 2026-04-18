@@ -3,8 +3,10 @@ using System.Threading.Channels;
 using Granit.BackgroundJobs.Abstractions;
 using Granit.BackgroundJobs.Diagnostics;
 using Granit.BackgroundJobs.Domain;
+using Granit.BackgroundJobs.Exports;
 using Granit.BackgroundJobs.Internal;
 using Granit.BackgroundJobs.Options;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -94,6 +96,9 @@ public static class BackgroundJobsHostApplicationBuilderExtensions
             new BackgroundJobsSeedService(
                 sp.GetRequiredService<IServiceScopeFactory>(),
                 registrations));
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<BackgroundJobDefinition, BackgroundJobDefinitionExportDefinition>();
 
         return builder;
     }

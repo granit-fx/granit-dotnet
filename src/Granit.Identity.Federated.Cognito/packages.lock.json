@@ -5,8 +5,8 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.6.10",
-        "contentHash": "Rg6p+EwuEJxGptp765AmC5lyxjMHJx1ZR+O3NYopDBMg80sBXHBUdSxe+lK4zh/LMF08yv4mi03rwTIYYC+Ftw==",
+        "resolved": "4.0.7",
+        "contentHash": "PopIGBY8BoT+JrFJgmbn6Gfek4NCdwAvJ+U0APw/e6b9kY7ot7ZzPqTBpnrV9SuGuSjAvu6IbNwXiflCNfbXuQ==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.3.29, 5.0.0)"
         }
@@ -60,6 +60,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity": {
         "type": "Project",
         "dependencies": {
@@ -70,6 +76,7 @@
       "granit.identity.federated": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )"
         }
       },

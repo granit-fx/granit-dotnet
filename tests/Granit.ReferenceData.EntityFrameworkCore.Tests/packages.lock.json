@@ -327,6 +327,12 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -362,6 +368,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -375,6 +382,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )"
         }
       },

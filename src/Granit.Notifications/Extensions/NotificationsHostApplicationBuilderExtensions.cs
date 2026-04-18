@@ -1,7 +1,10 @@
 using System.Threading.Channels;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Diagnostics;
+using Granit.Notifications.Domain;
+using Granit.Notifications.Exports;
 using Granit.Notifications.Handlers;
 using Granit.Notifications.Internal;
 using Granit.Notifications.Messages;
@@ -86,6 +89,10 @@ public static class NotificationsHostApplicationBuilderExtensions
         // InApp channel (built-in) — Scoped because IUserNotificationWriter is Scoped when
         // the EF Core provider is active (captive dependency if registered as Singleton).
         builder.Services.AddScoped<INotificationChannel, InAppNotificationChannel>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<UserNotification, UserNotificationExportDefinition>();
+        builder.Services.AddExportDefinition<NotificationPreference, NotificationPreferenceExportDefinition>();
 
         return builder;
     }

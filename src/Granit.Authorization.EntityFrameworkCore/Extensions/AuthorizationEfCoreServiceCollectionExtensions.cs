@@ -1,6 +1,9 @@
 using Granit.Authorization;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
+using Granit.Authorization.EntityFrameworkCore.Entities;
+using Granit.Authorization.EntityFrameworkCore.Exports;
 using Granit.Authorization.EntityFrameworkCore.Stores;
+using Granit.DataExchange.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -28,6 +31,9 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
         // Replace the NullPermissionGrantStore registered by Granit.Authorization
         services.Replace(ServiceDescriptor.Scoped<IPermissionGrantStore,
             EfCorePermissionGrantStore<TContext>>());
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<PermissionGrant, PermissionGrantExportDefinition>();
 
         return services;
     }

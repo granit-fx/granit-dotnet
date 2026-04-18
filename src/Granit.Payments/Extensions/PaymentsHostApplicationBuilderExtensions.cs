@@ -1,6 +1,9 @@
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Invoicing;
 using Granit.Payments.Diagnostics;
+using Granit.Payments.Domain;
+using Granit.Payments.Exports;
 using Granit.Payments.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -22,6 +25,12 @@ public static class PaymentsHostApplicationBuilderExtensions
 
         builder.Services.TryAddScoped<IPaymentProviderResolver, DefaultPaymentProviderResolver>();
         builder.Services.TryAddSingleton<IPaymentMethodAvailabilityFilter, DefaultPaymentMethodAvailabilityFilter>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<PaymentTransaction, PaymentTransactionExportDefinition>();
+        builder.Services.AddExportDefinition<PaymentMethod, PaymentMethodExportDefinition>();
+        builder.Services.AddExportDefinition<Refund, RefundExportDefinition>();
+        builder.Services.AddExportDefinition<Dispute, DisputeExportDefinition>();
 
         return builder;
     }

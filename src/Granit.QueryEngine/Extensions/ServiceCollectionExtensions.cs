@@ -1,6 +1,9 @@
+using Granit.DataExchange.Extensions;
 using Granit.QueryEngine.Diagnostics;
+using Granit.QueryEngine.Exports;
 using Granit.QueryEngine.Options;
 using Granit.QueryEngine.SavedViews;
+using Granit.QueryEngine.SavedViews.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -47,6 +50,9 @@ public static class ServiceCollectionExtensions
             sp.GetRequiredService<IOptions<QueryEngineOptions>>().Value);
 
         services.TryAddSingleton<QueryEngineMetrics>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<SavedView, SavedViewExportDefinition>();
 
         return services;
     }

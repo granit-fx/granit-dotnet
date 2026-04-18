@@ -1,3 +1,6 @@
+using Granit.DataExchange.Extensions;
+using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.Localization.EntityFrameworkCore.Exports;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.Localization.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -43,6 +46,9 @@ public static class LocalizationEntityFrameworkCoreHostApplicationBuilderExtensi
             CachedLocalizationOverrideStore.RawStoreKey);
         builder.Services.TryAddKeyedScoped<ILocalizationOverrideStoreWriter, EfCoreLocalizationOverrideStore>(
             CachedLocalizationOverrideStore.RawStoreKey);
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<LocalizationOverride, LocalizationOverrideExportDefinition>();
 
         return builder;
     }

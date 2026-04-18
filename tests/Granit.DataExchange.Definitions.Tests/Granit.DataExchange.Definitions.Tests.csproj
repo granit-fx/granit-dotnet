@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.DataExchange.Definitions\Granit.DataExchange.Definitions.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
-  </ItemGroup>
-
-</Project>

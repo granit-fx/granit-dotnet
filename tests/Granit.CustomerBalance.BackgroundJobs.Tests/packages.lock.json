@@ -684,6 +684,7 @@
         "dependencies": {
           "Cronos": "[0.12.*, )",
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
@@ -695,6 +696,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
@@ -706,6 +708,12 @@
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.CustomerBalance": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
+        }
+      },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {

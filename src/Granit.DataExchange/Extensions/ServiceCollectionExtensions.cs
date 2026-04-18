@@ -1,9 +1,12 @@
 using System.Threading.Channels;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
+using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
 using Granit.DataExchange.Export.Messages;
+using Granit.DataExchange.Exports;
 using Granit.DataExchange.Import;
+using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;
@@ -68,6 +71,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(Channel.CreateBounded<ExecuteImportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
         services.TryAddSingleton<IImportCommandDispatcher, ChannelImportCommandDispatcher>();
         services.AddHostedService<ImportCommandWorker>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<ImportJob, ImportJobExportDefinition>();
 
         return services;
     }
@@ -137,6 +143,9 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton(Channel.CreateBounded<ExecuteExportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
         services.TryAddSingleton<IExportCommandDispatcher, ChannelExportCommandDispatcher>();
         services.AddHostedService<ExportCommandWorker>();
+
+        // Export definitions (ADR-020: owned by the base module).
+        services.AddExportDefinition<ExportJob, ExportJobExportDefinition>();
 
         return services;
     }

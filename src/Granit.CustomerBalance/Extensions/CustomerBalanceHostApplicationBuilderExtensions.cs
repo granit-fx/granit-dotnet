@@ -1,5 +1,8 @@
 using Granit.CustomerBalance.Diagnostics;
+using Granit.CustomerBalance.Domain;
+using Granit.CustomerBalance.Exports;
 using Granit.CustomerBalance.Internal;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -23,6 +26,10 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         builder.Services.TryAddTransient<IAdminCreditService, DefaultAdminCreditService>();
         builder.Services.TryAddTransient<IOverpaymentCreditService, DefaultOverpaymentCreditService>();
         GranitActivitySourceRegistry.Register(CustomerBalanceActivitySource.Name);
+
+        // Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddExportDefinition<BalanceAccount, BalanceAccountExportDefinition>();
+        builder.Services.AddExportDefinition<BalanceTransaction, BalanceTransactionExportDefinition>();
 
         return builder;
     }

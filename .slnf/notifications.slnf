@@ -7,6 +7,7 @@
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
+      "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
