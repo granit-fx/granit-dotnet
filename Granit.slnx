@@ -385,6 +385,7 @@
   </Folder>
   <Folder Name="/tests/Application/">
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
+    <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.EntityFrameworkCore.Tests/Granit.DataExchange.EntityFrameworkCore.Tests.csproj" />

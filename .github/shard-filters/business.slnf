@@ -54,6 +54,7 @@
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj",
       "tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj",
       "tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj",
       "tests/Granit.DataExchange.Endpoints.Tests/Granit.DataExchange.Endpoints.Tests.csproj",
