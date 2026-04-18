@@ -9,14 +9,6 @@
     "Permission:Subscriptions.Prices.Read": "Preisversionshistorie anzeigen",
     "Permission:Subscriptions.Prices.Manage": "Preise verwalten (Versionen erstellen, Abonnements migrieren)",
     "Permission:Subscriptions.Seats.Read": "Platzzuweisungen anzeigen",
-    "Permission:Subscriptions.Seats.Manage": "Platzzuweisungen verwalten (zuweisen, widerrufen)",
-    "Subscriptions.Columns.Tenant": "Mandant",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Währung",
-    "Subscriptions.Columns.PeriodStart": "Periodenbeginn",
-    "Subscriptions.Columns.PeriodEnd": "Periodenende",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Am Periodenende kündigen",
-    "Subscriptions.Columns.TrialEndsAt": "Testphase endet am"
+    "Permission:Subscriptions.Seats.Manage": "Platzzuweisungen verwalten (zuweisen, widerrufen)"
   }
 }

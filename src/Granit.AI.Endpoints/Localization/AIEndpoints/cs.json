@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "Pracovní prostor s názvem '{0}' již existuje.",
     "AI.Workspaces.Kind.Dynamic": "Dynamický",
     "AI.Workspaces.Kind.System": "Systémový",
-    "AI.Workspaces.Kind.System:Hint": "Systémové pracovní prostory jsou pouze pro čtení a nelze je upravovat ani mazat.",
-    "AI.Columns.Workspace": "Workspace",
-    "AI.Columns.Provider": "Provider",
-    "AI.Columns.Model": "Model",
-    "AI.Columns.InputTokens": "Input Tokens",
-    "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCost": "Odhadované náklady",
-    "AI.Columns.CostCurrency": "Měna",
-    "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Workspaces.Kind.System:Hint": "Systémové pracovní prostory jsou pouze pro čtení a nelze je upravovat ani mazat."
   }
 }

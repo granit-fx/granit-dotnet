@@ -1,5 +1,6 @@
 using Granit.QueryEngine;
 using Granit.Subscriptions.Domain;
+using Granit.Subscriptions.Internal;
 
 namespace Granit.Subscriptions.Queries;
 
@@ -11,6 +12,9 @@ public sealed class SubscriptionQueryDefinition : QueryDefinition<Subscription>
 {
     /// <inheritdoc/>
     public override string Name => "Granit.Subscriptions.SubscriptionsQuery";
+
+    /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(SubscriptionsLocalizationResource);
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<Subscription> builder)

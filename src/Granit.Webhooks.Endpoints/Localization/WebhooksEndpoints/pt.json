@@ -7,20 +7,6 @@
     "Granit:Validation:InvalidWebhookUrl": "O URL de destino deve ser um URL HTTPS válido",
     "Granit:Validation:WebhookUrlPrivateAddress": "Endereços IP privados, locais ou reservados não são permitidos",
     "Granit:Validation:WebhookUrlBlockedTld": "Nomes de domínio internos (.local, .internal, .localhost, .onion) não são permitidos",
-    "Granit:Validation:UnknownWebhookEventType": "O tipo de evento especificado não está registado. Use GET /event-types para os tipos disponíveis.",
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Webhooks.Columns.EventType": "Event Type",
-    "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Status": "Status",
-    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
-    "Webhooks.Columns.LastSuccessAt": "Last Success At",
-    "Webhooks.Columns.SuspendedAt": "Suspended At",
-    "Webhooks.Columns.SuspendedBy": "Suspended By",
-    "Webhooks.Columns.Subscription": "Subscription",
-    "Webhooks.Columns.HttpStatus": "HTTP Status",
-    "Webhooks.Columns.Success": "Success",
-    "Webhooks.Columns.OccurredAt": "Occurred At",
-    "Webhooks.Columns.DurationMs": "Duration (ms)",
-    "Webhooks.Columns.ErrorMessage": "Error Message"
+    "Granit:Validation:UnknownWebhookEventType": "O tipo de evento especificado não está registado. Use GET /event-types para os tipos disponíveis."
   }
 }

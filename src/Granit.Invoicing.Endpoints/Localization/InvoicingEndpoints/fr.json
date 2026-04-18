@@ -6,17 +6,6 @@
     "Permission:Invoicing.Invoices.Manage": "Gérer les factures (créer, finaliser, annuler)",
     "Permission:Invoicing.Invoices.Download": "Télécharger les documents de facture (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Consulter les avoirs",
-    "Permission:Invoicing.CreditNotes.Manage": "Gérer les avoirs (créer, annuler)",
-    "Invoicing.Columns.Tenant": "Locataire",
-    "Invoicing.Columns.InvoiceNumber": "Numéro de facture",
-    "Invoicing.Columns.DocumentType": "Type de document",
-    "Invoicing.Columns.Status": "Statut",
-    "Invoicing.Columns.Currency": "Devise",
-    "Invoicing.Columns.Total": "Total",
-    "Invoicing.Columns.AmountRemaining": "Montant restant",
-    "Invoicing.Columns.IssuedAt": "Émise le",
-    "Invoicing.Columns.DueAt": "Échéance",
-    "Invoicing.Columns.PaidAt": "Payée le",
-    "Invoicing.Columns.BillingReason": "Motif de facturation"
+    "Permission:Invoicing.CreditNotes.Manage": "Gérer les avoirs (créer, annuler)"
   }
 }

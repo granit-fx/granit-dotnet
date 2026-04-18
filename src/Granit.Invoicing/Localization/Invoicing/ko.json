@@ -1,0 +1,16 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Invoicing.Columns.Tenant": "Tenant",
+    "Invoicing.Columns.InvoiceNumber": "Invoice Number",
+    "Invoicing.Columns.DocumentType": "Document Type",
+    "Invoicing.Columns.Status": "Status",
+    "Invoicing.Columns.Currency": "Currency",
+    "Invoicing.Columns.Total": "Total",
+    "Invoicing.Columns.AmountRemaining": "Amount Remaining",
+    "Invoicing.Columns.IssuedAt": "Issued At",
+    "Invoicing.Columns.DueAt": "Due At",
+    "Invoicing.Columns.PaidAt": "Paid At",
+    "Invoicing.Columns.BillingReason": "Billing Reason"
+  }
+}

@@ -9,14 +9,6 @@
     "Permission:Subscriptions.Prices.Read": "Consulter l'historique des versions de prix",
     "Permission:Subscriptions.Prices.Manage": "Gérer les prix (créer des versions, migrer les abonnements)",
     "Permission:Subscriptions.Seats.Read": "Consulter les attributions de sièges",
-    "Permission:Subscriptions.Seats.Manage": "Gérer les attributions de sièges (attribuer, révoquer)",
-    "Subscriptions.Columns.Tenant": "Locataire",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Statut",
-    "Subscriptions.Columns.Currency": "Devise",
-    "Subscriptions.Columns.PeriodStart": "Début de période",
-    "Subscriptions.Columns.PeriodEnd": "Fin de période",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Annuler en fin de période",
-    "Subscriptions.Columns.TrialEndsAt": "Fin de l'essai"
+    "Permission:Subscriptions.Seats.Manage": "Gérer les attributions de sièges (attribuer, révoquer)"
   }
 }

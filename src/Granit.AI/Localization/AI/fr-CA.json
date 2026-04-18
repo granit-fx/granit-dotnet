@@ -1,4 +1,14 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "AI.Columns.Workspace": "Espace de travail",
+    "AI.Columns.Provider": "Fournisseur",
+    "AI.Columns.Model": "Modèle",
+    "AI.Columns.InputTokens": "Jetons d'entrée",
+    "AI.Columns.OutputTokens": "Jetons de sortie",
+    "AI.Columns.EstimatedCost": "Coût estimé",
+    "AI.Columns.CostCurrency": "Devise",
+    "AI.Columns.Timestamp": "Horodatage",
+    "AI.Columns.Duration": "Durée"
+  }
 }

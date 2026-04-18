@@ -1,0 +1,13 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Subscriptions.Columns.Tenant": "Locataire",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Statut",
+    "Subscriptions.Columns.Currency": "Devise",
+    "Subscriptions.Columns.PeriodStart": "Début de période",
+    "Subscriptions.Columns.PeriodEnd": "Fin de période",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Annuler en fin de période",
+    "Subscriptions.Columns.TrialEndsAt": "Fin de l'essai"
+  }
+}

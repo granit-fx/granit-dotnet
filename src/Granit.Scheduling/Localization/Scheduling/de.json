@@ -1,0 +1,13 @@
+{
+  "culture": "de",
+  "texts": {
+    "Scheduling.Columns.Tenant": "Mandant",
+    "Scheduling.Columns.PayloadType": "Aktionstyp",
+    "Scheduling.Columns.Status": "Status",
+    "Scheduling.Columns.ExecuteAt": "Geplant für",
+    "Scheduling.Columns.ExecutedAt": "Ausgeführt am",
+    "Scheduling.Columns.CorrelationId": "Korrelations-ID",
+    "Scheduling.Columns.CancelledBy": "Abgebrochen von",
+    "Scheduling.Columns.FailureReason": "Fehlergrund"
+  }
+}

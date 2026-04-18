@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "'{0}' नाम का वर्कस्पेस पहले से मौजूद है।",
     "AI.Workspaces.Kind.Dynamic": "गतिशील",
     "AI.Workspaces.Kind.System": "सिस्टम",
-    "AI.Workspaces.Kind.System:Hint": "सिस्टम वर्कस्पेस केवल पठनीय हैं और उन्हें संशोधित या हटाया नहीं जा सकता।",
-    "AI.Columns.Workspace": "Workspace",
-    "AI.Columns.Provider": "Provider",
-    "AI.Columns.Model": "Model",
-    "AI.Columns.InputTokens": "Input Tokens",
-    "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCost": "अनुमानित लागत",
-    "AI.Columns.CostCurrency": "मुद्रा",
-    "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Workspaces.Kind.System:Hint": "सिस्टम वर्कस्पेस केवल पठनीय हैं और उन्हें संशोधित या हटाया नहीं जा सकता।"
   }
 }

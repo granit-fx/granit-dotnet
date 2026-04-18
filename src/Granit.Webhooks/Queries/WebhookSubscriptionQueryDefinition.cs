@@ -1,5 +1,6 @@
 using Granit.QueryEngine;
 using Granit.Webhooks.Domain;
+using Granit.Webhooks.Internal;
 
 namespace Granit.Webhooks.Queries;
 
@@ -11,6 +12,9 @@ public sealed class WebhookSubscriptionQueryDefinition : QueryDefinition<Webhook
 {
     /// <inheritdoc/>
     public override string Name => "Granit.Webhooks.SubscriptionsQuery";
+
+    /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(WebhooksLocalizationResource);
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<WebhookSubscription> builder)

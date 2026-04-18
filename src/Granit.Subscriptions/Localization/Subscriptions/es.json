@@ -1,0 +1,13 @@
+{
+  "culture": "es",
+  "texts": {
+    "Subscriptions.Columns.Tenant": "Inquilino",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Estado",
+    "Subscriptions.Columns.Currency": "Moneda",
+    "Subscriptions.Columns.PeriodStart": "Inicio del período",
+    "Subscriptions.Columns.PeriodEnd": "Fin del período",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Cancelar al final del período",
+    "Subscriptions.Columns.TrialEndsAt": "Fin de la prueba"
+  }
+}

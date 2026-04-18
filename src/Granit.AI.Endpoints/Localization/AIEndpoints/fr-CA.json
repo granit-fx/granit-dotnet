@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "Un espace de travail nommé « {0} » existe déjà.",
     "AI.Workspaces.Kind.Dynamic": "Dynamique",
     "AI.Workspaces.Kind.System": "Système",
-    "AI.Workspaces.Kind.System:Hint": "Les espaces de travail système sont en lecture seule et ne peuvent pas être modifiés ou supprimés.",
-    "AI.Columns.Workspace": "Espace de travail",
-    "AI.Columns.Provider": "Fournisseur",
-    "AI.Columns.Model": "Modèle",
-    "AI.Columns.InputTokens": "Jetons d'entrée",
-    "AI.Columns.OutputTokens": "Jetons de sortie",
-    "AI.Columns.EstimatedCost": "Coût estimé",
-    "AI.Columns.CostCurrency": "Devise",
-    "AI.Columns.Timestamp": "Horodatage",
-    "AI.Columns.Duration": "Durée"
+    "AI.Workspaces.Kind.System:Hint": "Les espaces de travail système sont en lecture seule et ne peuvent pas être modifiés ou supprimés."
   }
 }

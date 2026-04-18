@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "Já existe um workspace com o nome '{0}'.",
     "AI.Workspaces.Kind.Dynamic": "Dinâmico",
     "AI.Workspaces.Kind.System": "Sistema",
-    "AI.Workspaces.Kind.System:Hint": "Os workspaces de sistema são somente leitura e não podem ser modificados ou excluídos.",
-    "AI.Columns.Workspace": "Workspace",
-    "AI.Columns.Provider": "Provider",
-    "AI.Columns.Model": "Model",
-    "AI.Columns.InputTokens": "Input Tokens",
-    "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCost": "Custo estimado",
-    "AI.Columns.CostCurrency": "Moeda",
-    "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Workspaces.Kind.System:Hint": "Os workspaces de sistema são somente leitura e não podem ser modificados ou excluídos."
   }
 }

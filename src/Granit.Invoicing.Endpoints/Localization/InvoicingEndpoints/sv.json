@@ -6,17 +6,6 @@
     "Permission:Invoicing.Invoices.Manage": "Hantera fakturor (skapa, slutföra, makulera)",
     "Permission:Invoicing.Invoices.Download": "Ladda ner fakturadokument (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Visa kreditnotor",
-    "Permission:Invoicing.CreditNotes.Manage": "Hantera kreditnotor (skapa, makulera)",
-    "Invoicing.Columns.Tenant": "Tenant",
-    "Invoicing.Columns.InvoiceNumber": "Invoice Number",
-    "Invoicing.Columns.DocumentType": "Document Type",
-    "Invoicing.Columns.Status": "Status",
-    "Invoicing.Columns.Currency": "Currency",
-    "Invoicing.Columns.Total": "Total",
-    "Invoicing.Columns.AmountRemaining": "Amount Remaining",
-    "Invoicing.Columns.IssuedAt": "Issued At",
-    "Invoicing.Columns.DueAt": "Due At",
-    "Invoicing.Columns.PaidAt": "Paid At",
-    "Invoicing.Columns.BillingReason": "Billing Reason"
+    "Permission:Invoicing.CreditNotes.Manage": "Hantera kreditnotor (skapa, makulera)"
   }
 }

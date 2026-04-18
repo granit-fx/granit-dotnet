@@ -9,14 +9,6 @@
     "Permission:Subscriptions.Prices.Read": "Visualizzare lo storico delle versioni dei prezzi",
     "Permission:Subscriptions.Prices.Manage": "Gestire i prezzi (creare versioni, migrare abbonamenti)",
     "Permission:Subscriptions.Seats.Read": "Visualizzare le assegnazioni dei posti",
-    "Permission:Subscriptions.Seats.Manage": "Gestire le assegnazioni dei posti (assegnare, revocare)",
-    "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Piano",
-    "Subscriptions.Columns.Status": "Stato",
-    "Subscriptions.Columns.Currency": "Valuta",
-    "Subscriptions.Columns.PeriodStart": "Inizio periodo",
-    "Subscriptions.Columns.PeriodEnd": "Fine periodo",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "Annulla a fine periodo",
-    "Subscriptions.Columns.TrialEndsAt": "Fine prova"
+    "Permission:Subscriptions.Seats.Manage": "Gestire le assegnazioni dei posti (assegnare, revocare)"
   }
 }

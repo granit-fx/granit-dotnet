@@ -3,17 +3,6 @@
   "texts": {
     "PermissionGroup:BlobStorage": "Dateispeicher",
     "Permission:BlobStorage.Administration.Read": "Dateispeicherverwaltung anzeigen (Liste, Deskriptoren, Abfrage)",
-    "Permission:BlobStorage.Administration.Manage": "Dateispeicher verwalten (hochladen, herunterladen, löschen, bestätigen, bereinigen)",
-    "BlobStorage.Columns.Tenant": "Mandant",
-    "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "Dateiname",
-    "BlobStorage.Columns.ContentType": "Inhaltstyp",
-    "BlobStorage.Columns.VerifiedContentType": "Verifizierter Inhaltstyp",
-    "BlobStorage.Columns.SizeBytes": "Größe (Bytes)",
-    "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Erstellt am",
-    "BlobStorage.Columns.ValidatedAt": "Validiert am",
-    "BlobStorage.Columns.DeletedAt": "Gelöscht am",
-    "BlobStorage.Columns.RejectionReason": "Ablehnungsgrund"
+    "Permission:BlobStorage.Administration.Manage": "Dateispeicher verwalten (hochladen, herunterladen, löschen, bestätigen, bereinigen)"
   }
 }

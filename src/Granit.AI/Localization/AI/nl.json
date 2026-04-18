@@ -5,6 +5,15 @@
     "AI:Provider:NotRegistered": "No AI provider is registered for '{0}'.",
     "AI:RateLimit:Exceeded": "AI rate limit exceeded. Please try again later.",
     "AI:Workspace:SystemImmutable": "System workspace '{0}' cannot be modified.",
-    "AI:Service:Unavailable": "The AI service is currently unavailable."
+    "AI:Service:Unavailable": "The AI service is currently unavailable.",
+    "AI.Columns.Workspace": "Werkruimte",
+    "AI.Columns.Provider": "Aanbieder",
+    "AI.Columns.Model": "Model",
+    "AI.Columns.InputTokens": "Invoertokens",
+    "AI.Columns.OutputTokens": "Uitvoertokens",
+    "AI.Columns.EstimatedCost": "Geschatte kosten",
+    "AI.Columns.CostCurrency": "Valuta",
+    "AI.Columns.Timestamp": "Tijdstempel",
+    "AI.Columns.Duration": "Duur"
   }
 }

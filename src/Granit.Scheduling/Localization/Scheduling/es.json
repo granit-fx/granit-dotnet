@@ -1,0 +1,13 @@
+{
+  "culture": "es",
+  "texts": {
+    "Scheduling.Columns.Tenant": "Inquilino",
+    "Scheduling.Columns.PayloadType": "Tipo de acción",
+    "Scheduling.Columns.Status": "Estado",
+    "Scheduling.Columns.ExecuteAt": "Programado para",
+    "Scheduling.Columns.ExecutedAt": "Ejecutado el",
+    "Scheduling.Columns.CorrelationId": "ID de correlación",
+    "Scheduling.Columns.CancelledBy": "Cancelado por",
+    "Scheduling.Columns.FailureReason": "Motivo del fallo"
+  }
+}

@@ -7,20 +7,6 @@
     "Granit:Validation:InvalidWebhookUrl": "대상 URL은 유효한 HTTPS URL이어야 합니다",
     "Granit:Validation:WebhookUrlPrivateAddress": "사설, 로컬 또는 예약된 IP 주소는 허용되지 않습니다",
     "Granit:Validation:WebhookUrlBlockedTld": "내부 도메인 이름(.local, .internal, .localhost, .onion)은 허용되지 않습니다",
-    "Granit:Validation:UnknownWebhookEventType": "지정한 이벤트 유형이 등록되어 있지 않습니다. GET /event-types를 사용하여 사용 가능한 유형을 확인하세요.",
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Webhooks.Columns.EventType": "Event Type",
-    "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Status": "Status",
-    "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
-    "Webhooks.Columns.LastSuccessAt": "Last Success At",
-    "Webhooks.Columns.SuspendedAt": "Suspended At",
-    "Webhooks.Columns.SuspendedBy": "Suspended By",
-    "Webhooks.Columns.Subscription": "Subscription",
-    "Webhooks.Columns.HttpStatus": "HTTP Status",
-    "Webhooks.Columns.Success": "Success",
-    "Webhooks.Columns.OccurredAt": "Occurred At",
-    "Webhooks.Columns.DurationMs": "Duration (ms)",
-    "Webhooks.Columns.ErrorMessage": "Error Message"
+    "Granit:Validation:UnknownWebhookEventType": "지정한 이벤트 유형이 등록되어 있지 않습니다. GET /event-types를 사용하여 사용 가능한 유형을 확인하세요."
   }
 }

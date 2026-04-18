@@ -3,14 +3,6 @@
   "texts": {
     "PermissionGroup:Scheduling": "Pianificazione",
     "Permission:Scheduling.Actions.Read": "Visualizzare le azioni pianificate (elenco, dettaglio)",
-    "Permission:Scheduling.Actions.Manage": "Gestire le azioni pianificate (annullare, ripianificare)",
-    "Scheduling.Columns.Tenant": "Tenant",
-    "Scheduling.Columns.PayloadType": "Payload Type",
-    "Scheduling.Columns.Status": "Status",
-    "Scheduling.Columns.ExecuteAt": "Scheduled For",
-    "Scheduling.Columns.ExecutedAt": "Executed At",
-    "Scheduling.Columns.CorrelationId": "Correlation ID",
-    "Scheduling.Columns.CancelledBy": "Cancelled By",
-    "Scheduling.Columns.FailureReason": "Failure Reason"
+    "Permission:Scheduling.Actions.Manage": "Gestire le azioni pianificate (annullare, ripianificare)"
   }
 }

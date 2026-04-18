@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "'{0}' という名前のワークスペースは既に存在します。",
     "AI.Workspaces.Kind.Dynamic": "動的",
     "AI.Workspaces.Kind.System": "システム",
-    "AI.Workspaces.Kind.System:Hint": "システムワークスペースは読み取り専用であり、変更または削除できません。",
-    "AI.Columns.Workspace": "Workspace",
-    "AI.Columns.Provider": "Provider",
-    "AI.Columns.Model": "Model",
-    "AI.Columns.InputTokens": "Input Tokens",
-    "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCost": "推定コスト",
-    "AI.Columns.CostCurrency": "通貨",
-    "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Workspaces.Kind.System:Hint": "システムワークスペースは読み取り専用であり、変更または削除できません。"
   }
 }

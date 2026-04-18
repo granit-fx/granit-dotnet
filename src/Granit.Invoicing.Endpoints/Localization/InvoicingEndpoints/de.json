@@ -6,17 +6,6 @@
     "Permission:Invoicing.Invoices.Manage": "Rechnungen verwalten (erstellen, abschließen, stornieren)",
     "Permission:Invoicing.Invoices.Download": "Rechnungsdokumente herunterladen (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Gutschriften anzeigen",
-    "Permission:Invoicing.CreditNotes.Manage": "Gutschriften verwalten (erstellen, stornieren)",
-    "Invoicing.Columns.Tenant": "Mandant",
-    "Invoicing.Columns.InvoiceNumber": "Rechnungsnummer",
-    "Invoicing.Columns.DocumentType": "Dokumenttyp",
-    "Invoicing.Columns.Status": "Status",
-    "Invoicing.Columns.Currency": "Währung",
-    "Invoicing.Columns.Total": "Gesamt",
-    "Invoicing.Columns.AmountRemaining": "Restbetrag",
-    "Invoicing.Columns.IssuedAt": "Ausgestellt am",
-    "Invoicing.Columns.DueAt": "Fällig am",
-    "Invoicing.Columns.PaidAt": "Bezahlt am",
-    "Invoicing.Columns.BillingReason": "Rechnungsgrund"
+    "Permission:Invoicing.CreditNotes.Manage": "Gutschriften verwalten (erstellen, stornieren)"
   }
 }

@@ -9,14 +9,6 @@
     "Permission:Subscriptions.Prices.Read": "価格バージョン履歴を表示",
     "Permission:Subscriptions.Prices.Manage": "価格を管理（バージョン作成、サブスクリプション移行）",
     "Permission:Subscriptions.Seats.Read": "シート割り当ての表示",
-    "Permission:Subscriptions.Seats.Manage": "シート割り当ての管理（割り当て、取り消し）",
-    "Subscriptions.Columns.Tenant": "テナント",
-    "Subscriptions.Columns.Plan": "プラン",
-    "Subscriptions.Columns.Status": "ステータス",
-    "Subscriptions.Columns.Currency": "通貨",
-    "Subscriptions.Columns.PeriodStart": "期間開始",
-    "Subscriptions.Columns.PeriodEnd": "期間終了",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "期間終了時にキャンセル",
-    "Subscriptions.Columns.TrialEndsAt": "トライアル終了日"
+    "Permission:Subscriptions.Seats.Manage": "シート割り当ての管理（割り当て、取り消し）"
   }
 }

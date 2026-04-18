@@ -1,0 +1,13 @@
+{
+  "culture": "it",
+  "texts": {
+    "Subscriptions.Columns.Tenant": "Tenant",
+    "Subscriptions.Columns.Plan": "Piano",
+    "Subscriptions.Columns.Status": "Stato",
+    "Subscriptions.Columns.Currency": "Valuta",
+    "Subscriptions.Columns.PeriodStart": "Inizio periodo",
+    "Subscriptions.Columns.PeriodEnd": "Fine periodo",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Annulla a fine periodo",
+    "Subscriptions.Columns.TrialEndsAt": "Fine prova"
+  }
+}

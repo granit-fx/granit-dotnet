@@ -1,0 +1,13 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Scheduling.Columns.Tenant": "Tenant",
+    "Scheduling.Columns.PayloadType": "Actietype",
+    "Scheduling.Columns.Status": "Status",
+    "Scheduling.Columns.ExecuteAt": "Gepland voor",
+    "Scheduling.Columns.ExecutedAt": "Uitgevoerd op",
+    "Scheduling.Columns.CorrelationId": "Correlatie-ID",
+    "Scheduling.Columns.CancelledBy": "Geannuleerd door",
+    "Scheduling.Columns.FailureReason": "Reden van fout"
+  }
+}

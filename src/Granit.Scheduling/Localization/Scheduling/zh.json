@@ -1,0 +1,13 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Scheduling.Columns.Tenant": "Tenant",
+    "Scheduling.Columns.PayloadType": "Payload Type",
+    "Scheduling.Columns.Status": "Status",
+    "Scheduling.Columns.ExecuteAt": "Scheduled For",
+    "Scheduling.Columns.ExecutedAt": "Executed At",
+    "Scheduling.Columns.CorrelationId": "Correlation ID",
+    "Scheduling.Columns.CancelledBy": "Cancelled By",
+    "Scheduling.Columns.FailureReason": "Failure Reason"
+  }
+}

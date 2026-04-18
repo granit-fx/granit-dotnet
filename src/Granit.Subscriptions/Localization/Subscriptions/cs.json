@@ -1,0 +1,13 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Subscriptions.Columns.Tenant": "Nájemce",
+    "Subscriptions.Columns.Plan": "Plán",
+    "Subscriptions.Columns.Status": "Stav",
+    "Subscriptions.Columns.Currency": "Měna",
+    "Subscriptions.Columns.PeriodStart": "Začátek období",
+    "Subscriptions.Columns.PeriodEnd": "Konec období",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Zrušit na konci období",
+    "Subscriptions.Columns.TrialEndsAt": "Konec zkušebního období"
+  }
+}

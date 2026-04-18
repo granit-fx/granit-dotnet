@@ -13,6 +13,9 @@ public sealed class BlobDescriptorQueryDefinition : QueryDefinition<BlobDescript
     public override string Name => "Granit.BlobStorage.BlobDescriptorsQuery";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(BlobStorageLocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<BlobDescriptor> builder)
     {
         builder

@@ -3,14 +3,6 @@
   "texts": {
     "PermissionGroup:Scheduling": "शेड्यूलिंग",
     "Permission:Scheduling.Actions.Read": "निर्धारित कार्य देखें (सूची, विवरण)",
-    "Permission:Scheduling.Actions.Manage": "निर्धारित कार्य प्रबंधित करें (रद्द करें, पुनर्निर्धारित करें)",
-    "Scheduling.Columns.Tenant": "Tenant",
-    "Scheduling.Columns.PayloadType": "Payload Type",
-    "Scheduling.Columns.Status": "Status",
-    "Scheduling.Columns.ExecuteAt": "Scheduled For",
-    "Scheduling.Columns.ExecutedAt": "Executed At",
-    "Scheduling.Columns.CorrelationId": "Correlation ID",
-    "Scheduling.Columns.CancelledBy": "Cancelled By",
-    "Scheduling.Columns.FailureReason": "Failure Reason"
+    "Permission:Scheduling.Actions.Manage": "निर्धारित कार्य प्रबंधित करें (रद्द करें, पुनर्निर्धारित करें)"
   }
 }

@@ -920,6 +920,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
         "Granit.Guids",
+        "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
         "Granit.Workflow"
@@ -1772,6 +1773,7 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
@@ -1850,6 +1852,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
+        "Granit.Localization",
         "Granit.Metering",
         "Granit.QueryEngine.Abstractions",
         "Granit.Scheduling",
@@ -2189,6 +2192,7 @@
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Encryption",
+        "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
@@ -3340,6 +3344,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(AILocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -8936,6 +8946,12 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(BlobStorageLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -20897,13 +20913,19 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Queries/InvoiceQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(InvoicingLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -36104,13 +36126,19 @@
       "kind": "class",
       "project": "Granit.Scheduling",
       "file": "src/Granit.Scheduling/Queries/ScheduledActionQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(SchedulingLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -38496,13 +38524,19 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Queries/SubscriptionQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(SubscriptionsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -43888,13 +43922,19 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Queries/WebhookDeliveryAttemptQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(WebhooksLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },
@@ -43904,13 +43944,19 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Queries/WebhookSubscriptionQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(WebhooksLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },

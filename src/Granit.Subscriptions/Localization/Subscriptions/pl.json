@@ -1,0 +1,13 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Subscriptions.Columns.Tenant": "Najemca",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Currency": "Waluta",
+    "Subscriptions.Columns.PeriodStart": "Początek okresu",
+    "Subscriptions.Columns.PeriodEnd": "Koniec okresu",
+    "Subscriptions.Columns.CancelAtPeriodEnd": "Anuluj na koniec okresu",
+    "Subscriptions.Columns.TrialEndsAt": "Koniec okresu próbnego"
+  }
+}

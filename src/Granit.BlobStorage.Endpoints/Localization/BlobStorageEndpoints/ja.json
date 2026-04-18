@@ -3,17 +3,6 @@
   "texts": {
     "PermissionGroup:BlobStorage": "ファイルストレージ",
     "Permission:BlobStorage.Administration.Read": "ファイルストレージ管理を表示（一覧、記述子、クエリ）",
-    "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）",
-    "BlobStorage.Columns.Tenant": "Tenant",
-    "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
-    "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
-    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
-    "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
-    "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）"
   }
 }

@@ -3,17 +3,6 @@
   "texts": {
     "PermissionGroup:BlobStorage": "文件存储",
     "Permission:BlobStorage.Administration.Read": "查看文件存储管理（列表、描述符、查询）",
-    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）",
-    "BlobStorage.Columns.Tenant": "Tenant",
-    "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
-    "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
-    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
-    "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
-    "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）"
   }
 }

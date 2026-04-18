@@ -3,17 +3,6 @@
   "texts": {
     "PermissionGroup:BlobStorage": "Úložiště souborů",
     "Permission:BlobStorage.Administration.Read": "Zobrazit správu úložiště souborů (seznam, popisovače, dotaz)",
-    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)",
-    "BlobStorage.Columns.Tenant": "Tenant",
-    "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
-    "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
-    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
-    "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
-    "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)"
   }
 }

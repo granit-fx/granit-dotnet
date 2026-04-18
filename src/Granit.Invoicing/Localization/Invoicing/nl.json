@@ -1,0 +1,16 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Invoicing.Columns.Tenant": "Tenant",
+    "Invoicing.Columns.InvoiceNumber": "Factuurnummer",
+    "Invoicing.Columns.DocumentType": "Documenttype",
+    "Invoicing.Columns.Status": "Status",
+    "Invoicing.Columns.Currency": "Valuta",
+    "Invoicing.Columns.Total": "Totaal",
+    "Invoicing.Columns.AmountRemaining": "Resterend bedrag",
+    "Invoicing.Columns.IssuedAt": "Uitgegeven op",
+    "Invoicing.Columns.DueAt": "Vervaldatum",
+    "Invoicing.Columns.PaidAt": "Betaald op",
+    "Invoicing.Columns.BillingReason": "Factuurreden"
+  }
+}

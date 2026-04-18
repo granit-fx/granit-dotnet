@@ -1,0 +1,13 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Scheduling.Columns.Tenant": "Locataire",
+    "Scheduling.Columns.PayloadType": "Type d'action",
+    "Scheduling.Columns.Status": "Statut",
+    "Scheduling.Columns.ExecuteAt": "Planifié pour",
+    "Scheduling.Columns.ExecutedAt": "Exécuté le",
+    "Scheduling.Columns.CorrelationId": "ID de corrélation",
+    "Scheduling.Columns.CancelledBy": "Annulé par",
+    "Scheduling.Columns.FailureReason": "Raison de l'échec"
+  }
+}

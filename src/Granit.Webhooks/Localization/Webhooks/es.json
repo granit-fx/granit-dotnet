@@ -1,0 +1,19 @@
+{
+  "culture": "es",
+  "texts": {
+    "Webhooks.Columns.Tenant": "Inquilino",
+    "Webhooks.Columns.EventType": "Tipo de evento",
+    "Webhooks.Columns.TargetUrl": "URL de destino",
+    "Webhooks.Columns.Status": "Estado",
+    "Webhooks.Columns.ConsecutiveFailures": "Fallos consecutivos",
+    "Webhooks.Columns.LastSuccessAt": "Último éxito el",
+    "Webhooks.Columns.SuspendedAt": "Suspendido el",
+    "Webhooks.Columns.SuspendedBy": "Suspendido por",
+    "Webhooks.Columns.Subscription": "Suscripción",
+    "Webhooks.Columns.HttpStatus": "Estado HTTP",
+    "Webhooks.Columns.Success": "Éxito",
+    "Webhooks.Columns.OccurredAt": "Ocurrido el",
+    "Webhooks.Columns.DurationMs": "Duración (ms)",
+    "Webhooks.Columns.ErrorMessage": "Mensaje de error"
+  }
+}

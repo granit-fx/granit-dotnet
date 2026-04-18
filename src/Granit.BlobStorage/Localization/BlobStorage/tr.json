@@ -2,6 +2,17 @@
   "culture": "tr",
   "texts": {
     "BlobStorage:NotFound": "İstenen dosya bulunamadı.",
-    "BlobStorage:NotValid": "Dosya indirilebilir durumda değil."
+    "BlobStorage:NotValid": "Dosya indirilebilir durumda değil.",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.ContentType": "Content Type",
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.ValidatedAt": "Validated At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
   }
 }

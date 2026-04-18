@@ -11,15 +11,6 @@
     "AIEndpoints:Workspace:DuplicateName": "En arbetsyta med namnet '{0}' finns redan.",
     "AI.Workspaces.Kind.Dynamic": "Dynamisk",
     "AI.Workspaces.Kind.System": "System",
-    "AI.Workspaces.Kind.System:Hint": "Systemarbetsytor är skrivskyddade och kan inte ändras eller tas bort.",
-    "AI.Columns.Workspace": "Workspace",
-    "AI.Columns.Provider": "Provider",
-    "AI.Columns.Model": "Model",
-    "AI.Columns.InputTokens": "Input Tokens",
-    "AI.Columns.OutputTokens": "Output Tokens",
-    "AI.Columns.EstimatedCost": "Uppskattad kostnad",
-    "AI.Columns.CostCurrency": "Valuta",
-    "AI.Columns.Timestamp": "Timestamp",
-    "AI.Columns.Duration": "Duration"
+    "AI.Workspaces.Kind.System:Hint": "Systemarbetsytor är skrivskyddade och kan inte ändras eller tas bort."
   }
 }

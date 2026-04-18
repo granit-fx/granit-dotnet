@@ -13,6 +13,9 @@ public sealed class AIUsageRecordQueryDefinition : QueryDefinition<AIUsageRecord
     public override string Name => "Granit.AI.AIUsageRecordQuery";
 
     /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(AILocalizationResource);
+
+    /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<AIUsageRecord> builder)
     {
         builder

@@ -3,14 +3,6 @@
   "texts": {
     "PermissionGroup:Scheduling": "Planung",
     "Permission:Scheduling.Actions.Read": "Geplante Aktionen anzeigen (Liste, Detail)",
-    "Permission:Scheduling.Actions.Manage": "Geplante Aktionen verwalten (abbrechen, neu planen)",
-    "Scheduling.Columns.Tenant": "Mandant",
-    "Scheduling.Columns.PayloadType": "Aktionstyp",
-    "Scheduling.Columns.Status": "Status",
-    "Scheduling.Columns.ExecuteAt": "Geplant für",
-    "Scheduling.Columns.ExecutedAt": "Ausgeführt am",
-    "Scheduling.Columns.CorrelationId": "Korrelations-ID",
-    "Scheduling.Columns.CancelledBy": "Abgebrochen von",
-    "Scheduling.Columns.FailureReason": "Fehlergrund"
+    "Permission:Scheduling.Actions.Manage": "Geplante Aktionen verwalten (abbrechen, neu planen)"
   }
 }

@@ -9,14 +9,6 @@
     "Permission:Subscriptions.Prices.Read": "가격 버전 이력 조회",
     "Permission:Subscriptions.Prices.Manage": "가격 관리 (버전 생성, 구독 마이그레이션)",
     "Permission:Subscriptions.Seats.Read": "시트 할당 보기",
-    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)",
-    "Subscriptions.Columns.Tenant": "테넌트",
-    "Subscriptions.Columns.Plan": "플랜",
-    "Subscriptions.Columns.Status": "상태",
-    "Subscriptions.Columns.Currency": "통화",
-    "Subscriptions.Columns.PeriodStart": "기간 시작",
-    "Subscriptions.Columns.PeriodEnd": "기간 종료",
-    "Subscriptions.Columns.CancelAtPeriodEnd": "기간 종료 시 취소",
-    "Subscriptions.Columns.TrialEndsAt": "체험 종료일"
+    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)"
   }
 }

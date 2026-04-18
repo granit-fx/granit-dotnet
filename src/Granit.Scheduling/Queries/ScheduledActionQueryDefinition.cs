@@ -1,5 +1,6 @@
 using Granit.QueryEngine;
 using Granit.Scheduling.Domain;
+using Granit.Scheduling.Internal;
 
 namespace Granit.Scheduling.Queries;
 
@@ -11,6 +12,9 @@ public sealed class ScheduledActionQueryDefinition : QueryDefinition<ScheduledAc
 {
     /// <inheritdoc/>
     public override string Name => "Granit.Scheduling.ScheduledActionsQuery";
+
+    /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(SchedulingLocalizationResource);
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<ScheduledAction> builder)

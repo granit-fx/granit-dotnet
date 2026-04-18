@@ -2,6 +2,17 @@
   "culture": "en",
   "texts": {
     "BlobStorage:NotFound": "The requested file was not found.",
-    "BlobStorage:NotValid": "The file is not available for download."
+    "BlobStorage:NotValid": "The file is not available for download.",
+    "BlobStorage.Columns.Tenant": "Tenant",
+    "BlobStorage.Columns.Container": "Container",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.ContentType": "Content Type",
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
+    "BlobStorage.Columns.Status": "Status",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.ValidatedAt": "Validated At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
   }
 }

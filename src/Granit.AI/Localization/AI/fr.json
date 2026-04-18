@@ -5,6 +5,15 @@
     "AI:Provider:NotRegistered": "Aucun fournisseur IA n'est enregistré pour « {0} ». Installez le package correspondant.",
     "AI:RateLimit:Exceeded": "Le quota d'appels IA est dépassé pour cet espace de travail. Veuillez réessayer plus tard.",
     "AI:Workspace:SystemImmutable": "L'espace de travail système « {0} » ne peut pas être modifié.",
-    "AI:Service:Unavailable": "Le service IA est actuellement indisponible."
+    "AI:Service:Unavailable": "Le service IA est actuellement indisponible.",
+    "AI.Columns.Workspace": "Espace de travail",
+    "AI.Columns.Provider": "Fournisseur",
+    "AI.Columns.Model": "Modèle",
+    "AI.Columns.InputTokens": "Jetons d'entrée",
+    "AI.Columns.OutputTokens": "Jetons de sortie",
+    "AI.Columns.EstimatedCost": "Coût estimé",
+    "AI.Columns.CostCurrency": "Devise",
+    "AI.Columns.Timestamp": "Horodatage",
+    "AI.Columns.Duration": "Durée"
   }
 }

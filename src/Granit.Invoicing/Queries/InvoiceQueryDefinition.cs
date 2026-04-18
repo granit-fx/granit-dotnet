@@ -1,4 +1,5 @@
 using Granit.Invoicing.Domain;
+using Granit.Invoicing.Internal;
 using Granit.QueryEngine;
 
 namespace Granit.Invoicing.Queries;
@@ -11,6 +12,9 @@ public sealed class InvoiceQueryDefinition : QueryDefinition<Invoice>
 {
     /// <inheritdoc/>
     public override string Name => "Granit.Invoicing.InvoiceQuery";
+
+    /// <inheritdoc/>
+    public override Type? LocalizationResourceType => typeof(InvoicingLocalizationResource);
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<Invoice> builder)

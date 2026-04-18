@@ -3,17 +3,6 @@
   "texts": {
     "PermissionGroup:BlobStorage": "ब्लॉब स्टोरेज",
     "Permission:BlobStorage.Administration.Read": "ब्लॉब स्टोरेज प्रशासन देखें (सूची, डिस्क्रिप्टर, क्वेरी)",
-    "Permission:BlobStorage.Administration.Manage": "ब्लॉब स्टोरेज प्रबंधित करें (अपलोड, डाउनलोड, हटाएँ, पुष्टि करें, सफ़ाई)",
-    "BlobStorage.Columns.Tenant": "Tenant",
-    "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
-    "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
-    "BlobStorage.Columns.SizeBytes": "Size (bytes)",
-    "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
-    "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "Permission:BlobStorage.Administration.Manage": "ब्लॉब स्टोरेज प्रबंधित करें (अपलोड, डाउनलोड, हटाएँ, पुष्टि करें, सफ़ाई)"
   }
 }

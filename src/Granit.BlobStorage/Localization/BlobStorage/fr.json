@@ -2,6 +2,17 @@
   "culture": "fr",
   "texts": {
     "BlobStorage:NotFound": "Le fichier demandé est introuvable.",
-    "BlobStorage:NotValid": "Le fichier n'est pas disponible au téléchargement."
+    "BlobStorage:NotValid": "Le fichier n'est pas disponible au téléchargement.",
+    "BlobStorage.Columns.Tenant": "Locataire",
+    "BlobStorage.Columns.Container": "Conteneur",
+    "BlobStorage.Columns.FileName": "Nom du fichier",
+    "BlobStorage.Columns.ContentType": "Type de contenu",
+    "BlobStorage.Columns.VerifiedContentType": "Type de contenu vérifié",
+    "BlobStorage.Columns.SizeBytes": "Taille (octets)",
+    "BlobStorage.Columns.Status": "Statut",
+    "BlobStorage.Columns.CreatedAt": "Créé le",
+    "BlobStorage.Columns.ValidatedAt": "Validé le",
+    "BlobStorage.Columns.DeletedAt": "Supprimé le",
+    "BlobStorage.Columns.RejectionReason": "Raison du rejet"
   }
 }

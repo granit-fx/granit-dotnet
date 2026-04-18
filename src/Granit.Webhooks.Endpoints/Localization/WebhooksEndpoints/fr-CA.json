@@ -1,19 +1,4 @@
 {
   "culture": "fr-CA",
-  "texts": {
-    "Webhooks.Columns.Tenant": "Locataire",
-    "Webhooks.Columns.EventType": "Type d'événement",
-    "Webhooks.Columns.TargetUrl": "URL cible",
-    "Webhooks.Columns.Status": "Statut",
-    "Webhooks.Columns.ConsecutiveFailures": "Échecs consécutifs",
-    "Webhooks.Columns.LastSuccessAt": "Dernier succès le",
-    "Webhooks.Columns.SuspendedAt": "Suspendu le",
-    "Webhooks.Columns.SuspendedBy": "Suspendu par",
-    "Webhooks.Columns.Subscription": "Abonnement",
-    "Webhooks.Columns.HttpStatus": "Statut HTTP",
-    "Webhooks.Columns.Success": "Succès",
-    "Webhooks.Columns.OccurredAt": "Survenu le",
-    "Webhooks.Columns.DurationMs": "Durée (ms)",
-    "Webhooks.Columns.ErrorMessage": "Message d'erreur"
-  }
+  "texts": {}
 }
