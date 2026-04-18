@@ -5,7 +5,9 @@ using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Exports;
+using Granit.Identity.Local.Queries;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 using Granit.Settings;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -36,7 +38,9 @@ public sealed class GranitIdentityLocalModule : GranitModule
     {
         context.Services.TryAddSingleton<IdentityLocalMetrics>();
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        context.Services.AddQueryDefinition<GranitRole, GranitRoleQueryDefinition>();
+        context.Services.AddQueryDefinition<GranitUserGroup, GranitUserGroupQueryDefinition>();
         context.Services.AddExportDefinition<GranitRole, GranitRoleExportDefinition>();
         context.Services.AddExportDefinition<GranitUserGroup, GranitUserGroupExportDefinition>();
     }

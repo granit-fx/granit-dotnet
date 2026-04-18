@@ -10,7 +10,9 @@
       "name": "Granit.AI",
       "deps": [
         "Granit",
-        "Granit.Guids"
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -236,7 +238,8 @@
       "deps": [
         "Granit.Authorization",
         "Granit.DataExchange.Abstractions",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -246,6 +249,7 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -437,6 +441,7 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -795,7 +800,8 @@
       "name": "Granit.Identity.Federated",
       "deps": [
         "Granit.DataExchange.Abstractions",
-        "Granit.Identity"
+        "Granit.Identity",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -849,6 +855,7 @@
         "Granit.Events",
         "Granit.Guids",
         "Granit.Identity",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.Timing"
       ],
@@ -1020,7 +1027,8 @@
       "deps": [
         "Granit.DataExchange.Abstractions",
         "Granit.Persistence.EntityFrameworkCore",
-        "Granit.Localization"
+        "Granit.Localization",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1052,6 +1060,7 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Metering.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1114,7 +1123,8 @@
         "Granit.Events",
         "Granit.MultiTenancy",
         "Granit.Persistence.EntityFrameworkCore",
-        "Granit.Persistence.EntityFrameworkCore.Migrations"
+        "Granit.Persistence.EntityFrameworkCore.Migrations",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1134,6 +1144,7 @@
         "Granit.Encryption",
         "Granit.Guids",
         "Granit.Notifications.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1437,6 +1448,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1492,6 +1504,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Payments",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -1825,6 +1838,7 @@
       "deps": [
         "Granit.DataExchange.Abstractions",
         "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Settings"
       ],
       "framework": "net10.0"
@@ -1913,6 +1927,7 @@
       "deps": [
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -2602,15 +2617,8 @@
       "kind": "class",
       "project": "Granit.AI.Endpoints",
       "file": "src/Granit.AI.Endpoints/GranitAIEndpointsModule.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 14,
+      "members": []
     },
     {
       "name": "AIEndpointsOptions",
@@ -2710,28 +2718,6 @@
       "members": []
     },
     {
-      "name": "AIUsageRecordQueryDefinition",
-      "fqn": "Granit.AI.Endpoints.Queries.AIUsageRecordQueryDefinition",
-      "kind": "class",
-      "project": "Granit.AI.Endpoints",
-      "file": "src/Granit.AI.Endpoints/Queries/AIUsageRecordQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "typeof",
-          "kind": "method",
-          "signature": "typeof(AIEndpointsLocalizationResource)",
-          "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
-    },
-    {
       "name": "AIEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.AI.EntityFrameworkCore.Extensions.AIEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -2816,12 +2802,34 @@
       "members": []
     },
     {
+      "name": "AIUsageRecordExportDefinition",
+      "fqn": "Granit.AI.Exports.AIUsageRecordExportDefinition",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Exports/AIUsageRecordExportDefinition.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "QueryDefinitionName",
+          "kind": "property",
+          "signature": "string? QueryDefinitionName",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "AIServiceCollectionExtensions",
       "fqn": "Granit.AI.Extensions.AIServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.AI",
       "file": "src/Granit.AI/Extensions/AIServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitAI",
@@ -3315,6 +3323,22 @@
           "name": "ToString",
           "kind": "method",
           "signature": "ToString()",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AIUsageRecordQueryDefinition",
+      "fqn": "Granit.AI.Queries.AIUsageRecordQueryDefinition",
+      "kind": "class",
+      "project": "Granit.AI",
+      "file": "src/Granit.AI/Queries/AIUsageRecordQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
           "returnType": "string"
         }
       ]
@@ -4455,7 +4479,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Extensions/AuditingServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitAuditing",
@@ -4691,6 +4715,38 @@
           "kind": "method",
           "signature": "GetRetention(AuditCategory category)",
           "returnType": "TimeSpan"
+        }
+      ]
+    },
+    {
+      "name": "AuditEntityChangeQueryDefinition",
+      "fqn": "Granit.Auditing.Queries.AuditEntityChangeQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Queries/AuditEntityChangeQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AuditEntryQueryDefinition",
+      "fqn": "Granit.Auditing.Queries.AuditEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Queries/AuditEntryQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -6257,7 +6313,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/Extensions/AuthorizationEfCoreServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -6284,6 +6340,22 @@
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationEntityFrameworkCoreModule.cs",
       "line": 20,
       "members": []
+    },
+    {
+      "name": "PermissionGrantQueryDefinition",
+      "fqn": "Granit.Authorization.EntityFrameworkCore.Queries.PermissionGrantQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization.EntityFrameworkCore",
+      "file": "src/Granit.Authorization.EntityFrameworkCore/Queries/PermissionGrantQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "PermissionGrantChangedEvent",
@@ -6925,7 +6997,7 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/Extensions/BackgroundJobsHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitBackgroundJobs",
@@ -7102,6 +7174,22 @@
           "name": "ConnectionString",
           "kind": "property",
           "signature": "string ConnectionString",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BackgroundJobDefinitionQueryDefinition",
+      "fqn": "Granit.BackgroundJobs.Queries.BackgroundJobDefinitionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs",
+      "file": "src/Granit.BackgroundJobs/Queries/BackgroundJobDefinitionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
           "returnType": "string"
         }
       ]
@@ -9698,7 +9786,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -9841,6 +9929,38 @@
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BalanceAccountQueryDefinition",
+      "fqn": "Granit.CustomerBalance.Queries.BalanceAccountQueryDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Queries/BalanceAccountQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BalanceTransactionQueryDefinition",
+      "fqn": "Granit.CustomerBalance.Queries.BalanceTransactionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Queries/BalanceTransactionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -10820,7 +10940,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Extensions/ServiceCollectionExtensions.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "AddGranitDataImport",
@@ -11707,6 +11827,38 @@
           "kind": "property",
           "signature": "IReadOnlyList<RowFieldError> Errors",
           "returnType": "IReadOnlyList<RowFieldError>"
+        }
+      ]
+    },
+    {
+      "name": "ExportJobQueryDefinition",
+      "fqn": "Granit.DataExchange.Queries.ExportJobQueryDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Queries/ExportJobQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ImportJobQueryDefinition",
+      "fqn": "Granit.DataExchange.Queries.ImportJobQueryDefinition",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Queries/ImportJobQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -17045,7 +17197,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -17158,6 +17310,22 @@
           "kind": "property",
           "signature": "int IncrementalSyncBatchSize",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheEntryQueryDefinition",
+      "fqn": "Granit.Identity.Federated.Queries.UserCacheEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Queries/UserCacheEntryQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -18085,7 +18253,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 32,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18692,6 +18860,38 @@
           "kind": "property",
           "signature": "int ChallengeSize",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "GranitRoleQueryDefinition",
+      "fqn": "Granit.Identity.Local.Queries.GranitRoleQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Queries/GranitRoleQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserGroupQueryDefinition",
+      "fqn": "Granit.Identity.Local.Queries.GranitUserGroupQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Queries/GranitUserGroupQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -21006,7 +21206,7 @@
       "kind": "class",
       "project": "Granit.Localization.EntityFrameworkCore",
       "file": "src/Granit.Localization.EntityFrameworkCore/Extensions/LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitLocalizationEntityFrameworkCore",
@@ -21056,6 +21256,22 @@
       "file": "src/Granit.Localization.EntityFrameworkCore/GranitLocalizationEntityFrameworkCoreModule.cs",
       "line": 21,
       "members": []
+    },
+    {
+      "name": "LocalizationOverrideQueryDefinition",
+      "fqn": "Granit.Localization.EntityFrameworkCore.Queries.LocalizationOverrideQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Localization.EntityFrameworkCore",
+      "file": "src/Granit.Localization.EntityFrameworkCore/Queries/LocalizationOverrideQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "LocalizationServiceCollectionExtensions",
@@ -22320,7 +22536,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Extensions/MeteringHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitMetering",
@@ -22529,6 +22745,38 @@
           "kind": "property",
           "signature": "decimal MaxEventQuantity",
           "returnType": "decimal"
+        }
+      ]
+    },
+    {
+      "name": "MeterDefinitionQueryDefinition",
+      "fqn": "Granit.Metering.Queries.MeterDefinitionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Queries/MeterDefinitionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UsageAggregateQueryDefinition",
+      "fqn": "Granit.Metering.Queries.UsageAggregateQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Queries/UsageAggregateQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -22918,7 +23166,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitMultiTenancyEntityFrameworkCore",
@@ -22965,6 +23213,22 @@
           "name": "DbTablePrefix",
           "kind": "property",
           "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TenantQueryDefinition",
+      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Queries.TenantQueryDefinition",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.EntityFrameworkCore",
+      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Queries/TenantQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
           "returnType": "string"
         }
       ]
@@ -24794,7 +25058,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Extensions/NotificationsHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitNotifications",
@@ -25324,6 +25588,38 @@
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "NotificationPreferenceQueryDefinition",
+      "fqn": "Granit.Notifications.Queries.NotificationPreferenceQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Queries/NotificationPreferenceQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UserNotificationQueryDefinition",
+      "fqn": "Granit.Notifications.Queries.UserNotificationQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Queries/UserNotificationQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -27392,7 +27688,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 33,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -27616,6 +27912,38 @@
       "file": "src/Granit.OpenIddict/Permissions/OpenIddictPermissions.cs",
       "line": 30,
       "members": []
+    },
+    {
+      "name": "GranitOpenIddictApplicationQueryDefinition",
+      "fqn": "Granit.OpenIddict.Queries.GranitOpenIddictApplicationQueryDefinition",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Queries/GranitOpenIddictApplicationQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictScopeQueryDefinition",
+      "fqn": "Granit.OpenIddict.Queries.GranitOpenIddictScopeQueryDefinition",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Queries/GranitOpenIddictScopeQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "OpenIddictServerHostApplicationBuilderExtensions",
@@ -28791,7 +29119,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitPayments",
@@ -29477,6 +29805,70 @@
       ]
     },
     {
+      "name": "DisputeQueryDefinition",
+      "fqn": "Granit.Payments.Queries.DisputeQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Queries/DisputeQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodQueryDefinition",
+      "fqn": "Granit.Payments.Queries.PaymentMethodQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Queries/PaymentMethodQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PaymentTransactionQueryDefinition",
+      "fqn": "Granit.Payments.Queries.PaymentTransactionQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Queries/PaymentTransactionQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "RefundQueryDefinition",
+      "fqn": "Granit.Payments.Queries.RefundQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Queries/RefundQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitPaymentsSepaDirectDebitBuiltinModule",
       "fqn": "Granit.Payments.SepaDirectDebit.Builtin.GranitPaymentsSepaDirectDebitBuiltinModule",
       "kind": "class",
@@ -29759,7 +30151,7 @@
       "kind": "class",
       "project": "Granit.Payments.SepaDirectDebit",
       "file": "src/Granit.Payments.SepaDirectDebit/GranitPaymentsSepaDirectDebitModule.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -29866,6 +30258,22 @@
           "kind": "method",
           "signature": "UpdateAsync(Mandate mandate, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MandateQueryDefinition",
+      "fqn": "Granit.Payments.SepaDirectDebit.Queries.MandateQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Queries/MandateQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -33769,7 +34177,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/Extensions/ServiceCollectionExtensions.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitQueryEngine",
@@ -34148,6 +34556,22 @@
       "file": "src/Granit.QueryEngine.Abstractions/PagedResult.cs",
       "line": 22,
       "members": []
+    },
+    {
+      "name": "SavedViewQueryDefinition",
+      "fqn": "Granit.QueryEngine.Queries.SavedViewQueryDefinition",
+      "kind": "class",
+      "project": "Granit.QueryEngine",
+      "file": "src/Granit.QueryEngine/Queries/SavedViewQueryDefinition.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "QueryDefinition",
@@ -34996,7 +35420,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/Extensions/ReferenceDataServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitReferenceData",
@@ -35161,6 +35585,22 @@
       "file": "src/Granit.ReferenceData/Options/ReferenceDataExtensionOptions.cs",
       "line": 110,
       "members": []
+    },
+    {
+      "name": "DynamicReferenceDataEntityQueryDefinition",
+      "fqn": "Granit.ReferenceData.Queries.DynamicReferenceDataEntityQueryDefinition",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/Queries/DynamicReferenceDataEntityQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "ReferenceDataBuilder",
@@ -36015,7 +36455,7 @@
       "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/Extensions/SettingsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
@@ -36051,6 +36491,22 @@
       "file": "src/Granit.Settings.EntityFrameworkCore/ISettingsDbContext.cs",
       "line": 30,
       "members": []
+    },
+    {
+      "name": "SettingRecordQueryDefinition",
+      "fqn": "Granit.Settings.EntityFrameworkCore.Queries.SettingRecordQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Settings.EntityFrameworkCore",
+      "file": "src/Granit.Settings.EntityFrameworkCore/Queries/SettingRecordQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "SettingChangedEvent",
@@ -38003,6 +38459,38 @@
       ]
     },
     {
+      "name": "PlanPriceQueryDefinition",
+      "fqn": "Granit.Subscriptions.Queries.PlanPriceQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Queries/PlanPriceQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PlanQueryDefinition",
+      "fqn": "Granit.Subscriptions.Queries.PlanQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Queries/PlanQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SubscriptionQueryDefinition",
       "fqn": "Granit.Subscriptions.Queries.SubscriptionQueryDefinition",
       "kind": "class",
@@ -38469,7 +38957,7 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Extensions/TaxHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitTax",
@@ -38630,6 +39118,22 @@
           "kind": "property",
           "signature": "int ValidationCacheTtlHours",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "TaxRateOverrideQueryDefinition",
+      "fqn": "Granit.Tax.Queries.TaxRateOverrideQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Queries/TaxRateOverrideQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -40516,7 +41020,7 @@
       "kind": "class",
       "project": "Granit.Timeline",
       "file": "src/Granit.Timeline/Extensions/TimelineServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitTimeline",
@@ -40637,6 +41141,22 @@
           "signature": "new()",
           "returnType": "TimelineMentionNotificationType Instance ="
         },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TimelineEntryQueryDefinition",
+      "fqn": "Granit.Timeline.Queries.TimelineEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Queries/TimelineEntryQueryDefinition.cs",
+      "line": 10,
+      "members": [
         {
           "name": "Name",
           "kind": "property",
@@ -44295,7 +44815,7 @@
       "kind": "class",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/Extensions/WorkflowServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitWorkflow",
@@ -44558,6 +45078,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowTransitionRecordQueryDefinition",
+      "fqn": "Granit.Workflow.Queries.WorkflowTransitionRecordQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Workflow",
+      "file": "src/Granit.Workflow/Queries/WorkflowTransitionRecordQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

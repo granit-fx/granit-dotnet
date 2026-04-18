@@ -5,8 +5,10 @@ using Granit.Auditing.Exports;
 using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Messages;
 using Granit.Auditing.Options;
+using Granit.Auditing.Queries;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -66,7 +68,9 @@ public static class AuditingServiceCollectionExtensions
         services.AddHostedService<AuditingPersistenceWorker>();
         services.AddHostedService<AuditingCleanupWorker>();
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        services.AddQueryDefinition<AuditEntry, AuditEntryQueryDefinition>();
+        services.AddQueryDefinition<AuditEntityChange, AuditEntityChangeQueryDefinition>();
         services.AddExportDefinition<AuditEntry, AuditEntryExportDefinition>();
         services.AddExportDefinition<AuditEntityChange, AuditEntityChangeExportDefinition>();
 

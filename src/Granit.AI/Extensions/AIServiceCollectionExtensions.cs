@@ -1,9 +1,13 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.AI.Diagnostics;
+using Granit.AI.Exports;
 using Granit.AI.Internal;
 using Granit.AI.Options;
+using Granit.AI.Queries;
 using Granit.AI.Workspaces;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -60,6 +64,10 @@ public static class AIServiceCollectionExtensions
             .BindConfiguration(Options.AIQuotaOptions.SectionName);
 
         builder.Services.TryAddSingleton<IAIQuotaGuard, InMemoryAIQuotaGuard>();
+
+        // Query + Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddQueryDefinition<AIUsageRecord, AIUsageRecordQueryDefinition>();
+        builder.Services.AddExportDefinition<AIUsageRecord, AIUsageRecordExportDefinition>();
 
         return builder;
     }

@@ -1,8 +1,10 @@
 using Granit.DataExchange.Extensions;
+using Granit.QueryEngine.Extensions;
 using Granit.Settings.Definitions;
 using Granit.Settings.EntityFrameworkCore.Entities;
 using Granit.Settings.EntityFrameworkCore.Exports;
 using Granit.Settings.EntityFrameworkCore.Internal;
+using Granit.Settings.EntityFrameworkCore.Queries;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,7 +51,8 @@ public static class SettingsEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.Replace(ServiceDescriptor.Singleton<ISettingStoreWriter>(sp =>
             sp.GetRequiredService<EfCoreSettingStore<TDbContext>>()));
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddQueryDefinition<SettingRecord, SettingRecordQueryDefinition>();
         builder.Services.AddExportDefinition<SettingRecord, SettingRecordExportDefinition>();
 
         return builder;

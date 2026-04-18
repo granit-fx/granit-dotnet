@@ -46,6 +46,8 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         GranitActivitySourceRegistry.Register(SubscriptionsActivitySource.Name);
 
         builder.Services.AddQueryDefinition<Subscription, SubscriptionQueryDefinition>();
+        builder.Services.AddQueryDefinition<Plan, PlanQueryDefinition>();
+        builder.Services.AddQueryDefinition<PlanPrice, PlanPriceQueryDefinition>();
         builder.Services.AddExportDefinition<Subscription, SubscriptionExportDefinition>();
         builder.Services.AddExportDefinition<Plan, PlanExportDefinition>();
         builder.Services.AddExportDefinition<PlanPrice, PlanPriceExportDefinition>();

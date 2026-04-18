@@ -5,6 +5,8 @@ using Granit.Metering.Domain;
 using Granit.Metering.Exports;
 using Granit.Metering.Internal;
 using Granit.Metering.Options;
+using Granit.Metering.Queries;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -30,7 +32,9 @@ public static class MeteringHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IBillingPeriodProvider, CalendarMonthBillingPeriodProvider>();
         GranitActivitySourceRegistry.Register(MeteringActivitySource.Name);
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddQueryDefinition<MeterDefinition, MeterDefinitionQueryDefinition>();
+        builder.Services.AddQueryDefinition<UsageAggregate, UsageAggregateQueryDefinition>();
         builder.Services.AddExportDefinition<MeterDefinition, MeterDefinitionExportDefinition>();
         builder.Services.AddExportDefinition<UsageAggregate, UsageAggregateExportDefinition>();
 

@@ -1,8 +1,7 @@
-using Granit.AI.Endpoints.Internal;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
 
-namespace Granit.AI.Endpoints.Queries;
+namespace Granit.AI.Queries;
 
 /// <summary>
 /// Query definition for AI usage records — declares columns, filters, sorting,
@@ -11,10 +10,7 @@ namespace Granit.AI.Endpoints.Queries;
 public sealed class AIUsageRecordQueryDefinition : QueryDefinition<AIUsageRecord>
 {
     /// <inheritdoc/>
-    public override string Name => "AI.UsageRecords";
-
-    /// <inheritdoc/>
-    public override Type? LocalizationResourceType => typeof(AIEndpointsLocalizationResource);
+    public override string Name => "Granit.AI.AIUsageRecordQuery";
 
     /// <inheritdoc/>
     protected override void Configure(QueryDefinitionBuilder<AIUsageRecord> builder)

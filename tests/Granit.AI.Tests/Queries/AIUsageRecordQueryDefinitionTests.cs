@@ -1,16 +1,16 @@
-using Granit.AI.Endpoints.Queries;
+using Granit.AI.Queries;
 using Shouldly;
 using Xunit;
 
-namespace Granit.AI.Endpoints.Tests.Queries;
+namespace Granit.AI.Tests.Queries;
 
 public sealed class AIUsageRecordQueryDefinitionTests
 {
     private readonly AIUsageRecordQueryDefinition _definition = new();
 
     [Fact]
-    public void Name_is_AI_UsageRecords() =>
-        _definition.Name.ShouldBe("AI.UsageRecords");
+    public void Name_follows_canonical_convention() =>
+        _definition.Name.ShouldBe("Granit.AI.AIUsageRecordQuery");
 
     [Fact]
     public void Declares_expected_columns()

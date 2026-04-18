@@ -2,8 +2,10 @@ using Granit.DataExchange.Extensions;
 using Granit.Localization.EntityFrameworkCore.Entities;
 using Granit.Localization.EntityFrameworkCore.Exports;
 using Granit.Localization.EntityFrameworkCore.Internal;
+using Granit.Localization.EntityFrameworkCore.Queries;
 using Granit.Localization.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -47,7 +49,8 @@ public static class LocalizationEntityFrameworkCoreHostApplicationBuilderExtensi
         builder.Services.TryAddKeyedScoped<ILocalizationOverrideStoreWriter, EfCoreLocalizationOverrideStore>(
             CachedLocalizationOverrideStore.RawStoreKey);
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        builder.Services.AddQueryDefinition<LocalizationOverride, LocalizationOverrideQueryDefinition>();
         builder.Services.AddExportDefinition<LocalizationOverride, LocalizationOverrideExportDefinition>();
 
         return builder;

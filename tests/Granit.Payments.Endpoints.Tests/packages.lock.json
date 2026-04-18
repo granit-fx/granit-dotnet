@@ -796,6 +796,7 @@
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
           "Granit.Payments.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
@@ -816,6 +817,12 @@
           "Granit.RateLimiting": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
+        }
+      },
+      "granit.queryengine.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.ratelimiting": {

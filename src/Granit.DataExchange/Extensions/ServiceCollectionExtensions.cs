@@ -12,8 +12,10 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Internal;
+using Granit.DataExchange.Queries;
 using Granit.Diagnostics;
 using Granit.Events.Extensions;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -72,7 +74,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IImportCommandDispatcher, ChannelImportCommandDispatcher>();
         services.AddHostedService<ImportCommandWorker>();
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        services.AddQueryDefinition<ImportJob, ImportJobQueryDefinition>();
         services.AddExportDefinition<ImportJob, ImportJobExportDefinition>();
 
         return services;
@@ -144,7 +147,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<IExportCommandDispatcher, ChannelExportCommandDispatcher>();
         services.AddHostedService<ExportCommandWorker>();
 
-        // Export definitions (ADR-020: owned by the base module).
+        // Query + Export definitions (ADR-020: owned by the base module).
+        services.AddQueryDefinition<ExportJob, ExportJobQueryDefinition>();
         services.AddExportDefinition<ExportJob, ExportJobExportDefinition>();
 
         return services;
