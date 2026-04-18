@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using Granit.AI.Diagnostics;
 using Granit.AI.EntityFrameworkCore.Entities;
 using Granit.AI.EntityFrameworkCore.Internal;
+using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -71,11 +72,17 @@ public sealed class EfAIUsageStoreTests : IAsyncDisposable
         entity.CostCurrency.ShouldBe("USD");
     }
 
+    // Shared DataFilter across all tests in this class so the first-created AIDbContext
+    // in the AppDomain captures a non-null filter proxy — avoids poisoning the EF Core
+    // model cache with FilterProxy(null) which would disable Disable<IActive>() bypass
+    // in EfAIWorkspaceStoreTests.
+    private static readonly DataFilter SharedFilter = new();
+
     private sealed class TestDbContextFactory(DbContextOptions<AIDbContext> options) : IDbContextFactory<AIDbContext>
     {
-        public AIDbContext CreateDbContext() => new(options);
+        public AIDbContext CreateDbContext() => new(options, dataFilter: SharedFilter);
 
         public Task<AIDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new AIDbContext(options));
+            Task.FromResult(new AIDbContext(options, dataFilter: SharedFilter));
     }
 }
