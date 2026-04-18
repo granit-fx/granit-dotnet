@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataExchange.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.DataExchange: declarative ExportDefinition base class, builders, descriptors, auto-source/extra-field hooks. Reference this package from any module that declares exports; reference Granit.DataExchange only from hosts that execute them.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataExchange.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Csv" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Excel" />
+    <InternalsVisibleTo Include="Granit.DataExchange.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.DataExchange.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Endpoints" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

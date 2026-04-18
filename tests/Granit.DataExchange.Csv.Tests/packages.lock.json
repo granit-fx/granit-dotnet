@@ -299,11 +299,18 @@
       "granit.dataexchange": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Events": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "granit.dataexchange.csv": {
@@ -498,8 +505,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.12.3",
-        "contentHash": "xuQjdQ4c7A3yfJz6vzOy8T9KirByt8nmmVouhLDi9JYvoSQg4kOUdw9kQfThPOJ0N2MbTokSqF0Xr20RqeDQFQ==",
+        "resolved": "0.12.4",
+        "contentHash": "9d8BQepYsyjnwxqRv2V+KQ0IfST3jWK+ufhcafNbrZ2duZxBR4/g33t0rFBtc9dL8/gtMvWsd+U/b6RRHp/8Pw==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }

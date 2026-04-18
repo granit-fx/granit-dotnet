@@ -51,9 +51,9 @@ Each module follows a consistent layered split:
 
 | Layer | Project suffix | Contains |
 | ----- | -------------- | -------- |
-| Abstractions | `Granit.{Module}` | Interfaces, options, DI extension, `*Module` class |
+| Abstractions | `Granit.{Module}` | Interfaces, options, DI extension, `*Module` class, **declarative definitions** (`*QueryDefinition`, `*ExportDefinition`) |
 | Background Jobs | `.BackgroundJobs` | `IBackgroundJob` records, handlers, module class |
-| Endpoints | `.Endpoints` | Minimal API route groups, request/response DTOs |
+| Endpoints | `.Endpoints` | Minimal API route groups, request/response DTOs, validators, permission providers |
 | Persistence | `.EntityFrameworkCore` | Isolated `DbContext`, entity configs, migrations |
 | Provider | `.{Provider}` | External service implementation (S3, Keycloak, SMTP...) |
 | Messaging | `.Wolverine` | Wolverine handlers, saga state machines |
@@ -225,6 +225,54 @@ Single category with **mandatory suffix** — enforced by architecture tests:
 - **NEVER** use `*Command` suffix for jobs — commands are CQRS, jobs are scheduled work units.
 - **NEVER** create a separate `.Wolverine` package for jobs. Wolverine scheduling is
   handled by `Granit.BackgroundJobs.Wolverine`.
+
+### Declarative definitions (`*QueryDefinition`, `*ExportDefinition`) — placement (STRICT)
+
+Two declarative primitives describe how an entity is consulted (grid filter/sort) and
+exported (CSV/XLSX whitelist). They are **pure declarations** — no HTTP, no DbContext —
+so they live with the domain, not with the HTTP layer.
+
+| Primitive | Base class location | Concrete instance location |
+| --------- | ------------------- | -------------------------- |
+| `QueryDefinition<T>` | `Granit.QueryEngine.Abstractions` | `Granit.{Module}/Queries/{Entity}QueryDefinition.cs` |
+| `ExportDefinition<T>` | `Granit.DataExchange.Abstractions` | `Granit.{Module}/Exports/{Entity}ExportDefinition.cs` |
+
+**Rules:**
+
+- **Concrete `*QueryDefinition` / `*ExportDefinition` classes MUST live in the base module
+  `Granit.{Module}`**, NOT in `Granit.{Module}.Endpoints`. The `.Endpoints` package is
+  reserved for HTTP-layer artifacts (route groups, request/response DTOs, validators,
+  permission providers).
+- **Base modules reference `Granit.QueryEngine.Abstractions` / `Granit.DataExchange.Abstractions`**
+  (lightweight contracts, no runtime). NEVER reference `Granit.QueryEngine` or
+  `Granit.DataExchange` directly from a base module.
+- **Registration in the module class** (`Granit{Module}Module.ConfigureServices`):
+  `services.AddQueryDefinition<TEntity, TDefinition>()` and
+  `services.AddExportDefinition<TEntity, TDefinition>()`. Each module owns its
+  registrations — NEVER aggregate them into a central package.
+- **Localization keys** (`Column:{Entity}.{Field}`, `ExportHeader:{Entity}.{Field}`) live
+  in the base module's localization resource alongside the definitions.
+- **Naming**: `{Entity}QueryDefinition` and `{Entity}ExportDefinition` (no other suffix).
+  `Name` property uses `"Granit.{Module}.{Entity}{Query|Export}"` (e.g.,
+  `"Granit.Invoicing.InvoiceQuery"`, `"Granit.Invoicing.InvoiceExport"`).
+- **Why this placement**: queries and exports are part of the module's public contract —
+  the same definition is consumed by HTTP endpoints (`MapGranitQueryEndpoint`),
+  background jobs (export orchestrator), and tests. Coupling the declaration to
+  `.Endpoints` would make it inaccessible to non-HTTP consumers.
+
+**Anti-pattern — central aggregation package**: NEVER create a `Granit.{X}.Definitions`
+package that depends on every module to register definitions. Each module owns its own.
+
+**Pairing rule — STRICT**: every "admin-visible" entity MUST have **both** a
+`QueryDefinition` AND a matching `ExportDefinition`. Query and Export are two facets of
+the same admin-grid use case (browse + export). If you add one, you MUST add the other.
+Architecture tests enforce this pairing for every entity registered with either primitive.
+
+**What counts as "admin-visible"**: any aggregate root or entity exposed in an admin
+panel — typically those with a CRUD endpoint group or those returned in a paginated grid.
+Pure infrastructure entities (audit log details, internal cache rows like
+`AIWorkspaceEntity`, `TenantFeatureOverride`) are exempt and use the reflection-based
+fallback.
 
 ### DTOs & API responses
 

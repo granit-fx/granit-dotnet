@@ -2,13 +2,21 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.QueryEngine: PagedResult, QueryRequest, FilterOperator, QueryMetadata, SavedView abstractions. Reference this package instead of Granit.QueryEngine when you only need query contracts without the engine implementation.</Description>
+    <Description>Inter-module contracts for Granit.QueryEngine: declarative QueryDefinition base class, builders, descriptors (Column/Filter/Group/Quick/Date), DTOs (PagedResult, QueryRequest, QueryMetadata) and SavedView abstractions. Reference this package from any module that declares queries; reference Granit.QueryEngine only from hosts that execute them.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.QueryEngine.Abstractions.Tests" />
     <InternalsVisibleTo Include="Granit.QueryEngine" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.AspNetCore" />
+    <InternalsVisibleTo Include="Granit.QueryEngine.AspNetCore.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Tests" />
+    <InternalsVisibleTo Include="Granit.DataExchange.Abstractions" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

@@ -87,6 +87,7 @@
   </Folder>
   <Folder Name="/src/Application/">
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
+    <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
     <Project Path="src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj" />
     <Project Path="src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj" />
     <Project Path="src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj" />

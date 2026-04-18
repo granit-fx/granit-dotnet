@@ -20,6 +20,7 @@
       "src/Granit.Caching.StackExchangeRedis/Granit.Caching.StackExchangeRedis.csproj",
       "src/Granit.Caching/Granit.Caching.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
+      "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataExchange/Granit.DataExchange.csproj",
       "src/Granit.Diagnostics.Endpoints/Granit.Diagnostics.Endpoints.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",

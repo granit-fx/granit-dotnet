@@ -59,6 +59,7 @@
       "src/Granit.CustomerBalance.Wolverine/Granit.CustomerBalance.Wolverine.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
+      "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataExchange.Csv/Granit.DataExchange.Csv.csproj",
       "src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj",
       "src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj",

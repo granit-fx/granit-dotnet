@@ -473,6 +473,7 @@
     {
       "name": "Granit.DataExchange",
       "deps": [
+        "Granit.DataExchange.Abstractions",
         "Granit.Events",
         "Granit.Guids",
         "Granit.QueryEngine",
@@ -486,6 +487,13 @@
       "deps": [
         "Granit.AI",
         "Granit.DataExchange"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.DataExchange.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -10886,8 +10894,8 @@
       "name": "ExportDefinition",
       "fqn": "Granit.DataExchange.Export.ExportDefinition",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/ExportDefinition.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportDefinition.cs",
       "line": 42,
       "members": [
         {
@@ -10932,8 +10940,8 @@
       "name": "ExportDefinitionBuilder",
       "fqn": "Granit.DataExchange.Export.ExportDefinitionBuilder",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/ExportDefinitionBuilder.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportDefinitionBuilder.cs",
       "line": 20,
       "members": []
     },
@@ -10950,8 +10958,8 @@
       "name": "ExportFieldBuilder",
       "fqn": "Granit.DataExchange.Export.ExportFieldBuilder",
       "kind": "class",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/ExportFieldBuilder.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportFieldBuilder.cs",
       "line": 6,
       "members": []
     },
@@ -10959,8 +10967,8 @@
       "name": "ExportFieldDescriptor",
       "fqn": "Granit.DataExchange.Export.ExportFieldDescriptor",
       "kind": "record",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/ExportFieldDescriptor.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/ExportFieldDescriptor.cs",
       "line": 14,
       "members": []
     },
@@ -11020,8 +11028,8 @@
       "name": "IAutoExportDefinitionSource",
       "fqn": "Granit.DataExchange.Export.IAutoExportDefinitionSource",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IAutoExportDefinitionSource.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IAutoExportDefinitionSource.cs",
       "line": 18,
       "members": [
         {
@@ -11068,8 +11076,8 @@
       "name": "IExportDefinitionDescriptor",
       "fqn": "Granit.DataExchange.Export.IExportDefinitionDescriptor",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IExportDefinitionDescriptor.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExportDefinitionDescriptor.cs",
       "line": 12,
       "members": [
         {
@@ -11096,8 +11104,8 @@
       "name": "IExportDefinitionProvider",
       "fqn": "Granit.DataExchange.Export.IExportDefinitionProvider",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IExportDefinitionProvider.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExportDefinitionProvider.cs",
       "line": 18,
       "members": [
         {
@@ -11118,8 +11126,8 @@
       "name": "IExportExtraValueResolver",
       "fqn": "Granit.DataExchange.Export.IExportExtraValueResolver",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IExportExtraValueResolver.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExportExtraValueResolver.cs",
       "line": 18,
       "members": [
         {
@@ -11278,8 +11286,8 @@
       "name": "IExtraExportFieldProvider",
       "fqn": "Granit.DataExchange.Export.IExtraExportFieldProvider",
       "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IExtraExportFieldProvider.cs",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Export/IExtraExportFieldProvider.cs",
       "line": 11,
       "members": [
         {
@@ -11309,6 +11317,15 @@
       "members": []
     },
     {
+      "name": "ExportDefinitionServiceCollectionExtensions",
+      "fqn": "Granit.DataExchange.Extensions.ExportDefinitionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/Extensions/ExportDefinitionServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.DataExchange.Extensions.ServiceCollectionExtensions",
       "kind": "class",
@@ -11323,6 +11340,15 @@
           "returnType": "IServiceCollection"
         }
       ]
+    },
+    {
+      "name": "GranitDataExchangeAbstractionsModule",
+      "fqn": "Granit.DataExchange.GranitDataExchangeAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.DataExchange.Abstractions",
+      "file": "src/Granit.DataExchange.Abstractions/GranitDataExchangeAbstractionsModule.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "GranitDataExchangeModule",
@@ -33847,8 +33873,8 @@
       "name": "ColumnBuilder",
       "fqn": "Granit.QueryEngine.ColumnBuilder",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/ColumnBuilder.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/ColumnBuilder.cs",
       "line": 7,
       "members": []
     },
@@ -33856,8 +33882,8 @@
       "name": "ColumnDescriptor",
       "fqn": "Granit.QueryEngine.ColumnDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/ColumnDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/ColumnDescriptor.cs",
       "line": 6,
       "members": [
         {
@@ -33951,12 +33977,21 @@
       ]
     },
     {
+      "name": "QueryDefinitionServiceCollectionExtensions",
+      "fqn": "Granit.QueryEngine.Extensions.QueryDefinitionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Extensions/QueryDefinitionServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.QueryEngine.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/Extensions/ServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitQueryEngine",
@@ -33988,8 +34023,8 @@
       "name": "DateFilterDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.DateFilterDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/DateFilterDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/DateFilterDescriptor.cs",
       "line": 6,
       "members": []
     },
@@ -34006,8 +34041,8 @@
       "name": "FilterGroupBuilder",
       "fqn": "Granit.QueryEngine.Filtering.FilterGroupBuilder",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/FilterGroupBuilder.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterGroupBuilder.cs",
       "line": 9,
       "members": [
         {
@@ -34022,8 +34057,8 @@
       "name": "FilterGroupDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.FilterGroupDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/FilterGroupDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterGroupDescriptor.cs",
       "line": 7,
       "members": []
     },
@@ -34040,8 +34075,8 @@
       "name": "FilterOperatorInference",
       "fqn": "Granit.QueryEngine.Filtering.FilterOperatorInference",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/FilterOperatorInference.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/FilterOperatorInference.cs",
       "line": 6,
       "members": [
         {
@@ -34056,8 +34091,8 @@
       "name": "GroupByDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.GroupByDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/GroupByDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/GroupByDescriptor.cs",
       "line": 6,
       "members": []
     },
@@ -34081,8 +34116,8 @@
       "name": "PresetDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.PresetDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/PresetDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/PresetDescriptor.cs",
       "line": 8,
       "members": []
     },
@@ -34090,8 +34125,8 @@
       "name": "QuickFilterDescriptor",
       "fqn": "Granit.QueryEngine.Filtering.QuickFilterDescriptor",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Filtering/QuickFilterDescriptor.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Filtering/QuickFilterDescriptor.cs",
       "line": 11,
       "members": []
     },
@@ -34291,8 +34326,8 @@
       "name": "QueryEngineOptions",
       "fqn": "Granit.QueryEngine.Options.QueryEngineOptions",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Options/QueryEngineOptions.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/Options/QueryEngineOptions.cs",
       "line": 18,
       "members": [
         {
@@ -34340,8 +34375,8 @@
       "name": "QueryDefinition",
       "fqn": "Granit.QueryEngine.QueryDefinition",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/QueryDefinition.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryDefinition.cs",
       "line": 34,
       "members": [
         {
@@ -34422,8 +34457,8 @@
       "name": "QueryDefinitionBuilder",
       "fqn": "Granit.QueryEngine.QueryDefinitionBuilder",
       "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/QueryDefinitionBuilder.cs",
+      "project": "Granit.QueryEngine.Abstractions",
+      "file": "src/Granit.QueryEngine.Abstractions/QueryDefinitionBuilder.cs",
       "line": 13,
       "members": []
     },

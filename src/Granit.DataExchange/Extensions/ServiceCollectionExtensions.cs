@@ -142,24 +142,6 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers an export definition for the specified entity type.
-    /// </summary>
-    /// <typeparam name="TEntity">The source entity type.</typeparam>
-    /// <typeparam name="TDefinition">The export definition implementation.</typeparam>
-    /// <param name="services">The service collection.</param>
-    /// <returns>The service collection for chaining.</returns>
-    public static IServiceCollection AddExportDefinition<TEntity, TDefinition>(
-        this IServiceCollection services)
-        where TEntity : class
-        where TDefinition : ExportDefinition<TEntity>
-    {
-        services.AddSingleton<ExportDefinition<TEntity>, TDefinition>();
-        services.AddSingleton<IExportDefinitionDescriptor>(sp =>
-            sp.GetRequiredService<ExportDefinition<TEntity>>());
-        return services;
-    }
-
-    /// <summary>
     /// Replaces the default <see cref="ISemanticMappingService"/> with an AI-backed implementation.
     /// </summary>
     /// <typeparam name="TService">The semantic mapping service implementation.</typeparam>
