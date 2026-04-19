@@ -86,6 +86,29 @@ internal sealed class EfCoreAuditingReader(
     }
 
     /// <inheritdoc/>
+    public async Task<List<AuditEntry>> GetByUserAsync(
+        string userId,
+        int limit,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(limit);
+
+        await using AuditingDbContext dbContext = await dbContextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        return await dbContext.AuditEntries
+            .Include(e => e.EntityChanges)
+                .ThenInclude(ec => ec.PropertyChanges)
+            .Where(e => e.UserId == userId)
+            .OrderByDescending(e => e.Timestamp)
+            .Take(limit)
+            .AsNoTracking()
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
     public async Task<List<AuditEntry>> GetByCorrelationIdAsync(
         string correlationId,
         CancellationToken cancellationToken = default)

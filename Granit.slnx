@@ -177,6 +177,7 @@
     <Project Path="src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj" />
     <Project Path="src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj" />
     <Project Path="src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Auditing.Wolverine/Granit.Auditing.Wolverine.csproj" />
     <Project Path="src/Granit.Auditing/Granit.Auditing.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
     <Project Path="src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj" />
@@ -484,6 +485,7 @@
     <Project Path="tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.EntityFrameworkCore.Tests/Granit.Auditing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Tests/Granit.Auditing.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.Wolverine.Tests/Granit.Auditing.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />

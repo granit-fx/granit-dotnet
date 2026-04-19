@@ -35,4 +35,17 @@ public interface IAuditingReader
     Task<List<AuditEntry>> GetByCorrelationIdAsync(
         string correlationId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves audit log entries for a given user (GDPR Art. 15 — right of access), ordered
+    /// from most recent. <paramref name="limit"/> caps the result size so the archive assembly
+    /// stays within <c>GranitPrivacyOptions.ExportMaxSizeMb</c>.
+    /// </summary>
+    /// <param name="userId">User identifier recorded on <see cref="AuditEntry.UserId"/>.</param>
+    /// <param name="limit">Maximum number of entries to return.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<List<AuditEntry>> GetByUserAsync(
+        string userId,
+        int limit,
+        CancellationToken cancellationToken = default);
 }

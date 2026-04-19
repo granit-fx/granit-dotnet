@@ -120,6 +120,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Auditing.Wolverine",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.ApiKeys",
       "deps": [
         "Granit",
@@ -4602,6 +4610,12 @@
           "kind": "method",
           "signature": "GetByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default)",
           "returnType": "Task<List<AuditEntry>>"
+        },
+        {
+          "name": "GetByUserAsync",
+          "kind": "method",
+          "signature": "GetByUserAsync(string userId, int limit, CancellationToken cancellationToken = default)",
+          "returnType": "Task<List<AuditEntry>>"
         }
       ]
     },
@@ -4759,6 +4773,88 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AuditingPersonalDataExportHandler",
+      "fqn": "Granit.Auditing.Wolverine.DataExport.AuditingPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Auditing.Wolverine",
+      "file": "src/Granit.Auditing.Wolverine/DataExport/AuditingPersonalDataExportHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, AuditingPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AuditingPrivacyDataProvider",
+      "fqn": "Granit.Auditing.Wolverine.DataExport.AuditingPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Auditing.Wolverine",
+      "file": "src/Granit.Auditing.Wolverine/DataExport/AuditingPrivacyDataProvider.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderAuditingExtensions",
+      "fqn": "Granit.Auditing.Wolverine.Extensions.PrivacyBuilderAuditingExtensions",
+      "kind": "class",
+      "project": "Granit.Auditing.Wolverine",
+      "file": "src/Granit.Auditing.Wolverine/Extensions/PrivacyBuilderAuditingExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitAuditingPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitAuditingPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuditingWolverineModule",
+      "fqn": "Granit.Auditing.Wolverine.GranitAuditingWolverineModule",
+      "kind": "class",
+      "project": "Granit.Auditing.Wolverine",
+      "file": "src/Granit.Auditing.Wolverine/GranitAuditingWolverineModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
