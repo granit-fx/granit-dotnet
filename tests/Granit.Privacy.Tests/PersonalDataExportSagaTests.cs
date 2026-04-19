@@ -123,6 +123,8 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         result.IsPartial.ShouldBeFalse();
         result.MissingProviders.ShouldBeEmpty();
         result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+        result.Fragments.Count.ShouldBe(2);
+        result.Fragments.Select(f => f.BlobReferenceId).ShouldBe(["blob-patients", "blob-billing"], ignoreOrder: true);
     }
 
     // -------------------------------------------------------------------------
@@ -145,6 +147,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         result.IsPartial.ShouldBeTrue();
         result.MissingProviders.ShouldContain("appointments");
         result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+        result.Fragments.Count.ShouldBe(2);
     }
 
     // -------------------------------------------------------------------------

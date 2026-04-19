@@ -1,3 +1,4 @@
+using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Shouldly;
 using Xunit;
@@ -81,7 +82,7 @@ public sealed class ExportEventsTests
         var userId = Guid.NewGuid();
         List<string> missingProviders = ["billing", "appointments"];
 
-        ExportCompletedEto sut = new(requestId, userId, "gdpr-export/123", true, missingProviders);
+        ExportCompletedEto sut = new(requestId, userId, "gdpr-export/123", true, missingProviders, []);
 
         sut.RequestId.ShouldBe(requestId);
         sut.UserId.ShouldBe(userId);
@@ -89,6 +90,7 @@ public sealed class ExportEventsTests
         sut.IsPartial.ShouldBeTrue();
         sut.MissingProviders.Count.ShouldBe(2);
         sut.MissingProviders.ShouldContain("billing");
+        sut.Fragments.ShouldBeEmpty();
     }
 
     [Fact]
@@ -97,10 +99,13 @@ public sealed class ExportEventsTests
         var requestId = Guid.NewGuid();
         var userId = Guid.NewGuid();
 
-        ExportCompletedEto sut = new(requestId, userId, "gdpr-export/abc", false, []);
+        List<ReceivedFragment> fragments = [new("identity", "blob-1", "application/json")];
+
+        ExportCompletedEto sut = new(requestId, userId, "gdpr-export/abc", false, [], fragments);
 
         sut.IsPartial.ShouldBeFalse();
         sut.MissingProviders.ShouldBeEmpty();
+        sut.Fragments.Count.ShouldBe(1);
     }
 
     [Fact]
@@ -110,8 +115,9 @@ public sealed class ExportEventsTests
         var userId = Guid.NewGuid();
         List<string> missing = ["x"];
 
-        ExportCompletedEto a = new(requestId, userId, "ref", true, missing);
-        ExportCompletedEto b = new(requestId, userId, "ref", true, missing);
+        List<ReceivedFragment> fragments = [];
+        ExportCompletedEto a = new(requestId, userId, "ref", true, missing, fragments);
+        ExportCompletedEto b = new(requestId, userId, "ref", true, missing, fragments);
 
         a.ShouldBe(b);
     }

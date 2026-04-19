@@ -79,7 +79,7 @@ public sealed class PersonalDataExportSaga : Saga
         if (ExpectedCount == 0)
         {
             MarkCompleted();
-            return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, []);
+            return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, [], []);
         }
 
         await context.ScheduleAsync(
@@ -105,7 +105,13 @@ public sealed class PersonalDataExportSaga : Saga
         }
 
         MarkCompleted();
-        return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, []);
+        return new ExportCompletedEto(
+            Id,
+            UserId,
+            $"personal-data-export/{Id}",
+            IsPartial: false,
+            MissingProviders: [],
+            Fragments: ReceivedFragments.AsReadOnly());
     }
 
     /// <summary>
@@ -121,6 +127,7 @@ public sealed class PersonalDataExportSaga : Saga
             UserId,
             $"personal-data-export/{Id}",
             IsPartial: true,
-            PendingProviders.AsReadOnly());
+            MissingProviders: PendingProviders.AsReadOnly(),
+            Fragments: ReceivedFragments.AsReadOnly());
     }
 }

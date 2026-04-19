@@ -7686,12 +7686,6 @@
           "kind": "property",
           "signature": "string EffectiveErrorRedirectPath",
           "returnType": "string"
-        },
-        {
-          "name": "UsePushedAuthorizationRequests",
-          "kind": "property",
-          "signature": "bool UsePushedAuthorizationRequests",
-          "returnType": "bool"
         }
       ]
     },
@@ -32296,7 +32290,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/ExportCompletedEto.cs",
-      "line": 8,
+      "line": 22,
       "members": []
     },
     {
