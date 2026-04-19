@@ -1645,6 +1645,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Privacy.BlobStorage",
+      "deps": [
+        "Granit.Privacy",
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Privacy.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -32045,6 +32053,47 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Privacy.BlobStorage.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitPrivacyBlobStorage",
+          "kind": "method",
+          "signature": "AddGranitPrivacyBlobStorage(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitPrivacyBlobStorageModule",
+      "fqn": "Granit.Privacy.BlobStorage.GranitPrivacyBlobStorageModule",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/GranitPrivacyBlobStorageModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyFragmentUploader",
+      "fqn": "Granit.Privacy.BlobStorage.Internal.PrivacyFragmentUploader",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Internal/PrivacyFragmentUploader.cs",
+      "line": 26,
+      "members": []
     },
     {
       "name": "DeletionAction",

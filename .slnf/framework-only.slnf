@@ -124,6 +124,7 @@
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.Privacy.AI/Granit.Privacy.AI.csproj",
       "src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj",
+      "src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj",
       "src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj",
       "src/Granit.Privacy.EntityFrameworkCore/Granit.Privacy.EntityFrameworkCore.csproj",
       "src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj",

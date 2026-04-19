@@ -182,6 +182,7 @@
     <Project Path="src/Granit.Http.Cookies/Granit.Http.Cookies.csproj" />
     <Project Path="src/Granit.Privacy.AI/Granit.Privacy.AI.csproj" />
     <Project Path="src/Granit.Privacy.BackgroundJobs/Granit.Privacy.BackgroundJobs.csproj" />
+    <Project Path="src/Granit.Privacy.BlobStorage/Granit.Privacy.BlobStorage.csproj" />
     <Project Path="src/Granit.Privacy.Endpoints/Granit.Privacy.Endpoints.csproj" />
     <Project Path="src/Granit.Privacy.Notifications/Granit.Privacy.Notifications.csproj" />
     <Project Path="src/Granit.Privacy.Regulations.Cookies/Granit.Privacy.Regulations.Cookies.csproj" />
