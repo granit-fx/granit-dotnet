@@ -1298,6 +1298,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Notifications.Privacy.Wolverine",
+      "deps": [
+        "Granit.Notifications",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Notifications.SignalR",
       "deps": [
         "Granit.Notifications.Abstractions"
@@ -25784,6 +25792,88 @@
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "NotificationsPersonalDataExportHandler",
+      "fqn": "Granit.Notifications.Privacy.Wolverine.DataExport.NotificationsPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Notifications.Privacy.Wolverine",
+      "file": "src/Granit.Notifications.Privacy.Wolverine/DataExport/NotificationsPersonalDataExportHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, NotificationsPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "NotificationsPrivacyDataProvider",
+      "fqn": "Granit.Notifications.Privacy.Wolverine.DataExport.NotificationsPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Notifications.Privacy.Wolverine",
+      "file": "src/Granit.Notifications.Privacy.Wolverine/DataExport/NotificationsPrivacyDataProvider.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderNotificationsExtensions",
+      "fqn": "Granit.Notifications.Privacy.Wolverine.Extensions.PrivacyBuilderNotificationsExtensions",
+      "kind": "class",
+      "project": "Granit.Notifications.Privacy.Wolverine",
+      "file": "src/Granit.Notifications.Privacy.Wolverine/Extensions/PrivacyBuilderNotificationsExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitNotificationsPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitNotificationsPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitNotificationsPrivacyWolverineModule",
+      "fqn": "Granit.Notifications.Privacy.Wolverine.GranitNotificationsPrivacyWolverineModule",
+      "kind": "class",
+      "project": "Granit.Notifications.Privacy.Wolverine",
+      "file": "src/Granit.Notifications.Privacy.Wolverine/GranitNotificationsPrivacyWolverineModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

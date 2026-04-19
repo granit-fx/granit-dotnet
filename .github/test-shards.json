@@ -185,6 +185,7 @@
         "tests/Granit.Notifications.WebPush.Tests",
         "tests/Granit.Notifications.WhatsApp.Tests",
         "tests/Granit.Notifications.Wolverine.Tests",
+        "tests/Granit.Notifications.Privacy.Wolverine.Tests",
         "tests/Granit.Notifications.Zulip.Tests",
         "tests/Granit.Scheduling.BackgroundJobs.Tests",
         "tests/Granit.Scheduling.Endpoints.Tests",

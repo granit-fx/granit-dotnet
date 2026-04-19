@@ -154,6 +154,7 @@
       "src/Granit.Notifications.MobilePush.AzureNotificationHubs/Granit.Notifications.MobilePush.AzureNotificationHubs.csproj",
       "src/Granit.Notifications.MobilePush.GoogleFcm/Granit.Notifications.MobilePush.GoogleFcm.csproj",
       "src/Granit.Notifications.MobilePush/Granit.Notifications.MobilePush.csproj",
+      "src/Granit.Notifications.Privacy.Wolverine/Granit.Notifications.Privacy.Wolverine.csproj",
       "src/Granit.Notifications.SignalR/Granit.Notifications.SignalR.csproj",
       "src/Granit.Notifications.Sms.AwsSns/Granit.Notifications.Sms.AwsSns.csproj",
       "src/Granit.Notifications.Sms.AzureCommunicationServices/Granit.Notifications.Sms.AzureCommunicationServices.csproj",

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Notifications.Privacy.Wolverine</PackageId>
+    <Description>Wolverine privacy handlers for Granit.Notifications. Ships the NotificationsPrivacyDataProvider and a one-line PersonalDataRequestedEto handler that forwards to PrivacyFragmentUploader — drop-in GDPR export of the user's notification inbox, preferences, and subscriptions. Kept separate from Granit.Notifications.Wolverine so durable-dispatch consumers do not inherit a Privacy/BlobStorage dependency.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Notifications.Privacy.Wolverine.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

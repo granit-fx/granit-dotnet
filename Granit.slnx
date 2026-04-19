@@ -216,6 +216,7 @@
     <Project Path="src/Granit.Notifications.Twilio/Granit.Notifications.Twilio.csproj" />
     <Project Path="src/Granit.Notifications.WebPush/Granit.Notifications.WebPush.csproj" />
     <Project Path="src/Granit.Notifications.WhatsApp/Granit.Notifications.WhatsApp.csproj" />
+    <Project Path="src/Granit.Notifications.Privacy.Wolverine/Granit.Notifications.Privacy.Wolverine.csproj" />
     <Project Path="src/Granit.Notifications.Wolverine/Granit.Notifications.Wolverine.csproj" />
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
@@ -524,6 +525,7 @@
     <Project Path="tests/Granit.Notifications.Twilio.Tests/Granit.Notifications.Twilio.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.Tests/Granit.Notifications.WebPush.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WhatsApp.Tests/Granit.Notifications.WhatsApp.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.Privacy.Wolverine.Tests/Granit.Notifications.Privacy.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
