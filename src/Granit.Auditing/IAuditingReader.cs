@@ -20,11 +20,6 @@ public interface IAuditingReader
     Task<AuditEntry?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Retrieves a paginated list of audit log entries matching the given query filters.
-    /// </summary>
-    Task<PagedResult<AuditEntry>> GetPagedAsync(AuditingQuery query, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Retrieves the audit trail for a specific entity instance (GDPR SAR support).
     /// </summary>
     Task<PagedResult<AuditEntry>> GetByEntityAsync(

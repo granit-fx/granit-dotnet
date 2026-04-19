@@ -19,6 +19,7 @@
     <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

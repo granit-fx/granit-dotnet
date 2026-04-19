@@ -1,7 +1,7 @@
 using Granit.Domain;
 using Granit.Events;
 using Granit.MultiTenancy;
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.Events;
 using Shouldly;
 using Xunit;

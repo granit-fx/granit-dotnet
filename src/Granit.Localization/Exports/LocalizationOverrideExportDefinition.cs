@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
-using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.Localization.Domain;
 
-namespace Granit.Localization.EntityFrameworkCore.Exports;
+namespace Granit.Localization.Exports;
 
 public sealed class LocalizationOverrideExportDefinition : ExportDefinition<LocalizationOverride>
 {

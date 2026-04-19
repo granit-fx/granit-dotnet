@@ -1,4 +1,6 @@
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Tax.Endpoints.Endpoints;
+using Granit.Tax.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -18,7 +20,14 @@ public static class TaxEndpointRouteBuilderExtensions
             .WithTags("Tax");
 
         group.MapGranitGroup("ids").MapValidationEndpoints();
-        group.MapGranitGroup("rates").MapRateEndpoints();
+
+        // Rate endpoints — query engine for list/meta/saved-views, custom lookup for /{countryCode}.
+        // Both behind Tax.Rates.Read.
+        RouteGroupBuilder ratesGroup = group
+            .MapGranitGroup("rates")
+            .RequireAuthorization(TaxPermissions.Rates.Read);
+        ratesGroup.MapGranitQuery<TaxRateEntry>();
+        ratesGroup.MapRateEndpoints();
 
         return group;
     }

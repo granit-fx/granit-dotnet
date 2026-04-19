@@ -1,9 +1,11 @@
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
 using Granit.Tax.Diagnostics;
 using Granit.Tax.Domain;
 using Granit.Tax.Exports;
+using Granit.Tax.Internal;
 using Granit.Tax.Options;
 using Granit.Tax.Queries;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +34,11 @@ public static class TaxHostApplicationBuilderExtensions
         // Query + Export definitions (ADR-020: owned by the base module).
         builder.Services.AddQueryDefinition<TaxRateOverride, TaxRateOverrideQueryDefinition>();
         builder.Services.AddExportDefinition<TaxRateOverride, TaxRateOverrideExportDefinition>();
+        builder.Services.AddQueryDefinition<TaxRateEntry, TaxRateEntryQueryDefinition>();
+        builder.Services.AddExportDefinition<TaxRateEntry, TaxRateEntryExportDefinition>();
+
+        // Queryable source backing MapGranitQuery<TaxRateEntry>() — wraps ITaxRateProvider.
+        builder.Services.AddScoped<IQueryableSource<TaxRateEntry>, TaxRateEntryQueryableSource>();
 
         return builder;
     }

@@ -1,4 +1,4 @@
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Settings.EntityFrameworkCore;

@@ -1,5 +1,5 @@
 using Granit.Domain;
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 using Shouldly;
 using Xunit;
 

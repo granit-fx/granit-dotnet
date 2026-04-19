@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy.Domain;
 
-namespace Granit.MultiTenancy.EntityFrameworkCore.Exports;
+namespace Granit.MultiTenancy.Exports;
 
 public sealed class TenantExportDefinition : ExportDefinition<Tenant>
 {

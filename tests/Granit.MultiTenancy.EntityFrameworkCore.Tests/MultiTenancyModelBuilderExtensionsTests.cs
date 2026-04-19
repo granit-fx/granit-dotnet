@@ -1,4 +1,4 @@
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

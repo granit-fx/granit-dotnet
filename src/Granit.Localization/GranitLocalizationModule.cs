@@ -1,7 +1,12 @@
 using Granit.Caching;
+using Granit.DataExchange.Extensions;
+using Granit.Localization.Domain;
+using Granit.Localization.Exports;
 using Granit.Localization.Extensions;
 using Granit.Localization.Options;
+using Granit.Localization.Queries;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Localization;
@@ -16,6 +21,9 @@ public sealed class GranitLocalizationModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddGranitLocalization();
+
+        context.Services.AddQueryDefinition<LocalizationOverride, LocalizationOverrideQueryDefinition>();
+        context.Services.AddExportDefinition<LocalizationOverride, LocalizationOverrideExportDefinition>();
 
         context.Services.Configure<GranitLocalizationOptions>(options =>
         {

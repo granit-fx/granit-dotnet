@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.Authorization.EntityFrameworkCore.Entities;
+namespace Granit.Authorization.Domain;
 
 /// <summary>
 /// Represents an explicit grant of a permission to a role within a tenant.

@@ -6,6 +6,7 @@ using Granit.Auditing.Internal.Services;
 using Granit.Auditing.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
+using Granit.QueryEngine;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +63,10 @@ public static class AuditingEntityFrameworkCoreHostApplicationBuilderExtensions
         // CQRS services.
         builder.Services.AddScoped<IAuditingReader, EfCoreAuditingReader>();
         builder.Services.AddScoped<IAuditingWriter, EfCoreAuditingWriter>();
+
+        // Queryable sources for MapGranitQuery (host bypasses tenant filter for cross-tenant audit review).
+        builder.Services.AddScoped<IQueryableSource<AuditEntry>, EfAuditEntryQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<AuditEntityChange>, EfAuditEntityChangeQueryableSource>();
 
         // HttpContextAccessor for IP/UserAgent capture in audit entries.
         builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();

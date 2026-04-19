@@ -1,7 +1,7 @@
 using Granit.DataExchange.Export;
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 
-namespace Granit.Settings.EntityFrameworkCore.Exports;
+namespace Granit.Settings.Exports;
 
 public sealed class SettingRecordExportDefinition : ExportDefinition<SettingRecord>
 {

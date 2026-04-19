@@ -1,4 +1,4 @@
-using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.Localization.Domain;
 using Granit.Localization.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
 using Microsoft.EntityFrameworkCore;

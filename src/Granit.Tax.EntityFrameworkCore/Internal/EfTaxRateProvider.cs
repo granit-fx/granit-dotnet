@@ -45,12 +45,10 @@ internal sealed class EfTaxRateProvider(
     public async Task<IReadOnlyList<TaxRateEntry>> GetAllCurrentRatesAsync(
         CancellationToken cancellationToken = default)
     {
-        // Get base rates from fallback
         IReadOnlyList<TaxRateEntry> baseRates = await fallback
             .GetAllCurrentRatesAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // Get DB overrides
         await using TaxDbContext db = await contextFactory.CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
@@ -60,7 +58,28 @@ internal sealed class EfTaxRateProvider(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // Merge: DB overrides take precedence
+        return Merge(baseRates, overrides);
+    }
+
+    public IReadOnlyList<TaxRateEntry> GetAllCurrentRates()
+    {
+        IReadOnlyList<TaxRateEntry> baseRates = fallback.GetAllCurrentRates();
+
+        using TaxDbContext db = contextFactory.CreateDbContext();
+
+        DateTimeOffset now = clock.Now;
+        var overrides = db.TaxRateOverrides
+            .Where(r => r.EffectiveFrom <= now && (r.EffectiveTo == null || r.EffectiveTo > now))
+            .ToList();
+
+        return Merge(baseRates, overrides);
+    }
+
+    private static List<TaxRateEntry> Merge(
+        IReadOnlyList<TaxRateEntry> baseRates,
+        List<TaxRateOverride> overrides)
+    {
+        // DB overrides take precedence over the fallback rates.
         var overrideMap = overrides.ToDictionary(
             r => r.CountryCode, r => r, StringComparer.OrdinalIgnoreCase);
 

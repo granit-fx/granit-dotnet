@@ -1,14 +1,10 @@
-using Granit.DataExchange.Extensions;
 using Granit.Events.Extensions;
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
-using Granit.MultiTenancy.EntityFrameworkCore.Exports;
+using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
-using Granit.MultiTenancy.EntityFrameworkCore.Queries;
 using Granit.MultiTenancy.Stores;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Migrations;
 using Granit.QueryEngine;
-using Granit.QueryEngine.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -46,10 +42,6 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
 
         // Queryable source for the Granit query engine (filtering, pagination, sort over Tenant).
         builder.Services.TryAddScoped<IQueryableSource<Tenant>, EfTenantQueryableSource>();
-
-        // Query + Export definitions (ADR-020: owned by the base module).
-        builder.Services.AddQueryDefinition<Tenant, TenantQueryDefinition>();
-        builder.Services.AddExportDefinition<Tenant, TenantExportDefinition>();
 
         return builder;
     }
