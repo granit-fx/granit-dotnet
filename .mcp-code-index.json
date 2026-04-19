@@ -38970,6 +38970,22 @@
       "members": []
     },
     {
+      "name": "TaxRateEntryExportDefinition",
+      "fqn": "Granit.Tax.Exports.TaxRateEntryExportDefinition",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Exports/TaxRateEntryExportDefinition.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "TaxRateOverrideExportDefinition",
       "fqn": "Granit.Tax.Exports.TaxRateOverrideExportDefinition",
       "kind": "class",
@@ -39152,6 +39168,22 @@
           "kind": "property",
           "signature": "int ValidationCacheTtlHours",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "TaxRateEntryQueryDefinition",
+      "fqn": "Granit.Tax.Queries.TaxRateEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Tax",
+      "file": "src/Granit.Tax/Queries/TaxRateEntryQueryDefinition.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

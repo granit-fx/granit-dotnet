@@ -32,6 +32,8 @@ public static class TaxHostApplicationBuilderExtensions
         // Query + Export definitions (ADR-020: owned by the base module).
         builder.Services.AddQueryDefinition<TaxRateOverride, TaxRateOverrideQueryDefinition>();
         builder.Services.AddExportDefinition<TaxRateOverride, TaxRateOverrideExportDefinition>();
+        builder.Services.AddQueryDefinition<TaxRateEntry, TaxRateEntryQueryDefinition>();
+        builder.Services.AddExportDefinition<TaxRateEntry, TaxRateEntryExportDefinition>();
 
         return builder;
     }
