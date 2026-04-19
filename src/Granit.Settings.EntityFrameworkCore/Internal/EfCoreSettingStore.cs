@@ -1,6 +1,6 @@
 using Granit.Encryption;
 using Granit.Settings.Definitions;
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 using Granit.Settings.Values;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

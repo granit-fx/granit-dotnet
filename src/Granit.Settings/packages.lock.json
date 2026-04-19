@@ -21,6 +21,12 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.dataexchange.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
@@ -28,6 +34,12 @@
         }
       },
       "granit.events": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

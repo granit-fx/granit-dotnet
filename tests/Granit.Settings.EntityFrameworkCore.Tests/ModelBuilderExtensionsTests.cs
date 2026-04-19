@@ -1,4 +1,4 @@
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 using Granit.Settings.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;

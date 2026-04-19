@@ -1,7 +1,7 @@
 using Granit.QueryEngine;
-using Granit.Settings.EntityFrameworkCore.Entities;
+using Granit.Settings.Domain;
 
-namespace Granit.Settings.EntityFrameworkCore.Queries;
+namespace Granit.Settings.Queries;
 
 /// <summary>
 /// Query definition for setting records — declares columns, filters, sorting,
