@@ -56,6 +56,9 @@ public sealed class PersonalDataExportSaga : Saga
     /// <summary>Tenant identifier propagated from the starting event for metrics tagging.</summary>
     public string? TenantId { get; set; }
 
+    /// <summary>When the data subject filed the export request — propagated to <see cref="ExportCompletedEto"/>.</summary>
+    public DateTimeOffset RequestedAt { get; set; }
+
     /// <summary>
     /// Starts the Saga when a data subject requests export of their personal data.
     /// If no providers are registered, completes immediately.
@@ -72,6 +75,7 @@ public sealed class PersonalDataExportSaga : Saga
         UserId = @event.UserId;
         Regulation = @event.Regulation;
         TenantId = @event.TenantId;
+        RequestedAt = @event.RequestedAt;
         ExpectedCount = registry.Count;
         metrics.RecordExportRequested(TenantId, Regulation);
         PendingProviders = [.. registry.GetAll()];
@@ -79,7 +83,15 @@ public sealed class PersonalDataExportSaga : Saga
         if (ExpectedCount == 0)
         {
             MarkCompleted();
-            return new ExportCompletedEto(Id, UserId, $"personal-data-export/{Id}", IsPartial: false, [], []);
+            return new ExportCompletedEto(
+                Id,
+                UserId,
+                $"personal-data-export/{Id}",
+                IsPartial: false,
+                MissingProviders: [],
+                Fragments: [],
+                Regulation,
+                RequestedAt);
         }
 
         await context.ScheduleAsync(
@@ -111,7 +123,9 @@ public sealed class PersonalDataExportSaga : Saga
             $"personal-data-export/{Id}",
             IsPartial: false,
             MissingProviders: [],
-            Fragments: ReceivedFragments.AsReadOnly());
+            Fragments: ReceivedFragments.AsReadOnly(),
+            Regulation,
+            RequestedAt);
     }
 
     /// <summary>
@@ -128,6 +142,8 @@ public sealed class PersonalDataExportSaga : Saga
             $"personal-data-export/{Id}",
             IsPartial: true,
             MissingProviders: PendingProviders.AsReadOnly(),
-            Fragments: ReceivedFragments.AsReadOnly());
+            Fragments: ReceivedFragments.AsReadOnly(),
+            Regulation,
+            RequestedAt);
     }
 }

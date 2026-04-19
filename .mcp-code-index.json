@@ -31992,24 +31992,6 @@
       "members": []
     },
     {
-      "name": "ExportManifest",
-      "fqn": "Granit.Privacy.BackgroundJobs.DataExport.ExportManifest",
-      "kind": "record",
-      "project": "Granit.Privacy.BackgroundJobs",
-      "file": "src/Granit.Privacy.BackgroundJobs/DataExport/ExportManifest.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "ExportManifestFragment",
-      "fqn": "Granit.Privacy.BackgroundJobs.DataExport.ExportManifestFragment",
-      "kind": "record",
-      "project": "Granit.Privacy.BackgroundJobs",
-      "file": "src/Granit.Privacy.BackgroundJobs/DataExport/ExportManifest.cs",
-      "line": 34,
-      "members": []
-    },
-    {
       "name": "GranitPrivacyBackgroundJobsModule",
       "fqn": "Granit.Privacy.BackgroundJobs.GranitPrivacyBackgroundJobsModule",
       "kind": "class",
@@ -32067,12 +32049,46 @@
       ]
     },
     {
+      "name": "ExportArchiveAssemblyHandler",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportArchiveAssemblyHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
+      "line": 44,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExportCompletedEto @event, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ExportManifest",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportManifest",
+      "kind": "record",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "ExportManifestFragment",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportManifestFragment",
+      "kind": "record",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
+      "line": 34,
+      "members": []
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.Privacy.BlobStorage.Extensions.ServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -32308,7 +32324,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/ExportCompletedEto.cs",
-      "line": 22,
+      "line": 24,
       "members": []
     },
     {
@@ -32474,7 +32490,7 @@
           "name": "StartAsync",
           "kind": "method",
           "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
-          "returnType": "string? TenantId { get; set; } public Task<ExportCompletedEto?>"
+          "returnType": "string? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]
     },

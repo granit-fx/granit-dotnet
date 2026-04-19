@@ -1,8 +1,16 @@
 # Granit.Privacy.BlobStorage
 
-Bridges `Granit.Privacy` personal-data exports to `Granit.BlobStorage`. Ships
-`PrivacyFragmentUploader`, the shared presigned-upload + event-publication utility
-used by every `IPrivacyDataProvider` Wolverine handler in the scatter-gather saga.
+Bridges `Granit.Privacy` personal-data exports to `Granit.BlobStorage`. Ships both
+sides of the scatter-gather pipeline:
+
+- **`PrivacyFragmentUploader`** — provider-side: every `IPrivacyDataProvider`
+  Wolverine handler forwards here to run the presigned-upload dance and publish
+  `PersonalDataPreparedEto`.
+- **`ExportArchiveAssemblyHandler`** — terminal: consumes `ExportCompletedEto`,
+  streams every fragment into a ZIP archive (temp file, `CountingStream`-guarded
+  for `ExportMaxSizeMb`), writes `manifest.json`, uploads, and marks the
+  `IExportRequestTrackerWriter` as `Completed` / `PartiallyCompleted` /
+  `SizeLimitExceeded`.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
@@ -50,9 +58,19 @@ The uploader:
 3. Otherwise — runs the presigned upload dance
    (`InitiateUploadAsync` → HTTP PUT → `ConfirmUploadAsync`) and publishes
    `PersonalDataPreparedEto` with the confirmed blob id
-4. The archive assembler in `Granit.Privacy.BackgroundJobs` consumes the sentinel
-   to record the provider under `manifest.EmptyProviders` instead of downloading
-   a non-existent blob
+
+The archive assembler then:
+
+1. Receives `ExportCompletedEto` with the full fragment list
+2. For each non-`empty:` fragment: requests a presigned download URL (TTL from
+   `GranitPrivacyOptions.ArchiveAssemblyDownloadUrlExpiryMinutes`, default 15 min),
+   streams the bytes straight into a ZIP entry
+3. For `empty:` sentinels: records the provider under `manifest.EmptyProviders`
+   without calling `CreateDownloadUrlAsync`
+4. Writes `manifest.json` as the final entry
+5. Uploads the ZIP, confirms it, and calls `MarkCompletedAsync` with either
+   `Completed`, `PartiallyCompleted` (saga timed out), or `SizeLimitExceeded`
+   (archive exceeded `ExportMaxSizeMb`)
 
 ## Documentation
 

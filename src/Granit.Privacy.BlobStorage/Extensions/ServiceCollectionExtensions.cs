@@ -1,3 +1,4 @@
+using Granit.Privacy.BlobStorage.DataExport;
 using Granit.Privacy.BlobStorage.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -10,14 +11,20 @@ namespace Granit.Privacy.BlobStorage.Extensions;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers <see cref="PrivacyFragmentUploader"/> as a scoped service. Provider-side
-    /// Wolverine handlers resolve it to upload their fragments and publish
-    /// <see cref="Granit.Privacy.DataExport.Events.PersonalDataPreparedEto"/>.
+    /// Registers the privacy-export services that bridge the scatter-gather saga to BlobStorage:
+    /// <list type="bullet">
+    ///   <item><see cref="PrivacyFragmentUploader"/> — provider-side fragment upload helper.</item>
+    ///   <item><see cref="ExportArchiveAssemblyHandler"/> — terminal ZIP assembler triggered by
+    ///   <see cref="Granit.Privacy.DataExport.Events.ExportCompletedEto"/>. Auto-discovered by
+    ///   Wolverine once registered with DI.</item>
+    /// </list>
     /// </summary>
     public static IServiceCollection AddGranitPrivacyBlobStorage(this IServiceCollection services)
     {
         services.AddHttpClient(PrivacyFragmentUploader.HttpClientName);
+        services.AddHttpClient(ExportArchiveAssemblyHandler.HttpClientName);
         services.TryAddScoped<PrivacyFragmentUploader>();
+        services.TryAddScoped<ExportArchiveAssemblyHandler>();
         return services;
     }
 }

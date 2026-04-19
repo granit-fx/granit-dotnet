@@ -1,4 +1,4 @@
-namespace Granit.Privacy.BackgroundJobs.DataExport.Internal;
+namespace Granit.Privacy.BlobStorage.DataExport.Internal;
 
 /// <summary>
 /// Write-only decorator stream that tracks how many bytes have been written and

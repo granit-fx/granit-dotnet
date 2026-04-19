@@ -1,4 +1,4 @@
-namespace Granit.Privacy.BackgroundJobs.DataExport;
+namespace Granit.Privacy.BlobStorage.DataExport;
 
 /// <summary>
 /// <c>manifest.json</c> entry inside the assembled personal-data export ZIP.
