@@ -2,7 +2,7 @@ using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Privacy.DataDeletion;
 
-namespace Granit.Privacy.EntityFrameworkCore.DataDeletion;
+namespace Granit.Privacy.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// Read-model row persisted by <c>EfDeletionRequestTracker</c> for each deferred personal-data

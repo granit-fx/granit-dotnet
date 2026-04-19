@@ -5,7 +5,7 @@ using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Privacy.BlobStorage.Internal;
+namespace Granit.Privacy.BlobStorage;
 
 /// <summary>
 /// Reusable utility that drives the scatter-gather provider-side upload:

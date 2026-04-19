@@ -1,5 +1,5 @@
 using System.Reflection;
-using Granit.Privacy.BlobStorage.Internal;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
 using Shouldly;

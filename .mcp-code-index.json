@@ -32486,7 +32486,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 10,
       "members": [
         {
           "name": "AddGranitPrivacyBlobStorage",
@@ -32514,10 +32514,10 @@
     },
     {
       "name": "PrivacyFragmentUploader",
-      "fqn": "Granit.Privacy.BlobStorage.Internal.PrivacyFragmentUploader",
+      "fqn": "Granit.Privacy.BlobStorage.PrivacyFragmentUploader",
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/Internal/PrivacyFragmentUploader.cs",
+      "file": "src/Granit.Privacy.BlobStorage/PrivacyFragmentUploader.cs",
       "line": 26,
       "members": []
     },
@@ -33235,10 +33235,10 @@
     },
     {
       "name": "DeletionRequestEntity",
-      "fqn": "Granit.Privacy.EntityFrameworkCore.DataDeletion.DeletionRequestEntity",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Entities.DeletionRequestEntity",
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
-      "file": "src/Granit.Privacy.EntityFrameworkCore/DataDeletion/DeletionRequestEntity.cs",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/DeletionRequestEntity.cs",
       "line": 13,
       "members": [
         {
@@ -33251,10 +33251,10 @@
     },
     {
       "name": "ExportRequestEntity",
-      "fqn": "Granit.Privacy.EntityFrameworkCore.DataExport.ExportRequestEntity",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Entities.ExportRequestEntity",
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
-      "file": "src/Granit.Privacy.EntityFrameworkCore/DataExport/ExportRequestEntity.cs",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/ExportRequestEntity.cs",
       "line": 12,
       "members": [
         {
@@ -33271,7 +33271,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyBuilderEntityFrameworkCoreExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "UseEntityFrameworkCoreTrackers",
@@ -33303,7 +33303,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyModelBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ConfigurePrivacyModule",

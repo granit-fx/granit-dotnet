@@ -1,7 +1,7 @@
 using Granit.Domain;
 using Granit.Privacy.DataExport;
 
-namespace Granit.Privacy.EntityFrameworkCore.DataExport;
+namespace Granit.Privacy.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// Read-model row persisted by <c>EfExportRequestTracker</c> for each personal-data export

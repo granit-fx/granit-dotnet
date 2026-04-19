@@ -1,5 +1,6 @@
 using Granit.Privacy.EntityFrameworkCore.DataDeletion.Internal;
 using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
+using Granit.Privacy.EntityFrameworkCore.Entities;
 using Granit.Privacy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 

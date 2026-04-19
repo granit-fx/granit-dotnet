@@ -1,6 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.DataExport;
+using Granit.Privacy.EntityFrameworkCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Privacy.EntityFrameworkCore.DataExport.Internal;

@@ -1,4 +1,4 @@
-using Granit.Privacy.BlobStorage.Internal;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport.Events;
 
 namespace Granit.Identity.Federated.Wolverine.DataExport;

@@ -1,6 +1,6 @@
 using Granit.BlobStorage;
 using Granit.Events;
-using Granit.Privacy.BlobStorage.Internal;
+using Granit.Privacy.BlobStorage;
 using Granit.Privacy.BlobStorage.Tests.DataExport;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;
@@ -9,7 +9,7 @@ using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Privacy.BlobStorage.Tests.Internal;
+namespace Granit.Privacy.BlobStorage.Tests;
 
 public sealed class PrivacyFragmentUploaderTests : IDisposable
 {
