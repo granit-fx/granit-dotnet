@@ -33271,7 +33271,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyBuilderEntityFrameworkCoreExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "UseEntityFrameworkCoreTrackers",

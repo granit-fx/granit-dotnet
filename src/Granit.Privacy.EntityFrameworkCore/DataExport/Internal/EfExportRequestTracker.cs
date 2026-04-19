@@ -1,19 +1,25 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.DataExport;
-using Granit.Privacy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
 
-internal sealed class EfExportRequestTracker(
-    IDbContextFactory<PrivacyDbContext> contextFactory,
+/// <summary>
+/// EF Core-backed implementation of the export request tracker, parameterised by the host
+/// <typeparamref name="TContext"/>. Apps that keep privacy entities on their own shared or
+/// tenant-scoped DbContext (e.g. via <c>ConfigurePrivacyModule()</c>) register this store
+/// against their context rather than the default <c>PrivacyDbContext</c>.
+/// </summary>
+internal sealed class EfExportRequestTracker<TContext>(
+    IDbContextFactory<TContext> contextFactory,
     ICurrentTenant currentTenant,
     TimeProvider timeProvider)
-    : EfStoreBase<ExportRequestEntity, PrivacyDbContext>(contextFactory, currentTenant),
+    : EfStoreBase<ExportRequestEntity, TContext>(contextFactory, currentTenant),
       IExportRequestTrackerReader, IExportRequestTrackerWriter
+    where TContext : DbContext
 {
-    private readonly IDbContextFactory<PrivacyDbContext> _contextFactory = contextFactory;
+    private readonly IDbContextFactory<TContext> _contextFactory = contextFactory;
     private readonly TimeProvider _timeProvider = timeProvider;
 
     public async Task<ExportRequestStatus?> GetStatusAsync(
@@ -27,7 +33,7 @@ internal sealed class EfExportRequestTracker(
     public async Task<IReadOnlyList<ExportRequestStatus>> GetByUserAsync(
         Guid userId, CancellationToken cancellationToken = default)
     {
-        await using PrivacyDbContext db = await _contextFactory
+        await using TContext db = await _contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<ExportRequestEntity> rows = await Query(db)
@@ -62,7 +68,7 @@ internal sealed class EfExportRequestTracker(
         IReadOnlyList<string>? missingProviders,
         CancellationToken cancellationToken = default)
     {
-        await using PrivacyDbContext db = await _contextFactory
+        await using TContext db = await _contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         ExportRequestEntity? entity = await Query(db)

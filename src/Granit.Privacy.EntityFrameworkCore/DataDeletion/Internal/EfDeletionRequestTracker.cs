@@ -1,18 +1,24 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.DataDeletion;
-using Granit.Privacy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Privacy.EntityFrameworkCore.DataDeletion.Internal;
 
-internal sealed class EfDeletionRequestTracker(
-    IDbContextFactory<PrivacyDbContext> contextFactory,
+/// <summary>
+/// EF Core-backed implementation of the deletion request tracker, parameterised by the host
+/// <typeparamref name="TContext"/>. Apps that keep privacy entities on their own shared or
+/// tenant-scoped DbContext register this store against their context rather than the default
+/// <c>PrivacyDbContext</c>.
+/// </summary>
+internal sealed class EfDeletionRequestTracker<TContext>(
+    IDbContextFactory<TContext> contextFactory,
     ICurrentTenant currentTenant)
-    : EfStoreBase<DeletionRequestEntity, PrivacyDbContext>(contextFactory, currentTenant),
+    : EfStoreBase<DeletionRequestEntity, TContext>(contextFactory, currentTenant),
       IDeletionRequestTrackerReader, IDeletionRequestTrackerWriter
+    where TContext : DbContext
 {
-    private readonly IDbContextFactory<PrivacyDbContext> _contextFactory = contextFactory;
+    private readonly IDbContextFactory<TContext> _contextFactory = contextFactory;
 
     public async Task<DeletionRequestStatus?> GetStatusAsync(
         Guid requestId, CancellationToken cancellationToken = default)
@@ -25,7 +31,7 @@ internal sealed class EfDeletionRequestTracker(
     public async Task<IReadOnlyList<DeletionRequestStatus>> GetByUserAsync(
         Guid userId, CancellationToken cancellationToken = default)
     {
-        await using PrivacyDbContext db = await _contextFactory
+        await using TContext db = await _contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<DeletionRequestEntity> rows = await Query(db)
@@ -40,7 +46,7 @@ internal sealed class EfDeletionRequestTracker(
     public async Task<IReadOnlyList<DeletionRequestStatus>> GetExpiredDeferredAsync(
         DateTimeOffset now, CancellationToken cancellationToken = default)
     {
-        await using PrivacyDbContext db = await _contextFactory
+        await using TContext db = await _contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         List<DeletionRequestEntity> rows = await Query(db)
@@ -91,7 +97,7 @@ internal sealed class EfDeletionRequestTracker(
         Action<DeletionRequestEntity> mutation,
         CancellationToken cancellationToken)
     {
-        await using PrivacyDbContext db = await _contextFactory
+        await using TContext db = await _contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         DeletionRequestEntity? entity = await Query(db)
