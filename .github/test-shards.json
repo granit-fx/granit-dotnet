@@ -238,6 +238,7 @@
         "tests/Granit.Identity.Local.Endpoints.Tests",
         "tests/Granit.Identity.Local.Notifications.Tests",
         "tests/Granit.Identity.Local.Tests",
+        "tests/Granit.Identity.Local.Wolverine.Tests",
         "tests/Granit.Identity.Tests",
         "tests/Granit.Authentication.DPoP.Tests",
         "tests/Granit.Authentication.OpenIddict.Tests",
