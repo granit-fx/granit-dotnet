@@ -1,10 +1,15 @@
+using Granit.DataExchange.Extensions;
 using Granit.MultiTenancy.Diagnostics;
+using Granit.MultiTenancy.Domain;
+using Granit.MultiTenancy.Exports;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
+using Granit.MultiTenancy.Queries;
 using Granit.MultiTenancy.Resolvers;
 using Granit.MultiTenancy.Stores;
 using Granit.MultiTenancy.Url;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -51,6 +56,9 @@ public static class MultiTenancyServiceCollectionExtensions
 
         // IMiddleware pattern: resolved per scope (per request)
         services.AddScoped<TenantResolutionMiddleware>();
+
+        services.AddQueryDefinition<Tenant, TenantQueryDefinition>();
+        services.AddExportDefinition<Tenant, TenantExportDefinition>();
 
         return services;
     }

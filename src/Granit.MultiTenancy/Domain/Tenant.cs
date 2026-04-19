@@ -1,7 +1,7 @@
 using Granit.Domain;
 using Granit.MultiTenancy.Events;
 
-namespace Granit.MultiTenancy.EntityFrameworkCore.Entities;
+namespace Granit.MultiTenancy.Domain;
 
 /// <summary>
 /// Host-level tenant aggregate root.

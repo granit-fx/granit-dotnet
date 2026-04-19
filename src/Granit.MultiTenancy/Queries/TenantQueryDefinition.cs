@@ -1,7 +1,7 @@
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy.Domain;
 using Granit.QueryEngine;
 
-namespace Granit.MultiTenancy.EntityFrameworkCore.Queries;
+namespace Granit.MultiTenancy.Queries;
 
 /// <summary>
 /// Query definition for tenants — declares columns, filters, sorting,
