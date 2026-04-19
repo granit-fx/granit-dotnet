@@ -487,6 +487,7 @@
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj" />
+    <Project Path="tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Privacy.Regulations.Cookies.Tests/Granit.Privacy.Regulations.Cookies.Tests.csproj" />

@@ -294,6 +294,7 @@
       "tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj",
       "tests/Granit.Privacy.AI.Tests/Granit.Privacy.AI.Tests.csproj",
       "tests/Granit.Privacy.BackgroundJobs.Tests/Granit.Privacy.BackgroundJobs.Tests.csproj",
+      "tests/Granit.Privacy.BlobStorage.Tests/Granit.Privacy.BlobStorage.Tests.csproj",
       "tests/Granit.Privacy.Endpoints.Tests/Granit.Privacy.Endpoints.Tests.csproj",
       "tests/Granit.Privacy.EntityFrameworkCore.Tests/Granit.Privacy.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Privacy.Notifications.Tests/Granit.Privacy.Notifications.Tests.csproj",
