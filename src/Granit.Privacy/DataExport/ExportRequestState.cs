@@ -16,4 +16,10 @@ public enum ExportRequestState
 
     /// <summary>Saga timed out with no provider responses.</summary>
     TimedOut = 3,
+
+    /// <summary>
+    /// Archive assembly aborted because the ZIP exceeded
+    /// <see cref="Options.GranitPrivacyOptions.ExportMaxSizeMb"/>.
+    /// </summary>
+    SizeLimitExceeded = 4,
 }

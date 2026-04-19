@@ -20,6 +20,7 @@ internal static class PrivacyActivitySource
     // ──── Operation names ────
 
     internal const string ExportExecute = "privacy.export.execute";
+    internal const string ArchiveAssemble = "privacy.export.archive.assemble";
     internal const string DeletionExecute = "privacy.deletion.execute";
     internal const string DeletionDefer = "privacy.deletion.defer";
     internal const string DeletionCancel = "privacy.deletion.cancel";

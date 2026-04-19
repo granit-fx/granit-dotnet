@@ -25,6 +25,21 @@ public sealed class GranitPrivacyOptions
     [Range(1, 500)]
     public int ExportMaxSizeMb { get; set; } = 100;
 
+    /// <summary>
+    /// Time-to-live, in minutes, of the presigned URLs that the archive assembler
+    /// requests to download each fragment.
+    /// </summary>
+    /// <remarks>
+    /// The assembler is triggered by <c>ExportCompletedEto</c>, which fires at the end
+    /// of the saga — up to <see cref="ExportTimeoutMinutes"/> after the earliest fragment
+    /// was uploaded, plus Wolverine retry headroom. The default (15 min) covers a 5-minute
+    /// saga timeout with a comfortable retry budget. Blob providers may enforce a lower
+    /// ceiling — the effective TTL is the minimum of the two.
+    /// Default: 15 minutes.
+    /// </remarks>
+    [Range(1, 60)]
+    public int ArchiveAssemblyDownloadUrlExpiryMinutes { get; set; } = 15;
+
     // ── Deletion cooling-off period ──────────────────────────────────────────
 
     /// <summary>

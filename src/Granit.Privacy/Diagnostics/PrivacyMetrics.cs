@@ -25,7 +25,9 @@ public sealed class PrivacyMetrics
     private readonly Counter<long> _deletionReminders;
     private readonly Counter<long> _optOutRequests;
     private readonly Counter<long> _optOutRevocations;
+    private readonly Counter<long> _archivesAssembled;
     private readonly Histogram<double> _exportDuration;
+    private readonly Histogram<double> _archiveAssemblyDuration;
 
     public PrivacyMetrics(IMeterFactory meterFactory)
     {
@@ -71,6 +73,15 @@ public sealed class PrivacyMetrics
             "granit.privacy.export.duration",
             unit: "s",
             description: "Duration of personal data export in seconds.");
+
+        _archivesAssembled = meter.CreateCounter<long>(
+            "granit.privacy.export.archive.assembled",
+            description: "Number of personal-data export archives successfully assembled.");
+
+        _archiveAssemblyDuration = meter.CreateHistogram<double>(
+            "granit.privacy.export.archive.duration",
+            unit: "s",
+            description: "Duration of export archive assembly in seconds.");
     }
 
     /// <summary>Records an export request.</summary>
@@ -114,6 +125,20 @@ public sealed class PrivacyMetrics
             { TagRegulation, regulation ?? DefaultRegulation },
             { "status", status },
         });
+
+    /// <summary>Records a completed archive assembly (success or <c>SizeLimitExceeded</c>).</summary>
+    public void RecordArchiveAssembled(string? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)
+    {
+        TagList tags = new()
+        {
+            { TagTenantId, tenantId ?? DefaultTenant },
+            { TagRegulation, regulation ?? DefaultRegulation },
+            { "status", status },
+            { "is_partial", isPartial ? "true" : "false" },
+        };
+        _archivesAssembled.Add(1, tags);
+        _archiveAssemblyDuration.Record(duration.TotalSeconds, tags);
+    }
 
     /// <summary>Records an opt-out request.</summary>
     public void RecordOptOutRequested(string? tenantId, string? regulation = null) =>

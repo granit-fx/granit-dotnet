@@ -32536,9 +32536,9 @@
           "returnType": "void"
         },
         {
-          "name": "RecordOptOutRequested",
+          "name": "RecordArchiveAssembled",
           "kind": "method",
-          "signature": "RecordOptOutRequested(string? tenantId, string? regulation = null)",
+          "signature": "RecordArchiveAssembled(string? tenantId, string status, bool isPartial, TimeSpan duration, string? regulation = null)",
           "returnType": "void"
         },
         {
@@ -33479,6 +33479,12 @@
           "returnType": "int"
         },
         {
+          "name": "ArchiveAssemblyDownloadUrlExpiryMinutes",
+          "kind": "property",
+          "signature": "int ArchiveAssemblyDownloadUrlExpiryMinutes",
+          "returnType": "int"
+        },
+        {
           "name": "DefaultGracePeriodDays",
           "kind": "property",
           "signature": "int DefaultGracePeriodDays",
@@ -33510,7 +33516,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/Options/GranitPrivacyOptions.cs",
-      "line": 66,
+      "line": 81,
       "members": []
     },
     {
