@@ -4245,11 +4245,11 @@
       ]
     },
     {
-      "name": "AuditEntrySummary",
-      "fqn": "Granit.Auditing.Dtos.AuditEntrySummary",
+      "name": "AuditEntryResponse",
+      "fqn": "Granit.Auditing.Dtos.AuditEntryResponse",
       "kind": "record",
       "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Dtos/AuditEntrySummary.cs",
+      "file": "src/Granit.Auditing/Dtos/AuditEntryResponse.cs",
       "line": 14,
       "members": []
     },

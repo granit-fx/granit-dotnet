@@ -14,7 +14,7 @@ internal sealed class AuditingSchemaExampleProvider : ISchemaExampleProvider
     public IReadOnlyDictionary<Type, JsonNode> GetExamples() =>
         new Dictionary<Type, JsonNode>
         {
-            [typeof(AuditEntrySummary)] = new JsonObject
+            [typeof(AuditEntryResponse)] = new JsonObject
             {
                 ["id"] = "b3f7a1c2-9d4e-4f8a-b6c5-1e2d3f4a5b6c",
                 ["timestamp"] = "2026-03-17T10:15:30+00:00",

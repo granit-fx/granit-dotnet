@@ -28,7 +28,7 @@ public sealed class AuditEntryQueryDefinition : QueryDefinition<AuditEntry>
             .DateFilter(e => e.Timestamp)
             .DefaultSort("-timestamp")
             .DefaultPageSize(25)
-            .ProjectTo(e => new AuditEntrySummary(
+            .ProjectTo(e => new AuditEntryResponse(
                 e.Id,
                 e.Timestamp,
                 e.UserId,

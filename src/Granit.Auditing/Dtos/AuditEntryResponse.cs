@@ -11,7 +11,7 @@ namespace Granit.Auditing.Dtos;
 /// the list view — it is only exposed via the detail endpoint. <c>EntityChangeCount</c>
 /// is computed server-side via a SQL subquery on <c>AuditEntityChange</c>.
 /// </remarks>
-public sealed record AuditEntrySummary(
+public sealed record AuditEntryResponse(
     Guid Id,
     DateTimeOffset Timestamp,
     string UserId,

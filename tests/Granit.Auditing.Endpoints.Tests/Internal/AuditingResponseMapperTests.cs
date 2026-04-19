@@ -10,7 +10,7 @@ namespace Granit.Auditing.Endpoints.Tests.Internal;
 public sealed class AuditingResponseMapperTests
 {
     [Fact]
-    public void ToSummary_MapsAllFields()
+    public void ToSummaryResponse_MapsAllFields()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -36,7 +36,7 @@ public sealed class AuditingResponseMapperTests
         };
 
         // Act
-        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
+        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
 
         // Assert
         response.Id.ShouldBe(entry.Id);

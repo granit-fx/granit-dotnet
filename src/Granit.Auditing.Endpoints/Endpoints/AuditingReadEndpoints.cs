@@ -35,7 +35,7 @@ internal static class AuditingReadEndpoints
             .WithName("GetAuditEntriesByEntity")
             .WithSummary("Returns the audit trail for a specific entity instance.")
             .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record. Path parameters are limited to 256 characters.")
-            .Produces<PagedResult<AuditEntrySummary>>()
+            .Produces<PagedResult<AuditEntryResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/correlation/{correlationId}", GetByCorrelationIdAsync)
@@ -89,7 +89,7 @@ internal static class AuditingReadEndpoints
         return TypedResults.Ok(mapped);
     }
 
-    private static async Task<Results<Ok<PagedResult<AuditEntrySummary>>, ProblemHttpResult>> GetByEntityAsync(
+    private static async Task<Results<Ok<PagedResult<AuditEntryResponse>>, ProblemHttpResult>> GetByEntityAsync(
         string entityType,
         string entityId,
         [FromQuery] int? page,
@@ -114,8 +114,8 @@ internal static class AuditingReadEndpoints
                 cancellationToken)
             .ConfigureAwait(false);
 
-        PagedResult<AuditEntrySummary> mapped = new(
-            result.Items.Select(AuditingResponseMapper.ToSummary).ToList(),
+        PagedResult<AuditEntryResponse> mapped = new(
+            result.Items.Select(AuditingResponseMapper.ToSummaryResponse).ToList(),
             result.TotalCount,
             result.HasMore);
 

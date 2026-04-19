@@ -16,7 +16,7 @@ public sealed class AuditingSchemaExampleProviderTests
 
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 
-        examples.ShouldContainKey(typeof(AuditEntrySummary));
+        examples.ShouldContainKey(typeof(AuditEntryResponse));
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public sealed class AuditingSchemaExampleProviderTests
         AuditingSchemaExampleProvider provider = new();
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 
-        JsonNode entryExample = examples[typeof(AuditEntrySummary)];
+        JsonNode entryExample = examples[typeof(AuditEntryResponse)];
         JsonObject obj = entryExample.AsObject();
 
         obj["id"].ShouldNotBeNull();

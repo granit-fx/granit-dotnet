@@ -10,7 +10,7 @@ namespace Granit.Auditing.Endpoints.Internal;
 internal static class AuditingResponseMapper
 {
     /// <summary>Maps to the summary projection used by per-entity list lookups.</summary>
-    public static AuditEntrySummary ToSummary(AuditEntry entry) =>
+    public static AuditEntryResponse ToSummaryResponse(AuditEntry entry) =>
         new(
             entry.Id,
             entry.Timestamp,

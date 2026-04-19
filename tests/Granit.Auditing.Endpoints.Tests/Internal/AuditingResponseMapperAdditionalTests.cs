@@ -10,7 +10,7 @@ namespace Granit.Auditing.Endpoints.Tests.Internal;
 public sealed class AuditingResponseMapperAdditionalTests
 {
     [Fact]
-    public void ToSummary_WithEmptyEntityChanges_ReturnsZeroCount()
+    public void ToSummaryResponse_WithEmptyEntityChanges_ReturnsZeroCount()
     {
         AuditEntry entry = new()
         {
@@ -20,13 +20,13 @@ public sealed class AuditingResponseMapperAdditionalTests
             Category = AuditCategory.DataMutation,
         };
 
-        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
+        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
 
         response.EntityChangeCount.ShouldBe(0);
     }
 
     [Fact]
-    public void ToSummary_WithMultipleEntityChanges_CountsCorrectly()
+    public void ToSummaryResponse_WithMultipleEntityChanges_CountsCorrectly()
     {
         AuditEntry entry = new()
         {
@@ -42,13 +42,13 @@ public sealed class AuditingResponseMapperAdditionalTests
             ],
         };
 
-        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
+        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
 
         response.EntityChangeCount.ShouldBe(3);
     }
 
     [Fact]
-    public void ToSummary_PreservesCategoryEnum()
+    public void ToSummaryResponse_PreservesCategoryEnum()
     {
         AuditEntry entry = new()
         {
@@ -58,7 +58,7 @@ public sealed class AuditingResponseMapperAdditionalTests
             Category = AuditCategory.ConfigurationChange,
         };
 
-        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
+        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
 
         response.Category.ShouldBe(AuditCategory.ConfigurationChange);
     }
