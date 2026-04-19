@@ -32362,6 +32362,28 @@
       ]
     },
     {
+      "name": "IPrivacyDataProvider",
+      "fqn": "Granit.Privacy.DataExport.IPrivacyDataProvider",
+      "kind": "interface",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/IPrivacyDataProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string ProviderName { get; } string ContentType { get; } string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
       "name": "PersonalDataExportSaga",
       "fqn": "Granit.Privacy.DataExport.PersonalDataExportSaga",
       "kind": "class",
@@ -32392,6 +32414,22 @@
           "kind": "method",
           "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
           "returnType": "string? TenantId { get; set; } public Task<ExportCompletedEto?>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyExportContainerNames",
+      "fqn": "Granit.Privacy.DataExport.PrivacyExportContainerNames",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/DataExport/PrivacyExportContainerNames.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ArchiveBlobReferenceId",
+          "kind": "method",
+          "signature": "ArchiveBlobReferenceId(Guid requestId)",
+          "returnType": "string"
         }
       ]
     },

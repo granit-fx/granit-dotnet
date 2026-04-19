@@ -39,6 +39,24 @@ public sealed class GranitPrivacyBuilder(IServiceCollection services)
     }
 
     /// <summary>
+    /// Registers an <see cref="IPrivacyDataProvider"/> implementation and its provider name in
+    /// a single call. The concrete <typeparamref name="TProvider"/> is added to DI as scoped
+    /// and its <c>ProviderName</c> is recorded in the scatter-gather registry.
+    /// </summary>
+    /// <remarks>
+    /// The matching Wolverine handler is discovered automatically by assembly scanning — no
+    /// explicit handler registration is needed. See <c>PrivacyDataProviderHandlerBase&lt;T&gt;</c>
+    /// in <c>Granit.Privacy.BlobStorage</c>.
+    /// </remarks>
+    public GranitPrivacyBuilder AddDataProvider<TProvider>()
+        where TProvider : class, IPrivacyDataProvider
+    {
+        RegisterDataProvider(TProvider.ProviderName);
+        Services.AddScoped<TProvider>();
+        return this;
+    }
+
+    /// <summary>
     /// Registers a legal document for consent versioning.
     /// </summary>
     public GranitPrivacyBuilder RegisterDocument(string documentId, string currentVersion, string displayName)
