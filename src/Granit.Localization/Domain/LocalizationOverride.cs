@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.Localization.EntityFrameworkCore.Entities;
+namespace Granit.Localization.Domain;
 
 /// <summary>
 /// Represents a per-resource, per-culture, per-key translation override stored in PostgreSQL.
