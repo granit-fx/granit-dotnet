@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.Auditing.Endpoints.Dtos;
 using Granit.Auditing.Endpoints.Internal;
 using Granit.QueryEngine;
@@ -34,7 +35,7 @@ internal static class AuditingReadEndpoints
             .WithName("GetAuditEntriesByEntity")
             .WithSummary("Returns the audit trail for a specific entity instance.")
             .WithDescription("Returns all audit log entries associated with a specific entity, identified by its CLR type name and primary key. Results are paginated and ordered by timestamp descending. Useful for displaying the full change history of a single record. Path parameters are limited to 256 characters.")
-            .Produces<PagedResult<AuditEntryResponse>>()
+            .Produces<PagedResult<AuditEntrySummary>>()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/correlation/{correlationId}", GetByCorrelationIdAsync)
@@ -88,7 +89,7 @@ internal static class AuditingReadEndpoints
         return TypedResults.Ok(mapped);
     }
 
-    private static async Task<Results<Ok<PagedResult<AuditEntryResponse>>, ProblemHttpResult>> GetByEntityAsync(
+    private static async Task<Results<Ok<PagedResult<AuditEntrySummary>>, ProblemHttpResult>> GetByEntityAsync(
         string entityType,
         string entityId,
         [FromQuery] int? page,
@@ -113,8 +114,8 @@ internal static class AuditingReadEndpoints
                 cancellationToken)
             .ConfigureAwait(false);
 
-        PagedResult<AuditEntryResponse> mapped = new(
-            result.Items.Select(AuditingResponseMapper.ToSummaryResponse).ToList(),
+        PagedResult<AuditEntrySummary> mapped = new(
+            result.Items.Select(AuditingResponseMapper.ToSummary).ToList(),
             result.TotalCount,
             result.HasMore);
 

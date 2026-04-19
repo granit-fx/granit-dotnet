@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Granit.Auditing.Dtos;
 using Granit.Auditing.Endpoints.Dtos;
 using Granit.Auditing.Endpoints.Internal;
 using Shouldly;
@@ -15,7 +16,7 @@ public sealed class AuditingSchemaExampleProviderTests
 
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 
-        examples.ShouldContainKey(typeof(AuditEntryResponse));
+        examples.ShouldContainKey(typeof(AuditEntrySummary));
     }
 
     [Fact]
@@ -34,7 +35,7 @@ public sealed class AuditingSchemaExampleProviderTests
         AuditingSchemaExampleProvider provider = new();
         IReadOnlyDictionary<Type, JsonNode> examples = provider.GetExamples();
 
-        JsonNode entryExample = examples[typeof(AuditEntryResponse)];
+        JsonNode entryExample = examples[typeof(AuditEntrySummary)];
         JsonObject obj = entryExample.AsObject();
 
         obj["id"].ShouldNotBeNull();

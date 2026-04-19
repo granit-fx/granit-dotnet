@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.Auditing.Endpoints.Dtos;
 using Granit.Auditing.Endpoints.Internal;
 using Shouldly;
@@ -9,7 +10,7 @@ namespace Granit.Auditing.Endpoints.Tests.Internal;
 public sealed class AuditingResponseMapperAdditionalTests
 {
     [Fact]
-    public void ToSummaryResponse_WithEmptyEntityChanges_ReturnsZeroCount()
+    public void ToSummary_WithEmptyEntityChanges_ReturnsZeroCount()
     {
         AuditEntry entry = new()
         {
@@ -19,13 +20,13 @@ public sealed class AuditingResponseMapperAdditionalTests
             Category = AuditCategory.DataMutation,
         };
 
-        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
+        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
 
         response.EntityChangeCount.ShouldBe(0);
     }
 
     [Fact]
-    public void ToSummaryResponse_WithMultipleEntityChanges_CountsCorrectly()
+    public void ToSummary_WithMultipleEntityChanges_CountsCorrectly()
     {
         AuditEntry entry = new()
         {
@@ -41,13 +42,13 @@ public sealed class AuditingResponseMapperAdditionalTests
             ],
         };
 
-        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
+        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
 
         response.EntityChangeCount.ShouldBe(3);
     }
 
     [Fact]
-    public void ToSummaryResponse_MapsCategory_AsString()
+    public void ToSummary_PreservesCategoryEnum()
     {
         AuditEntry entry = new()
         {
@@ -57,9 +58,9 @@ public sealed class AuditingResponseMapperAdditionalTests
             Category = AuditCategory.ConfigurationChange,
         };
 
-        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
+        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
 
-        response.Category.ShouldBe("ConfigurationChange");
+        response.Category.ShouldBe(AuditCategory.ConfigurationChange);
     }
 
     [Fact]
