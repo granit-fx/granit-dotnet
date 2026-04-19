@@ -859,6 +859,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.Wolverine",
+      "deps": [
+        "Granit.Identity.Federated",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Local",
       "deps": [
         "Granit",
@@ -17324,6 +17332,22 @@
       ]
     },
     {
+      "name": "IFederatedUserCacheReader",
+      "fqn": "Granit.Identity.Federated.IFederatedUserCacheReader",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/IFederatedUserCacheReader.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "FindByExternalIdAsync",
+          "kind": "method",
+          "signature": "FindByExternalIdAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UserCacheEntry?>"
+        }
+      ]
+    },
+    {
       "name": "IdentityKeycloakServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.Keycloak.Extensions.IdentityKeycloakServiceCollectionExtensions",
       "kind": "class",
@@ -17442,6 +17466,88 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedPersonalDataExportHandler",
+      "fqn": "Granit.Identity.Federated.Wolverine.DataExport.IdentityFederatedPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Wolverine",
+      "file": "src/Granit.Identity.Federated.Wolverine/DataExport/IdentityFederatedPersonalDataExportHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, IdentityFederatedPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedPrivacyDataProvider",
+      "fqn": "Granit.Identity.Federated.Wolverine.DataExport.IdentityFederatedPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Wolverine",
+      "file": "src/Granit.Identity.Federated.Wolverine/DataExport/IdentityFederatedPrivacyDataProvider.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderIdentityFederatedExtensions",
+      "fqn": "Granit.Identity.Federated.Wolverine.Extensions.PrivacyBuilderIdentityFederatedExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Wolverine",
+      "file": "src/Granit.Identity.Federated.Wolverine/Extensions/PrivacyBuilderIdentityFederatedExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitIdentityFederatedPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitIdentityFederatedPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedWolverineModule",
+      "fqn": "Granit.Identity.Federated.Wolverine.GranitIdentityFederatedWolverineModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Wolverine",
+      "file": "src/Granit.Identity.Federated.Wolverine/GranitIdentityFederatedWolverineModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

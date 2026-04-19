@@ -80,6 +80,7 @@ public class MyAppModule : GranitModule { }
 | Module | Provider name | Package | Fragment | Cap |
 | ------ | ------------- | ------- | -------- | --- |
 | `Identity.Local` | `identity-local` | `Granit.Identity.Local.Wolverine` | Profile + roles | — |
+| `Identity.Federated` | `identity-federated` | `Granit.Identity.Federated.Wolverine` | Local cache entry (profile mirror + sync metadata) | — |
 | `Auditing` | `auditing` | `Granit.Auditing.Wolverine` | User-authored audit trail | 10 000 entries |
 | `Notifications` | `notifications` | `Granit.Notifications.Privacy.Wolverine` | Inbox + preferences + subscriptions | 5 000 inbox items |
 

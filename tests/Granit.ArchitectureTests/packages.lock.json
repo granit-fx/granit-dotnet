@@ -2178,6 +2178,14 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.federated.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )",
+          "WolverineFx": "[5.*, )"
+        }
+      },
       "granit.identity.local": {
         "type": "Project",
         "dependencies": {

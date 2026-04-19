@@ -128,6 +128,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntityFrameworkCore\Granit.Identity.Federated.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Wolverine\Granit.Identity.Federated.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.GoogleCloud\Granit.Identity.Federated.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />

@@ -29,6 +29,7 @@ public static class IdentityEfCoreServiceCollectionExtensions
         services.Replace(ServiceDescriptor.Scoped<IUserLookupService, CachedUserLookupService>());
         services.Replace(ServiceDescriptor.Scoped<IUserCacheStats, EfCoreUserCacheStats>());
         services.TryAddScoped<IUserCacheStore, EfCoreUserCacheStore<TContext>>();
+        services.TryAddScoped<IFederatedUserCacheReader, FederatedUserCacheReaderAdapter>();
         services.AddOptions<UserCacheOptions>()
             .BindConfiguration(UserCacheOptions.SectionName);
 

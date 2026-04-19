@@ -102,6 +102,7 @@
       "src/Granit.Identity.Federated.EntraId/Granit.Identity.Federated.EntraId.csproj",
       "src/Granit.Identity.Federated.GoogleCloud/Granit.Identity.Federated.GoogleCloud.csproj",
       "src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj",
+      "src/Granit.Identity.Federated.Wolverine/Granit.Identity.Federated.Wolverine.csproj",
       "src/Granit.Identity.Federated/Granit.Identity.Federated.csproj",
       "src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj",
       "src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj",
