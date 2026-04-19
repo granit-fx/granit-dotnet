@@ -1,7 +1,7 @@
-using Granit.Authorization.EntityFrameworkCore.Entities;
+using Granit.Authorization.Domain;
 using Granit.DataExchange.Export;
 
-namespace Granit.Authorization.EntityFrameworkCore.Exports;
+namespace Granit.Authorization.Exports;
 
 public sealed class PermissionGrantExportDefinition : ExportDefinition<PermissionGrant>
 {

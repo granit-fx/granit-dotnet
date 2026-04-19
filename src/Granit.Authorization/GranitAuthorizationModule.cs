@@ -1,7 +1,12 @@
 using System.Reflection;
+using Granit.Authorization.Domain;
+using Granit.Authorization.Exports;
 using Granit.Authorization.Extensions;
+using Granit.Authorization.Queries;
 using Granit.Caching;
+using Granit.DataExchange.Extensions;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +27,9 @@ public sealed class GranitAuthorizationModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddGranitAuthorization();
+
+        context.Services.AddQueryDefinition<PermissionGrant, PermissionGrantQueryDefinition>();
+        context.Services.AddExportDefinition<PermissionGrant, PermissionGrantExportDefinition>();
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
