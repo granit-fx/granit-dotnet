@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.Auditing.Endpoints.Dtos;
 
 namespace Granit.Auditing.Endpoints.Internal;
@@ -8,14 +9,15 @@ namespace Granit.Auditing.Endpoints.Internal;
 /// </summary>
 internal static class AuditingResponseMapper
 {
-    /// <summary>Maps to a summary response (list item — no PII fields like IpAddress).</summary>
-    public static AuditEntryResponse ToSummaryResponse(AuditEntry entry) =>
+    /// <summary>Maps to the summary projection used by per-entity list lookups.</summary>
+    public static AuditEntrySummary ToSummary(AuditEntry entry) =>
         new(
             entry.Id,
             entry.Timestamp,
             entry.UserId,
             entry.UserName,
-            entry.Category.ToString(),
+            entry.Category,
+            entry.IpAddress,
             entry.TenantId,
             entry.CorrelationId,
             entry.EntityChanges.Count);

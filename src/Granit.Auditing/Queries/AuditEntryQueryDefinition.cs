@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.QueryEngine;
 
 namespace Granit.Auditing.Queries;
@@ -26,6 +27,16 @@ public sealed class AuditEntryQueryDefinition : QueryDefinition<AuditEntry>
             .GlobalSearch(e => e.UserId, e => e.UserName, e => e.CorrelationId)
             .DateFilter(e => e.Timestamp)
             .DefaultSort("-timestamp")
-            .DefaultPageSize(25);
+            .DefaultPageSize(25)
+            .ProjectTo(e => new AuditEntrySummary(
+                e.Id,
+                e.Timestamp,
+                e.UserId,
+                e.UserName,
+                e.Category,
+                e.IpAddress,
+                e.TenantId,
+                e.CorrelationId,
+                e.EntityChanges.Count));
     }
 }

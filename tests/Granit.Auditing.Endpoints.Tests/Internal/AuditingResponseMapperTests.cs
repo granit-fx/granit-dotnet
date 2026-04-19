@@ -1,4 +1,5 @@
 using Granit.Auditing.Domain;
+using Granit.Auditing.Dtos;
 using Granit.Auditing.Endpoints.Dtos;
 using Granit.Auditing.Endpoints.Internal;
 using Shouldly;
@@ -9,7 +10,7 @@ namespace Granit.Auditing.Endpoints.Tests.Internal;
 public sealed class AuditingResponseMapperTests
 {
     [Fact]
-    public void ToSummaryResponse_MapsAllFields()
+    public void ToSummary_MapsAllFields()
     {
         // Arrange
         var tenantId = Guid.NewGuid();
@@ -35,12 +36,13 @@ public sealed class AuditingResponseMapperTests
         };
 
         // Act
-        AuditEntryResponse response = AuditingResponseMapper.ToSummaryResponse(entry);
+        AuditEntrySummary response = AuditingResponseMapper.ToSummary(entry);
 
         // Assert
         response.Id.ShouldBe(entry.Id);
         response.UserId.ShouldBe("user-1");
-        response.Category.ShouldBe("DataMutation");
+        response.Category.ShouldBe(AuditCategory.DataMutation);
+        response.IpAddress.ShouldBe("10.0.0.1");
         response.EntityChangeCount.ShouldBe(1);
         response.TenantId.ShouldBe(tenantId);
     }
