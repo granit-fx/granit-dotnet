@@ -1,7 +1,7 @@
-using Granit.Authorization.EntityFrameworkCore.Entities;
+using Granit.Authorization.Domain;
 using Granit.QueryEngine;
 
-namespace Granit.Authorization.EntityFrameworkCore.Queries;
+namespace Granit.Authorization.Queries;
 
 /// <summary>
 /// Query definition for permission grants — declares columns, filters, sorting,

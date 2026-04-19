@@ -213,7 +213,9 @@
     {
       "name": "Granit.Authorization",
       "deps": [
-        "Granit.Caching"
+        "Granit.Caching",
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1002,6 +1004,8 @@
       "name": "Granit.Localization",
       "deps": [
         "Granit.Caching",
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions",
         "Granit"
       ],
       "framework": "net10.0"
@@ -1104,7 +1108,9 @@
     {
       "name": "Granit.MultiTenancy",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1820,8 +1826,10 @@
       "name": "Granit.Settings",
       "deps": [
         "Granit.Caching",
+        "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
-        "Granit.Events"
+        "Granit.Events",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -6122,6 +6130,28 @@
       ]
     },
     {
+      "name": "PermissionGrant",
+      "fqn": "Granit.Authorization.Domain.PermissionGrant",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Domain/PermissionGrant.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "RoleName",
+          "kind": "property",
+          "signature": "string RoleName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "MyPermissionsResponse",
       "fqn": "Granit.Authorization.Endpoints.Dtos.MyPermissionsResponse",
       "kind": "record",
@@ -6257,50 +6287,12 @@
       ]
     },
     {
-      "name": "PermissionGrant",
-      "fqn": "Granit.Authorization.EntityFrameworkCore.Entities.PermissionGrant",
-      "kind": "class",
-      "project": "Granit.Authorization.EntityFrameworkCore",
-      "file": "src/Granit.Authorization.EntityFrameworkCore/Entities/PermissionGrant.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "RoleName",
-          "kind": "property",
-          "signature": "string RoleName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "PermissionGrantExportDefinition",
-      "fqn": "Granit.Authorization.EntityFrameworkCore.Exports.PermissionGrantExportDefinition",
-      "kind": "class",
-      "project": "Granit.Authorization.EntityFrameworkCore",
-      "file": "src/Granit.Authorization.EntityFrameworkCore/Exports/PermissionGrantExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "AuthorizationEfCoreServiceCollectionExtensions",
       "fqn": "Granit.Authorization.EntityFrameworkCore.Extensions.AuthorizationEfCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/Extensions/AuthorizationEfCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 12,
       "members": []
     },
     {
@@ -6329,12 +6321,21 @@
       "members": []
     },
     {
-      "name": "PermissionGrantQueryDefinition",
-      "fqn": "Granit.Authorization.EntityFrameworkCore.Queries.PermissionGrantQueryDefinition",
+      "name": "PermissionGrantChangedEvent",
+      "fqn": "Granit.Authorization.Events.PermissionGrantChangedEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/PermissionGrantChangedEvent.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "PermissionGrantExportDefinition",
+      "fqn": "Granit.Authorization.Exports.PermissionGrantExportDefinition",
       "kind": "class",
-      "project": "Granit.Authorization.EntityFrameworkCore",
-      "file": "src/Granit.Authorization.EntityFrameworkCore/Queries/PermissionGrantQueryDefinition.cs",
-      "line": 10,
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Exports/PermissionGrantExportDefinition.cs",
+      "line": 6,
       "members": [
         {
           "name": "Name",
@@ -6343,15 +6344,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "PermissionGrantChangedEvent",
-      "fqn": "Granit.Authorization.Events.PermissionGrantChangedEvent",
-      "kind": "record",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Events/PermissionGrantChangedEvent.cs",
-      "line": 15,
-      "members": []
     },
     {
       "name": "AuthorizationServiceCollectionExtensions",
@@ -6391,7 +6383,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 19,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -6641,6 +6633,22 @@
           "kind": "method",
           "signature": "AddPermission(string name, LocalizableString? displayName = null)",
           "returnType": "PermissionDefinition"
+        }
+      ]
+    },
+    {
+      "name": "PermissionGrantQueryDefinition",
+      "fqn": "Granit.Authorization.Queries.PermissionGrantQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Queries/PermissionGrantQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -21042,6 +21050,40 @@
       "members": []
     },
     {
+      "name": "LocalizationOverride",
+      "fqn": "Granit.Localization.Domain.LocalizationOverride",
+      "kind": "class",
+      "project": "Granit.Localization",
+      "file": "src/Granit.Localization/Domain/LocalizationOverride.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "CultureName",
+          "kind": "property",
+          "signature": "string CultureName",
+          "returnType": "string"
+        },
+        {
+          "name": "Key",
+          "kind": "property",
+          "signature": "string Key",
+          "returnType": "string"
+        },
+        {
+          "name": "Value",
+          "kind": "property",
+          "signature": "string Value",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "ApplicationLocalizationResponse",
       "fqn": "Granit.Localization.Endpoints.Dtos.ApplicationLocalizationResponse",
       "kind": "record",
@@ -21150,62 +21192,12 @@
       "members": []
     },
     {
-      "name": "LocalizationOverride",
-      "fqn": "Granit.Localization.EntityFrameworkCore.Entities.LocalizationOverride",
-      "kind": "class",
-      "project": "Granit.Localization.EntityFrameworkCore",
-      "file": "src/Granit.Localization.EntityFrameworkCore/Entities/LocalizationOverride.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "Guid? TenantId",
-          "returnType": "Guid?"
-        },
-        {
-          "name": "CultureName",
-          "kind": "property",
-          "signature": "string CultureName",
-          "returnType": "string"
-        },
-        {
-          "name": "Key",
-          "kind": "property",
-          "signature": "string Key",
-          "returnType": "string"
-        },
-        {
-          "name": "Value",
-          "kind": "property",
-          "signature": "string Value",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "LocalizationOverrideExportDefinition",
-      "fqn": "Granit.Localization.EntityFrameworkCore.Exports.LocalizationOverrideExportDefinition",
-      "kind": "class",
-      "project": "Granit.Localization.EntityFrameworkCore",
-      "file": "src/Granit.Localization.EntityFrameworkCore/Exports/LocalizationOverrideExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Localization.EntityFrameworkCore.Extensions.LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Localization.EntityFrameworkCore",
       "file": "src/Granit.Localization.EntityFrameworkCore/Extensions/LocalizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitLocalizationEntityFrameworkCore",
@@ -21257,12 +21249,12 @@
       "members": []
     },
     {
-      "name": "LocalizationOverrideQueryDefinition",
-      "fqn": "Granit.Localization.EntityFrameworkCore.Queries.LocalizationOverrideQueryDefinition",
+      "name": "LocalizationOverrideExportDefinition",
+      "fqn": "Granit.Localization.Exports.LocalizationOverrideExportDefinition",
       "kind": "class",
-      "project": "Granit.Localization.EntityFrameworkCore",
-      "file": "src/Granit.Localization.EntityFrameworkCore/Queries/LocalizationOverrideQueryDefinition.cs",
-      "line": 10,
+      "project": "Granit.Localization",
+      "file": "src/Granit.Localization/Exports/LocalizationOverrideExportDefinition.cs",
+      "line": 6,
       "members": [
         {
           "name": "Name",
@@ -21294,7 +21286,7 @@
       "kind": "class",
       "project": "Granit.Localization",
       "file": "src/Granit.Localization/GranitLocalizationModule.cs",
-      "line": 14,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21548,6 +21540,22 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan CacheTtl { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "LocalizationOverrideQueryDefinition",
+      "fqn": "Granit.Localization.Queries.LocalizationOverrideQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Localization",
+      "file": "src/Granit.Localization/Queries/LocalizationOverrideQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -23012,6 +23020,46 @@
       ]
     },
     {
+      "name": "Tenant",
+      "fqn": "Granit.MultiTenancy.Domain.Tenant",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Domain/Tenant.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Identifier",
+          "kind": "property",
+          "signature": "string Identifier",
+          "returnType": "string"
+        },
+        {
+          "name": "ContactEmail",
+          "kind": "property",
+          "signature": "string? ContactEmail",
+          "returnType": "string?"
+        },
+        {
+          "name": "CustomDomain",
+          "kind": "property",
+          "signature": "string? CustomDomain",
+          "returnType": "string?"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, string identifier, string? contactEmail = null, string? jurisdiction = null)",
+          "returnType": "Tenant"
+        }
+      ]
+    },
+    {
       "name": "CreateTenantRequest",
       "fqn": "Granit.MultiTenancy.Endpoints.Dtos.CreateTenantRequest",
       "kind": "record",
@@ -23104,68 +23152,12 @@
       "members": []
     },
     {
-      "name": "Tenant",
-      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Entities.Tenant",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.EntityFrameworkCore",
-      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Entities/Tenant.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "Identifier",
-          "kind": "property",
-          "signature": "string Identifier",
-          "returnType": "string"
-        },
-        {
-          "name": "ContactEmail",
-          "kind": "property",
-          "signature": "string? ContactEmail",
-          "returnType": "string?"
-        },
-        {
-          "name": "CustomDomain",
-          "kind": "property",
-          "signature": "string? CustomDomain",
-          "returnType": "string?"
-        },
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, string name, string identifier, string? contactEmail = null, string? jurisdiction = null)",
-          "returnType": "Tenant"
-        }
-      ]
-    },
-    {
-      "name": "TenantExportDefinition",
-      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Exports.TenantExportDefinition",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.EntityFrameworkCore",
-      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Exports/TenantExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Extensions.MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitMultiTenancyEntityFrameworkCore",
@@ -23217,22 +23209,6 @@
       ]
     },
     {
-      "name": "TenantQueryDefinition",
-      "fqn": "Granit.MultiTenancy.EntityFrameworkCore.Queries.TenantQueryDefinition",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.EntityFrameworkCore",
-      "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Queries/TenantQueryDefinition.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "TenantActivatedEvent",
       "fqn": "Granit.MultiTenancy.Events.TenantActivatedEvent",
       "kind": "record",
@@ -23278,6 +23254,22 @@
       "members": []
     },
     {
+      "name": "TenantExportDefinition",
+      "fqn": "Granit.MultiTenancy.Exports.TenantExportDefinition",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Exports/TenantExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyApplicationBuilderExtensions",
       "fqn": "Granit.MultiTenancy.Extensions.MultiTenancyApplicationBuilderExtensions",
       "kind": "class",
@@ -23299,7 +23291,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -23472,6 +23464,22 @@
           "kind": "method",
           "signature": "ResolveAsync(HttpContext context, CancellationToken cancellationToken = default)",
           "returnType": "Task<TenantResolutionResult>"
+        }
+      ]
+    },
+    {
+      "name": "TenantQueryDefinition",
+      "fqn": "Granit.MultiTenancy.Queries.TenantQueryDefinition",
+      "kind": "class",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Queries/TenantQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -36256,6 +36264,28 @@
       ]
     },
     {
+      "name": "SettingRecord",
+      "fqn": "Granit.Settings.Domain.SettingRecord",
+      "kind": "class",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Domain/SettingRecord.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "SettingValueResponse",
       "fqn": "Granit.Settings.Endpoints.Dtos.SettingValueResponse",
       "kind": "record",
@@ -36401,44 +36431,6 @@
       "members": []
     },
     {
-      "name": "SettingRecord",
-      "fqn": "Granit.Settings.EntityFrameworkCore.Entities.SettingRecord",
-      "kind": "class",
-      "project": "Granit.Settings.EntityFrameworkCore",
-      "file": "src/Granit.Settings.EntityFrameworkCore/Entities/SettingRecord.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        },
-        {
-          "name": "ProviderName",
-          "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "SettingRecordExportDefinition",
-      "fqn": "Granit.Settings.EntityFrameworkCore.Exports.SettingRecordExportDefinition",
-      "kind": "class",
-      "project": "Granit.Settings.EntityFrameworkCore",
-      "file": "src/Granit.Settings.EntityFrameworkCore/Exports/SettingRecordExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "ModelBuilderExtensions",
       "fqn": "Granit.Settings.EntityFrameworkCore.Extensions.ModelBuilderExtensions",
       "kind": "class",
@@ -36460,7 +36452,7 @@
       "kind": "class",
       "project": "Granit.Settings.EntityFrameworkCore",
       "file": "src/Granit.Settings.EntityFrameworkCore/Extensions/SettingsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 14,
       "members": []
     },
     {
@@ -36498,12 +36490,21 @@
       "members": []
     },
     {
-      "name": "SettingRecordQueryDefinition",
-      "fqn": "Granit.Settings.EntityFrameworkCore.Queries.SettingRecordQueryDefinition",
+      "name": "SettingChangedEvent",
+      "fqn": "Granit.Settings.Events.SettingChangedEvent",
+      "kind": "record",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Events/SettingChangedEvent.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "SettingRecordExportDefinition",
+      "fqn": "Granit.Settings.Exports.SettingRecordExportDefinition",
       "kind": "class",
-      "project": "Granit.Settings.EntityFrameworkCore",
-      "file": "src/Granit.Settings.EntityFrameworkCore/Queries/SettingRecordQueryDefinition.cs",
-      "line": 10,
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Exports/SettingRecordExportDefinition.cs",
+      "line": 6,
       "members": [
         {
           "name": "Name",
@@ -36512,15 +36513,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "SettingChangedEvent",
-      "fqn": "Granit.Settings.Events.SettingChangedEvent",
-      "kind": "record",
-      "project": "Granit.Settings",
-      "file": "src/Granit.Settings/Events/SettingChangedEvent.cs",
-      "line": 16,
-      "members": []
     },
     {
       "name": "SettingsServiceCollectionExtensions",
@@ -36544,7 +36536,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/GranitSettingsModule.cs",
-      "line": 21,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36769,6 +36761,22 @@
           "kind": "method",
           "signature": "GetOrNullAsync(SettingDefinition definition, CancellationToken cancellationToken = default)",
           "returnType": "Task<SettingValue?>"
+        }
+      ]
+    },
+    {
+      "name": "SettingRecordQueryDefinition",
+      "fqn": "Granit.Settings.Queries.SettingRecordQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Queries/SettingRecordQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

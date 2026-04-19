@@ -1,10 +1,15 @@
 using System.Reflection;
 using Granit.Caching;
+using Granit.DataExchange.Extensions;
 using Granit.Encryption;
 using Granit.Events;
 using Granit.Modularity;
+using Granit.QueryEngine.Extensions;
 using Granit.Settings.Definitions;
+using Granit.Settings.Domain;
+using Granit.Settings.Exports;
 using Granit.Settings.Extensions;
+using Granit.Settings.Queries;
 using Granit.Users;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,6 +29,9 @@ public sealed class GranitSettingsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.AddGranitSettings();
+
+        context.Services.AddQueryDefinition<SettingRecord, SettingRecordQueryDefinition>();
+        context.Services.AddExportDefinition<SettingRecord, SettingRecordExportDefinition>();
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {

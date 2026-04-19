@@ -1,6 +1,6 @@
 using Granit.Authorization;
+using Granit.Authorization.Domain;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
-using Granit.Authorization.EntityFrameworkCore.Entities;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,5 +1,5 @@
 using Granit.DataFiltering;
-using Granit.MultiTenancy.EntityFrameworkCore.Entities;
+using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;

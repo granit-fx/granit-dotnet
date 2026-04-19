@@ -1,4 +1,4 @@
-using Granit.Authorization.EntityFrameworkCore.Entities;
+using Granit.Authorization.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authorization.EntityFrameworkCore.DbContext;

@@ -1,5 +1,5 @@
+using Granit.Authorization.Domain;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
-using Granit.Authorization.EntityFrameworkCore.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Authorization.EntityFrameworkCore.Tests;

@@ -7,8 +7,8 @@
 //   - Gère correctement les grants à portée globale (TenantId null)
 // =============================================================================
 
+using Granit.Authorization.Domain;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
-using Granit.Authorization.EntityFrameworkCore.Entities;
 using Granit.Authorization.EntityFrameworkCore.Stores;
 using Granit.Guids;
 using Microsoft.EntityFrameworkCore;

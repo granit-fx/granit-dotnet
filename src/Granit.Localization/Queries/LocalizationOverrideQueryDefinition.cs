@@ -1,7 +1,7 @@
-using Granit.Localization.EntityFrameworkCore.Entities;
+using Granit.Localization.Domain;
 using Granit.QueryEngine;
 
-namespace Granit.Localization.EntityFrameworkCore.Queries;
+namespace Granit.Localization.Queries;
 
 /// <summary>
 /// Query definition for localization overrides — declares columns, filters, sorting,
