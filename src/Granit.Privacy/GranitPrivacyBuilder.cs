@@ -17,7 +17,12 @@ namespace Granit.Privacy;
 public sealed class GranitPrivacyBuilder(IServiceCollection services)
 {
     /// <summary>The underlying service collection.</summary>
-    internal IServiceCollection Services { get; } = services;
+    /// <remarks>
+    /// Exposed to let sibling packages (<c>Granit.Privacy.EntityFrameworkCore</c>,
+    /// <c>Granit.Privacy.BlobStorage</c>, …) register their own services from extension
+    /// methods on <see cref="GranitPrivacyBuilder"/>.
+    /// </remarks>
+    public IServiceCollection Services { get; } = services;
 
     /// <summary>Data provider names to register at startup.</summary>
     internal List<string> DataProviderNames { get; } = [];

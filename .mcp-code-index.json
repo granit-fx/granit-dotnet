@@ -32808,6 +32808,22 @@
       ]
     },
     {
+      "name": "PrivacyBuilderEntityFrameworkCoreExtensions",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyBuilderEntityFrameworkCoreExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyBuilderEntityFrameworkCoreExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "UseEntityFrameworkCoreTrackers",
+          "kind": "method",
+          "signature": "UseEntityFrameworkCoreTrackers(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
       "name": "PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -32829,7 +32845,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Extensions/PrivacyModelBuilderExtensions.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "ConfigurePrivacyModule",
@@ -32888,6 +32904,12 @@
       "file": "src/Granit.Privacy/GranitPrivacyBuilder.cs",
       "line": 17,
       "members": [
+        {
+          "name": "Services",
+          "kind": "property",
+          "signature": "IServiceCollection Services",
+          "returnType": "IServiceCollection"
+        },
         {
           "name": "RegisterDataProvider",
           "kind": "method",
