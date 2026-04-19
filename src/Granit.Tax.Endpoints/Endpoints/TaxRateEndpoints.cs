@@ -1,5 +1,4 @@
 using Granit.Tax.Endpoints.Dtos;
-using Granit.Tax.Endpoints.Permissions;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -9,23 +8,16 @@ using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Tax.Endpoints.Endpoints;
 
-/// <summary>Endpoints for tax rate lookup.</summary>
+/// <summary>
+/// Custom tax rate endpoints. The list endpoint (GET /, /meta, /saved-views/*)
+/// is provided by <c>MapGranitQuery&lt;TaxRateEntry&gt;()</c>; only the per-country
+/// lookup lives here.
+/// </summary>
 internal static class TaxRateEndpoints
 {
     internal static RouteGroupBuilder MapRateEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/", GetAllRatesAsync)
-            .RequireAuthorization(TaxPermissions.Rates.Read)
-            .WithName("GetAllTaxRates")
-            .WithSummary("Returns all currently effective tax rates.")
-            .WithDescription(
-                "Lists the standard and reduced tax rates for all configured countries. "
-                + "Rates come from the configured provider (EU VAT defaults, configuration overrides, "
-                + "or database-managed overrides when the EF Core package is registered).")
-            .Produces<IReadOnlyList<TaxRateResponse>>();
-
         group.MapGet("/{countryCode}", GetRateByCountryAsync)
-            .RequireAuthorization(TaxPermissions.Rates.Read)
             .WithName("GetTaxRateByCountry")
             .WithSummary("Returns the current tax rate for a specific country.")
             .WithDescription(
@@ -35,24 +27,6 @@ internal static class TaxRateEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
-    }
-
-    private static async Task<Ok<IReadOnlyList<TaxRateResponse>>> GetAllRatesAsync(
-        [FromServices] ITaxRateProvider rateProvider,
-        CancellationToken cancellationToken = default)
-    {
-        IReadOnlyList<TaxRateEntry> rates = await rateProvider
-            .GetAllCurrentRatesAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        IReadOnlyList<TaxRateResponse> response = rates
-            .Select(r => new TaxRateResponse(
-                r.CountryCode, r.StandardRate, r.ReducedRate,
-                r.SuperReducedRate, r.ParkingRate,
-                r.EffectiveFrom, r.EffectiveTo))
-            .ToList();
-
-        return TypedResults.Ok(response);
     }
 
     private static async Task<Results<Ok<TaxRateResponse>, ProblemHttpResult>> GetRateByCountryAsync(

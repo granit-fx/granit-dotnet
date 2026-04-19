@@ -108,4 +108,33 @@ public sealed class ConfigTaxRateProviderTests
         lu.StandardRate.ShouldBe(0.18m);
         lu.ReducedRate.ShouldBe(0.08m);
     }
+
+    // ======== GetAllCurrentRates (sync) ========
+
+    [Fact]
+    public void GetAllCurrentRates_ShouldReturnAllEuCountries()
+    {
+        ConfigTaxRateProvider provider = CreateProvider();
+
+        IReadOnlyList<TaxRateEntry> rates = provider.GetAllCurrentRates();
+
+        rates.Count.ShouldBe(27);
+    }
+
+    [Fact]
+    public void GetAllCurrentRates_WithOverride_ShouldUseOverrideRate()
+    {
+        var options = new EuVatRateOptions
+        {
+            StandardRates = new Dictionary<string, decimal> { ["LU"] = 0.18m },
+            ReducedRates = new Dictionary<string, decimal> { ["LU"] = 0.08m },
+        };
+        ConfigTaxRateProvider provider = CreateProvider(options);
+
+        IReadOnlyList<TaxRateEntry> rates = provider.GetAllCurrentRates();
+
+        TaxRateEntry lu = rates.Single(r => r.CountryCode == "LU");
+        lu.StandardRate.ShouldBe(0.18m);
+        lu.ReducedRate.ShouldBe(0.08m);
+    }
 }

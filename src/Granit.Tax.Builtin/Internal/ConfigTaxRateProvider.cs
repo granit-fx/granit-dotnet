@@ -34,9 +34,12 @@ internal sealed class ConfigTaxRateProvider(
     }
 
     public Task<IReadOnlyList<TaxRateEntry>> GetAllCurrentRatesAsync(
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default) =>
+        Task.FromResult(GetAllCurrentRates());
+
+    public IReadOnlyList<TaxRateEntry> GetAllCurrentRates()
     {
-        var rates = new List<TaxRateEntry>();
+        var rates = new List<TaxRateEntry>(EuVatRateDefaults.StandardRates.Count);
 
         foreach (KeyValuePair<string, decimal> entry in EuVatRateDefaults.StandardRates)
         {
@@ -49,6 +52,6 @@ internal sealed class ConfigTaxRateProvider(
                 options.Value.ReducedRates?.GetValueOrDefault(entry.Key)));
         }
 
-        return Task.FromResult<IReadOnlyList<TaxRateEntry>>(rates);
+        return rates;
     }
 }

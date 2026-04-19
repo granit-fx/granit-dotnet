@@ -1950,6 +1950,7 @@
       "name": "Granit.Tax.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Tax",
         "Granit.Validation"
       ],
@@ -38866,7 +38867,7 @@
       "kind": "class",
       "project": "Granit.Tax.Endpoints",
       "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitTax",
@@ -39007,7 +39008,7 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Extensions/TaxHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitTax",
@@ -39068,6 +39069,12 @@
           "kind": "method",
           "signature": "GetAllCurrentRatesAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<TaxRateEntry>>"
+        },
+        {
+          "name": "GetAllCurrentRates",
+          "kind": "method",
+          "signature": "GetAllCurrentRates()",
+          "returnType": "IReadOnlyList<TaxRateEntry>"
         }
       ]
     },
