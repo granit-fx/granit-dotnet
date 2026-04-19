@@ -1486,6 +1486,14 @@
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
       },
+      "granit.auditing.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Auditing": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )",
+          "WolverineFx": "[5.*, )"
+        }
+      },
       "granit.authentication.apikeys": {
         "type": "Project",
         "dependencies": {
@@ -2211,6 +2219,14 @@
           "Granit.Templating": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.local.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity.Local": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )",
+          "WolverineFx": "[5.*, )"
+        }
+      },
       "granit.imaging": {
         "type": "Project",
         "dependencies": {
@@ -2567,6 +2583,14 @@
         "dependencies": {
           "Granit.Http.Resilience": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )"
+        }
+      },
+      "granit.notifications.privacy.wolverine": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Notifications": "[0.1.0-dev, )",
+          "Granit.Privacy.BlobStorage": "[0.1.0-dev, )",
+          "WolverineFx": "[5.*, )"
         }
       },
       "granit.notifications.signalr": {
@@ -2928,6 +2952,13 @@
         "type": "Project",
         "dependencies": {
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Privacy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.privacy.blobstorage": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BlobStorage": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )"
         }
       },
@@ -4249,8 +4280,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.12.4",
-        "contentHash": "9d8BQepYsyjnwxqRv2V+KQ0IfST3jWK+ufhcafNbrZ2duZxBR4/g33t0rFBtc9dL8/gtMvWsd+U/b6RRHp/8Pw==",
+        "resolved": "0.12.5",
+        "contentHash": "yS1EgVf7a3QZ3hKN/B+Yh8kHbAvdtkDLdWf74sk3fFweLc4k9SSvMGig8k8lBK3iDXeVx9r7W44g/nBxYFIuLw==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }

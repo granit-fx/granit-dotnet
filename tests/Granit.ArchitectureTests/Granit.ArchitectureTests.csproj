@@ -42,6 +42,7 @@
     <ProjectReference Include="..\..\src\Granit.Auditing.ConfigurationChanges\Granit.Auditing.ConfigurationChanges.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.EntityFrameworkCore\Granit.Auditing.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Auditing.Wolverine\Granit.Auditing.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.EntityFrameworkCore\Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
@@ -133,6 +134,7 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Local.Wolverine\Granit.Identity.Local.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Notifications\Granit.Identity.Local.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Mcp\Granit.AI.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
@@ -186,6 +188,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Twilio\Granit.Notifications.Twilio.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WhatsApp\Granit.Notifications.WhatsApp.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.Privacy.Wolverine\Granit.Notifications.Privacy.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Wolverine\Granit.Notifications.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Zulip\Granit.Notifications.Zulip.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
@@ -216,6 +219,7 @@
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Postgres\Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.SqlServer\Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.AI\Granit.Privacy.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.BackgroundJobs\Granit.Privacy.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy.Endpoints\Granit.Privacy.Endpoints.csproj" />
