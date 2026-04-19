@@ -15,13 +15,14 @@
   <a href="https://sonarcloud.io/summary/new_code?id=granit-fx_granit-dotnet"><img src="https://sonarcloud.io/api/project_badges/measure?project=granit-fx_granit-dotnet&metric=alert_status" alt="Quality Gate Status"></a>
   <a href="https://sonarcloud.io/summary/new_code?id=granit-fx_granit-dotnet"><img src="https://sonarcloud.io/api/project_badges/measure?project=granit-fx_granit-dotnet&metric=coverage" alt="Coverage"></a>
   <a href="https://github.com/granit-fx/granit-dotnet/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License"></a>
+  <a href="https://www.bestpractices.dev/projects/12585"><img src="https://www.bestpractices.dev/projects/12585/badge" alt="OpenSSF Best Practices"></a>
 </p>
 
 ---
 
 Granit is a rock-solid, production-ready modular framework for .NET and React.
 Built as a Modular Monolith with zero compromises on Developer Experience.
-It provides **217 NuGet packages** organized as independent modules,
+It provides **273 NuGet packages** organized as independent modules,
 compliant with **GDPR/ISO 27001** requirements.
 
 **📖 Full documentation: [granit-fx.dev](https://granit-fx.dev)**
@@ -71,7 +72,7 @@ dotnet add package Granit
 
 # Add the modules you need
 dotnet add package Granit.Persistence
-dotnet add package Granit.Users
+dotnet add package Granit.Identity
 dotnet add package Granit.Observability
 ```
 
@@ -89,7 +90,7 @@ app.Run();
 // MyAppModule.cs
 [DependsOn(
     typeof(GranitPersistenceModule),
-    typeof(),
+    typeof(GranitIdentityModule),
     typeof(GranitObservabilityModule))]
 public sealed class MyAppModule : GranitModule
 {
