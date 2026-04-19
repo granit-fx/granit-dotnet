@@ -20,7 +20,9 @@ internal sealed class EfAuditEntryQueryableSource(
 
     public IQueryable<AuditEntry> GetQueryable()
     {
-        IQueryable<AuditEntry> query = _context.AuditEntries.AsNoTracking();
+        IQueryable<AuditEntry> query = _context.AuditEntries
+            .Include(e => e.EntityChanges)
+            .AsNoTracking();
         return _bypassTenantFilter
             ? query.IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             : query;
