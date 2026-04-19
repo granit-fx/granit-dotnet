@@ -10,7 +10,7 @@ namespace Granit.Privacy.EntityFrameworkCore.DataDeletion;
 /// <c>PersonalDataDeletionSaga</c>; this entity is the CQRS projection used by
 /// <c>GET /privacy/erasure</c>.
 /// </summary>
-internal sealed class DeletionRequestEntity : Entity, IMultiTenant
+public sealed class DeletionRequestEntity : Entity, IMultiTenant
 {
     /// <summary>Data subject whose data is scheduled for deletion.</summary>
     public Guid UserId { get; set; }

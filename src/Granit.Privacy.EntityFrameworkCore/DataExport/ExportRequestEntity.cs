@@ -9,7 +9,7 @@ namespace Granit.Privacy.EntityFrameworkCore.DataExport;
 /// this entity is an append-then-update CQRS projection for the <c>GET /privacy/exports</c>
 /// endpoints.
 /// </summary>
-internal sealed class ExportRequestEntity : Entity, IMultiTenant
+public sealed class ExportRequestEntity : Entity, IMultiTenant
 {
     /// <summary>Data subject whose personal data was requested.</summary>
     public Guid UserId { get; set; }

@@ -33234,6 +33234,38 @@
       ]
     },
     {
+      "name": "DeletionRequestEntity",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.DataDeletion.DeletionRequestEntity",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/DataDeletion/DeletionRequestEntity.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "Guid UserId",
+          "returnType": "Guid"
+        }
+      ]
+    },
+    {
+      "name": "ExportRequestEntity",
+      "fqn": "Granit.Privacy.EntityFrameworkCore.DataExport.ExportRequestEntity",
+      "kind": "class",
+      "project": "Granit.Privacy.EntityFrameworkCore",
+      "file": "src/Granit.Privacy.EntityFrameworkCore/DataExport/ExportRequestEntity.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "Guid UserId",
+          "returnType": "Guid"
+        }
+      ]
+    },
+    {
       "name": "PrivacyBuilderEntityFrameworkCoreExtensions",
       "fqn": "Granit.Privacy.EntityFrameworkCore.Extensions.PrivacyBuilderEntityFrameworkCoreExtensions",
       "kind": "class",
