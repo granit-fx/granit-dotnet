@@ -16456,7 +16456,7 @@
       "kind": "record",
       "project": "Granit.Identity.Endpoints",
       "file": "src/Granit.Identity.Endpoints/Dtos/IdentityProviderCapabilitiesResponse.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {

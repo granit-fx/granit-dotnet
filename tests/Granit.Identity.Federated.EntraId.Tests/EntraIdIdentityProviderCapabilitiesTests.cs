@@ -44,6 +44,10 @@ public sealed class EntraIdIdentityProviderCapabilitiesTests
         _capabilities.SupportsUserCreation.ShouldBeTrue();
 
     [Fact]
+    public void SupportsGroupManagement_ReturnsFalse() =>
+        _capabilities.SupportsGroupManagement.ShouldBeFalse();
+
+    [Fact]
     public void ImplementsIIdentityProviderCapabilities() =>
         _capabilities.ShouldBeAssignableTo<IIdentityProviderCapabilities>();
 

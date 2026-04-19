@@ -30,5 +30,13 @@ internal sealed class KeycloakIdentityProviderCapabilities : IIdentityProviderCa
     public bool SupportsUserCreation => true;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Keycloak natively supports group CRUD via the Admin REST API, but Granit does not yet
+    /// expose tenant-admin-facing endpoints. Reported as <see langword="false"/> until the
+    /// feature ships (see <c>docs/framework/identity/group-management.md</c>).
+    /// </remarks>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc/>
     public bool IsLocalStore => false;
 }

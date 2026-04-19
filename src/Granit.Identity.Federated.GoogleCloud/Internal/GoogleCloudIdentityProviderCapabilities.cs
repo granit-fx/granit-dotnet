@@ -30,5 +30,9 @@ internal sealed class GoogleCloudIdentityProviderCapabilities : IIdentityProvide
     public bool SupportsUserCreation => true;
 
     /// <inheritdoc />
+    /// <remarks>Firebase Auth has no group concept — group management is never supported.</remarks>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc />
     public bool IsLocalStore => false;
 }

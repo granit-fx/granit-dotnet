@@ -39,4 +39,8 @@ public sealed class GoogleCloudIdentityProviderCapabilitiesTests
     [Fact]
     public void SupportsUserCreation_IsTrue() =>
         _sut.SupportsUserCreation.ShouldBeTrue();
+
+    [Fact]
+    public void SupportsGroupManagement_IsFalse() =>
+        _sut.SupportsGroupManagement.ShouldBeFalse();
 }

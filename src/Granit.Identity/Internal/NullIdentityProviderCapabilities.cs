@@ -31,5 +31,8 @@ internal sealed class NullIdentityProviderCapabilities : IIdentityProviderCapabi
     public bool SupportsUserCreation => false;
 
     /// <inheritdoc/>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc/>
     public bool IsLocalStore => false;
 }

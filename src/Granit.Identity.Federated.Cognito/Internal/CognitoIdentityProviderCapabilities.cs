@@ -36,5 +36,14 @@ internal sealed class CognitoIdentityProviderCapabilities : IIdentityProviderCap
     public bool SupportsUserCreation => true;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Cognito supports group CRUD via the AWS SDK, but groups are pool-scoped (not
+    /// tenant-scoped) — CRUD cannot be safely exposed in a shared-pool multi-tenant
+    /// deployment. Reported as <see langword="false"/> pending the dedicated work item
+    /// (see <c>docs/framework/identity/group-management.md</c>).
+    /// </remarks>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc/>
     public bool IsLocalStore => false;
 }

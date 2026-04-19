@@ -35,6 +35,18 @@ public interface IIdentityProviderCapabilities
     bool SupportsUserCreation { get; }
 
     /// <summary>
+    /// Whether tenant admins can create, update, and delete groups via the API.
+    /// </summary>
+    /// <remarks>
+    /// Currently <see langword="false"/> for every provider — group lifecycle management
+    /// is handled by the identity provider's admin console (Keycloak, EntraID, Cognito) or
+    /// is unsupported (Firebase). The capability is exposed so the frontend can hide the
+    /// "manage groups" menu while the feature is scoped. See
+    /// <c>docs/framework/identity/group-management.md</c> for the roadmap.
+    /// </remarks>
+    bool SupportsGroupManagement { get; }
+
+    /// <summary>
     /// Whether users are stored locally in the application database.
     /// </summary>
     /// <remarks>

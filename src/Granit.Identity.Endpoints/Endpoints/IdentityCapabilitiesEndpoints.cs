@@ -33,5 +33,6 @@ internal static class IdentityCapabilitiesEndpoints
             capabilities.SupportsCustomAttributes,
             capabilities.MaxCustomAttributes,
             capabilities.SupportsCredentialVerification,
-            capabilities.SupportsUserCreation));
+            capabilities.SupportsUserCreation,
+            capabilities.SupportsGroupManagement));
 }

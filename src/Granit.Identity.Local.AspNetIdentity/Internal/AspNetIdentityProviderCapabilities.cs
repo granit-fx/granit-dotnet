@@ -32,5 +32,13 @@ internal sealed class AspNetIdentityProviderCapabilities : IIdentityProviderCapa
     public bool SupportsUserCreation => true;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// The local store supports group CRUD natively (via <c>OpenIddictGroupStore</c>), but
+    /// tenant-admin-facing endpoints are not yet exposed. Reported as <see langword="false"/>
+    /// pending the dedicated work item (see <c>docs/framework/identity/group-management.md</c>).
+    /// </remarks>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc/>
     public bool IsLocalStore => true;
 }

@@ -44,5 +44,14 @@ internal sealed class EntraIdIdentityProviderCapabilities : IIdentityProviderCap
     public bool SupportsUserCreation => true;
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// EntraID supports group CRUD via Microsoft Graph, but tenant-admin-facing endpoints
+    /// are not yet exposed in Granit. In a shared-directory deployment, group CRUD cannot
+    /// be safely isolated per SaaS tenant. Reported as <see langword="false"/> pending the
+    /// dedicated work item (see <c>docs/framework/identity/group-management.md</c>).
+    /// </remarks>
+    public bool SupportsGroupManagement => false;
+
+    /// <inheritdoc/>
     public bool IsLocalStore => false;
 }

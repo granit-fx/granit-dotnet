@@ -11,6 +11,7 @@ namespace Granit.Identity.Endpoints.Dtos;
 /// <param name="MaxCustomAttributes">Maximum number of custom attributes (0 if not supported).</param>
 /// <param name="SupportsCredentialVerification">Whether the provider supports credential verification.</param>
 /// <param name="SupportsUserCreation">Whether the provider supports user creation.</param>
+/// <param name="SupportsGroupManagement">Whether tenant admins can create, update, and delete groups via the API.</param>
 public sealed record IdentityProviderCapabilitiesResponse(
     string ProviderName,
     bool SupportsIndividualSessionTermination,
@@ -19,4 +20,5 @@ public sealed record IdentityProviderCapabilitiesResponse(
     bool SupportsCustomAttributes,
     int MaxCustomAttributes,
     bool SupportsCredentialVerification,
-    bool SupportsUserCreation);
+    bool SupportsUserCreation,
+    bool SupportsGroupManagement);

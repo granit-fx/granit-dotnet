@@ -41,6 +41,10 @@ public sealed class CognitoIdentityProviderCapabilitiesTests
         _capabilities.SupportsUserCreation.ShouldBeTrue();
 
     [Fact]
+    public void SupportsGroupManagement_ReturnsFalse() =>
+        _capabilities.SupportsGroupManagement.ShouldBeFalse();
+
+    [Fact]
     public void Implements_IIdentityProviderCapabilities() =>
         _capabilities.ShouldBeAssignableTo<IIdentityProviderCapabilities>();
 }

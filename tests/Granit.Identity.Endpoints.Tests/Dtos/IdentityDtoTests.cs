@@ -88,7 +88,8 @@ public sealed class IdentityDtoTests
             SupportsCustomAttributes: true,
             MaxCustomAttributes: 100,
             SupportsCredentialVerification: true,
-            SupportsUserCreation: true);
+            SupportsUserCreation: true,
+            SupportsGroupManagement: false);
 
         response.ProviderName.ShouldBe("Keycloak");
         response.SupportsIndividualSessionTermination.ShouldBeTrue();
@@ -98,6 +99,7 @@ public sealed class IdentityDtoTests
         response.MaxCustomAttributes.ShouldBe(100);
         response.SupportsCredentialVerification.ShouldBeTrue();
         response.SupportsUserCreation.ShouldBeTrue();
+        response.SupportsGroupManagement.ShouldBeFalse();
     }
 
     // ──── IdentityPasswordChangedAtResponse ────

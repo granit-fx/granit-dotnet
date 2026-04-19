@@ -43,4 +43,8 @@ public sealed class AspNetIdentityProviderCapabilitiesTests
     [Fact]
     public void MaxCustomAttributes_IsIntMaxValue() =>
         _sut.MaxCustomAttributes.ShouldBe(int.MaxValue);
+
+    [Fact]
+    public void SupportsGroupManagement_IsFalse() =>
+        _sut.SupportsGroupManagement.ShouldBeFalse();
 }
