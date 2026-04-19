@@ -32083,6 +32083,22 @@
       "members": []
     },
     {
+      "name": "PrivacyBlobStorageEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Privacy.BlobStorage.Extensions.PrivacyBlobStorageEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/Extensions/PrivacyBlobStorageEndpointRouteBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "MapGranitPrivacyExportDownload",
+          "kind": "method",
+          "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\")",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
       "name": "ServiceCollectionExtensions",
       "fqn": "Granit.Privacy.BlobStorage.Extensions.ServiceCollectionExtensions",
       "kind": "class",

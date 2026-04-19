@@ -59,7 +59,21 @@ The uploader:
    (`InitiateUploadAsync` → HTTP PUT → `ConfirmUploadAsync`) and publishes
    `PersonalDataPreparedEto` with the confirmed blob id
 
-The archive assembler then:
+### Download endpoint
+
+```csharp
+app.MapGranitPrivacy();               // from Granit.Privacy.Endpoints
+app.MapGranitPrivacyExportDownload(); // from this package
+```
+
+Exposes `GET /privacy/exports/{requestId}/download` which resolves the tracker,
+verifies the caller owns the request, and 302-redirects to a short-lived presigned
+URL of the assembled ZIP. Kept in this package (not `Granit.Privacy.Endpoints`) so
+the core privacy endpoints stay usable without a BlobStorage dependency.
+
+### Assembler flow
+
+The archive assembler:
 
 1. Receives `ExportCompletedEto` with the full fragment list
 2. For each non-`empty:` fragment: requests a presigned download URL (TTL from
