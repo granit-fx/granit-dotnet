@@ -31992,6 +31992,24 @@
       "members": []
     },
     {
+      "name": "ExportManifest",
+      "fqn": "Granit.Privacy.BackgroundJobs.DataExport.ExportManifest",
+      "kind": "record",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/DataExport/ExportManifest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "ExportManifestFragment",
+      "fqn": "Granit.Privacy.BackgroundJobs.DataExport.ExportManifestFragment",
+      "kind": "record",
+      "project": "Granit.Privacy.BackgroundJobs",
+      "file": "src/Granit.Privacy.BackgroundJobs/DataExport/ExportManifest.cs",
+      "line": 34,
+      "members": []
+    },
+    {
       "name": "GranitPrivacyBackgroundJobsModule",
       "fqn": "Granit.Privacy.BackgroundJobs.GranitPrivacyBackgroundJobsModule",
       "kind": "class",
