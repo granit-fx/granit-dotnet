@@ -37,6 +37,8 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     internal string? CursorPropertyName { get; private set; }
     internal Type? GlobalSearchStrategyType { get; private set; }
     internal string? DefaultSortValue { get; private set; }
+    internal LambdaExpression? ProjectionExpression { get; private set; }
+    internal Type? ProjectionType { get; private set; }
 
     /// <summary>
     /// Declares a column on the target entity. Only explicitly declared columns are
@@ -374,6 +376,33 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
     public QueryDefinitionBuilder<TEntity> DefaultSort(string sort)
     {
         DefaultSortValue = sort;
+        return this;
+    }
+
+    /// <summary>
+    /// Declares a server-side projection applied to every non-grouped query result.
+    /// When set, <c>MapGranitQuery&lt;TEntity&gt;</c> returns <c>PagedResult&lt;TDto&gt;</c>
+    /// instead of <c>PagedResult&lt;TEntity&gt;</c>, reducing I/O by selecting only the
+    /// requested columns at the database level.
+    /// </summary>
+    /// <typeparam name="TDto">The projected DTO type.</typeparam>
+    /// <param name="projection">
+    /// Projection expression. Must be translatable to SQL by EF Core — non-translatable
+    /// expressions (e.g. calls to arbitrary C# methods) will throw at runtime.
+    /// </param>
+    /// <exception cref="InvalidOperationException">Thrown if <c>ProjectTo</c> is called more than once.</exception>
+    public QueryDefinitionBuilder<TEntity> ProjectTo<TDto>(Expression<Func<TEntity, TDto>> projection)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+
+        if (ProjectionExpression is not null)
+        {
+            throw new InvalidOperationException(
+                "ProjectTo has already been configured for this query definition.");
+        }
+
+        ProjectionExpression = projection;
+        ProjectionType = typeof(TDto);
         return this;
     }
 

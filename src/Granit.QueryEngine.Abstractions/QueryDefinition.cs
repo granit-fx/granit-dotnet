@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Granit.QueryEngine.Options;
 namespace Granit.QueryEngine;
 
@@ -150,4 +151,16 @@ public abstract class QueryDefinition<TEntity> : IQueryDefinitionDescriptor wher
     /// </summary>
     public string? GetDefaultSort() =>
         GetBuilder().DefaultSortValue;
+
+    /// <summary>
+    /// Gets the declared projection DTO type, or <c>null</c> when no projection is configured.
+    /// </summary>
+    public Type? GetProjectionType() =>
+        GetBuilder().ProjectionType;
+
+    /// <summary>
+    /// Gets the declared projection expression, or <c>null</c> when no projection is configured.
+    /// </summary>
+    public LambdaExpression? GetProjectionExpression() =>
+        GetBuilder().ProjectionExpression;
 }

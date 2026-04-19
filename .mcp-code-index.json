@@ -34027,7 +34027,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": []
     },
     {
@@ -34601,7 +34601,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/QueryDefinition.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "typeof",
@@ -34674,6 +34674,18 @@
           "kind": "method",
           "signature": "GetDefaultSort()",
           "returnType": "string?"
+        },
+        {
+          "name": "GetProjectionType",
+          "kind": "method",
+          "signature": "GetProjectionType()",
+          "returnType": "Type?"
+        },
+        {
+          "name": "GetProjectionExpression",
+          "kind": "method",
+          "signature": "GetProjectionExpression()",
+          "returnType": "LambdaExpression?"
         }
       ]
     },
