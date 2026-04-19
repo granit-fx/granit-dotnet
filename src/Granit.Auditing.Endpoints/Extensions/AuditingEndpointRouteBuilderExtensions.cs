@@ -1,6 +1,8 @@
+using Granit.Auditing.Domain;
 using Granit.Auditing.Endpoints.Endpoints;
 using Granit.Auditing.Endpoints.Options;
 using Granit.Auditing.Endpoints.Permissions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -38,9 +40,15 @@ public static class AuditingEndpointRouteBuilderExtensions
             .WithTags(options.TagName)
             .RequireAuthorization(AuditingPermissions.AuditEntries.Read);
 
+        // Audit entries: query engine (list/meta/saved-views) + custom lookups + GDPR ops.
         RouteGroupBuilder entriesGroup = group.MapGranitGroup("audit-entries");
+        entriesGroup.MapGranitQuery<AuditEntry>();
         entriesGroup.MapAuditingReadEndpoints();
         entriesGroup.MapAuditingManagementEndpoints();
+
+        // Audit entity changes: query engine only (cross-cutting analysis).
+        // Detail of an entity change is reached via the parent AuditEntry detail endpoint.
+        group.MapGranitGroup("audit-entity-changes").MapGranitQuery<AuditEntityChange>();
 
         return group;
     }

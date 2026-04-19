@@ -13,18 +13,16 @@ namespace Granit.Auditing.Endpoints.Endpoints;
 /// <summary>
 /// Read-only Minimal API endpoints for the audit trail.
 /// </summary>
+/// <remarks>
+/// List and metadata endpoints (GET /, /meta, /saved-views/*) are provided by
+/// <c>MapGranitQuery&lt;AuditEntry&gt;()</c>. Only lookups that have no query-engine
+/// equivalent live here: by id, by entity reference, by correlation id.
+/// </remarks>
 internal static class AuditingReadEndpoints
 {
     /// <summary>Maps all audit log read endpoints to the given route group.</summary>
     public static RouteGroupBuilder MapAuditingReadEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/", GetPagedAsync)
-            .WithName("GetAuditEntries")
-            .WithSummary("Lists audit log entries with pagination and filters.")
-            .WithDescription("Returns a paginated list of audit log entries ordered by timestamp descending. Supports filtering by actor (userId), entity type/ID, category, and date range. Each entry contains a summary with the number of entity changes — use the detail endpoint to retrieve full property-level diffs. ISO 27001 A.12.4 compliant.")
-            .Produces<PagedResult<AuditEntryResponse>>()
-            .ProducesValidationProblem();
-
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetAuditEntryById")
             .WithSummary("Returns a single audit log entry with full change details.")
@@ -47,32 +45,6 @@ internal static class AuditingReadEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         return group;
-    }
-
-    private static async Task<Ok<PagedResult<AuditEntryResponse>>> GetPagedAsync(
-        [AsParameters] AuditingQueryParameters parameters,
-        [FromServices] IAuditingReader reader,
-        CancellationToken cancellationToken)
-    {
-        AuditingQuery query = new(
-            Page: parameters.Page ?? 1,
-            PageSize: Math.Clamp(parameters.PageSize ?? QueryEngineDefaults.DefaultPageSize, 1, QueryEngineDefaults.MaxPageSize),
-            UserId: parameters.UserId,
-            EntityType: parameters.EntityType,
-            EntityId: parameters.EntityId,
-            Category: parameters.Category,
-            From: parameters.From,
-            To: parameters.To);
-
-        PagedResult<AuditEntry> result = await reader
-            .GetPagedAsync(query, cancellationToken).ConfigureAwait(false);
-
-        PagedResult<AuditEntryResponse> mapped = new(
-            result.Items.Select(AuditingResponseMapper.ToSummaryResponse).ToList(),
-            result.TotalCount,
-            result.HasMore);
-
-        return TypedResults.Ok(mapped);
     }
 
     private static async Task<Results<Ok<AuditEntryDetailResponse>, ProblemHttpResult>> GetByIdAsync(

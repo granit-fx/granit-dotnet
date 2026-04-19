@@ -128,27 +128,6 @@ public sealed class EfCoreAuditingReaderCachingTests : IDisposable
         result2.Items.ShouldAllBe(e => e.EntityChanges.Any(ec => ec.EntityType == "A"));
     }
 
-    [Fact]
-    public async Task GetPagedAsync_IsNotCached()
-    {
-        // Arrange
-        var entryId = Guid.NewGuid();
-        await SeedEntryAsync(entryId);
-
-        IDbContextFactory<AuditingDbContext> factory = new TestDbContextFactory(_dbOptions);
-        EfCoreAuditingReader reader = new(factory, _cache, _currentTenant, _options);
-
-        // Act
-        PagedResult<AuditEntry> result = await reader.GetPagedAsync(
-            new AuditingQuery { Page = 1, PageSize = 10 },
-            TestContext.Current.CancellationToken);
-
-        // Assert — verify no cache entries were created for paged queries
-        result.Items.Count.ShouldBe(1);
-        MaybeValue<AuditEntry?> maybe = await _cache.TryGetAsync<AuditEntry?>("audit:global:paged", token: TestContext.Current.CancellationToken);
-        maybe.HasValue.ShouldBeFalse();
-    }
-
     // --- Helpers ---
 
     private async Task SeedEntryAsync(Guid id)

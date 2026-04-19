@@ -51,26 +51,6 @@ internal sealed class EfCoreAuditingReader(
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<AuditEntry>> GetPagedAsync(
-        AuditingQuery query,
-        CancellationToken cancellationToken = default)
-    {
-        await using AuditingDbContext dbContext = await dbContextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        IQueryable<AuditEntry> queryable = dbContext.AuditEntries
-            .Include(e => e.EntityChanges)
-            .AsNoTracking();
-
-        queryable = ApplyFilters(queryable, query);
-
-        return await queryable
-            .OrderByDescending(e => e.Timestamp)
-            .ToPagedResultAsync(query.Page, query.PageSize, cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    /// <inheritdoc/>
     public async Task<PagedResult<AuditEntry>> GetByEntityAsync(
         string entityType,
         string entityId,
@@ -123,44 +103,5 @@ internal sealed class EfCoreAuditingReader(
             .AsNoTracking()
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
-    }
-
-    private static IQueryable<AuditEntry> ApplyFilters(
-        IQueryable<AuditEntry> queryable,
-        AuditingQuery query)
-    {
-        if (query.UserId is not null)
-        {
-            queryable = queryable.Where(e => e.UserId == query.UserId);
-        }
-
-        if (query.EntityType is not null)
-        {
-            queryable = queryable.Where(e =>
-                e.EntityChanges.Any(ec => ec.EntityType == query.EntityType));
-        }
-
-        if (query.EntityId is not null)
-        {
-            queryable = queryable.Where(e =>
-                e.EntityChanges.Any(ec => ec.EntityId == query.EntityId));
-        }
-
-        if (query.Category is not null)
-        {
-            queryable = queryable.Where(e => e.Category == query.Category);
-        }
-
-        if (query.From is not null)
-        {
-            queryable = queryable.Where(e => e.Timestamp >= query.From);
-        }
-
-        if (query.To is not null)
-        {
-            queryable = queryable.Where(e => e.Timestamp < query.To);
-        }
-
-        return queryable;
     }
 }
