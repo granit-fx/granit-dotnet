@@ -26,7 +26,7 @@ internal static class SavedViewEndpoints
     /// DELETE /saved-views/{id}, POST /saved-views/{id}/set-default.
     /// </summary>
     internal static void MapSavedViewEndpoints(
-        this RouteGroupBuilder group, string entityType)
+        this RouteGroupBuilder group, string entityType, string entityName)
     {
         RouteGroupBuilder savedViews = group.MapGroup("/saved-views");
 
@@ -36,7 +36,7 @@ internal static class SavedViewEndpoints
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             GetListAsync(store, entityType, tenant, user, cancellationToken))
-            .WithName($"GetSavedViews_{entityType}")
+            .WithName($"Get{entityName}SavedViews")
             .WithSummary("Returns saved views for the current user.")
             .WithDescription("Returns all saved views owned by the authenticated user for this entity type within the current tenant. Each view contains its filter, sort, column selection, and whether it is the user's default view.")
             .Produces<List<SavedViewResponse>>();
@@ -50,7 +50,7 @@ internal static class SavedViewEndpoints
             [AsParameters] SavedViewUserContext ctx,
             CancellationToken cancellationToken) =>
             CreateAsync(request, reader, store, guidGenerator, engineOptions, entityType, ctx, cancellationToken))
-            .WithName($"CreateSavedView_{entityType}")
+            .WithName($"Create{entityName}SavedView")
             .WithSummary("Creates a new saved view.")
             .WithDescription("Creates a new saved view for the current user and entity type. The view stores a reusable query configuration (filters, sort, column selection). Returns 201 Created with the saved view details.")
             .Produces<SavedViewResponse>(StatusCodes.Status201Created)
@@ -65,7 +65,7 @@ internal static class SavedViewEndpoints
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             UpdateAsync(id, request, reader, writer, clock, user, cancellationToken))
-            .WithName($"UpdateSavedView_{entityType}")
+            .WithName($"Update{entityName}SavedView")
             .WithSummary("Updates an existing saved view.")
             .WithDescription("Replaces the name, filter, sort, and column selection of an existing saved view. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
             .Produces(StatusCodes.Status204NoContent)
@@ -79,7 +79,7 @@ internal static class SavedViewEndpoints
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             DeleteAsync(id, reader, store, user, cancellationToken))
-            .WithName($"DeleteSavedView_{entityType}")
+            .WithName($"Delete{entityName}SavedView")
             .WithSummary("Deletes a saved view.")
             .WithDescription("Permanently deletes the saved view. If it was the user's default view, no default is set afterward. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
             .Produces(StatusCodes.Status204NoContent)
@@ -93,7 +93,7 @@ internal static class SavedViewEndpoints
             ClaimsPrincipal user,
             CancellationToken cancellationToken) =>
             SetDefaultAsync(id, reader, store, entityType, user, cancellationToken))
-            .WithName($"SetDefaultSavedView_{entityType}")
+            .WithName($"SetDefault{entityName}SavedView")
             .WithSummary("Sets a saved view as the default for the current user.")
             .WithDescription("Marks the specified saved view as the user's default for this entity type. The previous default (if any) is unset. The view must belong to the current user or be shared. Returns 404 if the view does not exist. Returns 403 if the view belongs to another user.")
             .Produces(StatusCodes.Status204NoContent)
