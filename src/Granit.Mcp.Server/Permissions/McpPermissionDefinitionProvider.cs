@@ -17,22 +17,27 @@ internal sealed class McpPermissionDefinitionProvider : IPermissionDefinitionPro
 
         group.AddPermission(
             McpPermissions.Server.Access,
-            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Server.Access"));
+            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Server.Access"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             McpPermissions.Tools.Read,
-            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Tools.Read"));
+            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Tools.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             McpPermissions.Tools.Execute,
-            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Tools.Execute"));
+            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Tools.Execute"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             McpPermissions.Resources.Read,
-            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Resources.Read"));
+            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Resources.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             McpPermissions.Prompts.Read,
-            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Prompts.Read"));
+            LocalizableString.Create<McpServerLocalizationResource>("Permission:Mcp.Prompts.Read"),
+            MultiTenancySide.Both);
     }
 }

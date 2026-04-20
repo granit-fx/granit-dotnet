@@ -39,11 +39,13 @@ internal sealed class WebhooksPermissionDefinitionProvider : IPermissionDefiniti
         group.AddPermission(
             WebhooksPermissions.Subscriptions.Read,
             LocalizableString.Create<WebhooksEndpointsLocalizationResource>(
-                "Permission:Webhooks.Subscriptions.Read"));
+                "Permission:Webhooks.Subscriptions.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             WebhooksPermissions.Subscriptions.Manage,
             LocalizableString.Create<WebhooksEndpointsLocalizationResource>(
-                "Permission:Webhooks.Subscriptions.Manage"));
+                "Permission:Webhooks.Subscriptions.Manage"),
+            MultiTenancySide.Both);
     }
 }

@@ -18,14 +18,20 @@ internal sealed class AuditingPermissionDefinitionProvider : IPermissionDefiniti
             LocalizableString.Create<AuditingEndpointsLocalizationResource>(
                 "PermissionGroup:Auditing"));
 
+        // Reading audit entries is meaningful in both scopes: a tenant admin reads the
+        // tenant's entries; a host admin reads cross-tenant entries.
         group.AddPermission(
             AuditingPermissions.AuditEntries.Read,
             LocalizableString.Create<AuditingEndpointsLocalizationResource>(
-                "Permission:Auditing.AuditEntries.Read"));
+                "Permission:Auditing.AuditEntries.Read"),
+            MultiTenancySide.Both);
 
+        // Managing (pruning, redacting) audit entries is an infrastructure concern and
+        // should not be delegated to tenant admins — mis-use could break compliance trails.
         group.AddPermission(
             AuditingPermissions.AuditEntries.Manage,
             LocalizableString.Create<AuditingEndpointsLocalizationResource>(
-                "Permission:Auditing.AuditEntries.Manage"));
+                "Permission:Auditing.AuditEntries.Manage"),
+            MultiTenancySide.Host);
     }
 }

@@ -52,7 +52,8 @@ internal static class InvoiceEndpoints
             .Produces<InvoiceResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .RequireAuthorization(InvoicingPermissions.Invoices.Manage);
+            .RequireAuthorization(InvoicingPermissions.Invoices.Manage)
+            .AllowHostAccess();
 
         return group;
     }

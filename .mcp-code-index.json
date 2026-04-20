@@ -6502,13 +6502,19 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/HostAccessEndpointExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "AllowHostAccess",
           "kind": "method",
           "signature": "AllowHostAccess(this RouteHandlerBuilder builder)",
           "returnType": "RouteHandlerBuilder"
+        },
+        {
+          "name": "AllowHostAccess",
+          "kind": "method",
+          "signature": "AllowHostAccess(this RouteGroupBuilder group)",
+          "returnType": "RouteGroupBuilder"
         }
       ]
     },
@@ -9826,7 +9832,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Endpoints",
       "file": "src/Granit.CustomerBalance.Endpoints/Extensions/CustomerBalanceEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitCustomerBalance",
@@ -39539,7 +39545,7 @@
       "kind": "class",
       "project": "Granit.Tax.Endpoints",
       "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitTax",

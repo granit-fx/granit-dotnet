@@ -18,9 +18,12 @@ internal sealed class IdentityLocalPermissionDefinitionProvider : IPermissionDef
             LocalizableString.Create<IdentityLocalEndpointsLocalizationResource>(
                 "PermissionGroup:IdentityLocal"));
 
+        // Impersonation is a highly privileged "break glass" capability intended for platform
+        // support / investigations — cross-tenant by design. Restrict to the host side.
         group.AddPermission(
             IdentityLocalPermissions.Users.Impersonate,
             LocalizableString.Create<IdentityLocalEndpointsLocalizationResource>(
-                "Permission:IdentityLocal.Users.Impersonate"));
+                "Permission:IdentityLocal.Users.Impersonate"),
+            MultiTenancySide.Host);
     }
 }

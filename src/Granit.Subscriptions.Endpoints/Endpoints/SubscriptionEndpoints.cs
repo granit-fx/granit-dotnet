@@ -28,7 +28,8 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
+            .AllowHostAccess();
 
         group.MapGet("/subscriptions/{id:guid}", GetSubscriptionByIdAsync)
             .WithName("GetSubscriptionById")
@@ -48,7 +49,8 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
+            .AllowHostAccess();
 
         group.MapPost("/subscriptions/{id:guid}/cancel", CancelSubscriptionAsync)
             .WithName("CancelSubscription")
@@ -58,7 +60,8 @@ internal static class SubscriptionEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
+            .AllowHostAccess();
 
         group.MapPost("/subscriptions/{id:guid}/change-plan", ChangePlanAsync)
             .WithName("ChangeSubscriptionPlan")
@@ -69,7 +72,8 @@ internal static class SubscriptionEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
+            .AllowHostAccess();
 
         return group;
     }

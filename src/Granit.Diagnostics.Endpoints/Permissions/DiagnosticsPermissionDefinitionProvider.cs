@@ -18,9 +18,11 @@ internal sealed class DiagnosticsPermissionDefinitionProvider : IPermissionDefin
             LocalizableString.Create<DiagnosticsEndpointsLocalizationResource>(
                 "PermissionGroup:Diagnostics"));
 
+        // Platform observability is host-level: metrics and health expose cross-tenant state.
         group.AddPermission(
             DiagnosticsPermissions.Monitoring.Read,
             LocalizableString.Create<DiagnosticsEndpointsLocalizationResource>(
-                "Permission:Diagnostics.Monitoring.Read"));
+                "Permission:Diagnostics.Monitoring.Read"),
+            MultiTenancySide.Host);
     }
 }

@@ -1,3 +1,4 @@
+using Granit.Authorization.Extensions;
 using Granit.Tax.Endpoints.Dtos;
 using Granit.Tax.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
@@ -15,6 +16,7 @@ internal static class TaxValidationEndpoints
     {
         group.MapPost("/validate", ValidateAsync)
             .RequireAuthorization(TaxPermissions.Validations.Execute)
+            .AllowHostAccess()
             .WithName("ValidateTaxId")
             .WithSummary("Validates a tax ID online against the relevant tax authority.")
             .WithDescription(

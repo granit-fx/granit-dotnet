@@ -36,14 +36,22 @@ internal sealed class BackgroundJobsPermissionDefinitionProvider : IPermissionDe
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
                 "PermissionGroup:BackgroundJobs"));
 
+        // Host-only: the Wolverine scheduler is a single instance per application, jobs
+        // are registered globally via [RecurringJob] with kebab-case names unique across
+        // the whole app (e.g. "blob-storage-orphan-cleanup", "privacy-export-expiration").
+        // Their state and controls are cross-tenant by construction — exposing trigger /
+        // pause / cancel to a tenant would leak other tenants' activity and let one tenant
+        // interrupt work scheduled for others. Reading the job list has the same leak.
         group.AddPermission(
             BackgroundJobsPermissions.Jobs.Read,
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
-                "Permission:BackgroundJobs.Jobs.Read"));
+                "Permission:BackgroundJobs.Jobs.Read"),
+            MultiTenancySide.Host);
 
         group.AddPermission(
             BackgroundJobsPermissions.Jobs.Manage,
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
-                "Permission:BackgroundJobs.Jobs.Manage"));
+                "Permission:BackgroundJobs.Jobs.Manage"),
+            MultiTenancySide.Host);
     }
 }

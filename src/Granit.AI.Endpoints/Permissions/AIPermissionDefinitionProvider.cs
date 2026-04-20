@@ -39,26 +39,31 @@ internal sealed class AIPermissionDefinitionProvider : IPermissionDefinitionProv
         group.AddPermission(
             AIPermissions.Workspaces.Read,
             LocalizableString.Create<AIEndpointsLocalizationResource>(
-                "Permission:AI.Workspaces.Read"));
+                "Permission:AI.Workspaces.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             AIPermissions.Workspaces.Manage,
             LocalizableString.Create<AIEndpointsLocalizationResource>(
-                "Permission:AI.Workspaces.Manage"));
+                "Permission:AI.Workspaces.Manage"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             AIPermissions.Usage.Read,
             LocalizableString.Create<AIEndpointsLocalizationResource>(
-                "Permission:AI.Usage.Read"));
+                "Permission:AI.Usage.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             AIPermissions.Chat.Execute,
             LocalizableString.Create<AIEndpointsLocalizationResource>(
-                "Permission:AI.Chat.Execute"));
+                "Permission:AI.Chat.Execute"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             AIPermissions.Embeddings.Execute,
             LocalizableString.Create<AIEndpointsLocalizationResource>(
-                "Permission:AI.Embeddings.Execute"));
+                "Permission:AI.Embeddings.Execute"),
+            MultiTenancySide.Both);
     }
 }

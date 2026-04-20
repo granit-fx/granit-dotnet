@@ -1,6 +1,7 @@
 using Granit.Authorization.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Authorization.Extensions;
 
@@ -30,4 +31,15 @@ public static class HostAccessEndpointExtensions
     public static RouteHandlerBuilder AllowHostAccess(
         this RouteHandlerBuilder builder) =>
         builder.AddEndpointFilter(new RequireHostContextEndpointFilter());
+
+    /// <summary>
+    /// Marks every endpoint in the route group as accessible from host context. Equivalent
+    /// to calling <see cref="AllowHostAccess(RouteHandlerBuilder)"/> on each handler.
+    /// </summary>
+    public static RouteGroupBuilder AllowHostAccess(
+        this RouteGroupBuilder group)
+    {
+        group.AddEndpointFilter(new RequireHostContextEndpointFilter());
+        return group;
+    }
 }

@@ -39,11 +39,13 @@ internal sealed class LocalizationOverridesPermissionDefinitionProvider : IPermi
         group.AddPermission(
             LocalizationOverridesPermissions.Overrides.Read,
             LocalizableString.Create<LocalizationEndpointsLocalizationResource>(
-                "Permission:Localization.Overrides.Read"));
+                "Permission:Localization.Overrides.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             LocalizationOverridesPermissions.Overrides.Manage,
             LocalizableString.Create<LocalizationEndpointsLocalizationResource>(
-                "Permission:Localization.Overrides.Manage"));
+                "Permission:Localization.Overrides.Manage"),
+            MultiTenancySide.Both);
     }
 }

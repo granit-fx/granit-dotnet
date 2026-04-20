@@ -59,7 +59,8 @@ internal static class PaymentMethodEndpoints
             .Produces<PaymentMethodResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Methods.Manage);
+            .RequireAuthorization(PaymentsPermissions.Methods.Manage)
+            .AllowHostAccess();
 
         group.MapDelete("/methods/{id:guid}", DetachAsync)
             .WithName("DetachPaymentMethod")
@@ -70,7 +71,8 @@ internal static class PaymentMethodEndpoints
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Methods.Manage);
+            .RequireAuthorization(PaymentsPermissions.Methods.Manage)
+            .AllowHostAccess();
 
         return group;
     }

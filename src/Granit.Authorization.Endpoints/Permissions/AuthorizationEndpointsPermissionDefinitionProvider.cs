@@ -20,11 +20,13 @@ internal sealed class AuthorizationEndpointsPermissionDefinitionProvider : IPerm
         group.AddPermission(
             AuthorizationEndpointsPermissions.Definitions.Read,
             LocalizableString.Create<AuthorizationEndpointsLocalizationResource>(
-                "Permission:Authorization.Definitions.Read"));
+                "Permission:Authorization.Definitions.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             AuthorizationEndpointsPermissions.Grants.Manage,
             LocalizableString.Create<AuthorizationEndpointsLocalizationResource>(
-                "Permission:Authorization.Grants.Manage"));
+                "Permission:Authorization.Grants.Manage"),
+            MultiTenancySide.Both);
     }
 }

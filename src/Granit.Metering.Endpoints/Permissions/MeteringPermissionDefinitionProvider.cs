@@ -14,12 +14,16 @@ internal sealed class MeteringPermissionDefinitionProvider : IPermissionDefiniti
                 "PermissionGroup:Metering"));
 
         group.AddPermission(MeteringPermissions.Meters.Read,
-            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Meters.Read"));
+            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Meters.Read"),
+            MultiTenancySide.Both);
         group.AddPermission(MeteringPermissions.Meters.Manage,
-            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Meters.Manage"));
+            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Meters.Manage"),
+            MultiTenancySide.Both);
         group.AddPermission(MeteringPermissions.Usage.Read,
-            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Usage.Read"));
+            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Usage.Read"),
+            MultiTenancySide.Both);
         group.AddPermission(MeteringPermissions.Usage.Record,
-            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Usage.Record"));
+            LocalizableString.Create<MeteringEndpointsLocalizationResource>("Permission:Metering.Usage.Record"),
+            MultiTenancySide.Both);
     }
 }

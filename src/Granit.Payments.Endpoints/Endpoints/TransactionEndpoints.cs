@@ -53,7 +53,8 @@ internal static class TransactionEndpoints
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
-            .RequireAuthorization(PaymentsPermissions.Charges.Execute);
+            .RequireAuthorization(PaymentsPermissions.Charges.Execute)
+            .AllowHostAccess();
 
         group.MapPost("/refund", RefundAsync)
             .WithName("RequestPaymentRefund")
@@ -67,7 +68,8 @@ internal static class TransactionEndpoints
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Refunds.Execute);
+            .RequireAuthorization(PaymentsPermissions.Refunds.Execute)
+            .AllowHostAccess();
 
         group.MapPost("/checkout", CheckoutAsync)
             .WithName("CreateCheckoutSession")
@@ -80,7 +82,8 @@ internal static class TransactionEndpoints
             .Produces<PaymentCheckoutSessionResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Charges.Execute);
+            .RequireAuthorization(PaymentsPermissions.Charges.Execute)
+            .AllowHostAccess();
 
         return group;
     }

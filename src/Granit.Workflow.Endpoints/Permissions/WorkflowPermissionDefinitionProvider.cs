@@ -25,16 +25,19 @@ internal sealed class WorkflowPermissionDefinitionProvider : IPermissionDefiniti
         group.AddPermission(
             WorkflowPermissions.History.Read,
             LocalizableString.Create<WorkflowEndpointsLocalizationResource>(
-                "Permission:Workflow.History.Read"));
+                "Permission:Workflow.History.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             WorkflowPermissions.Transitions.Read,
             LocalizableString.Create<WorkflowEndpointsLocalizationResource>(
-                "Permission:Workflow.Transitions.Read"));
+                "Permission:Workflow.Transitions.Read"),
+            MultiTenancySide.Both);
 
         group.AddPermission(
             WorkflowPermissions.Transitions.Execute,
             LocalizableString.Create<WorkflowEndpointsLocalizationResource>(
-                "Permission:Workflow.Transitions.Execute"));
+                "Permission:Workflow.Transitions.Execute"),
+            MultiTenancySide.Both);
     }
 }
