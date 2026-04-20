@@ -78,7 +78,7 @@ is a data filter, not a schema router.
 | Module | IMultiTenant | Justification |
 |--------|-------------|---------------|
 | MultiTenancy (Tenant) | No | Tenant registry = host by definition |
-| OpenIddict (Users) | Yes (nullable) | Identity centralized (like ABP) |
+| OpenIddict (Users) | Yes (nullable) | Identity centralized at host level |
 | OpenIddict (Roles) | No | Global RBAC shared cross-tenant |
 | OpenIddict (Applications) | Yes (nullable) | OIDC apps: global or per-tenant |
 | OpenIddict (SigningKeys) | No | Cryptographic infrastructure |
@@ -118,11 +118,10 @@ Some host modules contain data for both host and tenants, differentiated by `Ten
 - **Auditing** — `TenantId = null` = host audit entries, `TenantId = {guid}` = tenant audit.
   Centralized in the host schema for ISO 27001 unified cross-tenant audit trail.
 
-## Host-level identity (like ABP)
+## Host-level identity
 
 Identity tables (users, roles, applications, tokens) stay in the **host schema only** —
-never duplicated in tenant schemas or databases. This is the same pattern ABP Framework
-uses:
+never duplicated in tenant schemas or databases:
 
 - `OpenIddictDbContext` uses `AddGranitDbContext` (standard, never isolated)
 - Authentication always goes through the host (BFF → OpenIddict → host DB)

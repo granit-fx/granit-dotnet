@@ -13,8 +13,8 @@ entity, enabling applications to store custom key-value pairs without modifying
 the framework's database schema. Properties that need SQL indexing or query
 filtering can be **promoted** to real SQL columns at startup.
 
-Also known as: **Property Bag**, **Object Extension** (ABP), **EAV** (legacy),
-**user_metadata** (Auth0), **Custom Attributes** (Keycloak).
+Also known as: **Property Bag**, **EAV** (legacy), **user_metadata** (Auth0),
+**Custom Attributes** (Keycloak).
 
 ## Diagram
 
@@ -142,7 +142,6 @@ JSON for the rest).
 | Framework | Mechanism | SQL promotion | Schema-free |
 |-----------|-----------|:---:|:---:|
 | **Granit** | `IHasExtraProperties` + `MapProperty<T>` | Yes | Yes |
-| **ABP** | `ExtraProperties` + `ObjectExtensionManager` | Yes | Yes |
 | **Auth0** | `user_metadata` / `app_metadata` | No | Yes |
 | **Keycloak** | `attributes` dictionary | No | Yes |
 | **Entra ID** | `extensionAttribute1-15` | Yes (fixed) | No (15 max) |

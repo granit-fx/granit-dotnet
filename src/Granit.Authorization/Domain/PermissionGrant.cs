@@ -8,7 +8,7 @@ namespace Granit.Authorization.Domain;
 /// </summary>
 /// <remarks>
 /// <para>
-/// ABP-style multi-provider model: <see cref="ProviderName"/> identifies the grantee kind
+/// Multi-provider model: <see cref="ProviderName"/> identifies the grantee kind
 /// (<c>"R"</c> for role, <c>"U"</c> for user, <c>"C"</c> for OIDC client) and
 /// <see cref="ProviderKey"/> holds the provider-specific identifier (role name, user id,
 /// client id). Extension points may introduce additional providers (organization, group,

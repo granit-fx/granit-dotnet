@@ -20,7 +20,7 @@ into a world-class English documentation site suitable for open-source publicati
 **Granit** is a modular .NET 10 framework (93 NuGet packages) for building
 production-ready ASP.NET Core APIs. Key characteristics:
 
-- **Module system**: ABP-inspired `[DependsOn]` with topological loading, `IsEnabled()`,
+- **Module system**: `[DependsOn]` with topological loading, `IsEnabled()`,
   auto-discovery of validators/providers, fluent `GranitBuilder` API
 - **5 bundles**: Essentials, Api, Documents, Notifications, SaaS — meta-packages for
   quick onboarding
@@ -379,12 +379,10 @@ Study these for inspiration — not to copy, but to match their quality level:
    section, stability levels, governance
 4. **Stripe** (docs.stripe.com) — rigor: compilable snippets, intent-based API docs
 5. **React** (react.dev) — concept-first: every hook introduced by its problem
-6. **ABP Framework** (abp.io/docs) — direct competitor: module system, .NET, DI
-   conventions, multi-tenancy
-7. **Laravel** (laravel.com/docs) — elegant structure, progressive disclosure
-8. **Next.js** (nextjs.org/docs) — App Router docs restructure, learn-by-doing
-9. **Rust** (doc.rust-lang.org/book) — "The Book": progressive tutorial + reference
-10. **Tailwind CSS** (tailwindcss.com/docs) — reference-heavy, excellent search
+6. **Laravel** (laravel.com/docs) — elegant structure, progressive disclosure
+7. **Next.js** (nextjs.org/docs) — App Router docs restructure, learn-by-doing
+8. **Rust** (doc.rust-lang.org/book) — "The Book": progressive tutorial + reference
+9. **Tailwind CSS** (tailwindcss.com/docs) — reference-heavy, excellent search
 
 The target quality is a deliberate mix of:
 Django (structure) + Kubernetes (governance) + Stripe (rigor) + Spring (conventions).

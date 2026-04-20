@@ -1,6 +1,6 @@
 ---
 title: "Module System Pattern — DependsOn Graph"
-description: "ABP-inspired module system with topological sorting for deterministic startup ordering"
+description: "DependsOn-based module system with topological sorting for deterministic startup ordering"
 sidebar:
   label: Module System
   order: 1
@@ -13,8 +13,7 @@ each owning its own service registration and initialization lifecycle. A central
 loader resolves startup order through topological sorting of declared dependencies,
 guaranteeing that a module never starts before its prerequisites.
 
-Granit implements a variant inspired by the ABP framework (ASP.NET Boilerplate),
-adapted for an ecosystem of independent NuGet packages.
+Granit implements this pattern adapted for an ecosystem of independent NuGet packages.
 
 ## Diagram
 

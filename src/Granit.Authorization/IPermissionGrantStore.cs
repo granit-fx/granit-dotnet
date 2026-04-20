@@ -1,7 +1,7 @@
 namespace Granit.Authorization;
 
 /// <summary>
-/// Data access layer for permission grants. Operates on the ABP-style
+/// Data access layer for permission grants. Operates on the
 /// <c>(providerName, providerKey, permissionName, tenantId)</c> tuple.
 /// Called by <see cref="IPermissionChecker"/> (read) and <c>PermissionManager</c> (read/write).
 /// Default implementation is <c>NullPermissionGrantStore</c> (always false, writes are no-ops).

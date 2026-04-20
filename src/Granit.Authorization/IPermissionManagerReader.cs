@@ -1,7 +1,7 @@
 namespace Granit.Authorization;
 
 /// <summary>
-/// Read-only service for querying grant state via the ABP-style
+/// Read-only service for querying grant state via the
 /// <c>(providerName, providerKey)</c> tuple.
 /// Available only when <c>Granit.Authorization.EntityFrameworkCore</c> is registered.
 /// </summary>

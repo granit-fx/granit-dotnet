@@ -9,7 +9,7 @@ namespace Granit.Authorization.EntityFrameworkCore;
 /// <para>
 /// Authorization grants are host-level: they may target host users (<c>TenantId == null</c>)
 /// or tenant-scoped users (<c>TenantId</c> set), but the storage itself always lives in the
-/// host schema alongside Identity and OpenIddict — per the ABP-aligned topology.
+/// host schema alongside Identity and OpenIddict.
 /// </para>
 /// <para>
 /// <b>Important:</b> Set these properties at application startup, before

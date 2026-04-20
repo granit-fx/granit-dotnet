@@ -17,7 +17,7 @@ ASP.NET Core gives you dependency injection but no concept of a **module**. When
 - **Conditional loading** -- Vault is useless in local development, Redis is optional if no connection string is configured.
 - **Discovery** -- you need a single entry point that pulls in the entire dependency tree without listing every package by hand.
 
-Granit solves this with a lightweight module system inspired by ABP Framework, built on four primitives: `GranitModule`, `[DependsOn]`, topological sort, and a two-phase lifecycle.
+Granit solves this with a lightweight module system built on four primitives: `GranitModule`, `[DependsOn]`, topological sort, and a two-phase lifecycle.
 
 ## Core concepts
 

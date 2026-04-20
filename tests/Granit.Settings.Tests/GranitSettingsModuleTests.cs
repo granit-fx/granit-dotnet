@@ -1,8 +1,7 @@
 // =============================================================================
 // GranitSettingsModuleTests - Tests d'intégration DI du module Settings
 // =============================================================================
-// Vérifie le câblage complet des services via AddGranit<GranitSettingsModule>(),
-// à la manière d'AbpIntegratedTest<T> dans ABP Framework.
+// Vérifie le câblage complet des services via AddGranit<GranitSettingsModule>().
 // =============================================================================
 
 using Granit.Extensions;
@@ -152,7 +151,7 @@ public sealed class GranitSettingsModuleTests
         granitApp.GetModuleTypes().ShouldContain(typeof(GranitSettingsModule));
     }
 
-    // --- Test fonctionnel (style AbpIntegratedTest) ---
+    // --- Test fonctionnel ---
 
     [Fact]
     public async Task SetGlobal_Then_GetOrNull_Returns_StoredValue()

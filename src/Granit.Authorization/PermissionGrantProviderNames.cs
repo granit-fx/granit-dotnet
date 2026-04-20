@@ -2,7 +2,7 @@ namespace Granit.Authorization;
 
 /// <summary>
 /// Canonical provider names identifying the grantee of a <see cref="Domain.PermissionGrant"/>.
-/// Kept short for compact storage — single-char letters match ABP's convention.
+/// Kept short for compact storage — single-char letters keep indexes compact.
 /// </summary>
 /// <remarks>
 /// Extend this type with additional providers (e.g. <c>"O"</c> for organization, <c>"G"</c> for

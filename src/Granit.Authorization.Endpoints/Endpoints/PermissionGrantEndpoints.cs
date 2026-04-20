@@ -16,8 +16,8 @@ namespace Granit.Authorization.Endpoints.Endpoints;
 /// Admin endpoints for viewing and managing role → permission grants.
 /// </summary>
 /// <remarks>
-/// These endpoints operate on the role provider (<c>"R"</c>) of the underlying ABP-style
-/// grant model. Endpoints targeting user-level (<c>"U"</c>) or OIDC-client-level (<c>"C"</c>)
+/// These endpoints operate on the role provider (<c>"R"</c>) of the underlying
+/// multi-provider grant model. Endpoints targeting user-level (<c>"U"</c>) or OIDC-client-level (<c>"C"</c>)
 /// grants can be added in sibling modules without changing this route surface.
 /// </remarks>
 internal static partial class PermissionGrantEndpoints

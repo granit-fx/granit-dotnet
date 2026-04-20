@@ -1,8 +1,7 @@
 // =============================================================================
 // GranitMultiTenancyModuleTests - DI integration tests for the module
 // =============================================================================
-// Verifies the complete service wiring via AddGranit<T>(),
-// in the style of AbpIntegratedTest<T> in ABP Framework.
+// Verifies the complete service wiring via AddGranit<T>().
 //
 // Each test bootstraps the MultiTenancy module (standalone, no Security dependency)
 // and resolves services from the real DI container.
@@ -109,7 +108,7 @@ public sealed class GranitMultiTenancyModuleTests
             "MultiTenancy module is standalone with no Security dependency");
     }
 
-    // --- Functional test (AbpIntegratedTest style) ---
+    // --- Functional test ---
 
     [Fact]
     public void ICurrentTenant_Resolved_From_DI_Change_Works()

@@ -1,7 +1,7 @@
 namespace Granit.Authorization;
 
 /// <summary>
-/// Administrative service for mutating grants in the ABP-style
+/// Administrative service for mutating grants in the
 /// <c>(providerName, providerKey)</c> model.
 /// Each call to <see cref="SetAsync"/> runs the <see cref="IPermissionGrantValidator"/> chain
 /// (for additions), emits an ISO 27001 audit log entry, and invalidates the cache.

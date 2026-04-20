@@ -6,7 +6,7 @@
 //   - Retourne false si le grantee (ProviderName/ProviderKey), la permission ou le tenant
 //     ne correspondent pas
 //   - Gère correctement les grants à portée globale (TenantId null)
-// Les grants sont scopés via le tuple ABP-style (ProviderName, ProviderKey) où
+// Les grants sont scopés via le tuple (ProviderName, ProviderKey) où
 // ProviderName="R" identifie un grantee de type rôle.
 // =============================================================================
 
