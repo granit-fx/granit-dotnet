@@ -53,4 +53,15 @@ public interface ICurrentUserService
     /// API key identifier when authenticated via API key, <c>null</c> otherwise.
     /// </summary>
     Guid? ApiKeyId => null;
+
+    /// <summary>
+    /// OIDC <c>client_id</c> of the calling application, <c>null</c> when unavailable
+    /// (e.g. local dev hosts without an IDP, or tests).
+    /// </summary>
+    /// <remarks>
+    /// Used by <c>ClientPermissionGrantProvider</c> (Granit.Authorization) to resolve
+    /// client-level permission grants. Default implementation returns <c>null</c> so
+    /// existing <see cref="ICurrentUserService"/> impls remain source-compatible.
+    /// </remarks>
+    string? ClientId => null;
 }

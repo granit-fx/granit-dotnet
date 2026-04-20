@@ -6617,6 +6617,22 @@
       ]
     },
     {
+      "name": "IPermissionGrantProvider",
+      "fqn": "Granit.Authorization.IPermissionGrantProvider",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionGrantProvider.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GetProviderKeys",
+          "kind": "method",
+          "signature": "GetProviderKeys(PermissionGrantLookupContext context)",
+          "returnType": "string Name { get; } IReadOnlyList<string>"
+        }
+      ]
+    },
+    {
       "name": "IPermissionGrantStore",
       "fqn": "Granit.Authorization.IPermissionGrantStore",
       "kind": "interface",
@@ -6760,6 +6776,15 @@
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/PermissionDefinition.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "PermissionGrantLookupContext",
+      "fqn": "Granit.Authorization.PermissionGrantLookupContext",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionGrantLookupContext.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -42117,6 +42142,12 @@
           "kind": "property",
           "signature": "Guid? ApiKeyId",
           "returnType": "Guid?"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string? ClientId",
+          "returnType": "string?"
         }
       ]
     },

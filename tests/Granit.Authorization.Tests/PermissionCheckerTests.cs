@@ -356,7 +356,7 @@ public sealed class PermissionCheckerTests
         meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
         AuthorizationMetrics metrics = new(meterFactory);
 
-        PermissionChecker checker = new(user, tenant, manager, store, cache, metrics,
+        PermissionChecker checker = new(user, tenant, manager, store, BuildDefaultProviders(), cache, metrics,
             Microsoft.Extensions.Options.Options.Create(opts));
 
         // Act
@@ -450,8 +450,19 @@ public sealed class PermissionCheckerTests
         meterFactory.Create(Arg.Any<MeterOptions>()).Returns(new Meter("test"));
         AuthorizationMetrics metrics = new(meterFactory);
 
-        return new PermissionChecker(user, tenant, manager, grantStore, cacheService, metrics, Microsoft.Extensions.Options.Options.Create(opts));
+        return new PermissionChecker(user, tenant, manager, grantStore, BuildDefaultProviders(), cacheService, metrics, Microsoft.Extensions.Options.Options.Create(opts));
     }
+
+    /// <summary>
+    /// Default U → R → C provider chain matching the registration order in
+    /// <c>AuthorizationServiceCollectionExtensions.AddGranitAuthorization</c>.
+    /// </summary>
+    private static IEnumerable<IPermissionGrantProvider> BuildDefaultProviders() =>
+    [
+        new UserPermissionGrantProvider(),
+        new RolePermissionGrantProvider(),
+        new ClientPermissionGrantProvider(),
+    ];
 
     /// <summary>
     /// Cache substitute that always calls the factory (simulates a cache miss on every call).

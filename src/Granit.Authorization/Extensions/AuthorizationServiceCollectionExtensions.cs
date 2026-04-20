@@ -41,6 +41,17 @@ public static class AuthorizationServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<
             IPermissionGrantValidator, MultiTenancySidePermissionGrantValidator>());
 
+        // Grant providers evaluated in the order below: specific → generic.
+        // A user-level grant short-circuits role and client checks; a role-level grant
+        // short-circuits the client check. This ordering also prepares a future "Deny"
+        // semantic where the most specific grant wins.
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IPermissionGrantProvider, UserPermissionGrantProvider>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IPermissionGrantProvider, RolePermissionGrantProvider>());
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<
+            IPermissionGrantProvider, ClientPermissionGrantProvider>());
+
         services.AddSingleton<IAuthorizationPolicyProvider, DynamicPermissionPolicyProvider>();
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
