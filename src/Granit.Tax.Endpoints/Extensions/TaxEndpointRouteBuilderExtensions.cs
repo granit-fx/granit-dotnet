@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Tax.Endpoints.Endpoints;
 using Granit.Tax.Endpoints.Permissions;
@@ -26,8 +25,7 @@ public static class TaxEndpointRouteBuilderExtensions
         // Both behind Tax.Rates.Read.
         RouteGroupBuilder ratesGroup = group
             .MapGranitGroup("rates")
-            .RequireAuthorization(TaxPermissions.Rates.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(TaxPermissions.Rates.Read);
         ratesGroup.MapGranitQuery<TaxRateEntry>();
         ratesGroup.MapRateEndpoints();
 

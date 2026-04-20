@@ -273,50 +273,60 @@ header, the `MultiTenant` query filter produces `WHERE TenantId IS NULL` — ret
 no tenant data. Host administrators need cross-tenant visibility on specific
 endpoints.
 
-### `.AllowHostAccess()` marker
+### Opt-in via the permission's `MultiTenancySide`
 
-Chain `.AllowHostAccess()` after `.RequireAuthorization()` on endpoints that should
-support host admin access:
+Host access is declared **once**, on the permission itself, via
+[`MultiTenancySide`](/dotnet/security/authorization-multitenancy-side/):
+
+```csharp title="SubscriptionsPermissionDefinitionProvider.cs"
+group.AddPermission(
+    SubscriptionsPermissions.Subscriptions.Read,
+    L("Permission:Subscriptions.Read"),
+    MultiTenancySide.Both); // host admin + tenant can both call
+```
+
+Endpoints gated by this permission are automatically accessible in either context:
 
 ```csharp
 group.MapGet("/{id:guid}", GetByIdAsync)
     .WithName("GetSubscription")
-    .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
-    .AllowHostAccess();  // Host admin can see any tenant's subscription
+    .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
+    // No extra marker — the permission's side already opts the endpoint in.
 ```
 
-The `RequireHostContextEndpointFilter` behind `.AllowHostAccess()` checks:
+`IPermissionChecker` enforces the side at check time:
 
-- **Tenant context active** — filter is a no-op, normal tenant-scoped access
-- **No tenant context** — verifies the caller is authenticated (defense in depth)
+- Permission includes `Host` and no tenant is active → allowed (authenticated caller
+  required, as always)
+- Permission includes `Tenant` and a tenant is active → allowed
+- Mismatch → denied at check time, before any data access
 
-Permission checks are handled by `.RequireAuthorization()` which already calls
-`IPermissionChecker` with the contextual cache key
-`perm:global:{role}:{permission}` in host context. No need to repeat the
-permission in `.AllowHostAccess()`.
-
-### Three-layer defense
+### Two-layer defense
 
 | Layer | Component | Role |
 |-------|-----------|------|
-| **Endpoint** | `.AllowHostAccess()` | Authentication gate for host requests |
-| **Authorization** | `.RequireAuthorization(perm)` | Permission check (`global` scope in host context) |
-| **Data** | `EfStoreBase.Query(db)` | `IgnoreQueryFilters([MultiTenant])` per query |
+| **Authorization** | `.RequireAuthorization(perm)` → `IPermissionChecker` | Enforces `MultiTenancySide` + grant lookup (per-provider `perm:{tenantId\|"global"}:...` cache key) |
+| **Data** | `EfStoreBase.Query(db)` | `IgnoreQueryFilters([MultiTenant])` when `!currentTenant.IsAvailable` |
 
-A tenant user who omits the `X-Tenant-Id` header gets **no data** (safe default)
-on endpoints without `.AllowHostAccess()`, and **403 Forbidden** from the
-authorization layer on endpoints with `.AllowHostAccess()` (no global permissions).
+A tenant user who omits the `X-Tenant-Id` header hits the safe default (no data
+returned) on every endpoint. A host caller lacking the right permission gets
+**403 Forbidden** from the authorization layer. A tenant caller invoking a
+`Host`-sided permission is also denied at check time.
 
-### When to use
+### When to use `MultiTenancySide.Both`
 
-Add `.AllowHostAccess()` on **read** endpoints where host administrators need
-cross-tenant visibility: GET by ID, list, and admin dashboards.
+Tag `Both` on **read** permissions where host administrators need cross-tenant
+visibility (list/get by id/admin dashboards) **and** tenants need their own view
+of the same data — the typical SaaS "host bills tenant" surfaces (Invoicing,
+Payments, CustomerBalance, Subscriptions, Tax).
 
-Do **not** add it on:
+Use `Host` for operations that are only meaningful at the platform level: tenant
+provisioning, impersonation, audit pruning, global feature-flag definitions,
+OIDC scopes, diagnostics, recurring job scheduler controls.
 
-- **Tenant-only writes** — `CreateSubscription`, `AssignSeat` (require tenant context)
-- **Endpoints with explicit tenant checks** — already return 400 if `!currentTenant.IsAvailable`
-- **QueryEngine endpoints** — `IQueryableSource` implementations handle the bypass separately
+Use `Tenant` for operations tied to a specific tenant's data model (per-tenant
+settings, and anything a host admin should **not** be able to do without entering
+the tenant's context).
 
 ## Testing authorization
 

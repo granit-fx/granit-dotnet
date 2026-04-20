@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.CustomerBalance.Endpoints.Internal;
 using Granit.CustomerBalance.Endpoints.Permissions;
@@ -27,8 +26,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
                 "Returns the current credit balance for the authenticated tenant in the specified currency. "
                 + "Returns zero balance if no account exists for that currency.")
             .Produces<CustomerBalanceResponse>()
-            .RequireAuthorization(CustomerBalancePermissions.Accounts.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(CustomerBalancePermissions.Accounts.Read);
 
         group.MapGet("/transactions", ListTransactionsEndpoint.HandleAsync)
             .WithName("ListBalanceTransactions")
@@ -38,8 +36,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
                 + "Ordered by creation date descending (most recent first). "
                 + "Each entry shows the transaction type, amount, source, and optional reference.")
             .Produces<IReadOnlyList<BalanceTransactionResponse>>()
-            .RequireAuthorization(CustomerBalancePermissions.Transactions.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(CustomerBalancePermissions.Transactions.Read);
 
         group.MapPost("/balance/credit", AdminCreditEndpoint.HandleAsync)
             .WithName("AddAdminCredit")
@@ -51,8 +48,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
             .Produces<CustomerBalanceResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .RequireAuthorization(CustomerBalancePermissions.Credits.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(CustomerBalancePermissions.Credits.Manage);
 
         return group;
     }

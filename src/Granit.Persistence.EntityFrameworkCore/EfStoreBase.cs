@@ -26,9 +26,10 @@ namespace Granit.Persistence.EntityFrameworkCore;
 /// <b>Host context bypass:</b> When <paramref name="currentTenant"/> is provided and no
 /// tenant is active (<see cref="ICurrentTenant.IsAvailable"/> is <c>false</c>), the
 /// <see cref="GranitFilterNames.MultiTenant"/> named query filter is bypassed on all read
-/// operations so the caller sees entities across all tenants. This is used for host-level
-/// administration endpoints protected by <c>RequireHostContextEndpointFilter</c>.
-/// All other filters (soft-delete, GDPR, active) remain active.
+/// operations so the caller sees entities across all tenants. Access to the endpoint is
+/// already gated upstream by <see cref="MultiTenancySide"/> on the required permission
+/// (<see cref="MultiTenancySide.Host"/> or <see cref="MultiTenancySide.Both"/> allow
+/// host-context callers). All other filters (soft-delete, GDPR, active) remain active.
 /// </para>
 /// </remarks>
 /// <typeparam name="TEntity">The entity type (must inherit <see cref="Entity"/>).</typeparam>

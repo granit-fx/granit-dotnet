@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
@@ -24,8 +23,7 @@ internal static class SeatEndpoints
             .Produces<IReadOnlyList<SeatResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Seats.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Seats.Read);
 
         group.MapPost("/subscriptions/{id:guid}/seats", AssignSeatAsync)
             .WithName("AssignSeat")
@@ -36,8 +34,7 @@ internal static class SeatEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(SubscriptionsPermissions.Seats.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Seats.Manage);
 
         group.MapDelete("/subscriptions/{id:guid}/seats/{userId:guid}", RevokeSeatAsync)
             .WithName("RevokeSeat")
@@ -47,8 +44,7 @@ internal static class SeatEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Seats.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Seats.Manage);
 
         return group;
     }

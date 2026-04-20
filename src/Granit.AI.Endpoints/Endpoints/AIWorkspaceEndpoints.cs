@@ -1,7 +1,6 @@
 using Granit.AI.Endpoints.Dtos;
 using Granit.AI.Endpoints.Permissions;
 using Granit.AI.Workspaces;
-using Granit.Authorization.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -20,8 +19,7 @@ internal static class AIWorkspaceEndpoints
             .WithDescription(
                 "Returns every registered workspace with its provider, model, and configuration. "
                 + "System workspaces are defined in configuration; dynamic workspaces are user-created.")
-            .Produces<AIWorkspaceListResponse>()
-            .AllowHostAccess();
+            .Produces<AIWorkspaceListResponse>();
 
         group.MapGet("/workspaces/{name}", GetByNameAsync)
             .WithName("GetAIWorkspace")
@@ -30,8 +28,7 @@ internal static class AIWorkspaceEndpoints
                 "Fetches the full configuration of a single workspace including provider, model, "
                 + "system prompt, and active status. Returns 404 if no workspace matches the name.")
             .Produces<AIWorkspaceResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .AllowHostAccess();
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/workspaces", CreateAsync)
             .WithName("CreateAIWorkspace")

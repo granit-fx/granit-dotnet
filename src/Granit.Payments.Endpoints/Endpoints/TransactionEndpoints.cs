@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
@@ -27,8 +26,7 @@ internal static class TransactionEndpoints
                 + "Each transaction includes its refunds and disputes. "
                 + "Requires the Payments.Transactions.Read permission.")
             .Produces<IReadOnlyList<PaymentTransactionResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Transactions.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Transactions.Read);
 
         group.MapGet("/transactions/{id:guid}", GetByIdAsync)
             .WithName("GetPaymentTransaction")
@@ -39,8 +37,7 @@ internal static class TransactionEndpoints
                 + "Returns 404 if the transaction does not exist.")
             .Produces<PaymentTransactionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Transactions.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Transactions.Read);
 
         group.MapPost("/charge", ChargeAsync)
             .WithName("InitiatePaymentCharge")
@@ -53,8 +50,7 @@ internal static class TransactionEndpoints
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
-            .RequireAuthorization(PaymentsPermissions.Charges.Execute)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Charges.Execute);
 
         group.MapPost("/refund", RefundAsync)
             .WithName("RequestPaymentRefund")
@@ -68,8 +64,7 @@ internal static class TransactionEndpoints
             .Produces(StatusCodes.Status202Accepted)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Refunds.Execute)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Refunds.Execute);
 
         group.MapPost("/checkout", CheckoutAsync)
             .WithName("CreateCheckoutSession")
@@ -82,8 +77,7 @@ internal static class TransactionEndpoints
             .Produces<PaymentCheckoutSessionResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Charges.Execute)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Charges.Execute);
 
         return group;
     }

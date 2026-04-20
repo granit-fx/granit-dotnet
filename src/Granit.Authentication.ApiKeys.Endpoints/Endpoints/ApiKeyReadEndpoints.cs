@@ -1,7 +1,6 @@
 using Granit.Authentication.ApiKeys.Domain;
 using Granit.Authentication.ApiKeys.Endpoints.Dtos;
 using Granit.Authentication.ApiKeys.Endpoints.Permissions;
-using Granit.Authorization.Extensions;
 using Granit.QueryEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -22,16 +21,14 @@ internal static class ApiKeyReadEndpoints
             .WithName("ListApiKeys")
             .WithSummary("Returns a paginated list of API keys.")
             .WithDescription("Lists all API keys for the current tenant with optional filters on type, environment, search term, and revocation status. The raw secret is never returned — only the prefix and last four characters for identification.")
-            .Produces<PagedResult<ApiKeyResponse>>()
-            .AllowHostAccess();
+            .Produces<PagedResult<ApiKeyResponse>>();
 
         group.MapGet("/{id:guid}", GetByIdAsync)
             .WithName("GetApiKeyById")
             .WithSummary("Returns a single API key by ID.")
             .WithDescription("Returns the metadata of a single API key. The raw secret is never exposed after creation. Returns 404 if the key does not exist.")
             .Produces<ApiKeyResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .AllowHostAccess();
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

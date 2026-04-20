@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -29,8 +28,7 @@ internal static class PaymentMethodEndpoints
                 + "including their type, provider, display label, and default status. "
                 + "Requires the Payments.Methods.Read permission.")
             .Produces<IReadOnlyList<PaymentMethodResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Methods.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Methods.Read);
 
         group.MapGet("/methods/available", GetAvailableAsync)
             .WithName("GetAvailablePaymentMethods")
@@ -44,8 +42,7 @@ internal static class PaymentMethodEndpoints
                 + "amount/sequenceType values.")
             .Produces<IReadOnlyList<PaymentAvailableMethodResponse>>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .RequireAuthorization(PaymentsPermissions.Methods.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Methods.Read);
 
         group.MapPost("/methods", AttachAsync)
             .WithName("AttachPaymentMethod")
@@ -59,8 +56,7 @@ internal static class PaymentMethodEndpoints
             .Produces<PaymentMethodResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Methods.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Methods.Manage);
 
         group.MapDelete("/methods/{id:guid}", DetachAsync)
             .WithName("DetachPaymentMethod")
@@ -71,8 +67,7 @@ internal static class PaymentMethodEndpoints
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Methods.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Methods.Manage);
 
         return group;
     }

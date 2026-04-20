@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Scheduling.Domain;
 using Granit.Scheduling.Domain.ValueObjects;
 using Granit.Scheduling.Endpoints.Dtos;
@@ -24,8 +23,7 @@ internal static class SchedulingReadEndpoints
             .WithSummary("Returns a scheduled action by ID.")
             .WithDescription("Returns the full details of a single scheduled action identified by its GUID. Returns 404 if the action does not exist or belongs to a different tenant.")
             .Produces<ScheduledActionResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .AllowHostAccess();
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }

@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Payments.Contracts;
@@ -33,8 +32,7 @@ internal static class PaymentMethodConfigurationEndpoints
                 + "instances, grouped by provider. Each method shows its localized display label, category "
                 + "and current activation state plus the capability snapshot captured at activation time.")
             .Produces<IReadOnlyList<PaymentProviderConfigurationResponse>>()
-            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage);
 
         config.MapGet("/catalog", GetCatalogAsync)
             .WithName("GetPaymentProviderCatalog")
@@ -46,8 +44,7 @@ internal static class PaymentMethodConfigurationEndpoints
                 + "them). Returns 404 if the provider is not registered.")
             .Produces<PaymentProviderCatalogResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage);
 
         config.MapPost("/{providerName}/{methodType}/activate", ActivateAsync)
             .WithName("ActivatePaymentMethodConfiguration")
@@ -61,8 +58,7 @@ internal static class PaymentMethodConfigurationEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new IdempotentAttribute { Required = false })
-            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage);
 
         config.MapPost("/{providerName}/{methodType}/deactivate", DeactivateAsync)
             .WithName("DeactivatePaymentMethodConfiguration")
@@ -74,8 +70,7 @@ internal static class PaymentMethodConfigurationEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new IdempotentAttribute { Required = false })
-            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage);
 
         config.MapPost("/{providerName}/{methodType}/resync", ResyncAsync)
             .WithName("ResyncPaymentMethodConfiguration")
@@ -88,8 +83,7 @@ internal static class PaymentMethodConfigurationEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .WithMetadata(new IdempotentAttribute { Required = false })
-            .RequireAuthorization(PaymentsPermissions.Configuration.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(PaymentsPermissions.Configuration.Manage);
 
         return group;
     }

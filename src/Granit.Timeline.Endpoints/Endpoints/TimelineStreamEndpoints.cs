@@ -1,5 +1,4 @@
 using Granit.Authorization;
-using Granit.Authorization.Extensions;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
 using Granit.Timeline.Endpoints.Dtos;
@@ -24,8 +23,7 @@ internal static class TimelineStreamEndpoints
             .WithName("GetTimelineStream")
             .WithSummary("Returns the paginated activity stream for an entity, newest first.")
             .WithDescription("Returns comments, internal notes (staff-only, requires Timeline.InternalNotes.Read), and system log entries. Supports pagination. Soft-deleted entries are excluded.")
-            .Produces<PagedResult<TimelineStreamEntryResponse>>()
-            .AllowHostAccess();
+            .Produces<PagedResult<TimelineStreamEntryResponse>>();
 
         return group;
     }

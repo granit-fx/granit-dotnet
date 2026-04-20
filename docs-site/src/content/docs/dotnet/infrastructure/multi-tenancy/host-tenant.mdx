@@ -192,20 +192,26 @@ By default, host context (no `X-Tenant-Id` header) results in the `MultiTenant`
 query filter matching `TenantId IS NULL` — returning only host-level entities.
 This is a safe default, but host administrators need to see data across all tenants.
 
-Granit provides a **3-layer defense-in-depth** architecture for this:
+Granit provides **2 layers** that work off a single declarative source — the
+permission's [`MultiTenancySide`](/dotnet/security/authorization-multitenancy-side/):
 
-1. **Endpoint layer** — `.AllowHostAccess()` marks endpoints that support host admin.
-   Verifies the caller is authenticated.
-2. **Authorization layer** — `.RequireAuthorization(permission)` checks permissions
-   using the `perm:global:{role}:{permission}` cache key in host context.
-3. **Data layer** — `EfStoreBase.Query(db)` bypasses the `MultiTenant` named query
-   filter per-query via `IgnoreQueryFilters`, without affecting other filters.
+1. **Authorization layer** — `.RequireAuthorization(permission)` goes through
+   `IPermissionChecker`, which rejects the call when the required permission's
+   `MultiTenancySide` doesn't match the current tenant context. A permission tagged
+   `Host` or `Both` is the single declarative opt-in that allows host-context callers
+   to reach the endpoint. Authentication is already enforced by the checker
+   (VULN-001), so no separate host-access filter is needed.
+2. **Data layer** — `EfStoreBase.Query(db)` bypasses the `MultiTenant` named query
+   filter per-query via `IgnoreQueryFilters` when `ICurrentTenant.IsAvailable` is
+   `false`, without affecting other filters.
 
 ```csharp
-// Endpoint: opt-in to host admin access
+// Endpoint: host access derived from the permission's MultiTenancySide.
+// No extra marker needed on the endpoint itself.
 group.MapGet("/{id:guid}", GetByIdAsync)
-    .RequireAuthorization(InvoicingPermissions.Invoices.Read)
-    .AllowHostAccess();
+    .RequireAuthorization(InvoicingPermissions.Invoices.Read);
+    // InvoicingPermissions.Invoices.Read is tagged MultiTenancySide.Both,
+    // so the host is allowed to call this endpoint.
 
 // Store: pass ICurrentTenant to EfStoreBase for automatic bypass
 internal sealed class EfInvoiceStore(

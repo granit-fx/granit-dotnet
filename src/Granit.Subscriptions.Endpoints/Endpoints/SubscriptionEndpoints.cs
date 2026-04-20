@@ -1,4 +1,3 @@
-using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -28,8 +27,7 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
 
         group.MapGet("/subscriptions/{id:guid}", GetSubscriptionByIdAsync)
             .WithName("GetSubscriptionById")
@@ -38,8 +36,7 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Read);
 
         group.MapPost("/subscriptions", CreateSubscriptionAsync)
             .WithName("CreateSubscription")
@@ -49,8 +46,7 @@ internal static class SubscriptionEndpoints
             .Produces<SubscriptionResponse>(StatusCodes.Status201Created)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
 
         group.MapPost("/subscriptions/{id:guid}/cancel", CancelSubscriptionAsync)
             .WithName("CancelSubscription")
@@ -60,8 +56,7 @@ internal static class SubscriptionEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
 
         group.MapPost("/subscriptions/{id:guid}/change-plan", ChangePlanAsync)
             .WithName("ChangeSubscriptionPlan")
@@ -72,8 +67,7 @@ internal static class SubscriptionEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage)
-            .AllowHostAccess();
+            .RequireAuthorization(SubscriptionsPermissions.Subscriptions.Manage);
 
         return group;
     }
@@ -110,8 +104,8 @@ internal static class SubscriptionEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        // Host context (AllowHostAccess): bypass tenant ownership check.
-        // Tenant context: verify the subscription belongs to the current tenant.
+        // Host context: bypass tenant ownership check (permission's MultiTenancySide
+        // gates host access upstream). Tenant context: verify ownership.
         if (currentTenant.IsAvailable && sub.TenantId != currentTenant.Id!.Value)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);

@@ -6497,28 +6497,6 @@
       ]
     },
     {
-      "name": "HostAccessEndpointExtensions",
-      "fqn": "Granit.Authorization.Extensions.HostAccessEndpointExtensions",
-      "kind": "class",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/Extensions/HostAccessEndpointExtensions.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "AllowHostAccess",
-          "kind": "method",
-          "signature": "AllowHostAccess(this RouteHandlerBuilder builder)",
-          "returnType": "RouteHandlerBuilder"
-        },
-        {
-          "name": "AllowHostAccess",
-          "kind": "method",
-          "signature": "AllowHostAccess(this RouteGroupBuilder group)",
-          "returnType": "RouteGroupBuilder"
-        }
-      ]
-    },
-    {
       "name": "GranitAuthorizationModule",
       "fqn": "Granit.Authorization.GranitAuthorizationModule",
       "kind": "class",
@@ -9832,7 +9810,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Endpoints",
       "file": "src/Granit.CustomerBalance.Endpoints/Extensions/CustomerBalanceEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitCustomerBalance",
@@ -31183,7 +31161,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 42,
+      "line": 43,
       "members": []
     },
     {
@@ -39545,7 +39523,7 @@
       "kind": "class",
       "project": "Granit.Tax.Endpoints",
       "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitTax",
