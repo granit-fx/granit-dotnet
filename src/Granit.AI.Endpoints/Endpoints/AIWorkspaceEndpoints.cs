@@ -50,8 +50,7 @@ internal static class AIWorkspaceEndpoints
                 + "System workspaces cannot be modified and return 422. "
                 + "Returns 404 if the workspace does not exist.")
             .Produces<AIWorkspaceResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/workspaces/{name}", DeleteAsync)
             .WithName("DeleteAIWorkspace")

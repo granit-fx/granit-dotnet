@@ -118,16 +118,17 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             return Task.CompletedTask;
         }
 
-        foreach (IOpenApiParameter parameter in operation.Parameters)
+        IEnumerable<IOpenApiParameter> cultureNameQueryParams = operation.Parameters
+            .Where(p => p.Name == "cultureName"
+                && p.In == ParameterLocation.Query
+                && p.Schema is OpenApiSchema);
+
+        foreach (IOpenApiParameter parameter in cultureNameQueryParams)
         {
-            if (parameter.Name == "cultureName"
-                && parameter.In == ParameterLocation.Query
-                && parameter.Schema is OpenApiSchema schema)
-            {
-                parameter.Description ??= "Optional BCP 47 culture tag (e.g. 'fr', 'fr-BE', 'zh-Hant-TW'). When omitted, the Accept-Language header is used.";
-                schema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
-                schema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
-            }
+            var schema = (OpenApiSchema)parameter.Schema!;
+            parameter.Description ??= "Optional BCP 47 culture tag (e.g. 'fr', 'fr-BE', 'zh-Hant-TW'). When omitted, the Accept-Language header is used.";
+            schema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
+            schema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
         }
 
         return Task.CompletedTask;

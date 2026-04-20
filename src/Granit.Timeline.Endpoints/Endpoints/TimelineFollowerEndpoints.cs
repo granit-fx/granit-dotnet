@@ -21,16 +21,14 @@ internal static class TimelineFollowerEndpoints
             .WithName("FollowTimelineEntity")
             .WithSummary("Subscribes the current user as a follower of an entity.")
             .WithDescription("Adds the authenticated user to the follower list for the specified entity. Followers receive notifications when new timeline entries are posted. Idempotent.")
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapDelete("/{entityType}/{entityId}/follow", UnfollowAsync)
             .RequireAuthorization(TimelinePermissions.Followers.Manage)
             .WithName("UnfollowTimelineEntity")
             .WithSummary("Unsubscribes the current user from an entity.")
             .WithDescription("Removes the authenticated user from the follower list. Idempotent.")
-            .Produces(StatusCodes.Status204NoContent)
-            .ProducesProblem(StatusCodes.Status401Unauthorized);
+            .Produces(StatusCodes.Status204NoContent);
 
         group.MapGet("/{entityType}/{entityId}/followers", GetFollowersAsync)
             .WithName("GetTimelineFollowers")

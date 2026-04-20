@@ -42,16 +42,14 @@ internal static partial class PermissionGrantEndpoints
             .WithSummary("Grants a permission to a role. No-op if already granted.")
             .WithDescription("Grants the specified permission to the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being granted (privilege escalation prevention). Idempotent — granting an already-granted permission is a no-op.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesValidationProblem();
 
         adminGroup.MapDelete("/{roleName}/{permissionName}", RevokePermissionAsync)
             .WithName("RevokePermission")
             .WithSummary("Revokes a permission from a role. No-op if not granted.")
             .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being revoked (privilege escalation prevention). Idempotent — revoking a non-granted permission is a no-op.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status403Forbidden);
+            .ProducesValidationProblem();
 
         return group;
     }

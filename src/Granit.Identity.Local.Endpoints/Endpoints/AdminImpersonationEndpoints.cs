@@ -23,7 +23,6 @@ internal static class AdminImpersonationEndpoints
                 + "Writes audit log and sends transparency notification.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<ImpersonationResponse>()
-            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(IdentityLocalPermissions.Users.Impersonate);
 

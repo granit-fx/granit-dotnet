@@ -26,7 +26,6 @@ internal static class AIChatEndpoints
                 + "Returns 404 if the workspace does not exist, or 502 if the provider is unavailable.")
             .Produces<AIChatResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status502BadGateway);
 
         group.MapPost("/chat/{workspaceName}/stream", StreamAsync)
@@ -40,7 +39,6 @@ internal static class AIChatEndpoints
                 + "or 502/503 if the provider is unavailable.")
             .Produces<string>(StatusCodes.Status200OK, "text/event-stream")
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesProblem(StatusCodes.Status502BadGateway)
             .ProducesProblem(StatusCodes.Status503ServiceUnavailable);
 

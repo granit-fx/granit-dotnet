@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Payments\Granit.Payments.csproj" />
     <ProjectReference Include="..\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />

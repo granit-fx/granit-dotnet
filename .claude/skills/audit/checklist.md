@@ -297,9 +297,17 @@ Ref: `docs-site/…/api/exception-handling.mdx`
 
 ---
 
-## 5. OpenAPI endpoint metadata (`--scope openapi`)
+## 5. OpenAPI endpoint metadata and compatibility (`--scope openapi`)
 
-Every endpoint MUST declare all 5 elements:
+This scope verifies that every endpoint is correctly declared AND that its runtime
+contract (handler signature, return types, parameter binding, authorization)
+is consistent with the OpenAPI metadata exposed to clients. Inconsistencies
+between the handler and the metadata produce broken SDKs, wrong typings in the
+frontend generator, and misleading Scalar documentation.
+
+### 5a. Mandatory metadata elements
+
+Every endpoint MUST declare all 5 elements — chained in this canonical order:
 
 - [ ] `.WithName("VerbNoun")` — PascalCase operation ID
 - [ ] `.WithSummary("Imperative sentence.")` — ~100 chars, ends with period
@@ -307,37 +315,266 @@ Every endpoint MUST declare all 5 elements:
 - [ ] `.Produces<T>()` — success response type (mapped from handler return type)
 - [ ] `.ProducesProblem(StatusCodes.StatusXxx)` — one per error path in handler
 
+### 5b. Handler ↔ metadata return-type consistency (CRITICAL)
+
+The handler's declared return type MUST match the `.Produces*()` declarations
+exactly — every branch covered, no extra declarations.
+
+- [ ] Handler returns a concrete `Results<...>` discriminated union when it can
+  produce multiple status codes — never loose `IResult` or `Task<IResult>`
+- [ ] Single-status handlers use the concrete type (`Ok<T>`, `Created<T>`,
+  `NoContent`, `Accepted<T>`, `FileStreamHttpResult`, `ProblemHttpResult`)
+- [ ] **Every** branch of the `Results<...>` union has a matching
+  `.Produces*()` or `.ProducesProblem()` declaration
+- [ ] **No** `.Produces*()` declaration without a corresponding handler branch
+  (false documentation)
+- [ ] No `Task<IActionResult>` or `ActionResult<T>` (MVC pattern — wrong in
+  Minimal API)
+- [ ] No `async void`; async handlers return `Task<Results<...>>`
+
 ### Return type mapping
 
-| Handler return | Produces | ProducesProblem |
-|----------------|----------|-----------------|
+| Handler return | Produces declaration | ProducesProblem declaration |
+| -------------- | ------------------- | --------------------------- |
 | `Ok<T>` | `.Produces<T>()` | — |
 | `Created<T>` | `.Produces<T>(Status201Created)` | — |
 | `Created` (no body) | `.Produces(Status201Created)` | — |
 | `NoContent` | `.Produces(Status204NoContent)` | — |
-| `Accepted` | `.Produces(Status202Accepted)` | — |
-| `NotFound` in `Results` | — | `.ProducesProblem(Status404NotFound)` |
-| `ProblemHttpResult` in `Results` | — | `.ProducesProblem(StatusXxx)` |
-| `ValidationProblem` in `Results` | — | `.ProducesValidationProblem()` |
-| `FileStreamHttpResult` | `.Produces(Status200OK, contentType: "...")` | — |
+| `Accepted<T>` | `.Produces<T>(Status202Accepted)` | — |
+| `Accepted` (no body) | `.Produces(Status202Accepted)` | — |
+| `NotFound` | — | `.ProducesProblem(Status404NotFound)` |
+| `Conflict<T>` or `Conflict` | — | `.ProducesProblem(Status409Conflict)` |
+| `ProblemHttpResult` | — | `.ProducesProblem(StatusXxx)` (one per path) |
+| `ValidationProblem` | — | `.ProducesValidationProblem()` |
+| `FileStreamHttpResult` | `.Produces(Status200OK, contentType: "…")` | — |
+| `PhysicalFileHttpResult` | `.Produces(Status200OK, contentType: "…")` | — |
+| `RedirectHttpResult` | `.Produces(Status302Found)` | — |
+| `UnauthorizedHttpResult` | — | `.ProducesProblem(Status401Unauthorized)` |
 
-### Route groups
+### 5c. Error response coverage
 
-- [ ] `endpoints.MapGranitGroup(prefix)` — not `MapGroup()` (auto-validation)
+The framework's `ProblemDetailsResponseOperationTransformer`
+(`Granit.Http.ApiDocumentation`) **auto-injects** these responses — do NOT
+declare them manually (redundant, and the transformer wires the shared
+`ProblemDetails` schema under `application/problem+json`):
+
+| Status | Auto-injected when | Manual declaration |
+| ------ | ------------------ | ------------------ |
+| `401 Unauthorized` | `[Authorize]` present and no `[AllowAnonymous]` | Redundant — do not add |
+| `403 Forbidden` | same as 401 | Redundant — do not add |
+| `422 Unprocessable Entity` | endpoint has a request body AND no existing 400 | Redundant — do not add |
+| `500 Internal Server Error` | always (every operation) | Redundant — do not add |
+
+What the endpoint MUST still declare:
+
+- [ ] Every business error path declared explicitly:
+  - `404 Not Found` whenever the handler does a lookup by id and can return
+    `TypedResults.NotFound()` — the transformer only **enriches** an existing
+    404 with the ProblemDetails schema, it does not create it
+  - `409 Conflict` for concurrency conflicts or duplicates
+  - `410 Gone`, `412 Precondition Failed`, `423 Locked`, `429 Too Many Requests`
+    when the handler returns these explicitly
+  - Custom statuses from `TypedResults.Problem(..., statusCode: X)`
+- [ ] No `BadRequest<string>()` — always `TypedResults.Problem()` (RFC 7807,
+  GRAPI002)
+- [ ] Never `Results.*()` — always `TypedResults.*()` (GRAPI001)
+- [ ] Do NOT manually declare `.ProducesProblem(401/403/422/500)` — flag
+  redundant declarations as `CLEANUP` (noise, drifts from framework defaults)
+- [ ] If the endpoint has **no route parameter** and shows 404 in the generated
+  OpenAPI document, it's a Wolverine phantom — the transformer strips it
+  automatically (no action needed)
+
+### 5d. Route groups and URL structure
+
+- [ ] `endpoints.MapGranitGroup(prefix)` — not `MapGroup()` (enables auto-
+  validation and standard filters)
 - [ ] Route prefix is kebab-case and plural
+- [ ] Route parameters use `camelCase` with explicit constraints where relevant
+  (`{id:guid}`, `{tenantId:guid}`, `{version:int}`)
+- [ ] Route constraint type matches the parameter type in the handler signature
+  (e.g. `{id:guid}` → `Guid id`, `{page:int}` → `int page`)
 
-### Schema examples
+### 5e. Parameter binding
 
-- [ ] `ISchemaExampleProvider` implemented for request DTOs with realistic values
-- [ ] Internal-only endpoints marked with `[InternalApiAttribute]`
+- [ ] Explicit binding attributes when the source is ambiguous:
+  `[FromRoute]`, `[FromQuery]`, `[FromHeader]`, `[FromBody]`, `[FromForm]`,
+  `[FromServices]`
+- [ ] Complex types bound from query string use `[AsParameters]` with a record
+  — not individual `[FromQuery]` parameters (improves OpenAPI schema)
+- [ ] `[FromBody]` used at most once per endpoint
+- [ ] Cancellation token (`CancellationToken`) is the **last** parameter and is
+  not decorated with any binding attribute
+- [ ] `HttpContext` parameter is not decorated with a binding attribute
+- [ ] Optional parameters have a default value or are nullable — the OpenAPI
+  `required` flag must reflect reality
 
-### API documentation
+### 5f. Content types — requests
 
-- [ ] Never Swashbuckle / NSwag — native `Microsoft.AspNetCore.OpenApi` only
-- [ ] Scalar UI for documentation
-- [ ] One OpenAPI document per API major version
+- [ ] JSON endpoints: no explicit `.Accepts<T>()` needed (inferred from
+  `[FromBody]`)
+- [ ] File upload endpoints (`IFormFile` / `IFormFileCollection`):
+  - Handler parameters decorated with `[FromForm]`
+  - `.DisableAntiforgery()` applied (Minimal API requires explicit opt-out for
+    multipart)
+  - `.Accepts<TRequest>("multipart/form-data")` declared so Scalar shows the
+    file picker
+- [ ] Raw binary body (`Stream`, `PipeReader`): `.Accepts<Stream>("application/
+  octet-stream")` or the correct MIME
 
-Ref: `CLAUDE.md §OpenAPI metadata`, `docs-site/…/api/api-documentation.mdx`
+### 5g. Content types — responses
+
+- [ ] `FileStreamHttpResult` / `PhysicalFileHttpResult` declare the correct
+  MIME type via `.Produces(Status200OK, contentType: "application/pdf")` (or
+  specific type)
+- [ ] Streaming download endpoints default to `application/octet-stream` when
+  the content type is unknown at compile time — but set it at runtime on the
+  result
+- [ ] JSON responses do not redundantly declare `contentType` (inferred)
+
+### 5h. Authorization and anonymous access
+
+- [ ] Every endpoint exposes its security stance explicitly:
+  `.RequireAuthorization("Group.Resource.Action")` **or** `.AllowAnonymous()`
+  — no implicit default
+- [ ] Permission string passed to `RequireAuthorization` exists as a constant
+  in the module's `{Module}Permissions` nested static class (grep to verify)
+- [ ] Anonymous endpoints are rare and justified (health checks, public docs,
+  auth callbacks) — flag unexpected `AllowAnonymous` usage
+- [ ] When `.RequireAuthorization(...)` is present, `.ProducesProblem(401)` and
+  `.ProducesProblem(403)` are declared (see §5c)
+
+### 5i. Tags and grouping (Scalar UI)
+
+- [ ] `.WithTags("{Module}")` applied at the group level (or per endpoint)
+  so Scalar groups operations by module
+- [ ] Tag name matches the canonical module name (PascalCase, e.g.
+  `"BlobStorage"`, `"QueryEngine"`) — not a legacy name
+- [ ] Endpoints within the same module share the same tag
+
+### 5j. OperationId uniqueness
+
+- [ ] `.WithName(...)` values are unique across the **entire solution** (Scalar
+  uses them as anchors; SDK generators use them as method names)
+- [ ] No duplicates across modules (common collision: `Create`, `Delete`,
+  `GetById` without a noun prefix)
+- [ ] Use specific verbs: `CreateBlobDescriptor`, not `Create`
+
+### 5k. Schema examples and DTOs
+
+- [ ] `ISchemaExampleProvider<TRequest>` implemented for each non-trivial
+  `*Request` DTO with realistic values (no `"string"`, `0`, `00000000-0000-...`)
+- [ ] Enum JSON serialization uses `JsonStringEnumConverter` (PascalCase)
+- [ ] Date/time properties are `DateTime` / `DateTimeOffset` → ISO 8601 with
+  timezone in OpenAPI
+- [ ] Identifiers are `Guid` → `string` with `format: uuid` in OpenAPI
+- [ ] Value objects (`SingleValueObject<T>`) expose the underlying primitive in
+  OpenAPI via the framework's `SingleValueObjectSchemaTransformer`
+- [ ] Request DTOs declared in `.Endpoints/Dtos/` — entities are never returned
+
+### 5l. Deprecation and versioning
+
+- [ ] Deprecated endpoints use
+  `.WithMetadata(new DeprecatedAttribute { SunsetDate = "YYYY-MM-DD", Link = "…" })`
+  from `Granit.Http.ApiVersioning.Deprecation` — emits RFC 8594 `Deprecation`,
+  `Sunset`, and `Link` response headers (preferred over raw
+  `op.Deprecated = true`)
+- [ ] Add `[Obsolete]` on the handler method so callers see a compiler warning
+- [ ] No hand-rolled API versioning in URLs (`/v1/…`) — versioning is driven by
+  `ApiDocumentation:MajorVersions` in configuration (generates
+  `/openapi/v1.json`, `/openapi/v2.json`)
+- [ ] One OpenAPI document per declared major version — registered by
+  `Granit.Http.ApiDocumentation` (never call `AddOpenApi()` manually in app code
+  when the module is used)
+
+### 5m. Internal / hidden endpoints
+
+- [ ] Internal-only endpoints (inter-service webhooks, sync jobs, raw admin)
+  marked with `[InternalApi]` from `Granit.Http.ApiDocumentation.Attributes`
+  — silently excluded from all generated OpenAPI documents by
+  `InternalApiDocumentTransformer`
+- [ ] Do NOT use `[ExcludeFromDescription]` — the framework's `[InternalApi]`
+  is the idiomatic marker and integrates with the document transformer
+  pipeline
+
+### 5n. Granit framework alignment (`Granit.Http.ApiDocumentation`)
+
+- [ ] Native `Microsoft.AspNetCore.OpenApi` via `GranitHttpApiDocumentationModule`
+  only — NEVER Swashbuckle or NSwag (flag any `Swashbuckle.*` or `NSwag.*`
+  `<PackageReference>`)
+- [ ] Host calls `app.UseGranitApiDocumentation()` in `Program.cs` (not manual
+  `MapOpenApi()` + custom UI wiring)
+- [ ] `ApiDocumentationOptions` bound from `ApiDocumentation` section in
+  `appsettings.json` (`MajorVersions`, `Title`, `Description`, `ContactEmail`,
+  `LogoUrl`, `FaviconUrl`, `EnableInProduction`, `EnableTenantHeader`,
+  `AuthorizationPolicy`, `OAuth2`)
+- [ ] `EnableInProduction = false` unless explicitly required (ISO 27001 —
+  OpenAPI surface is a reconnaissance vector)
+- [ ] Tenant-aware apps: `EnableTenantHeader = true` documents the
+  `X-Tenant-Id` header on every endpoint; anonymous-tenant endpoints opt out
+  with `[AllowAnonymousTenant]`
+- [ ] OAuth2 flows use `OAuth2Options` binding — do not hand-wire
+  `OpenApiSecurityScheme` (the `OAuth2SecuritySchemeTransformer` handles it)
+- [ ] Request DTO examples supplied via `ISchemaExampleProvider` implemented
+  in each `.Endpoints` package — NEVER inline JSON in the endpoint chain,
+  NEVER `[OpenApiExample]`-style hacks. The
+  `SchemaExampleSchemaTransformer` deep-clones examples from the provider.
+- [ ] Well-known parameter names (`userId`, `roleName`, `permissionName`,
+  `entityType`, `entryId`, `jobId`, etc.) inherit descriptions from
+  `ParameterDescriptionOperationTransformer` — do NOT re-describe them
+  manually unless overriding
+
+### 5o. Auto-injected responses — do NOT duplicate
+
+`ProblemDetailsResponseOperationTransformer` injects responses based on
+endpoint metadata. Manual declarations for these statuses are redundant
+noise and should be flagged as `CLEANUP`:
+
+- [ ] No manual `.ProducesProblem(StatusCodes.Status401Unauthorized)` on
+  `[Authorize]` endpoints — auto-injected
+- [ ] No manual `.ProducesProblem(StatusCodes.Status403Forbidden)` on
+  `[Authorize]` endpoints — auto-injected
+- [ ] No manual `.ProducesProblem(StatusCodes.Status422UnprocessableEntity)`
+  on endpoints with a request body — auto-injected when no 400 exists
+- [ ] No manual `.ProducesProblem(StatusCodes.Status500InternalServerError)`
+  — auto-injected on every operation
+- [ ] 404 response from `TypedResults.NotFound()` is automatically enriched
+  with the shared `ProblemDetails` schema — the endpoint only needs to
+  declare `.ProducesProblem(404)` if the handler branches to it
+
+### 5p. Detection strategy
+
+When auditing a module's endpoints:
+
+1. Enumerate endpoint files: `Glob src/Granit.{Module}.Endpoints/**/*Endpoints.cs`
+2. For each file, use MCP `get_file_overview` to list `Map*` methods
+3. For each `Map*` method, use MCP `get_symbol_detail` to read the chain
+4. Cross-reference the handler signature (return type, parameters) with the
+   `.With*`/`.Produces*` chain — mismatches are `BREAKING` (wrong SDK output)
+5. Grep for violations:
+   - `Results\.(Ok|BadRequest|NotFound|Problem)` → use `TypedResults` (GRAPI001)
+   - `BadRequest<string>` → use `Problem()` (GRAPI002)
+   - `Swashbuckle|NSwag` in `.csproj` → remove
+   - `MapGroup\(` (without `Granit`) in `.Endpoints/` → use `MapGranitGroup`
+   - `.RequireAuthorization\(\)` with no argument → specify a permission string
+   - `Task<IActionResult>` or `ActionResult<` → wrong pattern in Minimal API
+
+### Severity guidance
+
+| Finding | Severity |
+| ------- | -------- |
+| Handler branch not declared in `.Produces*()` | BREAKING (SDK mismatch) |
+| `.Produces*()` without matching handler branch | CONVENTION |
+| Missing one of the 5 mandatory metadata elements | CONVENTION |
+| Duplicate `OperationId` across solution | BREAKING (SDK codegen fails) |
+| Missing `.RequireAuthorization` / `.AllowAnonymous` | ARCHITECTURE (security) |
+| `MapGroup` instead of `MapGranitGroup` | CONVENTION (loses auto-validation) |
+| Entity returned from endpoint | ARCHITECTURE (leaks persistence) |
+| Swashbuckle / NSwag reference | ARCHITECTURE |
+| Wrong route constraint type | BREAKING (binding fails at runtime) |
+| Missing `.DisableAntiforgery()` on multipart | BREAKING (endpoint rejects requests) |
+
+Ref: `CLAUDE.md §OpenAPI metadata`, `docs-site/…/api/api-documentation.mdx`,
+`docs-site/…/architecture/http-conventions.md`
 
 ---
 
