@@ -32,18 +32,20 @@ public sealed class DtoTests
     [Fact]
     public void PermissionDefinitionResponse_SetsAllProperties()
     {
-        PermissionDefinitionResponse response = new("Invoices.Read", "Read invoices");
+        PermissionDefinitionResponse response = new("Invoices.Read", "Read invoices", MultiTenancySide.Tenant);
 
         response.Name.ShouldBe("Invoices.Read");
         response.DisplayName.ShouldBe("Read invoices");
+        response.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
     }
 
     [Fact]
     public void PermissionDefinitionResponse_NullDisplayName_IsValid()
     {
-        PermissionDefinitionResponse response = new("Invoices.Read", null);
+        PermissionDefinitionResponse response = new("Invoices.Read", null, MultiTenancySide.Both);
 
         response.DisplayName.ShouldBeNull();
+        response.MultiTenancySide.ShouldBe(MultiTenancySide.Both);
     }
 
     // ── PermissionGroupResponse ────────────────────────────────────────────
@@ -53,8 +55,8 @@ public sealed class DtoTests
     {
         List<PermissionDefinitionResponse> permissions =
         [
-            new("Invoices.Read", "Read invoices"),
-            new("Invoices.Create", "Create invoices")
+            new("Invoices.Read", "Read invoices", MultiTenancySide.Tenant),
+            new("Invoices.Create", "Create invoices", MultiTenancySide.Tenant)
         ];
 
         PermissionGroupResponse response = new("Invoices", "Invoice Management", permissions);
