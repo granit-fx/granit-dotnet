@@ -209,7 +209,7 @@ public sealed class ProblemDetailsResponseOperationTransformerTests
     // --- 422 skipped when 400 already exists (ASP.NET validation) ---
 
     [Fact]
-    public async Task TransformAsync_RequestBodyWith400_Skips422()
+    public async Task TransformAsync_RequestBodyWith400_Adds422Alongside()
     {
         // Arrange
         ProblemDetailsResponseOperationTransformer transformer = new();
@@ -227,8 +227,10 @@ public sealed class ProblemDetailsResponseOperationTransformerTests
         await transformer.TransformAsync(operation, context, TestContext.Current.CancellationToken);
 
         // Assert
+        // Granit convention: 400 = domain-level errors, 422 = FluentValidation body failures.
+        // Both coexist whenever the endpoint has a request body.
         operation.Responses.ShouldContainKey("400", "existing 400 is preserved");
-        operation.Responses.ShouldNotContainKey("422", "422 is redundant when 400 exists");
+        operation.Responses.ShouldContainKey("422", "422 is added alongside 400 for validation errors");
     }
 
     // --- Document transformer registers shared schema ---

@@ -9,7 +9,7 @@ namespace Granit.Http.ApiDocumentation.Transformers;
 /// Adds RFC 7807 ProblemDetails error responses to OpenAPI operations based on endpoint metadata.
 /// <list type="bullet">
 ///   <item>401 + 403: added when <c>[Authorize]</c> is present (unless <c>[AllowAnonymous]</c>)</item>
-///   <item>422: added when the operation has a request body and no existing 400 validation response</item>
+///   <item>422: added whenever the operation has a request body (Granit's FluentValidation filter returns 422; 400 may coexist for domain-level errors)</item>
 ///   <item>404: enriched with ProblemDetails schema when present (route parameters) but lacks content</item>
 ///   <item>500: added on all operations</item>
 /// </list>
@@ -54,9 +54,9 @@ internal sealed class ProblemDetailsResponseOperationTransformer : IOpenApiOpera
             EnsureResponse(responses, "403", "Forbidden");
         }
 
-        // Add 422 only when there's a request body and no existing 400 (ASP.NET validation).
-        // When ASP.NET adds a 400 with HttpValidationProblemDetails, a separate 422 is redundant.
-        if (hasRequestBody && !responses.ContainsKey("400"))
+        // Granit convention: FluentValidationAutoEndpointFilter returns 422 for body validation
+        // failures. 400 is reserved for domain-level errors (invalid path/format). Both can coexist.
+        if (hasRequestBody)
         {
             EnsureResponse(responses, "422", "Unprocessable Entity");
         }

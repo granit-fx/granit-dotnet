@@ -38,7 +38,7 @@ internal static class IdentityWebhookEndpoints
             .WithDescription("Webhook receiver for identity provider event notifications. Validates the HMAC signature (if configured) and processes user_created, user_updated, and user_deleted events by refreshing or removing the corresponding cache entries. No authentication required — security relies on the HMAC signature validation.")
             .WithTags("Identity Webhook")
             .Produces(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized)
+            .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status413PayloadTooLarge);
 
@@ -48,7 +48,7 @@ internal static class IdentityWebhookEndpoints
     /// <summary>Maximum webhook payload size (64 KB). Webhook payloads are small JSON objects.</summary>
     private const int MaxWebhookBodySize = 64 * 1024;
 
-    private static async Task<Results<Ok, UnauthorizedHttpResult, ProblemHttpResult>> HandleWebhookAsync(
+    private static async Task<Results<Ok, ProblemHttpResult>> HandleWebhookAsync(
         HttpRequest request,
         WebhookSignatureValidator signatureValidator,
         [FromServices] IOptions<IdentityWebhookOptions> webhookOptions,
@@ -74,7 +74,9 @@ internal static class IdentityWebhookEndpoints
         string? signature = request.Headers[webhookOptions.Value.SignatureHeaderName].FirstOrDefault();
         if (!signatureValidator.Validate(body, signature))
         {
-            return TypedResults.Unauthorized();
+            return TypedResults.Problem(
+                detail: "Invalid webhook signature.",
+                statusCode: StatusCodes.Status401Unauthorized);
         }
 
         // Parse payload
