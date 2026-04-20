@@ -9,8 +9,10 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi;
 
 namespace Granit.QueryEngine.AspNetCore.Extensions;
 
@@ -139,7 +141,7 @@ public static class QueryEndpointRouteBuilderExtensions
                 .GetService<QueryDefinition<TEntity>>();
 
             string entityType = definition?.Name ?? entityName;
-            group.MapSavedViewEndpoints(entityType);
+            group.MapSavedViewEndpoints(entityType, entityName);
         }
 
         return group;
@@ -181,7 +183,9 @@ public static class QueryEndpointRouteBuilderExtensions
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult by default. When the groupBy query parameter is specified, returns a GroupedResult instead (same status code, different shape).")
         .Produces<PagedResult<TEntity>>()
         .Produces<GroupedResult<TEntity>>(StatusCodes.Status200OK)
-        .ProducesValidationProblem();
+        .ProducesValidationProblem()
+        .AddOpenApiOperationTransformer((op, ctx, ct) =>
+            DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TEntity>), typeof(GroupedResult<TEntity>), ct));
     }
 
     private static void MapProjectedGetEndpoint<TEntity, TDto>(
@@ -225,6 +229,110 @@ public static class QueryEndpointRouteBuilderExtensions
         .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{entityName}> instead (projection is not applied to grouped queries).")
         .Produces<PagedResult<TDto>>()
         .Produces<GroupedResult<TEntity>>(StatusCodes.Status200OK)
-        .ProducesValidationProblem();
+        .ProducesValidationProblem()
+        .AddOpenApiOperationTransformer((op, ctx, ct) =>
+            DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TDto>), typeof(GroupedResult<TEntity>), ct));
+    }
+
+    /// <summary>
+    /// Enriches a query endpoint operation with the standard QueryEngine query parameters
+    /// (bound transparently by <see cref="BindableQueryRequest.BindAsync"/> so they are
+    /// invisible to ASP.NET Core's default OpenAPI generator) and rewrites the 200 response
+    /// as a <c>oneOf</c> union of the paged and grouped result shapes.
+    /// </summary>
+    private static async Task DescribeQueryEndpointAsync(
+        OpenApiOperation operation,
+        OpenApiOperationTransformerContext context,
+        Type pagedResultType,
+        Type groupedResultType,
+        CancellationToken cancellationToken)
+    {
+        operation.Parameters ??= [];
+
+        AddParam(operation, "page", "1-based page index. Ignored when cursor is supplied.",
+            new OpenApiSchema { Type = JsonSchemaType.Integer | JsonSchemaType.Null, Format = "int32", Minimum = "1" });
+        AddParam(operation, "pageSize", "Number of items per page (1-500). Server-side cap applies.",
+            new OpenApiSchema { Type = JsonSchemaType.Integer | JsonSchemaType.Null, Format = "int32", Minimum = "1", Maximum = "500" });
+        AddParam(operation, "cursor", "Opaque cursor for keyset pagination. When supplied, overrides page.",
+            new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null });
+        AddParam(operation, "search", "Free-text search across searchable columns declared in the query definition.",
+            new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null });
+        AddParam(operation, "sort", "Comma-separated sort directives. Prefix a field with '-' for descending (e.g. '-createdAt,lastName').",
+            new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null });
+        AddParam(operation, "groupBy", "Field to group results by. When set, the response shape becomes GroupedResult instead of PagedResult.",
+            new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null });
+        AddParam(operation, "quickFilters", "Comma-separated quick-filter names (declared in the query definition).",
+            new OpenApiSchema { Type = JsonSchemaType.String | JsonSchemaType.Null });
+        AddParam(operation, "skipTotalCount", "Skip the total row count for faster pagination when the client doesn't need it.",
+            new OpenApiSchema { Type = JsonSchemaType.Boolean | JsonSchemaType.Null });
+        AddParam(operation, "filter", "Bracketed filter expressions: 'filter[field.op]=value'. Example: 'filter[name.contains]=alice&filter[age.gt]=18'.",
+            new OpenApiSchema
+            {
+                Type = JsonSchemaType.Object | JsonSchemaType.Null,
+                AdditionalProperties = new OpenApiSchema { Type = JsonSchemaType.String },
+            },
+            style: ParameterStyle.DeepObject,
+            explode: true);
+        AddParam(operation, "presets", "Bracketed preset selectors: 'presets[group]=name'. Applies preset filter groups declared in the query definition.",
+            new OpenApiSchema
+            {
+                Type = JsonSchemaType.Object | JsonSchemaType.Null,
+                AdditionalProperties = new OpenApiSchema { Type = JsonSchemaType.String },
+            },
+            style: ParameterStyle.DeepObject,
+            explode: true);
+
+        if (operation.Responses is not null
+            && operation.Responses.TryGetValue("200", out IOpenApiResponse? response)
+            && response is OpenApiResponse concrete
+            && concrete.Content is not null
+            && concrete.Content.TryGetValue("application/json", out OpenApiMediaType? media))
+        {
+            IOpenApiSchema pagedSchema = await context.GetOrCreateSchemaAsync(pagedResultType, null, cancellationToken).ConfigureAwait(false);
+            IOpenApiSchema groupedSchema = await context.GetOrCreateSchemaAsync(groupedResultType, null, cancellationToken).ConfigureAwait(false);
+
+            media.Schema = new OpenApiSchema
+            {
+                OneOf = [pagedSchema, groupedSchema],
+                Description = "PagedResult when groupBy is absent; GroupedResult otherwise.",
+            };
+        }
+    }
+
+    private static void AddParam(
+        OpenApiOperation operation,
+        string name,
+        string description,
+        OpenApiSchema schema,
+        ParameterStyle? style = null,
+        bool? explode = null)
+    {
+        IList<IOpenApiParameter> parameters = operation.Parameters ??= [];
+
+        if (parameters.Any(p => string.Equals(p.Name, name, StringComparison.Ordinal) && p.In == ParameterLocation.Query))
+        {
+            return;
+        }
+
+        OpenApiParameter parameter = new()
+        {
+            Name = name,
+            In = ParameterLocation.Query,
+            Required = false,
+            Description = description,
+            Schema = schema,
+        };
+
+        if (style is not null)
+        {
+            parameter.Style = style;
+        }
+
+        if (explode is not null)
+        {
+            parameter.Explode = (bool)explode;
+        }
+
+        parameters.Add(parameter);
     }
 }

@@ -755,18 +755,18 @@ group.MapGroup("deliveries").MapGranitQuery<WebhookDeliveryAttempt>(
 <Aside type="note">
 Operation IDs are suffixed with the entity type name. For example,
 `MapGranitQuery<BlobDescriptor>()` produces `QueryBlobDescriptor`,
-`GetBlobDescriptorMeta`, `GetSavedViews_BlobDescriptor`, etc.
+`GetBlobDescriptorMeta`, `GetBlobDescriptorSavedViews`, etc.
 </Aside>
 
 | Method | Route | Operation |
 |--------|-------|-----------|
 | <Badge text="GET" variant="note" /> | `/` | Query\{EntityName\} |
 | <Badge text="GET" variant="note" /> | `/meta` | Get\{EntityName\}Meta |
-| <Badge text="GET" variant="note" /> | `/saved-views` | GetSavedViews\_\{EntityName\} |
-| <Badge text="POST" variant="success" /> | `/saved-views` | CreateSavedView\_\{EntityName\} |
-| <Badge text="PUT" variant="caution" /> | `/saved-views/{id}` | UpdateSavedView\_\{EntityName\} |
-| <Badge text="DELETE" variant="danger" /> | `/saved-views/{id}` | DeleteSavedView\_\{EntityName\} |
-| <Badge text="POST" variant="success" /> | `/saved-views/{id}/set-default` | SetDefaultSavedView\_\{EntityName\} |
+| <Badge text="GET" variant="note" /> | `/saved-views` | Get\{EntityName\}SavedViews |
+| <Badge text="POST" variant="success" /> | `/saved-views` | Create\{EntityName\}SavedView |
+| <Badge text="PUT" variant="caution" /> | `/saved-views/{id}` | Update\{EntityName\}SavedView |
+| <Badge text="DELETE" variant="danger" /> | `/saved-views/{id}` | Delete\{EntityName\}SavedView |
+| <Badge text="POST" variant="success" /> | `/saved-views/{id}/set-default` | SetDefault\{EntityName\}SavedView |
 
 ---
 
