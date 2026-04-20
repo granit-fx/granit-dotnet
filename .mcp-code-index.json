@@ -6301,7 +6301,7 @@
       "kind": "record",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Dtos/PermissionDefinitionResponse.cs",
-      "line": 6,
+      "line": 15,
       "members": []
     },
     {
@@ -21543,7 +21543,7 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/Extensions/LocalizationEndpointRouteBuilderExtensions.cs",
-      "line": 31,
+      "line": 33,
       "members": [
         {
           "name": "MapGranitLocalization",
@@ -34694,7 +34694,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
