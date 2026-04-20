@@ -18,10 +18,12 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi;
 
 namespace Granit.Localization.Endpoints.Extensions;
 
@@ -68,9 +70,67 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             .WithSummary("Returns all localization resources for the requested culture.")
             .WithDescription("Returns all localization resources (key-value pairs) for the requested culture, grouped by resource name. Accepts an optional cultureName query parameter (BCP 47 format); defaults to the Accept-Language header culture. Also returns the list of supported languages. Response is cached for 1 hour (Cache-Control: public, max-age=3600, Vary: Accept-Language). Anonymous — no authentication required.")
             .Produces<ApplicationLocalizationResponse>()
-            .ProducesProblem(StatusCodes.Status400BadRequest);
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .AddOpenApiOperationTransformer(DescribeCultureNameParam);
 
         return endpoints;
+    }
+
+    private static Task MarkOverridesQueryParamsRequired(
+        OpenApiOperation operation,
+        OpenApiOperationTransformerContext context,
+        CancellationToken cancellationToken)
+    {
+        if (operation.Parameters is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        foreach (IOpenApiParameter parameter in operation.Parameters)
+        {
+            if (parameter.In != ParameterLocation.Query)
+            {
+                continue;
+            }
+
+            if (parameter is OpenApiParameter concrete && parameter.Name is "resourceName" or "cultureName")
+            {
+                concrete.Required = true;
+            }
+
+            if (parameter.Name == "cultureName" && parameter.Schema is OpenApiSchema cultureSchema)
+            {
+                cultureSchema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
+                cultureSchema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
+            }
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private static Task DescribeCultureNameParam(
+        OpenApiOperation operation,
+        OpenApiOperationTransformerContext context,
+        CancellationToken cancellationToken)
+    {
+        if (operation.Parameters is null)
+        {
+            return Task.CompletedTask;
+        }
+
+        foreach (IOpenApiParameter parameter in operation.Parameters)
+        {
+            if (parameter.Name == "cultureName"
+                && parameter.In == ParameterLocation.Query
+                && parameter.Schema is OpenApiSchema schema)
+            {
+                parameter.Description ??= "Optional BCP 47 culture tag (e.g. 'fr', 'fr-BE', 'zh-Hant-TW'). When omitted, the Accept-Language header is used.";
+                schema.Pattern ??= "^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$";
+                schema.Example ??= System.Text.Json.Nodes.JsonValue.Create("fr-BE");
+            }
+        }
+
+        return Task.CompletedTask;
     }
 
     /// <summary>
@@ -112,7 +172,8 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
              .WithDescription("Returns all active translation overrides for the specified resource and culture as a key-value dictionary. Both resourceName and cultureName query parameters are required. Returns 501 if no override store is registered.")
              .Produces<IReadOnlyDictionary<string, string>>()
              .ProducesProblem(StatusCodes.Status400BadRequest)
-             .ProducesProblem(StatusCodes.Status501NotImplemented);
+             .ProducesProblem(StatusCodes.Status501NotImplemented)
+             .AddOpenApiOperationTransformer(MarkOverridesQueryParamsRequired);
 
         group.MapPut("/{resourceName}/{cultureName}/{key}", HandlePutOverrideAsync)
              .WithName("PutLocalizationOverride")
@@ -137,7 +198,9 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     // Handlers — GET /{prefix}/localization
     // -------------------------------------------------------------------------
 
-    private static IResult HandleGetLocalization(HttpContext context, string? cultureName = null)
+    private static Results<Ok<ApplicationLocalizationResponse>, ProblemHttpResult> HandleGetLocalization(
+        HttpContext context,
+        string? cultureName = null)
     {
         IOptions<GranitLocalizationOptions> options =
             context.RequestServices.GetRequiredService<IOptions<GranitLocalizationOptions>>();
@@ -181,7 +244,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
     // Handlers — CRUD /{prefix}/localization/overrides
     // -------------------------------------------------------------------------
 
-    private static async Task<IResult> HandleGetOverridesAsync(
+    private static async Task<Results<Ok<IReadOnlyDictionary<string, string>>, ProblemHttpResult>> HandleGetOverridesAsync(
         HttpContext context,
         string? resourceName,
         string? cultureName,
@@ -202,7 +265,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
-        IResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
+        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
             ?? ValidateBcp47(cultureName);
 
         if (error is not null)
@@ -216,7 +279,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         return TypedResults.Ok(overrides);
     }
 
-    private static async Task<IResult> HandlePutOverrideAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> HandlePutOverrideAsync(
         HttpContext context,
         string resourceName,
         string cultureName,
@@ -232,7 +295,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             return StoreNotRegistered();
         }
 
-        IResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
+        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
             ?? ValidateBcp47(cultureName)
             ?? ValidateMaxLength(key, nameof(key), MaxKeyLength);
 
@@ -259,7 +322,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         return TypedResults.NoContent();
     }
 
-    private static async Task<IResult> HandleDeleteOverrideAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> HandleDeleteOverrideAsync(
         HttpContext context,
         string resourceName,
         string cultureName,
@@ -274,7 +337,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
             return StoreNotRegistered();
         }
 
-        IResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
+        ProblemHttpResult? error = ValidateMaxLength(resourceName, nameof(resourceName), MaxResourceNameLength)
             ?? ValidateBcp47(cultureName)
             ?? ValidateMaxLength(key, nameof(key), MaxKeyLength);
 
