@@ -74,12 +74,14 @@ internal sealed class PermissionChecker(
         foreach (string role in roles)
         {
             PermissionGrantCacheItem result = await cache.GetOrSetAsync<PermissionGrantCacheItem>(
-                BuildCacheKey(tenantId, role, permissionName),
+                BuildCacheKey(tenantId, PermissionGrantProviderNames.Role, role, permissionName),
                 async (_, ct) =>
                 {
                     metrics.RecordCacheMiss(tenantIdStr);
                     return new PermissionGrantCacheItem(
-                        await grantStore.IsGrantedAsync(role, permissionName, tenantId, ct).ConfigureAwait(false));
+                        await grantStore.IsGrantedAsync(
+                            PermissionGrantProviderNames.Role, role, permissionName, tenantId, ct)
+                        .ConfigureAwait(false));
                 },
                 new FusionCacheEntryOptions { Duration = opts.CacheDuration },
                 token: cancellationToken).ConfigureAwait(false);
@@ -179,7 +181,7 @@ internal sealed class PermissionChecker(
         foreach (string role in roles)
         {
             MaybeValue<PermissionGrantCacheItem> cached = await cache.TryGetAsync<PermissionGrantCacheItem>(
-                BuildCacheKey(tenantId, role, permissionName),
+                BuildCacheKey(tenantId, PermissionGrantProviderNames.Role, role, permissionName),
                 token: cancellationToken).ConfigureAwait(false);
 
             if (cached.HasValue)
@@ -210,7 +212,7 @@ internal sealed class PermissionChecker(
         foreach (string role in roles)
         {
             IReadOnlyList<string> roleGrants = await grantStore.GetGrantedAsync(
-                role, uncached, tenantId, cancellationToken).ConfigureAwait(false);
+                PermissionGrantProviderNames.Role, role, uncached, tenantId, cancellationToken).ConfigureAwait(false);
 
             foreach (string perm in roleGrants)
             {
@@ -222,7 +224,7 @@ internal sealed class PermissionChecker(
             {
                 bool isGranted = roleGrants.Contains(perm);
                 await cache.SetAsync(
-                    BuildCacheKey(tenantId, role, perm),
+                    BuildCacheKey(tenantId, PermissionGrantProviderNames.Role, role, perm),
                     new PermissionGrantCacheItem(isGranted),
                     entryOptions,
                     token: cancellationToken).ConfigureAwait(false);
@@ -230,8 +232,13 @@ internal sealed class PermissionChecker(
         }
     }
 
-    internal static string BuildCacheKey(Guid? tenantId, string roleName, string permissionName) =>
-        $"perm:{tenantId?.ToString() ?? "global"}:{roleName}:{permissionName}";
+    /// <summary>
+    /// Builds the cache key for a permission check. Scopes the cache by tenant, provider and
+    /// provider key so that grants to a user and grants to a role of the same textual key
+    /// (unlikely but possible) never collide.
+    /// </summary>
+    internal static string BuildCacheKey(Guid? tenantId, string providerName, string providerKey, string permissionName) =>
+        $"perm:{tenantId?.ToString() ?? "global"}:{providerName}:{providerKey}:{permissionName}";
 
     // Side enforcement: a Host-sided permission is only grantable when no tenant is active;
     // a Tenant-sided one only when a tenant is active. Both-sided permissions pass in any context.

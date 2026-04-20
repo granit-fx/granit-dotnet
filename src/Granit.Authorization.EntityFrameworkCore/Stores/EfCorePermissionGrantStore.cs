@@ -19,62 +19,78 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
 {
     /// <inheritdoc />
     public Task<bool> IsGrantedAsync(
-        string roleName,
+        string providerName,
+        string providerKey,
         string permissionName,
         Guid? tenantId,
         CancellationToken cancellationToken = default) =>
         context.PermissionGrants
             .AsNoTracking()
             .AnyAsync(
-                g => g.TenantId == tenantId && g.Name == permissionName && g.RoleName == roleName,
+                g => g.TenantId == tenantId
+                    && g.Name == permissionName
+                    && g.ProviderName == providerName
+                    && g.ProviderKey == providerKey,
                 cancellationToken);
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<string>> GetGrantedPermissionsAsync(
-        string roleName,
+        string providerName,
+        string providerKey,
         Guid? tenantId,
         CancellationToken cancellationToken = default) =>
         await context.PermissionGrants
             .AsNoTracking()
-            .Where(g => g.TenantId == tenantId && g.RoleName == roleName)
+            .Where(g => g.TenantId == tenantId
+                && g.ProviderName == providerName
+                && g.ProviderKey == providerKey)
             .Select(g => g.Name)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<string>> GetGrantedAsync(
-        string roleName,
+        string providerName,
+        string providerKey,
         IReadOnlyList<string> permissionNames,
         Guid? tenantId,
         CancellationToken cancellationToken = default) =>
         await context.PermissionGrants
             .AsNoTracking()
             .Where(g => g.TenantId == tenantId
-                && g.RoleName == roleName
+                && g.ProviderName == providerName
+                && g.ProviderKey == providerKey
                 && permissionNames.Contains(g.Name))
             .Select(g => g.Name)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<string>> GetGrantedRolesAsync(
+    public async Task<IReadOnlyList<string>> GetGranteesAsync(
+        string providerName,
         string permissionName,
         Guid? tenantId,
         CancellationToken cancellationToken = default) =>
         await context.PermissionGrants
             .AsNoTracking()
-            .Where(g => g.TenantId == tenantId && g.Name == permissionName)
-            .Select(g => g.RoleName)
+            .Where(g => g.TenantId == tenantId
+                && g.Name == permissionName
+                && g.ProviderName == providerName)
+            .Select(g => g.ProviderKey)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc />
     public async Task<bool> GrantAsync(
+        string providerName,
+        string providerKey,
         string permissionName,
-        string roleName,
         Guid? tenantId,
         CancellationToken cancellationToken = default)
     {
         bool exists = await context.PermissionGrants
             .AnyAsync(
-                g => g.TenantId == tenantId && g.Name == permissionName && g.RoleName == roleName,
+                g => g.TenantId == tenantId
+                    && g.Name == permissionName
+                    && g.ProviderName == providerName
+                    && g.ProviderKey == providerKey,
                 cancellationToken).ConfigureAwait(false);
 
         if (exists)
@@ -86,7 +102,8 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
         {
             Id = guidGenerator.Create(),
             Name = permissionName,
-            RoleName = roleName,
+            ProviderName = providerName,
+            ProviderKey = providerKey,
             TenantId = tenantId
         });
 
@@ -106,14 +123,18 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
 
     /// <inheritdoc />
     public async Task<bool> RevokeAsync(
+        string providerName,
+        string providerKey,
         string permissionName,
-        string roleName,
         Guid? tenantId,
         CancellationToken cancellationToken = default)
     {
         PermissionGrant? existing = await context.PermissionGrants
             .FirstOrDefaultAsync(
-                g => g.TenantId == tenantId && g.Name == permissionName && g.RoleName == roleName,
+                g => g.TenantId == tenantId
+                    && g.Name == permissionName
+                    && g.ProviderName == providerName
+                    && g.ProviderKey == providerKey,
                 cancellationToken).ConfigureAwait(false);
 
         if (existing is null)

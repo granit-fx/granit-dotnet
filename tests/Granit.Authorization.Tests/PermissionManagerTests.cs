@@ -3,7 +3,8 @@
 // =============================================================================
 // Verifies that the manager:
 //   - Validates permission definition before store access
-//   - Delegates grant/revoke to IPermissionGrantStore
+//   - Delegates grant/revoke to IPermissionGrantStore using the
+//     (providerName, providerKey) tuple
 //   - Publishes PermissionGrantChangedEvent + emits [AUDIT] log on state change
 //   - Is no-op when store reports no change (idempotent)
 //   - Throws InvalidOperationException for undefined permissions
@@ -25,6 +26,7 @@ public sealed class PermissionManagerTests
 {
     private const string DefinedPermission = "Invoices.Delete";
     private const string UndefinedPermission = "Unknown.Permission";
+    private const string R = PermissionGrantProviderNames.Role;
     private static readonly Guid TenantId = Guid.NewGuid();
 
     // --- SetAsync: grant ---
@@ -32,29 +34,25 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task SetAsync_GrantNew_DelegatesToStorePublishesEventAndLogsAudit()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store,
             ILocalEventBus eventBus, ILogger<PermissionManager> logger) = BuildManager();
 
-        store.GrantAsync(DefinedPermission, "accountant", TenantId, Arg.Any<CancellationToken>())
+        store.GrantAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        // Act
-        await manager.SetAsync(DefinedPermission, "accountant", TenantId, isGranted: true, TestContext.Current.CancellationToken);
+        await manager.SetAsync(DefinedPermission, R, "accountant", TenantId, isGranted: true, TestContext.Current.CancellationToken);
 
-        // Assert — store called
-        await store.Received(1).GrantAsync(DefinedPermission, "accountant", TenantId, Arg.Any<CancellationToken>());
+        await store.Received(1).GrantAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
 
-        // Assert — event published for cache invalidation
         await eventBus.Received(1).PublishAsync(
             Arg.Is<PermissionGrantChangedEvent>(e =>
                 e.PermissionName == DefinedPermission &&
-                e.RoleName == "accountant" &&
+                e.ProviderName == R &&
+                e.ProviderKey == "accountant" &&
                 e.TenantId == TenantId &&
                 e.IsGranted),
             Arg.Any<CancellationToken>());
 
-        // Assert — ISO 27001 audit log emitted
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
@@ -68,29 +66,25 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task SetAsync_RevokeExisting_DelegatesToStorePublishesEventAndLogsAudit()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store,
             ILocalEventBus eventBus, ILogger<PermissionManager> logger) = BuildManager();
 
-        store.RevokeAsync(DefinedPermission, "accountant", TenantId, Arg.Any<CancellationToken>())
+        store.RevokeAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        // Act
-        await manager.SetAsync(DefinedPermission, "accountant", TenantId, isGranted: false, TestContext.Current.CancellationToken);
+        await manager.SetAsync(DefinedPermission, R, "accountant", TenantId, isGranted: false, TestContext.Current.CancellationToken);
 
-        // Assert — store called
-        await store.Received(1).RevokeAsync(DefinedPermission, "accountant", TenantId, Arg.Any<CancellationToken>());
+        await store.Received(1).RevokeAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
 
-        // Assert — event published for cache invalidation
         await eventBus.Received(1).PublishAsync(
             Arg.Is<PermissionGrantChangedEvent>(e =>
                 e.PermissionName == DefinedPermission &&
-                e.RoleName == "accountant" &&
+                e.ProviderName == R &&
+                e.ProviderKey == "accountant" &&
                 e.TenantId == TenantId &&
                 !e.IsGranted),
             Arg.Any<CancellationToken>());
 
-        // Assert — audit log emitted
         logger.Received(1).Log(
             LogLevel.Information,
             Arg.Any<EventId>(),
@@ -104,21 +98,17 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task SetAsync_GrantAlreadyExists_NoOpNoEventNoLog()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store,
             ILocalEventBus eventBus, ILogger<PermissionManager> logger) = BuildManager();
 
-        store.GrantAsync(DefinedPermission, "accountant", TenantId, Arg.Any<CancellationToken>())
+        store.GrantAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(false); // store reports no change (already existed)
 
-        // Act
-        await manager.SetAsync(DefinedPermission, "accountant", TenantId, isGranted: true, TestContext.Current.CancellationToken);
+        await manager.SetAsync(DefinedPermission, R, "accountant", TenantId, isGranted: true, TestContext.Current.CancellationToken);
 
-        // Assert — no event published (no-op)
         await eventBus.DidNotReceive().PublishAsync(
             Arg.Any<PermissionGrantChangedEvent>(), Arg.Any<CancellationToken>());
 
-        // Assert — no audit log (no-op)
         logger.DidNotReceive().Log(
             Arg.Any<LogLevel>(),
             Arg.Any<EventId>(),
@@ -132,17 +122,50 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task SetAsync_UndefinedPermission_ThrowsWithoutStoreAccess()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager();
 
-        // Act
-        Func<Task> act = () => manager.SetAsync(UndefinedPermission, "accountant", TenantId, isGranted: true);
+        Func<Task> act = () => manager.SetAsync(UndefinedPermission, R, "accountant", TenantId, isGranted: true);
 
-        // Assert
         (await Should.ThrowAsync<InvalidOperationException>(act)).Message.ShouldContain($"'{UndefinedPermission}'");
 
         await store.DidNotReceive().GrantAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+    }
+
+    // --- SetAsync: validator rejects ---
+
+    [Fact]
+    public async Task SetAsync_GrantRejectedByValidator_ThrowsWithoutStoreAccess()
+    {
+        (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager(
+            validators:
+            [
+                new StubValidator(PermissionGrantValidationResult.Reject("test_reject", "nope"))
+            ]);
+
+        Func<Task> act = () => manager.SetAsync(DefinedPermission, R, "accountant", TenantId, isGranted: true);
+
+        (await Should.ThrowAsync<InvalidOperationException>(act)).Message.ShouldContain("test_reject");
+
+        await store.DidNotReceive().GrantAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SetAsync_RevokeBypassesValidators()
+    {
+        // Validators only gate additions; revocations must always proceed so that a grant made
+        // under relaxed rules can still be removed after the policy tightens.
+        StubValidator hostile = new(PermissionGrantValidationResult.Reject("would_block", "should not fire"));
+        (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager(validators: [hostile]);
+
+        store.RevokeAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        await manager.SetAsync(DefinedPermission, R, "accountant", TenantId, isGranted: false, TestContext.Current.CancellationToken);
+
+        hostile.CallCount.ShouldBe(0);
+        await store.Received(1).RevokeAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
     }
 
     // --- IsGrantedAsync ---
@@ -150,15 +173,12 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task IsGrantedAsync_DelegatesToStore()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager();
-        store.IsGrantedAsync("accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync(R, "accountant", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
-        // Act
-        bool result = await manager.IsGrantedAsync(DefinedPermission, "accountant", TenantId, TestContext.Current.CancellationToken);
+        bool result = await manager.IsGrantedAsync(DefinedPermission, R, "accountant", TenantId, TestContext.Current.CancellationToken);
 
-        // Assert
         result.ShouldBeTrue();
     }
 
@@ -167,43 +187,38 @@ public sealed class PermissionManagerTests
     [Fact]
     public async Task GetGrantedPermissionsAsync_DelegatesToStore()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager();
         IReadOnlyList<string> expected = ["Invoices.Delete", "Invoices.Read"];
-        store.GetGrantedPermissionsAsync("accountant", TenantId, Arg.Any<CancellationToken>())
+        store.GetGrantedPermissionsAsync(R, "accountant", TenantId, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        // Act
         IReadOnlyList<string> permissions =
-            await manager.GetGrantedPermissionsAsync("accountant", TenantId, TestContext.Current.CancellationToken);
+            await manager.GetGrantedPermissionsAsync(R, "accountant", TenantId, TestContext.Current.CancellationToken);
 
-        // Assert
         permissions.ShouldBe(expected);
     }
 
-    // --- GetGrantedRolesAsync ---
+    // --- GetGranteesAsync ---
 
     [Fact]
-    public async Task GetGrantedRolesAsync_DelegatesToStore()
+    public async Task GetGranteesAsync_DelegatesToStore()
     {
-        // Arrange
         (PermissionManager manager, IPermissionGrantStore store, _, _) = BuildManager();
         IReadOnlyList<string> expected = ["accountant", "manager"];
-        store.GetGrantedRolesAsync(DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+        store.GetGranteesAsync(R, DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(expected);
 
-        // Act
-        IReadOnlyList<string> roles =
-            await manager.GetGrantedRolesAsync(DefinedPermission, TenantId, TestContext.Current.CancellationToken);
+        IReadOnlyList<string> grantees =
+            await manager.GetGranteesAsync(R, DefinedPermission, TenantId, TestContext.Current.CancellationToken);
 
-        // Assert
-        roles.ShouldBe(expected);
+        grantees.ShouldBe(expected);
     }
 
     // --- Helpers ---
 
     private static (PermissionManager, IPermissionGrantStore,
-        ILocalEventBus, ILogger<PermissionManager>) BuildManager()
+        ILocalEventBus, ILogger<PermissionManager>) BuildManager(
+            IEnumerable<IPermissionGrantValidator>? validators = null)
     {
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
 
@@ -222,10 +237,23 @@ public sealed class PermissionManagerTests
         PermissionManager manager = new(
             store,
             definitionManager,
-            grantValidators: [],
+            grantValidators: validators ?? [],
             eventBus,
             logger);
 
         return (manager, store, eventBus, logger);
+    }
+
+    private sealed class StubValidator(PermissionGrantValidationResult result) : IPermissionGrantValidator
+    {
+        public int CallCount { get; private set; }
+
+        public ValueTask<PermissionGrantValidationResult> ValidateAsync(
+            PermissionGrantValidationContext context,
+            CancellationToken cancellationToken = default)
+        {
+            CallCount++;
+            return ValueTask.FromResult(result);
+        }
     }
 }

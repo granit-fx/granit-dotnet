@@ -31,7 +31,7 @@ public sealed class IdentityApproverResolverTests
     [Fact]
     public async Task ResolveApproversAsync_WithRolesAndUsers_ReturnsUserIds()
     {
-        _permissionManagerReader.GetGrantedRolesAsync("workflow.publish", null, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGranteesAsync("R", "workflow.publish", null, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
@@ -52,7 +52,7 @@ public sealed class IdentityApproverResolverTests
     [Fact]
     public async Task ResolveApproversAsync_NoRolesGranted_ReturnsEmptyList()
     {
-        _permissionManagerReader.GetGrantedRolesAsync("workflow.publish", null, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGranteesAsync("R", "workflow.publish", null, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<string>)[]);
 
         IReadOnlyList<string> result = await _resolver.ResolveApproversAsync(
@@ -64,7 +64,7 @@ public sealed class IdentityApproverResolverTests
     [Fact]
     public async Task ResolveApproversAsync_RoleWithNoUsers_ReturnsEmptyList()
     {
-        _permissionManagerReader.GetGrantedRolesAsync("workflow.publish", null, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGranteesAsync("R", "workflow.publish", null, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
@@ -79,7 +79,7 @@ public sealed class IdentityApproverResolverTests
     [Fact]
     public async Task ResolveApproversAsync_DuplicateUsersAcrossRoles_ReturnsDeduplicatedList()
     {
-        _permissionManagerReader.GetGrantedRolesAsync("workflow.publish", null, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGranteesAsync("R", "workflow.publish", null, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<string>)["editor", "admin"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
@@ -112,7 +112,7 @@ public sealed class IdentityApproverResolverTests
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(tenantId);
 
-        _permissionManagerReader.GetGrantedRolesAsync("workflow.publish", tenantId, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGranteesAsync("R", "workflow.publish", tenantId, Arg.Any<CancellationToken>())
             .Returns((IReadOnlyList<string>)["editor"]);
 
         _identityProvider.GetRoleMembersAsync("editor", Arg.Any<CancellationToken>())
@@ -125,7 +125,7 @@ public sealed class IdentityApproverResolverTests
             "workflow.publish", TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(1);
-        await _permissionManagerReader.Received(1).GetGrantedRolesAsync(
-            "workflow.publish", tenantId, Arg.Any<CancellationToken>());
+        await _permissionManagerReader.Received(1).GetGranteesAsync(
+            "R", "workflow.publish", tenantId, Arg.Any<CancellationToken>());
     }
 }

@@ -25,7 +25,7 @@ namespace Granit.Authorization.Cache;
 public class PermissionCacheInvalidationHandler
 {
     /// <summary>
-    /// Invalidates the cached permission grant entry for the changed role and tenant scope.
+    /// Invalidates the cached permission grant entry for the changed grantee and tenant scope.
     /// </summary>
     public static async Task HandleAsync(
         PermissionGrantChangedEvent @event,
@@ -33,7 +33,7 @@ public class PermissionCacheInvalidationHandler
         CancellationToken cancellationToken)
     {
         string key = PermissionChecker.BuildCacheKey(
-            @event.TenantId, @event.RoleName, @event.PermissionName);
+            @event.TenantId, @event.ProviderName, @event.ProviderKey, @event.PermissionName);
 
         if (@event.IsGranted)
         {

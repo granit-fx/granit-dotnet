@@ -6264,7 +6264,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Domain/PermissionGrant.cs",
-      "line": 10,
+      "line": 22,
       "members": [
         {
           "name": "Name",
@@ -6273,9 +6273,15 @@
           "returnType": "string"
         },
         {
-          "name": "RoleName",
+          "name": "ProviderName",
           "kind": "property",
-          "signature": "string RoleName",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ProviderKey",
+          "kind": "property",
+          "signature": "string ProviderKey",
           "returnType": "string"
         }
       ]
@@ -6430,7 +6436,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/GranitAuthorizationDbProperties.cs",
-      "line": 13,
+      "line": 20,
       "members": [
         {
           "name": "DbTablePrefix",
@@ -6455,7 +6461,7 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Events/PermissionGrantChangedEvent.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -6616,42 +6622,42 @@
       "kind": "interface",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/IPermissionGrantStore.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "IsGrantedAsync",
           "kind": "method",
-          "signature": "IsGrantedAsync(string roleName, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "IsGrantedAsync(string providerName, string providerKey, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         },
         {
           "name": "GetGrantedPermissionsAsync",
           "kind": "method",
-          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetGrantedPermissionsAsync(string providerName, string providerKey, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         },
         {
           "name": "GetGrantedAsync",
           "kind": "method",
-          "signature": "GetGrantedAsync(string roleName, IReadOnlyList<string> permissionNames, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetGrantedAsync(string providerName, string providerKey, IReadOnlyList<string> permissionNames, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         },
         {
-          "name": "GetGrantedRolesAsync",
+          "name": "GetGranteesAsync",
           "kind": "method",
-          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetGranteesAsync(string providerName, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         },
         {
           "name": "GrantAsync",
           "kind": "method",
-          "signature": "GrantAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GrantAsync(string providerName, string providerKey, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         },
         {
           "name": "RevokeAsync",
           "kind": "method",
-          "signature": "RevokeAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "RevokeAsync(string providerName, string providerKey, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         }
       ]
@@ -6678,24 +6684,24 @@
       "kind": "interface",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/IPermissionManagerReader.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "IsGrantedAsync",
           "kind": "method",
-          "signature": "IsGrantedAsync(string permissionName, string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "IsGrantedAsync(string permissionName, string providerName, string providerKey, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
         },
         {
           "name": "GetGrantedPermissionsAsync",
           "kind": "method",
-          "signature": "GetGrantedPermissionsAsync(string roleName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetGrantedPermissionsAsync(string providerName, string providerKey, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         },
         {
-          "name": "GetGrantedRolesAsync",
+          "name": "GetGranteesAsync",
           "kind": "method",
-          "signature": "GetGrantedRolesAsync(string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "signature": "GetGranteesAsync(string providerName, string permissionName, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<string>>"
         }
       ]
@@ -6706,12 +6712,12 @@
       "kind": "interface",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/IPermissionManagerWriter.cs",
-      "line": 8,
+      "line": 10,
       "members": [
         {
           "name": "SetAsync",
           "kind": "method",
-          "signature": "SetAsync(string permissionName, string roleName, Guid? tenantId, bool isGranted, CancellationToken cancellationToken = default)",
+          "signature": "SetAsync(string permissionName, string providerName, string providerKey, Guid? tenantId, bool isGranted, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]

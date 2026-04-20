@@ -6,9 +6,16 @@ namespace Granit.Authorization.EntityFrameworkCore;
 /// Provides configurable table-naming properties for the Authorization EF Core module.
 /// </summary>
 /// <remarks>
+/// <para>
+/// Authorization grants are host-level: they may target host users (<c>TenantId == null</c>)
+/// or tenant-scoped users (<c>TenantId</c> set), but the storage itself always lives in the
+/// host schema alongside Identity and OpenIddict — per the ABP-aligned topology.
+/// </para>
+/// <para>
 /// <b>Important:</b> Set these properties at application startup, before
 /// <c>ConfigureServices</c> completes. EF Core caches the compiled model
 /// after first use — later mutations have no effect.
+/// </para>
 /// </remarks>
 public static class GranitAuthorizationDbProperties
 {
@@ -21,12 +28,14 @@ public static class GranitAuthorizationDbProperties
     private static bool _dbSchemaExplicitlySet;
 
     /// <summary>
-    /// Database schema for tenant-level tables.
-    /// Falls back to <see cref="GranitDbDefaults.DbSchema"/> when not explicitly set.
+    /// Database schema for authorization tables. Host-level storage:
+    /// falls back to <see cref="GranitDbDefaults.HostDbSchema"/> when not explicitly set,
+    /// then to <see cref="GranitDbDefaults.DbSchema"/> as a final fallback for
+    /// shared-database deployments.
     /// </summary>
     public static string? DbSchema
     {
-        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.DbSchema;
+        get => _dbSchemaExplicitlySet ? _dbSchema : GranitDbDefaults.HostDbSchema ?? GranitDbDefaults.DbSchema;
         set { _dbSchema = value; _dbSchemaExplicitlySet = true; }
     }
 }

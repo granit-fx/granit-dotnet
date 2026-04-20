@@ -54,7 +54,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.DidNotReceive().IsGrantedAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     // --- Not authenticated ---
@@ -92,7 +92,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.DidNotReceive().IsGrantedAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     // --- Undefined permission ---
@@ -117,7 +117,7 @@ public sealed class PermissionCheckerTests
     {
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        store.IsGrantedAsync("editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
         IFusionCache cache = BuildPassThroughCache();
@@ -135,7 +135,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.Received(1).IsGrantedAsync(
-            "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
+            "R", "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
     }
 
     // --- Cache hit → store NOT called ---
@@ -166,7 +166,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.DidNotReceive().IsGrantedAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     // --- Multi-role OR logic ---
@@ -176,9 +176,9 @@ public sealed class PermissionCheckerTests
     {
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        store.IsGrantedAsync("reader", DefinedPermission, null, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", "reader", DefinedPermission, null, Arg.Any<CancellationToken>())
             .Returns(false);
-        store.IsGrantedAsync("editor", DefinedPermission, null, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", "editor", DefinedPermission, null, Arg.Any<CancellationToken>())
             .Returns(true);
 
         PermissionChecker checker = BuildChecker(
@@ -199,7 +199,7 @@ public sealed class PermissionCheckerTests
     {
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        store.IsGrantedAsync(Arg.Any<string>(), DefinedPermission, null, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", Arg.Any<string>(), DefinedPermission, null, Arg.Any<CancellationToken>())
             .Returns(false);
 
         PermissionChecker checker = BuildChecker(
@@ -221,15 +221,15 @@ public sealed class PermissionCheckerTests
     public void BuildCacheKey_WithTenantId_FormatsCorrectly()
     {
         var tenant = Guid.Parse("12345678-1234-1234-1234-123456789abc");
-        string key = PermissionChecker.BuildCacheKey(tenant, "editor", "Invoices.Delete");
-        key.ShouldBe($"perm:{tenant}:editor:Invoices.Delete");
+        string key = PermissionChecker.BuildCacheKey(tenant, "R", "editor", "Invoices.Delete");
+        key.ShouldBe($"perm:{tenant}:R:editor:Invoices.Delete");
     }
 
     [Fact]
     public void BuildCacheKey_WithoutTenantId_UsesGlobalSegment()
     {
-        string key = PermissionChecker.BuildCacheKey(null, "editor", "Invoices.Delete");
-        key.ShouldBe("perm:global:editor:Invoices.Delete");
+        string key = PermissionChecker.BuildCacheKey(null, "R", "editor", "Invoices.Delete");
+        key.ShouldBe("perm:global:R:editor:Invoices.Delete");
     }
 
     // --- AdminRole bypass (case-insensitive) ---
@@ -255,7 +255,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.DidNotReceive().IsGrantedAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     // --- AlwaysAllow requires authentication ---
@@ -282,7 +282,7 @@ public sealed class PermissionCheckerTests
     {
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        store.IsGrantedAsync("editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>())
             .Returns(true);
 
         PermissionChecker checker = BuildChecker(
@@ -298,7 +298,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.Received(1).IsGrantedAsync(
-            "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
+            "R", "editor", DefinedPermission, TenantId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -306,7 +306,7 @@ public sealed class PermissionCheckerTests
     {
         // Arrange
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        store.IsGrantedAsync("editor", DefinedPermission, null, Arg.Any<CancellationToken>())
+        store.IsGrantedAsync("R", "editor", DefinedPermission, null, Arg.Any<CancellationToken>())
             .Returns(true);
 
         PermissionChecker checker = BuildChecker(
@@ -322,7 +322,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.Received(1).IsGrantedAsync(
-            "editor", DefinedPermission, null, Arg.Any<CancellationToken>());
+            "R", "editor", DefinedPermission, null, Arg.Any<CancellationToken>());
     }
 
     // --- AdminRole with multiple admin roles configured ---
@@ -365,7 +365,7 @@ public sealed class PermissionCheckerTests
         // Assert
         result.ShouldBeTrue();
         await store.DidNotReceive().IsGrantedAsync(
-            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
     }
 
     // --- Empty roles list ---
@@ -393,17 +393,17 @@ public sealed class PermissionCheckerTests
     [Fact]
     public void BuildCacheKey_EmptyRoleName_IncludesEmptySegment()
     {
-        string key = PermissionChecker.BuildCacheKey(null, "", "Invoices.Delete");
+        string key = PermissionChecker.BuildCacheKey(null, "R", "", "Invoices.Delete");
 
-        key.ShouldBe("perm:global::Invoices.Delete");
+        key.ShouldBe("perm:global:R::Invoices.Delete");
     }
 
     [Fact]
     public void BuildCacheKey_EmptyPermissionName_IncludesEmptySegment()
     {
-        string key = PermissionChecker.BuildCacheKey(null, "editor", "");
+        string key = PermissionChecker.BuildCacheKey(null, "R", "editor", "");
 
-        key.ShouldBe("perm:global:editor:");
+        key.ShouldBe("perm:global:R:editor:");
     }
 
     // --- Helpers ---

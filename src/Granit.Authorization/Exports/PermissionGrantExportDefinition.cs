@@ -12,7 +12,8 @@ public sealed class PermissionGrantExportDefinition : ExportDefinition<Permissio
         builder
             .IncludeId()
             .Field(p => p.Name)
-            .Field(p => p.RoleName)
+            .Field(p => p.ProviderName)
+            .Field(p => p.ProviderKey)
             .Field(p => p.TenantId)
             .Field(p => p.CreatedAt, f => f.Format("O"))
             .Field(p => p.CreatedBy)

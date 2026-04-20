@@ -10,9 +10,10 @@ public static class PermissionGrantModelBuilderExtensions
     /// Applies all entity configurations for the Granit Authorization module.
     /// </summary>
     /// <remarks>
-    /// Configures the <see cref="PermissionGrant"/> entity: table name, column constraints,
-    /// and unique composite index on (TenantId, Name, RoleName).
-    /// Call this from <c>OnModelCreating</c> in the host application's DbContext.
+    /// Configures the <see cref="PermissionGrant"/> entity: host-level table name, column
+    /// constraints, and unique composite index on
+    /// <c>(TenantId, ProviderName, ProviderKey, Name)</c>. Call this from
+    /// <c>OnModelCreating</c> in the host application's DbContext.
     /// </remarks>
     public static ModelBuilder ConfigureAuthorizationModule(this ModelBuilder builder)
     {
@@ -23,10 +24,11 @@ public static class PermissionGrantModelBuilderExtensions
                 GranitAuthorizationDbProperties.DbSchema);
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).HasMaxLength(256).IsRequired();
-            entity.Property(e => e.RoleName).HasMaxLength(256).IsRequired();
-            entity.HasIndex(e => new { e.TenantId, e.Name, e.RoleName })
+            entity.Property(e => e.ProviderName).HasMaxLength(8).IsRequired();
+            entity.Property(e => e.ProviderKey).HasMaxLength(256).IsRequired();
+            entity.HasIndex(e => new { e.TenantId, e.ProviderName, e.ProviderKey, e.Name })
                   .IsUnique()
-                  .HasDatabaseName($"uq_{GranitAuthorizationDbProperties.DbTablePrefix}permission_grants_tenant_name_role");
+                  .HasDatabaseName($"uq_{GranitAuthorizationDbProperties.DbTablePrefix}permission_grants_tenant_provider_key_name");
         });
 
         return builder;

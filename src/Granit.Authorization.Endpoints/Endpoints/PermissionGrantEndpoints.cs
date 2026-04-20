@@ -15,6 +15,11 @@ namespace Granit.Authorization.Endpoints.Endpoints;
 /// <summary>
 /// Admin endpoints for viewing and managing role → permission grants.
 /// </summary>
+/// <remarks>
+/// These endpoints operate on the role provider (<c>"R"</c>) of the underlying ABP-style
+/// grant model. Endpoints targeting user-level (<c>"U"</c>) or OIDC-client-level (<c>"C"</c>)
+/// grants can be added in sibling modules without changing this route surface.
+/// </remarks>
 internal static partial class PermissionGrantEndpoints
 {
     /// <summary>
@@ -69,7 +74,8 @@ internal static partial class PermissionGrantEndpoints
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
         IReadOnlyList<string> permissions = await permissionManagerReader
-            .GetGrantedPermissionsAsync(roleName, tenantId, cancellationToken)
+            .GetGrantedPermissionsAsync(
+                PermissionGrantProviderNames.Role, roleName, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.Ok(new PermissionGrantResponse(roleName, permissions));
@@ -113,7 +119,13 @@ internal static partial class PermissionGrantEndpoints
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
-        await permissionManagerWriter.SetAsync(permissionName, roleName, tenantId, isGranted: true, cancellationToken)
+        await permissionManagerWriter.SetAsync(
+                permissionName,
+                PermissionGrantProviderNames.Role,
+                roleName,
+                tenantId,
+                isGranted: true,
+                cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.NoContent();
@@ -157,7 +169,13 @@ internal static partial class PermissionGrantEndpoints
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
-        await permissionManagerWriter.SetAsync(permissionName, roleName, tenantId, isGranted: false, cancellationToken)
+        await permissionManagerWriter.SetAsync(
+                permissionName,
+                PermissionGrantProviderNames.Role,
+                roleName,
+                tenantId,
+                isGranted: false,
+                cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.NoContent();

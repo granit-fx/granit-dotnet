@@ -14,7 +14,7 @@ namespace Granit.Workflow.Notifications.Internal;
 /// Resolution flow:
 /// <list type="number">
 ///   <item>
-///     <see cref="IPermissionManagerReader.GetGrantedRolesAsync"/> retrieves role names
+///     <see cref="IPermissionManagerReader.GetGranteesAsync"/> retrieves role names
 ///     granted the required permission (from the authorization database).
 ///   </item>
 ///   <item>
@@ -37,8 +37,9 @@ internal sealed partial class IdentityApproverResolver(
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
-        IReadOnlyList<string> roles = await permissionManagerReader.GetGrantedRolesAsync(
-            requiredPermission, tenantId, cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<string> roles = await permissionManagerReader.GetGranteesAsync(
+            PermissionGrantProviderNames.Role, requiredPermission, tenantId, cancellationToken)
+            .ConfigureAwait(false);
 
         if (roles.Count == 0)
         {

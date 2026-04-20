@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Domain;
 using Shouldly;
@@ -32,11 +33,19 @@ public sealed class PermissionGrantEntityTests
     }
 
     [Fact]
-    public void RoleName_Default_IsEmptyString()
+    public void ProviderName_Default_IsEmptyString()
     {
         PermissionGrant grant = new();
 
-        grant.RoleName.ShouldBe(string.Empty);
+        grant.ProviderName.ShouldBe(string.Empty);
+    }
+
+    [Fact]
+    public void ProviderKey_Default_IsEmptyString()
+    {
+        PermissionGrant grant = new();
+
+        grant.ProviderKey.ShouldBe(string.Empty);
     }
 
     [Fact]
@@ -57,13 +66,15 @@ public sealed class PermissionGrantEntityTests
         {
             Id = id,
             Name = "Invoices.Delete",
-            RoleName = "accountant",
+            ProviderName = PermissionGrantProviderNames.Role,
+            ProviderKey = "accountant",
             TenantId = tenantId
         };
 
         grant.Id.ShouldBe(id);
         grant.Name.ShouldBe("Invoices.Delete");
-        grant.RoleName.ShouldBe("accountant");
+        grant.ProviderName.ShouldBe("R");
+        grant.ProviderKey.ShouldBe("accountant");
         grant.TenantId.ShouldBe(tenantId);
     }
 }

@@ -197,7 +197,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     public async Task GetRolePermissions_WithAdminRole_Returns200()
     {
         // Arrange
-        _permissionManagerReader.GetGrantedPermissionsAsync("editor", null, Arg.Any<CancellationToken>())
+        _permissionManagerReader.GetGrantedPermissionsAsync("R", "editor", null, Arg.Any<CancellationToken>())
             .Returns(["Invoices.Read", "Invoices.Create"]);
 
         // Act
@@ -247,7 +247,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _permissionManagerWriter.Received(1).SetAsync(
-            "Invoices.Read", "editor", null, true, Arg.Any<CancellationToken>());
+            "Invoices.Read", "R", "editor", null, true, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -300,7 +300,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _permissionManagerWriter.Received(1).SetAsync(
-            "Invoices.Read", "editor", null, false, Arg.Any<CancellationToken>());
+            "Invoices.Read", "R", "editor", null, false, Arg.Any<CancellationToken>());
     }
 
     [Fact]
