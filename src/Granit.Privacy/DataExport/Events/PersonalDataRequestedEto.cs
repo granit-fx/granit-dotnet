@@ -1,4 +1,5 @@
 using Granit.Events;
+using Wolverine.Persistence.Sagas;
 
 namespace Granit.Privacy.DataExport.Events;
 
@@ -7,7 +8,7 @@ namespace Granit.Privacy.DataExport.Events;
 /// Each registered data provider handles this event and prepares its fragment.
 /// </summary>
 public sealed record PersonalDataRequestedEto(
-    Guid RequestId,
+    [property: SagaIdentity] Guid RequestId,
     Guid UserId,
     DateTimeOffset RequestedAt,
     string Regulation,
