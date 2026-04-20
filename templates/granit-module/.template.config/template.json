@@ -5,7 +5,7 @@
   "identity": "Granit.Templates.Module",
   "name": "Granit Module Library",
   "shortName": "granit-module",
-  "description": "A Granit module library with standard folder structure, module class, and extension method.",
+  "description": "A Granit module library with standard folder structure, module class, OpenTelemetry Metrics/ActivitySource, and a HostApplicationBuilder extension.",
   "tags": {
     "language": "C#",
     "type": "project"

@@ -1,4 +1,5 @@
 using Granit.Modularity;
+using Granit.MyModule.Extensions;
 
 namespace Granit.MyModule;
 
@@ -20,9 +21,6 @@ namespace Granit.MyModule;
 public sealed class GranitMyModuleModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        // Register your services here.
-        // Example: context.Services.AddScoped<IMyService, MyService>();
-    }
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Builder.AddGranitMyModule();
 }

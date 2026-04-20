@@ -2,6 +2,7 @@ using Granit.Bundle.Api;
 using Granit.Bundle.Notifications;
 using Granit.Extensions;
 using GranitApiFull;
+using GranitApiFull.Greetings;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,6 @@ WebApplication app = builder.Build();
 
 await app.UseGranitAsync();
 
-app.MapGet("/", () => new { Message = "Hello from Granit!" });
+app.MapGreetingEndpoints();
 
 await app.RunAsync();
