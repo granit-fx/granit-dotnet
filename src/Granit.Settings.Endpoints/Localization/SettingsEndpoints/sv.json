@@ -1,10 +1,13 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Settings": "Inställningar",
-    "Permission:Settings.Global.Read": "Visa globala inställningar",
+    "Granit:Settings:NotFound": "Inställningen är inte deklarerad.",
+    "Granit:Settings:ProviderNotAllowed": "Denna omfattning är inte tillåten för denna inställning.",
+    "Granit:Settings:ValidationFailed": "Värdet matchar inte det förväntade formatet eller tillåtna listan.",
     "Permission:Settings.Global.Manage": "Hantera globala inställningar (visa, skapa, redigera)",
+    "Permission:Settings.Global.Read": "Visa globala inställningar",
+    "Permission:Settings.Tenant.Manage": "Hantera klientinställningar (visa, skapa, redigera)",
     "Permission:Settings.Tenant.Read": "Visa klientinställningar",
-    "Permission:Settings.Tenant.Manage": "Hantera klientinställningar (visa, skapa, redigera)"
+    "PermissionGroup:Settings": "Inställningar"
   }
 }

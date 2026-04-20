@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.CustomerBalance.Endpoints.Internal;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.CustomerBalance.Endpoints.Permissions;
 

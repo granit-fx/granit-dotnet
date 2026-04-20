@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints.Internal;
 
 namespace Granit.Notifications.Endpoints.Permissions;

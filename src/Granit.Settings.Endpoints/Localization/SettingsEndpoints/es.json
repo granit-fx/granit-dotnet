@@ -1,10 +1,13 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Settings": "Configuración",
-    "Permission:Settings.Global.Read": "Ver configuración global",
+    "Granit:Settings:NotFound": "La configuración no está declarada.",
+    "Granit:Settings:ProviderNotAllowed": "Este ámbito no está permitido para esta configuración.",
+    "Granit:Settings:ValidationFailed": "El valor no coincide con el formato esperado o la lista permitida.",
     "Permission:Settings.Global.Manage": "Gestionar configuración global (ver, crear, editar)",
+    "Permission:Settings.Global.Read": "Ver configuración global",
+    "Permission:Settings.Tenant.Manage": "Gestionar configuración del inquilino (ver, crear, editar)",
     "Permission:Settings.Tenant.Read": "Ver configuración del inquilino",
-    "Permission:Settings.Tenant.Manage": "Gestionar configuración del inquilino (ver, crear, editar)"
+    "PermissionGroup:Settings": "Configuración"
   }
 }

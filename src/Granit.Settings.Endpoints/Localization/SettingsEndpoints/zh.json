@@ -1,10 +1,13 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Settings": "设置",
-    "Permission:Settings.Global.Read": "查看全局设置",
+    "Granit:Settings:NotFound": "未声明的设置。",
+    "Granit:Settings:ProviderNotAllowed": "此作用域不允许该设置。",
+    "Granit:Settings:ValidationFailed": "值不符合预期格式或允许列表。",
     "Permission:Settings.Global.Manage": "管理全局设置（查看、创建、编辑）",
+    "Permission:Settings.Global.Read": "查看全局设置",
+    "Permission:Settings.Tenant.Manage": "管理租户设置（查看、创建、编辑）",
     "Permission:Settings.Tenant.Read": "查看租户设置",
-    "Permission:Settings.Tenant.Manage": "管理租户设置（查看、创建、编辑）"
+    "PermissionGroup:Settings": "设置"
   }
 }

@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Minst en mappning måste ha en icke-null målegenskap.",
+    "Granit:Validation:BulkSettingsTooLarge": "Högst 200 inställningar tillåtna per bulkbegäran.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' får bara innehålla bokstäver, siffror, bindestreck, understreck eller punkter.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' är inte ett giltigt kreditkortsnummer.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",

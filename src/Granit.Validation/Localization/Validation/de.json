@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "Die angegebene Bedingung für '{PropertyName}' wurde nicht erfüllt.",
     "Granit:Validation:AtLeastOneMappingTarget": "Mindestens eine Zuordnung muss eine nicht-null Zieleigenschaft haben.",
+    "Granit:Validation:BulkSettingsTooLarge": "Maximal 200 Einstellungen pro Sammelanfrage erlaubt.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' darf nur Buchstaben, Ziffern, Bindestriche, Unterstriche oder Punkte enthalten.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' ist keine gültige Kreditkartennummer.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' und 'Page' schließen sich gegenseitig aus.",

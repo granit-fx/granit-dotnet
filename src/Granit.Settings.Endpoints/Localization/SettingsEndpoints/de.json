@@ -1,10 +1,13 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Settings": "Einstellungen",
-    "Permission:Settings.Global.Read": "Globale Einstellungen anzeigen",
+    "Granit:Settings:NotFound": "Einstellung ist nicht deklariert.",
+    "Granit:Settings:ProviderNotAllowed": "Dieser Geltungsbereich ist für diese Einstellung nicht erlaubt.",
+    "Granit:Settings:ValidationFailed": "Der Wert entspricht nicht dem erwarteten Format oder der Zulassungsliste.",
     "Permission:Settings.Global.Manage": "Globale Einstellungen verwalten (anzeigen, erstellen, bearbeiten)",
+    "Permission:Settings.Global.Read": "Globale Einstellungen anzeigen",
+    "Permission:Settings.Tenant.Manage": "Mandanteneinstellungen verwalten (anzeigen, erstellen, bearbeiten)",
     "Permission:Settings.Tenant.Read": "Mandanteneinstellungen anzeigen",
-    "Permission:Settings.Tenant.Manage": "Mandanteneinstellungen verwalten (anzeigen, erstellen, bearbeiten)"
+    "PermissionGroup:Settings": "Einstellungen"
   }
 }

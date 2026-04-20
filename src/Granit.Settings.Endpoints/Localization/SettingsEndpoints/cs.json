@@ -1,10 +1,13 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Settings": "Nastavení",
-    "Permission:Settings.Global.Read": "Zobrazit globální nastavení",
+    "Granit:Settings:NotFound": "Nastavení není deklarováno.",
+    "Granit:Settings:ProviderNotAllowed": "Tento rozsah není pro toto nastavení povolen.",
+    "Granit:Settings:ValidationFailed": "Hodnota neodpovídá očekávanému formátu ani povolenému seznamu.",
     "Permission:Settings.Global.Manage": "Spravovat globální nastavení (zobrazit, vytvořit, upravit)",
+    "Permission:Settings.Global.Read": "Zobrazit globální nastavení",
+    "Permission:Settings.Tenant.Manage": "Spravovat nastavení nájemce (zobrazit, vytvořit, upravit)",
     "Permission:Settings.Tenant.Read": "Zobrazit nastavení nájemce",
-    "Permission:Settings.Tenant.Manage": "Spravovat nastavení nájemce (zobrazit, vytvořit, upravit)"
+    "PermissionGroup:Settings": "Nastavení"
   }
 }

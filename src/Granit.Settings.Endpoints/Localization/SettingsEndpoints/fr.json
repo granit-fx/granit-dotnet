@@ -1,10 +1,13 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Settings": "Paramètres",
-    "Permission:Settings.Global.Read": "Consulter les paramètres globaux",
+    "Granit:Settings:NotFound": "Paramètre non déclaré.",
+    "Granit:Settings:ProviderNotAllowed": "Ce scope n'est pas autorisé pour ce paramètre.",
+    "Granit:Settings:ValidationFailed": "La valeur ne correspond pas au format attendu ou à la liste autorisée.",
     "Permission:Settings.Global.Manage": "Gérer les paramètres globaux (consulter, créer, modifier)",
+    "Permission:Settings.Global.Read": "Consulter les paramètres globaux",
+    "Permission:Settings.Tenant.Manage": "Gérer les paramètres du tenant (consulter, créer, modifier)",
     "Permission:Settings.Tenant.Read": "Consulter les paramètres du tenant",
-    "Permission:Settings.Tenant.Manage": "Gérer les paramètres du tenant (consulter, créer, modifier)"
+    "PermissionGroup:Settings": "Paramètres"
   }
 }

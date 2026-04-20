@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 using Granit.OpenIddict.Endpoints.Internal;
 using Granit.OpenIddict.Permissions;
 

@@ -1,10 +1,13 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Settings": "सेटिंग्स",
-    "Permission:Settings.Global.Read": "वैश्विक सेटिंग्स देखें",
+    "Granit:Settings:NotFound": "सेटिंग घोषित नहीं है।",
+    "Granit:Settings:ProviderNotAllowed": "यह स्कोप इस सेटिंग के लिए अनुमत नहीं है।",
+    "Granit:Settings:ValidationFailed": "मान अपेक्षित प्रारूप या अनुमत सूची से मेल नहीं खाता।",
     "Permission:Settings.Global.Manage": "वैश्विक सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)",
+    "Permission:Settings.Global.Read": "वैश्विक सेटिंग्स देखें",
+    "Permission:Settings.Tenant.Manage": "टेनेंट सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)",
     "Permission:Settings.Tenant.Read": "टेनेंट सेटिंग्स देखें",
-    "Permission:Settings.Tenant.Manage": "टेनेंट सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)"
+    "PermissionGroup:Settings": "सेटिंग्स"
   }
 }

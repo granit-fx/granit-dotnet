@@ -1,10 +1,13 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Settings": "설정",
-    "Permission:Settings.Global.Read": "전역 설정 보기",
+    "Granit:Settings:NotFound": "설정이 선언되지 않았습니다.",
+    "Granit:Settings:ProviderNotAllowed": "이 범위는 이 설정에 허용되지 않습니다.",
+    "Granit:Settings:ValidationFailed": "값이 예상 형식 또는 허용 목록과 일치하지 않습니다.",
     "Permission:Settings.Global.Manage": "전역 설정 관리 (보기, 생성, 편집)",
+    "Permission:Settings.Global.Read": "전역 설정 보기",
+    "Permission:Settings.Tenant.Manage": "테넌트 설정 관리 (보기, 생성, 편집)",
     "Permission:Settings.Tenant.Read": "테넌트 설정 보기",
-    "Permission:Settings.Tenant.Manage": "테넌트 설정 관리 (보기, 생성, 편집)"
+    "PermissionGroup:Settings": "설정"
   }
 }

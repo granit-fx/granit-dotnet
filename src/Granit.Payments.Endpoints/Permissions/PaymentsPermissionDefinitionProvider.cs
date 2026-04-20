@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 using Granit.Payments.Endpoints.Internal;
 
 namespace Granit.Payments.Endpoints.Permissions;

@@ -320,4 +320,60 @@ public sealed class SettingDefinitionTests
         ex.Message.ShouldContain("AllowedValues");
         ex.Message.ShouldContain("Int");
     }
+
+    // -------------------------------------------------------------------------
+    // IsValidValue
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void IsValidValue_NullValue_IsAlwaysValid()
+    {
+        SettingDefinition def = new("App.X")
+        {
+            ValueKind = ValueKind.Int,
+            AllowedValues = ["1", "5"],
+        };
+
+        def.IsValidValue(null).ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData(ValueKind.Bool, "true", true)]
+    [InlineData(ValueKind.Bool, "maybe", false)]
+    [InlineData(ValueKind.Int, "42", true)]
+    [InlineData(ValueKind.Int, "3.14", false)]
+    [InlineData(ValueKind.Double, "3.14", true)]
+    [InlineData(ValueKind.Json, "{\"a\":1}", true)]
+    [InlineData(ValueKind.Json, "{malformed", false)]
+    public void IsValidValue_ChecksValueKindParseability(ValueKind kind, string value, bool expected)
+    {
+        SettingDefinition def = new("App.X") { ValueKind = kind };
+
+        def.IsValidValue(value).ShouldBe(expected);
+    }
+
+    [Fact]
+    public void IsValidValue_WithAllowedValues_RejectsValuesOutsideList()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            AllowedValues = ["Debug", "Information", "Warning"],
+        };
+
+        def.IsValidValue("Information").ShouldBeTrue();
+        def.IsValidValue("Trace").ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsValidValue_EmptyAllowedValues_AcceptsAnyParseableValue()
+    {
+        SettingDefinition def = new("App.X")
+        {
+            ValueKind = ValueKind.Int,
+            AllowedValues = [],
+        };
+
+        def.IsValidValue("42").ShouldBeTrue();
+        def.IsValidValue("abc").ShouldBeFalse();
+    }
 }

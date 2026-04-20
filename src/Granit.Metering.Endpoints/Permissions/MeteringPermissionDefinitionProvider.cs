@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.Localization;
 using Granit.Metering.Endpoints.Internal;
+using Granit.MultiTenancy;
 
 namespace Granit.Metering.Endpoints.Permissions;
 

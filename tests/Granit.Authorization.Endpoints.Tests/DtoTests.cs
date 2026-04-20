@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Authorization.Endpoints.Dtos;
+using Granit.MultiTenancy;
 using Shouldly;
 using Xunit;
 

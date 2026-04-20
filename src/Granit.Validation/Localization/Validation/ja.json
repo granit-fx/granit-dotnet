@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:AtLeastOneMappingTarget": "少なくとも1つのマッピングにnullでないターゲットプロパティが必要です。",
+    "Granit:Validation:BulkSettingsTooLarge": "一括リクエストあたり最大200件の設定が許可されます。",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' には英数字、ハイフン、アンダースコア、ドットのみ使用できます。",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' は有効なクレジットカード番号ではありません。",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",

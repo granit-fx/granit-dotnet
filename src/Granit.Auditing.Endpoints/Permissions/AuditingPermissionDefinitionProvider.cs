@@ -1,6 +1,7 @@
 using Granit.Auditing.Endpoints.Internal;
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.Auditing.Endpoints.Permissions;
 

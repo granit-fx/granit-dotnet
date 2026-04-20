@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.BlobStorage.Endpoints.Internal;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.BlobStorage.Endpoints.Permissions;
 

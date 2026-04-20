@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+
 namespace Granit.Authorization.Services;
 
 /// <summary>

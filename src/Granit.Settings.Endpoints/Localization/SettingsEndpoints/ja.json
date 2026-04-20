@@ -1,10 +1,13 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Settings": "設定",
-    "Permission:Settings.Global.Read": "グローバル設定の表示",
+    "Granit:Settings:NotFound": "設定が宣言されていません。",
+    "Granit:Settings:ProviderNotAllowed": "このスコープはこの設定では許可されていません。",
+    "Granit:Settings:ValidationFailed": "値が期待される形式または許可リストと一致しません。",
     "Permission:Settings.Global.Manage": "グローバル設定の管理（表示、作成、編集）",
+    "Permission:Settings.Global.Read": "グローバル設定の表示",
+    "Permission:Settings.Tenant.Manage": "テナント設定の管理（表示、作成、編集）",
     "Permission:Settings.Tenant.Read": "テナント設定の表示",
-    "Permission:Settings.Tenant.Manage": "テナント設定の管理（表示、作成、編集）"
+    "PermissionGroup:Settings": "設定"
   }
 }

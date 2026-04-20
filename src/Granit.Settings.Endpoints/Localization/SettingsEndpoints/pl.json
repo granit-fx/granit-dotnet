@@ -1,10 +1,13 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Settings": "Ustawienia",
-    "Permission:Settings.Global.Read": "Wyświetlanie ustawień globalnych",
+    "Granit:Settings:NotFound": "Ustawienie nie jest zadeklarowane.",
+    "Granit:Settings:ProviderNotAllowed": "Ten zakres nie jest dozwolony dla tego ustawienia.",
+    "Granit:Settings:ValidationFailed": "Wartość nie pasuje do oczekiwanego formatu lub listy dozwolonych wartości.",
     "Permission:Settings.Global.Manage": "Zarządzanie ustawieniami globalnymi (wyświetlanie, tworzenie, edycja)",
+    "Permission:Settings.Global.Read": "Wyświetlanie ustawień globalnych",
+    "Permission:Settings.Tenant.Manage": "Zarządzanie ustawieniami najemcy (wyświetlanie, tworzenie, edycja)",
     "Permission:Settings.Tenant.Read": "Wyświetlanie ustawień najemcy",
-    "Permission:Settings.Tenant.Manage": "Zarządzanie ustawieniami najemcy (wyświetlanie, tworzenie, edycja)"
+    "PermissionGroup:Settings": "Ustawienia"
   }
 }

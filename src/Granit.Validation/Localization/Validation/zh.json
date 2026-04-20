@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' 的指定条件未满足。",
     "Granit:Validation:AtLeastOneMappingTarget": "至少一个映射必须具有非空的目标属性。",
+    "Granit:Validation:BulkSettingsTooLarge": "每个批量请求最多允许 200 个设置。",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' 只能包含字母、数字、连字符、下划线或点。",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' 不是有效的信用卡号。",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",

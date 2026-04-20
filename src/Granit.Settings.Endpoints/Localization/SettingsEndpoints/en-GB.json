@@ -1,4 +1,8 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "Granit:Settings:NotFound": "Setting is not declared.",
+    "Granit:Settings:ProviderNotAllowed": "This scope is not allowed for this setting.",
+    "Granit:Settings:ValidationFailed": "Value does not match the setting's expected format or allow-list."
+  }
 }

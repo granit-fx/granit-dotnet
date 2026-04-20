@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 using Granit.Tax.Endpoints.Internal;
 
 namespace Granit.Tax.Endpoints.Permissions;

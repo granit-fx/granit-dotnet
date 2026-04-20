@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.Mcp.Server.Permissions;
 

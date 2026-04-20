@@ -1,6 +1,7 @@
 using Granit.AI.Endpoints.Internal;
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.AI.Endpoints.Permissions;
 

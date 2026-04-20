@@ -15,6 +15,7 @@ using Granit.Authorization;
 using Granit.Authorization.Events;
 using Granit.Authorization.Services;
 using Granit.Events;
+using Granit.MultiTenancy;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Shouldly;

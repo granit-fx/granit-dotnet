@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "La condición especificada para '{PropertyName}' no se ha cumplido.",
     "Granit:Validation:AtLeastOneMappingTarget": "Al menos una asignación debe tener una propiedad destino no nula.",
+    "Granit:Validation:BulkSettingsTooLarge": "Se permiten un máximo de 200 configuraciones por solicitud en lote.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' solo puede contener letras, dígitos, guiones, guiones bajos o puntos.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' no es un número de tarjeta de crédito válido.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' y 'Page' son mutuamente excluyentes.",

@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.MultiTenancy;
 
 namespace Granit.Authorization.Endpoints.Dtos;
 

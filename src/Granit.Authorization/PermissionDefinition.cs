@@ -1,4 +1,5 @@
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.Authorization;
 

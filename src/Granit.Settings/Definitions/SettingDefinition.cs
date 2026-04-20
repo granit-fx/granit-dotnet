@@ -99,6 +99,32 @@ public sealed class SettingDefinition
         }
     }
 
+    /// <summary>
+    /// Checks whether <paramref name="value"/> is acceptable for this definition —
+    /// i.e. parseable as <see cref="ValueKind"/> and, if <see cref="AllowedValues"/> is
+    /// non-empty, a member of it. <see langword="null"/> is always acceptable (clears the
+    /// override and falls back to the default / higher-priority provider).
+    /// </summary>
+    public bool IsValidValue(string? value)
+    {
+        if (value is null)
+        {
+            return true;
+        }
+
+        if (!TryParseAs(value, ValueKind))
+        {
+            return false;
+        }
+
+        if (AllowedValues is { Count: > 0 } && !AllowedValues.Contains(value))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     internal static bool TryParseAs(string value, ValueKind kind) => kind switch
     {
         ValueKind.String => true,

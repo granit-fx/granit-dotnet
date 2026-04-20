@@ -1,6 +1,7 @@
 using Granit.Authentication.ApiKeys.Endpoints.Internal;
 using Granit.Authorization;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.Authentication.ApiKeys.Endpoints.Permissions;
 

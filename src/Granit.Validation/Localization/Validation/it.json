@@ -3,6 +3,7 @@
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "La condizione specificata per '{PropertyName}' non è stata soddisfatta.",
     "Granit:Validation:AtLeastOneMappingTarget": "Almeno una mappatura deve avere una proprietà destinazione non nulla.",
+    "Granit:Validation:BulkSettingsTooLarge": "Sono consentite al massimo 200 impostazioni per richiesta in blocco.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' può contenere solo lettere, cifre, trattini, underscore o punti.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' non è un numero di carta di credito valido.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' e 'Page' si escludono a vicenda.",

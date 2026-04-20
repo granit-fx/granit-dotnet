@@ -7818,7 +7818,7 @@
       "kind": "enum",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -7827,7 +7827,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 91,
+      "line": 93,
       "members": [
         {
           "name": "Name",
@@ -7854,10 +7854,10 @@
           "returnType": "string?"
         },
         {
-          "name": "PathPrefix",
+          "name": "ClientSide",
           "kind": "property",
-          "signature": "string PathPrefix",
-          "returnType": "string"
+          "signature": "MultiTenancySide? ClientSide",
+          "returnType": "MultiTenancySide?"
         },
         {
           "name": "StaticFilesPath",
@@ -7915,7 +7915,7 @@
       "kind": "class",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/Options/GranitBffOptions.cs",
-      "line": 29,
+      "line": 31,
       "members": [
         {
           "name": "Authority",
@@ -36994,6 +36994,60 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "AdminAppSettingResponse",
+      "fqn": "Granit.Settings.Endpoints.Dtos.AdminAppSettingResponse",
+      "kind": "record",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/AdminAppSettingResponse.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "BulkSettingEntry",
+      "fqn": "Granit.Settings.Endpoints.Dtos.BulkSettingEntry",
+      "kind": "record",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/BulkUpdateSettingsRequest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "BulkSettingOutcome",
+      "fqn": "Granit.Settings.Endpoints.Dtos.BulkSettingOutcome",
+      "kind": "enum",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/BulkUpdateSettingsResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "BulkSettingResult",
+      "fqn": "Granit.Settings.Endpoints.Dtos.BulkSettingResult",
+      "kind": "record",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/BulkUpdateSettingsResponse.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "BulkUpdateSettingsRequest",
+      "fqn": "Granit.Settings.Endpoints.Dtos.BulkUpdateSettingsRequest",
+      "kind": "record",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/BulkUpdateSettingsRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BulkUpdateSettingsResponse",
+      "fqn": "Granit.Settings.Endpoints.Dtos.BulkUpdateSettingsResponse",
+      "kind": "record",
+      "project": "Granit.Settings.Endpoints",
+      "file": "src/Granit.Settings.Endpoints/Dtos/BulkUpdateSettingsResponse.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "SettingValueResponse",

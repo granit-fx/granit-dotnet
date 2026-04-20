@@ -1,4 +1,8 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "Granit:Settings:NotFound": "Configuração não declarada.",
+    "Granit:Settings:ProviderNotAllowed": "Este escopo não é permitido para esta configuração.",
+    "Granit:Settings:ValidationFailed": "O valor não corresponde ao formato esperado ou à lista permitida."
+  }
 }

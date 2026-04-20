@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+
 namespace Granit.Bff.Options;
 
 /// <summary>
@@ -110,6 +112,20 @@ public sealed class BffFrontendOptions
 
     /// <summary>OIDC scopes to request.</summary>
     public string[] Scopes { get; set; } = ["openid", "profile", "email", "roles", "offline_access"];
+
+    /// <summary>
+    /// Declared scope of this frontend relative to the host/tenant boundary. When set,
+    /// downstream components (e.g. a custom OIDC server handler) may enforce that the
+    /// authenticating user's context matches: <see cref="MultiTenancySide.Host"/> rejects
+    /// users with a tenant context, <see cref="MultiTenancySide.Tenant"/> rejects users
+    /// without one. <see cref="MultiTenancySide.Both"/> or <see langword="null"/> leaves
+    /// the frontend unrestricted.
+    /// </summary>
+    /// <remarks>
+    /// Granit.Bff does not act on this value itself — it is purely declarative metadata
+    /// for consumers (typically the host application's OpenIddict server handler) to read.
+    /// </remarks>
+    public MultiTenancySide? ClientSide { get; set; }
 
     /// <summary>
     /// URL path prefix for this frontend (e.g., <c>"/admin"</c>, <c>"/patient"</c>).

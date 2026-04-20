@@ -1,6 +1,7 @@
 using Granit.Authorization;
 using Granit.BackgroundJobs.Endpoints.Internal;
 using Granit.Localization;
+using Granit.MultiTenancy;
 
 namespace Granit.BackgroundJobs.Endpoints.Permissions;
 

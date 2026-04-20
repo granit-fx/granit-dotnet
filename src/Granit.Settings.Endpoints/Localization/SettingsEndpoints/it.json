@@ -1,10 +1,13 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Settings": "Impostazioni",
-    "Permission:Settings.Global.Read": "Visualizzare le impostazioni globali",
+    "Granit:Settings:NotFound": "L'impostazione non è dichiarata.",
+    "Granit:Settings:ProviderNotAllowed": "Questo ambito non è consentito per questa impostazione.",
+    "Granit:Settings:ValidationFailed": "Il valore non corrisponde al formato previsto o alla lista consentita.",
     "Permission:Settings.Global.Manage": "Gestire le impostazioni globali (visualizzare, creare, modificare)",
+    "Permission:Settings.Global.Read": "Visualizzare le impostazioni globali",
+    "Permission:Settings.Tenant.Manage": "Gestire le impostazioni del tenant (visualizzare, creare, modificare)",
     "Permission:Settings.Tenant.Read": "Visualizzare le impostazioni del tenant",
-    "Permission:Settings.Tenant.Manage": "Gestire le impostazioni del tenant (visualizzare, creare, modificare)"
+    "PermissionGroup:Settings": "Impostazioni"
   }
 }
