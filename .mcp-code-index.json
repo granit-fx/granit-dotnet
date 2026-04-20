@@ -6302,7 +6302,7 @@
       "kind": "record",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/Dtos/PermissionDefinitionResponse.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -6487,7 +6487,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Extensions/AuthorizationServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitAuthorization",
@@ -6746,15 +6746,6 @@
       ]
     },
     {
-      "name": "MultiTenancySide",
-      "fqn": "Granit.Authorization.MultiTenancySide",
-      "kind": "enum",
-      "project": "Granit.Authorization",
-      "file": "src/Granit.Authorization/MultiTenancySide.cs",
-      "line": 14,
-      "members": []
-    },
-    {
       "name": "GranitAuthorizationOptions",
       "fqn": "Granit.Authorization.Options.GranitAuthorizationOptions",
       "kind": "class",
@@ -6782,7 +6773,7 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/PermissionDefinition.cs",
-      "line": 13,
+      "line": 14,
       "members": []
     },
     {
@@ -6818,7 +6809,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/PermissionGroup.cs",
-      "line": 6,
+      "line": 7,
       "members": [
         {
           "name": "Name",
@@ -23787,6 +23778,15 @@
       ]
     },
     {
+      "name": "MultiTenancySide",
+      "fqn": "Granit.MultiTenancy.MultiTenancySide",
+      "kind": "enum",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/MultiTenancySide.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "MultiTenancyOptions",
       "fqn": "Granit.MultiTenancy.Options.MultiTenancyOptions",
       "kind": "class",
@@ -36914,7 +36914,7 @@
       "kind": "class",
       "project": "Granit.Settings",
       "file": "src/Granit.Settings/Definitions/SettingDefinition.cs",
-      "line": 6,
+      "line": 9,
       "members": [
         {
           "name": "Name",
@@ -36929,10 +36929,16 @@
           "returnType": "IList<string>"
         },
         {
+          "name": "DisplayName",
+          "kind": "property",
+          "signature": "string? DisplayName",
+          "returnType": "string?"
+        },
+        {
           "name": "SettingDefinition",
           "kind": "method",
           "signature": "SettingDefinition(string name)",
-          "returnType": "string? DisplayName { get; init; } public string? Description { get; init; } public"
+          "returnType": "IReadOnlyList<string>? AllowedValues { get; init; } public"
         }
       ]
     },
@@ -36957,6 +36963,15 @@
           "returnType": "IReadOnlyCollection<SettingDefinition>"
         }
       ]
+    },
+    {
+      "name": "ValueKind",
+      "fqn": "Granit.Settings.Definitions.ValueKind",
+      "kind": "enum",
+      "project": "Granit.Settings",
+      "file": "src/Granit.Settings/Definitions/ValueKind.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "SettingRecord",

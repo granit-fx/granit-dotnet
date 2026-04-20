@@ -139,4 +139,185 @@ public sealed class SettingDefinitionTests
         def.Providers.ShouldContain("U");
         def.Providers.ShouldContain("G");
     }
+
+    // -------------------------------------------------------------------------
+    // ValueKind + AllowedValues defaults
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void ValueKind_IsString_ByDefault()
+    {
+        SettingDefinition def = new("App.Theme");
+
+        def.ValueKind.ShouldBe(ValueKind.String);
+    }
+
+    [Fact]
+    public void AllowedValues_IsNull_ByDefault()
+    {
+        SettingDefinition def = new("App.Theme");
+
+        def.AllowedValues.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ValueKind_And_AllowedValues_CanBeSet_ViaInitSyntax()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            ValueKind = ValueKind.String,
+            AllowedValues = ["Debug", "Information", "Warning", "Error"],
+            DefaultValue = "Information",
+        };
+
+        def.ValueKind.ShouldBe(ValueKind.String);
+        def.AllowedValues.ShouldNotBeNull();
+        def.AllowedValues.Count.ShouldBe(4);
+        def.AllowedValues.ShouldContain("Debug");
+    }
+
+    // -------------------------------------------------------------------------
+    // ValidateInvariants — DefaultValue parsing per ValueKind
+    // -------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(ValueKind.Bool, "true")]
+    [InlineData(ValueKind.Bool, "false")]
+    [InlineData(ValueKind.Bool, "True")]
+    [InlineData(ValueKind.Int, "0")]
+    [InlineData(ValueKind.Int, "-42")]
+    [InlineData(ValueKind.Int, "2147483647")]
+    [InlineData(ValueKind.Double, "3.14")]
+    [InlineData(ValueKind.Double, "-1e-5")]
+    [InlineData(ValueKind.Double, "0")]
+    [InlineData(ValueKind.Json, "{\"key\":\"value\"}")]
+    [InlineData(ValueKind.Json, "[1,2,3]")]
+    [InlineData(ValueKind.Json, "\"hello\"")]
+    [InlineData(ValueKind.Json, "null")]
+    [InlineData(ValueKind.String, "anything goes")]
+    public void ValidateInvariants_ParseableDefaultValue_DoesNotThrow(ValueKind kind, string defaultValue)
+    {
+        SettingDefinition def = new("App.X")
+        {
+            ValueKind = kind,
+            DefaultValue = defaultValue,
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    [Theory]
+    [InlineData(ValueKind.Bool, "yes")]
+    [InlineData(ValueKind.Bool, "1")]
+    [InlineData(ValueKind.Int, "3.14")]
+    [InlineData(ValueKind.Int, "abc")]
+    [InlineData(ValueKind.Double, "not-a-number")]
+    [InlineData(ValueKind.Json, "{malformed")]
+    [InlineData(ValueKind.Json, "")]
+    public void ValidateInvariants_NonParseableDefaultValue_Throws(ValueKind kind, string defaultValue)
+    {
+        SettingDefinition def = new("App.X")
+        {
+            ValueKind = kind,
+            DefaultValue = defaultValue,
+        };
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() => def.ValidateInvariants());
+        ex.Message.ShouldContain("App.X");
+        ex.Message.ShouldContain("DefaultValue");
+    }
+
+    [Fact]
+    public void ValidateInvariants_NullDefaultValue_DoesNotThrow()
+    {
+        SettingDefinition def = new("App.X")
+        {
+            ValueKind = ValueKind.Int,
+            DefaultValue = null,
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    // -------------------------------------------------------------------------
+    // ValidateInvariants — AllowedValues
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void ValidateInvariants_DefaultValueInAllowedValues_DoesNotThrow()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            AllowedValues = ["Debug", "Information", "Warning"],
+            DefaultValue = "Information",
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    [Fact]
+    public void ValidateInvariants_DefaultValueNotInAllowedValues_Throws()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            AllowedValues = ["Debug", "Information", "Warning"],
+            DefaultValue = "Trace",
+        };
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() => def.ValidateInvariants());
+        ex.Message.ShouldContain("App.LogLevel");
+        ex.Message.ShouldContain("AllowedValues");
+    }
+
+    [Fact]
+    public void ValidateInvariants_NullDefaultValue_WithAllowedValues_DoesNotThrow()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            AllowedValues = ["Debug", "Information"],
+            DefaultValue = null,
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    [Fact]
+    public void ValidateInvariants_EmptyAllowedValues_DoesNotConstrainDefaultValue()
+    {
+        SettingDefinition def = new("App.X")
+        {
+            AllowedValues = [],
+            DefaultValue = "anything",
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    [Fact]
+    public void ValidateInvariants_AllowedValuesOnIntKind_AcceptsStringIntegers()
+    {
+        SettingDefinition def = new("App.MaxRetries")
+        {
+            ValueKind = ValueKind.Int,
+            AllowedValues = ["1", "5", "10"],
+            DefaultValue = "5",
+        };
+
+        Should.NotThrow(() => def.ValidateInvariants());
+    }
+
+    [Fact]
+    public void ValidateInvariants_AllowedValuesOnIntKind_RejectsNonIntegerEntry()
+    {
+        SettingDefinition def = new("App.MaxRetries")
+        {
+            ValueKind = ValueKind.Int,
+            AllowedValues = ["1", "5", "ten"],
+        };
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() => def.ValidateInvariants());
+        ex.Message.ShouldContain("App.MaxRetries");
+        ex.Message.ShouldContain("AllowedValues");
+        ex.Message.ShouldContain("Int");
+    }
 }

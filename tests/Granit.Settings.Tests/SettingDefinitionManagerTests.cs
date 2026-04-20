@@ -117,4 +117,50 @@ public sealed class SettingDefinitionManagerTests
             inspect(context);
         }
     }
+
+    // -------------------------------------------------------------------------
+    // Registration-time invariant validation
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void Constructor_InvalidDefaultValue_ForValueKind_Throws()
+    {
+        SettingDefinition def = new("App.MaxRetries")
+        {
+            ValueKind = ValueKind.Int,
+            DefaultValue = "not-a-number",
+        };
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => new SettingDefinitionManager([new FakeProvider(def)]));
+        ex.Message.ShouldContain("App.MaxRetries");
+    }
+
+    [Fact]
+    public void Constructor_DefaultValueOutsideAllowedValues_Throws()
+    {
+        SettingDefinition def = new("App.LogLevel")
+        {
+            AllowedValues = ["Debug", "Information"],
+            DefaultValue = "Trace",
+        };
+
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(
+            () => new SettingDefinitionManager([new FakeProvider(def)]));
+        ex.Message.ShouldContain("App.LogLevel");
+        ex.Message.ShouldContain("AllowedValues");
+    }
+
+    [Fact]
+    public void Constructor_ValidDefinition_DoesNotThrow()
+    {
+        SettingDefinition def = new("App.MaxRetries")
+        {
+            ValueKind = ValueKind.Int,
+            AllowedValues = ["1", "5", "10"],
+            DefaultValue = "5",
+        };
+
+        Should.NotThrow(() => new SettingDefinitionManager([new FakeProvider(def)]));
+    }
 }

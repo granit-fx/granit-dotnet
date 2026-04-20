@@ -15,6 +15,11 @@ public sealed class SettingDefinitionManager
             provider.Define(context);
         }
         _definitions = context.Build();
+
+        foreach (SettingDefinition definition in _definitions.Values)
+        {
+            definition.ValidateInvariants();
+        }
     }
 
     /// <summary>
