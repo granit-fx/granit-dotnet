@@ -22,7 +22,7 @@ public sealed class BlobStorageEndpointsOptionsTests
     {
         BlobStorageEndpointsOptions options = new();
 
-        options.TagName.ShouldBe("BlobStorage");
+        options.TagName.ShouldBe("Blob Storage");
     }
 
     [Fact]

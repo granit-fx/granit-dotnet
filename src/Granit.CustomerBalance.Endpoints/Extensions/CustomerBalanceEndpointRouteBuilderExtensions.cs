@@ -18,7 +18,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
     {
         RouteGroupBuilder group = endpoints
             .MapGranitGroup("customer-balance")
-            .WithTags("CustomerBalance");
+            .WithTags("Customer Balance");
 
         group.MapGet("/balance", GetBalanceEndpoint.HandleAsync)
             .WithName("GetCustomerBalance")

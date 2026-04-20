@@ -16,27 +16,27 @@ public sealed class AIEndpointsOptions
 
     /// <summary>
     /// OpenAPI tag name for provider discovery endpoints.
-    /// Default: <c>"AI Providers"</c>.
+    /// Default: <c>"AI - Providers"</c>.
     /// </summary>
-    public string ProvidersTagName { get; set; } = "AI Providers";
+    public string ProvidersTagName { get; set; } = "AI - Providers";
 
     /// <summary>
     /// OpenAPI tag name for workspace management endpoints.
-    /// Default: <c>"AI Workspaces"</c>.
+    /// Default: <c>"AI - Workspaces"</c>.
     /// </summary>
-    public string WorkspacesTagName { get; set; } = "AI Workspaces";
+    public string WorkspacesTagName { get; set; } = "AI - Workspaces";
 
     /// <summary>
     /// OpenAPI tag name for usage tracking endpoints.
-    /// Default: <c>"AI Usage"</c>.
+    /// Default: <c>"AI - Usage"</c>.
     /// </summary>
-    public string UsageTagName { get; set; } = "AI Usage";
+    public string UsageTagName { get; set; } = "AI - Usage";
 
     /// <summary>
     /// OpenAPI tag name for chat and embedding proxy endpoints.
-    /// Default: <c>"AI Inference"</c>.
+    /// Default: <c>"AI - Inference"</c>.
     /// </summary>
-    public string InferenceTagName { get; set; } = "AI Inference";
+    public string InferenceTagName { get; set; } = "AI - Inference";
 
     /// <summary>
     /// Maximum number of messages allowed per chat request.

@@ -25,7 +25,7 @@ public static class MobilePushTokenEndpoints
     {
         RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
             .RequireAuthorization()
-            .WithTags("MobilePush");
+            .WithTags("Notifications - Mobile Push");
 
         group.MapPost("/", RegisterTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)

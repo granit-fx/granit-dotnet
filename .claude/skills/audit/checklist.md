@@ -445,11 +445,25 @@ What the endpoint MUST still declare:
 
 ### 5i. Tags and grouping (Scalar UI)
 
-- [ ] `.WithTags("{Module}")` applied at the group level (or per endpoint)
-  so Scalar groups operations by module
-- [ ] Tag name matches the canonical module name (PascalCase, e.g.
-  `"BlobStorage"`, `"QueryEngine"`) — not a legacy name
-- [ ] Endpoints within the same module share the same tag
+- [ ] `.WithTags(...)` applied on every root `RouteGroupBuilder`. Without it, the
+  generator falls back to the handler's declaring class name (e.g.
+  `AccountLoginEndpoints`) — a BREAKING OpenAPI output issue, not a style nit
+- [ ] Tag value format: **Title Case with spaces** — `"Blob Storage"`,
+  `"Background Jobs"`, `"Reference Data"`. NEVER glued PascalCase
+  (`"BlobStorage"`, `"MobilePush"`, `"CustomerBalance"`), NEVER kebab/snake_case
+- [ ] Multi-tag modules use `"<Module> - <SubGroup>"` (space-dash-space) so sub-tags
+  group visually in Scalar — e.g. `"AI - Workspaces"`, `"Identity - User Cache"`,
+  `"Notifications - Mobile Push"`. Pattern enforced across `Granit.AI.Endpoints`,
+  `Granit.Identity.Endpoints`, `Granit.Notifications.Endpoints`,
+  `Granit.MultiTenancy.Endpoints`
+- [ ] Single-tag modules use a natural user-facing name (module namespace does not
+  dictate the tag — e.g. `Granit.Authentication.ApiKeys.Endpoints` → `"API Keys"`)
+- [ ] Tag exposed via `TagName` (or `{Role}TagName` for multi-tag) on the
+  module's `*EndpointsOptions` so consumers can override
+- [ ] Tag list is sorted alphabetically in the generated document — verified by
+  `SortedTagsDocumentTransformer` (registered in `Granit.Http.ApiDocumentation`).
+  No per-app action needed; flag only if the transformer is missing from
+  `ApiDocumentationServiceCollectionExtensions`
 
 ### 5j. OperationId uniqueness
 

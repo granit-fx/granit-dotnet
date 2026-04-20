@@ -18299,7 +18299,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Extensions/AccountEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitAccount",
@@ -18343,6 +18343,18 @@
           "name": "AdminRoutePrefix",
           "kind": "property",
           "signature": "string AdminRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AccountTagName",
+          "kind": "property",
+          "signature": "string AccountTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "AdminTagName",
+          "kind": "property",
+          "signature": "string AdminTagName",
           "returnType": "string"
         }
       ]
@@ -27868,7 +27880,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Endpoints",
       "file": "src/Granit.OpenIddict.Endpoints/Extensions/OpenIddictEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitOpenIddict",
@@ -27912,6 +27924,12 @@
           "name": "AdminRoutePrefix",
           "kind": "property",
           "signature": "string AdminRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AdminTagName",
+          "kind": "property",
+          "signature": "string AdminTagName",
           "returnType": "string"
         }
       ]

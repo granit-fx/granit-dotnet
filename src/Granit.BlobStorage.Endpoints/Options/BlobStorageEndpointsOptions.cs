@@ -16,7 +16,7 @@ public sealed class BlobStorageEndpointsOptions
 
     /// <summary>
     /// OpenAPI tag name for grouping blob storage endpoints.
-    /// Default: <c>"BlobStorage"</c>.
+    /// Default: <c>"Blob Storage"</c>.
     /// </summary>
-    public string TagName { get; set; } = "BlobStorage";
+    public string TagName { get; set; } = "Blob Storage";
 }

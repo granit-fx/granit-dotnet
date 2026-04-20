@@ -302,6 +302,43 @@ group.MapGet("/{id:guid}", GetByIdAsync)
 **Rules:** WithName = PascalCase VerbNoun, WithSummary = imperative ~100 chars with period,
 WithDescription = 2-4 sentences, ProducesProblem = one per error status code.
 
+### OpenAPI tags — naming convention (STRICT)
+
+Every `*.Endpoints` module MUST attach a `.WithTags(...)` call on its root `RouteGroupBuilder`.
+Without it, .NET's OpenAPI generator falls back to the handler's declaring class name
+(e.g. `AccountLoginEndpoints`) — ugly and leaks internal structure.
+
+**Format: `Title Case With Spaces`.**
+
+- Prefer natural English: `Blob Storage`, `Background Jobs`, `Reference Data`, `Data Exchange`.
+- NEVER glued PascalCase (`BlobStorage`, `MobilePush`, `CustomerBalance`) — that's a class name, not a UI label.
+- NEVER kebab-case or snake_case (those belong in URLs and metric tags, not OpenAPI UI labels).
+
+**Module sub-tags: `<Module> - <SubGroup>`.**
+
+When a module exposes multiple distinct tag groups, prefix every sub-tag with the module
+name followed by ` - ` (space-dash-space). This makes Scalar's left column group them
+visually and alphabetically.
+
+| Module | Tags |
+| ------ | ---- |
+| `Granit.AI.Endpoints` | `AI - Workspaces`, `AI - Inference`, `AI - Providers`, `AI - Usage` |
+| `Granit.Identity.Endpoints` | `Identity - User Cache`, `Identity - Provider`, `Identity - Webhook` |
+| `Granit.Notifications.Endpoints` | `Notifications`, `Notifications - Mobile Push` |
+| `Granit.MultiTenancy.Endpoints` | `Platform - Tenants` |
+
+Single-tag modules use the module's user-facing name directly (e.g. `Blob Storage`,
+`Privacy`, `Webhooks`, `Workflow`). The tag name does NOT have to match the .NET
+namespace — it's a human label.
+
+**Expose the tag via options.** Every module MUST ship a `TagName` property (or
+`{Role}TagName` for multi-tag modules) on its `*EndpointsOptions` with a sensible
+default. Consumers can override per-app.
+
+**Declarative tag list.** `Granit.Http.ApiDocumentation` auto-emits a sorted
+`document.Tags` array (via `SortedTagsDocumentTransformer`), so Scalar renders tags
+alphabetically without per-app configuration.
+
 ### Validation
 
 - **Auto-validation**: use `endpoints.MapGranitGroup(prefix)` instead of `MapGroup()` — applies

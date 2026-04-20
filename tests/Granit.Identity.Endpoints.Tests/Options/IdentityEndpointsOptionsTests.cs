@@ -22,7 +22,7 @@ public sealed class IdentityEndpointsOptionsTests
     {
         IdentityEndpointsOptions options = new();
 
-        options.TagName.ShouldBe("Identity User Cache");
+        options.TagName.ShouldBe("Identity - User Cache");
     }
 
     [Fact]

@@ -116,9 +116,8 @@ public sealed class WolverineCouplingTests
 
     private static bool HasWolverineUsing(string content)
     {
-        foreach (string line in content.Split('\n'))
+        foreach (string trimmed in content.Split('\n').Select(static line => line.TrimStart()))
         {
-            string trimmed = line.TrimStart();
             if (trimmed.StartsWith("using Wolverine;", StringComparison.Ordinal) ||
                 trimmed.StartsWith("using Wolverine.", StringComparison.Ordinal) ||
                 trimmed.StartsWith("using static Wolverine", StringComparison.Ordinal))

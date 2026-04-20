@@ -22,7 +22,7 @@ public sealed class IdentityProviderEndpointsOptionsTests
     {
         IdentityProviderEndpointsOptions options = new();
 
-        options.TagName.ShouldBe("Identity Provider");
+        options.TagName.ShouldBe("Identity - Provider");
     }
 
     [Fact]

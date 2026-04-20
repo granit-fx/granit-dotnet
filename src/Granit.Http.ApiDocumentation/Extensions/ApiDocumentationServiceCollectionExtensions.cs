@@ -61,6 +61,7 @@ public static class ApiDocumentationServiceCollectionExtensions
         services.AddTransient<OAuth2SecuritySchemeTransformer>();
         services.AddTransient<ProblemDetailsSchemaDocumentTransformer>();
         services.AddTransient<InternalApiDocumentTransformer>();
+        services.AddTransient<SortedTagsDocumentTransformer>();
         services.AddTransient<TenantHeaderOperationTransformer>();
         services.AddTransient<WolverineOpenApiOperationTransformer>();
         services.AddTransient<ProblemDetailsResponseOperationTransformer>();
@@ -109,6 +110,7 @@ public static class ApiDocumentationServiceCollectionExtensions
                 openApiOptions.AddDocumentTransformer<JwtBearerSecuritySchemeTransformer>();
                 openApiOptions.AddDocumentTransformer<OAuth2SecuritySchemeTransformer>();
                 openApiOptions.AddDocumentTransformer<InternalApiDocumentTransformer>();
+                openApiOptions.AddDocumentTransformer<SortedTagsDocumentTransformer>();
                 openApiOptions.AddOperationTransformer<TenantHeaderOperationTransformer>();
                 openApiOptions.AddOperationTransformer<WolverineOpenApiOperationTransformer>();
                 openApiOptions.AddOperationTransformer<ProblemDetailsResponseOperationTransformer>();

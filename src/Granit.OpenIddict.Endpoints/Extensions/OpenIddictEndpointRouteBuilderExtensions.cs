@@ -2,6 +2,7 @@ using Granit.OpenIddict.Endpoints.Endpoints;
 using Granit.OpenIddict.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.OpenIddict.Endpoints.Extensions;
@@ -34,6 +35,7 @@ public static class OpenIddictEndpointRouteBuilderExtensions
         // ──── Admin OIDC management (/api/admin) ────
         RouteGroupBuilder adminGroup = endpoints
             .MapGranitGroup(options.AdminRoutePrefix)
+            .WithTags(options.AdminTagName)
             .RequireAuthorization();
 
         adminGroup.MapAdminOidcEndpoints();

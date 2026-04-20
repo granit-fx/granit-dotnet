@@ -16,7 +16,7 @@ public sealed class IdentityProviderEndpointsOptions
 
     /// <summary>
     /// OpenAPI tag name for grouping identity provider endpoints.
-    /// Default: <c>"Identity Provider"</c>.
+    /// Default: <c>"Identity - Provider"</c>.
     /// </summary>
-    public string TagName { get; set; } = "Identity Provider";
+    public string TagName { get; set; } = "Identity - Provider";
 }

@@ -2,6 +2,7 @@ using Granit.Identity.Local.Endpoints.Endpoints;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Identity.Local.Endpoints.Extensions;
@@ -26,7 +27,8 @@ public static class AccountEndpointRouteBuilderExtensions
 
         // ──── Account self-service (/api/account) ────
         RouteGroupBuilder accountGroup = endpoints
-            .MapGranitGroup(options.AccountRoutePrefix);
+            .MapGranitGroup(options.AccountRoutePrefix)
+            .WithTags(options.AccountTagName);
 
         accountGroup.MapAccountLoginEndpoints();
         accountGroup.MapAccountRegistrationEndpoints();
@@ -45,6 +47,7 @@ public static class AccountEndpointRouteBuilderExtensions
         // ──── Admin management (/api/admin) ────
         RouteGroupBuilder adminGroup = endpoints
             .MapGranitGroup(options.AdminRoutePrefix)
+            .WithTags(options.AdminTagName)
             .RequireAuthorization();
 
         adminGroup.MapAdminImpersonationEndpoints();

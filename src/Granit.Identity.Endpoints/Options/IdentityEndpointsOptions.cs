@@ -16,7 +16,7 @@ public sealed class IdentityEndpointsOptions
 
     /// <summary>
     /// OpenAPI tag name for grouping identity endpoints in Swagger UI.
-    /// Default: <c>"Identity User Cache"</c>.
+    /// Default: <c>"Identity - User Cache"</c>.
     /// </summary>
-    public string TagName { get; set; } = "Identity User Cache";
+    public string TagName { get; set; } = "Identity - User Cache";
 }
