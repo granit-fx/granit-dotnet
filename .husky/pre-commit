@@ -32,6 +32,32 @@ fi
 
 gitleaks git --pre-commit --staged --no-banner
 
-# Heavy regenerators (code index, shard filters, domain filters) run in pre-push,
-# not pre-commit — scanning 3700+ .cs files adds multiple minutes to every commit.
-# See .husky/pre-push.
+# =============================================================================
+# Heavy regenerators — MCP code index, shard filters, domain filters.
+# =============================================================================
+#
+# Triggered only when their inputs are staged so artifacts travel with the
+# commit that requires them. Avoids the pre-push amend dance (which broke
+# fast-forward pushes and required --force-with-lease).
+
+set -eu
+
+STAGED_FILES=$(git diff --cached --name-only)
+
+if echo "$STAGED_FILES" | grep -qE '\.cs$|\.csproj$'; then
+    echo "▶ Regenerating .mcp-code-index.json..."
+    python3 scripts/generate-code-index.py >/dev/null
+fi
+
+if echo "$STAGED_FILES" | grep -qE 'test-shards\.json$|\.csproj$'; then
+    echo "▶ Regenerating .github/shard-filters/*.slnf..."
+    python3 scripts/generate-shard-filters.py >/dev/null
+fi
+
+if echo "$STAGED_FILES" | grep -qE 'Granit\.slnx$|\.csproj$'; then
+    echo "▶ Regenerating .slnf/*.slnf..."
+    python3 scripts/generate-domain-filters.py >/dev/null
+fi
+
+# Stage regenerated artifacts so they're included in this commit.
+git add .mcp-code-index.json .github/shard-filters/*.slnf .slnf/*.slnf 2>/dev/null || true

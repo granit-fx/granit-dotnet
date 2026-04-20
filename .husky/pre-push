@@ -2,12 +2,16 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # =============================================================================
-# 1. PR state check — block push to branches with a merged or closed PR/MR.
+# PR state check — block push to branches with a merged or closed PR/MR.
 # =============================================================================
 #
 # Protects against orphan commits on already-merged feature branches. Skipped
 # for main/develop (branch protection handles those). Supports GitHub (gh) and
 # GitLab (glab) based on the origin URL.
+#
+# Heavy regenerators (code index, shard filters, domain filters) run in
+# pre-commit — see .husky/pre-commit. They amended HEAD in pre-push previously
+# but that broke fast-forward pushes.
 
 BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || true)
 
@@ -73,52 +77,4 @@ $CLOSED_PART"
             fi
             ;;
     esac
-fi
-
-# =============================================================================
-# 2. Heavy regenerators — MCP code index, shard filters, domain filters.
-# =============================================================================
-#
-# Run here (not in pre-commit) so local commits stay snappy. Scan ~3700 .cs
-# files was blocking every commit for several minutes. If regeneration produces
-# a diff, fold it into HEAD via `git commit --amend` so the push carries the
-# updated artifacts in the same ref advance.
-
-set -eu
-
-# Determine the range of commits being pushed. When there is no upstream yet
-# (first push of a branch), fall back to the merge base with origin/develop.
-UPSTREAM="@{upstream}"
-if ! git rev-parse --verify --quiet "$UPSTREAM" >/dev/null 2>&1; then
-    UPSTREAM=$(git merge-base HEAD origin/develop 2>/dev/null || echo "")
-fi
-
-if [ -z "$UPSTREAM" ]; then
-    # Brand new repo or no develop remote — regenerate unconditionally.
-    CHANGED_FILES=$(git diff --name-only HEAD)
-else
-    CHANGED_FILES=$(git diff --name-only "$UPSTREAM"...HEAD)
-fi
-
-if echo "$CHANGED_FILES" | grep -qE '\.cs$|\.csproj$'; then
-    echo "▶ Regenerating .mcp-code-index.json..."
-    python3 scripts/generate-code-index.py >/dev/null
-fi
-
-if echo "$CHANGED_FILES" | grep -qE 'test-shards\.json$|\.csproj$'; then
-    echo "▶ Regenerating .github/shard-filters/*.slnf..."
-    python3 scripts/generate-shard-filters.py >/dev/null
-fi
-
-if echo "$CHANGED_FILES" | grep -qE 'Granit\.slnx$|\.csproj$'; then
-    echo "▶ Regenerating .slnf/*.slnf..."
-    python3 scripts/generate-domain-filters.py >/dev/null
-fi
-
-# If any regenerator produced a diff, fold the result into HEAD so the push
-# carries the updated artifacts together with the commits that require them.
-if ! git diff --quiet -- .mcp-code-index.json .github/shard-filters .slnf 2>/dev/null; then
-    git add .mcp-code-index.json .github/shard-filters/*.slnf .slnf/*.slnf 2>/dev/null || true
-    git commit --amend --no-edit --no-verify >/dev/null
-    echo "✓ Amended HEAD with regenerated artifacts."
 fi
