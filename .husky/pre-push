@@ -1,0 +1,53 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Regenerate the MCP code index, CI shard filters, and domain solution filters if any
+# .cs / .csproj / test-shards.json / Granit.slnx change since the upstream tip. When they
+# produce a diff, auto-amend HEAD — git push will then deliver the amended tip in the
+# same push, so generated artifacts never fall behind the commits that require them.
+#
+# This used to live in pre-commit; scanning ~3700 .cs files blocked every commit for
+# several minutes. Moving it to pre-push keeps local commits snappy while still
+# guaranteeing the artifacts stay in sync with every push.
+
+set -eu
+
+# Determine the range of commits being pushed. When there is no upstream yet (first push
+# of a branch), fall back to the merge base with origin/develop so we scan the branch's
+# diff rather than every commit in history.
+UPSTREAM="@{upstream}"
+if ! git rev-parse --verify --quiet "$UPSTREAM" >/dev/null 2>&1; then
+    UPSTREAM=$(git merge-base HEAD origin/develop 2>/dev/null || echo "")
+fi
+
+if [ -z "$UPSTREAM" ]; then
+    # Brand new repo or no develop remote — regen unconditionally.
+    CHANGED_FILES=$(git diff --name-only HEAD)
+else
+    CHANGED_FILES=$(git diff --name-only "$UPSTREAM"...HEAD)
+fi
+
+# Regenerate .mcp-code-index.json when any C# source or .csproj changed in the push range
+if echo "$CHANGED_FILES" | grep -qE '\.cs$|\.csproj$'; then
+    echo "▶ Regenerating .mcp-code-index.json..."
+    python3 scripts/generate-code-index.py >/dev/null
+fi
+
+# Regenerate shard filters if test-shards.json or any .csproj changed
+if echo "$CHANGED_FILES" | grep -qE 'test-shards\.json$|\.csproj$'; then
+    echo "▶ Regenerating .github/shard-filters/*.slnf..."
+    python3 scripts/generate-shard-filters.py >/dev/null
+fi
+
+# Regenerate domain filters if .slnx or any .csproj changed
+if echo "$CHANGED_FILES" | grep -qE 'Granit\.slnx$|\.csproj$'; then
+    echo "▶ Regenerating .slnf/*.slnf..."
+    python3 scripts/generate-domain-filters.py >/dev/null
+fi
+
+# If any regenerator produced a diff, fold the result into HEAD so the push carries it.
+if ! git diff --quiet -- .mcp-code-index.json .github/shard-filters .slnf; then
+    git add .mcp-code-index.json .github/shard-filters/*.slnf .slnf/*.slnf 2>/dev/null || true
+    git commit --amend --no-edit --no-verify >/dev/null
+    echo "✓ Amended HEAD with regenerated artifacts."
+fi

@@ -32,20 +32,6 @@ fi
 
 gitleaks git --pre-commit --staged --no-banner
 
-# Regenerate .mcp-code-index.json if any C# source or .csproj changed
-if git diff --cached --name-only | grep -qE '\.cs$|\.csproj$'; then
-  python3 scripts/generate-code-index.py
-  git add .mcp-code-index.json
-fi
-
-# Regenerate shard filters if test-shards.json or any .csproj changed
-if git diff --cached --name-only | grep -qE 'test-shards\.json$|\.csproj$'; then
-  python3 scripts/generate-shard-filters.py
-  git add .github/shard-filters/*.slnf
-fi
-
-# Regenerate domain filters if .slnx or any .csproj changed
-if git diff --cached --name-only | grep -qE 'Granit\.slnx$|\.csproj$'; then
-  python3 scripts/generate-domain-filters.py
-  git add .slnf/*.slnf
-fi
+# Heavy regenerators (code index, shard filters, domain filters) run in pre-push,
+# not pre-commit — scanning 3700+ .cs files adds multiple minutes to every commit.
+# See .husky/pre-push.
