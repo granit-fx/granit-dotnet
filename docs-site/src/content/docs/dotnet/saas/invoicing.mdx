@@ -18,7 +18,7 @@ module can create invoices via `CreateInvoiceCommand`, not just Subscriptions.
 - Granit.Invoicing/ Domain: Invoice (unified with CreditNote), line items, tax, provider abstractions
   - Granit.Invoicing.EntityFrameworkCore EF Core store (SQL Server / PostgreSQL)
   - Granit.Invoicing.Endpoints Minimal API (invoice listing, PDF download) with RBAC
-  - Granit.Invoicing.Wolverine CreateInvoiceHandler, payment event handlers
+  - Granit.Invoicing CreateInvoiceHandler, payment event handlers
   - Granit.Invoicing.BackgroundJobs Overdue invoice scan
   - Granit.Invoicing.Internal Self-hosted PDF via Granit.Templating (Phase 2)
   - Granit.Invoicing.Odoo External accounting sync via XML-RPC (Phase 2)

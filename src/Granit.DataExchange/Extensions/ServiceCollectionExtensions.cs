@@ -1,15 +1,12 @@
-using System.Threading.Channels;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Internal;
-using Granit.DataExchange.Export.Messages;
 using Granit.DataExchange.Exports;
 using Granit.DataExchange.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
-using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Internal;
 using Granit.DataExchange.Queries;
@@ -37,11 +34,15 @@ public static class ServiceCollectionExtensions
     ///   <item><see cref="IImportJobReader"/> / <see cref="IImportJobWriter"/> (scoped) — null-object default.</item>
     ///   <item><see cref="IDataExchangeFileProvider"/> (scoped) — in-memory default.</item>
     ///   <item><see cref="IImportOrchestrator"/> (scoped) — pipeline orchestrator.</item>
-    ///   <item><see cref="IImportCommandDispatcher"/> (singleton) — channel-based dispatch.</item>
     /// </list>
     /// <para>
     /// At least one <see cref="Parsing.IFileParser"/> must be registered separately.
     /// Use <c>Granit.DataExchange.Csv</c> or <c>Granit.DataExchange.Excel</c>.
+    /// </para>
+    /// <para>
+    /// An <c>ICommandSender</c> implementation must be registered (<c>Granit.Wolverine</c>
+    /// or another provider) — this module dispatches <see cref="ExecuteImportCommand"/>
+    /// via <c>ICommandSender</c> for asynchronous execution by <c>ExecuteImportCommandHandler</c>.
     /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>
@@ -68,11 +69,6 @@ public static class ServiceCollectionExtensions
 
         // Event bus fallback (in-process default if not already registered)
         services.AddGranitEvents();
-
-        // Channel-based async dispatch (default). Replaced by Wolverine if installed.
-        services.TryAddSingleton(Channel.CreateBounded<ExecuteImportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
-        services.TryAddSingleton<IImportCommandDispatcher, ChannelImportCommandDispatcher>();
-        services.AddHostedService<ImportCommandWorker>();
 
         // Query + Export definitions (ADR-020: owned by the base module).
         services.AddQueryDefinition<ImportJob, ImportJobQueryDefinition>();
@@ -108,11 +104,15 @@ public static class ServiceCollectionExtensions
     ///   <item><see cref="IExportOrchestrator"/> (scoped) — export pipeline orchestrator.</item>
     ///   <item><see cref="IExportJobReader"/> / <see cref="IExportJobWriter"/> (scoped) — null-object default.</item>
     ///   <item><see cref="IExportPresetReader"/> / <see cref="IExportPresetWriter"/> (scoped) — null-object default.</item>
-    ///   <item><see cref="IExportCommandDispatcher"/> (singleton) — channel-based dispatch.</item>
     /// </list>
     /// <para>
     /// At least one <see cref="IExportWriter"/> must be registered separately.
     /// Use <c>Granit.DataExchange.Excel</c> or <c>Granit.DataExchange.Csv</c>.
+    /// </para>
+    /// <para>
+    /// An <c>ICommandSender</c> implementation must be registered (<c>Granit.Wolverine</c>
+    /// or another provider) — this module dispatches <see cref="Messages.ExecuteExportCommand"/>
+    /// via <c>ICommandSender</c> for asynchronous execution by <c>ExecuteExportCommandHandler</c>.
     /// </para>
     /// </remarks>
     /// <param name="services">The service collection.</param>
@@ -141,11 +141,6 @@ public static class ServiceCollectionExtensions
 
         // Event bus fallback (in-process default if not already registered)
         services.AddGranitEvents();
-
-        // Channel-based async dispatch (default). Replaced by Wolverine if installed.
-        services.TryAddSingleton(Channel.CreateBounded<ExecuteExportCommand>(new BoundedChannelOptions(100) { FullMode = BoundedChannelFullMode.Wait }));
-        services.TryAddSingleton<IExportCommandDispatcher, ChannelExportCommandDispatcher>();
-        services.AddHostedService<ExportCommandWorker>();
 
         // Query + Export definitions (ADR-020: owned by the base module).
         services.AddQueryDefinition<ExportJob, ExportJobQueryDefinition>();

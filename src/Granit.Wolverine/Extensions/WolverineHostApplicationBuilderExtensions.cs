@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentValidation;
+using Granit.Commands;
 using Granit.Diagnostics;
 using Granit.Modularity;
 using Granit.Users;
@@ -62,6 +63,12 @@ public static class WolverineHostApplicationBuilderExtensions
 
         // Shared helper for Singleton services that need to dispatch via scoped IMessageBus.
         builder.Services.TryAddSingleton<WolverineScopedSender>();
+
+        // ICommandSender — generic command dispatch abstraction. Replaces per-module dispatcher
+        // interfaces (IPaymentCommandDispatcher, IInvoiceCommandPublisher, etc.) with a single
+        // provider-agnostic contract in the core Granit assembly. Named ICommandSender to
+        // avoid collision with Wolverine.ICommandBus.
+        builder.Services.TryAddScoped<ICommandSender, WolverineCommandSender>();
 
         // Bind and validate options at startup via DI.
         builder.Services

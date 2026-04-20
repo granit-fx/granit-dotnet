@@ -19,7 +19,7 @@ produce invoices at the right time with the right line items.
 - Granit.Subscriptions/ Domain: Plan, Subscription, seats, workflows, provider abstraction
   - Granit.Subscriptions.EntityFrameworkCore EF Core store (SQL Server / PostgreSQL)
   - Granit.Subscriptions.Endpoints Minimal API (plans, subscriptions, seats) with RBAC
-  - Granit.Subscriptions.Wolverine Event handlers (provider sync, usage → invoice)
+  - Granit.Subscriptions Event handlers (provider sync, usage → invoice)
   - Granit.Subscriptions.BackgroundJobs Trial expiration, period end, cancel-at-period-end scans
   - Granit.Subscriptions.Features Bridge to Granit.Features (IPlanIdProvider + IPlanFeatureStore)
   - Granit.Subscriptions.Internal No-op provider for self-hosted mode (zero dependencies)

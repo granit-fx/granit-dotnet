@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export;
 using Granit.DataExchange.Export.Domain;
@@ -26,7 +27,7 @@ public sealed class ExportOrchestratorTests
 {
     private readonly IExportJobReader _jobReader = Substitute.For<IExportJobReader>();
     private readonly IExportJobWriter _jobWriter = Substitute.For<IExportJobWriter>();
-    private readonly IExportCommandDispatcher _dispatcher = Substitute.For<IExportCommandDispatcher>();
+    private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILocalEventBus _eventBus = Substitute.For<ILocalEventBus>();
@@ -74,7 +75,7 @@ public sealed class ExportOrchestratorTests
         await _jobWriter.Received(1).CreateAsync(
             Arg.Is<ExportJob>(j => j.DefinitionName == "Test.Export" && j.Format == "csv"),
             Arg.Any<CancellationToken>());
-        await _dispatcher.Received(1).DispatchAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<ExecuteExportCommand>(c => c.ExportJobId == result.JobId),
             Arg.Any<CancellationToken>());
     }
@@ -521,7 +522,7 @@ public sealed class ExportOrchestratorTests
             [xlsxWriter],
             _jobReader,
             _jobWriter,
-            _dispatcher,
+            _commandSender,
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
@@ -635,7 +636,7 @@ public sealed class ExportOrchestratorTests
             [writer],
             _jobReader,
             _jobWriter,
-            _dispatcher,
+            _commandSender,
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),
@@ -666,7 +667,7 @@ public sealed class ExportOrchestratorTests
             [writer],
             _jobReader,
             _jobWriter,
-            _dispatcher,
+            _commandSender,
             _fileProvider,
             _clock,
             new SimpleGuidGenerator(),

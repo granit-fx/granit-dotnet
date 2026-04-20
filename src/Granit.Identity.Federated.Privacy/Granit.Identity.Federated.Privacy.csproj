@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Federated.Privacy</PackageId>
+    <Description>Privacy integration for Granit.Identity.Federated. Ships the IdentityFederatedPrivacyDataProvider and a one-line PersonalDataRequestedEto handler that forwards to PrivacyFragmentUploader — drop-in GDPR export of the local federated identity cache entry.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Federated.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

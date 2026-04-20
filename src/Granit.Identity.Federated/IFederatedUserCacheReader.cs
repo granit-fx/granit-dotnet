@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated;
 /// Narrow public read-only view over the federated user cache. Intended for downstream
 /// modules that need to look up a user mirror without taking a dependency on the internal
 /// <c>IUserCacheStore</c> data-access contract — notably the privacy export provider in
-/// <c>Granit.Identity.Federated.Wolverine</c>.
+/// <c>Granit.Identity.Federated.Privacy</c>.
 /// </summary>
 public interface IFederatedUserCacheReader
 {

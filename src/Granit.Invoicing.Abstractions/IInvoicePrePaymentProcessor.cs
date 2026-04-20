@@ -8,10 +8,10 @@ namespace Granit.Invoicing;
 /// <remarks>
 /// <para>
 /// The default implementation (<c>PassThroughPrePaymentProcessor</c> in
-/// <c>Granit.Payments.Wolverine</c>) returns the full invoice total unchanged.
+/// <c>Granit.Payments</c>) returns the full invoice total unchanged.
 /// </para>
 /// <para>
-/// When <c>Granit.CustomerBalance.Wolverine</c> is loaded, it replaces the default
+/// When <c>Granit.CustomerBalance</c> is loaded, it replaces the default
 /// via <c>services.Replace()</c> to deduct available credit before the PSP charge.
 /// </para>
 /// </remarks>

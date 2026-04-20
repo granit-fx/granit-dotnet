@@ -9,8 +9,8 @@ sidebar:
 > **Date:** 2026-04-19
 > **Authors:** Jean-Francois Meyers
 > **Scope:** `granit-dotnet` (`Granit.Privacy`, `Granit.Privacy.BlobStorage`,
-> `Granit.Privacy.EntityFrameworkCore`, `Granit.Identity.Local.Wolverine`,
-> `Granit.Auditing.Wolverine`, `Granit.Notifications.Privacy.Wolverine`)
+> `Granit.Privacy.EntityFrameworkCore`, `Granit.Identity.Local.Privacy`,
+> `Granit.Auditing.Privacy`, `Granit.Notifications.Privacy`)
 
 ## Context
 

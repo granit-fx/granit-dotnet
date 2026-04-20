@@ -62,9 +62,9 @@ Load modules:
 [DependsOn(
     typeof(GranitPrivacyEntityFrameworkCoreModule),
     typeof(GranitPrivacyBlobStorageModule),
-    typeof(GranitIdentityLocalWolverineModule),
-    typeof(GranitAuditingWolverineModule),
-    typeof(GranitNotificationsPrivacyWolverineModule))]
+    typeof(GranitIdentityLocalPrivacyModule),
+    typeof(GranitAuditingPrivacyModule),
+    typeof(GranitNotificationsPrivacyModule))]
 public class MyAppModule : GranitModule { }
 ```
 
@@ -79,10 +79,10 @@ public class MyAppModule : GranitModule { }
 
 | Module | Provider name | Package | Fragment | Cap |
 | ------ | ------------- | ------- | -------- | --- |
-| `Identity.Local` | `identity-local` | `Granit.Identity.Local.Wolverine` | Profile + roles | — |
-| `Identity.Federated` | `identity-federated` | `Granit.Identity.Federated.Wolverine` | Local cache entry (profile mirror + sync metadata) | — |
-| `Auditing` | `auditing` | `Granit.Auditing.Wolverine` | User-authored audit trail | 10 000 entries |
-| `Notifications` | `notifications` | `Granit.Notifications.Privacy.Wolverine` | Inbox + preferences + subscriptions | 5 000 inbox items |
+| `Identity.Local` | `identity-local` | `Granit.Identity.Local.Privacy` | Profile + roles | — |
+| `Identity.Federated` | `identity-federated` | `Granit.Identity.Federated.Privacy` | Local cache entry (profile mirror + sync metadata) | — |
+| `Auditing` | `auditing` | `Granit.Auditing.Privacy` | User-authored audit trail | 10 000 entries |
+| `Notifications` | `notifications` | `Granit.Notifications.Privacy` | Inbox + preferences + subscriptions | 5 000 inbox items |
 
 Providers return `ReadOnlyMemory<byte>.Empty` when the user has no data — the
 framework records the provider in `manifest.EmptyProviders` without uploading
@@ -158,9 +158,9 @@ or belong to another user return `404 Not Found`.
 ```
 personal-data-export-{requestId}.zip
 ├── manifest.json
-├── identity-local.json        (from Granit.Identity.Local.Wolverine)
-├── auditing.json              (from Granit.Auditing.Wolverine)
-├── notifications.json         (from Granit.Notifications.Privacy.Wolverine)
+├── identity-local.json        (from Granit.Identity.Local.Privacy)
+├── auditing.json              (from Granit.Auditing.Privacy)
+├── notifications.json         (from Granit.Notifications.Privacy)
 └── {custom-provider}.json     (from each app-specific IPrivacyDataProvider)
 ```
 

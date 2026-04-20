@@ -103,7 +103,7 @@ Events and commands solve different problems. Do not mix them.
 Never publish a command via `ILocalEventBus`. Commands need retry, DLQ, and delivery
 guarantees that a generic event bus cannot provide. These dispatchers stay
 Wolverine-specific: `IBackgroundJobDispatcher`, `IWebhookCommandDispatcher`,
-`INotificationPublisher`, `IMigrationBatchDispatcher`.
+`INotificationPublisher`, `ICommandSender`.
 :::
 
 ## Quick start — Local event

@@ -15,9 +15,6 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="WolverineFx" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />

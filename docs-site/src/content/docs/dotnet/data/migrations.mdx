@@ -245,7 +245,7 @@ See [Multi-tenancy](/dotnet/concepts/multi-tenancy/) for how to implement these 
 #### Runtime provisioning
 
 The `--migrate` runner handles **cold-start** provisioning (first deploy). For tenants
-created **at runtime** (via the admin API), `Granit.MultiTenancy.Wolverine` provides
+created **at runtime** (via the admin API), `Granit.MultiTenancy.Provisioning` provides
 an automatic `TenantProvisioningHandler` that listens to `TenantCreatedEvent` and
 delegates to `ITenantProvisioner`. See
 [Automatic Tenant Provisioning](/dotnet/infrastructure/multi-tenancy/isolation/#automatic-tenant-provisioning)

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Granit.Commands;
 using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
@@ -27,7 +28,7 @@ internal sealed partial class ExportOrchestrator(
     IEnumerable<IExportWriter> writers,
     IExportJobReader jobReader,
     IExportJobWriter jobWriter,
-    IExportCommandDispatcher dispatcher,
+    ICommandSender commandSender,
     IDataExchangeFileProvider fileProvider,
     IClock clock,
     IGuidGenerator guidGenerator,
@@ -57,8 +58,8 @@ internal sealed partial class ExportOrchestrator(
 
         await jobWriter.CreateAsync(job, cancellationToken).ConfigureAwait(false);
 
-        // Dispatch to background worker
-        await dispatcher.DispatchAsync(new ExecuteExportCommand(job.Id), cancellationToken).ConfigureAwait(false);
+        // Dispatch for asynchronous execution via the configured ICommandSender provider.
+        await commandSender.SendAsync(new ExecuteExportCommand(job.Id), cancellationToken).ConfigureAwait(false);
         LogExportQueued(job.Id, request.DefinitionName, request.Format);
 
         return new ExportJobResult(job.Id, ExportJobStatus.Queued);

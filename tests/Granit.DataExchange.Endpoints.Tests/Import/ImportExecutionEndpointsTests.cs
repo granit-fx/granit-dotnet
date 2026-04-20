@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Granit.Commands;
 using Granit.DataExchange;
 using Granit.DataExchange.Endpoints.Dtos.Export;
 using Granit.DataExchange.Endpoints.Dtos.Import;
@@ -35,7 +36,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
 
     private readonly IImportJobReader _jobReader = Substitute.For<IImportJobReader>();
     private readonly IImportJobWriter _jobWriter = Substitute.For<IImportJobWriter>();
-    private readonly IImportCommandDispatcher _dispatcher = Substitute.For<IImportCommandDispatcher>();
+    private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly IImportOrchestrator _orchestrator = Substitute.For<IImportOrchestrator>();
     private readonly IDataExchangeFileProvider _fileProvider = Substitute.For<IDataExchangeFileProvider>();
     private readonly WebApplication _app;
@@ -57,7 +58,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
             .AddPolicy(DataExchangePermissions.Exports.Execute, policy => policy.RequireRole(AdminRole));
         builder.Services.AddSingleton(_jobReader);
         builder.Services.AddSingleton(_jobWriter);
-        builder.Services.AddSingleton(_dispatcher);
+        builder.Services.AddSingleton(_commandSender);
         builder.Services.AddSingleton(_orchestrator);
         builder.Services.AddSingleton(_fileProvider);
 
@@ -93,7 +94,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
         var jobId = Guid.NewGuid();
         ImportJob job = BuildJob(jobId, ImportJobStatus.Mapped);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
-        _dispatcher.DispatchAsync(Arg.Any<ExecuteImportCommand>(), Arg.Any<CancellationToken>())
+        _commandSender.SendAsync(Arg.Any<ExecuteImportCommand>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         // Act
@@ -102,7 +103,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
 
         // Assert
         response.StatusCode.ShouldBe(HttpStatusCode.Accepted);
-        await _dispatcher.Received(1).DispatchAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<ExecuteImportCommand>(c => c.ImportJobId == jobId),
             Arg.Any<CancellationToken>());
     }

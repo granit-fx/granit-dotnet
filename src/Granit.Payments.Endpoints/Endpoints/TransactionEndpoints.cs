@@ -1,4 +1,5 @@
 using Granit.Authorization.Extensions;
+using Granit.Commands;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
@@ -10,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Wolverine;
 using ContractCheckoutRequest = Granit.Payments.Contracts.PaymentCheckoutSessionRequest;
 
 namespace Granit.Payments.Endpoints.Endpoints;
@@ -124,8 +124,9 @@ internal static class TransactionEndpoints
     private static async Task<Accepted> ChargeAsync(
         PaymentChargeRequest request,
         [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
-        [FromServices] IMessageBus messageBus,
-        [FromServices] ICurrentTenant currentTenant)
+        [FromServices] ICommandSender commandSender,
+        [FromServices] ICurrentTenant currentTenant,
+        CancellationToken cancellationToken)
     {
         Guid tenantId = currentTenant.Id ?? Guid.Empty;
 
@@ -138,7 +139,7 @@ internal static class TransactionEndpoints
             idempotencyKey,
             request.ProviderName);
 
-        await messageBus.SendAsync(command).ConfigureAwait(false);
+        await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Accepted((string?)null);
     }
@@ -147,7 +148,7 @@ internal static class TransactionEndpoints
         PaymentRefundRequest request,
         [FromHeader(Name = "Idempotency-Key")] string idempotencyKey,
         [FromServices] IPaymentTransactionReader reader,
-        [FromServices] IMessageBus messageBus,
+        [FromServices] ICommandSender commandSender,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -167,7 +168,7 @@ internal static class TransactionEndpoints
             request.Reason,
             idempotencyKey);
 
-        await messageBus.SendAsync(command).ConfigureAwait(false);
+        await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Accepted((string?)null);
     }

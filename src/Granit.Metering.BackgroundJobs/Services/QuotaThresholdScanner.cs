@@ -1,5 +1,6 @@
 using Granit.DataFiltering;
 using Granit.Domain;
+using Granit.Events;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
@@ -9,7 +10,6 @@ using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Wolverine;
 
 namespace Granit.Metering.BackgroundJobs.Services;
 
@@ -22,7 +22,7 @@ public sealed partial class QuotaThresholdScanner(
     IQuotaChecker quotaChecker,
     ICurrentTenant currentTenant,
     IDataFilter dataFilter,
-    IMessageBus messageBus,
+    IDistributedEventBus distributedEventBus,
     IOptions<GranitMeteringOptions> options,
     IClock clock,
     ILogger<QuotaThresholdScanner> logger)
@@ -55,14 +55,16 @@ public sealed partial class QuotaThresholdScanner(
 
                 if (status.IsExceeded)
                 {
-                    await messageBus.PublishAsync(
-                        new QuotaExceededEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit!.Value))
+                    await distributedEventBus.PublishAsync(
+                        new QuotaExceededEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit!.Value),
+                        cancellationToken)
                         .ConfigureAwait(false);
                 }
                 else if (status.Limit.HasValue && status.PercentUsed >= threshold)
                 {
-                    await messageBus.PublishAsync(
-                        new QuotaThresholdReachedEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit.Value, status.PercentUsed!.Value))
+                    await distributedEventBus.PublishAsync(
+                        new QuotaThresholdReachedEto(definition.TenantId.Value, definition.Id, status.MeterName, status.CurrentUsage, status.Limit.Value, status.PercentUsed!.Value),
+                        cancellationToken)
                         .ConfigureAwait(false);
                 }
             }

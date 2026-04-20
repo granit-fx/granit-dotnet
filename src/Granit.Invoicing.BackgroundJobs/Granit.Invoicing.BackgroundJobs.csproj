@@ -11,9 +11,6 @@
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="WolverineFx" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />

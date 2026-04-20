@@ -1,4 +1,4 @@
-using Granit.Invoicing;
+using Granit.Commands;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
@@ -14,7 +14,7 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
     ISubscriptionReader subscriptionReader,
     IPlanReader planReader,
     IPricingResolver pricingResolver,
-    IInvoiceCommandPublisher invoiceCommandPublisher,
+    ICommandSender commandSender,
     ILogger<DefaultBillingCycleInvoiceOrchestrator> logger) : IBillingCycleInvoiceOrchestrator
 {
     public async Task CreateInvoiceAsync(
@@ -90,7 +90,7 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
             PeriodStart: periodStart,
             PeriodEnd: periodEnd);
 
-        await invoiceCommandPublisher.PublishAsync(command, cancellationToken).ConfigureAwait(false);
+        await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
         Log.InvoiceCreated(logger, subscriptionId, basePrice, subscription.Currency);
     }
 

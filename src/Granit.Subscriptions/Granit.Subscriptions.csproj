@@ -9,13 +9,13 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Subscriptions.Tests" />
     <InternalsVisibleTo Include="Granit.Subscriptions.EntityFrameworkCore" />
-    <InternalsVisibleTo Include="Granit.Subscriptions.Wolverine" />
     <InternalsVisibleTo Include="Granit.Subscriptions.Features" />
     <InternalsVisibleTo Include="Granit.Subscriptions.Builtin" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 
@@ -26,6 +26,7 @@
     <ProjectReference Include="..\Granit.Invoicing.Abstractions\Granit.Invoicing.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\Granit.Metering\Granit.Metering.csproj" />
+    <ProjectReference Include="..\Granit.Payments.Abstractions\Granit.Payments.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Scheduling\Granit.Scheduling.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

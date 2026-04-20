@@ -174,7 +174,6 @@ The following modules integrate with Wolverine for asynchronous processing:
 
 - Granit.Notifications.Wolverine (notification fan-out)
 - Granit.Webhooks.Wolverine (webhook delivery)
-- Granit.DataExchange.Wolverine (import job processing)
 - Granit.BackgroundJobs.Wolverine (scheduled job execution)
 - Granit.Persistence.Migrations.Wolverine (migration progress tracking)
 - Granit.Privacy (GDPR erasure cascading)

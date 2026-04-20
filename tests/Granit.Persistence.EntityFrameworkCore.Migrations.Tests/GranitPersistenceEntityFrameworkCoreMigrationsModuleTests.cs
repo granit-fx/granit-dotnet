@@ -69,19 +69,4 @@ public sealed class GranitPersistenceEntityFrameworkCoreMigrationsModuleTests
             d => d.ServiceType == typeof(ITenantEnumerator));
     }
 
-    [Fact]
-    public void ConfigureServices_RegistersMigrationBatchDispatcher()
-    {
-        GranitPersistenceEntityFrameworkCoreMigrationsModule module = new();
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
-        ServiceConfigurationContext context = new(
-            builder.Services,
-            builder.Configuration,
-            builder);
-
-        module.ConfigureServices(context);
-
-        builder.Services.ShouldContain(
-            d => d.ServiceType == typeof(IMigrationBatchDispatcher));
-    }
 }

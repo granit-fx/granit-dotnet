@@ -14,8 +14,11 @@ namespace Granit.CustomerBalance;
 /// applied before PSP charges. Not a payment method or e-money system.
 /// </para>
 /// <para>
-/// Add <c>Granit.CustomerBalance.EntityFrameworkCore</c> for persistence,
-/// <c>Granit.CustomerBalance.Wolverine</c> for billing integration, and
+/// Replaces the default <c>IInvoicePrePaymentProcessor</c> to deduct available credit
+/// before PSP charges. Delegates credit application on invoices through
+/// <c>IInvoiceCreditApplier</c> so this module only needs <c>Granit.Invoicing.Abstractions</c>
+/// (light contract), not the full <c>Granit.Invoicing</c> package.
+/// Add <c>Granit.CustomerBalance.EntityFrameworkCore</c> for persistence and
 /// <c>Granit.CustomerBalance.BackgroundJobs</c> for credit expiration.
 /// </para>
 /// </remarks>

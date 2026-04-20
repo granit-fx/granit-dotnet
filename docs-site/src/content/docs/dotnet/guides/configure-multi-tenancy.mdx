@@ -381,14 +381,14 @@ When a tenant is created at runtime, the framework can automatically provision i
 database resources (schema, tables, seed data). Install the Wolverine integration:
 
 ```bash
-dotnet add package Granit.MultiTenancy.Wolverine
+dotnet add package Granit.MultiTenancy.Provisioning
 ```
 
 Add the module dependency:
 
 ```csharp
 [DependsOn(
-    typeof(GranitMultiTenancyWolverineModule),
+    typeof(GranitMultiTenancyProvisioningModule),
     // ... other dependencies
 )]
 public sealed class AppHostModule : GranitModule { }

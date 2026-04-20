@@ -1,3 +1,4 @@
+using Granit.Commands;
 using Granit.Payments.Commands;
 using Granit.Payments.Contracts;
 using Granit.Payments.Endpoints.Permissions;
@@ -7,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Wolverine;
 
 namespace Granit.Payments.Endpoints.Endpoints;
 
@@ -36,7 +36,7 @@ internal static class WebhookEndpoints
         HttpRequest httpRequest,
         [FromServices] IEnumerable<IPaymentWebhookVerifier> verifiers,
         [FromServices] IProcessedWebhookEventStore eventStore,
-        [FromServices] IMessageBus messageBus,
+        [FromServices] ICommandSender commandSender,
         CancellationToken cancellationToken)
     {
         IPaymentWebhookVerifier? verifier = verifiers
@@ -104,7 +104,7 @@ internal static class WebhookEndpoints
             result.ProviderEventId ?? "",
             result.Payload);
 
-        await messageBus.SendAsync(command).ConfigureAwait(false);
+        await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok();
     }

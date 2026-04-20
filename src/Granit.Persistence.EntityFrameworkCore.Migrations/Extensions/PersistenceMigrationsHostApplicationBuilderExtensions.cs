@@ -1,7 +1,5 @@
-using System.Threading.Channels;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
-using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,11 +87,9 @@ public static class PersistenceMigrationsHostApplicationBuilderExtensions
         // Bridge ITenantEnumerator → IDataSeedTenantProvider for DataSeeder tenant iteration.
         builder.Services.TryAddSingleton<IDataSeedTenantProvider, TenantEnumeratorDataSeedTenantProvider>();
 
-        // Channel-based dispatch (default). Replaced by Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine if installed.
-        builder.Services.TryAddSingleton(Channel.CreateUnbounded<RunMigrationBatchCommand>());
-        builder.Services.TryAddSingleton<IMigrationBatchDispatcher, ChannelBatchDispatcher>();
+        // Migration batch executor. Commands are dispatched via ICommandSender (Granit.Wolverine
+        // or another provider) and handled by RunMigrationBatchHandler.
         builder.Services.AddScoped<MigrationBatchExecutor>();
-        builder.Services.AddHostedService<MigrationBatchWorker>();
 
         // Hosted service — resumes pending and in-progress cycles at startup.
         builder.Services.AddHostedService<MigrationStartupService>();

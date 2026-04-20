@@ -1,3 +1,4 @@
+using Granit.Commands;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,8 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// <para>
 /// On startup, queries all <see cref="MigrationProgress"/> rows with status
 /// <see cref="MigrationStatus.Pending"/> or <see cref="MigrationStatus.InProgress"/>
-/// and dispatches one <see cref="RunMigrationBatchCommand"/> per cycle per tenant via <see cref="IMigrationBatchDispatcher"/>.
+/// and dispatches one <see cref="RunMigrationBatchCommand"/> per cycle per tenant via
+/// <see cref="ICommandSender"/>.
 /// </para>
 /// <para>
 /// If <see cref="ITenantEnumerator"/> yields tenant identifiers (Tenant-per-Schema or
@@ -30,7 +32,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 internal sealed partial class MigrationStartupService(
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
     ITenantEnumerator tenantEnumerator,
-    IMigrationBatchDispatcher dispatcher,
+    ICommandSender commandSender,
     IOptions<MigrationStartupOptions> options,
     ILogger<MigrationStartupService> logger) : IHostedService
 {
@@ -75,7 +77,10 @@ internal sealed partial class MigrationStartupService(
         int batchSize = options.Value.DefaultBatchSize;
         List<RunMigrationBatchCommand> commands = BuildCommands(pending, tenantIds, batchSize);
 
-        await dispatcher.DispatchAsync(commands, cancellationToken).ConfigureAwait(false);
+        foreach (RunMigrationBatchCommand command in commands)
+        {
+            await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
+        }
 
         LogCommandsDispatched(commands.Count);
     }

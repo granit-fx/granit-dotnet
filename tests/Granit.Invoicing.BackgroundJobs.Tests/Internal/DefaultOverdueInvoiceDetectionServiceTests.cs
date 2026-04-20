@@ -1,3 +1,4 @@
+using Granit.Events;
 using Granit.Invoicing;
 using Granit.Invoicing.BackgroundJobs.Internal;
 using Granit.Invoicing.Domain;
@@ -8,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
-using Wolverine;
 using Xunit;
 
 namespace Granit.Invoicing.BackgroundJobs.Tests.Internal;
@@ -18,7 +18,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
     // ======== Fixtures ========
 
     private readonly IInvoiceReader _invoiceReader = Substitute.For<IInvoiceReader>();
-    private readonly IMessageBus _messageBus = Substitute.For<IMessageBus>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly ILogger<DefaultOverdueInvoiceDetectionService> _logger =
@@ -35,7 +35,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
 
         _sut = new DefaultOverdueInvoiceDetectionService(
             _invoiceReader,
-            _messageBus,
+            _distributedEventBus,
             _clock,
             _currentTenant,
             _logger);
@@ -71,11 +71,12 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
 
         await _sut.DetectAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(
+        await _distributedEventBus.Received(1).PublishAsync(
             Arg.Is<InvoiceOverdueEto>(e =>
                 e.InvoiceId == invoice.Id
                 && e.TenantId == invoice.TenantId!.Value
-                && e.DueAt == invoice.DueAt!.Value));
+                && e.DueAt == invoice.DueAt!.Value),
+            Arg.Any<CancellationToken>());
     }
 
     // ======== Multiple Overdue Invoices ========
@@ -90,7 +91,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
 
         await _sut.DetectAsync(ct);
 
-        await _messageBus.Received(2).PublishAsync(Arg.Any<InvoiceOverdueEto>());
+        await _distributedEventBus.Received(2).PublishAsync(Arg.Any<InvoiceOverdueEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== No Overdue Invoices ========
@@ -103,7 +104,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
 
         await _sut.DetectAsync(ct);
 
-        await _messageBus.DidNotReceive().PublishAsync(Arg.Any<InvoiceOverdueEto>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<InvoiceOverdueEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Tenant Context Switching ========

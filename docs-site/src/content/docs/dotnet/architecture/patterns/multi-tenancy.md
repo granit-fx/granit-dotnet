@@ -72,11 +72,11 @@ no `[DependsOn(GranitMultiTenancyModule)]` required.
 | `DatabasePerTenant` | `src/Granit.Persistence/MultiTenancy/TenantPerDatabaseDbContextFactory.cs` | Dedicated connection string per tenant |
 | `TenantIsolationStrategy` | `src/Granit.Persistence/MultiTenancy/TenantIsolationStrategy.cs` | Selection enum |
 
-### Tenant provisioning (`Granit.MultiTenancy.Wolverine`)
+### Tenant provisioning (`Granit.MultiTenancy.Provisioning`)
 
 | Component | File | Role |
 |-----------|------|------|
-| `TenantProvisioningHandler` | `src/Granit.MultiTenancy.Wolverine/Handlers/TenantProvisioningHandler.cs` | Wolverine handler: `TenantCreatedEvent` → `ITenantProvisioner` |
+| `TenantProvisioningHandler` | `src/Granit.MultiTenancy.Provisioning/Handlers/TenantProvisioningHandler.cs` | Wolverine handler: `TenantCreatedEvent` → `ITenantProvisioner` |
 | `ITenantProvisioner` | `src/Granit.Persistence.EntityFrameworkCore.Hosting/ITenantProvisioner.cs` | Interface for runtime tenant provisioning |
 | `AutoTenantProvisioner` | `src/Granit.Persistence.EntityFrameworkCore.Hosting/Internal/AutoTenantProvisioner.cs` | Default: discovers `IsolatedDbContextMarker`s, creates schema, migrates, seeds |
 

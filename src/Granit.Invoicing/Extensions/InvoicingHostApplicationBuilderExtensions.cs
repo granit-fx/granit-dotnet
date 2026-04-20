@@ -23,6 +23,7 @@ public static class InvoicingHostApplicationBuilderExtensions
         builder.Services.AddWorkflow(InvoiceWorkflows.Default);
         builder.Services.TryAddSingleton<InvoicingMetrics>();
         builder.Services.TryAddTransient<IInvoiceCreationService, DefaultInvoiceCreationService>();
+        builder.Services.TryAddTransient<IInvoiceCreditApplier, DefaultInvoiceCreditApplier>();
         builder.Services.AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
         builder.Services.AddExportDefinition<Invoice, InvoiceExportDefinition>();
         GranitActivitySourceRegistry.Register(InvoicingActivitySource.Name);

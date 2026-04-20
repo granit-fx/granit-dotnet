@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Local.Privacy</PackageId>
+    <Description>Privacy integration for Granit.Identity.Local. Ships the IdentityLocalPrivacyDataProvider and a one-line PersonalDataRequestedEto handler that forwards to PrivacyFragmentUploader — drop-in GDPR export for the built-in local identity module.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Local.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

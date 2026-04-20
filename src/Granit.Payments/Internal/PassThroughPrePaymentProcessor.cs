@@ -5,7 +5,7 @@ namespace Granit.Payments.Internal;
 
 /// <summary>
 /// Default pre-payment processor that passes through the full invoice total unchanged.
-/// Replaced by <c>Granit.CustomerBalance.Wolverine</c> when the module is loaded.
+/// Replaced by <c>Granit.CustomerBalance</c> when the module is loaded.
 /// </summary>
 internal sealed class PassThroughPrePaymentProcessor : IInvoicePrePaymentProcessor
 {

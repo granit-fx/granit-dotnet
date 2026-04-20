@@ -204,18 +204,6 @@ public sealed class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddGranitDataExport_registers_command_dispatcher()
-    {
-        ServiceCollection services = new();
-
-        services.AddGranitDataExport();
-
-        services.ShouldContain(d =>
-            d.ServiceType == typeof(IExportCommandDispatcher) &&
-            d.Lifetime == ServiceLifetime.Singleton);
-    }
-
-    [Fact]
     public void AddGranitDataExport_returns_service_collection_for_chaining()
     {
         ServiceCollection services = new();

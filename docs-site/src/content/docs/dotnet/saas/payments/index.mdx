@@ -32,7 +32,6 @@ and bank transfers to SEPA — all simultaneously. No card data ever touches Gra
 - Granit.Payments/ Domain: PaymentTransaction, PaymentMethod, webhook dedup, provider interfaces
   - Granit.Payments.EntityFrameworkCore EF Core store, webhook dedup (insert-first)
   - Granit.Payments.Endpoints Checkout, payment methods, webhooks (AllowAnonymous + signature)
-  - Granit.Payments.Wolverine InvoiceFinalizedHandler (auto-charge), webhook dispatch
   - Granit.Payments.Stripe Stripe provider (PaymentIntent API, Checkout, WebhookVerifier)
   - Granit.Payments.Mollie Mollie EU-sovereign provider
   - Granit.Payments.Notifications Payment lifecycle notifications (5 types)

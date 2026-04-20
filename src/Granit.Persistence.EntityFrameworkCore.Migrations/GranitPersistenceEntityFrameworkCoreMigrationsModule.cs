@@ -1,9 +1,6 @@
-using System.Threading.Channels;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
-using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Persistence.EntityFrameworkCore.Migrations;
@@ -14,12 +11,12 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations;
 /// <remarks>
 /// <para>
 /// Registers provider-independent services: <see cref="IMigrationCycleRegistry"/>,
-/// the default <see cref="ITenantDbIsolator"/> (no-op), and the Channel-based
-/// <see cref="IMigrationBatchDispatcher"/>.
+/// the default <see cref="ITenantDbIsolator"/> and <see cref="ITenantEnumerator"/> (no-ops).
 /// </para>
 /// <para>
-/// Install <c>Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine</c> to replace the Channel-based
-/// dispatcher with an Outbox-backed <c>IMessageBus</c> implementation.
+/// Migration batch commands are dispatched via <c>Granit.Commands.ICommandSender</c>,
+/// which must be provided by a messaging module (typically <c>Granit.Wolverine</c>).
+/// The handler <c>RunMigrationBatchHandler</c> executes a batch and cascades the next command.
 /// </para>
 /// <para>
 /// <see cref="MigrationProgressDbContext"/> requires a provider-specific connection string
@@ -37,9 +34,5 @@ public sealed class GranitPersistenceEntityFrameworkCoreMigrationsModule : Grani
         context.Services.TryAddSingleton<IMigrationCycleRegistry, MigrationCycleRegistry>();
         context.Services.TryAddSingleton<ITenantDbIsolator, NullTenantDbIsolator>();
         context.Services.TryAddSingleton<ITenantEnumerator, NullTenantEnumerator>();
-
-        // Channel-based dispatch (default). Replaced by Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine if installed.
-        context.Services.TryAddSingleton(Channel.CreateUnbounded<RunMigrationBatchCommand>());
-        context.Services.TryAddSingleton<IMigrationBatchDispatcher, ChannelBatchDispatcher>();
     }
 }

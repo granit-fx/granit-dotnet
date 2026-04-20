@@ -1,4 +1,5 @@
 using Granit.DataFiltering;
+using Granit.Events;
 using Granit.Metering.BackgroundJobs.Services;
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
-using Wolverine;
 using Xunit;
 using ICurrentTenant = Granit.MultiTenancy.ICurrentTenant;
 using IMultiTenant = Granit.Domain.IMultiTenant;
@@ -25,7 +25,7 @@ public sealed class QuotaThresholdScannerTests
     private readonly IQuotaChecker _quotaChecker = Substitute.For<IQuotaChecker>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
-    private readonly IMessageBus _messageBus = Substitute.For<IMessageBus>();
+    private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly GranitMeteringOptions _options = new() { ThresholdPercentage = 80 };
     private readonly QuotaThresholdScanner _sut;
@@ -41,7 +41,7 @@ public sealed class QuotaThresholdScannerTests
             _quotaChecker,
             _currentTenant,
             _dataFilter,
-            _messageBus,
+            _distributedEventBus,
             Microsoft.Extensions.Options.Options.Create(_options),
             _clock,
             NullLogger<QuotaThresholdScanner>.Instance);
@@ -58,7 +58,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.DidNotReceiveWithAnyArgs().PublishAsync(Arg.Any<object>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Definition without tenant ========
@@ -76,7 +77,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _quotaChecker.DidNotReceive()
             .CheckAsync(Arg.Any<Guid>(), Arg.Any<MeterDefinitionId>(), Arg.Any<CancellationToken>());
-        await _messageBus.DidNotReceiveWithAnyArgs().PublishAsync(Arg.Any<object>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Quota exceeded ========
@@ -96,13 +98,13 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(
+        await _distributedEventBus.Received(1).PublishAsync(
             Arg.Is<QuotaExceededEto>(e =>
                 e.TenantId == tenantId &&
                 e.MeterDefinitionId == definition.Id &&
                 e.MeterName == "API Calls" &&
                 e.CurrentUsage == 1200m &&
-                e.Limit == 1000m));
+                e.Limit == 1000m), Arg.Any<CancellationToken>());
     }
 
     // ======== Threshold reached (not exceeded) ========
@@ -122,14 +124,14 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(
+        await _distributedEventBus.Received(1).PublishAsync(
             Arg.Is<QuotaThresholdReachedEto>(e =>
                 e.TenantId == tenantId &&
                 e.MeterDefinitionId == definition.Id &&
                 e.MeterName == "API Calls" &&
                 e.CurrentUsage == 850m &&
                 e.Limit == 1000m &&
-                e.PercentUsed == 85m));
+                e.PercentUsed == 85m), Arg.Any<CancellationToken>());
     }
 
     // ======== Below threshold ========
@@ -149,7 +151,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.DidNotReceiveWithAnyArgs().PublishAsync(Arg.Any<object>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Unlimited meter ========
@@ -169,7 +172,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.DidNotReceiveWithAnyArgs().PublishAsync(Arg.Any<object>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Multiple definitions ========
@@ -193,8 +197,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(Arg.Any<QuotaExceededEto>());
-        await _messageBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>());
+        await _distributedEventBus.Received(1).PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Disables multi-tenant filter ========
@@ -248,7 +252,7 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(Arg.Any<QuotaThresholdReachedEto>());
+        await _distributedEventBus.Received(1).PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Exactly at limit (exceeded) ========
@@ -268,8 +272,8 @@ public sealed class QuotaThresholdScannerTests
 
         await _sut.ScanAsync(ct);
 
-        await _messageBus.Received(1).PublishAsync(Arg.Any<QuotaExceededEto>());
-        await _messageBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>());
+        await _distributedEventBus.Received(1).PublishAsync(Arg.Any<QuotaExceededEto>(), Arg.Any<CancellationToken>());
+        await _distributedEventBus.DidNotReceive().PublishAsync(Arg.Any<QuotaThresholdReachedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Helpers ========

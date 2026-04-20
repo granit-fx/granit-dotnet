@@ -8,13 +8,8 @@ using Microsoft.Extensions.Logging;
 namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 
 /// <summary>
-/// Executes a single migration batch and returns the next command (cascade), or <c>null</c> when complete.
+/// Default <see cref="IMigrationBatchExecutor"/> implementation.
 /// </summary>
-/// <remarks>
-/// Extracted from the Wolverine handler to be transport-agnostic. This class contains no
-/// dependency on Wolverine — it can be consumed by a <see cref="MigrationBatchWorker"/>
-/// (Channel-based) or by a Wolverine handler in <c>Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine</c>.
-/// </remarks>
 internal sealed partial class MigrationBatchExecutor(
     IMigrationCycleRegistry registry,
     IServiceProvider serviceProvider,
@@ -22,7 +17,7 @@ internal sealed partial class MigrationBatchExecutor(
     ITenantDbIsolator isolator,
     IClock clock,
     IGuidGenerator guidGenerator,
-    ILogger<MigrationBatchExecutor> logger)
+    ILogger<MigrationBatchExecutor> logger) : IMigrationBatchExecutor
 {
     /// <summary>
     /// Processes one batch and returns the next command, or <c>null</c> when the cycle is complete.

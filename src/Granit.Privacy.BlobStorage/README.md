@@ -34,7 +34,7 @@ Add the module to your host application:
 public class MyAppModule : GranitModule { }
 ```
 
-Per-module provider handlers (e.g. in `Granit.Identity.Local.Wolverine`) forward to
+Per-module provider handlers (e.g. in `Granit.Identity.Local.Privacy`) forward to
 the uploader in one line:
 
 ```csharp

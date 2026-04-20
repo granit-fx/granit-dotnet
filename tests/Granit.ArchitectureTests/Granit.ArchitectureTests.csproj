@@ -42,7 +42,7 @@
     <ProjectReference Include="..\..\src\Granit.Auditing.ConfigurationChanges\Granit.Auditing.ConfigurationChanges.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.EntityFrameworkCore\Granit.Auditing.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Auditing.Wolverine\Granit.Auditing.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Auditing.Privacy\Granit.Auditing.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Endpoints\Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.EntityFrameworkCore\Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
@@ -85,7 +85,6 @@
     <ProjectReference Include="..\..\src\Granit.CustomerBalance.BackgroundJobs\Granit.CustomerBalance.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.CustomerBalance.Endpoints\Granit.CustomerBalance.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.CustomerBalance.EntityFrameworkCore\Granit.CustomerBalance.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.CustomerBalance.Wolverine\Granit.CustomerBalance.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange\Granit.DataExchange.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.AI\Granit.DataExchange.AI.csproj" />
@@ -93,7 +92,6 @@
     <ProjectReference Include="..\..\src\Granit.DataExchange.Endpoints\Granit.DataExchange.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.EntityFrameworkCore\Granit.DataExchange.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.DataExchange.Excel\Granit.DataExchange.Excel.csproj" />
-    <ProjectReference Include="..\..\src\Granit.DataExchange.Wolverine\Granit.DataExchange.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Diagnostics\Granit.Diagnostics.csproj" />
     <ProjectReference Include="..\..\src\Granit.Diagnostics.Endpoints\Granit.Diagnostics.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration\Granit.DocumentGeneration.csproj" />
@@ -128,14 +126,14 @@
     <ProjectReference Include="..\..\src\Granit.Identity.Federated\Granit.Identity.Federated.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Cognito\Granit.Identity.Federated.Cognito.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntityFrameworkCore\Granit.Identity.Federated.EntityFrameworkCore.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Wolverine\Granit.Identity.Federated.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.Privacy\Granit.Identity.Federated.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.GoogleCloud\Granit.Identity.Federated.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local\Granit.Identity.Local.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.AspNetIdentity\Granit.Identity.Local.AspNetIdentity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Endpoints\Granit.Identity.Local.Endpoints.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Identity.Local.Wolverine\Granit.Identity.Local.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Local.Privacy\Granit.Identity.Local.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Local.Notifications\Granit.Identity.Local.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Mcp\Granit.AI.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Imaging\Granit.Imaging.csproj" />
@@ -149,7 +147,6 @@
     <ProjectReference Include="..\..\src\Granit.Invoicing.Builtin\Granit.Invoicing.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Notifications\Granit.Invoicing.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.Odoo\Granit.Invoicing.Odoo.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Invoicing.Wolverine\Granit.Invoicing.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Localization\Granit.Localization.csproj" />
     <ProjectReference Include="..\..\src\Granit.Mcp\Granit.Mcp.csproj" />
     <ProjectReference Include="..\..\src\Granit.Mcp.Client\Granit.Mcp.Client.csproj" />
@@ -189,7 +186,7 @@
     <ProjectReference Include="..\..\src\Granit.Notifications.Twilio\Granit.Notifications.Twilio.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WebPush\Granit.Notifications.WebPush.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.WhatsApp\Granit.Notifications.WhatsApp.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Notifications.Privacy.Wolverine\Granit.Notifications.Privacy.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Notifications.Privacy\Granit.Notifications.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Wolverine\Granit.Notifications.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Notifications.Zulip\Granit.Notifications.Zulip.csproj" />
     <ProjectReference Include="..\..\src\Granit.Observability\Granit.Observability.csproj" />
@@ -206,7 +203,6 @@
     <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.Twikey\Granit.Payments.SepaDirectDebit.Twikey.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaTransfer\Granit.Payments.SepaTransfer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.Stripe\Granit.Payments.Stripe.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Payments.Wolverine\Granit.Payments.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict\Granit.OpenIddict.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.BackgroundJobs\Granit.OpenIddict.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.OpenIddict.Endpoints\Granit.OpenIddict.Endpoints.csproj" />
@@ -216,7 +212,6 @@
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Hosting\Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Migrations\Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine\Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Postgres\Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.SqlServer\Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Privacy\Granit.Privacy.csproj" />
@@ -252,7 +247,6 @@
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Features\Granit.Subscriptions.Features.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Builtin\Granit.Subscriptions.Builtin.csproj" />
     <ProjectReference Include="..\..\src\Granit.Subscriptions.Notifications\Granit.Subscriptions.Notifications.csproj" />
-    <ProjectReference Include="..\..\src\Granit.Subscriptions.Wolverine\Granit.Subscriptions.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating\Granit.Templating.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating.AI\Granit.Templating.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating.Endpoints\Granit.Templating.Endpoints.csproj" />

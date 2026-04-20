@@ -120,7 +120,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Auditing.Wolverine",
+      "name": "Granit.Auditing.Privacy",
       "deps": [
         "Granit.Auditing",
         "Granit.Privacy.BlobStorage"
@@ -452,6 +452,7 @@
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.Invoicing.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
       ],
@@ -480,15 +481,6 @@
       "deps": [
         "Granit.CustomerBalance",
         "Granit.Persistence.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.CustomerBalance.Wolverine",
-      "deps": [
-        "Granit.CustomerBalance",
-        "Granit.Invoicing",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -557,14 +549,6 @@
       "name": "Granit.DataExchange.Excel",
       "deps": [
         "Granit.DataExchange"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.DataExchange.Wolverine",
-      "deps": [
-        "Granit.DataExchange",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -859,7 +843,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.Federated.Wolverine",
+      "name": "Granit.Identity.Federated.Privacy",
       "deps": [
         "Granit.Identity.Federated",
         "Granit.Privacy.BlobStorage"
@@ -911,7 +895,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Identity.Local.Wolverine",
+      "name": "Granit.Identity.Local.Privacy",
       "deps": [
         "Granit.Identity.Local",
         "Granit.Privacy.BlobStorage"
@@ -1013,14 +997,6 @@
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Invoicing"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Invoicing.Wolverine",
-      "deps": [
-        "Granit.Invoicing",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -1161,7 +1137,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.MultiTenancy.Wolverine",
+      "name": "Granit.MultiTenancy.Provisioning",
       "deps": [
         "Granit.MultiTenancy",
         "Granit.Persistence.EntityFrameworkCore.Hosting",
@@ -1306,7 +1282,7 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Notifications.Privacy.Wolverine",
+      "name": "Granit.Notifications.Privacy",
       "deps": [
         "Granit.Notifications",
         "Granit.Privacy.BlobStorage"
@@ -1486,6 +1462,7 @@
         "Granit.Caching",
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
         "Granit.Invoicing.Abstractions",
         "Granit.Payments.Abstractions",
         "Granit.QueryEngine.Abstractions",
@@ -1589,16 +1566,6 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Payments.Wolverine",
-      "deps": [
-        "Granit.Guids",
-        "Granit.Invoicing.Abstractions",
-        "Granit.Payments",
-        "Granit.Wolverine"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.Persistence",
       "deps": [
         "Granit"
@@ -1628,14 +1595,6 @@
       "name": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "deps": [
         "Granit.Persistence.EntityFrameworkCore"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine",
-      "deps": [
-        "Granit.Persistence.EntityFrameworkCore.Migrations",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -1904,6 +1863,7 @@
         "Granit.Invoicing.Abstractions",
         "Granit.Localization",
         "Granit.Metering",
+        "Granit.Payments.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Scheduling",
         "Granit.Timing",
@@ -1960,18 +1920,6 @@
         "Granit.Subscriptions",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Subscriptions.Wolverine",
-      "deps": [
-        "Granit.Invoicing.Abstractions",
-        "Granit.Metering.Abstractions",
-        "Granit.Metering",
-        "Granit.Payments.Abstractions",
-        "Granit.Subscriptions",
-        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -4762,43 +4710,11 @@
       ]
     },
     {
-      "name": "AuditEntityChangeQueryDefinition",
-      "fqn": "Granit.Auditing.Queries.AuditEntityChangeQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Queries/AuditEntityChangeQueryDefinition.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "AuditEntryQueryDefinition",
-      "fqn": "Granit.Auditing.Queries.AuditEntryQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Auditing",
-      "file": "src/Granit.Auditing/Queries/AuditEntryQueryDefinition.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "AuditingPersonalDataExportHandler",
-      "fqn": "Granit.Auditing.Wolverine.DataExport.AuditingPersonalDataExportHandler",
+      "fqn": "Granit.Auditing.Privacy.DataExport.AuditingPersonalDataExportHandler",
       "kind": "class",
-      "project": "Granit.Auditing.Wolverine",
-      "file": "src/Granit.Auditing.Wolverine/DataExport/AuditingPersonalDataExportHandler.cs",
+      "project": "Granit.Auditing.Privacy",
+      "file": "src/Granit.Auditing.Privacy/DataExport/AuditingPersonalDataExportHandler.cs",
       "line": 10,
       "members": [
         {
@@ -4811,10 +4727,10 @@
     },
     {
       "name": "AuditingPrivacyDataProvider",
-      "fqn": "Granit.Auditing.Wolverine.DataExport.AuditingPrivacyDataProvider",
+      "fqn": "Granit.Auditing.Privacy.DataExport.AuditingPrivacyDataProvider",
       "kind": "class",
-      "project": "Granit.Auditing.Wolverine",
-      "file": "src/Granit.Auditing.Wolverine/DataExport/AuditingPrivacyDataProvider.cs",
+      "project": "Granit.Auditing.Privacy",
+      "file": "src/Granit.Auditing.Privacy/DataExport/AuditingPrivacyDataProvider.cs",
       "line": 19,
       "members": [
         {
@@ -4845,10 +4761,10 @@
     },
     {
       "name": "PrivacyBuilderAuditingExtensions",
-      "fqn": "Granit.Auditing.Wolverine.Extensions.PrivacyBuilderAuditingExtensions",
+      "fqn": "Granit.Auditing.Privacy.Extensions.PrivacyBuilderAuditingExtensions",
       "kind": "class",
-      "project": "Granit.Auditing.Wolverine",
-      "file": "src/Granit.Auditing.Wolverine/Extensions/PrivacyBuilderAuditingExtensions.cs",
+      "project": "Granit.Auditing.Privacy",
+      "file": "src/Granit.Auditing.Privacy/Extensions/PrivacyBuilderAuditingExtensions.cs",
       "line": 9,
       "members": [
         {
@@ -4860,11 +4776,11 @@
       ]
     },
     {
-      "name": "GranitAuditingWolverineModule",
-      "fqn": "Granit.Auditing.Wolverine.GranitAuditingWolverineModule",
+      "name": "GranitAuditingPrivacyModule",
+      "fqn": "Granit.Auditing.Privacy.GranitAuditingPrivacyModule",
       "kind": "class",
-      "project": "Granit.Auditing.Wolverine",
-      "file": "src/Granit.Auditing.Wolverine/GranitAuditingWolverineModule.cs",
+      "project": "Granit.Auditing.Privacy",
+      "file": "src/Granit.Auditing.Privacy/GranitAuditingPrivacyModule.cs",
       "line": 22,
       "members": [
         {
@@ -4872,6 +4788,38 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AuditEntityChangeQueryDefinition",
+      "fqn": "Granit.Auditing.Queries.AuditEntityChangeQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Queries/AuditEntityChangeQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "AuditEntryQueryDefinition",
+      "fqn": "Granit.Auditing.Queries.AuditEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Queries/AuditEntryQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -6881,7 +6829,7 @@
       "kind": "interface",
       "project": "Granit.BackgroundJobs",
       "file": "src/Granit.BackgroundJobs/Abstractions/IBackgroundJobDispatcher.cs",
-      "line": 11,
+      "line": 43,
       "members": [
         {
           "name": "PublishAsync",
@@ -9638,6 +9586,15 @@
       ]
     },
     {
+      "name": "ICommandSender",
+      "fqn": "Granit.Commands.ICommandSender",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Commands/ICommandSender.cs",
+      "line": 45,
+      "members": []
+    },
+    {
       "name": "GranitCustomerBalanceBackgroundJobsModule",
       "fqn": "Granit.CustomerBalance.BackgroundJobs.GranitCustomerBalanceBackgroundJobsModule",
       "kind": "class",
@@ -10010,7 +9967,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -10026,13 +9983,29 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/GranitCustomerBalanceModule.cs",
-      "line": 25,
+      "line": 28,
       "members": [
         {
           "name": "ConfigureServices",
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OverpaymentCreditHandler",
+      "fqn": "Granit.CustomerBalance.Handlers.OverpaymentCreditHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Handlers/OverpaymentCreditHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OverpaymentDetectedEto eto, IOverpaymentCreditService overpaymentCreditService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -10185,38 +10158,6 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitCustomerBalanceWolverineModule",
-      "fqn": "Granit.CustomerBalance.Wolverine.GranitCustomerBalanceWolverineModule",
-      "kind": "class",
-      "project": "Granit.CustomerBalance.Wolverine",
-      "file": "src/Granit.CustomerBalance.Wolverine/GranitCustomerBalanceWolverineModule.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "OverpaymentCreditHandler",
-      "fqn": "Granit.CustomerBalance.Wolverine.Handlers.OverpaymentCreditHandler",
-      "kind": "class",
-      "project": "Granit.CustomerBalance.Wolverine",
-      "file": "src/Granit.CustomerBalance.Wolverine/Handlers/OverpaymentCreditHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(OverpaymentDetectedEto eto, IOverpaymentCreditService overpaymentCreditService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
         }
       ]
     },
@@ -10842,22 +10783,6 @@
       ]
     },
     {
-      "name": "IExportCommandDispatcher",
-      "fqn": "Granit.DataExchange.Export.IExportCommandDispatcher",
-      "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Export/IExportCommandDispatcher.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "DispatchAsync",
-          "kind": "method",
-          "signature": "DispatchAsync(ExecuteExportCommand command, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "IExportDataSource",
       "fqn": "Granit.DataExchange.Export.IExportDataSource",
       "kind": "interface",
@@ -11164,7 +11089,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Extensions/ServiceCollectionExtensions.cs",
-      "line": 27,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitDataImport",
@@ -11196,6 +11121,38 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteExportCommandHandler",
+      "fqn": "Granit.DataExchange.Handlers.ExecuteExportCommandHandler",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Handlers/ExecuteExportCommandHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExecuteExportCommand command, IExportOrchestrator orchestrator, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteImportCommandHandler",
+      "fqn": "Granit.DataExchange.Handlers.ExecuteImportCommandHandler",
+      "kind": "class",
+      "project": "Granit.DataExchange",
+      "file": "src/Granit.DataExchange/Handlers/ExecuteImportCommandHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExecuteImportCommand command, IImportOrchestrator orchestrator, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -11805,22 +11762,6 @@
       "members": []
     },
     {
-      "name": "IImportCommandDispatcher",
-      "fqn": "Granit.DataExchange.Import.Pipeline.IImportCommandDispatcher",
-      "kind": "interface",
-      "project": "Granit.DataExchange",
-      "file": "src/Granit.DataExchange/Import/Pipeline/IImportCommandDispatcher.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "DispatchAsync",
-          "kind": "method",
-          "signature": "DispatchAsync(ExecuteImportCommand command, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "IImportJobReader",
       "fqn": "Granit.DataExchange.Import.Pipeline.IImportJobReader",
       "kind": "interface",
@@ -12083,22 +12024,6 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitDataExchangeWolverineModule",
-      "fqn": "Granit.DataExchange.Wolverine.GranitDataExchangeWolverineModule",
-      "kind": "class",
-      "project": "Granit.DataExchange.Wolverine",
-      "file": "src/Granit.DataExchange.Wolverine/GranitDataExchangeWolverineModule.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
         }
       ]
     },
@@ -17554,27 +17479,11 @@
       ]
     },
     {
-      "name": "UserCacheEntryQueryDefinition",
-      "fqn": "Granit.Identity.Federated.Queries.UserCacheEntryQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Queries/UserCacheEntryQueryDefinition.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "IdentityFederatedPersonalDataExportHandler",
-      "fqn": "Granit.Identity.Federated.Wolverine.DataExport.IdentityFederatedPersonalDataExportHandler",
+      "fqn": "Granit.Identity.Federated.Privacy.DataExport.IdentityFederatedPersonalDataExportHandler",
       "kind": "class",
-      "project": "Granit.Identity.Federated.Wolverine",
-      "file": "src/Granit.Identity.Federated.Wolverine/DataExport/IdentityFederatedPersonalDataExportHandler.cs",
+      "project": "Granit.Identity.Federated.Privacy",
+      "file": "src/Granit.Identity.Federated.Privacy/DataExport/IdentityFederatedPersonalDataExportHandler.cs",
       "line": 10,
       "members": [
         {
@@ -17587,10 +17496,10 @@
     },
     {
       "name": "IdentityFederatedPrivacyDataProvider",
-      "fqn": "Granit.Identity.Federated.Wolverine.DataExport.IdentityFederatedPrivacyDataProvider",
+      "fqn": "Granit.Identity.Federated.Privacy.DataExport.IdentityFederatedPrivacyDataProvider",
       "kind": "class",
-      "project": "Granit.Identity.Federated.Wolverine",
-      "file": "src/Granit.Identity.Federated.Wolverine/DataExport/IdentityFederatedPrivacyDataProvider.cs",
+      "project": "Granit.Identity.Federated.Privacy",
+      "file": "src/Granit.Identity.Federated.Privacy/DataExport/IdentityFederatedPrivacyDataProvider.cs",
       "line": 20,
       "members": [
         {
@@ -17621,10 +17530,10 @@
     },
     {
       "name": "PrivacyBuilderIdentityFederatedExtensions",
-      "fqn": "Granit.Identity.Federated.Wolverine.Extensions.PrivacyBuilderIdentityFederatedExtensions",
+      "fqn": "Granit.Identity.Federated.Privacy.Extensions.PrivacyBuilderIdentityFederatedExtensions",
       "kind": "class",
-      "project": "Granit.Identity.Federated.Wolverine",
-      "file": "src/Granit.Identity.Federated.Wolverine/Extensions/PrivacyBuilderIdentityFederatedExtensions.cs",
+      "project": "Granit.Identity.Federated.Privacy",
+      "file": "src/Granit.Identity.Federated.Privacy/Extensions/PrivacyBuilderIdentityFederatedExtensions.cs",
       "line": 10,
       "members": [
         {
@@ -17636,11 +17545,11 @@
       ]
     },
     {
-      "name": "GranitIdentityFederatedWolverineModule",
-      "fqn": "Granit.Identity.Federated.Wolverine.GranitIdentityFederatedWolverineModule",
+      "name": "GranitIdentityFederatedPrivacyModule",
+      "fqn": "Granit.Identity.Federated.Privacy.GranitIdentityFederatedPrivacyModule",
       "kind": "class",
-      "project": "Granit.Identity.Federated.Wolverine",
-      "file": "src/Granit.Identity.Federated.Wolverine/GranitIdentityFederatedWolverineModule.cs",
+      "project": "Granit.Identity.Federated.Privacy",
+      "file": "src/Granit.Identity.Federated.Privacy/GranitIdentityFederatedPrivacyModule.cs",
       "line": 21,
       "members": [
         {
@@ -17648,6 +17557,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheEntryQueryDefinition",
+      "fqn": "Granit.Identity.Federated.Queries.UserCacheEntryQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Queries/UserCacheEntryQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -19186,6 +19111,88 @@
       ]
     },
     {
+      "name": "IdentityLocalPersonalDataExportHandler",
+      "fqn": "Granit.Identity.Local.Privacy.DataExport.IdentityLocalPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Privacy",
+      "file": "src/Granit.Identity.Local.Privacy/DataExport/IdentityLocalPersonalDataExportHandler.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, IdentityLocalPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentityLocalPrivacyDataProvider",
+      "fqn": "Granit.Identity.Local.Privacy.DataExport.IdentityLocalPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Privacy",
+      "file": "src/Granit.Identity.Local.Privacy/DataExport/IdentityLocalPrivacyDataProvider.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderIdentityLocalExtensions",
+      "fqn": "Granit.Identity.Local.Privacy.Extensions.PrivacyBuilderIdentityLocalExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Privacy",
+      "file": "src/Granit.Identity.Local.Privacy/Extensions/PrivacyBuilderIdentityLocalExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitIdentityLocalPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitIdentityLocalPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityLocalPrivacyModule",
+      "fqn": "Granit.Identity.Local.Privacy.GranitIdentityLocalPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Privacy",
+      "file": "src/Granit.Identity.Local.Privacy/GranitIdentityLocalPrivacyModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitRoleQueryDefinition",
       "fqn": "Granit.Identity.Local.Queries.GranitRoleQueryDefinition",
       "kind": "class",
@@ -19608,88 +19615,6 @@
       "file": "src/Granit.Identity.Local/Services/UserSessionActivity.cs",
       "line": 13,
       "members": []
-    },
-    {
-      "name": "IdentityLocalPersonalDataExportHandler",
-      "fqn": "Granit.Identity.Local.Wolverine.DataExport.IdentityLocalPersonalDataExportHandler",
-      "kind": "class",
-      "project": "Granit.Identity.Local.Wolverine",
-      "file": "src/Granit.Identity.Local.Wolverine/DataExport/IdentityLocalPersonalDataExportHandler.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(PersonalDataRequestedEto request, IdentityLocalPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IdentityLocalPrivacyDataProvider",
-      "fqn": "Granit.Identity.Local.Wolverine.DataExport.IdentityLocalPrivacyDataProvider",
-      "kind": "class",
-      "project": "Granit.Identity.Local.Wolverine",
-      "file": "src/Granit.Identity.Local.Wolverine/DataExport/IdentityLocalPrivacyDataProvider.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ProviderName",
-          "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
-        },
-        {
-          "name": "ContentType",
-          "kind": "property",
-          "signature": "string ContentType",
-          "returnType": "string"
-        },
-        {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
-        },
-        {
-          "name": "ExportAsync",
-          "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
-        }
-      ]
-    },
-    {
-      "name": "PrivacyBuilderIdentityLocalExtensions",
-      "fqn": "Granit.Identity.Local.Wolverine.Extensions.PrivacyBuilderIdentityLocalExtensions",
-      "kind": "class",
-      "project": "Granit.Identity.Local.Wolverine",
-      "file": "src/Granit.Identity.Local.Wolverine/Extensions/PrivacyBuilderIdentityLocalExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitIdentityLocalPrivacyProvider",
-          "kind": "method",
-          "signature": "AddGranitIdentityLocalPrivacyProvider(this GranitPrivacyBuilder builder)",
-          "returnType": "GranitPrivacyBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitIdentityLocalWolverineModule",
-      "fqn": "Granit.Identity.Local.Wolverine.GranitIdentityLocalWolverineModule",
-      "kind": "class",
-      "project": "Granit.Identity.Local.Wolverine",
-      "file": "src/Granit.Identity.Local.Wolverine/GranitIdentityLocalWolverineModule.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
     },
     {
       "name": "IdentityDeviceActivity",
@@ -20833,17 +20758,17 @@
       ]
     },
     {
-      "name": "IInvoiceCommandPublisher",
-      "fqn": "Granit.Invoicing.IInvoiceCommandPublisher",
-      "kind": "interface",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/IInvoiceCommandPublisher.cs",
-      "line": 8,
+      "name": "CreateInvoiceHandler",
+      "fqn": "Granit.Invoicing.Handlers.CreateInvoiceHandler",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Handlers/CreateInvoiceHandler.cs",
+      "line": 11,
       "members": [
         {
-          "name": "PublishAsync",
+          "name": "HandleAsync",
           "kind": "method",
-          "signature": "PublishAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)",
+          "signature": "HandleAsync(CreateInvoiceCommand command, IInvoiceCreationService invoiceCreationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -20860,6 +20785,22 @@
           "name": "CreateAsync",
           "kind": "method",
           "signature": "CreateAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IInvoiceCreditApplier",
+      "fqn": "Granit.Invoicing.IInvoiceCreditApplier",
+      "kind": "interface",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/IInvoiceCreditApplier.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ApplyCreditAsync",
+          "kind": "method",
+          "signature": "ApplyCreditAsync(Guid invoiceId, decimal amount, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -21314,38 +21255,6 @@
           "kind": "method",
           "signature": "typeof(InvoicingLocalizationResource)",
           "returnType": "Type? LocalizationResourceType =>"
-        }
-      ]
-    },
-    {
-      "name": "GranitInvoicingWolverineModule",
-      "fqn": "Granit.Invoicing.Wolverine.GranitInvoicingWolverineModule",
-      "kind": "class",
-      "project": "Granit.Invoicing.Wolverine",
-      "file": "src/Granit.Invoicing.Wolverine/GranitInvoicingWolverineModule.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "CreateInvoiceHandler",
-      "fqn": "Granit.Invoicing.Wolverine.Handlers.CreateInvoiceHandler",
-      "kind": "class",
-      "project": "Granit.Invoicing.Wolverine",
-      "file": "src/Granit.Invoicing.Wolverine/Handlers/CreateInvoiceHandler.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(CreateInvoiceCommand command, IInvoiceCreationService invoiceCreationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
         }
       ]
     },
@@ -23880,6 +23789,31 @@
       ]
     },
     {
+      "name": "GranitMultiTenancyProvisioningModule",
+      "fqn": "Granit.MultiTenancy.Provisioning.GranitMultiTenancyProvisioningModule",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Provisioning",
+      "file": "src/Granit.MultiTenancy.Provisioning/GranitMultiTenancyProvisioningModule.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "TenantProvisioningHandler",
+      "fqn": "Granit.MultiTenancy.Provisioning.Handlers.TenantProvisioningHandler",
+      "kind": "class",
+      "project": "Granit.MultiTenancy.Provisioning",
+      "file": "src/Granit.MultiTenancy.Provisioning/Handlers/TenantProvisioningHandler.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TenantCreatedEvent evt, ITenantProvisioner provisioner, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "TenantQueryDefinition",
       "fqn": "Granit.MultiTenancy.Queries.TenantQueryDefinition",
       "kind": "class",
@@ -24121,31 +24055,6 @@
       "file": "src/Granit/MultiTenancy/TenantUrlStrategy.cs",
       "line": 6,
       "members": []
-    },
-    {
-      "name": "GranitMultiTenancyWolverineModule",
-      "fqn": "Granit.MultiTenancy.Wolverine.GranitMultiTenancyWolverineModule",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.Wolverine",
-      "file": "src/Granit.MultiTenancy.Wolverine/GranitMultiTenancyWolverineModule.cs",
-      "line": 28,
-      "members": []
-    },
-    {
-      "name": "TenantProvisioningHandler",
-      "fqn": "Granit.MultiTenancy.Wolverine.Handlers.TenantProvisioningHandler",
-      "kind": "class",
-      "project": "Granit.MultiTenancy.Wolverine",
-      "file": "src/Granit.MultiTenancy.Wolverine/Handlers/TenantProvisioningHandler.cs",
-      "line": 26,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(TenantCreatedEvent evt, ITenantProvisioner provisioner, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
     },
     {
       "name": "NotificationsAIHostApplicationBuilderExtensions",
@@ -26012,10 +25921,10 @@
     },
     {
       "name": "NotificationsPersonalDataExportHandler",
-      "fqn": "Granit.Notifications.Privacy.Wolverine.DataExport.NotificationsPersonalDataExportHandler",
+      "fqn": "Granit.Notifications.Privacy.DataExport.NotificationsPersonalDataExportHandler",
       "kind": "class",
-      "project": "Granit.Notifications.Privacy.Wolverine",
-      "file": "src/Granit.Notifications.Privacy.Wolverine/DataExport/NotificationsPersonalDataExportHandler.cs",
+      "project": "Granit.Notifications.Privacy",
+      "file": "src/Granit.Notifications.Privacy/DataExport/NotificationsPersonalDataExportHandler.cs",
       "line": 10,
       "members": [
         {
@@ -26028,10 +25937,10 @@
     },
     {
       "name": "NotificationsPrivacyDataProvider",
-      "fqn": "Granit.Notifications.Privacy.Wolverine.DataExport.NotificationsPrivacyDataProvider",
+      "fqn": "Granit.Notifications.Privacy.DataExport.NotificationsPrivacyDataProvider",
       "kind": "class",
-      "project": "Granit.Notifications.Privacy.Wolverine",
-      "file": "src/Granit.Notifications.Privacy.Wolverine/DataExport/NotificationsPrivacyDataProvider.cs",
+      "project": "Granit.Notifications.Privacy",
+      "file": "src/Granit.Notifications.Privacy/DataExport/NotificationsPrivacyDataProvider.cs",
       "line": 20,
       "members": [
         {
@@ -26062,10 +25971,10 @@
     },
     {
       "name": "PrivacyBuilderNotificationsExtensions",
-      "fqn": "Granit.Notifications.Privacy.Wolverine.Extensions.PrivacyBuilderNotificationsExtensions",
+      "fqn": "Granit.Notifications.Privacy.Extensions.PrivacyBuilderNotificationsExtensions",
       "kind": "class",
-      "project": "Granit.Notifications.Privacy.Wolverine",
-      "file": "src/Granit.Notifications.Privacy.Wolverine/Extensions/PrivacyBuilderNotificationsExtensions.cs",
+      "project": "Granit.Notifications.Privacy",
+      "file": "src/Granit.Notifications.Privacy/Extensions/PrivacyBuilderNotificationsExtensions.cs",
       "line": 9,
       "members": [
         {
@@ -26077,11 +25986,11 @@
       ]
     },
     {
-      "name": "GranitNotificationsPrivacyWolverineModule",
-      "fqn": "Granit.Notifications.Privacy.Wolverine.GranitNotificationsPrivacyWolverineModule",
+      "name": "GranitNotificationsPrivacyModule",
+      "fqn": "Granit.Notifications.Privacy.GranitNotificationsPrivacyModule",
       "kind": "class",
-      "project": "Granit.Notifications.Privacy.Wolverine",
-      "file": "src/Granit.Notifications.Privacy.Wolverine/GranitNotificationsPrivacyWolverineModule.cs",
+      "project": "Granit.Notifications.Privacy",
+      "file": "src/Granit.Notifications.Privacy/GranitNotificationsPrivacyModule.cs",
       "line": 22,
       "members": [
         {
@@ -29647,6 +29556,70 @@
       ]
     },
     {
+      "name": "AutoChargeOnInvoiceHandler",
+      "fqn": "Granit.Payments.Handlers.AutoChargeOnInvoiceHandler",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Handlers/AutoChargeOnInvoiceHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoiceFinalizedEto eto, IAutoChargeService autoChargeService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "InitiatePaymentCommandHandler",
+      "fqn": "Granit.Payments.Handlers.InitiatePaymentCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Handlers/InitiatePaymentCommandHandler.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InitiatePaymentCommand command, IPaymentProviderResolver providerResolver, IEnumerable<IPaymentProvider> providers, IPaymentTransactionWriter transactionWriter, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<InitiatePaymentCommandHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ProcessWebhookCommandHandler",
+      "fqn": "Granit.Payments.Handlers.ProcessWebhookCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Handlers/ProcessWebhookCommandHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessWebhookCommand command, IWebhookProcessor processor, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RequestRefundCommandHandler",
+      "fqn": "Granit.Payments.Handlers.RequestRefundCommandHandler",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Handlers/RequestRefundCommandHandler.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RequestRefundCommand command, IPaymentTransactionReader transactionReader, IPaymentTransactionWriter transactionWriter, IEnumerable<IPaymentProvider> providers, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<RequestRefundCommandHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "PaymentProviderHealthCheck",
       "fqn": "Granit.Payments.HealthChecks.PaymentProviderHealthCheck",
       "kind": "class",
@@ -29707,22 +29680,6 @@
           "kind": "method",
           "signature": "CreateAsync(PaymentCheckoutSessionRequest request, CancellationToken cancellationToken = default)",
           "returnType": "string ProviderName { get; } Task<PaymentCheckoutSession>"
-        }
-      ]
-    },
-    {
-      "name": "IPaymentCommandDispatcher",
-      "fqn": "Granit.Payments.IPaymentCommandDispatcher",
-      "kind": "interface",
-      "project": "Granit.Payments.Abstractions",
-      "file": "src/Granit.Payments.Abstractions/IPaymentCommandDispatcher.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "SendAsync",
-          "kind": "method",
-          "signature": "SendAsync(InitiatePaymentCommand command, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -30970,86 +30927,6 @@
       ]
     },
     {
-      "name": "GranitPaymentsWolverineModule",
-      "fqn": "Granit.Payments.Wolverine.GranitPaymentsWolverineModule",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/GranitPaymentsWolverineModule.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "AutoChargeOnInvoiceHandler",
-      "fqn": "Granit.Payments.Wolverine.Handlers.AutoChargeOnInvoiceHandler",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Handlers/AutoChargeOnInvoiceHandler.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(InvoiceFinalizedEto eto, IAutoChargeService autoChargeService, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "InitiatePaymentCommandHandler",
-      "fqn": "Granit.Payments.Wolverine.Handlers.InitiatePaymentCommandHandler",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Handlers/InitiatePaymentCommandHandler.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(InitiatePaymentCommand command, IPaymentProviderResolver providerResolver, IEnumerable<IPaymentProvider> providers, IPaymentTransactionWriter transactionWriter, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<InitiatePaymentCommandHandler> logger, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ProcessWebhookCommandHandler",
-      "fqn": "Granit.Payments.Wolverine.Handlers.ProcessWebhookCommandHandler",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Handlers/ProcessWebhookCommandHandler.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(ProcessWebhookCommand command, IWebhookProcessor processor, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "RequestRefundCommandHandler",
-      "fqn": "Granit.Payments.Wolverine.Handlers.RequestRefundCommandHandler",
-      "kind": "class",
-      "project": "Granit.Payments.Wolverine",
-      "file": "src/Granit.Payments.Wolverine/Handlers/RequestRefundCommandHandler.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(RequestRefundCommand command, IPaymentTransactionReader transactionReader, IPaymentTransactionWriter transactionWriter, IEnumerable<IPaymentProvider> providers, IGuidGenerator guidGenerator, IClock clock, PaymentsMetrics metrics, ICurrentTenant currentTenant, ILogger<RequestRefundCommandHandler> logger, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "DataSeedContext",
       "fqn": "Granit.Persistence.EntityFrameworkCore.DataSeeding.DataSeedContext",
       "kind": "class",
@@ -31736,7 +31613,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Extensions/PersistenceMigrationsHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitPersistenceMigrations",
@@ -31752,7 +31629,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/GranitPersistenceEntityFrameworkCoreMigrationsModule.cs",
-      "line": 32,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -31763,24 +31640,34 @@
       ]
     },
     {
-      "name": "IMigrationBatchDispatcher",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationBatchDispatcher",
-      "kind": "interface",
+      "name": "RunMigrationBatchHandler",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Handlers.RunMigrationBatchHandler",
+      "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationBatchDispatcher.cs",
-      "line": 18,
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Handlers/RunMigrationBatchHandler.cs",
+      "line": 14,
       "members": [
         {
-          "name": "DispatchAsync",
+          "name": "HandleAsync",
           "kind": "method",
-          "signature": "DispatchAsync(RunMigrationBatchCommand command, CancellationToken cancellationToken = default)",
+          "signature": "HandleAsync(RunMigrationBatchCommand command, IMigrationBatchExecutor executor, ICommandSender commandSender, CancellationToken cancellationToken)",
           "returnType": "Task"
-        },
+        }
+      ]
+    },
+    {
+      "name": "IMigrationBatchExecutor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.IMigrationBatchExecutor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
+      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/IMigrationBatchExecutor.cs",
+      "line": 13,
+      "members": [
         {
-          "name": "DispatchAsync",
+          "name": "ExecuteBatchAsync",
           "kind": "method",
-          "signature": "DispatchAsync(IEnumerable<RunMigrationBatchCommand> commands, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
+          "signature": "ExecuteBatchAsync(RunMigrationBatchCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RunMigrationBatchCommand?>"
         }
       ]
     },
@@ -31949,22 +31836,6 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan BatchExecutionTimeout { get; set; } = TimeSpan."
-        }
-      ]
-    },
-    {
-      "name": "GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine",
-      "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine/GranitPersistenceEntityFrameworkCoreMigrationsWolverineModule.cs",
-      "line": 28,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
         }
       ]
     },
@@ -38680,6 +38551,118 @@
       ]
     },
     {
+      "name": "BillingCycleCompletedHandler",
+      "fqn": "Granit.Subscriptions.Handlers.BillingCycleCompletedHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/BillingCycleCompletedHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BillingCycleCompletedEto eto, IBillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BillingCycleUsagePublisher",
+      "fqn": "Granit.Subscriptions.Handlers.BillingCycleUsagePublisher",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/BillingCycleUsagePublisher.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BillingCycleCompletedEto eto, IMeterDefinitionReader meterReader, IUsageReader usageReader, IDistributedEventBus eventBus, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "InvoicePaidHandler",
+      "fqn": "Granit.Subscriptions.Handlers.InvoicePaidHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/InvoicePaidHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(InvoicePaidEto eto, ISubscriptionReactivationService reactivationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PaymentFailedHandler",
+      "fqn": "Granit.Subscriptions.Handlers.PaymentFailedHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/PaymentFailedHandler.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PaymentFailedEto eto, IDunningService dunningService, ICurrentTenant currentTenant, ILogger<PaymentFailedHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "RetryPaymentHandler",
+      "fqn": "Granit.Subscriptions.Handlers.RetryPaymentHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/RetryPaymentHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RetryPaymentPayload payload, ICommandSender commandSender, ICurrentTenant currentTenant, ILogger<RetryPaymentHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionProviderSyncHandler",
+      "fqn": "Granit.Subscriptions.Handlers.SubscriptionProviderSyncHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/SubscriptionProviderSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SubscriptionCancelledEto eto, ISubscriptionProviderSyncService syncService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UsageSummaryReadyHandler",
+      "fqn": "Granit.Subscriptions.Handlers.UsageSummaryReadyHandler",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Handlers/UsageSummaryReadyHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UsageSummaryReadyEto eto, IUsageInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IBillingCycleInvoiceOrchestrator",
       "fqn": "Granit.Subscriptions.IBillingCycleInvoiceOrchestrator",
       "kind": "interface",
@@ -39315,150 +39298,6 @@
       "file": "src/Granit.Subscriptions/SubscriptionProviderCapabilities.cs",
       "line": 8,
       "members": []
-    },
-    {
-      "name": "GranitSubscriptionsWolverineModule",
-      "fqn": "Granit.Subscriptions.Wolverine.GranitSubscriptionsWolverineModule",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/GranitSubscriptionsWolverineModule.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "BillingCycleCompletedHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.BillingCycleCompletedHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleCompletedHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(BillingCycleCompletedEto eto, IBillingCycleInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "BillingCycleUsagePublisher",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.BillingCycleUsagePublisher",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/BillingCycleUsagePublisher.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(BillingCycleCompletedEto eto, IMeterDefinitionReader meterReader, IUsageReader usageReader, IDistributedEventBus eventBus, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "InvoicePaidHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.InvoicePaidHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/InvoicePaidHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(InvoicePaidEto eto, ISubscriptionReactivationService reactivationService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "PaymentFailedHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.PaymentFailedHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/PaymentFailedHandler.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(PaymentFailedEto eto, IDunningService dunningService, ICurrentTenant currentTenant, ILogger<PaymentFailedHandler> logger, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "RetryPaymentHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.RetryPaymentHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/RetryPaymentHandler.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(RetryPaymentPayload payload, PaymentRetryDispatcher dispatcher, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "SubscriptionProviderSyncHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.SubscriptionProviderSyncHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/SubscriptionProviderSyncHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(SubscriptionCancelledEto eto, ISubscriptionProviderSyncService syncService, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "UsageSummaryReadyHandler",
-      "fqn": "Granit.Subscriptions.Wolverine.Handlers.UsageSummaryReadyHandler",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Handlers/UsageSummaryReadyHandler.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(UsageSummaryReadyEto eto, IUsageInvoiceOrchestrator orchestrator, ICurrentTenant currentTenant, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "PaymentRetryDispatcher",
-      "fqn": "Granit.Subscriptions.Wolverine.Services.PaymentRetryDispatcher",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Wolverine",
-      "file": "src/Granit.Subscriptions.Wolverine/Services/PaymentRetryDispatcher.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "DispatchRetryAsync",
-          "kind": "method",
-          "signature": "DispatchRetryAsync(RetryPaymentPayload payload)",
-          "returnType": "Task"
-        }
-      ]
     },
     {
       "name": "GranitTaxBuiltinModule",
@@ -44919,7 +44758,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Extensions/WolverineHostApplicationBuilderExtensions.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "AddGranitWolverine",

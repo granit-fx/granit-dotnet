@@ -1,11 +1,11 @@
 using Granit.DataFiltering;
 using Granit.Domain;
+using Granit.Events;
 using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Events;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
-using Wolverine;
 
 namespace Granit.Subscriptions.BackgroundJobs.Services;
 
@@ -15,7 +15,7 @@ namespace Granit.Subscriptions.BackgroundJobs.Services;
 public sealed partial class TrialExpirationScanner(
     ISubscriptionReader reader,
     ISubscriptionWriter writer,
-    IMessageBus messageBus,
+    ILocalEventBus localEventBus,
     IClock clock,
     ICurrentTenant currentTenant,
     IDataFilter dataFilter,
@@ -51,8 +51,9 @@ public sealed partial class TrialExpirationScanner(
                     else
                     {
                         int daysRemaining = (int)(sub.TrialEndsAt!.Value - now).TotalDays;
-                        await messageBus.PublishAsync(
-                            new TrialExpiringEvent(sub.Id, sub.PlanId, sub.TenantId!.Value, daysRemaining)).ConfigureAwait(false);
+                        await localEventBus.PublishAsync(
+                            new TrialExpiringEvent(sub.Id, sub.PlanId, sub.TenantId!.Value, daysRemaining),
+                            cancellationToken).ConfigureAwait(false);
                         Log.TrialExpiring(logger, sub.Id, daysRemaining);
                     }
                 }

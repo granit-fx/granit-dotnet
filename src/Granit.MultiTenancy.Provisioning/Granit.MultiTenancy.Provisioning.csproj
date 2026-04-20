@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.MultiTenancy.Provisioning</PackageId>
+    <Description>Wolverine integration for Granit.MultiTenancy. Automatic tenant provisioning handler that runs EF Core migrations and data seeding for newly created tenants at runtime.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.MultiTenancy.Provisioning.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore.Hosting\Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

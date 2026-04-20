@@ -1,4 +1,4 @@
-using Granit.Invoicing;
+using Granit.Commands;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
@@ -17,7 +17,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
     private readonly ISubscriptionReader _subscriptionReader = Substitute.For<ISubscriptionReader>();
     private readonly IPlanReader _planReader = Substitute.For<IPlanReader>();
     private readonly IPricingResolver _pricingResolver = Substitute.For<IPricingResolver>();
-    private readonly IInvoiceCommandPublisher _invoiceCommandPublisher = Substitute.For<IInvoiceCommandPublisher>();
+    private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly ILogger<DefaultUsageInvoiceOrchestrator> _logger =
         NullLoggerFactory.Instance.CreateLogger<DefaultUsageInvoiceOrchestrator>();
     private readonly DefaultUsageInvoiceOrchestrator _sut;
@@ -28,7 +28,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
     public DefaultUsageInvoiceOrchestratorTests()
     {
         _sut = new DefaultUsageInvoiceOrchestrator(
-            _subscriptionReader, _planReader, _pricingResolver, _invoiceCommandPublisher, _logger);
+            _subscriptionReader, _planReader, _pricingResolver, _commandSender, _logger);
     }
 
     private static Subscription CreateActiveSubscription(Guid tenantId, PlanId planId, Guid? planPriceId = null)
@@ -73,8 +73,8 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Validation — PeriodEnd <= PeriodStart ========
@@ -93,8 +93,8 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -111,8 +111,8 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== No active subscription ========
@@ -127,8 +127,8 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Plan not found ========
@@ -148,8 +148,8 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Usage only (base price = 0) ========
@@ -178,7 +178,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.Received(1).PublishAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<CreateInvoiceCommand>(cmd =>
                 cmd.TenantId == tenantId &&
                 cmd.Currency == "EUR" &&
@@ -215,7 +215,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.Received(1).PublishAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<CreateInvoiceCommand>(cmd =>
                 cmd.TenantId == tenantId &&
                 cmd.LineItems.Count == 2 &&
@@ -263,7 +263,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.Received(1).PublishAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<CreateInvoiceCommand>(cmd =>
                 cmd.LineItems[0].Description == "Storage: 75 GB"),
             Arg.Any<CancellationToken>());

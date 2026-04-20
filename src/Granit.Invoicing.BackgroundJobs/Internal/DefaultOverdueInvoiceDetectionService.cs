@@ -1,16 +1,16 @@
+using Granit.Events;
 using Granit.Invoicing;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
-using Wolverine;
 
 namespace Granit.Invoicing.BackgroundJobs.Internal;
 
 internal sealed partial class DefaultOverdueInvoiceDetectionService(
     IInvoiceReader invoiceReader,
-    IMessageBus messageBus,
+    IDistributedEventBus distributedEventBus,
     IClock clock,
     ICurrentTenant currentTenant,
     ILogger<DefaultOverdueInvoiceDetectionService> logger) : IOverdueInvoiceDetectionService
@@ -25,8 +25,9 @@ internal sealed partial class DefaultOverdueInvoiceDetectionService(
         {
             using (currentTenant.Change(invoice.TenantId))
             {
-                await messageBus.PublishAsync(
-                    new InvoiceOverdueEto(invoice.Id, invoice.TenantId!.Value, invoice.DueAt!.Value))
+                await distributedEventBus.PublishAsync(
+                    new InvoiceOverdueEto(invoice.Id, invoice.TenantId!.Value, invoice.DueAt!.Value),
+                    cancellationToken)
                     .ConfigureAwait(false);
 
                 Log.InvoiceOverdue(logger, invoice.Id, invoice.InvoiceNumber ?? "N/A");

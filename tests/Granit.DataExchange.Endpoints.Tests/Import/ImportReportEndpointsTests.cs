@@ -70,7 +70,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<IMappingSuggestionService>());
         builder.Services.AddSingleton(Substitute.For<IImportDefinitionDescriptor>());
         builder.Services.AddSingleton(Substitute.For<IFileParser>());
-        builder.Services.AddSingleton(Substitute.For<IImportCommandDispatcher>());
+        builder.Services.AddSingleton(Substitute.For<Granit.Commands.ICommandSender>());
         builder.Services.AddSingleton(Substitute.For<IImportOrchestrator>());
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 

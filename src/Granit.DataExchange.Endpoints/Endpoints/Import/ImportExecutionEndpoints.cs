@@ -1,3 +1,4 @@
+using Granit.Commands;
 using Granit.DataExchange.Endpoints.Dtos.Import;
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Messages;
@@ -59,7 +60,7 @@ internal static class ImportExecutionEndpoints
     private static async Task<Results<Accepted, ProblemHttpResult>> ExecuteAsync(
         Guid jobId,
         [FromServices] IImportJobReader jobReader,
-        [FromServices] IImportCommandDispatcher dispatcher,
+        [FromServices] ICommandSender commandSender,
         CancellationToken cancellationToken)
     {
         ImportJob? job = await jobReader.GetAsync(jobId, cancellationToken).ConfigureAwait(false);
@@ -76,7 +77,7 @@ internal static class ImportExecutionEndpoints
         }
 
         ExecuteImportCommand command = new(job.Id, job.DefinitionName);
-        await dispatcher.DispatchAsync(command, cancellationToken).ConfigureAwait(false);
+        await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Accepted($"/{job.Id}");
     }

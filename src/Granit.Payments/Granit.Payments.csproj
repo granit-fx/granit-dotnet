@@ -9,7 +9,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Payments.Tests" />
     <InternalsVisibleTo Include="Granit.Payments.EntityFrameworkCore" />
-    <InternalsVisibleTo Include="Granit.Payments.Wolverine" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
@@ -21,6 +20,7 @@
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Invoicing.Abstractions\Granit.Invoicing.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Payments.Abstractions\Granit.Payments.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />

@@ -69,11 +69,11 @@
     <Project Path="src/Granit.Identity.Federated.EntraId/Granit.Identity.Federated.EntraId.csproj" />
     <Project Path="src/Granit.Identity.Federated.GoogleCloud/Granit.Identity.Federated.GoogleCloud.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj" />
-    <Project Path="src/Granit.Identity.Federated.Wolverine/Granit.Identity.Federated.Wolverine.csproj" />
+    <Project Path="src/Granit.Identity.Federated.Privacy/Granit.Identity.Federated.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Federated/Granit.Identity.Federated.csproj" />
     <Project Path="src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj" />
     <Project Path="src/Granit.Identity.Local.Endpoints/Granit.Identity.Local.Endpoints.csproj" />
-    <Project Path="src/Granit.Identity.Local.Wolverine/Granit.Identity.Local.Wolverine.csproj" />
+    <Project Path="src/Granit.Identity.Local.Privacy/Granit.Identity.Local.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Local/Granit.Identity.Local.csproj" />
     <Project Path="src/Granit.Identity/Granit.Identity.csproj" />
     <Project Path="src/Granit.OpenIddict.BackgroundJobs/Granit.OpenIddict.BackgroundJobs.csproj" />
@@ -94,7 +94,6 @@
     <Project Path="src/Granit.DataExchange.Endpoints/Granit.DataExchange.Endpoints.csproj" />
     <Project Path="src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.DataExchange.Excel/Granit.DataExchange.Excel.csproj" />
-    <Project Path="src/Granit.DataExchange.Wolverine/Granit.DataExchange.Wolverine.csproj" />
     <Project Path="src/Granit.DataExchange/Granit.DataExchange.csproj" />
     <Project Path="src/Granit.DocumentGeneration.Excel/Granit.DocumentGeneration.Excel.csproj" />
     <Project Path="src/Granit.DocumentGeneration.Pdf/Granit.DocumentGeneration.Pdf.csproj" />
@@ -160,7 +159,6 @@
     <Project Path="src/Granit.Imaging.MagickNet/Granit.Imaging.MagickNet.csproj" />
     <Project Path="src/Granit.Imaging/Granit.Imaging.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Hosting/Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
-    <Project Path="src/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Migrations/Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.Postgres/Granit.Persistence.EntityFrameworkCore.Postgres.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.SqlServer/Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
@@ -178,7 +176,7 @@
     <Project Path="src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj" />
     <Project Path="src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj" />
     <Project Path="src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Auditing.Wolverine/Granit.Auditing.Wolverine.csproj" />
+    <Project Path="src/Granit.Auditing.Privacy/Granit.Auditing.Privacy.csproj" />
     <Project Path="src/Granit.Auditing/Granit.Auditing.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
     <Project Path="src/Granit.Http.Cookies.Klaro/Granit.Http.Cookies.Klaro.csproj" />
@@ -217,7 +215,7 @@
     <Project Path="src/Granit.Notifications.Twilio/Granit.Notifications.Twilio.csproj" />
     <Project Path="src/Granit.Notifications.WebPush/Granit.Notifications.WebPush.csproj" />
     <Project Path="src/Granit.Notifications.WhatsApp/Granit.Notifications.WhatsApp.csproj" />
-    <Project Path="src/Granit.Notifications.Privacy.Wolverine/Granit.Notifications.Privacy.Wolverine.csproj" />
+    <Project Path="src/Granit.Notifications.Privacy/Granit.Notifications.Privacy.csproj" />
     <Project Path="src/Granit.Notifications.Wolverine/Granit.Notifications.Wolverine.csproj" />
     <Project Path="src/Granit.Notifications.Zulip/Granit.Notifications.Zulip.csproj" />
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
@@ -226,7 +224,6 @@
     <Project Path="src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj" />
     <Project Path="src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj" />
     <Project Path="src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.CustomerBalance.Wolverine/Granit.CustomerBalance.Wolverine.csproj" />
     <Project Path="src/Granit.CustomerBalance/Granit.CustomerBalance.csproj" />
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
     <Project Path="src/Granit.Invoicing.Abstractions/Granit.Invoicing.Abstractions.csproj" />
@@ -236,7 +233,6 @@
     <Project Path="src/Granit.Invoicing.Builtin/Granit.Invoicing.Builtin.csproj" />
     <Project Path="src/Granit.Invoicing.Notifications/Granit.Invoicing.Notifications.csproj" />
     <Project Path="src/Granit.Invoicing.Odoo/Granit.Invoicing.Odoo.csproj" />
-    <Project Path="src/Granit.Invoicing.Wolverine/Granit.Invoicing.Wolverine.csproj" />
     <Project Path="src/Granit.Invoicing/Granit.Invoicing.csproj" />
     <Project Path="src/Granit.Metering.Abstractions/Granit.Metering.Abstractions.csproj" />
     <Project Path="src/Granit.Metering.BackgroundJobs/Granit.Metering.BackgroundJobs.csproj" />
@@ -254,7 +250,6 @@
     <Project Path="src/Granit.Payments.SepaDirectDebit/Granit.Payments.SepaDirectDebit.csproj" />
     <Project Path="src/Granit.Payments.SepaTransfer/Granit.Payments.SepaTransfer.csproj" />
     <Project Path="src/Granit.Payments.Stripe/Granit.Payments.Stripe.csproj" />
-    <Project Path="src/Granit.Payments.Wolverine/Granit.Payments.Wolverine.csproj" />
     <Project Path="src/Granit.Payments/Granit.Payments.csproj" />
     <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
@@ -267,7 +262,6 @@
     <Project Path="src/Granit.Subscriptions.Features/Granit.Subscriptions.Features.csproj" />
     <Project Path="src/Granit.Subscriptions.Builtin/Granit.Subscriptions.Builtin.csproj" />
     <Project Path="src/Granit.Subscriptions.Notifications/Granit.Subscriptions.Notifications.csproj" />
-    <Project Path="src/Granit.Subscriptions.Wolverine/Granit.Subscriptions.Wolverine.csproj" />
     <Project Path="src/Granit.Subscriptions/Granit.Subscriptions.csproj" />
     <Project Path="src/Granit.Tax.Endpoints/Granit.Tax.Endpoints.csproj" />
     <Project Path="src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj" />
@@ -277,7 +271,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
-    <Project Path="src/Granit.MultiTenancy.Wolverine/Granit.MultiTenancy.Wolverine.csproj" />
+    <Project Path="src/Granit.MultiTenancy.Provisioning/Granit.MultiTenancy.Provisioning.csproj" />
   </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
@@ -372,11 +366,11 @@
     <Project Path="tests/Granit.Identity.Federated.GoogleCloud.Tests/Granit.Identity.Federated.GoogleCloud.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj" />
-    <Project Path="tests/Granit.Identity.Federated.Wolverine.Tests/Granit.Identity.Federated.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Privacy.Tests/Granit.Identity.Federated.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests/Granit.Identity.Local.AspNetIdentity.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Endpoints.Tests/Granit.Identity.Local.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Tests/Granit.Identity.Local.Tests.csproj" />
-    <Project Path="tests/Granit.Identity.Local.Wolverine.Tests/Granit.Identity.Local.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Local.Privacy.Tests/Granit.Identity.Local.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Tests/Granit.Identity.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.BackgroundJobs.Tests/Granit.OpenIddict.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.OpenIddict.Endpoints.Tests/Granit.OpenIddict.Endpoints.Tests.csproj" />
@@ -398,7 +392,6 @@
     <Project Path="tests/Granit.DataExchange.EntityFrameworkCore.Tests/Granit.DataExchange.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Excel.Tests/Granit.DataExchange.Excel.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Tests/Granit.DataExchange.Tests.csproj" />
-    <Project Path="tests/Granit.DataExchange.Wolverine.Tests/Granit.DataExchange.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Excel.Tests/Granit.DocumentGeneration.Excel.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Pdf.Tests/Granit.DocumentGeneration.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj" />
@@ -468,7 +461,6 @@
     <Project Path="tests/Granit.Imaging.Tests/Granit.Imaging.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests/Granit.Persistence.EntityFrameworkCore.Hosting.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Tests.csproj" />
-    <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.Tests/Granit.Persistence.EntityFrameworkCore.Migrations.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests/Granit.Persistence.EntityFrameworkCore.Postgres.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Tests/Granit.Persistence.EntityFrameworkCore.Tests.csproj" />
@@ -488,7 +480,7 @@
     <Project Path="tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.EntityFrameworkCore.Tests/Granit.Auditing.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Tests/Granit.Auditing.Tests.csproj" />
-    <Project Path="tests/Granit.Auditing.Wolverine.Tests/Granit.Auditing.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.Privacy.Tests/Granit.Auditing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Klaro.Tests/Granit.Http.Cookies.Klaro.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Tests/Granit.Http.Cookies.Tests.csproj" />
@@ -527,7 +519,7 @@
     <Project Path="tests/Granit.Notifications.Twilio.Tests/Granit.Notifications.Twilio.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WebPush.Tests/Granit.Notifications.WebPush.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.WhatsApp.Tests/Granit.Notifications.WhatsApp.Tests.csproj" />
-    <Project Path="tests/Granit.Notifications.Privacy.Wolverine.Tests/Granit.Notifications.Privacy.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.Notifications.Privacy.Tests/Granit.Notifications.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Wolverine.Tests/Granit.Notifications.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
@@ -536,7 +528,6 @@
     <Project Path="tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj" />
-    <Project Path="tests/Granit.CustomerBalance.Wolverine.Tests/Granit.CustomerBalance.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Abstractions.Tests/Granit.Invoicing.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.BackgroundJobs.Tests/Granit.Invoicing.BackgroundJobs.Tests.csproj" />
@@ -546,7 +537,6 @@
     <Project Path="tests/Granit.Invoicing.Notifications.Tests/Granit.Invoicing.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Odoo.Tests/Granit.Invoicing.Odoo.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Tests/Granit.Invoicing.Tests.csproj" />
-    <Project Path="tests/Granit.Invoicing.Wolverine.Tests/Granit.Invoicing.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Metering.Abstractions.Tests/Granit.Metering.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Metering.BackgroundJobs.Tests/Granit.Metering.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Metering.Endpoints.Tests/Granit.Metering.Endpoints.Tests.csproj" />
@@ -564,7 +554,6 @@
     <Project Path="tests/Granit.Payments.SepaTransfer.Tests/Granit.Payments.SepaTransfer.Tests.csproj" />
     <Project Path="tests/Granit.Payments.Stripe.Tests/Granit.Payments.Stripe.Tests.csproj" />
     <Project Path="tests/Granit.Payments.Tests/Granit.Payments.Tests.csproj" />
-    <Project Path="tests/Granit.Payments.Wolverine.Tests/Granit.Payments.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.BackgroundJobs.Tests/Granit.Scheduling.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.Endpoints.Tests/Granit.Scheduling.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.EntityFrameworkCore.Tests/Granit.Scheduling.EntityFrameworkCore.Tests.csproj" />
@@ -577,7 +566,6 @@
     <Project Path="tests/Granit.Subscriptions.Builtin.Tests/Granit.Subscriptions.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Notifications.Tests/Granit.Subscriptions.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.Tests/Granit.Subscriptions.Tests.csproj" />
-    <Project Path="tests/Granit.Subscriptions.Wolverine.Tests/Granit.Subscriptions.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Endpoints.Tests/Granit.Tax.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Tax.EntityFrameworkCore.Tests/Granit.Tax.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Tax.Builtin.Tests/Granit.Tax.Builtin.Tests.csproj" />
@@ -586,7 +574,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
-    <Project Path="tests/Granit.MultiTenancy.Wolverine.Tests/Granit.MultiTenancy.Wolverine.Tests.csproj" />
+    <Project Path="tests/Granit.MultiTenancy.Provisioning.Tests/Granit.MultiTenancy.Provisioning.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

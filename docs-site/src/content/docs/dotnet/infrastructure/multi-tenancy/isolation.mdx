@@ -153,7 +153,7 @@ Npgsql throws a fatal error before creating the first table.
 ## Automatic tenant provisioning
 
 When a new tenant is created at runtime (via the admin API), `TenantCreatedEvent` is
-dispatched as a domain event. The `Granit.MultiTenancy.Wolverine` package provides a
+dispatched as a domain event. The `Granit.MultiTenancy.Provisioning` package provides a
 framework-level handler that **automatically provisions** the tenant — no application
 code needed:
 
@@ -184,11 +184,11 @@ sequenceDiagram
 Install the package and add the module dependency:
 
 ```bash
-dotnet add package Granit.MultiTenancy.Wolverine
+dotnet add package Granit.MultiTenancy.Provisioning
 ```
 
 ```csharp
-[DependsOn(typeof(GranitMultiTenancyWolverineModule))]
+[DependsOn(typeof(GranitMultiTenancyProvisioningModule))]
 public sealed class AppHostModule : GranitModule { }
 ```
 

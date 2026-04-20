@@ -25,5 +25,5 @@ builder.AddGranitCustomerBalanceEntityFrameworkCore(options => ...);
 | ------- | ----------- |
 | `Granit.CustomerBalance.EntityFrameworkCore` | EF Core persistence |
 | `Granit.CustomerBalance.Endpoints` | REST API for balance and transactions |
-| `Granit.CustomerBalance.Wolverine` | Billing choreography integration |
+| `Granit.CustomerBalance` | Billing choreography integration |
 | `Granit.CustomerBalance.BackgroundJobs` | Credit expiration scan |

@@ -1,3 +1,4 @@
+using Granit.Commands;
 using Granit.Invoicing;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Events;
@@ -11,13 +12,13 @@ namespace Granit.Payments.Internal;
 /// <summary>
 /// Automatically initiates payment when an invoice is finalized with auto-collection.
 /// Delegates to <see cref="IInvoicePrePaymentProcessor"/> before charging — the default
-/// pass-through returns the full total, but <c>Granit.CustomerBalance.Wolverine</c> can
-/// replace it to deduct available credit first.
+/// pass-through returns the full total, but <c>Granit.CustomerBalance</c> can replace it
+/// to deduct available credit first.
 /// </summary>
 internal sealed partial class DefaultAutoChargeService(
     IInvoicePrePaymentProcessor prePaymentProcessor,
     IPaymentMethodReader paymentMethodReader,
-    IPaymentCommandDispatcher paymentCommandDispatcher,
+    ICommandSender commandSender,
     ICurrentTenant currentTenant,
     ILogger<DefaultAutoChargeService> logger) : IAutoChargeService
 {
@@ -59,7 +60,7 @@ internal sealed partial class DefaultAutoChargeService(
                 $"inv-{eto.InvoiceId:N}",
                 defaultMethod.ProviderName);
 
-            await paymentCommandDispatcher.SendAsync(command, cancellationToken).ConfigureAwait(false);
+            await commandSender.SendAsync(command, cancellationToken).ConfigureAwait(false);
             Log.PaymentInitiated(logger, eto.InvoiceId, result.RemainingAmount, defaultMethod.Type, defaultMethod.ProviderName);
         }
     }

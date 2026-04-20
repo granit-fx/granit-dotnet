@@ -1,3 +1,4 @@
+using Granit.Commands;
 using Granit.Invoicing;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Events;
@@ -19,7 +20,7 @@ public sealed class DefaultAutoChargeServiceTests
 
     private readonly IInvoicePrePaymentProcessor _prePaymentProcessor = Substitute.For<IInvoicePrePaymentProcessor>();
     private readonly IPaymentMethodReader _paymentMethodReader = Substitute.For<IPaymentMethodReader>();
-    private readonly IPaymentCommandDispatcher _paymentCommandDispatcher = Substitute.For<IPaymentCommandDispatcher>();
+    private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly ILogger<DefaultAutoChargeService> _logger = NullLoggerFactory.Instance.CreateLogger<DefaultAutoChargeService>();
 
@@ -36,7 +37,7 @@ public sealed class DefaultAutoChargeServiceTests
         _sut = new DefaultAutoChargeService(
             _prePaymentProcessor,
             _paymentMethodReader,
-            _paymentCommandDispatcher,
+            _commandSender,
             _currentTenant,
             _logger);
     }
@@ -63,7 +64,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _sut.HandleAsync(eto, ct);
 
-        await _paymentCommandDispatcher.Received(1)
+        await _commandSender.Received(1)
             .SendAsync(Arg.Is<InitiatePaymentCommand>(c =>
                 c.InvoiceId == InvoiceId
                 && c.TenantId == TenantId
@@ -84,7 +85,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _sut.HandleAsync(eto, ct);
 
-        await _paymentCommandDispatcher.DidNotReceive()
+        await _commandSender.DidNotReceive()
             .SendAsync(Arg.Any<InitiatePaymentCommand>(), Arg.Any<CancellationToken>());
     }
 
@@ -101,7 +102,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _paymentMethodReader.DidNotReceive()
             .GetDefaultForTenantAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
-        await _paymentCommandDispatcher.DidNotReceive()
+        await _commandSender.DidNotReceive()
             .SendAsync(Arg.Any<InitiatePaymentCommand>(), Arg.Any<CancellationToken>());
     }
 
@@ -114,7 +115,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _sut.HandleAsync(eto, ct);
 
-        await _paymentCommandDispatcher.DidNotReceive()
+        await _commandSender.DidNotReceive()
             .SendAsync(Arg.Any<InitiatePaymentCommand>(), Arg.Any<CancellationToken>());
     }
 
@@ -130,7 +131,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _sut.HandleAsync(eto, ct);
 
-        await _paymentCommandDispatcher.DidNotReceive()
+        await _commandSender.DidNotReceive()
             .SendAsync(Arg.Any<InitiatePaymentCommand>(), Arg.Any<CancellationToken>());
     }
 
@@ -162,7 +163,7 @@ public sealed class DefaultAutoChargeServiceTests
 
         await _sut.HandleAsync(eto, ct);
 
-        await _paymentCommandDispatcher.Received(1)
+        await _commandSender.Received(1)
             .SendAsync(Arg.Is<InitiatePaymentCommand>(c =>
                 c.IdempotencyKey == $"inv-{InvoiceId:N}"), ct);
     }

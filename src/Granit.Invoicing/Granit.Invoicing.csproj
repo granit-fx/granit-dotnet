@@ -9,7 +9,6 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Invoicing.Tests" />
     <InternalsVisibleTo Include="Granit.Invoicing.EntityFrameworkCore" />
-    <InternalsVisibleTo Include="Granit.Invoicing.Wolverine" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

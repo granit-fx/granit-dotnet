@@ -1,4 +1,4 @@
-using Granit.Invoicing;
+using Granit.Commands;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
@@ -17,7 +17,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
     private readonly ISubscriptionReader _subscriptionReader = Substitute.For<ISubscriptionReader>();
     private readonly IPlanReader _planReader = Substitute.For<IPlanReader>();
     private readonly IPricingResolver _pricingResolver = Substitute.For<IPricingResolver>();
-    private readonly IInvoiceCommandPublisher _invoiceCommandPublisher = Substitute.For<IInvoiceCommandPublisher>();
+    private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
     private readonly ILogger<DefaultBillingCycleInvoiceOrchestrator> _logger =
         NullLoggerFactory.Instance.CreateLogger<DefaultBillingCycleInvoiceOrchestrator>();
     private readonly DefaultBillingCycleInvoiceOrchestrator _sut;
@@ -28,7 +28,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
     public DefaultBillingCycleInvoiceOrchestratorTests()
     {
         _sut = new DefaultBillingCycleInvoiceOrchestrator(
-            _subscriptionReader, _planReader, _pricingResolver, _invoiceCommandPublisher, _logger);
+            _subscriptionReader, _planReader, _pricingResolver, _commandSender, _logger);
     }
 
     private static Subscription CreateSubscription(Guid tenantId, PlanId planId, Guid? planPriceId = null)
@@ -55,8 +55,8 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             Guid.NewGuid(), Guid.NewGuid(), planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Usage-based plans skipped ========
@@ -77,8 +77,8 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
 
         await _subscriptionReader.DidNotReceive()
             .GetByIdAsync(Arg.Any<SubscriptionId>(), Arg.Any<CancellationToken>());
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== SubscriptionNotFound ========
@@ -98,8 +98,8 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             subscriptionId, Guid.NewGuid(), planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Zero base price ========
@@ -123,8 +123,8 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             subscriptionId, tenantId, planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Flat pricing ========
@@ -148,7 +148,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             subscriptionId, tenantId, planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.Received(1).PublishAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<CreateInvoiceCommand>(cmd =>
                 cmd.TenantId == tenantId &&
                 cmd.Currency == "EUR" &&
@@ -187,7 +187,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             subscriptionId, tenantId, planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.Received(1).PublishAsync(
+        await _commandSender.Received(1).SendAsync(
             Arg.Is<CreateInvoiceCommand>(cmd =>
                 cmd.LineItems.Count == 1 &&
                 cmd.LineItems[0].Quantity == 3 &&
@@ -217,8 +217,8 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
             subscriptionId, tenantId, planId, PeriodStart, PeriodEnd,
             TestContext.Current.CancellationToken);
 
-        await _invoiceCommandPublisher.DidNotReceive()
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.DidNotReceive()
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 
     // ======== Pinned price (planPriceId) ========
@@ -245,7 +245,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
 
         await _pricingResolver.Received(1).ResolveBasePriceAsync(
             planId, "EUR", BillingInterval.Monthly, planPriceId, Arg.Any<CancellationToken>());
-        await _invoiceCommandPublisher.Received(1)
-            .PublishAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
+        await _commandSender.Received(1)
+            .SendAsync(Arg.Any<CreateInvoiceCommand>(), Arg.Any<CancellationToken>());
     }
 }
