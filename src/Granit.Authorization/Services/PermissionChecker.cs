@@ -54,7 +54,8 @@ internal sealed class PermissionChecker(
             return true;
         }
 
-        if (!definitionManager.Exists(permissionName))
+        PermissionDefinition? definition = definitionManager.Find(permissionName);
+        if (definition is null)
         {
             throw new InvalidOperationException(
                 $"Permission '{permissionName}' is not defined. Register it via IPermissionDefinitionProvider.");
@@ -63,6 +64,12 @@ internal sealed class PermissionChecker(
         // Explicit IsAvailable check per soft-dependency contract (NullTenantContext returns null).
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
         string tenantIdStr = tenantId?.ToString() ?? "global";
+
+        if (!IsCompatibleWithCurrentSide(definition, currentTenant))
+        {
+            metrics.RecordCheckDenied(tenantIdStr);
+            return false;
+        }
 
         foreach (string role in roles)
         {
@@ -141,7 +148,13 @@ internal sealed class PermissionChecker(
 
         foreach (string permissionName in permissionNames)
         {
-            if (!definitionManager.Exists(permissionName))
+            PermissionDefinition? definition = definitionManager.Find(permissionName);
+            if (definition is null)
+            {
+                continue;
+            }
+
+            if (!IsCompatibleWithCurrentSide(definition, currentTenant))
             {
                 continue;
             }
@@ -219,4 +232,14 @@ internal sealed class PermissionChecker(
 
     internal static string BuildCacheKey(Guid? tenantId, string roleName, string permissionName) =>
         $"perm:{tenantId?.ToString() ?? "global"}:{roleName}:{permissionName}";
+
+    // Side enforcement: a Host-sided permission is only grantable when no tenant is active;
+    // a Tenant-sided one only when a tenant is active. Both-sided permissions pass in any context.
+    // When Granit.MultiTenancy is absent, NullTenantContext.IsAvailable is always false — so
+    // Tenant-sided permissions are uniformly denied, which is consistent: a consumer without
+    // multi-tenancy should not declare Tenant-sided permissions in the first place.
+    internal static bool IsCompatibleWithCurrentSide(PermissionDefinition definition, ICurrentTenant currentTenant) =>
+        currentTenant.IsAvailable
+            ? definition.MultiTenancySide.HasFlag(MultiTenancySide.Tenant)
+            : definition.MultiTenancySide.HasFlag(MultiTenancySide.Host);
 }

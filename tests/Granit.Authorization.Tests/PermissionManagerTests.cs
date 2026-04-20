@@ -210,6 +210,9 @@ public sealed class PermissionManagerTests
         IPermissionDefinitionManager definitionManager = Substitute.For<IPermissionDefinitionManager>();
         definitionManager.Exists(DefinedPermission).Returns(true);
         definitionManager.Exists(UndefinedPermission).Returns(false);
+        definitionManager.Find(DefinedPermission)
+            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySide.Both));
+        definitionManager.Find(UndefinedPermission).Returns((PermissionDefinition?)null);
 
         ILocalEventBus eventBus = Substitute.For<ILocalEventBus>();
 
@@ -219,6 +222,7 @@ public sealed class PermissionManagerTests
         PermissionManager manager = new(
             store,
             definitionManager,
+            grantValidators: [],
             eventBus,
             logger);
 

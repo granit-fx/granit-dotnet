@@ -6657,6 +6657,22 @@
       ]
     },
     {
+      "name": "IPermissionGrantValidator",
+      "fqn": "Granit.Authorization.IPermissionGrantValidator",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IPermissionGrantValidator.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(PermissionGrantValidationContext context, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<PermissionGrantValidationResult>"
+        }
+      ]
+    },
+    {
       "name": "IPermissionManagerReader",
       "fqn": "Granit.Authorization.IPermissionManagerReader",
       "kind": "interface",
@@ -6701,6 +6717,15 @@
       ]
     },
     {
+      "name": "MultiTenancySide",
+      "fqn": "Granit.Authorization.MultiTenancySide",
+      "kind": "enum",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/MultiTenancySide.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "GranitAuthorizationOptions",
       "fqn": "Granit.Authorization.Options.GranitAuthorizationOptions",
       "kind": "class",
@@ -6728,7 +6753,25 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/PermissionDefinition.cs",
-      "line": 6,
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PermissionGrantProviderNames",
+      "fqn": "Granit.Authorization.PermissionGrantProviderNames",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionGrantProviderNames.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "PermissionGrantValidationContext",
+      "fqn": "Granit.Authorization.PermissionGrantValidationContext",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionGrantValidationContext.cs",
+      "line": 15,
       "members": []
     },
     {
@@ -6760,7 +6803,7 @@
         {
           "name": "AddPermission",
           "kind": "method",
-          "signature": "AddPermission(string name, LocalizableString? displayName = null)",
+          "signature": "AddPermission(string name, LocalizableString? displayName = null, MultiTenancySide multiTenancySide = MultiTenancySide.Both)",
           "returnType": "PermissionDefinition"
         }
       ]
@@ -6778,6 +6821,28 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Authorization.struct",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/PermissionGrantValidationResult.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(true, null, null)",
+          "returnType": "PermissionGrantValidationResult Success { get; } ="
+        },
+        {
+          "name": "Reject",
+          "kind": "method",
+          "signature": "Reject(string reasonCode, string? reasonMessage = null)",
+          "returnType": "PermissionGrantValidationResult"
         }
       ]
     },
@@ -7806,6 +7871,12 @@
           "kind": "property",
           "signature": "string EffectiveErrorRedirectPath",
           "returnType": "string"
+        },
+        {
+          "name": "UsePushedAuthorizationRequests",
+          "kind": "property",
+          "signature": "bool UsePushedAuthorizationRequests",
+          "returnType": "bool"
         }
       ]
     },

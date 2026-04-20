@@ -17,9 +17,12 @@ public sealed class PermissionGroup(string name, LocalizableString? displayName 
     public IReadOnlyList<PermissionDefinition> Permissions => _permissions.AsReadOnly();
 
     /// <summary>Adds a permission to this group and returns its definition.</summary>
-    public PermissionDefinition AddPermission(string name, LocalizableString? displayName = null)
+    public PermissionDefinition AddPermission(
+        string name,
+        LocalizableString? displayName = null,
+        MultiTenancySide multiTenancySide = MultiTenancySide.Both)
     {
-        PermissionDefinition definition = new(name, displayName, Name);
+        PermissionDefinition definition = new(name, displayName, Name, multiTenancySide);
         _permissions.Add(definition);
         return definition;
     }

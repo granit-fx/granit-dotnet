@@ -17,24 +17,29 @@ internal sealed class MultiTenancyPermissionDefinitionProvider : IPermissionDefi
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
                 "PermissionGroup:MultiTenancy"));
 
+        // Managing tenants is inherently cross-tenant and can only be authorized in the host context.
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Read,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
-                "Permission:MultiTenancy.Tenants.Read"));
+                "Permission:MultiTenancy.Tenants.Read"),
+            MultiTenancySide.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Create,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
-                "Permission:MultiTenancy.Tenants.Create"));
+                "Permission:MultiTenancy.Tenants.Create"),
+            MultiTenancySide.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Update,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
-                "Permission:MultiTenancy.Tenants.Update"));
+                "Permission:MultiTenancy.Tenants.Update"),
+            MultiTenancySide.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Manage,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
-                "Permission:MultiTenancy.Tenants.Manage"));
+                "Permission:MultiTenancy.Tenants.Manage"),
+            MultiTenancySide.Host);
     }
 }

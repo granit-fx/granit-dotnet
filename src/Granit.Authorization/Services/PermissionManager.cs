@@ -7,11 +7,13 @@ namespace Granit.Authorization.Services;
 /// <summary>
 /// Domain service implementing <see cref="IPermissionManagerReader"/> and <see cref="IPermissionManagerWriter"/>.
 /// Delegates data access to <see cref="IPermissionGrantStore"/> and provides business logic:
-/// permission definition validation, event-driven cache invalidation, and ISO 27001 audit logging.
+/// permission definition validation, grant validation chain, event-driven cache invalidation,
+/// and ISO 27001 audit logging.
 /// </summary>
 internal sealed partial class PermissionManager(
     IPermissionGrantStore grantStore,
     IPermissionDefinitionManager definitionManager,
+    IEnumerable<IPermissionGrantValidator> grantValidators,
     ILocalEventBus eventBus,
     ILogger<PermissionManager> logger)
     : IPermissionManagerReader, IPermissionManagerWriter
@@ -24,10 +26,35 @@ internal sealed partial class PermissionManager(
         bool isGranted,
         CancellationToken cancellationToken = default)
     {
-        if (!definitionManager.Exists(permissionName))
+        PermissionDefinition? definition = definitionManager.Find(permissionName);
+        if (definition is null)
         {
             throw new InvalidOperationException(
                 $"Permission '{permissionName}' is not defined. Register it via IPermissionDefinitionProvider.");
+        }
+
+        // Validators only gate additions. Revocations must always be possible so that a
+        // grant previously made under relaxed rules can still be removed after a policy change.
+        if (isGranted)
+        {
+            PermissionGrantValidationContext validationContext = new(
+                permissionName,
+                PermissionGrantProviderNames.Role,
+                roleName,
+                tenantId,
+                definition);
+
+            foreach (IPermissionGrantValidator validator in grantValidators)
+            {
+                PermissionGrantValidationResult result = await validator
+                    .ValidateAsync(validationContext, cancellationToken).ConfigureAwait(false);
+
+                if (!result.IsValid)
+                {
+                    throw new InvalidOperationException(
+                        $"Grant rejected ({result.ReasonCode}): {result.ReasonMessage}");
+                }
+            }
         }
 
         bool changed = isGranted
