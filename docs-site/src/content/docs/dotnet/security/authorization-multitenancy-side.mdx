@@ -1,0 +1,191 @@
+---
+title: "Authorization — Host/Tenant scope & multi-provider grants"
+description: Tag permissions as Host, Tenant, or Both; grant them to roles, users, or OIDC clients. The checker enforces the scope at check time and follows a specific-wins-over-generic evaluation order.
+sidebar:
+  order: 4
+  label: Host/Tenant & multi-provider
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+## Why this matters
+
+A SaaS application almost always carries two kinds of authorization concerns:
+
+- **Host-level concerns** — managing tenants, reading cross-tenant audit logs, rotating
+  platform-wide secrets. Relevant only in an admin context where no tenant is active.
+- **Tenant-level concerns** — reading invoices, updating customers, approving
+  workflows. Only meaningful inside a specific tenant's scope.
+
+Without an explicit marker, nothing stops an operator from granting `Tenants.Manage` to
+a tenant user or from issuing a tenant-scoped check for an inherently host-level
+permission. Granit 2026.05 adds two aligned features that close this gap:
+
+1. A **`MultiTenancySide`** tag on every `PermissionDefinition` (`Host`, `Tenant`, `Both`).
+2. A **multi-provider grant model** (role / user / OIDC client) with a deterministic
+   evaluation order.
+
+Multi-tenancy remains optional: consumers that do not reference
+`Granit.MultiTenancy` keep their current behavior — the absent module resolves to a
+`NullTenantContext`, which is always "host-side" from the checker's point of view.
+
+## `MultiTenancySide`
+
+```csharp title="MyModulePermissionDefinitionProvider.cs"
+group.AddPermission(
+    MyPermissions.Tenants.Manage,
+    L("Permission:MyModule.Tenants.Manage"),
+    MultiTenancySide.Host);
+
+group.AddPermission(
+    MyPermissions.Invoices.Delete,
+    L("Permission:MyModule.Invoices.Delete"),
+    MultiTenancySide.Tenant);
+
+group.AddPermission(
+    MyPermissions.Profile.Read,
+    L("Permission:MyModule.Profile.Read")); // default = Both
+```
+
+The `MultiTenancySide` property on the definition is consulted by
+`IPermissionChecker.IsGrantedAsync` **before** any store lookup:
+
+- Permission is `Host` and `ICurrentTenant.IsAvailable == true` → denied, no DB hit.
+- Permission is `Tenant` and `ICurrentTenant.IsAvailable == false` → denied, no DB hit.
+- Otherwise, normal grant evaluation proceeds.
+
+At grant time, the built-in
+`MultiTenancySidePermissionGrantValidator` refuses to persist a grant whose
+`TenantId` contradicts the permission's side:
+
+| Permission side | Accepted `TenantId` on grant |
+| --- | --- |
+| `Host` | `null` only (host-level grant) |
+| `Tenant` | non-null only (tenant-scoped grant) |
+| `Both` | any |
+
+Custom validators can compose on top of the default chain via
+`TryAddEnumerable<IPermissionGrantValidator>` for domain-specific rules (e.g. reject
+if the target role does not exist in the IdP).
+
+<Aside type="tip">
+The architecture test suite only enforces that every permission has a side explicitly
+declared if you opt in — the default `Both` is always accepted. Tagging obvious
+Host-sided permissions (platform admin, tenant provisioning) closes the most common
+privilege-escalation holes without boiling the ocean.
+</Aside>
+
+## Grant providers (ABP-style)
+
+Grants are no longer role-only. A `PermissionGrant` row now carries:
+
+```csharp
+public sealed class PermissionGrant : AuditedEntity, IMultiTenant
+{
+    public string Name { get; init; }         // "Invoices.Delete"
+    public string ProviderName { get; init; } // "R" | "U" | "C"
+    public string ProviderKey { get; init; }  // role name | user id | client id
+    public Guid?  TenantId    { get; set; }   // null = host-level grant
+}
+```
+
+The storage lives in the **host schema** (aligned with Identity and OpenIddict), so a
+host admin user without a tenant can receive grants on the same footing as a
+tenant-scoped user.
+
+The canonical provider names are defined once and reused everywhere:
+
+```csharp
+public static class PermissionGrantProviderNames
+{
+    public const string Role   = "R";
+    public const string User   = "U";
+    public const string Client = "C";
+}
+```
+
+### Evaluation order
+
+Registered providers are consulted in the order they are added to the DI container.
+The default order is **specific → generic**:
+
+```text
+User (U)  ──▶  Role (R)  ──▶  Client (C)
+```
+
+A user-level grant short-circuits role and client lookups; a role-level grant
+short-circuits the client lookup. This ordering is deliberate:
+
+- It matches the principle of least surprise — explicit user permissions win.
+- It prepares a future `Deny` semantic where the most specific entry takes precedence.
+
+### Writing a custom provider
+
+A provider is a read-only projection of the current principal — it does not run the
+actual grant query (the shared `IPermissionGrantStore` handles persistence and caching).
+
+```csharp title="OrganizationPermissionGrantProvider.cs"
+internal sealed class OrganizationPermissionGrantProvider : IPermissionGrantProvider
+{
+    public string Name => "O";
+
+    public IReadOnlyList<string> GetProviderKeys(PermissionGrantLookupContext context) =>
+        // Organization id is surfaced by a custom ICurrentUserService extension;
+        // or consume IHttpContextAccessor / custom claims here.
+        OrganizationResolver.Resolve(context) is { } orgId ? [orgId] : [];
+}
+```
+
+```csharp title="Program.cs"
+builder.Services.TryAddEnumerable(
+    ServiceDescriptor.Singleton<IPermissionGrantProvider, OrganizationPermissionGrantProvider>());
+```
+
+### Granting permissions
+
+The HTTP endpoints under `POST/DELETE /api/authorization/roles/{role}/{permission}`
+still target roles. Lower-level consumers can grant to users or clients via
+`IPermissionManagerWriter.SetAsync`:
+
+```csharp
+await permissionManagerWriter.SetAsync(
+    permissionName: "Invoices.Delete",
+    providerName:  PermissionGrantProviderNames.User,
+    providerKey:   userId.ToString(),
+    tenantId:      currentTenant.Id,
+    isGranted:     true);
+```
+
+The writer runs the `IPermissionGrantValidator` chain before persisting — including
+the built-in side validator.
+
+## Cache key layout
+
+Cache keys are scoped by `(tenantId, providerName, providerKey, permissionName)` so
+that a role named `"alice"` and a user with id `"alice"` never collide:
+
+```text
+perm:{tenantId|"global"}:{providerName}:{providerKey}:{permissionName}
+```
+
+Cache invalidation (`PermissionCacheInvalidationHandler`) uses the exact same key
+layout, driven by the updated `PermissionGrantChangedEvent`.
+
+## Storage placement
+
+The `PermissionGrant` table lives in the **host schema** reached via
+`GranitDbDefaults.HostDbSchema` (with fallback to `DbSchema` for shared-database
+setups). Wire it from the host context:
+
+```csharp title="AppHostDbContext.cs"
+protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+    modelBuilder.ConfigureOpenIddictModule();
+    modelBuilder.ConfigureAuthorizationModule(); // new: grants are host-level
+}
+```
+
+Tenant-scoped grants simply carry the target `TenantId`; host-level grants have
+`TenantId == null`. A single table, a single migration — no per-tenant duplication of
+authorization state.
