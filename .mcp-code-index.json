@@ -854,6 +854,7 @@
       "name": "Granit.Identity.Local",
       "deps": [
         "Granit",
+        "Granit.Authorization",
         "Granit.DataExchange.Abstractions",
         "Granit.Events",
         "Granit.Guids",
@@ -868,7 +869,8 @@
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
         "Granit.Identity",
-        "Granit.Identity.Local"
+        "Granit.Identity.Local",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -18097,7 +18099,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19512,6 +19514,15 @@
       "members": []
     },
     {
+      "name": "CreateRoleCommand",
+      "fqn": "Granit.Identity.Local.Services.CreateRoleCommand",
+      "kind": "record",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IGranitRoleOrchestrator.cs",
+      "line": 59,
+      "members": []
+    },
+    {
       "name": "ExternalLoginInfo",
       "fqn": "Granit.Identity.Local.Services.ExternalLoginInfo",
       "kind": "record",
@@ -19642,6 +19653,34 @@
           "kind": "method",
           "signature": "IsProviderConfigured(string providerName)",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IGranitRoleOrchestrator",
+      "fqn": "Granit.Identity.Local.Services.IGranitRoleOrchestrator",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IGranitRoleOrchestrator.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(CreateRoleCommand command, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid roleId, string newName, string? newDescription, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid roleId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },

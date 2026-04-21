@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Identity\Granit.Identity.csproj" />
     <ProjectReference Include="..\Granit.Identity.Local\Granit.Identity.Local.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>
