@@ -12,11 +12,12 @@ namespace Granit.Authorization.EntityFrameworkCore.Extensions;
 public static class AuthorizationEfCoreServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers EF Core persistence for permission grants.
-    /// Replaces the default <see cref="NullPermissionGrantStore"/> registered by
-    /// <c>Granit.Authorization</c> with <see cref="EfCorePermissionGrantStore{TContext}"/>.
-    /// <c>IPermissionManagerReader</c> and <c>IPermissionManagerWriter</c> are already registered
-    /// by <c>Granit.Authorization</c> and delegate to the store.
+    /// Registers EF Core persistence for permission grants and role metadata.
+    /// Replaces the default <see cref="NullPermissionGrantStore"/> and
+    /// <see cref="Services.NullRoleMetadataStore"/> registered by <c>Granit.Authorization</c>
+    /// with EF-backed implementations. <c>IPermissionManagerReader</c> and
+    /// <c>IPermissionManagerWriter</c> are already registered by <c>Granit.Authorization</c>
+    /// and delegate to the store.
     /// </summary>
     /// <typeparam name="TContext">
     /// The application DbContext, which must implement <see cref="IPermissionGrantDbContext"/>.
@@ -28,6 +29,10 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
         // Replace the NullPermissionGrantStore registered by Granit.Authorization
         services.Replace(ServiceDescriptor.Scoped<IPermissionGrantStore,
             EfCorePermissionGrantStore<TContext>>());
+
+        // Replace the NullRoleMetadataStore registered by Granit.Authorization
+        services.Replace(ServiceDescriptor.Scoped<IRoleMetadataStore,
+            EfCoreRoleMetadataStore<TContext>>());
 
         return services;
     }

@@ -6242,6 +6242,34 @@
       ]
     },
     {
+      "name": "RoleMetadata",
+      "fqn": "Granit.Authorization.Domain.RoleMetadata",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Domain/RoleMetadata.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "RoleMetadata",
+          "kind": "method",
+          "signature": "RoleMetadata()",
+          "returnType": "string? Description { get; private set; } public bool IsSystem { get; private set; } private"
+        }
+      ]
+    },
+    {
       "name": "MyPermissionsResponse",
       "fqn": "Granit.Authorization.Endpoints.Dtos.MyPermissionsResponse",
       "kind": "record",
@@ -6358,7 +6386,14 @@
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/DbContext/IPermissionGrantDbContext.cs",
       "line": 11,
-      "members": []
+      "members": [
+        {
+          "name": "PermissionGrants",
+          "kind": "property",
+          "signature": "DbSet<PermissionGrant> PermissionGrants",
+          "returnType": "DbSet<PermissionGrant>"
+        }
+      ]
     },
     {
       "name": "PermissionGrantModelBuilderExtensions",
@@ -6372,6 +6407,22 @@
           "name": "ConfigureAuthorizationModule",
           "kind": "method",
           "signature": "ConfigureAuthorizationModule(this ModelBuilder builder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "RoleMetadataModelBuilderExtensions",
+      "fqn": "Granit.Authorization.EntityFrameworkCore.DbContext.RoleMetadataModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Authorization.EntityFrameworkCore",
+      "file": "src/Granit.Authorization.EntityFrameworkCore/DbContext/RoleMetadataModelBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ConfigureRoleMetadata",
+          "kind": "method",
+          "signature": "ConfigureRoleMetadata(this ModelBuilder builder)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -6420,11 +6471,54 @@
       "members": []
     },
     {
+      "name": "RoleCreatedEvent",
+      "fqn": "Granit.Authorization.Events.RoleCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/RoleCreatedEvent.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "RoleDeletedEvent",
+      "fqn": "Granit.Authorization.Events.RoleDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/RoleDeletedEvent.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "RoleUpdatedEvent",
+      "fqn": "Granit.Authorization.Events.RoleUpdatedEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/RoleUpdatedEvent.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "PermissionGrantExportDefinition",
       "fqn": "Granit.Authorization.Exports.PermissionGrantExportDefinition",
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Exports/PermissionGrantExportDefinition.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "RoleMetadataExportDefinition",
+      "fqn": "Granit.Authorization.Exports.RoleMetadataExportDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Exports/RoleMetadataExportDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -6700,6 +6794,52 @@
       ]
     },
     {
+      "name": "IRoleMetadataStore",
+      "fqn": "Granit.Authorization.IRoleMetadataStore",
+      "kind": "interface",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/IRoleMetadataStore.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "FindByIdAsync",
+          "kind": "method",
+          "signature": "FindByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata?>"
+        },
+        {
+          "name": "FindByNameAsync",
+          "kind": "method",
+          "signature": "FindByNameAsync(string name, Guid? tenantId, string? clientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata?>"
+        },
+        {
+          "name": "ListAllAsync",
+          "kind": "method",
+          "signature": "ListAllAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<RoleMetadata>>"
+        },
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(RoleMetadata role, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveAsync",
+          "kind": "method",
+          "signature": "RemoveAsync(RoleMetadata role, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "GranitAuthorizationOptions",
       "fqn": "Granit.Authorization.Options.GranitAuthorizationOptions",
       "kind": "class",
@@ -6797,6 +6937,22 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Queries/PermissionGrantQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "RoleMetadataQueryDefinition",
+      "fqn": "Granit.Authorization.Queries.RoleMetadataQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Queries/RoleMetadataQueryDefinition.cs",
       "line": 10,
       "members": [
         {

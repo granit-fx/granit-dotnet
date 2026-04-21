@@ -32,6 +32,7 @@ public static class AuthorizationServiceCollectionExtensions
         services.AddSingleton<IPermissionDefinitionManager, PermissionDefinitionManager>();
 
         services.TryAddSingleton<IPermissionGrantStore, NullPermissionGrantStore>();
+        services.TryAddSingleton<IRoleMetadataStore, NullRoleMetadataStore>();
         services.TryAddSingleton<AuthorizationMetrics>();
 
         services.AddScoped<IPermissionChecker, PermissionChecker>();

@@ -31,6 +31,9 @@ public sealed class GranitAuthorizationModule : GranitModule
         context.Services.AddQueryDefinition<PermissionGrant, PermissionGrantQueryDefinition>();
         context.Services.AddExportDefinition<PermissionGrant, PermissionGrantExportDefinition>();
 
+        context.Services.AddQueryDefinition<RoleMetadata, RoleMetadataQueryDefinition>();
+        context.Services.AddExportDefinition<RoleMetadata, RoleMetadataExportDefinition>();
+
         foreach (Assembly assembly in context.ModuleAssemblies)
         {
             IEnumerable<Type> providerTypes = assembly.GetTypes()
