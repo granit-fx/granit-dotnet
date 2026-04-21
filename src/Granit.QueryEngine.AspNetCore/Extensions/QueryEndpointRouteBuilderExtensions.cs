@@ -77,10 +77,18 @@ public static class QueryEndpointRouteBuilderExtensions
         QueryEndpointOptions options = new();
         configure?.Invoke(options);
 
-        string tag = options.TagName ?? typeof(TEntity).Name;
         string entityName = typeof(TEntity).Name;
 
-        RouteGroupBuilder group = endpoints.MapGranitGroup(prefix).WithTags(tag);
+        RouteGroupBuilder group = endpoints.MapGranitGroup(prefix);
+
+        // Only apply an explicit tag override. When TagName is null, inherit the
+        // parent group's tag — previously we forced typeof(TEntity).Name, which
+        // replaced module tags like "Auditing" with entity class names like
+        // "AuditEntry" and leaked internal type names into the OpenAPI UI.
+        if (!string.IsNullOrEmpty(options.TagName))
+        {
+            group.WithTags(options.TagName);
+        }
 
         if (options.AuthorizationPolicy is not null)
         {
