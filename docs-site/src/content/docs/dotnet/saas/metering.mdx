@@ -265,9 +265,17 @@ Table prefix: `metering_` (configurable via `GranitMeteringDbProperties.DbTableP
 | GET | `/api/granit/metering/usage` | `Metering.Usage.Read` |
 | GET | `/api/granit/metering/quota/{meterId}` | `Metering.Usage.Read` |
 | POST | `/api/granit/metering/events` | `Metering.Usage.Record` |
+| GET | `/api/granit/metering/meter-definitions` | `Metering.Meters.Read` |
+| GET | `/api/granit/metering/usage-aggregates` | `Metering.Usage.Read` |
 
 All usage endpoints require tenant context. `POST /events` validates that each
 `MeterDefinitionId` in the batch belongs to the current tenant and is active.
+
+The `/meter-definitions` and `/usage-aggregates` routes expose the full Granit
+**QueryEngine** surface (`/`, `/meta`, `/saved-views/*`) — filter, sort, group,
+paginate, export to CSV/XLSX, and save per-user views. When called without a
+tenant context (host admin), the multi-tenant query filter is bypassed so the
+host can review usage cross-tenant.
 
 ## See also
 

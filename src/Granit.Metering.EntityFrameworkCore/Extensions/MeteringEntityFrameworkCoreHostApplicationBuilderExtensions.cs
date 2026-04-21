@@ -1,5 +1,7 @@
+using Granit.Metering.Domain;
 using Granit.Metering.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -30,6 +32,10 @@ public static class MeteringEntityFrameworkCoreHostApplicationBuilderExtensions
 
         builder.Services.TryAddScoped<IAggregationRunner, EfAggregationRunner>();
         builder.Services.TryAddScoped<IQuotaChecker, EfQuotaChecker>();
+
+        // Queryable sources for MapGranitQuery (host bypasses tenant filter for cross-tenant review).
+        builder.Services.AddScoped<IQueryableSource<MeterDefinition>, EfMeterDefinitionQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<UsageAggregate>, EfUsageAggregateQueryableSource>();
 
         return builder;
     }

@@ -22809,7 +22809,7 @@
       "kind": "class",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Extensions/MeteringEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitMetering",
@@ -22883,7 +22883,7 @@
       "kind": "class",
       "project": "Granit.Metering.EntityFrameworkCore",
       "file": "src/Granit.Metering.EntityFrameworkCore/Extensions/MeteringEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitMeteringEntityFrameworkCore",

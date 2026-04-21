@@ -1,5 +1,8 @@
+using Granit.Metering.Domain;
 using Granit.Metering.Endpoints.Endpoints;
 using Granit.Metering.Endpoints.Options;
+using Granit.Metering.Endpoints.Permissions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +32,17 @@ public static class MeteringEndpointRouteBuilderExtensions
 
         group.MapMeterDefinitionEndpoints();
         group.MapUsageEndpoints();
+
+        // Admin query endpoints — list / filter / sort / paginate / export via the QueryEngine.
+        // Mounted on dedicated sub-paths to avoid colliding with the business endpoints above
+        // (/meters returns only active meters; /usage returns a single aggregate by period).
+        group.MapGranitGroup("meter-definitions")
+            .MapGranitQuery<MeterDefinition>()
+            .RequireAuthorization(MeteringPermissions.Meters.Read);
+
+        group.MapGranitGroup("usage-aggregates")
+            .MapGranitQuery<UsageAggregate>()
+            .RequireAuthorization(MeteringPermissions.Usage.Read);
 
         return group;
     }
