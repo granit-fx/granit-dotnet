@@ -68,6 +68,10 @@ public static class WolverineHostApplicationBuilderExtensions
         // interfaces (IPaymentCommandDispatcher, IInvoiceCommandPublisher, etc.) with a single
         // provider-agnostic contract in the core Granit assembly. Named ICommandSender to
         // avoid collision with Wolverine.ICommandBus.
+        // Scoped so OutgoingContextMiddleware reads the caller's ICurrentTenant /
+        // ICurrentUserService and injects X-Tenant-Id / X-User-Id / traceparent into the
+        // outgoing envelope. Singleton consumers (IHostedService) must create a scope
+        // via IServiceScopeFactory before resolving ICommandSender.
         builder.Services.TryAddScoped<ICommandSender, WolverineCommandSender>();
 
         // Bind and validate options at startup via DI.

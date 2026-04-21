@@ -82,10 +82,18 @@ public sealed class MigrationStartupServiceTests
         ICommandSender commandSender,
         int defaultBatchSize = 200)
     {
+        // MigrationStartupService is Singleton and creates a scope per dispatch to resolve
+        // the Scoped ICommandSender. Wrap the mocked sender in a real IServiceScopeFactory
+        // so GetRequiredService<ICommandSender>() inside the service returns the mock.
+        ServiceCollection services = new();
+        services.AddSingleton(commandSender);
+        IServiceScopeFactory scopeFactory = services.BuildServiceProvider()
+            .GetRequiredService<IServiceScopeFactory>();
+
         return new(
             factory,
             tenantEnumerator,
-            commandSender,
+            scopeFactory,
             Microsoft.Extensions.Options.Options.Create(new MigrationStartupOptions { DefaultBatchSize = defaultBatchSize }),
             NullLogger<MigrationStartupService>.Instance);
     }

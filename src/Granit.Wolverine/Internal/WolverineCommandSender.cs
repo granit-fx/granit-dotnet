@@ -8,9 +8,17 @@ namespace Granit.Wolverine.Internal;
 /// through <see cref="IMessageBus.SendAsync{T}(T, DeliveryOptions?)"/>.
 /// </summary>
 /// <remarks>
-/// Wolverine resolves the single registered handler by message type. The global policies
-/// registered in <c>AddGranitWolverine</c> — tenant / user / trace propagation,
-/// FluentValidation, retry, DLQ — apply to messages sent through this bus.
+/// <para>
+/// Registered as <b>Scoped</b> so the enclosing scope's <c>ICurrentTenant</c> /
+/// <c>ICurrentUserService</c> / W3C trace context flow into the
+/// <c>OutgoingContextMiddleware</c> and end up as <c>X-Tenant-Id</c> / <c>X-User-Id</c> /
+/// <c>traceparent</c> headers on the outgoing envelope.
+/// </para>
+/// <para>
+/// Singleton consumers (<c>IHostedService</c>) that need to dispatch commands must create
+/// a DI scope themselves via <c>IServiceScopeFactory.CreateAsyncScope()</c> and resolve
+/// <see cref="ICommandSender"/> inside it.
+/// </para>
 /// </remarks>
 internal sealed class WolverineCommandSender(IMessageBus bus) : ICommandSender
 {

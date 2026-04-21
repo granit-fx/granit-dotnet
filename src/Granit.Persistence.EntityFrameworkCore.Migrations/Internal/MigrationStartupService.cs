@@ -2,6 +2,7 @@ using Granit.Commands;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Options;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,7 +17,9 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 /// On startup, queries all <see cref="MigrationProgress"/> rows with status
 /// <see cref="MigrationStatus.Pending"/> or <see cref="MigrationStatus.InProgress"/>
 /// and dispatches one <see cref="RunMigrationBatchCommand"/> per cycle per tenant via
-/// <see cref="ICommandSender"/>.
+/// <see cref="ICommandSender"/>, resolved in a short-lived scope (<see cref="ICommandSender"/>
+/// is Scoped so its <c>ICurrentTenant</c> / <c>ICurrentUserService</c> dependencies resolve
+/// cleanly even though this service runs as a Singleton <see cref="IHostedService"/>).
 /// </para>
 /// <para>
 /// If <see cref="ITenantEnumerator"/> yields tenant identifiers (Tenant-per-Schema or
@@ -32,7 +35,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Internal;
 internal sealed partial class MigrationStartupService(
     IDbContextFactory<MigrationProgressDbContext> progressFactory,
     ITenantEnumerator tenantEnumerator,
-    ICommandSender commandSender,
+    IServiceScopeFactory scopeFactory,
     IOptions<MigrationStartupOptions> options,
     ILogger<MigrationStartupService> logger) : IHostedService
 {
@@ -76,6 +79,12 @@ internal sealed partial class MigrationStartupService(
 
         int batchSize = options.Value.DefaultBatchSize;
         List<RunMigrationBatchCommand> commands = BuildCommands(pending, tenantIds, batchSize);
+
+        // ICommandSender is Scoped; create a short-lived scope so it (and its scoped
+        // dependencies such as IMessageBus / OutgoingContextMiddleware) resolve correctly
+        // from this Singleton IHostedService.
+        await using AsyncServiceScope scope = scopeFactory.CreateAsyncScope();
+        ICommandSender commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
 
         foreach (RunMigrationBatchCommand command in commands)
         {
