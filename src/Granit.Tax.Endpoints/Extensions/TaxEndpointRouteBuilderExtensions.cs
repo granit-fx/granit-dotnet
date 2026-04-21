@@ -1,6 +1,7 @@
 using Granit.Authorization.Extensions;
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Tax.Endpoints.Endpoints;
+using Granit.Tax.Endpoints.Options;
 using Granit.Tax.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -13,19 +14,27 @@ namespace Granit.Tax.Endpoints.Extensions;
 public static class TaxEndpointRouteBuilderExtensions
 {
     /// <summary>Maps the tax administration endpoints.</summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="TaxEndpointsOptions"/>.</param>
+    /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     public static RouteGroupBuilder MapGranitTax(
-        this IEndpointRouteBuilder endpoints)
+        this IEndpointRouteBuilder endpoints,
+        Action<TaxEndpointsOptions>? configure = null)
     {
-        RouteGroupBuilder group = endpoints
-            .MapGranitGroup("tax")
-            .WithTags("Tax");
+        TaxEndpointsOptions options = new();
+        configure?.Invoke(options);
 
-        group.MapGranitGroup("ids").MapValidationEndpoints();
+        RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
+
+        group.MapGranitGroup("ids")
+            .WithTags(options.ValidationTagName)
+            .MapValidationEndpoints();
 
         // Rate endpoints — query engine for list/meta/saved-views, custom lookup for /{countryCode}.
         // Both behind Tax.Rates.Read.
         RouteGroupBuilder ratesGroup = group
             .MapGranitGroup("rates")
+            .WithTags(options.RatesTagName)
             .RequireAuthorization(TaxPermissions.Rates.Read)
             .AllowHostAccess();
         ratesGroup.MapGranitQuery<TaxRateEntry>();

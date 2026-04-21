@@ -26,7 +26,8 @@ internal static class IdentityWebhookEndpoints
 
     internal static IEndpointRouteBuilder MapWebhookEndpoint(
         this IEndpointRouteBuilder endpoints,
-        string prefix)
+        string prefix,
+        string tagName)
     {
         string webhookRoute = string.IsNullOrEmpty(prefix)
             ? "identity/webhook"
@@ -36,7 +37,7 @@ internal static class IdentityWebhookEndpoints
             .WithName("IdentityWebhook")
             .WithSummary("Receives identity provider webhook events (user created/updated/deleted).")
             .WithDescription("Webhook receiver for identity provider event notifications. Validates the HMAC signature (if configured) and processes user_created, user_updated, and user_deleted events by refreshing or removing the corresponding cache entries. No authentication required — security relies on the HMAC signature validation.")
-            .WithTags("Identity - Webhook")
+            .WithTags(tagName)
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status400BadRequest)

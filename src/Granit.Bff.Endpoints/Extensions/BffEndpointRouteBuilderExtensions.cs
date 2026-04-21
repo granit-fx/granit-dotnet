@@ -77,7 +77,7 @@ public static class BffEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(groupPrefix)
-            .WithTags($"BFF ({frontend.Name})");
+            .WithTags($"BFF - {frontend.Name}");
 
         group.MapLoginEndpoints(frontend);
         group.MapLogoutEndpoints(frontend);

@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Granit.MultiTenancy;
 using Granit.Notifications.Endpoints.Dtos;
+using Granit.Notifications.Endpoints.Options;
 using Granit.Notifications.Endpoints.Permissions;
 using Granit.Notifications.MobilePush;
 using Granit.Timing;
@@ -19,13 +20,20 @@ namespace Granit.Notifications.Endpoints.Endpoints;
 public static class MobilePushTokenEndpoints
 {
     /// <summary>Maps mobile push token management endpoints.</summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="prefix">Route prefix. Default <c>"api/notifications/mobile-push/tokens"</c>.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="NotificationEndpointsOptions"/> (tag only).</param>
     public static IEndpointRouteBuilder MapGranitMobilePushTokens(
         this IEndpointRouteBuilder endpoints,
-        string prefix = "api/notifications/mobile-push/tokens")
+        string prefix = "api/notifications/mobile-push/tokens",
+        Action<NotificationEndpointsOptions>? configure = null)
     {
+        NotificationEndpointsOptions options = new();
+        configure?.Invoke(options);
+
         RouteGroupBuilder group = endpoints.MapGranitGroup(prefix)
             .RequireAuthorization()
-            .WithTags("Notifications - Mobile Push");
+            .WithTags(options.MobilePushTagName);
 
         group.MapPost("/", RegisterTokenAsync)
             .RequireAuthorization(NotificationPermissions.UserNotifications.Manage)

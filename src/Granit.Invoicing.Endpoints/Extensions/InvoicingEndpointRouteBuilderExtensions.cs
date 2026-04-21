@@ -1,5 +1,6 @@
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Endpoints.Endpoints;
+using Granit.Invoicing.Endpoints.Options;
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -12,11 +13,19 @@ namespace Granit.Invoicing.Endpoints.Extensions;
 public static class InvoicingEndpointRouteBuilderExtensions
 {
     /// <summary>Maps the invoicing administration endpoints.</summary>
-    public static RouteGroupBuilder MapGranitInvoicing(this IEndpointRouteBuilder endpoints)
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="InvoicingEndpointsOptions"/>.</param>
+    /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
+    public static RouteGroupBuilder MapGranitInvoicing(
+        this IEndpointRouteBuilder endpoints,
+        Action<InvoicingEndpointsOptions>? configure = null)
     {
+        InvoicingEndpointsOptions options = new();
+        configure?.Invoke(options);
+
         RouteGroupBuilder group = endpoints
-            .MapGranitGroup("invoicing")
-            .WithTags("Invoicing");
+            .MapGranitGroup(options.RoutePrefix)
+            .WithTags(options.TagName);
 
         group.MapInvoiceEndpoints();
 

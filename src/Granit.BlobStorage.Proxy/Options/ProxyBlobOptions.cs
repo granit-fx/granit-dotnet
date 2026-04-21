@@ -28,4 +28,10 @@ public sealed class ProxyBlobOptions
     /// Maximum upload size in bytes accepted by the proxy. Defaults to 100 MB.
     /// </summary>
     public long MaxUploadBytes { get; set; } = 104_857_600;
+
+    /// <summary>
+    /// OpenAPI tag name for proxy endpoints.
+    /// Default: <c>"Blob Proxy"</c>.
+    /// </summary>
+    public string TagName { get; set; } = "Blob Proxy";
 }

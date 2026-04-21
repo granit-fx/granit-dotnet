@@ -66,7 +66,7 @@ public static class IdentityEndpointRouteBuilderExtensions
             .MapRgpdEndpoints();
 
         // Webhook endpoint (outside the authorized group — uses signature validation)
-        endpoints.MapWebhookEndpoint("");
+        endpoints.MapWebhookEndpoint("", options.WebhookTagName);
 
         return group;
     }

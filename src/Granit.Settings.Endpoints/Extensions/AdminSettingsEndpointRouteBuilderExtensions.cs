@@ -34,7 +34,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.GlobalRoutePrefix)
-            .WithTags(options.TagName);
+            .WithTags(options.GlobalTagName);
 
         group.MapGet("", HandleGetAllGlobalSettingsAsync)
              .RequireAuthorization(SettingsPermissions.Global.Read)
@@ -85,7 +85,7 @@ public static class AdminSettingsEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.TenantRoutePrefix)
-            .WithTags(options.TagName);
+            .WithTags(options.TenantTagName);
 
         group.MapGet("", HandleGetAllTenantSettingsAsync)
              .RequireAuthorization(SettingsPermissions.Tenant.Read)

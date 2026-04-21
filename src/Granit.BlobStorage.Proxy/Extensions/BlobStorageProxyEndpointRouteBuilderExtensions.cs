@@ -38,7 +38,7 @@ public static class BlobStorageProxyEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .WithTags("Blob Proxy");
+            .WithTags(options.TagName);
 
         group.MapPut("/upload/{token}", ProxyEndpoints.HandleUploadAsync)
             .WithName("BlobProxyUpload")

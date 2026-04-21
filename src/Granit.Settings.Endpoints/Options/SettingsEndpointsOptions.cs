@@ -24,8 +24,20 @@ public sealed class SettingsEndpointsOptions
     public string TenantRoutePrefix { get; set; } = "settings/tenant";
 
     /// <summary>
-    /// OpenAPI tag name for all settings endpoints.
-    /// Default: <c>"Settings"</c>.
+    /// OpenAPI tag name for global setting administration endpoints.
+    /// Default: <c>"Settings - Global"</c>.
     /// </summary>
-    public string TagName { get; set; } = "Settings";
+    public string GlobalTagName { get; set; } = "Settings - Global";
+
+    /// <summary>
+    /// OpenAPI tag name for tenant-scoped setting administration endpoints.
+    /// Default: <c>"Settings - Tenant"</c>.
+    /// </summary>
+    public string TenantTagName { get; set; } = "Settings - Tenant";
+
+    /// <summary>
+    /// OpenAPI tag name for user-scoped setting endpoints.
+    /// Default: <c>"Settings - User"</c>.
+    /// </summary>
+    public string UserTagName { get; set; } = "Settings - User";
 }

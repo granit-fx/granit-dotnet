@@ -31,11 +31,27 @@ public sealed class SettingsEndpointsOptionsTests
     }
 
     [Fact]
-    public void TagName_Default_IsSettings()
+    public void GlobalTagName_Default_IsSettingsGlobal()
     {
         SettingsEndpointsOptions options = new();
 
-        options.TagName.ShouldBe("Settings");
+        options.GlobalTagName.ShouldBe("Settings - Global");
+    }
+
+    [Fact]
+    public void TenantTagName_Default_IsSettingsTenant()
+    {
+        SettingsEndpointsOptions options = new();
+
+        options.TenantTagName.ShouldBe("Settings - Tenant");
+    }
+
+    [Fact]
+    public void UserTagName_Default_IsSettingsUser()
+    {
+        SettingsEndpointsOptions options = new();
+
+        options.UserTagName.ShouldBe("Settings - User");
     }
 
     [Fact]
@@ -46,12 +62,16 @@ public sealed class SettingsEndpointsOptionsTests
             UserRoutePrefix = "custom/user",
             GlobalRoutePrefix = "custom/global",
             TenantRoutePrefix = "custom/tenant",
-            TagName = "CustomTag",
+            GlobalTagName = "CustomGlobal",
+            TenantTagName = "CustomTenant",
+            UserTagName = "CustomUser",
         };
 
         options.UserRoutePrefix.ShouldBe("custom/user");
         options.GlobalRoutePrefix.ShouldBe("custom/global");
         options.TenantRoutePrefix.ShouldBe("custom/tenant");
-        options.TagName.ShouldBe("CustomTag");
+        options.GlobalTagName.ShouldBe("CustomGlobal");
+        options.TenantTagName.ShouldBe("CustomTenant");
+        options.UserTagName.ShouldBe("CustomUser");
     }
 }

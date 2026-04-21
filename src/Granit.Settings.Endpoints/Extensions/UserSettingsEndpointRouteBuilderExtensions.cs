@@ -35,7 +35,7 @@ public static class UserSettingsEndpointRouteBuilderExtensions
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.UserRoutePrefix)
             .RequireAuthorization()
-            .WithTags(options.TagName);
+            .WithTags(options.UserTagName);
 
         group.MapGet("", HandleGetAllUserSettingsAsync)
              .WithName("GetAllUserSettings")

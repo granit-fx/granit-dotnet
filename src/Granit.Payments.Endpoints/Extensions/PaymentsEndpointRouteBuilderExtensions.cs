@@ -1,4 +1,5 @@
 using Granit.Payments.Endpoints.Endpoints;
+using Granit.Payments.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -17,17 +18,32 @@ public static class PaymentsEndpointRouteBuilderExtensions
     /// </code>
     /// </remarks>
     /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="PaymentsEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapGranitPayments(this IEndpointRouteBuilder endpoints)
+    public static RouteGroupBuilder MapGranitPayments(
+        this IEndpointRouteBuilder endpoints,
+        Action<PaymentsEndpointsOptions>? configure = null)
     {
-        RouteGroupBuilder group = endpoints
-            .MapGranitGroup("payments")
-            .WithTags("Payments");
+        PaymentsEndpointsOptions options = new();
+        configure?.Invoke(options);
 
-        group.MapTransactionEndpoints();
-        group.MapPaymentMethodEndpoints();
-        group.MapPaymentMethodConfigurationEndpoints();
-        group.MapWebhookEndpoints();
+        RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
+
+        RouteGroupBuilder transactionsGroup = group.MapGranitGroup(string.Empty)
+            .WithTags(options.TransactionsTagName);
+        transactionsGroup.MapTransactionEndpoints();
+
+        RouteGroupBuilder methodsGroup = group.MapGranitGroup(string.Empty)
+            .WithTags(options.MethodsTagName);
+        methodsGroup.MapPaymentMethodEndpoints();
+
+        RouteGroupBuilder configurationGroup = group.MapGranitGroup(string.Empty)
+            .WithTags(options.ConfigurationTagName);
+        configurationGroup.MapPaymentMethodConfigurationEndpoints();
+
+        RouteGroupBuilder webhooksGroup = group.MapGranitGroup(string.Empty)
+            .WithTags(options.WebhooksTagName);
+        webhooksGroup.MapWebhookEndpoints();
 
         return group;
     }

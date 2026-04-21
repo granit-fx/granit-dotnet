@@ -19,4 +19,10 @@ public sealed class IdentityEndpointsOptions
     /// Default: <c>"Identity - User Cache"</c>.
     /// </summary>
     public string TagName { get; set; } = "Identity - User Cache";
+
+    /// <summary>
+    /// OpenAPI tag name for the identity-provider webhook receiver endpoint.
+    /// Default: <c>"Identity - Webhook"</c>.
+    /// </summary>
+    public string WebhookTagName { get; set; } = "Identity - Webhook";
 }

@@ -9080,6 +9080,12 @@
           "kind": "property",
           "signature": "long MaxUploadBytes",
           "returnType": "long"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
@@ -9775,12 +9781,12 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Endpoints",
       "file": "src/Granit.CustomerBalance.Endpoints/Extensions/CustomerBalanceEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitCustomerBalance",
           "kind": "method",
-          "signature": "MapGranitCustomerBalance(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitCustomerBalance(this IEndpointRouteBuilder endpoints, Action<CustomerBalanceEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -9793,6 +9799,28 @@
       "file": "src/Granit.CustomerBalance.Endpoints/GranitCustomerBalanceEndpointsModule.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "CustomerBalanceEndpointsOptions",
+      "fqn": "Granit.CustomerBalance.Endpoints.Options.CustomerBalanceEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Options/CustomerBalanceEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "Accounts",
@@ -16761,6 +16789,12 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "WebhookTagName",
+          "kind": "property",
+          "signature": "string WebhookTagName",
+          "returnType": "string"
         }
       ]
     },
@@ -20600,12 +20634,12 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/Extensions/InvoicingEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitInvoicing",
           "kind": "method",
-          "signature": "MapGranitInvoicing(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitInvoicing(this IEndpointRouteBuilder endpoints, Action<InvoicingEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -20618,6 +20652,28 @@
       "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "InvoicingEndpointsOptions",
+      "fqn": "Granit.Invoicing.Endpoints.Options.InvoicingEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Invoicing.Endpoints",
+      "file": "src/Granit.Invoicing.Endpoints/Options/InvoicingEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "CreditNotes",
@@ -22753,12 +22809,12 @@
       "kind": "class",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Extensions/MeteringEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitMetering",
           "kind": "method",
-          "signature": "MapGranitMetering(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitMetering(this IEndpointRouteBuilder endpoints, Action<MeteringEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -22771,6 +22827,28 @@
       "file": "src/Granit.Metering.Endpoints/GranitMeteringEndpointsModule.cs",
       "line": 16,
       "members": []
+    },
+    {
+      "name": "MeteringEndpointsOptions",
+      "fqn": "Granit.Metering.Endpoints.Options.MeteringEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Options/MeteringEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "MeteringPermissions",
@@ -25218,12 +25296,12 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/Endpoints/MobilePushTokenEndpoints.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "MapGranitMobilePushTokens",
           "kind": "method",
-          "signature": "MapGranitMobilePushTokens(this IEndpointRouteBuilder endpoints, string prefix = \"api/notifications/mobile-push/tokens\")",
+          "signature": "MapGranitMobilePushTokens(this IEndpointRouteBuilder endpoints, string prefix = \"api/notifications/mobile-push/tokens\", Action<NotificationEndpointsOptions>? configure = null)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
@@ -25271,6 +25349,12 @@
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
+          "returnType": "string"
+        },
+        {
+          "name": "MobilePushTagName",
+          "kind": "property",
+          "signature": "string MobilePushTagName",
           "returnType": "string"
         }
       ]
@@ -29347,12 +29431,12 @@
       "kind": "class",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/Extensions/PaymentsEndpointRouteBuilderExtensions.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "MapGranitPayments",
           "kind": "method",
-          "signature": "MapGranitPayments(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitPayments(this IEndpointRouteBuilder endpoints, Action<PaymentsEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -29365,6 +29449,46 @@
       "file": "src/Granit.Payments.Endpoints/GranitPaymentsEndpointsModule.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "PaymentsEndpointsOptions",
+      "fqn": "Granit.Payments.Endpoints.Options.PaymentsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Payments.Endpoints",
+      "file": "src/Granit.Payments.Endpoints/Options/PaymentsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TransactionsTagName",
+          "kind": "property",
+          "signature": "string TransactionsTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "MethodsTagName",
+          "kind": "property",
+          "signature": "string MethodsTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ConfigurationTagName",
+          "kind": "property",
+          "signature": "string ConfigurationTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "WebhooksTagName",
+          "kind": "property",
+          "signature": "string WebhooksTagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "Charges",
@@ -32527,7 +32651,7 @@
         {
           "name": "MapGranitPrivacyExportDownload",
           "kind": "method",
-          "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\")",
+          "signature": "MapGranitPrivacyExportDownload(this IEndpointRouteBuilder endpoints, string routePrefix = \"privacy\", string tagName = \"Privacy\")",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -37103,9 +37227,21 @@
           "returnType": "string"
         },
         {
-          "name": "TagName",
+          "name": "GlobalTagName",
           "kind": "property",
-          "signature": "string TagName",
+          "signature": "string GlobalTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "TenantTagName",
+          "kind": "property",
+          "signature": "string TenantTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "UserTagName",
+          "kind": "property",
+          "signature": "string UserTagName",
           "returnType": "string"
         }
       ]
@@ -38269,12 +38405,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Extensions/SubscriptionsEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitSubscriptions",
           "kind": "method",
-          "signature": "MapGranitSubscriptions(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitSubscriptions(this IEndpointRouteBuilder endpoints, Action<SubscriptionsEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -38287,6 +38423,46 @@
       "file": "src/Granit.Subscriptions.Endpoints/GranitSubscriptionsEndpointsModule.cs",
       "line": 16,
       "members": []
+    },
+    {
+      "name": "SubscriptionsEndpointsOptions",
+      "fqn": "Granit.Subscriptions.Endpoints.Options.SubscriptionsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Options/SubscriptionsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "PlansTagName",
+          "kind": "property",
+          "signature": "string PlansTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "PricesTagName",
+          "kind": "property",
+          "signature": "string PricesTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "SubscriptionsTagName",
+          "kind": "property",
+          "signature": "string SubscriptionsTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "SeatsTagName",
+          "kind": "property",
+          "signature": "string SeatsTagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "Plans",
@@ -39526,12 +39702,12 @@
       "kind": "class",
       "project": "Granit.Tax.Endpoints",
       "file": "src/Granit.Tax.Endpoints/Extensions/TaxEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitTax",
           "kind": "method",
-          "signature": "MapGranitTax(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitTax(this IEndpointRouteBuilder endpoints, Action<TaxEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -39544,6 +39720,34 @@
       "file": "src/Granit.Tax.Endpoints/GranitTaxEndpointsModule.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "TaxEndpointsOptions",
+      "fqn": "Granit.Tax.Endpoints.Options.TaxEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Tax.Endpoints",
+      "file": "src/Granit.Tax.Endpoints/Options/TaxEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "ValidationTagName",
+          "kind": "property",
+          "signature": "string ValidationTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "RatesTagName",
+          "kind": "property",
+          "signature": "string RatesTagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "Rates",
@@ -44309,7 +44513,7 @@
         {
           "name": "MapGranitWebhooksRedelivery",
           "kind": "method",
-          "signature": "MapGranitWebhooksRedelivery(this IEndpointRouteBuilder endpoints, string routePrefix = \"webhooks\")",
+          "signature": "MapGranitWebhooksRedelivery(this IEndpointRouteBuilder endpoints, string routePrefix = \"webhooks\", string tagName = \"Webhooks\")",
           "returnType": "IEndpointRouteBuilder"
         }
       ]

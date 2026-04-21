@@ -1,6 +1,7 @@
 using Granit.Authorization.Extensions;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.CustomerBalance.Endpoints.Internal;
+using Granit.CustomerBalance.Endpoints.Options;
 using Granit.CustomerBalance.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -13,12 +14,19 @@ namespace Granit.CustomerBalance.Endpoints.Extensions;
 public static class CustomerBalanceEndpointRouteBuilderExtensions
 {
     /// <summary>Maps the customer balance endpoints.</summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="configure">Optional delegate to customize <see cref="CustomerBalanceEndpointsOptions"/>.</param>
+    /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     public static RouteGroupBuilder MapGranitCustomerBalance(
-        this IEndpointRouteBuilder endpoints)
+        this IEndpointRouteBuilder endpoints,
+        Action<CustomerBalanceEndpointsOptions>? configure = null)
     {
+        CustomerBalanceEndpointsOptions options = new();
+        configure?.Invoke(options);
+
         RouteGroupBuilder group = endpoints
-            .MapGranitGroup("customer-balance")
-            .WithTags("Customer Balance");
+            .MapGranitGroup(options.RoutePrefix)
+            .WithTags(options.TagName);
 
         group.MapGet("/balance", GetBalanceEndpoint.HandleAsync)
             .WithName("GetCustomerBalance")

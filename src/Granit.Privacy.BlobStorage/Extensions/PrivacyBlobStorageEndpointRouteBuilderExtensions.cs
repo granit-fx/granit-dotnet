@@ -22,17 +22,23 @@ public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="routePrefix">Route prefix — typically mirrors <c>MapGranitPrivacy</c>. Default <c>"privacy"</c>.</param>
+    /// <param name="tagName">
+    /// OpenAPI tag. Default <c>"Privacy"</c> — matches <c>PrivacyEndpointsOptions.TagName</c>.
+    /// Override when the host customizes the Privacy tag.
+    /// </param>
     public static RouteGroupBuilder MapGranitPrivacyExportDownload(
         this IEndpointRouteBuilder endpoints,
-        string routePrefix = "privacy")
+        string routePrefix = "privacy",
+        string tagName = "Privacy")
     {
         ArgumentNullException.ThrowIfNull(endpoints);
         ArgumentException.ThrowIfNullOrWhiteSpace(routePrefix);
+        ArgumentException.ThrowIfNullOrWhiteSpace(tagName);
 
         RouteGroupBuilder group = endpoints
             .MapGroup(routePrefix)
             .RequireAuthorization()
-            .WithTags("Privacy");
+            .WithTags(tagName);
 
         group.MapGet("/exports/{requestId:guid}/download", HandleDownloadAsync)
              .WithName("DownloadPrivacyExportArchive")

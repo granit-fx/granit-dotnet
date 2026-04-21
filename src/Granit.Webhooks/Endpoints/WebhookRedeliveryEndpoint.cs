@@ -15,14 +15,21 @@ public static class WebhookRedeliveryEndpoint
     /// <summary>
     /// Maps <c>POST /webhooks/deliveries/{deliveryId}/retry</c> (or custom prefix).
     /// </summary>
+    /// <param name="endpoints">The endpoint route builder.</param>
+    /// <param name="routePrefix">Route prefix. Default <c>"webhooks"</c>.</param>
+    /// <param name="tagName">
+    /// OpenAPI tag. Default <c>"Webhooks"</c> — matches <c>WebhooksEndpointsOptions.TagName</c>.
+    /// Override when the host customizes the Webhooks tag.
+    /// </param>
     public static IEndpointRouteBuilder MapGranitWebhooksRedelivery(
         this IEndpointRouteBuilder endpoints,
-        string routePrefix = "webhooks")
+        string routePrefix = "webhooks",
+        string tagName = "Webhooks")
     {
         endpoints
             .MapPost($"{routePrefix}/deliveries/{{deliveryId:guid}}/retry", HandleRetryAsync)
             .WithName("RetryWebhookDelivery")
-            .WithTags("Webhooks")
+            .WithTags(tagName)
             .WithSummary("Retries a previously failed webhook delivery attempt.")
             .WithDescription("Enqueues a manual redelivery for a previously failed webhook delivery attempt. Returns 404 if the delivery does not exist, 409 if the delivery is not in a retryable state (e.g., already succeeded or retry in progress), and 400 for other validation errors.")
             .RequireAuthorization()

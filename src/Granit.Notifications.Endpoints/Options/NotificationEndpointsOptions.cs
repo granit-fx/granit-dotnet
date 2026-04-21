@@ -16,4 +16,10 @@ public sealed class NotificationEndpointsOptions
     /// Default: <c>"Notifications"</c>.
     /// </summary>
     public string TagName { get; set; } = "Notifications";
+
+    /// <summary>
+    /// OpenAPI tag name for mobile push device token endpoints.
+    /// Default: <c>"Notifications - Mobile Push"</c>.
+    /// </summary>
+    public string MobilePushTagName { get; set; } = "Notifications - Mobile Push";
 }
