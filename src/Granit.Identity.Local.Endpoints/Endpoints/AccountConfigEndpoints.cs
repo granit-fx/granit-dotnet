@@ -15,13 +15,15 @@ internal static class AccountConfigEndpoints
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="routePrefix">Route prefix. Default: <c>"api/account"</c>.</param>
+    /// <param name="tag">OpenAPI tag. Default: <c>"Account - Config"</c>.</param>
     /// <returns>The endpoint route builder for chaining.</returns>
     internal static IEndpointRouteBuilder MapGranitAccountConfig(
         this IEndpointRouteBuilder endpoints,
-        string routePrefix = "api/account") =>
+        string routePrefix = "api/account",
+        string tag = "Account - Config") =>
         endpoints.MapGranitModuleConfigAsync<IdentityLocalConfigProvider, IdentityLocalConfigResponse>(
             routePrefix,
             "GetAccountConfig",
-            "Account",
+            tag,
             builder => builder.AllowAnonymous());
 }

@@ -13,7 +13,7 @@ namespace Granit.Identity.Local.Endpoints.Endpoints;
 
 internal static class AccountSessionEndpoints
 {
-    internal static RouteGroupBuilder MapAccountSessionEndpoints(this RouteGroupBuilder group)
+    internal static RouteGroupBuilder MapAccountSessionHeartbeatEndpoint(this RouteGroupBuilder group)
     {
         group.MapPost("/session/heartbeat", (Delegate)HeartbeatAsync)
             .WithName("SessionHeartbeat")
@@ -24,6 +24,11 @@ internal static class AccountSessionEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization();
 
+        return group;
+    }
+
+    internal static RouteGroupBuilder MapAccountBackToImpersonatorEndpoint(this RouteGroupBuilder group)
+    {
         group.MapPost("/session/back-to-impersonator", (Delegate)BackToImpersonatorAsync)
             .WithName("BackToImpersonator")
             .WithSummary("Ends an impersonation session and returns to the admin account.")

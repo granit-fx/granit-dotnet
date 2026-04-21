@@ -18340,15 +18340,75 @@
           "returnType": "string"
         },
         {
-          "name": "AccountTagName",
+          "name": "LoginTagName",
           "kind": "property",
-          "signature": "string AccountTagName",
+          "signature": "string LoginTagName",
           "returnType": "string"
         },
         {
-          "name": "AdminTagName",
+          "name": "RegistrationTagName",
           "kind": "property",
-          "signature": "string AdminTagName",
+          "signature": "string RegistrationTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ProfileTagName",
+          "kind": "property",
+          "signature": "string ProfileTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "EmailChangeTagName",
+          "kind": "property",
+          "signature": "string EmailChangeTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "PasswordTagName",
+          "kind": "property",
+          "signature": "string PasswordTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "TwoFactorTagName",
+          "kind": "property",
+          "signature": "string TwoFactorTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ExternalLoginsTagName",
+          "kind": "property",
+          "signature": "string ExternalLoginsTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "PasskeysTagName",
+          "kind": "property",
+          "signature": "string PasskeysTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "DeletionTagName",
+          "kind": "property",
+          "signature": "string DeletionTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "SessionTagName",
+          "kind": "property",
+          "signature": "string SessionTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ConfigTagName",
+          "kind": "property",
+          "signature": "string ConfigTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ImpersonationTagName",
+          "kind": "property",
+          "signature": "string ImpersonationTagName",
           "returnType": "string"
         }
       ]
