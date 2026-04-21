@@ -1,5 +1,3 @@
-using Granit.Authorization.Events;
-using Granit.Events;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Authorization.Services;
@@ -7,14 +5,14 @@ namespace Granit.Authorization.Services;
 /// <summary>
 /// Domain service implementing <see cref="IPermissionManagerReader"/> and <see cref="IPermissionManagerWriter"/>.
 /// Delegates data access to <see cref="IPermissionGrantStore"/> and provides business logic:
-/// permission definition validation, grant validation chain, event-driven cache invalidation,
-/// and ISO 27001 audit logging.
+/// permission definition validation, grant validation chain, and ISO 27001 audit logging.
+/// Cache invalidation flows through <c>PermissionGrantChangedEvent</c> domain events raised
+/// by the <c>PermissionGrant</c> aggregate and dispatched by the EF Core interceptor.
 /// </summary>
 internal sealed partial class PermissionManager(
     IPermissionGrantStore grantStore,
     IPermissionDefinitionManager definitionManager,
     IEnumerable<IPermissionGrantValidator> grantValidators,
-    ILocalEventBus eventBus,
     ILogger<PermissionManager> logger)
     : IPermissionManagerReader, IPermissionManagerWriter
 {
@@ -69,11 +67,9 @@ internal sealed partial class PermissionManager(
             return; // no-op: state already matches requested value (or idempotent race)
         }
 
-        // Event-driven cache invalidation — consumed by PermissionCacheInvalidationHandler.
-        // Decoupled from the store so other modules can react to permission changes.
-        await eventBus.PublishAsync(
-            new PermissionGrantChangedEvent(permissionName, providerName, providerKey, tenantId, isGranted),
-            cancellationToken).ConfigureAwait(false);
+        // Cache invalidation flows via PermissionGrantChangedEvent domain events raised by
+        // the PermissionGrant aggregate (Create / MarkAsRevoked) and dispatched by
+        // DomainEventDispatcherInterceptor after SaveChanges commits. No manual publish here.
 
         // ISO 27001 audit trail: emitted as structured log → Serilog → OTLP → Loki (3-year retention)
         // RGPD: no personal data — only provider key, permission name, tenant scope

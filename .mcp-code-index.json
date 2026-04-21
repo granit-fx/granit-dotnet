@@ -6213,7 +6213,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Domain/PermissionGrant.cs",
-      "line": 22,
+      "line": 30,
       "members": [
         {
           "name": "Name",
@@ -6232,6 +6232,12 @@
           "kind": "property",
           "signature": "string ProviderKey",
           "returnType": "string"
+        },
+        {
+          "name": "PermissionGrant",
+          "kind": "method",
+          "signature": "PermissionGrant()",
+          "returnType": "Guid? TenantId { get; private set; } private"
         }
       ]
     },
@@ -6410,7 +6416,7 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Events/PermissionGrantChangedEvent.cs",
-      "line": 17,
+      "line": 20,
       "members": []
     },
     {

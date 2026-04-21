@@ -98,14 +98,12 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
             return false;
         }
 
-        context.PermissionGrants.Add(new PermissionGrant
-        {
-            Id = guidGenerator.Create(),
-            Name = permissionName,
-            ProviderName = providerName,
-            ProviderKey = providerKey,
-            TenantId = tenantId
-        });
+        context.PermissionGrants.Add(PermissionGrant.Create(
+            guidGenerator.Create(),
+            permissionName,
+            providerName,
+            providerKey,
+            tenantId));
 
         try
         {
@@ -142,6 +140,7 @@ internal sealed class EfCorePermissionGrantStore<TContext>(
             return false;
         }
 
+        existing.MarkAsRevoked();
         context.PermissionGrants.Remove(existing);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

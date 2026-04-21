@@ -1,3 +1,5 @@
+using Granit.Events;
+
 namespace Granit.Authorization.Events;
 
 /// <summary>
@@ -5,9 +7,10 @@ namespace Granit.Authorization.Events;
 /// OIDC client).
 /// </summary>
 /// <remarks>
-/// Consumed by <see cref="Cache.PermissionCacheInvalidationHandler"/> to remove the stale
-/// entry from <see cref="Caching.ICacheService{PermissionGrantCacheItem}"/>.
-/// Publish this event after any <see cref="IPermissionManagerWriter"/> mutation.
+/// Domain event collected from <see cref="Domain.PermissionGrant"/> via
+/// <c>AddDomainEvent</c> (create/revoke paths) and dispatched by the
+/// <c>DomainEventDispatcherInterceptor</c> after <c>SaveChanges</c> commits. Consumed by
+/// <see cref="Cache.PermissionCacheInvalidationHandler"/> to invalidate the stale entry.
 /// </remarks>
 /// <param name="PermissionName">The permission that was granted or revoked.</param>
 /// <param name="ProviderName">Provider identifier for the grantee (<c>"R"</c>, <c>"U"</c>, <c>"C"</c>).</param>
@@ -19,4 +22,4 @@ public sealed record PermissionGrantChangedEvent(
     string ProviderName,
     string ProviderKey,
     Guid? TenantId,
-    bool IsGranted);
+    bool IsGranted) : IDomainEvent;

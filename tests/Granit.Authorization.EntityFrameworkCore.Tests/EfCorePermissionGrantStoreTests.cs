@@ -226,14 +226,12 @@ public sealed class EfCorePermissionGrantStoreTests
         string permissionName,
         Guid? tenantId)
     {
-        context.PermissionGrants.Add(new PermissionGrant
-        {
-            Id = Guid.NewGuid(),
-            Name = permissionName,
-            ProviderName = R,
-            ProviderKey = roleName,
-            TenantId = tenantId
-        });
+        context.PermissionGrants.Add(PermissionGrant.Create(
+            Guid.NewGuid(),
+            permissionName,
+            R,
+            roleName,
+            tenantId));
         await context.SaveChangesAsync(TestContext.Current.CancellationToken);
     }
 }
