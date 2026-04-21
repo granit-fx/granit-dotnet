@@ -42,9 +42,13 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
 
     /// <summary>
     /// OIDC client identifier the role is scoped to (<c>null</c> for realm / global roles).
-    /// Max 256 characters. Populated for provider-native client roles in Phase 2; always
-    /// <see langword="null"/> for locally created roles in Phase 1.
+    /// Max 256 characters.
     /// </summary>
+    /// <remarks>
+    /// Reserved for a future realm vs client role distinction on federated providers
+    /// (Keycloak client roles, Entra app roles, etc.). Locally created roles leave this
+    /// <see langword="null"/>.
+    /// </remarks>
     public string? ClientId { get; private set; }
 
     /// <summary>Host / tenant applicability side. Default on new declarations is <see cref="MultiTenancySide.Both"/>.</summary>

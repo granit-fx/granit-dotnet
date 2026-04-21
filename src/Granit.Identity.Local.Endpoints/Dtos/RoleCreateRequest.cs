@@ -5,8 +5,8 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <summary>Request to create a new local role.</summary>
 /// <param name="Name">Display name of the role (max 256 chars).</param>
 /// <param name="MultiTenancySide">
-/// Host / Tenant / Both applicability. <see cref="MultiTenancySide.Tenant"/> is refused in
-/// Phase 1 unless the <c>AllowTenantRoles</c> option is flipped.
+/// Host / Tenant / Both applicability. <see cref="MultiTenancySide.Tenant"/> is refused
+/// unless <c>RoleEndpointsOptions.AllowTenantRoles</c> is enabled.
 /// </param>
 /// <param name="TenantId">
 /// Tenant identifier — required iff <paramref name="MultiTenancySide"/> is

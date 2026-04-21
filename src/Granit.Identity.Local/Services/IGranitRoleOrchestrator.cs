@@ -12,16 +12,17 @@ namespace Granit.Identity.Local.Services;
 /// <para>
 /// GranitRole rows live in the Identity DbContext (e.g. <c>OpenIddictDbContext</c>) while
 /// <see cref="RoleMetadata"/> rows live in the host DbContext that implements
-/// <c>IPermissionGrantDbContext</c>. The orchestrator serialises the two writes and
-/// performs a compensating delete of the GranitRole if the <see cref="RoleMetadata"/>
+/// <c>IPermissionGrantDbContext</c>. The default implementation serialises the two writes
+/// and performs a compensating delete of the GranitRole if the <see cref="RoleMetadata"/>
 /// write fails, so the invariant "every Granit-managed role has matching metadata"
 /// converges even without a cross-DbContext transaction.
 /// </para>
 /// <para>
-/// Phase 1 uses this compensating-write approach. A future refinement can swap the
-/// implementation for a shared-connection EF Core transaction when both DbContexts
-/// target the same physical database, as documented in
-/// <c>docs/dotnet/security/authorization-multitenancy-side.mdx</c>.
+/// A shared-connection EF Core transaction is preferable when both DbContexts target the
+/// same physical database, but requires the Identity DbContext to expose its
+/// <c>DbConnection</c> across assemblies — the current <c>OpenIddictDbContext</c> is
+/// <c>internal sealed</c>. Implementers that control both contexts can register an
+/// alternative implementation of this interface that opens a shared transaction instead.
 /// </para>
 /// </remarks>
 public interface IGranitRoleOrchestrator
@@ -53,7 +54,7 @@ public interface IGranitRoleOrchestrator
 /// <param name="Name">Role display name, e.g. <c>"Manager"</c>.</param>
 /// <param name="MultiTenancySide">Declarative scope of the role.</param>
 /// <param name="TenantId">Tenant identifier — must be set iff <paramref name="MultiTenancySide"/> is <see cref="Granit.MultiTenancy.MultiTenancySide.Tenant"/>.</param>
-/// <param name="ClientId">Optional OIDC client scope (always <c>null</c> in Phase 1).</param>
+/// <param name="ClientId">Optional OIDC client scope — reserved for future realm / client role distinction.</param>
 /// <param name="Description">Optional description.</param>
 /// <param name="IsSystem">Mark the role as platform-provisioned (prevents CRUD via endpoints).</param>
 public sealed record CreateRoleCommand(

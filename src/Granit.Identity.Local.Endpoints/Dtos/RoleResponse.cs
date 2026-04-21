@@ -7,7 +7,7 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <param name="Name">Role display name.</param>
 /// <param name="MultiTenancySide">Host / Tenant / Both applicability.</param>
 /// <param name="TenantId">Tenant scope (null for Host / Both).</param>
-/// <param name="ClientId">OIDC client scope (always null in Phase 1).</param>
+/// <param name="ClientId">OIDC client scope — reserved for future realm / client role distinction; currently always null.</param>
 /// <param name="Description">Optional description.</param>
 /// <param name="IsSystem"><c>true</c> for platform-seeded roles (cannot be renamed or deleted).</param>
 /// <param name="CreatedAt">Creation timestamp.</param>

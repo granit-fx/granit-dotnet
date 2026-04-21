@@ -15,17 +15,18 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Phase 1 uses a compensating-write strategy rather than a cross-DbContext transaction:
-/// the role is created in the Identity DbContext first, then the metadata is persisted
-/// via <see cref="IRoleMetadataStore"/>. If the metadata write fails the GranitRole is
+/// Uses a compensating-write strategy rather than a cross-DbContext transaction: the role
+/// is created in the Identity DbContext first, then the metadata is persisted via
+/// <see cref="IRoleMetadataStore"/>. If the metadata write fails the GranitRole is
 /// deleted so the invariant "every Granit-managed role has matching metadata" converges.
 /// </para>
 /// <para>
 /// This avoids the MSDTC escalation hazard of <c>TransactionScope</c> on Linux with
-/// Npgsql. A future refinement can swap this implementation for a shared-connection
-/// EF Core transaction (<c>Database.OpenConnectionAsync</c> / <c>SetDbConnection</c> /
-/// <c>BeginTransactionAsync</c> / <c>UseTransactionAsync</c>) when both DbContexts are
-/// known to target the same physical database.
+/// Npgsql and works regardless of whether both DbContexts share a physical database.
+/// Deployments that guarantee both contexts target the same database and can expose their
+/// connection across assemblies may replace this with a shared-connection EF Core
+/// transaction (<c>Database.OpenConnectionAsync</c> / <c>SetDbConnection</c> /
+/// <c>BeginTransactionAsync</c> / <c>UseTransactionAsync</c>).
 /// </para>
 /// </remarks>
 internal sealed partial class GranitRoleOrchestrator(

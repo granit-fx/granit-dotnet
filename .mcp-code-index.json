@@ -19577,7 +19577,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IGranitRoleOrchestrator.cs",
-      "line": 59,
+      "line": 60,
       "members": []
     },
     {
@@ -19720,7 +19720,7 @@
       "kind": "interface",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Services/IGranitRoleOrchestrator.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "CreateAsync",

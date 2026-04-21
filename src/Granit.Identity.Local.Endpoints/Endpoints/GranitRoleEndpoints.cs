@@ -53,7 +53,7 @@ internal static class GranitRoleEndpoints
             .WithSummary("Creates a new local role and its RoleMetadata row.")
             .WithDescription(
                 "Invariants: Host / Both ⇒ TenantId must be null; Tenant ⇒ TenantId required. "
-                + "Phase 1 refuses Side=Tenant unless the AllowTenantRoles option is enabled.")
+                + "Side=Tenant requests are refused unless RoleEndpointsOptions.AllowTenantRoles is enabled.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -122,7 +122,7 @@ internal static class GranitRoleEndpoints
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
-                detail: "Tenant-scoped role creation is disabled in this deployment (Phase 1). " +
+                detail: "Tenant-scoped role creation is disabled. " +
                         "Set RoleEndpointsOptions.AllowTenantRoles = true to enable it.");
         }
 
