@@ -18502,6 +18502,33 @@
       "members": []
     },
     {
+      "name": "RoleCreateRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.RoleCreateRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleCreateRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "RoleResponse",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.RoleResponse",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "RoleUpdateRequest",
+      "fqn": "Granit.Identity.Local.Endpoints.Dtos.RoleUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleUpdateRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "AccountEndpointRouteBuilderExtensions",
       "fqn": "Granit.Identity.Local.Endpoints.Extensions.AccountEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -18513,6 +18540,22 @@
           "name": "MapGranitAccount",
           "kind": "method",
           "signature": "MapGranitAccount(this IEndpointRouteBuilder endpoints, Action<AccountEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "RoleEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Identity.Local.Endpoints.Extensions.RoleEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Extensions/RoleEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitRoles",
+          "kind": "method",
+          "signature": "MapGranitRoles(this IEndpointRouteBuilder endpoints, Action<RoleEndpointsOptions>? configure = null)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -18628,12 +18671,43 @@
       ]
     },
     {
+      "name": "RoleEndpointsOptions",
+      "fqn": "Granit.Identity.Local.Endpoints.Options.RoleEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Options/RoleEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RolesRoutePrefix",
+          "kind": "property",
+          "signature": "string RolesRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IdentityLocalPermissions",
       "fqn": "Granit.Identity.Local.Endpoints.Permissions.IdentityLocalPermissions",
       "kind": "class",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Permissions/IdentityLocalPermissions.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "Roles",
+      "fqn": "Granit.Identity.Local.Endpoints.Permissions.Roles",
+      "kind": "class",
+      "project": "Granit.Identity.Local.Endpoints",
+      "file": "src/Granit.Identity.Local.Endpoints/Permissions/IdentityLocalPermissions.cs",
+      "line": 24,
       "members": []
     },
     {

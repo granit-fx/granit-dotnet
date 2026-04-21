@@ -2,6 +2,16 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:IdentityLocal": "Lokale identiteit",
-    "Permission:IdentityLocal.Users.Impersonate": "Gebruikers nabootsen"
+    "Permission:IdentityLocal.Users.Impersonate": "Gebruikers nabootsen",
+    "Permission:IdentityLocal.Roles.Read": "Read roles",
+    "Permission:IdentityLocal.Roles.Manage": "Create and rename roles",
+    "Permission:IdentityLocal.Roles.Delete": "Delete roles",
+    "Granit:Identity:Role:TenantIdRequired": "Tenant-scoped roles require a non-null TenantId.",
+    "Granit:Identity:Role:TenantIdForbidden": "Host and Both roles must have a null TenantId.",
+    "Granit:Identity:Role:CannotDeleteSystem": "System roles cannot be deleted.",
+    "Granit:Identity:Role:CannotRenameSystem": "System roles cannot be renamed.",
+    "Granit:Identity:Role:NameAlreadyExists": "A role with this name already exists in the target scope.",
+    "Granit:Identity:Role:TenantRolesDisabled": "Tenant-scoped role creation is disabled in this deployment.",
+    "Granit:Identity:Role:CrossTenantForbidden": "Tenant administrators can only manage roles within their own tenant."
   }
 }
