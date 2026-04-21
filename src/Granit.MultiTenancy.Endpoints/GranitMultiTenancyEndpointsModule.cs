@@ -10,7 +10,7 @@ namespace Granit.MultiTenancy.Endpoints;
 /// </summary>
 /// <remarks>
 /// Exposes tenant CRUD and activation/deactivation endpoints under
-/// <c>/{prefix}/admin/tenants</c> (<see cref="Extensions.MultiTenancyEndpointRouteBuilderExtensions.MapGranitMultiTenancy"/>).
+/// <c>/{prefix}/multi-tenancy/tenants</c> (<see cref="Extensions.MultiTenancyEndpointRouteBuilderExtensions.MapGranitMultiTenancy"/>).
 /// Permission definition providers are auto-discovered by the authorization module.
 /// </remarks>
 [DependsOn(

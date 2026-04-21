@@ -17,7 +17,8 @@ namespace Granit.MultiTenancy.Endpoints.Extensions;
 public static class MultiTenancyEndpointRouteBuilderExtensions
 {
     /// <summary>
-    /// Maps multi-tenancy management endpoints under <c>/{prefix}/admin/tenants</c>.
+    /// Maps multi-tenancy management endpoints under <c>/{prefix}/tenants</c>
+    /// (default prefix: <c>multi-tenancy</c>, so the full path is <c>/multi-tenancy/tenants</c>).
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="MultiTenancyEndpointsOptions"/>.</param>
@@ -37,10 +38,10 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         RouteGroupBuilder tenantsGroup = group.MapGranitGroup("tenants");
 
         // Note: Tenant listing is handled by Granit.QueryEngine. Consumers should register
-        // a query endpoint at the same prefix, e.g.:
+        // a query endpoint at the same prefix as the CRUD endpoints above, e.g.:
         //   api.MapGranitQuery<Tenant>(
         //       sp => sp.GetRequiredService<IQueryableSource<Tenant>>().GetQueryable(),
-        //       "admin/tenants",
+        //       "multi-tenancy/tenants",
         //       opts => opts.AuthorizationPolicy = MultiTenancyPermissions.Tenants.Read);
         //
         // This keeps Granit.MultiTenancy.Endpoints decoupled from EF Core and the query engine,

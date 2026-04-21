@@ -186,7 +186,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
         response.EnsureSuccessStatusCode();
 
         ZipArchiveEntry entry = zip.CreateEntry(entryName, CompressionLevel.Optimal);
-        await using Stream entryStream = entry.Open();
+        await using Stream entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
         await using Stream contentStream = await response.Content
             .ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         await contentStream.CopyToAsync(entryStream, cancellationToken).ConfigureAwait(false);
@@ -211,7 +211,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
             fragments);
 
         ZipArchiveEntry entry = zip.CreateEntry("manifest.json", CompressionLevel.Optimal);
-        await using Stream entryStream = entry.Open();
+        await using Stream entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
         await JsonSerializer.SerializeAsync(entryStream, manifest, ManifestJsonOptions, cancellationToken)
             .ConfigureAwait(false);
     }
