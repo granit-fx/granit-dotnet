@@ -7848,12 +7848,6 @@
           "kind": "property",
           "signature": "string EffectiveErrorRedirectPath",
           "returnType": "string"
-        },
-        {
-          "name": "UsePushedAuthorizationRequests",
-          "kind": "property",
-          "signature": "bool UsePushedAuthorizationRequests",
-          "returnType": "bool"
         }
       ]
     },

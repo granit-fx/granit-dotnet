@@ -181,7 +181,8 @@ public sealed class BffFrontendOptions
     /// <summary>
     /// Gets the effective post-login redirect path.
     /// When <see cref="ClientUrl"/> is set and no explicit path is configured,
-    /// returns <c>{ClientUrl}/</c>.
+    /// returns the canonical origin <c>{ClientUrl}</c> with no trailing slash
+    /// (matches how OIDC clients are typically registered).
     /// </summary>
     public string EffectivePostLoginRedirectPath =>
         PrefixWithClientUrl(PostLoginRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/"));
@@ -189,7 +190,8 @@ public sealed class BffFrontendOptions
     /// <summary>
     /// Gets the effective post-logout redirect path.
     /// When <see cref="ClientUrl"/> is set and no explicit path is configured,
-    /// returns <c>{ClientUrl}/</c>.
+    /// returns the canonical origin <c>{ClientUrl}</c> with no trailing slash
+    /// (required for OIDC exact-match on <c>post_logout_redirect_uri</c>).
     /// </summary>
     public string EffectivePostLogoutRedirectPath =>
         PrefixWithClientUrl(PostLogoutRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/" : $"{PathPrefix}/"));
@@ -202,8 +204,19 @@ public sealed class BffFrontendOptions
     public string EffectiveErrorRedirectPath =>
         PrefixWithClientUrl(ErrorRedirectPath ?? (string.IsNullOrEmpty(PathPrefix) ? "/login" : $"{PathPrefix}/login"));
 
-    internal string PrefixWithClientUrl(string relativePath) =>
-        string.IsNullOrEmpty(ClientUrl) ? relativePath : $"{ClientUrl.TrimEnd('/')}{relativePath}";
+    internal string PrefixWithClientUrl(string relativePath)
+    {
+        if (string.IsNullOrEmpty(ClientUrl))
+        {
+            return relativePath;
+        }
+
+        // Canonicalize the origin: "http://host/" + "/" would yield "http://host/", but OIDC
+        // requires exact string match on post_logout_redirect_uri (RFC 6749 §3.1.2.3 / OIDC Core §3.1.2.1),
+        // and the natural registered form is just the origin "http://host" (no trailing slash).
+        string trimmedClientUrl = ClientUrl.TrimEnd('/');
+        return relativePath == "/" ? trimmedClientUrl : $"{trimmedClientUrl}{relativePath}";
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the BFF should use Pushed Authorization

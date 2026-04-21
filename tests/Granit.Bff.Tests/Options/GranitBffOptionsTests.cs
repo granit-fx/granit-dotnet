@@ -299,7 +299,7 @@ public sealed class BffFrontendOptionsTests
             ClientUrl = "http://localhost:5173",
         };
 
-        frontend.EffectivePostLoginRedirectPath.ShouldBe("http://localhost:5173/");
+        frontend.EffectivePostLoginRedirectPath.ShouldBe("http://localhost:5173");
     }
 
     [Fact]
@@ -322,7 +322,7 @@ public sealed class BffFrontendOptionsTests
             ClientUrl = "http://localhost:5174",
         };
 
-        frontend.EffectivePostLogoutRedirectPath.ShouldBe("http://localhost:5174/");
+        frontend.EffectivePostLogoutRedirectPath.ShouldBe("http://localhost:5174");
     }
 
     [Fact]
