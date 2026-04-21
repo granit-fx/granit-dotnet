@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Authorization.Domain;
+using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
@@ -53,6 +54,7 @@ internal static class GranitRoleEndpoints
             .WithDescription(
                 "Invariants: Host / Both ⇒ TenantId must be null; Tenant ⇒ TenantId required. "
                 + "Phase 1 refuses Side=Tenant unless the AllowTenantRoles option is enabled.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status403Forbidden)
@@ -62,6 +64,7 @@ internal static class GranitRoleEndpoints
             .WithName("RenameRole")
             .WithSummary("Renames a role and updates its description.")
             .WithDescription("Side and tenant scope are immutable. System roles and non-visible roles cannot be renamed.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -72,6 +75,7 @@ internal static class GranitRoleEndpoints
             .WithName("DeleteRole")
             .WithSummary("Hard-deletes a non-system role.")
             .WithDescription("System roles (SuperAdmin, TenantAdministrator, User) and non-visible roles cannot be deleted.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status403Forbidden)

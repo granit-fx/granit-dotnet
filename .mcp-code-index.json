@@ -18126,22 +18126,6 @@
       ]
     },
     {
-      "name": "TenantAwareRoleLookupNormalizer",
-      "fqn": "Granit.Identity.Local.AspNetIdentity.Internal.TenantAwareRoleLookupNormalizer",
-      "kind": "class",
-      "project": "Granit.Identity.Local.AspNetIdentity",
-      "file": "src/Granit.Identity.Local.AspNetIdentity/Internal/TenantAwareRoleLookupNormalizer.cs",
-      "line": 31,
-      "members": [
-        {
-          "name": "NormalizeName",
-          "kind": "method",
-          "signature": "NormalizeName(string? name)",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
       "name": "IdentityLocalMetrics",
       "fqn": "Granit.Identity.Local.Diagnostics.IdentityLocalMetrics",
       "kind": "class",

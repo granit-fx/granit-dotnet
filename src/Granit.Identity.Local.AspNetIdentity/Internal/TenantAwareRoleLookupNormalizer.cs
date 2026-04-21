@@ -28,7 +28,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// table needs the prefix strategy.
 /// </para>
 /// </remarks>
-public sealed class TenantAwareRoleLookupNormalizer(ICurrentTenant currentTenant) : ILookupNormalizer
+internal sealed class TenantAwareRoleLookupNormalizer(ICurrentTenant currentTenant) : ILookupNormalizer
 {
     private const string TenantPrefixMarker = "T_";
 
