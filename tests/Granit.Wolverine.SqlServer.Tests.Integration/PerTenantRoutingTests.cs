@@ -14,6 +14,7 @@
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.MultiTenancy;
+using Granit.Testing.Containers;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -88,7 +89,12 @@ public sealed class TwoSqlServerContainersFixture : IAsyncLifetime
                 .WithPassword("Test_Password1!")
                 .Build();
 
-            await Task.WhenAll(_containerA.StartAsync(), _containerB.StartAsync());
+            // MCR (mcr.microsoft.com/mssql/server) has been observed to intermittently
+            // block pulls from CI runners via Azure Front Door. Retry up to 3 times
+            // with exponential backoff so a single transient block doesn't fail the job.
+            await ContainerStartRetry.RunWithRetryAsync(
+                ct => Task.WhenAll(_containerA.StartAsync(ct), _containerB.StartAsync(ct)),
+                label: "mssql-per-tenant-fixture");
 
             ConnectionStringA = _containerA.GetConnectionString();
             ConnectionStringB = _containerB.GetConnectionString();

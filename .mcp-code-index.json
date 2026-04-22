@@ -41430,6 +41430,22 @@
       "members": []
     },
     {
+      "name": "ContainerStartRetry",
+      "fqn": "Granit.Testing.Containers.ContainerStartRetry",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Containers/ContainerStartRetry.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "RunWithRetryAsync",
+          "kind": "method",
+          "signature": "RunWithRetryAsync(Func<CancellationToken, Task> start, string label, ILogger? logger = null, int maxAttempts = 3, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "TestDbContextServiceCollectionExtensions",
       "fqn": "Granit.Testing.EntityFrameworkCore.Extensions.TestDbContextServiceCollectionExtensions",
       "kind": "class",
