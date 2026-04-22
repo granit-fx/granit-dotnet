@@ -19715,6 +19715,22 @@
       ]
     },
     {
+      "name": "IGranitRoleLookup",
+      "fqn": "Granit.Identity.Local.Services.IGranitRoleLookup",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IGranitRoleLookup.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "FindByNameAsync",
+          "kind": "method",
+          "signature": "FindByNameAsync(string name, string? clientId = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata?>"
+        }
+      ]
+    },
+    {
       "name": "IGranitRoleOrchestrator",
       "fqn": "Granit.Identity.Local.Services.IGranitRoleOrchestrator",
       "kind": "interface",

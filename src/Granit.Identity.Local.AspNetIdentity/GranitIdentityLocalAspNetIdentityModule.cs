@@ -42,9 +42,18 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // Replace default UserManager with GranitUserManager (exponential backoff lockout)
         context.Services.Replace(ServiceDescriptor.Scoped<UserManager<GranitUser>, GranitUserManager>());
 
-        // TenantAwareRoleLookupNormalizer is intentionally not wired here. When
-        // RoleEndpointsOptions.AllowTenantRoles is enabled, applications must replace the
-        // framework default ILookupNormalizer with that type — see the class remarks.
+        // Tenant-aware role lookup: the normalizer prefixes every NormalizeName call
+        // with the current tenant id when one is active, letting the same display name
+        // coexist across tenants on ASP.NET Identity's global NormalizedName index.
+        // Scoped because it depends on the scoped ICurrentTenant. See ADR-023 for the
+        // rationale behind the universal (vs flag-gated) registration.
+        context.Services.Replace(ServiceDescriptor.Scoped<
+            ILookupNormalizer, TenantAwareRoleLookupNormalizer>());
+
+        // Canonical lookup abstraction for Granit-internal role queries. Prefers the
+        // tenant-scoped row when a tenant context is active and falls back to the
+        // host-scope row for Both-side roles that are assignable but stored globally.
+        context.Services.TryAddScoped<IGranitRoleLookup, GranitRoleLookup>();
 
         // Replace default claims principal factory to inject tenant_id into the Identity cookie.
         // This ensures multi-tenancy middleware can resolve the tenant from the authenticated
