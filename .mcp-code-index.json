@@ -6451,7 +6451,7 @@
       "kind": "class",
       "project": "Granit.Authorization.EntityFrameworkCore",
       "file": "src/Granit.Authorization.EntityFrameworkCore/Extensions/AuthorizationEfCoreServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": []
     },
     {
@@ -6817,7 +6817,7 @@
       "kind": "interface",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/IRoleMetadataStore.cs",
-      "line": 13,
+      "line": 27,
       "members": [
         {
           "name": "FindByIdAsync",
@@ -28449,7 +28449,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.EntityFrameworkCore",
       "file": "src/Granit.OpenIddict.EntityFrameworkCore/Extensions/OpenIddictEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitOpenIddict",
@@ -32563,6 +32563,31 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "IAuthorizationHostDbContextAccessor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SharedConnection.IAuthorizationHostDbContextAccessor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/SharedConnection/IAuthorizationHostDbContextAccessor.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "CreateFreshDbContextAsync",
+          "kind": "method",
+          "signature": "CreateFreshDbContextAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<DbContext>"
+        }
+      ]
+    },
+    {
+      "name": "IIdentityDbContextAccessor",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.SharedConnection.IIdentityDbContextAccessor",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/SharedConnection/IIdentityDbContextAccessor.cs",
+      "line": 28,
+      "members": []
     },
     {
       "name": "SpecificationEvaluator",

@@ -6,9 +6,23 @@ namespace Granit.Authorization;
 /// Persistence abstraction for <see cref="RoleMetadata"/>.
 /// </summary>
 /// <remarks>
+/// <para>
 /// Consumers (the grant validator, CRUD endpoints, orchestrator) depend on this
 /// contract so roles defined by the local identity store and by future federated
 /// providers share the same metadata surface.
+/// </para>
+/// <para>
+/// <b>Orchestrator atomic path caveat.</b> When <c>IGranitRoleOrchestrator</c> takes
+/// its shared-connection atomic path (see ADR-024), the write methods on this
+/// interface (<see cref="AddAsync"/>, <see cref="UpdateAsync"/>, <see cref="RemoveAsync"/>)
+/// are <b>bypassed by design</b> — the orchestrator writes directly through a fresh
+/// <c>DbContext</c> attached to the shared transaction. Implementations that want to
+/// run additional business logic (in-memory event publication, extra validation,
+/// cross-cutting audit) around role persistence MUST NOT rely on being called
+/// through this contract; extract such logic into a domain service invoked by the
+/// orchestrator itself (or by the CRUD endpoint layer before orchestration) so it
+/// runs on both paths.
+/// </para>
 /// </remarks>
 public interface IRoleMetadataStore
 {
