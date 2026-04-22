@@ -135,10 +135,13 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
             return;
         }
 
+        string? previousName = nameChanged ? Name : null;
+
         Name = newName;
         Description = newDescription;
 
-        AddDomainEvent(new RoleUpdatedEvent(Id, Name, MultiTenancySide, TenantId, ClientId));
+        AddDomainEvent(new RoleUpdatedEvent(
+            Id, Name, previousName, MultiTenancySide, TenantId, ClientId));
     }
 
     /// <summary>

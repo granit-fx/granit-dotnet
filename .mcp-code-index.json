@@ -6188,6 +6188,22 @@
       "members": []
     },
     {
+      "name": "RoleCacheInvalidationHandler",
+      "fqn": "Granit.Authorization.Cache.RoleCacheInvalidationHandler",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Cache/RoleCacheInvalidationHandler.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(RoleUpdatedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "AuthorizationMetrics",
       "fqn": "Granit.Authorization.Diagnostics.AuthorizationMetrics",
       "kind": "class",
@@ -6496,7 +6512,7 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Events/RoleUpdatedEvent.cs",
-      "line": 15,
+      "line": 20,
       "members": []
     },
     {

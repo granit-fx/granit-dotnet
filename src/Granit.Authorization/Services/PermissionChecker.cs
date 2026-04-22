@@ -91,7 +91,8 @@ internal sealed class PermissionChecker(
                                 provider.Name, providerKey, permissionName, tenantId, ct)
                             .ConfigureAwait(false));
                     },
-                    new FusionCacheEntryOptions { Duration = opts.CacheDuration },
+                    options: new FusionCacheEntryOptions { Duration = opts.CacheDuration },
+                    tags: BuildCacheTags(provider.Name, providerKey),
                     token: cancellationToken).ConfigureAwait(false);
 
                 if (result.IsGranted)
@@ -237,13 +238,15 @@ internal sealed class PermissionChecker(
                     granted.Add(perm);
                 }
 
+                IEnumerable<string>? tags = BuildCacheTags(provider.Name, providerKey);
                 foreach (string perm in uncached)
                 {
                     bool isGranted = granteeGrants.Contains(perm);
                     await cache.SetAsync(
                         BuildCacheKey(tenantId, provider.Name, providerKey, perm),
                         new PermissionGrantCacheItem(isGranted),
-                        entryOptions,
+                        options: entryOptions,
+                        tags: tags,
                         token: cancellationToken).ConfigureAwait(false);
                 }
             }
@@ -257,6 +260,23 @@ internal sealed class PermissionChecker(
     /// </summary>
     internal static string BuildCacheKey(Guid? tenantId, string providerName, string providerKey, string permissionName) =>
         $"perm:{tenantId?.ToString() ?? "global"}:{providerName}:{providerKey}:{permissionName}";
+
+    /// <summary>
+    /// Builds the FusionCache tag set for a permission grant cache entry. Role-scope
+    /// grants are tagged with <c>role:{roleName}</c> so <c>RoleUpdatedEvent</c> /
+    /// <c>RoleDeletedEvent</c> handlers can flush every stale entry for a given role
+    /// via <c>RemoveByTagAsync</c> in one shot — across every tenant that had cached
+    /// it. User and client grants currently have no tag (cache invalidation for those
+    /// flows goes through <see cref="Cache.PermissionCacheInvalidationHandler"/>
+    /// listening on <c>PermissionGrantChangedEvent</c>).
+    /// </summary>
+    internal static IEnumerable<string>? BuildCacheTags(string providerName, string providerKey) =>
+        providerName == PermissionGrantProviderNames.Role
+            ? [RoleTag(providerKey)]
+            : null;
+
+    /// <summary>Tag applied to every role-scope grant cache entry for <paramref name="roleName"/>.</summary>
+    internal static string RoleTag(string roleName) => $"role:{roleName}";
 
     // Side enforcement: a Host-sided permission is only grantable when no tenant is active;
     // a Tenant-sided one only when a tenant is active. Both-sided permissions pass in any context.

@@ -142,9 +142,10 @@ public sealed class RoleMetadataEntityTests
     }
 
     [Fact]
-    public void Rename_ChangesNameAndDescription_RaisesEvent()
+    public void Rename_ChangesNameAndDescription_RaisesEventWithPreviousName()
     {
         RoleMetadata role = NewHostRole();
+        string originalName = role.Name;
         role.ClearDomainEvents();
 
         role.Rename("PlatformAdmin", "Updated description");
@@ -152,7 +153,22 @@ public sealed class RoleMetadataEntityTests
         role.Name.ShouldBe("PlatformAdmin");
         role.Description.ShouldBe("Updated description");
         role.DomainEvents.Count.ShouldBe(1);
-        role.DomainEvents.Single().ShouldBeOfType<RoleUpdatedEvent>();
+        RoleUpdatedEvent evt = role.DomainEvents.Single().ShouldBeOfType<RoleUpdatedEvent>();
+        evt.Name.ShouldBe("PlatformAdmin");
+        evt.PreviousName.ShouldBe(originalName);
+    }
+
+    [Fact]
+    public void Rename_DescriptionOnly_RaisesEventWithNullPreviousName()
+    {
+        RoleMetadata role = NewHostRole();
+        role.ClearDomainEvents();
+
+        role.Rename(role.Name, "New description only");
+
+        role.DomainEvents.Count.ShouldBe(1);
+        RoleUpdatedEvent evt = role.DomainEvents.Single().ShouldBeOfType<RoleUpdatedEvent>();
+        evt.PreviousName.ShouldBeNull();
     }
 
     [Fact]
