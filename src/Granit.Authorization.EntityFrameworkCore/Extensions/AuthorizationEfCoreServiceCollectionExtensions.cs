@@ -1,6 +1,8 @@
 using Granit.Authorization;
 using Granit.Authorization.EntityFrameworkCore.DbContext;
+using Granit.Authorization.EntityFrameworkCore.Internal;
 using Granit.Authorization.EntityFrameworkCore.Stores;
+using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -33,6 +35,12 @@ public static class AuthorizationEfCoreServiceCollectionExtensions
         // Replace the NullRoleMetadataStore registered by Granit.Authorization
         services.Replace(ServiceDescriptor.Scoped<IRoleMetadataStore,
             EfCoreRoleMetadataStore<TContext>>());
+
+        // Factory-style accessor consumed by IGranitRoleOrchestrator to open a
+        // fresh host DbContext for the shared-connection transaction path. Uses
+        // TryAdd so host apps can override with a custom accessor if needed.
+        services.TryAddScoped<IAuthorizationHostDbContextAccessor,
+            AuthorizationHostDbContextAccessor<TContext>>();
 
         return services;
     }

@@ -7,6 +7,7 @@ using Granit.OpenIddict.EntityFrameworkCore.Internal;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.SharedConnection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -86,6 +87,12 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
 
         // 5. Register group store — required by AspNetIdentityProvider
         builder.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
+
+        // 6. Accessor exposing the scoped OpenIddictDbContext as IIdentityDbContextAccessor —
+        //    consumed by IGranitRoleOrchestrator to share the Identity transaction
+        //    with the host authorization DbContext when both target the same database.
+        builder.Services.TryAddScoped<IIdentityDbContextAccessor,
+            OpenIddictIdentityDbContextAccessor>();
 
         return builder;
     }
