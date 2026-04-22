@@ -97,7 +97,6 @@ The endpoints live in `Granit.Identity.Local.Endpoints` and map via:
 app.MapGranitRoles(opts =>
 {
     opts.RolesRoutePrefix = "admin/roles"; // default
-    opts.AllowTenantRoles = false;          // default — see below
 });
 ```
 
@@ -105,7 +104,7 @@ app.MapGranitRoles(opts =>
 | --- | --- | --- | --- |
 | `GET` | `/admin/roles` | `IdentityLocal.Roles.Read` | Scoped to visible roles (matrix below). |
 | `GET` | `/admin/roles/{id}` | `IdentityLocal.Roles.Read` | 404 when not visible. |
-| `POST` | `/admin/roles` | `IdentityLocal.Roles.Manage` | 403 if `AllowTenantRoles = false` and `Side = Tenant`. |
+| `POST` | `/admin/roles` | `IdentityLocal.Roles.Manage` | Tenant admins restricted to `Side = Tenant` within their own tenant. |
 | `PUT` | `/admin/roles/{id}` | `IdentityLocal.Roles.Manage` | Side and tenant scope are immutable. |
 | `DELETE` | `/admin/roles/{id}` | `IdentityLocal.Roles.Delete` | System roles refuse deletion with 403. |
 
@@ -120,33 +119,23 @@ Applied server-side via `ICurrentTenant` — the store never leaks a non-visible
 
 Non-visible roles **always** return 404, never 403 — existence is not disclosed.
 
-## Feature flag: `AllowTenantRoles`
+## Tenant-scoped roles and `NormalizedName`
 
-Tenant-scoped roles collide on ASP.NET Core Identity's process-wide unique index on
-`AspNetRoles.NormalizedName` when two tenants create a role with the same display name.
-The solution is `TenantAwareRoleLookupNormalizer`, which prefixes the normalized name
-with `T_{tenantId}_` whenever a tenant context is active — but it changes the
-normalization of **every** `UserManager` / `RoleManager` lookup, so it must be wired
-consciously.
+ASP.NET Core Identity enforces a process-wide unique index on
+`AspNetRoles.NormalizedName`, so two tenants creating a role named `Manager` would
+collide under the default upper-invariant normalizer.
+`GranitIdentityLocalAspNetIdentityModule` solves this by registering
+`TenantAwareRoleLookupNormalizer` unconditionally as the framework
+`ILookupNormalizer` (scoped lifetime): when a tenant context is active, the
+normalized form is prefixed with `T_{tenantId:N}_` so each tenant gets its own
+isolated namespace.
 
-The framework ships the normalizer ready to use but leaves it **unregistered** by
-default. Opt in by flipping the flag and registering the normalizer:
-
-```csharp title="Program.cs"
-app.MapGranitRoles(opts =>
-{
-    opts.AllowTenantRoles = true; // tenant admins can now CRUD tenant-scoped roles
-});
-
-// Wire the normalizer (scoped, depends on ICurrentTenant)
-builder.Services.Replace(ServiceDescriptor.Scoped<
-    ILookupNormalizer,
-    TenantAwareRoleLookupNormalizer>());
-```
-
-While `AllowTenantRoles` is `false` the CRUD endpoints refuse `Side = Tenant` create
-requests with a 403 `tenant-roles-disabled` problem detail — host and Both roles
-remain fully available.
+Callers that look up roles for business logic should route through
+`IGranitRoleLookup` rather than `RoleManager<GranitRole>.FindByNameAsync` — the
+lookup service queries `IRoleMetadataStore` (the canonical catalog) and applies
+the `Both`-scope fallback that a straight `RoleManager` call cannot express from
+inside a tenant context. The side effect on `UserManager.FindByNameAsync` is
+intentional and covered in ADR-023.
 
 ## Orchestration across two DbContexts
 

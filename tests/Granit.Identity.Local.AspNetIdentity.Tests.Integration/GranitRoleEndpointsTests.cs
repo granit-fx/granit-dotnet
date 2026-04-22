@@ -111,11 +111,11 @@ public sealed class GranitRoleEndpointsTests
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // POST — AllowTenantRoles flag (Phase 1 refusal)
+    // POST — tenant admin happy path + cross-tenant guard
     // ─────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task Create_SideTenant_AllowTenantRolesFalse_Returns403()
+    public async Task Create_AsTenantAdmin_SideTenantOwnTenant_Returns201()
     {
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -126,7 +126,65 @@ public sealed class GranitRoleEndpointsTests
                 name = "Manager",
                 multiTenancySide = (int)MultiTenancySide.Tenant,
                 tenantId = _tenantA,
+                description = "Tenant-scoped operational manager.",
             },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        RoleResponseLite? created = await response.Content
+            .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
+        created.ShouldNotBeNull();
+        created.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
+        created.TenantId.ShouldBe(_tenantA);
+    }
+
+    [Fact]
+    public async Task Create_AsTenantAdmin_SameRoleNameInTwoTenants_BothPersist()
+    {
+        // Tenant A creates "Manager".
+        using (_app.CurrentTenant.Change(_tenantA))
+        {
+            HttpResponseMessage responseA = await _app.HttpClient.PostAsJsonAsync(
+                "/admin/roles",
+                new { name = "Manager", multiTenancySide = (int)MultiTenancySide.Tenant, tenantId = _tenantA },
+                TestContext.Current.CancellationToken);
+            responseA.StatusCode.ShouldBe(HttpStatusCode.Created);
+        }
+
+        // Tenant B creates another "Manager" — proves the tenant-prefixed normalizer
+        // keeps ASP.NET Identity's global NormalizedName index happy.
+        using (_app.CurrentTenant.Change(_tenantB))
+        {
+            HttpResponseMessage responseB = await _app.HttpClient.PostAsJsonAsync(
+                "/admin/roles",
+                new { name = "Manager", multiTenancySide = (int)MultiTenancySide.Tenant, tenantId = _tenantB },
+                TestContext.Current.CancellationToken);
+            responseB.StatusCode.ShouldBe(HttpStatusCode.Created);
+        }
+    }
+
+    [Fact]
+    public async Task Create_AsTenantAdmin_ForeignTenantId_Returns403()
+    {
+        using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
+
+        HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
+            "/admin/roles",
+            new { name = "Hijack", multiTenancySide = (int)MultiTenancySide.Tenant, tenantId = _tenantB },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Create_AsTenantAdmin_SideHost_Returns403()
+    {
+        using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
+
+        HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
+            "/admin/roles",
+            new { name = "SuperAdmin", multiTenancySide = (int)MultiTenancySide.Host, tenantId = (Guid?)null },
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);

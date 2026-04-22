@@ -2,7 +2,6 @@ using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Dtos;
-using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
 using Granit.MultiTenancy;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -53,7 +51,8 @@ internal static class GranitRoleEndpoints
             .WithSummary("Creates a new local role and its RoleMetadata row.")
             .WithDescription(
                 "Invariants: Host / Both ⇒ TenantId must be null; Tenant ⇒ TenantId required. "
-                + "Side=Tenant requests are refused unless RoleEndpointsOptions.AllowTenantRoles is enabled.")
+                + "Tenant admins (ICurrentTenant active) can only create Tenant-side roles "
+                + "scoped to their own tenant.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -113,19 +112,8 @@ internal static class GranitRoleEndpoints
         [FromBody] RoleCreateRequest request,
         [FromServices] IGranitRoleOrchestrator orchestrator,
         [FromServices] ICurrentTenant currentTenant,
-        [FromServices] IOptions<RoleEndpointsOptions> options,
         CancellationToken cancellationToken)
     {
-        RoleEndpointsOptions opts = options.Value;
-
-        if (request.MultiTenancySide == MultiTenancySide.Tenant && !opts.AllowTenantRoles)
-        {
-            return TypedResults.Problem(
-                statusCode: StatusCodes.Status403Forbidden,
-                detail: "Tenant-scoped role creation is disabled. " +
-                        "Set RoleEndpointsOptions.AllowTenantRoles = true to enable it.");
-        }
-
         // Tenant admins may only create roles in their own tenant.
         if (currentTenant.IsAvailable && request.MultiTenancySide == MultiTenancySide.Tenant
             && request.TenantId != currentTenant.Id)

@@ -72,6 +72,12 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
             .AddRoles<GranitRole>()
             .AddEntityFrameworkStores<TestIdentityDbContext>();
 
+        // Mirrors production wiring (GranitIdentityLocalAspNetIdentityModule): the
+        // tenant-aware normalizer lets two tenants hold a role with the same display
+        // name without tripping ASP.NET Identity's global NormalizedName unique index.
+        builder.Services.Replace(ServiceDescriptor.Scoped<
+            ILookupNormalizer, TenantAwareRoleLookupNormalizer>());
+
         builder.Services.AddGranitAuthorizationEntityFrameworkCore<TestHostDbContext>();
         builder.Services.AddGranitGuids();
         builder.Services.AddScoped<IGranitRoleOrchestrator, GranitRoleOrchestrator>();

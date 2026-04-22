@@ -27,10 +27,9 @@ internal sealed class IdentityLocalPermissionDefinitionProvider : IPermissionDef
                 "Permission:IdentityLocal.Users.Impersonate"),
             MultiTenancySide.Host);
 
-        // Role CRUD — assignable in both host and tenant admin contexts. Visibility matrix
-        // + the AllowTenantRoles feature flag on endpoint options gate who can create
-        // tenant-scoped roles; the permission itself stays Side=Both so either admin can
-        // hold it.
+        // Role CRUD — assignable in both host and tenant admin contexts. The visibility
+        // matrix inside the endpoint gates who can create tenant-scoped roles; the
+        // permission itself stays Side=Both so either admin can hold it.
         group.AddPermission(
             IdentityLocalPermissions.Roles.Read,
             LocalizableString.Create<IdentityLocalEndpointsLocalizationResource>(
