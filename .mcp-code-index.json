@@ -818,9 +818,12 @@
     {
       "name": "Granit.Identity.Federated.EntraId",
       "deps": [
+        "Granit.Authorization",
         "Granit.Diagnostics",
+        "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -17345,7 +17348,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Extensions/IdentityEntraIdServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityEntraId",
@@ -17436,6 +17439,28 @@
           "kind": "method",
           "signature": "GetTokenEndpoint()",
           "returnType": "string? RopcClientId { get; set; } internal string"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdClientRoleSyncOptions",
+      "fqn": "Granit.Identity.Federated.EntraId.Options.EntraIdClientRoleSyncOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Options/EntraIdClientRoleSyncOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "TrackedAppIds",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> TrackedAppIds",
+          "returnType": "IReadOnlyList<string>"
         }
       ]
     },

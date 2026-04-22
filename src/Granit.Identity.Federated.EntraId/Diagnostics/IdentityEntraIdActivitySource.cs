@@ -25,6 +25,9 @@ internal static class IdentityEntraIdActivitySource
 
     internal const string GetUsers = "identity.entraid.get-users";
     internal const string GetUser = "identity.entraid.get-user";
+    internal const string GetClients = "identity.entraid.get-clients";
+    internal const string GetClientRoles = "identity.entraid.get-client-roles";
+    internal const string GetUserClientRoles = "identity.entraid.get-user-client-roles";
     internal const string SetUserEnabled = "identity.entraid.set-user-enabled";
     internal const string UpdateUser = "identity.entraid.update-user";
     internal const string GetUserSessions = "identity.entraid.get-user-sessions";
@@ -47,6 +50,7 @@ internal static class IdentityEntraIdActivitySource
     internal const string TagUserId = "identity.user_id";
     internal const string TagRoleName = "identity.role_name";
     internal const string TagGroupId = "identity.group_id";
+    internal const string TagClientId = "identity.client_id";
 
 #pragma warning disable GRSEC003 // Operation name constants, not secrets
     internal const string GetPasswordChangedAt = "identity.entraid.get-password-changed-at";

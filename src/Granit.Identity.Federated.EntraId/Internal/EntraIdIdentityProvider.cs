@@ -4,9 +4,11 @@ using System.Net.Http.Json;
 using System.Security.Cryptography;
 using Granit.Diagnostics;
 using Granit.Events;
+using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.EntraId.Diagnostics;
+using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Options;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
@@ -35,7 +37,7 @@ internal sealed partial class EntraIdIdentityProvider(
     IOptions<EntraIdAdminOptions> options,
     IPasswordResetNotifier passwordResetNotifier,
     IDistributedEventBus distributedEventBus,
-    ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider
+    ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
@@ -496,6 +498,120 @@ internal sealed partial class EntraIdIdentityProvider(
         await distributedEventBus.PublishAsync(new IdentityRoleRemovedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
 
         LogRoleRemoved(roleName, userId);
+    }
+
+    // ──── Phase 2: Client role support (IIdentityClientRoleManager) ────
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<string>> GetClientsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.GetClients);
+
+        try
+        {
+            HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+            string endpoint = EntraIdAdminOptions.GetServicePrincipalsEndpoint();
+
+            GraphCollectionResponse<GraphServicePrincipalRepresentation>? response = await client
+                .GetFromJsonAsync<GraphCollectionResponse<GraphServicePrincipalRepresentation>>(endpoint, cancellationToken)
+                .ConfigureAwait(false);
+
+            return response?.Value is { } sps
+                ? sps.Where(sp => !string.IsNullOrEmpty(sp.AppId)).Select(sp => sp.AppId!).ToList()
+                : [];
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            LogEntraIdGetClientsFailed(ex);
+            return [];
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetClientRolesAsync(
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.GetClientRoles);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        GraphServicePrincipalRepresentation sp = await ResolveServicePrincipalAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+
+        if (sp.AppRoles is null or { Count: 0 })
+        {
+            return [];
+        }
+
+        return sp.AppRoles
+            .Where(r => r.IsEnabled)
+            .Select(r => new IdentityRole(r.Id, r.Value, r.Description) { ClientId = clientId })
+            .ToList();
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetUserClientRolesAsync(
+        string userId,
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.GetUserClientRoles);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        GraphServicePrincipalRepresentation sp = await ResolveServicePrincipalAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+        var roleMap = (sp.AppRoles ?? [])
+            .ToDictionary(r => r.Id, StringComparer.OrdinalIgnoreCase);
+
+        try
+        {
+            string endpoint = EntraIdAdminOptions.GetUserAppRoleAssignmentsForServicePrincipalEndpoint(userId, sp.Id);
+            GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>? response = await client
+                .GetFromJsonAsync<GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>>(endpoint, cancellationToken)
+                .ConfigureAwait(false);
+
+            if (response?.Value is null)
+            {
+                return [];
+            }
+
+            return response.Value
+                .Select(a => roleMap.TryGetValue(a.AppRoleId, out GraphAppRoleRepresentation? role) ? role : null)
+                .Where(r => r is not null)
+                .Select(r => new IdentityRole(r!.Id, r.Value, r.Description) { ClientId = clientId })
+                .ToList();
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            LogEntraIdGetUserClientRolesFailed(ex, userId, clientId);
+            return [];
+        }
+    }
+
+    private static async Task<GraphServicePrincipalRepresentation> ResolveServicePrincipalAsync(
+        HttpClient client,
+        string appId,
+        CancellationToken cancellationToken)
+    {
+        string endpoint = EntraIdAdminOptions.GetServicePrincipalsEndpoint(appId);
+        GraphCollectionResponse<GraphServicePrincipalRepresentation>? response = await client
+            .GetFromJsonAsync<GraphCollectionResponse<GraphServicePrincipalRepresentation>>(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+
+        GraphServicePrincipalRepresentation? match = response?.Value is { } sps
+            ? sps.FirstOrDefault(sp => string.Equals(sp.AppId, appId, StringComparison.OrdinalIgnoreCase))
+            : null;
+
+        return match ?? throw new EntraIdClientNotFoundException(appId);
     }
 
     // ──── Session termination ────
@@ -970,6 +1086,12 @@ internal sealed partial class EntraIdIdentityProvider(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get roles for user {UserId} from Entra ID. Returning empty list")]
     private partial void LogGetUserRolesFailed(Exception exception, string userId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get Service Principals from Entra ID. Returning empty list")]
+    private partial void LogEntraIdGetClientsFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get app-role assignments for user {UserId} on client {ClientId} from Entra ID. Returning empty list")]
+    private partial void LogEntraIdGetUserClientRolesFailed(Exception exception, string userId, string clientId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Role {RoleName} assigned to user {UserId} in Entra ID")]
     private partial void LogRoleAssigned(string roleName, string userId);

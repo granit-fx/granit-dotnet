@@ -54,4 +54,12 @@ internal sealed class EntraIdIdentityProviderCapabilities : IIdentityProviderCap
 
     /// <inheritdoc/>
     public bool IsLocalStore => false;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Entra ID's "client roles" are <b>App Roles</b> declared on an Application /
+    /// Service Principal. Surfaced via <c>IIdentityClientRoleManager</c> on
+    /// <see cref="EntraIdIdentityProvider"/>.
+    /// </remarks>
+    public bool SupportsClientRoles => true;
 }

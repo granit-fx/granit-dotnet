@@ -3,6 +3,7 @@ using System.Diagnostics.Metrics;
 using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Diagnostics;
+using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Models;
 using Granit.Timing;

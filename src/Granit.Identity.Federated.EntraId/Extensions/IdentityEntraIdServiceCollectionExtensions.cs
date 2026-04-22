@@ -3,7 +3,9 @@ using Granit.Http.Resilience.Extensions;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntraId.HealthChecks;
 using Granit.Identity.Federated.EntraId.Internal;
+using Granit.Identity.Federated.EntraId.Internal.Sync;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -58,6 +60,24 @@ public static class IdentityEntraIdServiceCollectionExtensions
         services.TryAddScoped<IPasswordResetNotifier, NullPasswordResetNotifier>();
         services.AddIdentityProvider<EntraIdIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, EntraIdIdentityProviderCapabilities>());
+
+        // Client-role capability (Phase 2). Forwards to the scoped IIdentityProvider so
+        // IIdentityProvider and IIdentityClientRoleManager resolve to the SAME scoped
+        // EntraIdIdentityProvider instance — avoids doubling Graph admin-token acquisition
+        // and keeps internal state coherent across the two facets.
+        services.TryAddScoped<IIdentityClientRoleManager>(sp =>
+            sp.GetRequiredService<IIdentityProvider>() as IIdentityClientRoleManager
+            ?? throw new InvalidOperationException(
+                "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
+                "AddGranitIdentityEntraId must be the last provider-registration call."));
+
+        // Client-role sync pipeline — enumerates Entra ID App Roles for each tracked appId
+        // at host boot and upserts RoleMetadata rows. See ADR-026 for details.
+        services.AddOptions<EntraIdClientRoleSyncOptions>()
+            .BindConfiguration(EntraIdClientRoleSyncOptions.SectionName);
+
+        services.TryAddScoped<EntraIdClientRoleSyncService>();
+        services.AddTransient<IHostDataSeedContributor, EntraIdClientRoleSyncContributor>();
 
         return services;
     }

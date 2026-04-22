@@ -152,6 +152,31 @@ public sealed class EntraIdAdminOptions
     internal static string GetUserAppRoleAssignmentsEndpoint(string userId) =>
         $"/v1.0/users/{Uri.EscapeDataString(userId)}/appRoleAssignments";
 
+    // ──── Client-role sync (Phase 2) ────
+
+    /// <summary>
+    /// Builds the Graph API URL for listing Service Principals. Optionally filters by
+    /// <paramref name="appId"/> to resolve the Service Principal <c>id</c> (object id) from an
+    /// OIDC <c>appId</c>. Returns `$select=id,appId,appRoles` so the caller can project
+    /// both the object id and the inline <c>appRoles</c> array without a second call.
+    /// </summary>
+    internal static string GetServicePrincipalsEndpoint(string? appId = null)
+    {
+        const string select = "$select=id,appId,appRoles";
+        return appId is null
+            ? $"/v1.0/servicePrincipals?{select}"
+            : $"/v1.0/servicePrincipals?$filter=appId eq '{Uri.EscapeDataString(appId)}'&{select}";
+    }
+
+    /// <summary>
+    /// Builds the Graph API URL for listing App Role assignments of a user scoped to a given
+    /// Service Principal (identified by its object id — NOT the OIDC <c>appId</c>).
+    /// </summary>
+    internal static string GetUserAppRoleAssignmentsForServicePrincipalEndpoint(
+        string userId, string servicePrincipalObjectId) =>
+        $"/v1.0/users/{Uri.EscapeDataString(userId)}/appRoleAssignments" +
+        $"?$filter=resourceId eq {servicePrincipalObjectId}";
+
     // ──── Sessions ────
 
     /// <summary>

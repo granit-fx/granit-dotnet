@@ -2,7 +2,7 @@ using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity;
-using Granit.Identity.Federated.Keycloak.Internal;
+using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Internal.Sync;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;

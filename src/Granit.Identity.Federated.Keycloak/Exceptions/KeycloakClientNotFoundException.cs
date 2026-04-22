@@ -1,4 +1,4 @@
-namespace Granit.Identity.Federated.Keycloak.Internal;
+namespace Granit.Identity.Federated.Keycloak.Exceptions;
 
 /// <summary>
 /// Thrown by <c>KeycloakIdentityProvider</c> client-role methods when the OIDC <c>client_id</c>

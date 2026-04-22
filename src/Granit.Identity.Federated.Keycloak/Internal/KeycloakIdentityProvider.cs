@@ -7,6 +7,7 @@ using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.Keycloak.Diagnostics;
+using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
