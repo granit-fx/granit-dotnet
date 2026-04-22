@@ -42,13 +42,9 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // Replace default UserManager with GranitUserManager (exponential backoff lockout)
         context.Services.Replace(ServiceDescriptor.Scoped<UserManager<GranitUser>, GranitUserManager>());
 
-        // TenantAwareRoleLookupNormalizer is intentionally NOT registered by default.
-        // It prefixes NormalizedName with T_{tenantId}_ when a tenant context is active,
-        // enabling two tenants to share the same role display name without colliding on
-        // the ASP.NET Core Identity global unique index on AspNetRoles.NormalizedName.
-        // Applications that enable RoleEndpointsOptions.AllowTenantRoles must register it:
-        //   context.Services.Replace(
-        //       ServiceDescriptor.Scoped<ILookupNormalizer, TenantAwareRoleLookupNormalizer>());
+        // TenantAwareRoleLookupNormalizer is intentionally not wired here. When
+        // RoleEndpointsOptions.AllowTenantRoles is enabled, applications must replace the
+        // framework default ILookupNormalizer with that type — see the class remarks.
 
         // Replace default claims principal factory to inject tenant_id into the Identity cookie.
         // This ensures multi-tenancy middleware can resolve the tenant from the authenticated

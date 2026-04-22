@@ -146,10 +146,8 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// the entity from the <c>DbContext</c> so the interceptor can collect the event from
     /// the still-tracked <c>Deleted</c> entry.
     /// </summary>
-    public void MarkAsDeleted()
-    {
+    public void MarkAsDeleted() =>
         AddDomainEvent(new RoleDeletedEvent(Id, Name, MultiTenancySide, TenantId, ClientId));
-    }
 
     private static void ValidateLengths(string name, string? clientId, string? description)
     {

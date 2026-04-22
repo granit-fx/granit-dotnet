@@ -27,6 +27,14 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <c>GranitUser</c> already scopes users per tenant via <c>TenantId</c> — only the role
 /// table needs the prefix strategy.
 /// </para>
+/// <para>
+/// This implementation is intentionally not registered by
+/// <c>GranitIdentityLocalAspNetIdentityModule</c>. Applications that enable
+/// <c>RoleEndpointsOptions.AllowTenantRoles</c> must replace the framework default
+/// <see cref="ILookupNormalizer"/> with this type (scoped lifetime required because
+/// <see cref="ICurrentTenant"/> is scoped). See the Granit docs for the full wiring
+/// example.
+/// </para>
 /// </remarks>
 internal sealed class TenantAwareRoleLookupNormalizer(ICurrentTenant currentTenant) : ILookupNormalizer
 {

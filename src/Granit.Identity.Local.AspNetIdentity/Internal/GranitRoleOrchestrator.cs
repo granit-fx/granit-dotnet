@@ -72,7 +72,7 @@ internal sealed partial class GranitRoleOrchestrator(
             await roleMetadataStore.AddAsync(metadata, cancellationToken).ConfigureAwait(false);
             return metadata;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogMetadataFailedCompensating(logger, ex, roleId, command.Name);
             await CompensateDeleteAsync(granitRole).ConfigureAwait(false);
@@ -122,7 +122,7 @@ internal sealed partial class GranitRoleOrchestrator(
             await roleMetadataStore.UpdateAsync(existingMetadata, cancellationToken).ConfigureAwait(false);
             return existingMetadata;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogRenameFailedCompensating(logger, ex, roleId, newName);
             granitRole.Name = previousName;
@@ -131,7 +131,7 @@ internal sealed partial class GranitRoleOrchestrator(
             {
                 await roleManager.UpdateAsync(granitRole).ConfigureAwait(false);
             }
-            catch (Exception compEx)
+            catch (Exception compEx) when (compEx is not OperationCanceledException)
             {
                 LogCompensationFailed(logger, compEx, roleId);
             }
@@ -183,7 +183,7 @@ internal sealed partial class GranitRoleOrchestrator(
                 LogCompensationFailed(logger, exception: null, granitRole.Id);
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogCompensationFailed(logger, ex, granitRole.Id);
         }
