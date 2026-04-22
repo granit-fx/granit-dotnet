@@ -182,10 +182,40 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
     base.OnModelCreating(modelBuilder);
     modelBuilder.ConfigureOpenIddictModule();
-    modelBuilder.ConfigureAuthorizationModule(); // new: grants are host-level
+    modelBuilder.ConfigureAuthorizationModule(); // grants + role metadata, host-level
 }
 ```
 
 Tenant-scoped grants simply carry the target `TenantId`; host-level grants have
 `TenantId == null`. A single table, a single migration — no per-tenant duplication of
 authorization state.
+
+## Role-side scoping
+
+`MultiTenancySide` is not only a permission property — it is also a property of the
+**role** the permission is granted to. The `RoleMetadata` aggregate (introduced
+alongside this feature) carries the same `Host` / `Tenant` / `Both` enum plus an
+optional `TenantId` (required when the side is `Tenant`):
+
+| Role side | `TenantId` | Usable from | Assignable to |
+| --- | --- | --- | --- |
+| `Host` | `null` | Host admin context only | Cross-tenant platform users |
+| `Tenant` | specific | Matching tenant context only | Users of that tenant |
+| `Both` | `null` | Host **and** tenant contexts | Defined by the platform, assigned per tenant |
+
+The built-in `MultiTenancySidePermissionGrantValidator` looks up the target role via
+`IRoleMetadataStore` whenever `ProviderName == "R"` and rejects inconsistent grants
+with one of two reason codes:
+
+- `role_side_forbidden` — the role side forbids the grant's scope (`Host` role + tenant
+  grant, or `Tenant` role + host grant).
+- `role_tenant_mismatch` — the role belongs to a different tenant than the grant's
+  `TenantId`.
+
+A role without metadata falls through the role-side check and is evaluated only against
+the permission side — preserving backward compatibility with roles created outside the
+Granit `RoleMetadata` surface (legacy rows, provider-native roles in early setups).
+
+See [**Roles — RoleMetadata and /admin/roles CRUD**](/dotnet/security/authorization-roles/)
+for the full CRUD surface, the admin visibility matrix, and the system roles seeded by
+`IdentityLocalRoleSeedContributor`.
