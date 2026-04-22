@@ -40,7 +40,7 @@ public static class RoleMetadataModelBuilderExtensions
 
             entity.HasIndex(e => new { e.Name, e.TenantId, e.ClientId })
                   .IsUnique()
-                  .HasAnnotation("Npgsql:NullsDistinct", false)
+                  .AreNullsDistinct(false)
                   .HasDatabaseName($"uq_{GranitAuthorizationDbProperties.DbTablePrefix}role_metadata_name_tenant_client");
         });
 

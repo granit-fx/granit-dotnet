@@ -19,7 +19,8 @@ public static class PermissionGrantModelBuilderExtensions
     /// </para>
     /// <para>
     /// The unique index uses PostgreSQL <c>NULLS NOT DISTINCT</c> semantics (via the
-    /// <c>Npgsql:NullsDistinct</c> annotation) so host-level grants with
+    /// typed <c>AreNullsDistinct(false)</c> extension from
+    /// <c>Npgsql.EntityFrameworkCore.PostgreSQL</c>) so host-level grants with
     /// <c>TenantId = null</c> cannot duplicate each other on the same
     /// <c>(ProviderName, ProviderKey, Name)</c> tuple.
     /// </para>
@@ -37,7 +38,7 @@ public static class PermissionGrantModelBuilderExtensions
             entity.Property(e => e.ProviderKey).HasMaxLength(256).IsRequired();
             entity.HasIndex(e => new { e.TenantId, e.ProviderName, e.ProviderKey, e.Name })
                   .IsUnique()
-                  .HasAnnotation("Npgsql:NullsDistinct", false)
+                  .AreNullsDistinct(false)
                   .HasDatabaseName($"uq_{GranitAuthorizationDbProperties.DbTablePrefix}permission_grants_tenant_provider_key_name");
         });
 

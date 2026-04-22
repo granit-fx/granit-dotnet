@@ -44,6 +44,19 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     // ─────────────────────────────────────────────────────────────────────
 
     [Fact]
+    public void Migration_SQL_ContainsNullsNotDistinctClause()
+    {
+        // GenerateCreateScript uses the migration SQL generator pipeline — guarantees the
+        // annotation flows through to `CREATE UNIQUE INDEX ... NULLS NOT DISTINCT` in the
+        // actual DDL (raw `HasAnnotation("Npgsql:NullsDistinct", ...)` works for
+        // EnsureCreated but not for migrations; the typed `AreNullsDistinct(false)` does).
+        string script = _context.Database.GenerateCreateScript();
+
+        script.ShouldContain("uq_authorization_role_metadata_name_tenant_client");
+        script.ShouldContain("NULLS NOT DISTINCT");
+    }
+
+    [Fact]
     public async Task HostRole_DuplicateName_RejectedByUniqueIndex()
     {
         var first = RoleMetadata.Create(
