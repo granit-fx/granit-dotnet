@@ -56,4 +56,12 @@ public interface IIdentityProviderCapabilities
     /// Entra ID), the cache is required for local queries.
     /// </remarks>
     bool IsLocalStore { get; }
+
+    /// <summary>
+    /// Whether the provider surfaces <b>client-scoped roles</b> in addition to realm / global
+    /// roles via <see cref="IIdentityClientRoleManager"/>. Default: <see langword="false"/>
+    /// (DIM). Providers that support the concept natively (Keycloak client roles, Entra app
+    /// roles, Cognito app-client groups) override to <see langword="true"/>.
+    /// </summary>
+    bool SupportsClientRoles => false;
 }

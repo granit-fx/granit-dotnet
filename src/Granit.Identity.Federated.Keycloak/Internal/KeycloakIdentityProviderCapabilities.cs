@@ -39,4 +39,7 @@ internal sealed class KeycloakIdentityProviderCapabilities : IIdentityProviderCa
 
     /// <inheritdoc/>
     public bool IsLocalStore => false;
+
+    /// <inheritdoc/>
+    public bool SupportsClientRoles => true;
 }

@@ -169,6 +169,32 @@ public sealed class KeycloakAdminOptions
     internal string GetRoleByNameEndpoint(string roleName) =>
         $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/roles/{Uri.EscapeDataString(roleName)}";
 
+    // ──── Client role support (Phase 2) ────
+
+    /// <summary>
+    /// Builds the Admin API URL for listing all OIDC clients in the realm. Optionally filters
+    /// by <paramref name="clientId"/> — used to resolve Keycloak's internal client UUID from
+    /// the OIDC client_id string.
+    /// </summary>
+    internal string GetClientsEndpoint(string? clientId = null) =>
+        clientId is null
+            ? $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients"
+            : $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients?clientId={Uri.EscapeDataString(clientId)}";
+
+    /// <summary>
+    /// Builds the Admin API URL for listing client-scope roles of the given Keycloak client
+    /// (identified by its internal UUID, not the OIDC client_id).
+    /// </summary>
+    internal string GetClientRolesEndpoint(string clientUuid) =>
+        $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients/{Uri.EscapeDataString(clientUuid)}/roles";
+
+    /// <summary>
+    /// Builds the Admin API URL for listing client-scope role mappings of a user for a given
+    /// Keycloak client (identified by its internal UUID).
+    /// </summary>
+    internal string GetUserClientRoleMappingsEndpoint(string userId, string clientUuid) =>
+        $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/users/{Uri.EscapeDataString(userId)}/role-mappings/clients/{Uri.EscapeDataString(clientUuid)}";
+
     // ──── Feature 2: Session termination ────
 
     /// <summary>

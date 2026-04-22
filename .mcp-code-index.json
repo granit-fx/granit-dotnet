@@ -835,9 +835,12 @@
     {
       "name": "Granit.Identity.Federated.Keycloak",
       "deps": [
+        "Granit.Authorization",
         "Granit.Diagnostics",
+        "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Identity.Federated",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.Timing"
       ],
       "framework": "net10.0"
@@ -17586,7 +17589,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitIdentityKeycloak",
@@ -17655,6 +17658,28 @@
           "kind": "method",
           "signature": "GetTokenEndpoint()",
           "returnType": "string? DirectAccessClientId { get; set; } internal string"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakClientRoleSyncOptions",
+      "fqn": "Granit.Identity.Federated.Keycloak.Options.KeycloakClientRoleSyncOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Options/KeycloakClientRoleSyncOptions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "TrackedClientIds",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> TrackedClientIds",
+          "returnType": "IReadOnlyList<string>"
         }
       ]
     },
@@ -17801,6 +17826,34 @@
       ]
     },
     {
+      "name": "IIdentityClientRoleManager",
+      "fqn": "Granit.Identity.IIdentityClientRoleManager",
+      "kind": "interface",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/IIdentityClientRoleManager.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "GetClientsAsync",
+          "kind": "method",
+          "signature": "GetClientsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<string>>"
+        },
+        {
+          "name": "GetClientRolesAsync",
+          "kind": "method",
+          "signature": "GetClientRolesAsync(string clientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<IdentityRole>>"
+        },
+        {
+          "name": "GetUserClientRolesAsync",
+          "kind": "method",
+          "signature": "GetUserClientRolesAsync(string userId, string clientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<IdentityRole>>"
+        }
+      ]
+    },
+    {
       "name": "IIdentityCredentialVerifier",
       "fqn": "Granit.Identity.IIdentityCredentialVerifier",
       "kind": "interface",
@@ -17894,7 +17947,14 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/IIdentityProviderCapabilities.cs",
       "line": 11,
-      "members": []
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "IIdentityRoleManager",

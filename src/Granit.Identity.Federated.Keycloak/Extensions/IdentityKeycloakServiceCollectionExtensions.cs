@@ -3,7 +3,9 @@ using Granit.Http.Resilience.Extensions;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Keycloak.HealthChecks;
 using Granit.Identity.Federated.Keycloak.Internal;
+using Granit.Identity.Federated.Keycloak.Internal.Sync;
 using Granit.Identity.Federated.Keycloak.Options;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -54,6 +56,24 @@ public static class IdentityKeycloakServiceCollectionExtensions
         services.TryAddTransient<KeycloakUserTokenExchangeService>();
         services.AddIdentityProvider<KeycloakIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, KeycloakIdentityProviderCapabilities>());
+
+        // Client-role capability (Phase 2). Forwards to the scoped IIdentityProvider so
+        // IIdentityProvider and IIdentityClientRoleManager resolve to the SAME scoped
+        // KeycloakIdentityProvider instance — avoids doubling the admin-token acquisition
+        // and keeps internal state coherent across the two facets.
+        services.TryAddScoped<IIdentityClientRoleManager>(sp =>
+            sp.GetRequiredService<IIdentityProvider>() as IIdentityClientRoleManager
+            ?? throw new InvalidOperationException(
+                "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
+                "AddGranitIdentityKeycloak must be the last provider-registration call."));
+
+        // Client-role sync pipeline — enumerates Keycloak client roles for each tracked
+        // clientId at host boot and upserts RoleMetadata rows. See ADR-025 for details.
+        services.AddOptions<KeycloakClientRoleSyncOptions>()
+            .BindConfiguration(KeycloakClientRoleSyncOptions.SectionName);
+
+        services.TryAddScoped<KeycloakClientRoleSyncService>();
+        services.AddTransient<IHostDataSeedContributor, KeycloakClientRoleSyncContributor>();
 
         return services;
     }

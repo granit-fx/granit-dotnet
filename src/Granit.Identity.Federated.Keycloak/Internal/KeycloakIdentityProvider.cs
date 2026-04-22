@@ -34,7 +34,7 @@ internal sealed partial class KeycloakIdentityProvider(
     IOptions<KeycloakAdminOptions> options,
     IDistributedEventBus distributedEventBus,
     IdentityMetrics metrics,
-    ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider
+    ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     private const string ProviderName = "keycloak";
     /// <inheritdoc/>
@@ -430,6 +430,112 @@ internal sealed partial class KeycloakIdentityProvider(
         LogRoleRemoved(roleName, userId);
 
         await distributedEventBus.PublishAsync(new IdentityRoleRemovedEto(userId, roleName), cancellationToken).ConfigureAwait(false);
+    }
+
+    // ──── Phase 2: Client role support (IIdentityClientRoleManager) ────
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<string>> GetClientsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.GetClients);
+
+        try
+        {
+            HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+            string endpoint = options.Value.GetClientsEndpoint();
+
+            List<KeycloakClientRepresentation>? clients = await client
+                .GetFromJsonAsync<List<KeycloakClientRepresentation>>(endpoint, cancellationToken)
+                .ConfigureAwait(false);
+
+            return clients?.ConvertAll(c => c.ClientId) ?? [];
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            LogKeycloakGetClientsFailed(ex);
+            return [];
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetClientRolesAsync(
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.GetClientRoles);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string clientUuid = await ResolveClientUuidAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            string endpoint = options.Value.GetClientRolesEndpoint(clientUuid);
+            List<KeycloakRoleRepresentation>? roles = await client
+                .GetFromJsonAsync<List<KeycloakRoleRepresentation>>(endpoint, cancellationToken)
+                .ConfigureAwait(false);
+
+            return roles?.ConvertAll(r => new IdentityRole(r.Id, r.Name, r.Description) { ClientId = clientId }) ?? [];
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            LogKeycloakGetClientRolesFailed(ex, clientId);
+            return [];
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetUserClientRolesAsync(
+        string userId,
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.GetUserClientRoles);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string clientUuid = await ResolveClientUuidAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            string endpoint = options.Value.GetUserClientRoleMappingsEndpoint(userId, clientUuid);
+            List<KeycloakRoleRepresentation>? roles = await client
+                .GetFromJsonAsync<List<KeycloakRoleRepresentation>>(endpoint, cancellationToken)
+                .ConfigureAwait(false);
+
+            return roles?.ConvertAll(r => new IdentityRole(r.Id, r.Name, r.Description) { ClientId = clientId }) ?? [];
+        }
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            LogKeycloakGetUserClientRolesFailed(ex, userId, clientId);
+            return [];
+        }
+    }
+
+    private async Task<string> ResolveClientUuidAsync(
+        HttpClient client,
+        string clientId,
+        CancellationToken cancellationToken)
+    {
+        string endpoint = options.Value.GetClientsEndpoint(clientId);
+        List<KeycloakClientRepresentation>? clients = await client
+            .GetFromJsonAsync<List<KeycloakClientRepresentation>>(endpoint, cancellationToken)
+            .ConfigureAwait(false);
+
+        KeycloakClientRepresentation? match = clients?.FirstOrDefault(c =>
+            string.Equals(c.ClientId, clientId, StringComparison.Ordinal));
+
+        return match?.Id ?? throw new KeycloakClientNotFoundException(clientId);
     }
 
     // ──── Feature 2: Session termination ────
@@ -900,6 +1006,15 @@ internal sealed partial class KeycloakIdentityProvider(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get roles for user {UserId} from Keycloak. Returning empty list")]
     private partial void LogKeycloakGetUserRolesFailed(Exception exception, string userId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get clients from Keycloak. Returning empty list")]
+    private partial void LogKeycloakGetClientsFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get client roles for client {ClientId} from Keycloak. Returning empty list")]
+    private partial void LogKeycloakGetClientRolesFailed(Exception exception, string clientId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get client role mappings for user {UserId} on client {ClientId} from Keycloak. Returning empty list")]
+    private partial void LogKeycloakGetUserClientRolesFailed(Exception exception, string userId, string clientId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Role {RoleName} assigned to user {UserId} in Keycloak")]
     private partial void LogRoleAssigned(string roleName, string userId);
