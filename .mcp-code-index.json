@@ -19731,6 +19731,22 @@
       ]
     },
     {
+      "name": "IGranitRoleLookup",
+      "fqn": "Granit.Identity.Local.Services.IGranitRoleLookup",
+      "kind": "interface",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Services/IGranitRoleLookup.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "FindByNameAsync",
+          "kind": "method",
+          "signature": "FindByNameAsync(string name, string? clientId = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<RoleMetadata?>"
+        }
+      ]
+    },
+    {
       "name": "IGranitRoleOrchestrator",
       "fqn": "Granit.Identity.Local.Services.IGranitRoleOrchestrator",
       "kind": "interface",
@@ -41444,6 +41460,22 @@
       "file": "src/Granit.Templating.Workflow/GranitTemplatingWorkflowModule.cs",
       "line": 19,
       "members": []
+    },
+    {
+      "name": "ContainerStartRetry",
+      "fqn": "Granit.Testing.Containers.ContainerStartRetry",
+      "kind": "class",
+      "project": "Granit.Testing",
+      "file": "src/Granit.Testing/Containers/ContainerStartRetry.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "RunWithRetryAsync",
+          "kind": "method",
+          "signature": "RunWithRetryAsync(Func<CancellationToken, Task> start, string label, ILogger? logger = null, int maxAttempts = 3, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "TestDbContextServiceCollectionExtensions",

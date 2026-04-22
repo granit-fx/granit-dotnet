@@ -23,17 +23,27 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// resolved outside a tenant context, so their normalized names stay un-prefixed.
 /// </para>
 /// <para>
-/// User name normalization falls through to the standard upper-invariant behavior because
-/// <c>GranitUser</c> already scopes users per tenant via <c>TenantId</c> — only the role
-/// table needs the prefix strategy.
+/// <see cref="ILookupNormalizer.NormalizeName"/> is invoked by ASP.NET Identity for both
+/// <c>NormalizedUserName</c> and <c>NormalizedName</c> lookups — the contract has no way
+/// to distinguish users from roles from inside the normalizer. The universal prefix
+/// therefore also scopes <c>GranitUser.NormalizedUserName</c> per tenant: users created
+/// inside a tenant context are invisible to host-side <c>FindByNameAsync</c> lookups and
+/// vice-versa. This matches Granit's tenant-isolation intent — host and tenant admin
+/// contexts never share a user-by-name lookup in practice. Email-based lookups
+/// (<see cref="NormalizeEmail"/>) stay upper-invariant so cross-context login by email
+/// still works.
 /// </para>
 /// <para>
-/// This implementation is intentionally not registered by
-/// <c>GranitIdentityLocalAspNetIdentityModule</c>. Applications that enable
-/// <c>RoleEndpointsOptions.AllowTenantRoles</c> must replace the framework default
-/// <see cref="ILookupNormalizer"/> with this type (scoped lifetime required because
-/// <see cref="ICurrentTenant"/> is scoped). See the Granit docs for the full wiring
-/// example.
+/// Business callers should query roles through <c>IGranitRoleLookup</c>, not through
+/// <c>RoleManager&lt;GranitRole&gt;.FindByNameAsync</c>: the lookup service routes via
+/// <c>IRoleMetadataStore</c> (the canonical source of truth) and handles the
+/// <c>Both</c>-scope fallback that <c>RoleManager</c> cannot express from inside a
+/// tenant context. See ADR-023.
+/// </para>
+/// <para>
+/// Registered as <see cref="Microsoft.Extensions.DependencyInjection.ServiceLifetime.Scoped"/>
+/// by <c>GranitIdentityLocalAspNetIdentityModule</c> because <see cref="ICurrentTenant"/>
+/// is scoped.
 /// </para>
 /// </remarks>
 internal sealed class TenantAwareRoleLookupNormalizer(ICurrentTenant currentTenant) : ILookupNormalizer
