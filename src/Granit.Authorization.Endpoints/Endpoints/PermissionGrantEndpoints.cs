@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Granit.Authorization;
+using Granit.Authorization.Domain;
 using Granit.Authorization.Endpoints.Dtos;
 using Granit.Authorization.Endpoints.Permissions;
 using Granit.MultiTenancy;
@@ -34,29 +35,33 @@ internal static partial class PermissionGrantEndpoints
         adminGroup.MapGet("/{roleName}", GetGrantedPermissionsAsync)
             .WithName("GetRolePermissions")
             .WithSummary("Returns the list of permissions explicitly granted to a role.")
-            .WithDescription("Returns only the permissions explicitly assigned to the specified role for the current tenant. Does not include inherited or implicit permissions. The role name is case-sensitive and must match the identity provider's role definition.")
-            .Produces<PermissionGrantResponse>();
+            .WithDescription("Returns only the permissions explicitly assigned to the specified role for the current tenant. Does not include inherited or implicit permissions. The role name is case-sensitive and must match the identity provider's role definition. Returns 404 if the role has a RoleMetadata row that is not visible in the caller's context (host-scope role from a tenant admin, or another tenant's role) — no 403 is returned to avoid disclosing the role's existence.")
+            .Produces<PermissionGrantResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         adminGroup.MapPut("/{roleName}/{permissionName}", GrantPermissionAsync)
             .WithName("GrantPermission")
             .WithSummary("Grants a permission to a role. No-op if already granted.")
-            .WithDescription("Grants the specified permission to the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being granted (privilege escalation prevention). Idempotent — granting an already-granted permission is a no-op.")
+            .WithDescription("Grants the specified permission to the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being granted (privilege escalation prevention). Idempotent — granting an already-granted permission is a no-op. Returns 404 when the role is not visible in the caller's context.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         adminGroup.MapDelete("/{roleName}/{permissionName}", RevokePermissionAsync)
             .WithName("RevokePermission")
             .WithSummary("Revokes a permission from a role. No-op if not granted.")
-            .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being revoked (privilege escalation prevention). Idempotent — revoking a non-granted permission is a no-op.")
+            .WithDescription("Revokes the specified permission from the role for the current tenant. The permission name must match a registered permission definition (returns 422 otherwise). The calling user must hold the permission being revoked (privilege escalation prevention). Idempotent — revoking a non-granted permission is a no-op. Returns 404 when the role is not visible in the caller's context.")
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesValidationProblem();
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }
 
-    private static async Task<Results<Ok<PermissionGrantResponse>, ValidationProblem>> GetGrantedPermissionsAsync(
+    private static async Task<Results<Ok<PermissionGrantResponse>, ValidationProblem, ProblemHttpResult>> GetGrantedPermissionsAsync(
         string roleName,
         [FromServices] IPermissionManagerReader permissionManagerReader,
+        [FromServices] IRoleMetadataStore roleMetadataStore,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -67,6 +72,14 @@ internal static partial class PermissionGrantEndpoints
                 {
                     ["roleName"] = ["Role name must be 1-256 characters (alphanumeric, dots, hyphens, underscores)."]
                 });
+        }
+
+        if (!await IsRoleVisibleAsync(roleName, roleMetadataStore, currentTenant, cancellationToken)
+            .ConfigureAwait(false))
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Role '{roleName}' not found.");
         }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -85,6 +98,7 @@ internal static partial class PermissionGrantEndpoints
         [FromServices] IPermissionManagerWriter permissionManagerWriter,
         [FromServices] IPermissionDefinitionManager definitionManager,
         [FromServices] IPermissionChecker permissionChecker,
+        [FromServices] IRoleMetadataStore roleMetadataStore,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -95,6 +109,14 @@ internal static partial class PermissionGrantEndpoints
                 {
                     ["name"] = ["Role and permission names must be 1-256 characters (alphanumeric, dots, hyphens, underscores)."]
                 });
+        }
+
+        if (!await IsRoleVisibleAsync(roleName, roleMetadataStore, currentTenant, cancellationToken)
+            .ConfigureAwait(false))
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Role '{roleName}' not found.");
         }
 
         if (!definitionManager.Exists(permissionName))
@@ -135,6 +157,7 @@ internal static partial class PermissionGrantEndpoints
         [FromServices] IPermissionManagerWriter permissionManagerWriter,
         [FromServices] IPermissionDefinitionManager definitionManager,
         [FromServices] IPermissionChecker permissionChecker,
+        [FromServices] IRoleMetadataStore roleMetadataStore,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -145,6 +168,14 @@ internal static partial class PermissionGrantEndpoints
                 {
                     ["name"] = ["Role and permission names must be 1-256 characters (alphanumeric, dots, hyphens, underscores)."]
                 });
+        }
+
+        if (!await IsRoleVisibleAsync(roleName, roleMetadataStore, currentTenant, cancellationToken)
+            .ConfigureAwait(false))
+        {
+            return TypedResults.Problem(
+                statusCode: StatusCodes.Status404NotFound,
+                detail: $"Role '{roleName}' not found.");
         }
 
         if (!definitionManager.Exists(permissionName))
@@ -184,4 +215,56 @@ internal static partial class PermissionGrantEndpoints
 
     [GeneratedRegex(@"^[\w.\-]{1,256}$")]
     private static partial Regex ValidNameRegex();
+
+    /// <summary>
+    /// Applies the <see cref="MultiTenancySide"/> visibility matrix to a role name.
+    /// Returns <see langword="true"/> when the role either has no <see cref="RoleMetadata"/>
+    /// row (legacy / externally-managed role, not under Granit's visibility regime) or
+    /// its row is visible in the caller's context.
+    /// </summary>
+    /// <remarks>
+    /// Mirrors the matrix used by <c>GranitRoleEndpoints</c>:
+    /// host context sees everything; tenant context sees <c>Both</c> and its own tenant roles.
+    /// Host-scope roles queried from a tenant context return <see langword="false"/> so the
+    /// endpoint responds with 404 and never discloses the row's existence.
+    /// </remarks>
+    internal static async Task<bool> IsRoleVisibleAsync(
+        string roleName,
+        IRoleMetadataStore roleMetadataStore,
+        ICurrentTenant currentTenant,
+        CancellationToken cancellationToken)
+    {
+        RoleMetadata? role = null;
+        if (currentTenant.IsAvailable)
+        {
+            role = await roleMetadataStore
+                .FindByNameAsync(roleName, currentTenant.Id, clientId: null, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        role ??= await roleMetadataStore
+            .FindByNameAsync(roleName, tenantId: null, clientId: null, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (role is null)
+        {
+            // Legacy / externally-managed role — no metadata row means no declared scope,
+            // so visibility is not enforced here. Tenant isolation still applies to the
+            // grant rows themselves via the IPermissionGrantStore layer.
+            return true;
+        }
+
+        if (!currentTenant.IsAvailable)
+        {
+            return true;
+        }
+
+        return role.MultiTenancySide switch
+        {
+            MultiTenancySide.Host => false,
+            MultiTenancySide.Both => true,
+            MultiTenancySide.Tenant => role.TenantId == currentTenant.Id,
+            _ => false,
+        };
+    }
 }

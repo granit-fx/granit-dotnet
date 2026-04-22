@@ -33,6 +33,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
     private readonly IPermissionDefinitionManager _definitionManager = Substitute.For<IPermissionDefinitionManager>();
     private readonly IPermissionManagerReader _permissionManagerReader = Substitute.For<IPermissionManagerReader>();
     private readonly IPermissionManagerWriter _permissionManagerWriter = Substitute.For<IPermissionManagerWriter>();
+    private readonly IRoleMetadataStore _roleMetadataStore = Substitute.For<IRoleMetadataStore>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
     private readonly WebApplication _app;
 
@@ -82,6 +83,7 @@ public sealed class AuthorizationEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_definitionManager);
         builder.Services.AddSingleton(_permissionManagerReader);
         builder.Services.AddSingleton(_permissionManagerWriter);
+        builder.Services.AddSingleton(_roleMetadataStore);
         builder.Services.AddSingleton(_currentTenant);
 
         _app = builder.Build();
