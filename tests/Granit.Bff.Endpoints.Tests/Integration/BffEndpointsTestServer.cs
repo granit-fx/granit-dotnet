@@ -93,7 +93,7 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
         TokenEndpointHandler = tokenEndpointHandler;
     }
 
-    public static async Task<BffEndpointsTestServer> CreateAsync()
+    public static async Task<BffEndpointsTestServer> CreateAsync(string[]? scopes = null)
     {
         // Reset the static singleton guard so each test can register endpoints
         ResetEndpointsMappedFlag();
@@ -138,7 +138,7 @@ internal sealed class BffEndpointsTestServer : IAsyncDisposable
             ClientId = "test-client-id",
             ClientSecret = "test-client-secret",
             PathPrefix = TestPathPrefix,
-            Scopes = ["openid", "profile"],
+            Scopes = scopes ?? ["openid", "profile"],
         };
 
         GranitBffOptions bffOptions = new()

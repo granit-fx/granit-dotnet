@@ -652,6 +652,32 @@ public sealed class BffEndpointsIntegrationTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetLogin_DuplicateScopes_DedupedInAuthorizeUrl()
+    {
+        // Simulate the IConfiguration-binding concatenation quirk observed in
+        // production: the default Scopes array was appended to — not replaced —
+        // by an appsettings section with overlapping values, which surfaced on
+        // /connect/authorize as a doubled scope list. The dedup in
+        // BffLoginEndpoints is the guardrail.
+        await _server.DisposeAsync();
+        _server = await BffEndpointsTestServer.CreateAsync(
+            scopes: ["openid", "profile", "email", "openid", "profile", "email"]);
+
+        HttpResponseMessage response = await _server.SendWithoutRedirectAsync(
+            new HttpRequestMessage(HttpMethod.Get, "/app/bff/login"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Redirect);
+
+        string redirectUrl = response.Headers.Location!.ToString();
+        string scopeParam = HttpUtility.ParseQueryString(
+            new Uri(redirectUrl).Query)["scope"]!;
+
+        string[] emitted = scopeParam.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        emitted.ShouldBe(["openid", "profile", "email"], ignoreOrder: false);
+    }
+
+    [Fact]
     public async Task GetLogin_StoresPkceStateInCache()
     {
         HttpResponseMessage response = await _server.SendWithoutRedirectAsync(

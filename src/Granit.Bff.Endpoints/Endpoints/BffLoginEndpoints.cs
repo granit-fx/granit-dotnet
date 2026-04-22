@@ -115,9 +115,14 @@ internal static partial class BffLoginEndpoints
             new FusionCacheEntryOptions { Duration = TimeSpan.FromMinutes(10) },
             token: cancellationToken).ConfigureAwait(false);
 
-        // Build authorization URL
+        // Build authorization URL.
+        // Deduplicate defensively: IConfiguration binding onto a pre-initialised
+        // string[] can produce duplicates when the default values and an
+        // appsettings section declare overlapping scopes. Duplicates in the
+        // `scope` parameter are tolerated by most OIDC servers but bloat the
+        // /connect/authorize URL and were observed in production on 2026-04-22.
 #pragma warning disable GRSEC003 // Building OIDC authorize URL with client credentials
-        string scopes = string.Join(" ", frontend.Scopes);
+        string scopes = string.Join(" ", frontend.Scopes.Distinct(StringComparer.Ordinal));
         string pathPrefix = string.IsNullOrEmpty(frontend.PathPrefix) ? "" : frontend.PathPrefix;
         string callbackUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}{pathPrefix}/bff/callback";
         string authorityBase = bffOptions.Authority.ToString().TrimEnd('/');
