@@ -113,6 +113,7 @@
       "tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj",
       "tests/Granit.Identity.Federated.Privacy.Tests/Granit.Identity.Federated.Privacy.Tests.csproj",
       "tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj",
+      "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj",
       "tests/Granit.Identity.Local.AspNetIdentity.Tests/Granit.Identity.Local.AspNetIdentity.Tests.csproj",
       "tests/Granit.Identity.Local.Endpoints.Tests/Granit.Identity.Local.Endpoints.Tests.csproj",
       "tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj",
