@@ -575,6 +575,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Provisioning.Tests/Granit.MultiTenancy.Provisioning.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
