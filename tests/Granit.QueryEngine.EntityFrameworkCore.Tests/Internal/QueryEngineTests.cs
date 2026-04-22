@@ -272,6 +272,28 @@ public sealed class QueryEngineTests : IAsyncLifetime
         priceField.Operators.ShouldContain(FilterOperator.Between);
     }
 
+    [Fact]
+    public void GetMetadata_populates_enum_values_for_enum_fields()
+    {
+        ProductQueryDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        FilterableField categoryField = metadata.FilterableFields
+            .First(f => f.Name == "Category");
+        categoryField.EnumValues.ShouldNotBeNull();
+        categoryField.EnumValues.ShouldBe(["Electronics", "Books", "Clothing"], ignoreOrder: true);
+
+        FilterableField nameField = metadata.FilterableFields
+            .First(f => f.Name == "Name");
+        nameField.EnumValues.ShouldBeNull();
+
+        FilterableField priceField = metadata.FilterableFields
+            .First(f => f.Name == "Price");
+        priceField.EnumValues.ShouldBeNull();
+    }
+
     private sealed class QuickFilterDefinition : QueryDefinition<TestProduct>
     {
         public override string Name => "Test.Products.QuickFilter";

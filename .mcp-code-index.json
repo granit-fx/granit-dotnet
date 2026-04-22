@@ -35483,7 +35483,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterableField.cs",
-      "line": 11,
+      "line": 16,
       "members": []
     },
     {

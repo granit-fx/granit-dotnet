@@ -269,7 +269,8 @@ internal sealed class QueryEngine<TEntity>(
                 .Select(c => new FilterableField(
                     c.PropertyName,
                     c.ClrType.Name,
-                    FilterOperatorInference.GetOperators(c.ClrType)))
+                    FilterOperatorInference.GetOperators(c.ClrType),
+                    GetEnumValues(c.ClrType)))
                 .ToList(),
             SortableFields = _builder.Columns
                 .Where(c => c.IsSortable)
@@ -300,6 +301,12 @@ internal sealed class QueryEngine<TEntity>(
                 _builder.CursorPropertyName is not null),
             DefaultSort = _builder.DefaultSortValue,
         };
+    }
+
+    private static string[]? GetEnumValues(Type clrType)
+    {
+        Type underlying = Nullable.GetUnderlyingType(clrType) ?? clrType;
+        return underlying.IsEnum ? Enum.GetNames(underlying) : null;
     }
 
     private static string ResolveLabel(ColumnDescriptor column, IStringLocalizer? localizer)
