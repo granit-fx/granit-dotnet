@@ -94,6 +94,7 @@
       "tests/Granit.Authentication.OpenIddict.Tests/Granit.Authentication.OpenIddict.Tests.csproj",
       "tests/Granit.Authorization.AI.Tests/Granit.Authorization.AI.Tests.csproj",
       "tests/Granit.Authorization.Endpoints.Tests/Granit.Authorization.Endpoints.Tests.csproj",
+      "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration/Granit.Authorization.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Authorization.EntityFrameworkCore.Tests/Granit.Authorization.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Authorization.Tests/Granit.Authorization.Tests.csproj",
       "tests/Granit.Bff.BackgroundJobs.Tests/Granit.Bff.BackgroundJobs.Tests.csproj",

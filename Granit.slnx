@@ -350,6 +350,7 @@
     <Project Path="tests/Granit.Authorization.AI.Tests/Granit.Authorization.AI.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.Endpoints.Tests/Granit.Authorization.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authorization.EntityFrameworkCore.Tests/Granit.Authorization.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration/Granit.Authorization.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Authorization.Tests/Granit.Authorization.Tests.csproj" />
     <Project Path="tests/Granit.Bff.BackgroundJobs.Tests/Granit.Bff.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Bff.Endpoints.Tests/Granit.Bff.Endpoints.Tests.csproj" />

@@ -221,6 +221,7 @@
         "tests/Granit.Oidc.TokenManagement.Tests",
         "tests/Granit.Authorization.Endpoints.Tests",
         "tests/Granit.Authorization.EntityFrameworkCore.Tests",
+        "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Authorization.Tests",
         "tests/Granit.Bff.BackgroundJobs.Tests",
         "tests/Granit.Bff.EntityFrameworkCore.Tests",
