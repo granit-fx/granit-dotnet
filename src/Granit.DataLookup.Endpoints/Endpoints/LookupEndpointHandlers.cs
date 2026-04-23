@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Diagnostics;
-using Granit.DataLookup.Endpoints.Responses;
+using Granit.DataLookup.Endpoints.Dtos;
 using Granit.DataLookup.Registry;
 using Granit.DataLookup.Sources;
 using Microsoft.AspNetCore.Http;
@@ -89,7 +89,7 @@ public static class LookupEndpointHandlers
     }
 
     /// <summary>GET /api/granit/lookups/{name}/resolve?value=… — single item lookup for rehydration.</summary>
-    public static async Task<Results<Ok<LookupItemResponse>, NotFound, ForbidHttpResult>> ResolveAsync(
+    public static async Task<Results<Ok<LookupItemResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>> ResolveAsync(
         string name,
         [FromQuery] string value,
         [FromServices] ILookupRegistry registry,

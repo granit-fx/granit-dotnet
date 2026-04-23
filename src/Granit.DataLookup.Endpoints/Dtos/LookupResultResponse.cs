@@ -1,4 +1,4 @@
-namespace Granit.DataLookup.Endpoints.Responses;
+namespace Granit.DataLookup.Endpoints.Dtos;
 
 /// <summary>Response shape for a paginated lookup search.</summary>
 /// <param name="Items">The page of items, in source order.</param>

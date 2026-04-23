@@ -582,7 +582,9 @@
       "name": "Granit.DataLookup.EntityFrameworkCore",
       "deps": [
         "Granit",
-        "Granit.DataLookup"
+        "Granit.DataLookup",
+        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -12361,6 +12363,42 @@
       "members": []
     },
     {
+      "name": "LookupItemResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupItemResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupItemResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "LookupManifestEntryResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupManifestEntryResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "LookupManifestResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupManifestResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "LookupResultResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupResultResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupResultResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "LookupEndpointHandlers",
       "fqn": "Granit.DataLookup.Endpoints.Endpoints.LookupEndpointHandlers",
       "kind": "class",
@@ -12435,42 +12473,6 @@
       "members": []
     },
     {
-      "name": "LookupItemResponse",
-      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupItemResponse",
-      "kind": "record",
-      "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupItemResponse.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "LookupManifestEntryResponse",
-      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupManifestEntryResponse",
-      "kind": "record",
-      "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupManifestResponse.cs",
-      "line": 14,
-      "members": []
-    },
-    {
-      "name": "LookupManifestResponse",
-      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupManifestResponse",
-      "kind": "record",
-      "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupManifestResponse.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "LookupResultResponse",
-      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupResultResponse",
-      "kind": "record",
-      "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupResultResponse.cs",
-      "line": 7,
-      "members": []
-    },
-    {
       "name": "DataLookupQueryableExtensions",
       "fqn": "Granit.DataLookup.EntityFrameworkCore.Extensions.DataLookupQueryableExtensions",
       "kind": "class",
@@ -12485,7 +12487,7 @@
       "kind": "class",
       "project": "Granit.DataLookup.EntityFrameworkCore",
       "file": "src/Granit.DataLookup.EntityFrameworkCore/GranitDataLookupEntityFrameworkCoreModule.cs",
-      "line": 15,
+      "line": 18,
       "members": []
     },
     {

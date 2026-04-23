@@ -59,6 +59,7 @@
         "tests/Granit.DataExchange.EntityFrameworkCore.Tests",
         "tests/Granit.DataExchange.Excel.Tests",
         "tests/Granit.DataExchange.Tests",
+        "tests/Granit.DataLookup.Abstractions.Tests",
         "tests/Granit.DataLookup.Endpoints.Tests",
         "tests/Granit.DataLookup.EntityFrameworkCore.Tests",
         "tests/Granit.DataLookup.Tests",

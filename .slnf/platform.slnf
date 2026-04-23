@@ -135,6 +135,7 @@
       "tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj",
       "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj",
+      "tests/Granit.DataLookup.Abstractions.Tests/Granit.DataLookup.Abstractions.Tests.csproj",
       "tests/Granit.DataLookup.Endpoints.Tests/Granit.DataLookup.Endpoints.Tests.csproj",
       "tests/Granit.DataLookup.EntityFrameworkCore.Tests/Granit.DataLookup.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.DataLookup.Tests/Granit.DataLookup.Tests.csproj",

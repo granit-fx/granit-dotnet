@@ -1,4 +1,4 @@
-namespace Granit.DataLookup.Endpoints.Responses;
+namespace Granit.DataLookup.Endpoints.Dtos;
 
 /// <summary>Response shape for a single lookup item — wire representation of <c>LookupItem</c>.</summary>
 /// <param name="Value">Opaque value (JSON-serialized as given by the source).</param>

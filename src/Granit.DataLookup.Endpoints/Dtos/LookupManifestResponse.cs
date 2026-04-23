@@ -1,6 +1,6 @@
 using Granit.DataLookup.Descriptors;
 
-namespace Granit.DataLookup.Endpoints.Responses;
+namespace Granit.DataLookup.Endpoints.Dtos;
 
 /// <summary>Response shape for <c>GET /api/granit/lookups</c> — discovery manifest.</summary>
 /// <param name="Lookups">Sorted list of registered lookups.</param>

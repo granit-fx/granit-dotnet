@@ -397,6 +397,7 @@
     <Project Path="tests/Granit.DataExchange.EntityFrameworkCore.Tests/Granit.DataExchange.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Excel.Tests/Granit.DataExchange.Excel.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Tests/Granit.DataExchange.Tests.csproj" />
+    <Project Path="tests/Granit.DataLookup.Abstractions.Tests/Granit.DataLookup.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.Endpoints.Tests/Granit.DataLookup.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.EntityFrameworkCore.Tests/Granit.DataLookup.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.DataLookup.Tests/Granit.DataLookup.Tests.csproj" />

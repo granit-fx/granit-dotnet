@@ -1,7 +1,7 @@
+using Granit.DataLookup.Endpoints.Dtos;
 using Granit.DataLookup.Endpoints.Endpoints;
 using Granit.DataLookup.Endpoints.Options;
 using Granit.DataLookup.Endpoints.Permissions;
-using Granit.DataLookup.Endpoints.Responses;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

@@ -64,6 +64,7 @@
       "tests/Granit.DataExchange.EntityFrameworkCore.Tests/Granit.DataExchange.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.DataExchange.Excel.Tests/Granit.DataExchange.Excel.Tests.csproj",
       "tests/Granit.DataExchange.Tests/Granit.DataExchange.Tests.csproj",
+      "tests/Granit.DataLookup.Abstractions.Tests/Granit.DataLookup.Abstractions.Tests.csproj",
       "tests/Granit.DataLookup.Endpoints.Tests/Granit.DataLookup.Endpoints.Tests.csproj",
       "tests/Granit.DataLookup.EntityFrameworkCore.Tests/Granit.DataLookup.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.DataLookup.Tests/Granit.DataLookup.Tests.csproj",
