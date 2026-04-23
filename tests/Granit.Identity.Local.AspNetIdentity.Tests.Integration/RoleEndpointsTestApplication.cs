@@ -36,8 +36,14 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests.Integration;
 /// evaluation pipeline (<c>DynamicPermissionPolicyProvider</c> /
 /// <c>IPermissionChecker</c>) doesn't gate these tests. That surface is covered
 /// by unit tests around <c>PermissionChecker</c>; here we focus on the visibility
-/// matrix, the <c>AllowTenantRoles</c> flag, and the system-role protection rules
-/// applied inside the endpoint handlers.
+/// matrix, tenant-scope role CRUD, and the system-role protection rules applied
+/// inside the endpoint handlers.
+/// </para>
+/// <para>
+/// The fixture wires <see cref="TenantAwareRoleLookupNormalizer"/> as the
+/// <see cref="ILookupNormalizer"/> so tenant-scope role names (e.g. "Manager"
+/// created under both <c>TenantA</c> and <c>TenantB</c>) don't collide on the
+/// ASP.NET Core Identity <c>AspNetRoles.NormalizedName</c> unique index.
 /// </para>
 /// </remarks>
 public sealed class RoleEndpointsTestApplication : IAsyncLifetime
@@ -78,6 +84,13 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
 
         _currentTenant = new MutableCurrentTenant();
         builder.Services.AddSingleton<ICurrentTenant>(_currentTenant);
+
+        // Tenant-scope roles require the tenant-aware normalizer to avoid colliding on
+        // AspNetRoles.NormalizedName across tenants (see ADR-023). Granit wires this in
+        // GranitIdentityLocalAspNetIdentityModule; the fixture replicates that here since
+        // it boots Identity directly with AddIdentityCore.
+        builder.Services.Replace(ServiceDescriptor.Scoped<
+            ILookupNormalizer, TenantAwareRoleLookupNormalizer>());
 
         builder.Services
             .AddAuthentication(TestAuthHandler.SchemeName)

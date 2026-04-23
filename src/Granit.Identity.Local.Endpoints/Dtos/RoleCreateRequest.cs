@@ -6,7 +6,8 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <param name="Name">Display name of the role (max 256 chars).</param>
 /// <param name="MultiTenancySide">
 /// Host / Tenant / Both applicability. <see cref="MultiTenancySide.Tenant"/> is refused
-/// unless <c>RoleEndpointsOptions.AllowTenantRoles</c> is enabled.
+/// when <c>RoleEndpointsOptions.AllowTenantRoles</c> is explicitly disabled (enabled by
+/// default).
 /// </param>
 /// <param name="TenantId">
 /// Tenant identifier — required iff <paramref name="MultiTenancySide"/> is

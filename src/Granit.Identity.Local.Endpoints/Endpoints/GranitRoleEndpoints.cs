@@ -53,7 +53,8 @@ internal static class GranitRoleEndpoints
             .WithSummary("Creates a new local role and its RoleMetadata row.")
             .WithDescription(
                 "Invariants: Host / Both ⇒ TenantId must be null; Tenant ⇒ TenantId required. "
-                + "Side=Tenant requests are refused unless RoleEndpointsOptions.AllowTenantRoles is enabled.")
+                + "Tenant admins may only create Tenant-scope roles in their own tenant. "
+                + "Set RoleEndpointsOptions.AllowTenantRoles = false to disable Tenant-scope creation entirely.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()

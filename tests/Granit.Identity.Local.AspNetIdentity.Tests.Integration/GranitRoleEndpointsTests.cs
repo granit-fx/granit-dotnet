@@ -11,11 +11,10 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests.Integration;
 
 /// <summary>
 /// HTTP-level integration tests for the <c>/admin/roles</c> CRUD endpoints.
-/// Covers the visibility matrix applied by <c>ICurrentTenant</c>, the
-/// <c>AllowTenantRoles</c> Phase-1 refusal, and the system-role protection
-/// rules. Permission-grant enforcement is deliberately bypassed at the
-/// authorization-policy layer — see <see cref="PermissiveAuthorizationPolicyProvider"/>
-/// for the rationale.
+/// Covers the visibility matrix applied by <c>ICurrentTenant</c>, tenant-scope
+/// role happy paths, and the system-role protection rules. Permission-grant
+/// enforcement is deliberately bypassed at the authorization-policy layer —
+/// see <see cref="PermissiveAuthorizationPolicyProvider"/> for the rationale.
 /// </summary>
 public sealed class GranitRoleEndpointsTests
     : IClassFixture<RoleEndpointsTestApplication>, IAsyncLifetime
@@ -111,11 +110,11 @@ public sealed class GranitRoleEndpointsTests
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // POST — AllowTenantRoles flag (Phase 1 refusal)
+    // POST — Tenant-scope happy path (AllowTenantRoles = true default)
     // ─────────────────────────────────────────────────────────────────────
 
     [Fact]
-    public async Task Create_SideTenant_AllowTenantRolesFalse_Returns403()
+    public async Task Create_AsTenantAdmin_SideTenant_OwnTenant_Returns201()
     {
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -126,10 +125,113 @@ public sealed class GranitRoleEndpointsTests
                 name = "Manager",
                 multiTenancySide = (int)MultiTenancySide.Tenant,
                 tenantId = _tenantA,
+                description = "Tenant-A managers.",
+            },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+        RoleResponseLite? created = await response.Content
+            .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
+
+        created.ShouldNotBeNull();
+        created.Name.ShouldBe("Manager");
+        created.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
+        created.TenantId.ShouldBe(_tenantA);
+    }
+
+    [Fact]
+    public async Task Create_AsTenantAdmin_SideTenant_ForeignTenant_Returns403()
+    {
+        using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
+
+        HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
+            "/admin/roles",
+            new
+            {
+                name = "Manager",
+                multiTenancySide = (int)MultiTenancySide.Tenant,
+                tenantId = _tenantB,
             },
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task Create_AsTenantAdmin_SideTenant_VisibleInOwnList_InvisibleToOtherTenant()
+    {
+        // Create a tenant-A role.
+        using (_app.CurrentTenant.Change(_tenantA))
+        {
+            HttpResponseMessage create = await _app.HttpClient.PostAsJsonAsync(
+                "/admin/roles",
+                new
+                {
+                    name = "Manager",
+                    multiTenancySide = (int)MultiTenancySide.Tenant,
+                    tenantId = _tenantA,
+                },
+                TestContext.Current.CancellationToken);
+
+            create.StatusCode.ShouldBe(HttpStatusCode.Created);
+
+            // Tenant A sees it.
+            HttpResponseMessage listA = await _app.HttpClient.GetAsync(
+                "/admin/roles", TestContext.Current.CancellationToken);
+            RoleResponseLite[]? rolesA = await listA.Content
+                .ReadFromJsonAsync<RoleResponseLite[]>(TestContext.Current.CancellationToken);
+            rolesA!.ShouldContain(r => r.Name == "Manager" && r.TenantId == _tenantA);
+        }
+
+        // Tenant B does not.
+        using (_app.CurrentTenant.Change(_tenantB))
+        {
+            HttpResponseMessage listB = await _app.HttpClient.GetAsync(
+                "/admin/roles", TestContext.Current.CancellationToken);
+            RoleResponseLite[]? rolesB = await listB.Content
+                .ReadFromJsonAsync<RoleResponseLite[]>(TestContext.Current.CancellationToken);
+            rolesB!.ShouldNotContain(r => r.Name == "Manager" && r.TenantId == _tenantA);
+        }
+    }
+
+    [Fact]
+    public async Task Rename_AsTenantAdmin_OwnTenantRole_Returns200()
+    {
+        using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
+
+        Guid roleId = await CreateViaEndpointAsync(
+            "Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
+
+        HttpResponseMessage response = await _app.HttpClient.PutAsJsonAsync(
+            $"/admin/roles/{roleId:D}",
+            new { name = "SeniorManager", description = "Renamed" },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        RoleResponseLite? updated = await response.Content
+            .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
+        updated!.Name.ShouldBe("SeniorManager");
+        updated.Description.ShouldBe("Renamed");
+    }
+
+    [Fact]
+    public async Task Delete_AsTenantAdmin_OwnTenantRole_Returns204()
+    {
+        using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
+
+        Guid roleId = await CreateViaEndpointAsync(
+            "Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
+
+        HttpResponseMessage response = await _app.HttpClient.DeleteAsync(
+            $"/admin/roles/{roleId:D}", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+
+        HttpResponseMessage getAfter = await _app.HttpClient.GetAsync(
+            $"/admin/roles/{roleId:D}", TestContext.Current.CancellationToken);
+        getAfter.StatusCode.ShouldBe(HttpStatusCode.NotFound);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -214,6 +316,25 @@ public sealed class GranitRoleEndpointsTests
     // ─────────────────────────────────────────────────────────────────────
     // helpers
     // ─────────────────────────────────────────────────────────────────────
+
+    private async Task<Guid> CreateViaEndpointAsync(
+        string name, MultiTenancySide side, Guid? tenantId)
+    {
+        HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
+            "/admin/roles",
+            new
+            {
+                name,
+                multiTenancySide = (int)side,
+                tenantId,
+            },
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Created);
+        RoleResponseLite? created = await response.Content
+            .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
+        return created!.Id;
+    }
 
     private async Task<RoleMetadata> SeedMetadataAsync(
         string name, MultiTenancySide side, Guid? tenantId, bool isSystem = false)

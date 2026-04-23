@@ -12,14 +12,23 @@ public sealed class RoleEndpointsOptions
     public string TagName { get; set; } = "Identity - Roles";
 
     /// <summary>
-    /// When <see langword="false"/> (default), create / rename / delete endpoints refuse
-    /// <see cref="Granit.MultiTenancy.MultiTenancySide.Tenant"/> role requests — only
-    /// host-level and Both roles are creatable.
+    /// When <see langword="true"/> (default), tenant admins can create / rename / delete
+    /// <see cref="Granit.MultiTenancy.MultiTenancySide.Tenant"/>-scoped roles in their
+    /// own tenant. Host and Both roles remain host-admin only regardless of this flag.
     /// </summary>
     /// <remarks>
-    /// Opt-in requires <c>TenantAwareRoleLookupNormalizer</c> to be registered as the
-    /// <c>ILookupNormalizer</c>; otherwise two tenants with the same role display name
-    /// collide on the ASP.NET Core Identity <c>AspNetRoles.NormalizedName</c> unique index.
+    /// <para>
+    /// Requires <c>TenantAwareRoleLookupNormalizer</c> to be registered as the
+    /// <c>ILookupNormalizer</c>, otherwise two tenants with the same role display name
+    /// collide on the ASP.NET Core Identity <c>AspNetRoles.NormalizedName</c> unique
+    /// index. The normalizer is wired automatically by
+    /// <c>Granit.Identity.Local.AspNetIdentity</c>.
+    /// </para>
+    /// <para>
+    /// Set to <see langword="false"/> to opt out and have the endpoints refuse
+    /// Tenant-scope create requests with 403 (useful for host-only deployments that
+    /// want to keep the attack surface minimal).
+    /// </para>
     /// </remarks>
-    public bool AllowTenantRoles { get; set; }
+    public bool AllowTenantRoles { get; set; } = true;
 }

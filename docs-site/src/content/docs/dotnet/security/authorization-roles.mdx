@@ -97,7 +97,7 @@ The endpoints live in `Granit.Identity.Local.Endpoints` and map via:
 app.MapGranitRoles(opts =>
 {
     opts.RolesRoutePrefix = "admin/roles"; // default
-    opts.AllowTenantRoles = false;          // default — see below
+    opts.AllowTenantRoles = true;          // default — tenant admins can CRUD tenant roles
 });
 ```
 
@@ -105,7 +105,7 @@ app.MapGranitRoles(opts =>
 | --- | --- | --- | --- |
 | `GET` | `/admin/roles` | `IdentityLocal.Roles.Read` | Scoped to visible roles (matrix below). |
 | `GET` | `/admin/roles/{id}` | `IdentityLocal.Roles.Read` | 404 when not visible. |
-| `POST` | `/admin/roles` | `IdentityLocal.Roles.Manage` | 403 if `AllowTenantRoles = false` and `Side = Tenant`. |
+| `POST` | `/admin/roles` | `IdentityLocal.Roles.Manage` | Tenant admins create in own tenant only. Set `AllowTenantRoles = false` to disable tenant-scope creation entirely. |
 | `PUT` | `/admin/roles/{id}` | `IdentityLocal.Roles.Manage` | Side and tenant scope are immutable. |
 | `DELETE` | `/admin/roles/{id}` | `IdentityLocal.Roles.Delete` | System roles refuse deletion with 403. |
 
@@ -120,33 +120,31 @@ Applied server-side via `ICurrentTenant` — the store never leaks a non-visible
 
 Non-visible roles **always** return 404, never 403 — existence is not disclosed.
 
-## Feature flag: `AllowTenantRoles`
+## Tenant-scope roles
 
-Tenant-scoped roles collide on ASP.NET Core Identity's process-wide unique index on
-`AspNetRoles.NormalizedName` when two tenants create a role with the same display name.
-The solution is `TenantAwareRoleLookupNormalizer`, which prefixes the normalized name
-with `T_{tenantId}_` whenever a tenant context is active — but it changes the
-normalization of **every** `UserManager` / `RoleManager` lookup, so it must be wired
-consciously.
+Tenant admins CRUD tenant-scope roles in their own tenant by default
+(`AllowTenantRoles = true`). Tenant-scope roles would otherwise collide on
+ASP.NET Core Identity's process-wide unique index on `AspNetRoles.NormalizedName`
+when two tenants create a role with the same display name. The solution is
+`TenantAwareRoleLookupNormalizer`, which prefixes the normalized name with
+`T_{tenantId}_` whenever a tenant context is active — it's wired automatically
+by `Granit.Identity.Local.AspNetIdentity` (no action required).
 
-The framework ships the normalizer ready to use but leaves it **unregistered** by
-default. Opt in by flipping the flag and registering the normalizer:
+### Opt-out: host-only deployments
+
+For hosts that don't want to expose tenant-scope role creation at all (e.g. a
+single-tenant product that keeps permission scoping at the Host level only),
+opt out:
 
 ```csharp title="Program.cs"
 app.MapGranitRoles(opts =>
 {
-    opts.AllowTenantRoles = true; // tenant admins can now CRUD tenant-scoped roles
+    opts.AllowTenantRoles = false; // POST / with Side = Tenant now returns 403
 });
-
-// Wire the normalizer (scoped, depends on ICurrentTenant)
-builder.Services.Replace(ServiceDescriptor.Scoped<
-    ILookupNormalizer,
-    TenantAwareRoleLookupNormalizer>());
 ```
 
-While `AllowTenantRoles` is `false` the CRUD endpoints refuse `Side = Tenant` create
-requests with a 403 `tenant-roles-disabled` problem detail — host and Both roles
-remain fully available.
+When `AllowTenantRoles = false` the CRUD endpoints refuse `Side = Tenant` create
+requests with a 403 problem detail; Host and Both roles remain fully available.
 
 ## Orchestration across two DbContexts
 

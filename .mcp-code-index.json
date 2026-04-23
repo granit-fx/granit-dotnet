@@ -19373,7 +19373,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/RoleCreateRequest.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -19555,6 +19555,12 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "AllowTenantRoles",
+          "kind": "property",
+          "signature": "bool AllowTenantRoles",
+          "returnType": "bool"
         }
       ]
     },
