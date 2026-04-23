@@ -33,6 +33,8 @@ public sealed class EntraIdClientRoleTests : IDisposable
     private readonly IPasswordResetNotifier _passwordResetNotifier = Substitute.For<IPasswordResetNotifier>();
     private readonly IDistributedEventBus _distributedEventBus = Substitute.For<IDistributedEventBus>();
     private readonly ActivityListener _activityListener;
+    private HttpClient? _graphHttpClient;
+    private HttpClient? _tokenHttpClient;
 
     public EntraIdClientRoleTests()
     {
@@ -44,21 +46,29 @@ public sealed class EntraIdClientRoleTests : IDisposable
         ActivitySource.AddActivityListener(_activityListener);
     }
 
-    public void Dispose() => _activityListener.Dispose();
+    public void Dispose()
+    {
+        _activityListener.Dispose();
+        _graphHttpClient?.Dispose();
+        _tokenHttpClient?.Dispose();
+    }
 
     private EntraIdIdentityProvider BuildProvider(params string[] responses)
     {
+        _graphHttpClient?.Dispose();
+        _tokenHttpClient?.Dispose();
+
         MockSequenceHttpMessageHandler handler = new(responses);
-        HttpClient httpClient = new(handler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
-        _httpClientFactory.CreateClient("MicrosoftGraph").Returns(httpClient);
+        _graphHttpClient = new HttpClient(handler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        _httpClientFactory.CreateClient("MicrosoftGraph").Returns(_graphHttpClient);
 
         MockHttpMessageHandler tokenHandler = new()
         {
             ResponseBody = """{"access_token":"fake-token","expires_in":300}""",
         };
-        HttpClient tokenClient = new(tokenHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        _tokenHttpClient = new HttpClient(tokenHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
         IHttpClientFactory tokenFactory = Substitute.For<IHttpClientFactory>();
-        tokenFactory.CreateClient("MicrosoftGraph").Returns(tokenClient);
+        tokenFactory.CreateClient("MicrosoftGraph").Returns(_tokenHttpClient);
 
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(DateTimeOffset.UtcNow);
