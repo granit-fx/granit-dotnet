@@ -830,9 +830,8 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task ExternalLoginCallback_MissingProvider_Returns400()
     {
         // No external auth ticket and no query string — endpoint cannot resolve a provider
-        // and rejects with 400. This guards the post-VULN-214 behaviour: query-string
-        // provider is no longer trusted, so a missing IdentityConstants.ExternalScheme
-        // ticket must fail closed.
+        // and rejects with 400. The query-string provider is not trusted, so a missing
+        // IdentityConstants.ExternalScheme ticket must fail closed.
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
             "/account/external-logins/callback",
             TestContext.Current.CancellationToken);
@@ -843,9 +842,9 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task ExternalLoginCallback_QueryStringIgnored_Returns400()
     {
-        // The query string is attacker-controlled; the post-VULN-214 endpoint reads the
-        // provider from the IdentityConstants.ExternalScheme ticket only. A request that
-        // carries only ?provider=Google with no external ticket must be rejected.
+        // The query string is attacker-controlled; the endpoint reads the provider
+        // from the IdentityConstants.ExternalScheme ticket only. A request that carries
+        // only ?provider=Google with no external ticket must be rejected.
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
             "/account/external-logins/callback?provider=Google",
             TestContext.Current.CancellationToken);
@@ -908,9 +907,9 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task ExternalLoginCallback_QueryProviderIgnoredWhenSchemeDiffers_UsesScheme()
     {
-        // VULN-214: even when the query string says "GitHub", the actual scheme on the
-        // external ticket ("Google") wins. Otherwise an attacker who lands an OAuth
-        // callback for one provider could mis-attribute the resulting external login.
+        // Even when the query string says "GitHub", the actual scheme on the external
+        // ticket ("Google") wins. Otherwise an attacker who lands an OAuth callback for
+        // one provider could mis-attribute the resulting external login.
         _server.ExternalLoginService
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
             .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));

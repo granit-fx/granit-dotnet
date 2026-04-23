@@ -13,10 +13,10 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests;
 /// <remarks>
 /// <para>
 /// The previous test suite (33 tests) verified the broken stub behaviour where
-/// the service stored random bytes at registration (VULN-002) and accepted any
-/// assertion whose credential id matched a row (VULN-001). Those tests were
-/// intentionally deleted because their assertions encoded the audit findings —
-/// keeping them would lock the bugs in.
+/// the service stored random bytes at registration and accepted any assertion
+/// whose credential id matched a row. Those tests were intentionally deleted
+/// because their assertions encoded the audit findings — keeping them would
+/// lock the bugs in.
 /// </para>
 /// <para>
 /// The cryptographic correctness of the new implementation is the responsibility

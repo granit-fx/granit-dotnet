@@ -10,8 +10,8 @@ namespace Granit.Identity.Federated.RateLimiting;
 /// The default implementation (<see cref="NullTokenExchangeRateLimiter"/>) always
 /// allows. Hosts that have <c>Granit.RateLimiting</c> wired up should replace it with
 /// an implementation backed by <c>IRateLimitCounterStore</c> so the quota is enforced
-/// across all pods (the in-memory variant only protects a single process — see
-/// VULN-207 in the Identity audit).
+/// across all pods — the in-memory variant only protects a single process, so an
+/// attacker can cycle through pods to multiply the effective quota.
 /// </para>
 /// </remarks>
 public interface ITokenExchangeRateLimiter

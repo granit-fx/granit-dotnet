@@ -6,11 +6,10 @@ namespace Granit.Identity.Federated.Exceptions;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The audit (<c>VULN-211</c>) found that all four federated providers swallowed every
-/// upstream failure — including credential expiry and missing IAM permissions — and
-/// returned an empty result set to callers. Operators saw "no users" instead of
-/// "your service account is unauthorized", masking real outages and quietly degrading
-/// the admin UI.
+/// The federated providers previously swallowed every upstream failure — including
+/// credential expiry and missing IAM permissions — and returned an empty result set to
+/// callers. Operators saw "no users" instead of "your service account is unauthorized",
+/// masking real outages and quietly degrading the admin UI.
 /// </para>
 /// <para>
 /// Providers now distinguish 401/403 from transient 5xx and re-throw this exception so

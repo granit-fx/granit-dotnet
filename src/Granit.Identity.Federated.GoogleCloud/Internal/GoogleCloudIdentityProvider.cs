@@ -49,7 +49,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
 
         // Firebase Admin SDK's ListUsers cursor does not support server-side filter.
         // The previous implementation materialised every user in memory then filtered —
-        // that is a DoS / mass-enumeration risk on directories with 100k+ users (VULN-204).
+        // that is a DoS / mass-enumeration risk on directories with 100k+ users.
         // Refuse search requests rather than silently fall back to the unsafe pattern.
         if (!string.IsNullOrEmpty(search))
         {

@@ -18119,7 +18119,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderUnauthorizedException.cs",
-      "line": 20,
+      "line": 19,
       "members": []
     },
     {

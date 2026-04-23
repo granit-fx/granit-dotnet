@@ -18,8 +18,7 @@ internal interface IFirebaseAuthTransport
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <remarks>
     /// Bounding the slice avoids materialising large directories (100k+ users) into
-    /// memory on every list call and limits the Identity Toolkit quota footprint —
-    /// see VULN-204 in the Identity audit.
+    /// memory on every list call and limits the Identity Toolkit quota footprint.
     /// </remarks>
     Task<IReadOnlyList<ExportedUserRecord>> ListUsersAsync(
         int? skip = null,

@@ -66,7 +66,8 @@ public static class IdentityKeycloakServiceCollectionExtensions
         // Defensive registration: hosts that wire Keycloak via the DI extension (rather
         // than via the module loader) still get the no-op rate limiter so the
         // KeycloakUserTokenExchangeService dependency resolves. Production hosts should
-        // replace this with a Granit.RateLimiting-backed implementation (see VULN-207).
+        // replace this with a Granit.RateLimiting-backed implementation — otherwise the
+        // RFC 8693 naked-impersonation flow is unbounded per target user.
         services.TryAddSingleton<ITokenExchangeRateLimiter, NullTokenExchangeRateLimiter>();
         services.AddIdentityProvider<KeycloakIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, KeycloakIdentityProviderCapabilities>());
