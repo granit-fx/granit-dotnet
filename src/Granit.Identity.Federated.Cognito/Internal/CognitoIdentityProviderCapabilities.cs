@@ -46,4 +46,12 @@ internal sealed class CognitoIdentityProviderCapabilities : IIdentityProviderCap
 
     /// <inheritdoc/>
     public bool IsLocalStore => false;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Cognito groups are a flat list per User Pool with no native "client scope". Granit
+    /// infers client-scoped roles by matching the <c>{appClientId}:</c> naming prefix —
+    /// see <see cref="Options.CognitoClientRoleSyncOptions"/> and ADR-027.
+    /// </remarks>
+    public bool SupportsClientRoles => true;
 }

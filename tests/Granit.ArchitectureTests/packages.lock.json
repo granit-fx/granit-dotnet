@@ -1914,6 +1914,16 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.datalookup.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataLookup": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
+        }
+      },
       "granit.diagnostics": {
         "type": "Project",
         "dependencies": {
@@ -2147,7 +2157,10 @@
         "type": "Project",
         "dependencies": {
           "AWSSDK.CognitoIdentityProvider": "[4.*, )",
-          "Granit.Identity.Federated": "[0.1.0-dev, )"
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
         }
       },
       "granit.identity.federated.entityframeworkcore": {
@@ -2430,6 +2443,7 @@
       "granit.metering.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.DataLookup.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Metering": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
@@ -2456,6 +2470,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataLookup.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Events": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",

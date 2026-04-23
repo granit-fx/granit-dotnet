@@ -4,7 +4,9 @@ using Amazon.Runtime;
 using Granit.Diagnostics;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.Cognito.Internal;
+using Granit.Identity.Federated.Cognito.Internal.Sync;
 using Granit.Identity.Federated.Cognito.Options;
+using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -52,6 +54,24 @@ public static class IdentityCognitoServiceCollectionExtensions
 
         services.AddIdentityProvider<CognitoIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, CognitoIdentityProviderCapabilities>());
+
+        // Client-role capability (Phase 2). Forwards to the scoped IIdentityProvider so
+        // IIdentityProvider and IIdentityClientRoleManager resolve to the SAME scoped
+        // CognitoIdentityProvider instance — keeps internal state coherent across the
+        // two facets. See ADR-027.
+        services.TryAddScoped<IIdentityClientRoleManager>(sp =>
+            sp.GetRequiredService<IIdentityProvider>() as IIdentityClientRoleManager
+            ?? throw new InvalidOperationException(
+                "The registered IIdentityProvider does not implement IIdentityClientRoleManager — " +
+                "AddGranitIdentityCognito must be the last provider-registration call."));
+
+        // Client-role sync pipeline — enumerates prefix-matching Cognito groups for each
+        // tracked app-client id at host boot and upserts RoleMetadata rows.
+        services.AddOptions<CognitoClientRoleSyncOptions>()
+            .BindConfiguration(CognitoClientRoleSyncOptions.SectionName);
+
+        services.TryAddScoped<CognitoClientRoleSyncService>();
+        services.AddTransient<IHostDataSeedContributor, CognitoClientRoleSyncContributor>();
 
         return services;
     }

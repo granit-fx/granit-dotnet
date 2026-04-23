@@ -262,7 +262,7 @@ labels automatically.
 
 ## Related
 
-- [ADR-027: Unified Data Lookup](/dotnet/architecture/adr/027-unified-data-lookup/)
+- [ADR-028: Unified Data Lookup](/dotnet/architecture/adr/028-unified-data-lookup/)
   — architectural rationale and alternatives evaluated.
 - [`/dotnet/business/data-lookup/`](/dotnet/business/data-lookup/) —
   module reference with full API surface.

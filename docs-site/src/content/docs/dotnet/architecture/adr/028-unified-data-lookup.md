@@ -1,9 +1,9 @@
 ---
-title: "ADR-027: Unified Data Lookup for QueryEngine Filters and Form Dropdowns"
+title: "ADR-028: Unified Data Lookup for QueryEngine Filters and Form Dropdowns"
 description: "Introduce Granit.DataLookup — a single declarative primitive that feeds typeahead pickers across QueryEngine filter bars, edit-form dropdowns, and ReferenceData sets. Backed by a scoped registry, a canonical LookupItem shape, and a server-side label projection honoring 18 cultures."
 sidebar:
-  order: 27
-  label: "027 - Unified Data Lookup"
+  order: 28
+  label: "028 - Unified Data Lookup"
 ---
 
 > **Date:** 2026-04-23
