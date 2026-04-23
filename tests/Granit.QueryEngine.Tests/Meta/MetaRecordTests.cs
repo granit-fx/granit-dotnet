@@ -272,6 +272,38 @@ public sealed class FilterableFieldEqualityTests
 
         a.ShouldNotBe(b);
     }
+
+    [Fact]
+    public void Lookup_defaults_to_null()
+    {
+        IReadOnlyList<FilterOperator> operators = [FilterOperator.Eq];
+        FilterableField field = new("Name", "String", operators);
+
+        field.Lookup.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Equality_different_lookup_are_not_equal()
+    {
+        IReadOnlyList<FilterOperator> operators = [FilterOperator.Eq];
+        FilterableField a = new("TenantId", "Guid", operators,
+            Lookup: new Granit.DataLookup.Descriptors.LookupDescriptor(Name: "tenants"));
+        FilterableField b = new("TenantId", "Guid", operators,
+            Lookup: new Granit.DataLookup.Descriptors.LookupDescriptor(Name: "organizations"));
+
+        a.ShouldNotBe(b);
+    }
+
+    [Fact]
+    public void Equality_same_lookup_are_equal()
+    {
+        IReadOnlyList<FilterOperator> operators = [FilterOperator.Eq];
+        Granit.DataLookup.Descriptors.LookupDescriptor lookup = new(Name: "tenants");
+        FilterableField a = new("TenantId", "Guid", operators, Lookup: lookup);
+        FilterableField b = new("TenantId", "Guid", operators, Lookup: lookup);
+
+        a.ShouldBe(b);
+    }
 }
 
 public sealed class DateFilterMetaEqualityTests

@@ -1754,7 +1754,8 @@
     {
       "name": "Granit.QueryEngine.Abstractions",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.DataLookup.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -35563,7 +35564,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnBuilder.cs",
-      "line": 7,
+      "line": 9,
       "members": []
     },
     {
@@ -35572,7 +35573,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnDescriptor.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "PropertyName",
@@ -35969,7 +35970,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterableField.cs",
-      "line": 16,
+      "line": 24,
       "members": []
     },
     {

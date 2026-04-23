@@ -16,6 +16,7 @@
       "src/Granit.DataExchange.EntityFrameworkCore/Granit.DataExchange.EntityFrameworkCore.csproj",
       "src/Granit.DataExchange.Excel/Granit.DataExchange.Excel.csproj",
       "src/Granit.DataExchange/Granit.DataExchange.csproj",
+      "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.DocumentGeneration.Excel/Granit.DocumentGeneration.Excel.csproj",
       "src/Granit.DocumentGeneration.Pdf/Granit.DocumentGeneration.Pdf.csproj",
       "src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj",

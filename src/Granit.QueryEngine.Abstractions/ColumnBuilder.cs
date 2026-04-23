@@ -1,3 +1,5 @@
+using Granit.DataLookup.Descriptors;
+
 namespace Granit.QueryEngine;
 
 /// <summary>
@@ -13,6 +15,7 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     internal bool IsFilterableValue { get; private set; }
     internal bool IsVisibleValue { get; private set; } = true;
     internal string? FormatValue { get; private set; }
+    internal LookupDescriptor? LookupValue { get; private set; }
 
     /// <summary>
     /// Sets the user-facing label for this column.
@@ -83,6 +86,49 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     public ColumnBuilder<TEntity> Format(string format)
     {
         FormatValue = format;
+        return this;
+    }
+
+    /// <summary>
+    /// Declares a data-lookup source for this column by registry name. The frontend
+    /// renders a typeahead picker backed by
+    /// <c>GET /api/granit/lookups/{name}</c> instead of a free-text filter input.
+    /// </summary>
+    /// <remarks>
+    /// Preferred form when the backing source is registered in the central
+    /// <c>ILookupRegistry</c>. For one-off lookups pointing to an ad-hoc HTTP
+    /// endpoint, use the overload accepting a full <see cref="LookupDescriptor"/>.
+    /// </remarks>
+    /// <param name="name">Registry key of the lookup (e.g. <c>"tenants"</c>).</param>
+    /// <param name="kind">Kind of backing source — informational, helps the UI pick an affordance.</param>
+    /// <param name="requiredPermission">Permission the caller must hold to open the picker.</param>
+    /// <param name="scopeKeys">Scope keys the source requires (e.g. <c>["tenantId"]</c>).</param>
+    public ColumnBuilder<TEntity> Lookup(
+        string name,
+        LookupKind kind = LookupKind.QueryEngine,
+        string? requiredPermission = null,
+        IReadOnlyList<string>? scopeKeys = null)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        LookupValue = new LookupDescriptor(
+            Name: name,
+            Kind: kind,
+            RequiredPermission: requiredPermission,
+            ScopeKeys: scopeKeys);
+        return this;
+    }
+
+    /// <summary>
+    /// Declares a data-lookup source for this column via a full
+    /// <see cref="LookupDescriptor"/>. Use when pointing to a custom URL
+    /// (<see cref="LookupDescriptor.Endpoint"/>) or when overriding the default
+    /// <see cref="LookupDescriptor.SearchParam"/>.
+    /// </summary>
+    /// <param name="descriptor">The descriptor to attach to this column.</param>
+    public ColumnBuilder<TEntity> Lookup(LookupDescriptor descriptor)
+    {
+        ArgumentNullException.ThrowIfNull(descriptor);
+        LookupValue = descriptor;
         return this;
     }
 }

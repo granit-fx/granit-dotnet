@@ -1,3 +1,5 @@
+using Granit.DataLookup.Descriptors;
+
 namespace Granit.QueryEngine;
 
 /// <summary>
@@ -38,4 +40,11 @@ public sealed class ColumnDescriptor
     /// direct member access.
     /// </summary>
     public bool IsShadowProperty { get; init; }
+
+    /// <summary>
+    /// Optional data-lookup descriptor propagated to <c>FilterableField.Lookup</c> in the
+    /// query metadata. Set via <see cref="ColumnBuilder{TEntity}.Lookup(string, LookupKind, string?, IReadOnlyList{string}?)"/>
+    /// or the <see cref="LookupDescriptor"/> overload.
+    /// </summary>
+    public LookupDescriptor? Lookup { get; init; }
 }
