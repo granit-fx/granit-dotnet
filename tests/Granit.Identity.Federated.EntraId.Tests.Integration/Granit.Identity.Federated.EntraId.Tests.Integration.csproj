@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="WireMock.Net" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity\Granit.Identity.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
+  </ItemGroup>
+
+</Project>
