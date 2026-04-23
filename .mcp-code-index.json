@@ -1792,6 +1792,7 @@
       "deps": [
         "Granit",
         "Granit.DataExchange.Abstractions",
+        "Granit.DataLookup",
         "Granit.QueryEngine"
       ],
       "framework": "net10.0"
@@ -12546,6 +12547,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "IKindProviderLookupSource",
+      "fqn": "Granit.DataLookup.Registry.IKindProviderLookupSource",
+      "kind": "interface",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Registry/IKindProviderLookupSource.cs",
+      "line": 17,
+      "members": []
     },
     {
       "name": "ILookupRegistry",
@@ -36907,7 +36917,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData.EntityFrameworkCore",
       "file": "src/Granit.ReferenceData.EntityFrameworkCore/Extensions/ReferenceDataEfCoreServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
@@ -36966,7 +36976,7 @@
       "kind": "class",
       "project": "Granit.ReferenceData",
       "file": "src/Granit.ReferenceData/GranitReferenceDataModule.cs",
-      "line": 18,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37054,6 +37064,22 @@
           "kind": "method",
           "signature": "SetActiveAsync(string code, bool isActive, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ReferenceDataLookupNaming",
+      "fqn": "Granit.ReferenceData.Lookups.ReferenceDataLookupNaming",
+      "kind": "class",
+      "project": "Granit.ReferenceData",
+      "file": "src/Granit.ReferenceData/Lookups/ReferenceDataLookupNaming.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ForEntity",
+          "kind": "method",
+          "signature": "ForEntity(Type entityType)",
+          "returnType": "string"
         }
       ]
     },

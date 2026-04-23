@@ -1,3 +1,4 @@
+using Granit.DataLookup;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Extensions;
@@ -13,8 +14,12 @@ namespace Granit.ReferenceData;
 /// <code>
 /// services.AddGranitReferenceData();
 /// </code>
+/// Each registered reference data type is auto-exposed as a Granit.DataLookup source
+/// under the <c>ref-{type-kebab-case}</c> name (e.g. <c>ref-country</c>).
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineModule))]
+[DependsOn(
+    typeof(GranitDataLookupModule),
+    typeof(GranitQueryEngineModule))]
 public sealed class GranitReferenceDataModule : GranitModule
 {
     /// <inheritdoc/>

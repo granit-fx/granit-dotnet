@@ -57,12 +57,3 @@ internal sealed class LookupRegistry : ILookupRegistry
     private static LookupKind InferKind(ILookupSource source) =>
         source is IKindProviderLookupSource provider ? provider.Kind : LookupKind.Simple;
 }
-
-/// <summary>
-/// Optional marker for <see cref="ILookupSource"/> implementations that want to
-/// advertise a specific <see cref="LookupKind"/> in the manifest.
-/// </summary>
-internal interface IKindProviderLookupSource
-{
-    LookupKind Kind { get; }
-}

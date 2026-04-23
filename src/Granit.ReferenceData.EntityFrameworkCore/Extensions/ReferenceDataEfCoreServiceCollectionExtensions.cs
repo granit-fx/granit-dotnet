@@ -1,3 +1,4 @@
+using Granit.DataLookup.Sources;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
@@ -6,6 +7,7 @@ using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
 using Granit.ReferenceData.Internal;
+using Granit.ReferenceData.Lookups;
 using Granit.ReferenceData.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,6 +69,14 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
             _ => new GenericReferenceDataQueryDefinition<TEntity>());
         services.TryAddSingleton<IQueryDefinitionDescriptor>(sp =>
             sp.GetRequiredService<QueryDefinition<TEntity>>());
+
+        // Auto-register as a Granit.DataLookup source. Lookup name uses the kebab-case
+        // "ref-{entity-name}" convention (e.g. Country → "ref-country"). Frontend picker
+        // hits GET /api/granit/lookups/ref-country with Accept-Language for localized labels.
+        string lookupName = ReferenceDataLookupNaming.ForEntity(typeof(TEntity));
+        services.AddScoped<ILookupSource>(sp => new ReferenceDataLookupSource<TEntity>(
+            lookupName,
+            sp.GetRequiredService<IReferenceDataStoreReader<TEntity>>()));
 
         // Register seeder as Host or Tenant contributor based on scope
         if (scope == ReferenceDataScope.Tenant)
@@ -193,6 +203,14 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
             // 4. Register in the singleton registry (deferred to hosted service start)
             services.AddSingleton<IReferenceDataRegistryContributor>(
                 new ReferenceDataRegistryContributor(registration));
+
+            // 5. Auto-register as a Granit.DataLookup source. Name is "ref-{type-kebab}".
+            // Resolves the keyed reader so each dynamic type feeds its own lookup.
+            string dynamicLookupName = ReferenceDataLookupNaming.ForTypeName(registration.TypeName);
+            string keyedRegistryKey = registration.TypeName;
+            services.AddScoped<ILookupSource>(sp => new ReferenceDataLookupSource<DynamicReferenceDataEntity>(
+                dynamicLookupName,
+                sp.GetRequiredKeyedService<IReferenceDataStoreReader<DynamicReferenceDataEntity>>(keyedRegistryKey)));
         }
 
         return services;
