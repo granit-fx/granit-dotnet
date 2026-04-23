@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:DataLookup": "데이터 조회",
+    "Permission:DataLookup.Lookups.Read": "조회 소스 읽기"
+  }
+}

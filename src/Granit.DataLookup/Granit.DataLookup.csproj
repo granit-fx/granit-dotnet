@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataLookup</PackageId>
+    <Description>Unified data-lookup runtime for Granit. Registry of named lookup sources, EnumLookupSource&lt;TEnum&gt; with localized labels, thread-safe dispatch and metrics. Hosts execute lookups through this package; module authors declare via Granit.DataLookup.Abstractions.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataLookup.Tests" />
+    <InternalsVisibleTo Include="Granit.DataLookup.Endpoints" />
+    <InternalsVisibleTo Include="Granit.DataLookup.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.DataLookup.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.DataLookup.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup.Abstractions\Granit.DataLookup.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

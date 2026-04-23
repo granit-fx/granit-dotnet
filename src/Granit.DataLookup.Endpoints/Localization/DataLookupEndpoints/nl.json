@@ -1,0 +1,7 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:DataLookup": "Gegevensopzoeking",
+    "Permission:DataLookup.Lookups.Read": "Opzoekbronnen lezen"
+  }
+}

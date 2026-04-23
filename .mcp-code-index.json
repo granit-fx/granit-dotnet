@@ -553,6 +553,40 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.DataLookup",
+      "deps": [
+        "Granit",
+        "Granit.DataLookup.Abstractions",
+        "Granit.Localization"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.DataLookup.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.DataLookup.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.DataLookup",
+        "Granit.Http.Abstractions",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.DataLookup.EntityFrameworkCore",
+      "deps": [
+        "Granit",
+        "Granit.DataLookup"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Diagnostics",
       "deps": [
         "Granit.Timing"
@@ -12271,6 +12305,314 @@
       "file": "src/Granit/DataFiltering/IDataFilter.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "LookupDescriptor",
+      "fqn": "Granit.DataLookup.Descriptors.LookupDescriptor",
+      "kind": "record",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Descriptors/LookupDescriptor.cs",
+      "line": 56,
+      "members": []
+    },
+    {
+      "name": "LookupItem",
+      "fqn": "Granit.DataLookup.Descriptors.LookupItem",
+      "kind": "record",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Descriptors/LookupItem.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "LookupKind",
+      "fqn": "Granit.DataLookup.Descriptors.LookupKind",
+      "kind": "enum",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Descriptors/LookupKind.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "LookupQuery",
+      "fqn": "Granit.DataLookup.Descriptors.LookupQuery",
+      "kind": "record",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Descriptors/LookupQuery.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "LookupResult",
+      "fqn": "Granit.DataLookup.Descriptors.LookupResult",
+      "kind": "record",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Descriptors/LookupResult.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "DataLookupMetrics",
+      "fqn": "Granit.DataLookup.Diagnostics.DataLookupMetrics",
+      "kind": "class",
+      "project": "Granit.DataLookup",
+      "file": "src/Granit.DataLookup/Diagnostics/DataLookupMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "LookupEndpointHandlers",
+      "fqn": "Granit.DataLookup.Endpoints.Endpoints.LookupEndpointHandlers",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Endpoints/LookupEndpointHandlers.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "DataLookupEndpointRouteBuilderExtensions",
+      "fqn": "Granit.DataLookup.Endpoints.Extensions.DataLookupEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Extensions/DataLookupEndpointRouteBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "MapGranitDataLookups",
+          "kind": "method",
+          "signature": "MapGranitDataLookups(this IEndpointRouteBuilder endpoints, Action<DataLookupEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataLookupEndpointsModule",
+      "fqn": "Granit.DataLookup.Endpoints.GranitDataLookupEndpointsModule",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/GranitDataLookupEndpointsModule.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "DataLookupEndpointsOptions",
+      "fqn": "Granit.DataLookup.Endpoints.Options.DataLookupEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Options/DataLookupEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DataLookupPermissions",
+      "fqn": "Granit.DataLookup.Endpoints.Permissions.DataLookupPermissions",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Permissions/DataLookupPermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "Lookups",
+      "fqn": "Granit.DataLookup.Endpoints.Permissions.Lookups",
+      "kind": "class",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Permissions/DataLookupPermissions.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "LookupItemResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupItemResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupItemResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "LookupManifestEntryResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupManifestEntryResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupManifestResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "LookupManifestResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupManifestResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupManifestResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "LookupResultResponse",
+      "fqn": "Granit.DataLookup.Endpoints.Responses.LookupResultResponse",
+      "kind": "record",
+      "project": "Granit.DataLookup.Endpoints",
+      "file": "src/Granit.DataLookup.Endpoints/Responses/LookupResultResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DataLookupQueryableExtensions",
+      "fqn": "Granit.DataLookup.EntityFrameworkCore.Extensions.DataLookupQueryableExtensions",
+      "kind": "class",
+      "project": "Granit.DataLookup.EntityFrameworkCore",
+      "file": "src/Granit.DataLookup.EntityFrameworkCore/Extensions/DataLookupQueryableExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitDataLookupEntityFrameworkCoreModule",
+      "fqn": "Granit.DataLookup.EntityFrameworkCore.GranitDataLookupEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.DataLookup.EntityFrameworkCore",
+      "file": "src/Granit.DataLookup.EntityFrameworkCore/GranitDataLookupEntityFrameworkCoreModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "QueryableLookupSource",
+      "fqn": "Granit.DataLookup.EntityFrameworkCore.Sources.QueryableLookupSource",
+      "kind": "class",
+      "project": "Granit.DataLookup.EntityFrameworkCore",
+      "file": "src/Granit.DataLookup.EntityFrameworkCore/Sources/QueryableLookupSource.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(LookupQuery query, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<LookupResult>"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.DataLookup.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.DataLookup",
+      "file": "src/Granit.DataLookup/Extensions/ServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitDataLookup",
+          "kind": "method",
+          "signature": "AddGranitDataLookup(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDataLookupAbstractionsModule",
+      "fqn": "Granit.DataLookup.GranitDataLookupAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/GranitDataLookupAbstractionsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "GranitDataLookupModule",
+      "fqn": "Granit.DataLookup.GranitDataLookupModule",
+      "kind": "class",
+      "project": "Granit.DataLookup",
+      "file": "src/Granit.DataLookup/GranitDataLookupModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ILookupRegistry",
+      "fqn": "Granit.DataLookup.Registry.ILookupRegistry",
+      "kind": "interface",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Resolve",
+          "kind": "method",
+          "signature": "Resolve(string name)",
+          "returnType": "ILookupSource?"
+        },
+        {
+          "name": "GetManifest",
+          "kind": "method",
+          "signature": "GetManifest()",
+          "returnType": "IReadOnlyList<LookupManifestEntry>"
+        }
+      ]
+    },
+    {
+      "name": "LookupManifestEntry",
+      "fqn": "Granit.DataLookup.Registry.LookupManifestEntry",
+      "kind": "record",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
+      "line": 34,
+      "members": []
+    },
+    {
+      "name": "EnumLookupSource",
+      "fqn": "Granit.DataLookup.Sources.EnumLookupSource",
+      "kind": "class",
+      "project": "Granit.DataLookup",
+      "file": "src/Granit.DataLookup/Sources/EnumLookupSource.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(LookupQuery query, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<LookupResult>"
+        }
+      ]
+    },
+    {
+      "name": "ILookupSource",
+      "fqn": "Granit.DataLookup.Sources.ILookupSource",
+      "kind": "interface",
+      "project": "Granit.DataLookup.Abstractions",
+      "file": "src/Granit.DataLookup.Abstractions/Sources/ILookupSource.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(LookupQuery query, CancellationToken cancellationToken)",
+          "returnType": "string Name { get; } string? RequiredPermission { get; } IReadOnlyList<string> ScopeKeys { get; } ValueTask<LookupResult>"
+        },
+        {
+          "name": "ResolveByValueAsync",
+          "kind": "method",
+          "signature": "ResolveByValueAsync(object value, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<LookupItem?>"
+        }
+      ]
     },
     {
       "name": "SensitiveDataAttribute",

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataLookup.EntityFrameworkCore</PackageId>
+    <Description>Entity Framework Core adapter for Granit.DataLookup. Provides QueryableLookupSource&lt;T&gt; that wraps an IQueryable&lt;T&gt; with value/label selectors and serves paginated lookup results honoring the current culture, tenant, and scope keys.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataLookup.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.DataLookup\Granit.DataLookup.csproj" />
+  </ItemGroup>
+
+</Project>

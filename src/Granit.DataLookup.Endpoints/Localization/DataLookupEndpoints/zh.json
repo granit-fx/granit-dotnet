@@ -1,0 +1,7 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:DataLookup": "数据查找",
+    "Permission:DataLookup.Lookups.Read": "读取查找源"
+  }
+}

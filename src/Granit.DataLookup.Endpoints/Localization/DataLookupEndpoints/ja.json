@@ -1,0 +1,7 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:DataLookup": "データ検索",
+    "Permission:DataLookup.Lookups.Read": "ルックアップソースを読み取る"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:DataLookup": "डेटा लुकअप",
+    "Permission:DataLookup.Lookups.Read": "लुकअप स्रोत पढ़ें"
+  }
+}

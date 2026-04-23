@@ -1,0 +1,7 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:DataLookup": "Datauppslag",
+    "Permission:DataLookup.Lookups.Read": "Läs uppslagskällor"
+  }
+}

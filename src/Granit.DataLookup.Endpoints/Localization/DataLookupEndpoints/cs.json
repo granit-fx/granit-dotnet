@@ -1,0 +1,7 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:DataLookup": "Vyhledávání dat",
+    "Permission:DataLookup.Lookups.Read": "Číst zdroje vyhledávání"
+  }
+}

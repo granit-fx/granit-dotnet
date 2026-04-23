@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.DataLookup.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.DataLookup: declarative lookup descriptors (LookupDescriptor, LookupKind), canonical response shape (LookupItem, LookupResult), and the ILookupSource / ILookupRegistry contracts. Reference this package from any module that declares lookups; reference Granit.DataLookup only from hosts that execute them.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.DataLookup" />
+    <InternalsVisibleTo Include="Granit.DataLookup.Tests" />
+    <InternalsVisibleTo Include="Granit.DataLookup.Endpoints" />
+    <InternalsVisibleTo Include="Granit.DataLookup.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.DataLookup.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.DataLookup.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

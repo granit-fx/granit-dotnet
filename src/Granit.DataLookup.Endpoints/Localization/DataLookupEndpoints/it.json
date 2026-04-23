@@ -1,0 +1,7 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:DataLookup": "Ricerca dati",
+    "Permission:DataLookup.Lookups.Read": "Leggere sorgenti di ricerca"
+  }
+}
