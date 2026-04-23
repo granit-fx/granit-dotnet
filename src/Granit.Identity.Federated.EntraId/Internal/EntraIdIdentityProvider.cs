@@ -39,6 +39,7 @@ internal sealed partial class EntraIdIdentityProvider(
     IOptions<EntraIdAdminOptions> options,
     IPasswordResetNotifier passwordResetNotifier,
     IDistributedEventBus distributedEventBus,
+    Granit.Guids.IGuidGenerator guidGenerator,
     ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     private const string ProviderName = "entra-id";
@@ -632,6 +633,137 @@ internal sealed partial class EntraIdIdentityProvider(
             : null;
 
         return match ?? throw new EntraIdClientNotFoundException(appId);
+    }
+
+    // ──── Phase 3: Client-role writes (ADR-031) ────
+
+    /// <inheritdoc/>
+    public async Task<IdentityRole> CreateClientRoleAsync(
+        string clientId,
+        string name,
+        string? description,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.CreateClientRole);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+
+        // App Roles live on the Application object, not the Service Principal — fetch the
+        // app, append to appRoles, PATCH the whole array back. Not concurrency-safe against
+        // parallel writers; see ADR-031 for the trade-off.
+        GraphCollectionResponse<GraphApplicationRepresentation>? response = await client
+            .GetFromJsonAsync<GraphCollectionResponse<GraphApplicationRepresentation>>(
+                EntraIdAdminOptions.GetApplicationsEndpoint(clientId), cancellationToken)
+            .ConfigureAwait(false);
+
+        GraphApplicationRepresentation app = response?.Value?.FirstOrDefault()
+            ?? throw new EntraIdClientNotFoundException(clientId);
+
+        string newRoleId = guidGenerator.Create().ToString();
+        GraphAppRoleRepresentation newRole = new(
+            Id: newRoleId,
+            DisplayName: name,
+            Value: name,
+            Description: description,
+            IsEnabled: true)
+        {
+            AllowedMemberTypes = ["User"],
+        };
+
+        List<GraphAppRoleRepresentation> existing = app.AppRoles ?? [];
+        existing.Add(newRole);
+
+        using HttpResponseMessage patch = await client.PatchAsJsonAsync(
+            EntraIdAdminOptions.GetApplicationEndpoint(app.Id),
+            new { appRoles = existing },
+            cancellationToken).ConfigureAwait(false);
+        patch.EnsureSuccessStatusCode();
+
+        return new IdentityRole(newRoleId, name, description) { ClientId = clientId };
+    }
+
+    /// <inheritdoc/>
+    public async Task AssignClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.AssignClientRole);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        GraphServicePrincipalRepresentation sp = await ResolveServicePrincipalAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+        GraphAppRoleRepresentation role = FindAppRoleByName(sp, clientId, roleName);
+
+        using HttpResponseMessage post = await client.PostAsJsonAsync(
+            EntraIdAdminOptions.GetUserAppRoleAssignmentsEndpoint(userId),
+            new
+            {
+                principalId = userId,
+                resourceId = sp.Id,
+                appRoleId = role.Id,
+            },
+            cancellationToken).ConfigureAwait(false);
+        post.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc/>
+    public async Task RemoveClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityEntraIdActivitySource.Source.StartActivity(IdentityEntraIdActivitySource.RemoveClientRole);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityEntraIdActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        GraphServicePrincipalRepresentation sp = await ResolveServicePrincipalAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+        GraphAppRoleRepresentation role = FindAppRoleByName(sp, clientId, roleName);
+
+        string listEndpoint = EntraIdAdminOptions.GetUserAppRoleAssignmentsForServicePrincipalEndpoint(userId, sp.Id);
+        GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>? list = await client
+            .GetFromJsonAsync<GraphCollectionResponse<GraphAppRoleAssignmentRepresentation>>(listEndpoint, cancellationToken)
+            .ConfigureAwait(false);
+
+        GraphAppRoleAssignmentRepresentation? assignment = list?.Value?
+            .FirstOrDefault(a => string.Equals(a.AppRoleId, role.Id, StringComparison.OrdinalIgnoreCase));
+
+        if (assignment is null)
+        {
+            // No-op: the user did not carry the role — matches the interface contract.
+            return;
+        }
+
+        using HttpResponseMessage delete = await client.DeleteAsync(
+            EntraIdAdminOptions.GetUserAppRoleAssignmentEndpoint(userId, assignment.Id),
+            cancellationToken).ConfigureAwait(false);
+        delete.EnsureSuccessStatusCode();
+    }
+
+    private static GraphAppRoleRepresentation FindAppRoleByName(
+        GraphServicePrincipalRepresentation sp, string clientId, string roleName)
+    {
+        GraphAppRoleRepresentation? role = sp.AppRoles?
+            .FirstOrDefault(r => string.Equals(r.Value, roleName, StringComparison.Ordinal));
+
+        return role ?? throw new InvalidOperationException(
+            $"Entra ID App Role '{roleName}' not found on appId '{clientId}'.");
     }
 
     // ──── Session termination ────

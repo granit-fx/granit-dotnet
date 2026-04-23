@@ -75,7 +75,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
 
         EntraIdIdentityProvider provider = new(
             tokenService, _httpClientFactory, adminOptsWrapper,
-            notifier, eventBus,
+            notifier, eventBus, new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         InMemoryRoleMetadataStore store = new();

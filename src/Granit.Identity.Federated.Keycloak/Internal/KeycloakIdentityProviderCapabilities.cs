@@ -42,4 +42,13 @@ internal sealed class KeycloakIdentityProviderCapabilities : IIdentityProviderCa
 
     /// <inheritdoc/>
     public bool SupportsClientRoles => true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Keycloak's Admin REST API supports creating client roles and assigning / unassigning
+    /// them on users. The service account must carry <c>manage-clients</c> and
+    /// <c>manage-users</c> roles under <c>realm-management</c> in addition to the read
+    /// roles required by the Phase 2 read path.
+    /// </remarks>
+    public bool SupportsClientRoleWrites => true;
 }

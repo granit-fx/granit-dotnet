@@ -177,6 +177,30 @@ public sealed class EntraIdAdminOptions
         $"/v1.0/users/{Uri.EscapeDataString(userId)}/appRoleAssignments" +
         $"?$filter=resourceId eq {servicePrincipalObjectId}";
 
+    // ──── Client-role writes (Phase 3, ADR-031) ────
+
+    /// <summary>
+    /// Builds the Graph API URL for listing / projecting Applications filtered by
+    /// <paramref name="appId"/>. App Roles are authored on the <c>Application</c> object, NOT
+    /// on the Service Principal — Phase 3 <c>CreateClientRoleAsync</c> fetches the application
+    /// to learn its <c>id</c> and current <c>appRoles</c> array before PATCHing.
+    /// </summary>
+    internal static string GetApplicationsEndpoint(string appId) =>
+        $"/v1.0/applications?$filter=appId eq '{Uri.EscapeDataString(appId)}'&$select=id,appId,appRoles";
+
+    /// <summary>
+    /// Builds the Graph API URL for a specific Application by its object id. Used by Phase 3
+    /// <c>CreateClientRoleAsync</c> to PATCH the updated <c>appRoles</c> array.
+    /// </summary>
+    internal static string GetApplicationEndpoint(string applicationObjectId) =>
+        $"/v1.0/applications/{Uri.EscapeDataString(applicationObjectId)}";
+
+    /// <summary>
+    /// Builds the Graph API URL for deleting a single App Role assignment on a user.
+    /// </summary>
+    internal static string GetUserAppRoleAssignmentEndpoint(string userId, string assignmentId) =>
+        $"/v1.0/users/{Uri.EscapeDataString(userId)}/appRoleAssignments/{Uri.EscapeDataString(assignmentId)}";
+
     // ──── Sessions ────
 
     /// <summary>

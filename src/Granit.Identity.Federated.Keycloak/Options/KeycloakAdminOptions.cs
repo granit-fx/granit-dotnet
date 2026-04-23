@@ -189,6 +189,14 @@ public sealed class KeycloakAdminOptions
         $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients/{Uri.EscapeDataString(clientUuid)}/roles";
 
     /// <summary>
+    /// Builds the Admin API URL for a specific client role on the given client
+    /// (identified by its internal UUID). Used by the Phase 3 write path to resolve the
+    /// role's provider-assigned id before POSTing / DELETEing role-mapping payloads.
+    /// </summary>
+    internal string GetClientRoleByNameEndpoint(string clientUuid, string roleName) =>
+        $"{BaseUrl.TrimEnd('/')}/admin/realms/{Realm}/clients/{Uri.EscapeDataString(clientUuid)}/roles/{Uri.EscapeDataString(roleName)}";
+
+    /// <summary>
     /// Builds the Admin API URL for listing client-scope role mappings of a user for a given
     /// Keycloak client (identified by its internal UUID).
     /// </summary>

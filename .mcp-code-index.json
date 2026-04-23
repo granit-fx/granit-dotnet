@@ -18613,7 +18613,7 @@
       "kind": "interface",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/IIdentityClientRoleManager.cs",
-      "line": 26,
+      "line": 29,
       "members": [
         {
           "name": "GetClientsAsync",
@@ -18632,6 +18632,24 @@
           "kind": "method",
           "signature": "GetUserClientRolesAsync(string userId, string clientId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<IdentityRole>>"
+        },
+        {
+          "name": "CreateClientRoleAsync",
+          "kind": "method",
+          "signature": "CreateClientRoleAsync(string clientId, string name, string? description, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IdentityRole>"
+        },
+        {
+          "name": "AssignClientRoleAsync",
+          "kind": "method",
+          "signature": "AssignClientRoleAsync(string userId, string clientId, string roleName, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveClientRoleAsync",
+          "kind": "method",
+          "signature": "RemoveClientRoleAsync(string userId, string clientId, string roleName, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -18735,6 +18753,12 @@
           "kind": "property",
           "signature": "string ProviderName",
           "returnType": "string"
+        },
+        {
+          "name": "SupportsClientRoleWrites",
+          "kind": "property",
+          "signature": "bool SupportsClientRoleWrites",
+          "returnType": "bool"
         }
       ]
     },

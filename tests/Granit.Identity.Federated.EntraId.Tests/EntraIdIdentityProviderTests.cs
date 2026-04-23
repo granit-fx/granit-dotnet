@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using Granit.Events;
+using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.EntraId.Internal;
@@ -71,6 +72,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 
@@ -229,6 +231,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(optionsWithRopc),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "password123",
@@ -270,6 +273,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(optionsWithRopc),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         bool result = await provider.VerifyUserCredentialsAsync("admin", "wrong-password",
@@ -330,6 +334,7 @@ public sealed class EntraIdIdentityProviderTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(optionsWithDomain),
             _passwordResetNotifier,
             distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         IdentityUserCreate newUser = new("alice", "alice@test.com", "Alice", "Doe");

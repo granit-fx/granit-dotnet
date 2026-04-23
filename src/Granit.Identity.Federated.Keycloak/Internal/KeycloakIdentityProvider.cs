@@ -564,6 +564,123 @@ internal sealed partial class KeycloakIdentityProvider(
         return match?.Id ?? throw new KeycloakClientNotFoundException(clientId);
     }
 
+    // ──── Phase 3: Client-role writes (ADR-031) ────
+
+    /// <inheritdoc/>
+    public async Task<IdentityRole> CreateClientRoleAsync(
+        string clientId,
+        string name,
+        string? description,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.CreateClientRole);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string clientUuid = await ResolveClientUuidAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+
+        KeycloakRoleRepresentation payload = new(
+            Id: string.Empty, // server-assigned
+            Name: name,
+            Description: description)
+        {
+            ContainerId = clientUuid,
+            ClientRole = true,
+        };
+
+        using HttpResponseMessage response = await client.PostAsJsonAsync(
+            options.Value.GetClientRolesEndpoint(clientUuid), payload, cancellationToken)
+            .ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+
+        // Keycloak returns 201 Created with an empty body; re-fetch the role to pick up its id.
+        KeycloakRoleRepresentation? created = await client
+            .GetFromJsonAsync<KeycloakRoleRepresentation>(
+                options.Value.GetClientRoleByNameEndpoint(clientUuid, name), cancellationToken)
+            .ConfigureAwait(false);
+
+        if (created is null)
+        {
+            throw new InvalidOperationException(
+                $"Keycloak created client role '{name}' on '{clientId}' but did not return it on re-fetch.");
+        }
+
+        return new IdentityRole(created.Id, created.Name, created.Description) { ClientId = clientId };
+    }
+
+    /// <inheritdoc/>
+    public async Task AssignClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.AssignClientRole);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string clientUuid = await ResolveClientUuidAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+        KeycloakRoleRepresentation role = await LookupClientRoleAsync(client, clientUuid, clientId, roleName, cancellationToken).ConfigureAwait(false);
+
+        using HttpResponseMessage response = await client.PostAsJsonAsync(
+            options.Value.GetUserClientRoleMappingsEndpoint(userId, clientUuid),
+            new[] { role },
+            cancellationToken).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+    }
+
+    /// <inheritdoc/>
+    public async Task RemoveClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityKeycloakActivitySource.Source.StartActivity(IdentityKeycloakActivitySource.RemoveClientRole);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagUserId, userId);
+        activity?.SetTag(IdentityKeycloakActivitySource.TagClientId, clientId);
+
+        HttpClient client = await CreateAuthenticatedClientAsync(cancellationToken).ConfigureAwait(false);
+        string clientUuid = await ResolveClientUuidAsync(client, clientId, cancellationToken).ConfigureAwait(false);
+        KeycloakRoleRepresentation role = await LookupClientRoleAsync(client, clientUuid, clientId, roleName, cancellationToken).ConfigureAwait(false);
+
+        HttpRequestMessage request = new(HttpMethod.Delete,
+            options.Value.GetUserClientRoleMappingsEndpoint(userId, clientUuid))
+        {
+            Content = System.Net.Http.Json.JsonContent.Create(new[] { role }),
+        };
+        using HttpResponseMessage response = await client.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        response.EnsureSuccessStatusCode();
+    }
+
+    private async Task<KeycloakRoleRepresentation> LookupClientRoleAsync(
+        HttpClient client,
+        string clientUuid,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken)
+    {
+        KeycloakRoleRepresentation? role = await client
+            .GetFromJsonAsync<KeycloakRoleRepresentation>(
+                options.Value.GetClientRoleByNameEndpoint(clientUuid, roleName), cancellationToken)
+            .ConfigureAwait(false);
+
+        return role ?? throw new InvalidOperationException(
+            $"Keycloak client role '{roleName}' not found on client '{clientId}'.");
+    }
+
     // ──── Feature 2: Session termination ────
 
     /// <inheritdoc/>

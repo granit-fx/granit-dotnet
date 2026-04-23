@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Granit.Events;
+using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Internal;
@@ -35,6 +36,7 @@ public sealed class EntraIdClientRoleTests : IDisposable
     private readonly ActivityListener _activityListener;
     private HttpClient? _graphHttpClient;
     private HttpClient? _tokenHttpClient;
+    private MockSequenceHttpMessageHandler? _graphHandler;
 
     public EntraIdClientRoleTests()
     {
@@ -58,8 +60,8 @@ public sealed class EntraIdClientRoleTests : IDisposable
         _graphHttpClient?.Dispose();
         _tokenHttpClient?.Dispose();
 
-        MockSequenceHttpMessageHandler handler = new(responses);
-        _graphHttpClient = new HttpClient(handler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
+        _graphHandler = new MockSequenceHttpMessageHandler(responses);
+        _graphHttpClient = new HttpClient(_graphHandler) { BaseAddress = new Uri("https://graph.microsoft.com/") };
         _httpClientFactory.CreateClient("MicrosoftGraph").Returns(_graphHttpClient);
 
         MockHttpMessageHandler tokenHandler = new()
@@ -85,6 +87,7 @@ public sealed class EntraIdClientRoleTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 
@@ -176,5 +179,136 @@ public sealed class EntraIdClientRoleTests : IDisposable
         roles.Count.ShouldBe(1);
         roles[0].Name.ShouldBe("Admin");
         roles[0].ClientId.ShouldBe(appId);
+    }
+
+    // ──── ADR-031 — client-role writes ────────────────────────────────────
+
+    [Fact]
+    public async Task CreateClientRoleAsync_GetsApplication_ThenPatchesAppRolesArray()
+    {
+        const string appId = "11111111-1111-1111-1111-111111111111";
+        const string appObjectId = "app-object-id-1";
+        // 1st response = GET /applications (resolve app object id + existing appRoles)
+        string applicationResponse = $$"""
+            {"value":[{
+              "id":"{{appObjectId}}",
+              "appId":"{{appId}}",
+              "appRoles":[
+                {"id":"r1","displayName":"Existing","value":"Existing","description":null,"isEnabled":true,"allowedMemberTypes":["User"]}
+              ]
+            }]}
+            """;
+        // 2nd response = PATCH /applications/{objectId} — body ignored
+        const string patchResponse = "{}";
+        EntraIdIdentityProvider provider = BuildProvider(applicationResponse, patchResponse);
+
+        IdentityRole created = await provider.CreateClientRoleAsync(
+            appId, "Editor", "Edit docs", TestContext.Current.CancellationToken);
+
+        created.Id.ShouldNotBeNullOrWhiteSpace();
+        created.Name.ShouldBe("Editor");
+        created.Description.ShouldBe("Edit docs");
+        created.ClientId.ShouldBe(appId);
+
+        _graphHandler!.Requests.Count.ShouldBe(2);
+        _graphHandler.Requests[0].Method.ShouldBe("GET");
+        _graphHandler.Requests[0].Url.ShouldContain("/v1.0/applications");
+        _graphHandler.Requests[1].Method.ShouldBe("PATCH");
+        _graphHandler.Requests[1].Url.ShouldContain($"/v1.0/applications/{appObjectId}");
+        // Body MUST contain both the pre-existing role AND the new one (concurrency-unsafe PATCH).
+        _graphHandler.Requests[1].Body.ShouldContain("Existing");
+        _graphHandler.Requests[1].Body.ShouldContain("Editor");
+    }
+
+    [Fact]
+    public async Task CreateClientRoleAsync_UnknownAppId_Throws()
+    {
+        const string emptyResolve = """{"value":[]}""";
+        EntraIdIdentityProvider provider = BuildProvider(emptyResolve);
+
+        await Should.ThrowAsync<EntraIdClientNotFoundException>(
+            async () => await provider.CreateClientRoleAsync(
+                "nonexistent-app-id", "Editor", null, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task AssignClientRoleAsync_ResolvesSp_ThenPostsAppRoleAssignment()
+    {
+        const string appId = "11111111-1111-1111-1111-111111111111";
+        string resolveResponse = $$"""
+            {"value":[{
+              "id":"sp-object-id-1",
+              "appId":"{{appId}}",
+              "appRoles":[
+                {"id":"r-editor","displayName":"Editor","value":"Editor","description":null,"isEnabled":true}
+              ]
+            }]}
+            """;
+        const string postResponse = "{}";
+        EntraIdIdentityProvider provider = BuildProvider(resolveResponse, postResponse);
+
+        await provider.AssignClientRoleAsync(
+            "user-42", appId, "Editor", TestContext.Current.CancellationToken);
+
+        _graphHandler!.Requests.Count.ShouldBe(2);
+        _graphHandler.Requests[0].Method.ShouldBe("GET");
+        _graphHandler.Requests[0].Url.ShouldContain("/v1.0/servicePrincipals");
+        _graphHandler.Requests[1].Method.ShouldBe("POST");
+        _graphHandler.Requests[1].Url.ShouldContain("/v1.0/users/user-42/appRoleAssignments");
+        _graphHandler.Requests[1].Body.ShouldContain("r-editor");
+        _graphHandler.Requests[1].Body.ShouldContain("sp-object-id-1");
+    }
+
+    [Fact]
+    public async Task RemoveClientRoleAsync_FindsAssignment_ThenDeletesIt()
+    {
+        const string appId = "11111111-1111-1111-1111-111111111111";
+        string resolveResponse = $$"""
+            {"value":[{
+              "id":"sp-object-id-1",
+              "appId":"{{appId}}",
+              "appRoles":[
+                {"id":"r-editor","displayName":"Editor","value":"Editor","description":null,"isEnabled":true}
+              ]
+            }]}
+            """;
+        const string assignmentsResponse = """
+            {"value":[
+              {"id":"assignment-42","appRoleId":"r-editor","principalId":"user-42","resourceId":"sp-object-id-1"}
+            ]}
+            """;
+        const string deleteResponse = "{}";
+        EntraIdIdentityProvider provider = BuildProvider(resolveResponse, assignmentsResponse, deleteResponse);
+
+        await provider.RemoveClientRoleAsync(
+            "user-42", appId, "Editor", TestContext.Current.CancellationToken);
+
+        _graphHandler!.Requests.Count.ShouldBe(3);
+        _graphHandler.Requests[2].Method.ShouldBe("DELETE");
+        _graphHandler.Requests[2].Url.ShouldContain("/v1.0/users/user-42/appRoleAssignments/assignment-42");
+    }
+
+    [Fact]
+    public async Task RemoveClientRoleAsync_NoMatchingAssignment_Noop()
+    {
+        const string appId = "11111111-1111-1111-1111-111111111111";
+        string resolveResponse = $$"""
+            {"value":[{
+              "id":"sp-object-id-1",
+              "appId":"{{appId}}",
+              "appRoles":[
+                {"id":"r-editor","displayName":"Editor","value":"Editor","description":null,"isEnabled":true}
+              ]
+            }]}
+            """;
+        const string emptyAssignments = """{"value":[]}""";
+        EntraIdIdentityProvider provider = BuildProvider(resolveResponse, emptyAssignments);
+
+        await provider.RemoveClientRoleAsync(
+            "user-42", appId, "Editor", TestContext.Current.CancellationToken);
+
+        // No DELETE issued — only the resolve + list calls.
+        _graphHandler!.Requests.Count.ShouldBe(2);
+        _graphHandler.Requests.ShouldAllBe(r => r.Method != "DELETE");
     }
 }

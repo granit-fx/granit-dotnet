@@ -28,6 +28,9 @@ internal static class IdentityKeycloakActivitySource
     internal const string GetClients = "identity.keycloak.get-clients";
     internal const string GetClientRoles = "identity.keycloak.get-client-roles";
     internal const string GetUserClientRoles = "identity.keycloak.get-user-client-roles";
+    internal const string CreateClientRole = "identity.keycloak.create-client-role";
+    internal const string AssignClientRole = "identity.keycloak.assign-client-role";
+    internal const string RemoveClientRole = "identity.keycloak.remove-client-role";
     internal const string SetUserEnabled = "identity.keycloak.set-user-enabled";
     internal const string UpdateUser = "identity.keycloak.update-user";
     internal const string GetUserSessions = "identity.keycloak.get-user-sessions";

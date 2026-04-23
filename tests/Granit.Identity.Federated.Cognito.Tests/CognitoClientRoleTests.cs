@@ -162,4 +162,101 @@ public sealed class CognitoClientRoleTests
         roles[0].Name.ShouldBe("admin");
         roles[0].ClientId.ShouldBe("clientA");
     }
+
+    // ──── ADR-031 — client-role writes ────────────────────────────────────
+
+    [Fact]
+    public async Task CreateClientRoleAsync_CreatesGroup_WithPrefixedName()
+    {
+        _cognitoClient.CreateGroupAsync(
+                Arg.Any<CreateGroupRequest>(), Arg.Any<CancellationToken>())
+            .Returns(ci =>
+            {
+                CreateGroupRequest req = ci.Arg<CreateGroupRequest>();
+                return new CreateGroupResponse
+                {
+                    Group = new GroupType
+                    {
+                        GroupName = req.GroupName,
+                        Description = req.Description,
+                    },
+                };
+            });
+        CognitoIdentityProvider sut = BuildSut();
+
+        IdentityRole created = await sut.CreateClientRoleAsync(
+            "clientA", "editor", "Edit docs", TestContext.Current.CancellationToken);
+
+        created.Id.ShouldBe("clientA:editor");
+        created.Name.ShouldBe("editor");
+        created.ClientId.ShouldBe("clientA");
+        created.Description.ShouldBe("Edit docs");
+
+        await _cognitoClient.Received(1).CreateGroupAsync(
+            Arg.Is<CreateGroupRequest>(r =>
+                r.UserPoolId == "eu-west-1_TEST" &&
+                r.GroupName == "clientA:editor" &&
+                r.Description == "Edit docs"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task CreateClientRoleAsync_CustomDelimiter_UsesDelimiterInGroupName()
+    {
+        _cognitoClient.CreateGroupAsync(
+                Arg.Any<CreateGroupRequest>(), Arg.Any<CancellationToken>())
+            .Returns(ci => new CreateGroupResponse
+            {
+                Group = new GroupType
+                {
+                    GroupName = ci.Arg<CreateGroupRequest>().GroupName,
+                    Description = ci.Arg<CreateGroupRequest>().Description,
+                },
+            });
+        CognitoIdentityProvider sut = BuildSut(delimiter: "__");
+
+        IdentityRole created = await sut.CreateClientRoleAsync(
+            "clientA", "viewer", null, TestContext.Current.CancellationToken);
+
+        created.Id.ShouldBe("clientA__viewer");
+        created.Name.ShouldBe("viewer");
+    }
+
+    [Fact]
+    public async Task AssignClientRoleAsync_AddsUserToPrefixedGroup()
+    {
+        _cognitoClient.AdminAddUserToGroupAsync(
+                Arg.Any<AdminAddUserToGroupRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new AdminAddUserToGroupResponse());
+        CognitoIdentityProvider sut = BuildSut();
+
+        await sut.AssignClientRoleAsync(
+            "user-42", "clientA", "editor", TestContext.Current.CancellationToken);
+
+        await _cognitoClient.Received(1).AdminAddUserToGroupAsync(
+            Arg.Is<AdminAddUserToGroupRequest>(r =>
+                r.UserPoolId == "eu-west-1_TEST" &&
+                r.Username == "user-42" &&
+                r.GroupName == "clientA:editor"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RemoveClientRoleAsync_RemovesUserFromPrefixedGroup()
+    {
+        _cognitoClient.AdminRemoveUserFromGroupAsync(
+                Arg.Any<AdminRemoveUserFromGroupRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new AdminRemoveUserFromGroupResponse());
+        CognitoIdentityProvider sut = BuildSut();
+
+        await sut.RemoveClientRoleAsync(
+            "user-42", "clientA", "editor", TestContext.Current.CancellationToken);
+
+        await _cognitoClient.Received(1).AdminRemoveUserFromGroupAsync(
+            Arg.Is<AdminRemoveUserFromGroupRequest>(r =>
+                r.UserPoolId == "eu-west-1_TEST" &&
+                r.Username == "user-42" &&
+                r.GroupName == "clientA:editor"),
+            Arg.Any<CancellationToken>());
+    }
 }

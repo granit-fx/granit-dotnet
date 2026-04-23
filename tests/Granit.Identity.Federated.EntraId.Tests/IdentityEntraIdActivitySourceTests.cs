@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using Granit.Events;
+using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Federated.EntraId.Diagnostics;
 using Granit.Identity.Federated.EntraId.Internal;
@@ -74,6 +75,7 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
             MsOptions.Create(options),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 

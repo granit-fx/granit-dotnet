@@ -800,6 +800,105 @@ internal sealed partial class CognitoIdentityProvider(
         }
     }
 
+    // ── Phase 3: Client-role writes (ADR-031) ──────────────────────────────
+
+    /// <inheritdoc/>
+    public async Task<IdentityRole> CreateClientRoleAsync(
+        string clientId,
+        string name,
+        string? description,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.CreateClientRole);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.ClientId, clientId);
+
+        string groupName = clientId + _clientRoleSyncOptions.Delimiter + name;
+
+        CreateGroupRequest request = new()
+        {
+            UserPoolId = _options.UserPoolId,
+            GroupName = groupName,
+            Description = description,
+        };
+
+        CreateGroupResponse response = await cognitoClient
+            .CreateGroupAsync(request, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Cognito "roles" are groups; the group name carries the Granit id semantics —
+        // there is no separate id. Returning the group name as Id preserves the contract
+        // that downstream code can round-trip the role.
+        return new IdentityRole(
+            Id: response.Group.GroupName,
+            Name: name,
+            Description: response.Group.Description)
+        { ClientId = clientId };
+    }
+
+    /// <inheritdoc/>
+    public async Task AssignClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.AssignClientRole);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.UserId, userId);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.ClientId, clientId);
+
+        string groupName = clientId + _clientRoleSyncOptions.Delimiter + roleName;
+
+        AdminAddUserToGroupRequest request = new()
+        {
+            UserPoolId = _options.UserPoolId,
+            Username = userId,
+            GroupName = groupName,
+        };
+
+        await cognitoClient
+            .AdminAddUserToGroupAsync(request, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async Task RemoveClientRoleAsync(
+        string userId,
+        string clientId,
+        string roleName,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(roleName);
+
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.RemoveClientRole);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.UserId, userId);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.ClientId, clientId);
+
+        string groupName = clientId + _clientRoleSyncOptions.Delimiter + roleName;
+
+        AdminRemoveUserFromGroupRequest request = new()
+        {
+            UserPoolId = _options.UserPoolId,
+            Username = userId,
+            GroupName = groupName,
+        };
+
+        await cognitoClient
+            .AdminRemoveUserFromGroupAsync(request, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
     // ── Mapping helpers ────────────────────────────────────────────────────
 
     private static FederatedIdentityUser ToIdentityUser(UserType user)

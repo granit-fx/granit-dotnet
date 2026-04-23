@@ -62,4 +62,14 @@ internal sealed class EntraIdIdentityProviderCapabilities : IIdentityProviderCap
     /// <see cref="EntraIdIdentityProvider"/>.
     /// </remarks>
     public bool SupportsClientRoles => true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Supported via Graph API: <c>CreateClientRoleAsync</c> PATCHes the Application's
+    /// <c>appRoles</c> array (not concurrency-safe); <c>AssignClientRoleAsync</c> /
+    /// <c>RemoveClientRoleAsync</c> operate on <c>appRoleAssignments</c>. Requires the
+    /// <c>Application.ReadWrite.All</c> and <c>AppRoleAssignment.ReadWrite.All</c>
+    /// Graph application permissions.
+    /// </remarks>
+    public bool SupportsClientRoleWrites => true;
 }

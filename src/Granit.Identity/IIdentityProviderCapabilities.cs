@@ -64,4 +64,15 @@ public interface IIdentityProviderCapabilities
     /// roles, Cognito app-client groups) override to <see langword="true"/>.
     /// </summary>
     bool SupportsClientRoles => false;
+
+    /// <summary>
+    /// Whether <see cref="IIdentityClientRoleManager"/>'s write methods
+    /// (<c>CreateClientRoleAsync</c>, <c>AssignClientRoleAsync</c>,
+    /// <c>RemoveClientRoleAsync</c>) are backed by a live implementation on this provider.
+    /// Default: <see langword="false"/> (DIM). Providers that want Granit to be the source
+    /// of truth for client-role provisioning override to <see langword="true"/>; read-only
+    /// deployments (upstream IaC owns the roles) keep the default and the admin surfaces
+    /// guard on this flag before exposing create / assign / remove actions. See ADR-031.
+    /// </summary>
+    bool SupportsClientRoleWrites => false;
 }

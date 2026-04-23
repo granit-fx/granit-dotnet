@@ -54,4 +54,14 @@ internal sealed class CognitoIdentityProviderCapabilities : IIdentityProviderCap
     /// see <see cref="Options.CognitoClientRoleSyncOptions"/> and ADR-027.
     /// </remarks>
     public bool SupportsClientRoles => true;
+
+    /// <inheritdoc/>
+    /// <remarks>
+    /// Backed by <c>CreateGroup</c> (with <c>{clientId}{Delimiter}{name}</c> naming per
+    /// ADR-027), <c>AdminAddUserToGroup</c>, and <c>AdminRemoveUserFromGroup</c>.
+    /// Requires IAM permissions <c>cognito-idp:CreateGroup</c>,
+    /// <c>cognito-idp:AdminAddUserToGroup</c>, and <c>cognito-idp:AdminRemoveUserFromGroup</c>
+    /// on the target User Pool.
+    /// </remarks>
+    public bool SupportsClientRoleWrites => true;
 }

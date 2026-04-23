@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\..\src\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>

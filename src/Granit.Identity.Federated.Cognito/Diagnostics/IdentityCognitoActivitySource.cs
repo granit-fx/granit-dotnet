@@ -28,6 +28,9 @@ internal static class IdentityCognitoActivitySource
         public const string ListUserPoolClients = "cognito.list-user-pool-clients";
         public const string GetClientRoles = "cognito.get-client-roles";
         public const string GetUserClientRoles = "cognito.get-user-client-roles";
+        public const string CreateClientRole = "cognito.create-client-role";
+        public const string AssignClientRole = "cognito.assign-client-role";
+        public const string RemoveClientRole = "cognito.remove-client-role";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string SetPassword = "cognito.set-password";
         public const string ResetPassword = "cognito.reset-password";

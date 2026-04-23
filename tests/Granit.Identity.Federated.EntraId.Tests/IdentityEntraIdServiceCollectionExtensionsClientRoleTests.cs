@@ -1,4 +1,5 @@
 using Granit.Events;
+using Granit.Guids.Extensions;
 using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntraId.Extensions;
@@ -36,6 +37,7 @@ public sealed class IdentityEntraIdServiceCollectionExtensionsClientRoleTests
         services.AddLogging();
         services.AddSingleton(Substitute.For<IClock>());
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
+        services.AddGranitGuids();
         services.AddGranitIdentity();
         services.AddGranitIdentityEntraId();
 

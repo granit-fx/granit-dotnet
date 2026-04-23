@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using Granit.Events;
+using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.EntraId.Internal;
@@ -69,6 +70,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
     }
 
@@ -322,6 +324,7 @@ public sealed class EntraIdIdentityProviderAdditionalTests : IDisposable
             Microsoft.Extensions.Options.Options.Create(_options),
             _passwordResetNotifier,
             _distributedEventBus,
+            new SimpleGuidGenerator(),
             NullLogger<EntraIdIdentityProvider>.Instance);
 
         IReadOnlyList<IdentityRole> result = await provider.GetUserRolesAsync(

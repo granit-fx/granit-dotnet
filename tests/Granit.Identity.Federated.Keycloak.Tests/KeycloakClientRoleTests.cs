@@ -163,4 +163,50 @@ public sealed class KeycloakClientRoleTests : IDisposable
         roles[0].Name.ShouldBe("admin");
         roles[0].ClientId.ShouldBe("app-a");
     }
+
+    // ──── ADR-031 — client-role writes ────────────────────────────────────
+
+    [Fact]
+    public async Task CreateClientRoleAsync_Resolves_PostsRole_Refetches()
+    {
+        const string resolveResponse = """[{"id":"client-uuid","clientId":"app-a"}]""";
+        // 2nd response = POST /roles (empty 201), 3rd = re-fetch returning the new role.
+        const string postResponse = "{}";
+        const string refetchResponse = """{"id":"role-new","name":"editor","description":"Edit"}""";
+        KeycloakIdentityProvider provider = BuildProvider(resolveResponse, postResponse, refetchResponse);
+
+        IdentityRole created = await provider.CreateClientRoleAsync(
+            "app-a", "editor", "Edit", TestContext.Current.CancellationToken);
+
+        created.Id.ShouldBe("role-new");
+        created.Name.ShouldBe("editor");
+        created.ClientId.ShouldBe("app-a");
+        created.Description.ShouldBe("Edit");
+    }
+
+    [Fact]
+    public async Task AssignClientRoleAsync_LooksUpRole_PostsMapping()
+    {
+        const string resolveResponse = """[{"id":"client-uuid","clientId":"app-a"}]""";
+        const string roleResponse = """{"id":"r1","name":"editor","description":null}""";
+        // 3rd response = POST /role-mappings, body ignored by mock.
+        const string postResponse = "{}";
+        KeycloakIdentityProvider provider = BuildProvider(resolveResponse, roleResponse, postResponse);
+
+        // Should not throw.
+        await provider.AssignClientRoleAsync(
+            "user-42", "app-a", "editor", TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task RemoveClientRoleAsync_LooksUpRole_DeletesMapping()
+    {
+        const string resolveResponse = """[{"id":"client-uuid","clientId":"app-a"}]""";
+        const string roleResponse = """{"id":"r1","name":"editor","description":null}""";
+        const string deleteResponse = "{}";
+        KeycloakIdentityProvider provider = BuildProvider(resolveResponse, roleResponse, deleteResponse);
+
+        await provider.RemoveClientRoleAsync(
+            "user-42", "app-a", "editor", TestContext.Current.CancellationToken);
+    }
 }

@@ -28,6 +28,9 @@ internal static class IdentityEntraIdActivitySource
     internal const string GetClients = "identity.entraid.get-clients";
     internal const string GetClientRoles = "identity.entraid.get-client-roles";
     internal const string GetUserClientRoles = "identity.entraid.get-user-client-roles";
+    internal const string CreateClientRole = "identity.entraid.create-client-role";
+    internal const string AssignClientRole = "identity.entraid.assign-client-role";
+    internal const string RemoveClientRole = "identity.entraid.remove-client-role";
     internal const string SetUserEnabled = "identity.entraid.set-user-enabled";
     internal const string UpdateUser = "identity.entraid.update-user";
     internal const string GetUserSessions = "identity.entraid.get-user-sessions";
