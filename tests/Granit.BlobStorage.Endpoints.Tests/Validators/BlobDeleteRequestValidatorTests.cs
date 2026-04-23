@@ -12,7 +12,7 @@ public sealed class BlobDeleteRequestValidatorTests
     [Fact]
     public void Valid_request_should_pass()
     {
-        BlobDeleteRequest request = new("medical-images", "RGPD Art. 17");
+        BlobDeleteRequest request = new("medical-images", "GDPR Art. 17");
         _validator.TestValidate(request).ShouldNotHaveAnyValidationErrors();
     }
 

@@ -13,9 +13,9 @@ using Xunit;
 namespace Granit.Identity.Endpoints.Tests;
 
 /// <summary>
-/// Integration tests for identity user cache RGPD endpoints (erase, pseudonymize).
+/// Integration tests for identity user cache GDPR endpoints (erase, pseudonymize).
 /// </summary>
-public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
+public sealed class IdentityUserCacheGdprEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-identity-admin";
     private const string Prefix = "/identity/users";
@@ -26,7 +26,7 @@ public sealed class IdentityUserCacheRgpdEndpointsTests : IAsyncDisposable
     private readonly HttpClient _adminClient;
     private readonly HttpClient _userClient;
 
-    public IdentityUserCacheRgpdEndpointsTests()
+    public IdentityUserCacheGdprEndpointsTests()
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();

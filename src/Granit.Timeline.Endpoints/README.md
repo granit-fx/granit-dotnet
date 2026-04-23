@@ -1,7 +1,7 @@
 # Granit.Timeline.Endpoints
 
 Minimal API endpoints for Granit.Timeline. Exposes paginated activity stream,
-comment/note posting, soft-delete (RGPD), and follower management REST endpoints.
+comment/note posting, soft-delete (GDPR), and follower management REST endpoints.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

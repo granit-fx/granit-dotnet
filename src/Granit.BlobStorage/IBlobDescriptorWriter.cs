@@ -7,7 +7,7 @@ namespace Granit.BlobStorage;
 /// </summary>
 /// <remarks>
 /// Implemented by <c>Granit.BlobStorage.EntityFrameworkCore</c>.
-/// No hard-delete method exists by design (RGPD/ISO 27001: audit rows are retained for 3 years).
+/// No hard-delete method exists by design (GDPR/ISO 27001: audit rows are retained for 3 years).
 /// </remarks>
 public interface IBlobDescriptorWriter
 {

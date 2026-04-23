@@ -12377,8 +12377,8 @@
       "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupManifestEntryResponse",
       "kind": "record",
       "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
-      "line": 14,
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestEntryResponse.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -12387,7 +12387,7 @@
       "kind": "record",
       "project": "Granit.DataLookup.Endpoints",
       "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
-      "line": 7,
+      "line": 5,
       "members": []
     },
     {
@@ -12554,7 +12554,7 @@
       "kind": "interface",
       "project": "Granit.DataLookup.Abstractions",
       "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "Resolve",
@@ -12575,8 +12575,8 @@
       "fqn": "Granit.DataLookup.Registry.LookupManifestEntry",
       "kind": "record",
       "project": "Granit.DataLookup.Abstractions",
-      "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
-      "line": 34,
+      "file": "src/Granit.DataLookup.Abstractions/Registry/LookupManifestEntry.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -12601,7 +12601,7 @@
       "kind": "interface",
       "project": "Granit.DataLookup.Abstractions",
       "file": "src/Granit.DataLookup.Abstractions/Sources/ILookupSource.cs",
-      "line": 32,
+      "line": 45,
       "members": [
         {
           "name": "SearchAsync",
@@ -17514,7 +17514,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Extensions/IdentityServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitIdentity",
@@ -17867,7 +17867,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.GoogleCloud",
       "file": "src/Granit.Identity.Federated.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityGoogleCloud",
@@ -19284,7 +19284,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",

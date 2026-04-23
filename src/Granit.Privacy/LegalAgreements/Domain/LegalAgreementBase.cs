@@ -4,7 +4,7 @@ using Granit.Domain;
 namespace Granit.Privacy.LegalAgreements.Domain;
 
 /// <summary>
-/// Abstract base entity for legal agreement records (RGPD Art. 7 — proof of consent).
+/// Abstract base entity for legal agreement records (GDPR Art. 7 — proof of consent).
 /// Applications must create a concrete entity inheriting this class and map it in their DbContext.
 /// </summary>
 /// <remarks>
@@ -26,7 +26,7 @@ public abstract class LegalAgreementBase : CreationAuditedEntity
     public DateTimeOffset AcceptedAt { get; set; }
 
     /// <summary>
-    /// IP address of the user at the time of acceptance (pseudonymized — last octet masked, RGPD).
+    /// IP address of the user at the time of acceptance (pseudonymized — last octet masked, GDPR).
     /// </summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
     public string? IpAddress { get; set; }

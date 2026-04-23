@@ -18,6 +18,6 @@ public enum MappingConfidence
     /// <summary>Fuzzy match (Levenshtein distance within threshold).</summary>
     Fuzzy = 3,
 
-    /// <summary>AI-assisted semantic match (header metadata only, RGPD-safe).</summary>
+    /// <summary>AI-assisted semantic match (header metadata only, GDPR-safe).</summary>
     Semantic = 4,
 }

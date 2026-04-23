@@ -35,7 +35,7 @@ internal static class TimelineEntryEndpoints
         group.MapDelete("/{entityType}/{entityId}/entries/{entryId:guid}", DeleteEntryAsync)
             .RequireAuthorization(TimelinePermissions.Entries.Manage)
             .WithName("DeleteTimelineEntry")
-            .WithSummary("Soft-deletes a comment or internal note (RGPD right to erasure).")
+            .WithSummary("Soft-deletes a comment or internal note (GDPR right to erasure).")
             .WithDescription("Performs a soft-delete on the timeline entry. Only the author or users with Timeline.Entries.Manage permission can delete. SystemLog entries are immutable (ISO 27001). Returns 404 if the entry does not exist.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);

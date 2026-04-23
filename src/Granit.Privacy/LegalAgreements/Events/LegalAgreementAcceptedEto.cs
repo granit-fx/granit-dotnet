@@ -3,7 +3,7 @@ using Granit.Events;
 namespace Granit.Privacy.LegalAgreements.Events;
 
 /// <summary>
-/// Published when a user accepts a legal agreement (RGPD Art. 7 consent proof).
+/// Published when a user accepts a legal agreement (GDPR Art. 7 consent proof).
 /// Enables cross-service consent tracking and audit trail.
 /// </summary>
 /// <param name="UserId">The user who consented.</param>

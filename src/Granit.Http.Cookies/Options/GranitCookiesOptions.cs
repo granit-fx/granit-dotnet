@@ -45,7 +45,7 @@ public sealed class ThirdPartyServiceOptions
     /// <summary>Unique service identifier (e.g. "matomo", "hubspot").</summary>
     public required string Name { get; set; }
 
-    /// <summary>RGPD consent category.</summary>
+    /// <summary>GDPR consent category.</summary>
     public required CookieCategory Category { get; set; }
 
     /// <summary>

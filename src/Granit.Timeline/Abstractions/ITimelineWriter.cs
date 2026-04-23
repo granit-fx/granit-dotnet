@@ -17,7 +17,7 @@ public interface ITimelineWriter
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Soft-deletes a comment or internal note (RGPD right to erasure).
+    /// Soft-deletes a comment or internal note (GDPR right to erasure).
     /// Throws <see cref="InvalidOperationException"/> for <see cref="TimelineEntryType.SystemLog"/>
     /// entries because they are immutable (ISO 27001 audit trail).
     /// </summary>

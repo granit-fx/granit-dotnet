@@ -5,7 +5,7 @@ namespace Granit.DataExchange.Import.Mapping;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <b>RGPD/ISO 27001 compliance</b>: this interface receives <b>only</b> column header names
+/// <b>GDPR/ISO 27001 compliance</b>: this interface receives <b>only</b> column header names
 /// and <see cref="ImportFieldMetadata"/> (property names, CLR types, display names).
 /// It <b>never</b> receives <c>RawImportRow.Values</c> or any business data.
 /// </para>

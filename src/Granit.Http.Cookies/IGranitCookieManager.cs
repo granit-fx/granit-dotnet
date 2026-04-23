@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 namespace Granit.Http.Cookies;
 
 /// <summary>
-/// Managed cookie operations that enforce the Strict Registry Pattern and RGPD consent.
+/// Managed cookie operations that enforce the Strict Registry Pattern and GDPR consent.
 /// All cookie writes must go through this interface (enforced by analyzer GRSEC004).
 /// </summary>
 public interface IGranitCookieManager

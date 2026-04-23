@@ -14,7 +14,7 @@ public sealed record CookieConsentConfigResponse(
 /// API response for an internal cookie definition.
 /// </summary>
 /// <param name="Name">Cookie name.</param>
-/// <param name="Category">RGPD consent category (snake_case).</param>
+/// <param name="Category">GDPR consent category (snake_case).</param>
 /// <param name="RetentionDays">Maximum retention period in days.</param>
 /// <param name="Purpose">Human-readable purpose description.</param>
 public sealed record CookieDefinitionResponse(
@@ -27,7 +27,7 @@ public sealed record CookieDefinitionResponse(
 /// API response for a third-party service that sets cookies.
 /// </summary>
 /// <param name="Name">Service identifier (e.g. "matomo", "hubspot").</param>
-/// <param name="Category">RGPD consent category (snake_case).</param>
+/// <param name="Category">GDPR consent category (snake_case).</param>
 /// <param name="CookiePatterns">Regex patterns matching cookies set by this service.</param>
 public sealed record ThirdPartyServiceResponse(
     string Name,

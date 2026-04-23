@@ -25,7 +25,7 @@ public sealed class NotificationDefinition
 
     /// <summary>
     /// When <c>false</c>, the notification is always sent regardless of user preferences
-    /// (e.g., security alerts, RGPD breach notifications).
+    /// (e.g., security alerts, GDPR breach notifications).
     /// </summary>
     public bool AllowUserOptOut { get; init; } = true;
 

@@ -87,9 +87,9 @@ public sealed class BlobEndpointsDtoTests
     [Fact]
     public void BlobDeleteRequest_WithReason_SetsReason()
     {
-        BlobDeleteRequest request = new("docs", "RGPD Art. 17");
+        BlobDeleteRequest request = new("docs", "GDPR Art. 17");
 
-        request.DeletionReason.ShouldBe("RGPD Art. 17");
+        request.DeletionReason.ShouldBe("GDPR Art. 17");
     }
 
     // ── BlobDownloadUrlRequest ───────────────────────────────────────────────

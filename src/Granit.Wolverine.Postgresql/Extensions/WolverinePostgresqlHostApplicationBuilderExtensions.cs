@@ -59,7 +59,7 @@ public static class WolverinePostgresqlHostApplicationBuilderExtensions
 
     /// <summary>
     /// Adds per-tenant database support for Wolverine: each tenant has its own isolated
-    /// PostgreSQL database, required for the strictest RGPD/ISO 27001 physical isolation mandates.
+    /// PostgreSQL database, required for the strictest GDPR/ISO 27001 physical isolation mandates.
     /// </summary>
     /// <typeparam name="TContext">The tenant-specific <see cref="DbContext"/> type.</typeparam>
     /// <param name="builder">The host application builder.</param>

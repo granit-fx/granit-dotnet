@@ -8,6 +8,15 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Local.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetIdentity" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetIdentity.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.AspNetIdentity.Tests.Integration" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Notifications" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Notifications.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Privacy" />
+    <InternalsVisibleTo Include="Granit.Identity.Local.Privacy.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

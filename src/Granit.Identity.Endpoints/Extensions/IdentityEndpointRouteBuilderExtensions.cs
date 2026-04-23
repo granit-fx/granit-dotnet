@@ -21,7 +21,7 @@ public static class IdentityEndpointRouteBuilderExtensions
     /// <list type="bullet">
     /// <item>Search, get by ID, batch resolve (<c>Identity.Users.Read</c> permission)</item>
     /// <item>Sync, sync-all (<c>Identity.Users.Sync</c> permission)</item>
-    /// <item>RGPD erase, pseudonymize (<c>Identity.Users.Delete</c> permission)</item>
+    /// <item>GDPR erase, pseudonymize (<c>Identity.Users.Delete</c> permission)</item>
     /// <item>Stats (<c>Identity.Users.Read</c> permission)</item>
     /// <item>Webhook (signature-validated, no user authentication required)</item>
     /// </list>
@@ -60,10 +60,10 @@ public static class IdentityEndpointRouteBuilderExtensions
             .RequireAuthorization(IdentityPermissions.Users.Sync)
             .MapSyncEndpoints();
 
-        // RGPD endpoints
+        // GDPR endpoints
         group
             .RequireAuthorization(IdentityPermissions.Users.Delete)
-            .MapRgpdEndpoints();
+            .MapGdprEndpoints();
 
         // Webhook endpoint (outside the authorized group — uses signature validation)
         endpoints.MapWebhookEndpoint("", options.WebhookTagName);

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
@@ -32,7 +33,6 @@ internal static class AccountRegistrationEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status202Accepted)
             .ProducesProblem(StatusCodes.Status403Forbidden)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
             .AllowAnonymous()
             .RequireRateLimiting("authentication");
@@ -68,6 +68,9 @@ internal static class AccountRegistrationEndpoints
         [FromServices] IdentityLocalMetrics metrics,
         CancellationToken cancellationToken)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.UserRegistration);
+
         string? allowed = await settingProvider
             .GetOrNullAsync(IdentityLocalSettingNames.AllowSelfRegistration, cancellationToken)
             .ConfigureAwait(false);

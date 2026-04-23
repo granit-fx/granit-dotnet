@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity;
@@ -103,6 +104,10 @@ internal static class AccountPasswordEndpoints
         [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.PasswordReset);
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "forgot");
+
         // Always return 202 regardless of whether the email exists (prevents enumeration).
         // IPasswordResetService.RequestResetAsync publishes PasswordResetRequestedEto
         // which a subscriber (Granit.Notifications or app-level) consumes to send the email.
@@ -118,6 +123,10 @@ internal static class AccountPasswordEndpoints
         [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.PasswordReset);
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "reset-token");
+
         try
         {
             await passwordResetService.ResetPasswordAsync(

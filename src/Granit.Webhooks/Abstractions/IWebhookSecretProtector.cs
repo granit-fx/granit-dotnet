@@ -6,7 +6,7 @@ namespace Granit.Webhooks.Abstractions;
 /// <remarks>
 /// <para>
 /// The default implementation is <c>NoOpWebhookSecretProtector</c> which stores secrets in plain text.
-/// For production (RGPD/ISO 27001), replace with a Vault-backed implementation via
+/// For production (GDPR/ISO 27001), replace with a Vault-backed implementation via
 /// <c>AddGranitWebhooksWithVaultSecrets(keyName)</c> or register a custom implementation.
 /// </para>
 /// <para>

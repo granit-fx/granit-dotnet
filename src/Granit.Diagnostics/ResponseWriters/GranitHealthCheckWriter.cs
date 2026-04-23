@@ -12,7 +12,7 @@ namespace Granit.Diagnostics.ResponseWriters;
 /// <remarks>
 /// <para>
 /// The response never contains stack traces, connection strings, tokens, or any PII,
-/// in compliance with ISO 27001 and RGPD constraints.
+/// in compliance with ISO 27001 and GDPR constraints.
 /// </para>
 /// <para>
 /// Two writers are available:

@@ -235,20 +235,20 @@ internal sealed partial class CachedUserLookupService(
         return refreshed;
     }
 
-    // -- RGPD --
+    // -- GDPR --
 
     public async Task DeleteByIdAsync(string userId, CancellationToken cancellationToken = default)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
         await store.DeleteByExternalIdAsync(userId, tenantId, cancellationToken).ConfigureAwait(false);
-        LogRgpdDelete(userId);
+        LogGdprDelete(userId);
     }
 
     public async Task PseudonymizeByIdAsync(string userId, CancellationToken cancellationToken = default)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
         await store.PseudonymizeAsync(userId, tenantId, cancellationToken).ConfigureAwait(false);
-        LogRgpdPseudonymize(userId);
+        LogGdprPseudonymize(userId);
     }
 
     // -- Helpers --
@@ -282,9 +282,9 @@ internal sealed partial class CachedUserLookupService(
     [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] Incremental user cache refresh completed: {Refreshed}/{Total} stale entries refreshed")]
     private partial void LogRefreshStaleCompleted(int refreshed, int total);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] RGPD erasure: user cache entry deleted for user {UserId}")]
-    private partial void LogRgpdDelete(string userId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] GDPR erasure: user cache entry deleted for user {UserId}")]
+    private partial void LogGdprDelete(string userId);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] RGPD pseudonymization: user cache entry anonymized for user {UserId}")]
-    private partial void LogRgpdPseudonymize(string userId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] GDPR pseudonymization: user cache entry anonymized for user {UserId}")]
+    private partial void LogGdprPseudonymize(string userId);
 }

@@ -56,7 +56,7 @@ public static class WolverineSqlServerHostApplicationBuilderExtensions
 
     /// <summary>
     /// Adds per-tenant database support for Wolverine: each tenant has its own isolated
-    /// SQL Server database, required for the strictest RGPD/ISO 27001 physical isolation mandates.
+    /// SQL Server database, required for the strictest GDPR/ISO 27001 physical isolation mandates.
     /// </summary>
     /// <typeparam name="TContext">The tenant-specific <see cref="DbContext"/> type.</typeparam>
     /// <param name="builder">The host application builder.</param>

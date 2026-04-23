@@ -3,10 +3,12 @@ using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Granit.Diagnostics;
 using Granit.Identity.Extensions;
+using Granit.Identity.Federated.GoogleCloud.HealthChecks;
 using Granit.Identity.Federated.GoogleCloud.Internal;
 using Granit.Identity.Federated.GoogleCloud.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Federated.GoogleCloud.Extensions;
@@ -54,5 +56,31 @@ public static class IdentityGoogleCloudServiceCollectionExtensions
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, GoogleCloudIdentityProviderCapabilities>());
 
         return services;
+    }
+
+    /// <summary>
+    /// Adds a Google Cloud Identity Platform connectivity health check tagged
+    /// <c>"readiness"</c> and <c>"startup"</c>. Verifies that the Firebase Admin SDK
+    /// can authenticate and reach Identity Toolkit by reading the first user page
+    /// with <c>PageSize = 1</c>.
+    /// </summary>
+    /// <param name="builder">The health checks builder.</param>
+    /// <param name="name">Check name. Defaults to <c>"googlecloud-identity"</c>.</param>
+    /// <param name="failureStatus">Status on failure. Defaults to <see cref="HealthStatus.Unhealthy"/>.</param>
+    /// <param name="timeout">Check timeout. Defaults to 10 seconds.</param>
+    public static IHealthChecksBuilder AddGranitGoogleCloudIdentityHealthCheck(
+        this IHealthChecksBuilder builder,
+        string name = "googlecloud-identity",
+        HealthStatus? failureStatus = null,
+        TimeSpan? timeout = null)
+    {
+        builder.Services.AddSingleton<GoogleCloudIdentityHealthCheck>();
+
+        return builder.Add(new HealthCheckRegistration(
+            name,
+            sp => sp.GetRequiredService<GoogleCloudIdentityHealthCheck>(),
+            failureStatus,
+            ["readiness", "startup"],
+            timeout ?? TimeSpan.FromSeconds(10)));
     }
 }

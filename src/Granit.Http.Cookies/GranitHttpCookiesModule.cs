@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 namespace Granit.Http.Cookies;
 
 /// <summary>
-/// Granit module for RGPD-compliant cookie management.
+/// Granit module for GDPR-compliant cookie management.
 /// Ensures the cookie infrastructure (registry, manager, consent resolver) is available
 /// even if the application host does not call <c>AddGranitCookies()</c> explicitly.
 /// </summary>

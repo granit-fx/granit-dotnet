@@ -72,7 +72,7 @@ internal sealed partial class PermissionManager(
         // DomainEventDispatcherInterceptor after SaveChanges commits. No manual publish here.
 
         // ISO 27001 audit trail: emitted as structured log → Serilog → OTLP → Loki (3-year retention)
-        // RGPD: no personal data — only provider key, permission name, tenant scope
+        // GDPR: no personal data — only provider key, permission name, tenant scope
         LogPermissionChange(
             isGranted ? "Granted" : "Revoked", permissionName, providerName, providerKey, tenantId);
     }

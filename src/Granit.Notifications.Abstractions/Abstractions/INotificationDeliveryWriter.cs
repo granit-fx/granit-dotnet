@@ -7,7 +7,7 @@ namespace Granit.Notifications.Abstractions;
 /// </summary>
 /// <remarks>
 /// Records are INSERT-only during the HDS retention period (default 3 years).
-/// After retention expires, <see cref="DeleteBeforeAsync"/> enables RGPD-compliant
+/// After retention expires, <see cref="DeleteBeforeAsync"/> enables GDPR-compliant
 /// data minimization by purging obsolete records in batches.
 /// </remarks>
 public interface INotificationDeliveryWriter
@@ -30,7 +30,7 @@ public interface INotificationDeliveryWriter
     /// </para>
     /// <para>
     /// ISO 27001: deletion is permitted after the mandatory retention period has elapsed.
-    /// RGPD Art. 5(1)(e): storage limitation requires deletion of data no longer necessary.
+    /// GDPR Art. 5(1)(e): storage limitation requires deletion of data no longer necessary.
     /// </para>
     /// </remarks>
     /// <param name="cutoff">Only attempts that occurred before this instant are deleted.</param>

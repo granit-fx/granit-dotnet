@@ -73,6 +73,10 @@ internal static partial class AccountLoginEndpoints
     {
         long startTicks = Stopwatch.GetTimestamp();
 
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.UserAuthentication);
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "password");
+
         Results<Ok<AccountLoginResponse>, ProblemHttpResult> response = await HandleLoginCoreAsync(
             request, signInManager, userManager, httpContext, cancellationToken)
             .ConfigureAwait(false);
@@ -200,6 +204,11 @@ internal static partial class AccountLoginEndpoints
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.TwoFactorChallenge);
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider,
+            request.UseRecoveryCode ? "recovery_code" : "totp");
+
         ILogger logger = httpContext.RequestServices
             .GetRequiredService<ILoggerFactory>()
             .CreateLogger("Granit.Identity.Local.Endpoints.AccountLoginEndpoints");

@@ -1,7 +1,7 @@
 namespace Granit.Domain;
 
 /// <summary>
-/// Aggregate root with full audit trail including soft delete (RGPD).
+/// Aggregate root with full audit trail including soft delete (GDPR).
 /// Inherits from <see cref="AuditedAggregateRoot"/> and implements <see cref="ISoftDeletable"/>.
 /// </summary>
 public abstract class FullAuditedAggregateRoot : AuditedAggregateRoot, ISoftDeletable

@@ -1,7 +1,7 @@
 namespace Granit.Domain;
 
 /// <summary>
-/// Interface for RGPD processing restriction (Art. 18/21).
+/// Interface for GDPR processing restriction (Art. 18/21).
 /// Marked entities are excluded from standard queries (analytics, marketing, etc.)
 /// but remain in the database — no physical deletion.
 /// </summary>

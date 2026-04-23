@@ -1,7 +1,7 @@
 namespace Granit.Privacy.DataDeletion;
 
 /// <summary>
-/// State of a deferred personal data deletion request (RGPD Art. 17 cooling-off period).
+/// State of a deferred personal data deletion request (GDPR Art. 17 cooling-off period).
 /// </summary>
 public enum DeletionRequestState
 {

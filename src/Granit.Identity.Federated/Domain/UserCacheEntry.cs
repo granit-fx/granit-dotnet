@@ -16,7 +16,7 @@ namespace Granit.Identity.Federated.Domain;
 /// a cache entry per tenant in shared-realm deployments.
 /// </para>
 /// <para>
-/// No <c>ISoftDeletable</c>: cache entries are hard-deleted on RGPD erasure requests.
+/// No <c>ISoftDeletable</c>: cache entries are hard-deleted on GDPR erasure requests.
 /// The audit fields on <see cref="AuditedEntity"/> satisfy ISO 27001 requirements for the cache entry itself.
 /// </para>
 /// </remarks>

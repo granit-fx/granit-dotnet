@@ -17,7 +17,7 @@ namespace Granit.BlobStorage.Domain;
 /// <c>Pending -> Uploading -> Rejected</c>.
 /// </para>
 /// <para>
-/// RGPD /ISO 27001: records are <b>never deleted from the database</b>.
+/// GDPR /ISO 27001: records are <b>never deleted from the database</b>.
 /// <see cref="BlobStatus.Deleted"/> means the S3 bytes are gone; the audit row remains for 3 years.
 /// </para>
 /// </remarks>
@@ -99,7 +99,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
     /// <summary>Human-readable reason for rejection; null unless <see cref="BlobStatus.Rejected"/>.</summary>
     public string? RejectionReason { get; private set; }
 
-    /// <summary>Human-readable reason for deletion (e.g. "RGPD Art. 17 request"); null unless <see cref="BlobStatus.Deleted"/>.</summary>
+    /// <summary>Human-readable reason for deletion (e.g. "GDPR Art. 17 request"); null unless <see cref="BlobStatus.Deleted"/>.</summary>
     public string? DeletionReason { get; private set; }
 
     /// <summary>
@@ -169,7 +169,7 @@ public sealed class BlobDescriptor : AggregateRoot, IMultiTenant
     /// The record is retained in the database for ISO 27001 audit compliance.
     /// </summary>
     /// <param name="deletedAt">UTC instant of deletion.</param>
-    /// <param name="reason">Optional human-readable reason (e.g. "RGPD Art. 17 erasure request").</param>
+    /// <param name="reason">Optional human-readable reason (e.g. "GDPR Art. 17 erasure request").</param>
     /// <exception cref="InvalidOperationException">When current status is not <see cref="BlobStatus.Valid"/>.</exception>
     public void MarkAsDeleted(DateTimeOffset deletedAt, string? reason = null)
     {
