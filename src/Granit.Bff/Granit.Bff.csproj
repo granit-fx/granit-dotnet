@@ -9,6 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Bff.Tests" />
     <InternalsVisibleTo Include="Granit.Bff.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Bff.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Bff.Yarp" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>

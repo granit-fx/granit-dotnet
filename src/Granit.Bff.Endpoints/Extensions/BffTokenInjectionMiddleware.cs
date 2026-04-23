@@ -153,19 +153,82 @@ public sealed partial class BffTokenInjectionMiddleware
         await _next(context).ConfigureAwait(false);
     }
 
-    private static (BffFrontendOptions? Frontend, string? SessionId) ResolveFrontendFromCookies(
+    /// <summary>
+    /// Resolves the BFF frontend for the current request based on session cookies.
+    /// When multiple frontends are configured on a single backend origin, the browser
+    /// sends every <c>.bff-{name}</c> cookie it holds for that origin (they share
+    /// <c>Path=/</c>). Picking the first cookie found would mismatch the CSRF token
+    /// that the SPA obtained for its own frontend, which produces 403 responses on
+    /// mutating calls. Disambiguate by matching the request's <c>Origin</c> (or
+    /// <c>Referer</c> when <c>Origin</c> is absent) against each candidate's
+    /// <see cref="BffFrontendOptions.ClientUrl"/>.
+    /// </summary>
+    internal static (BffFrontendOptions? Frontend, string? SessionId) ResolveFrontendFromCookies(
         HttpContext context, GranitBffOptions options)
     {
+        List<(BffFrontendOptions Frontend, string SessionId)> candidates = [];
+
         foreach (BffFrontendOptions frontend in options.Frontends)
         {
             string? sessionId = context.Request.Cookies[frontend.SessionCookieName];
             if (!string.IsNullOrEmpty(sessionId))
             {
-                return (frontend, sessionId);
+                candidates.Add((frontend, sessionId));
             }
         }
 
-        return (null, null);
+        if (candidates.Count == 0)
+        {
+            return (null, null);
+        }
+
+        if (candidates.Count == 1)
+        {
+            return candidates[0];
+        }
+
+        string? callerOrigin = GetCallerOrigin(context.Request);
+        if (callerOrigin is not null)
+        {
+            foreach ((BffFrontendOptions frontend, string sessionId) in candidates)
+            {
+                if (OriginMatchesClientUrl(callerOrigin, frontend.ClientUrl))
+                {
+                    return (frontend, sessionId);
+                }
+            }
+        }
+
+        return candidates[0];
+    }
+
+    private static string? GetCallerOrigin(HttpRequest request)
+    {
+        string? origin = request.Headers.Origin.FirstOrDefault();
+        if (!string.IsNullOrEmpty(origin) && origin != "null")
+        {
+            return NormalizeOrigin(origin);
+        }
+
+        string? referer = request.Headers.Referer.FirstOrDefault();
+        return string.IsNullOrEmpty(referer) ? null : NormalizeOrigin(referer);
+    }
+
+    private static string? NormalizeOrigin(string value) =>
+        Uri.TryCreate(value, UriKind.Absolute, out Uri? uri)
+            ? $"{uri.Scheme}://{uri.Authority}"
+            : null;
+
+    private static bool OriginMatchesClientUrl(string callerOrigin, string? clientUrl)
+    {
+        if (string.IsNullOrEmpty(clientUrl))
+        {
+            return false;
+        }
+
+        string? clientOrigin = NormalizeOrigin(clientUrl);
+        return clientOrigin is not null
+            && string.Equals(callerOrigin, clientOrigin, StringComparison.OrdinalIgnoreCase);
     }
 
     private static void InjectAuthorizationHeader(HttpContext context, BffTokenSet tokens)
