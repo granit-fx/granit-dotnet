@@ -37,6 +37,8 @@ public static class RoleMetadataModelBuilderExtensions
             entity.Property(e => e.Description).HasMaxLength(2048);
             entity.Property(e => e.MultiTenancySide).IsRequired();
             entity.Property(e => e.IsSystem).IsRequired();
+            entity.Property(e => e.IsOrphaned).IsRequired().HasDefaultValue(false);
+            entity.Property(e => e.OrphanedAt);
 
             entity.HasIndex(e => new { e.Name, e.TenantId, e.ClientId })
                   .IsUnique()

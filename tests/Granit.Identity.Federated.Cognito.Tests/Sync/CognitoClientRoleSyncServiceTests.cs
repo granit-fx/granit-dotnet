@@ -5,6 +5,7 @@ using Granit.Identity;
 using Granit.Identity.Federated.Cognito.Internal.Sync;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
+using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -20,21 +21,29 @@ public sealed class CognitoClientRoleSyncServiceTests
         Substitute.For<IIdentityClientRoleManager>();
     private readonly IRoleMetadataStore _store = Substitute.For<IRoleMetadataStore>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
+    private readonly IClock _clock = Substitute.For<IClock>();
 
     public CognitoClientRoleSyncServiceTests()
     {
         _guidGenerator.Create().Returns(_ => Guid.NewGuid());
+        _clock.Now.Returns(new DateTimeOffset(2026, 4, 23, 12, 0, 0, TimeSpan.Zero));
+        _store.ListByClientIdAsync(Arg.Any<string?>(), Arg.Any<CancellationToken>())
+            .Returns<IReadOnlyList<RoleMetadata>>(_ => []);
     }
 
-    private CognitoClientRoleSyncService BuildSut(params string[] trackedAppClientIds)
+    private CognitoClientRoleSyncService BuildSut(params string[] trackedAppClientIds) =>
+        BuildSut(OrphanedRolePolicy.KeepAndLog, trackedAppClientIds);
+
+    private CognitoClientRoleSyncService BuildSut(OrphanedRolePolicy policy, params string[] trackedAppClientIds)
     {
         CgSyncOpts opts = new()
         {
             Enabled = true,
             TrackedAppClientIds = trackedAppClientIds,
+            OrphanedRolePolicy = policy,
         };
         return new CognitoClientRoleSyncService(
-            _clientRoleManager, _store, _guidGenerator,
+            _clientRoleManager, _store, _guidGenerator, _clock,
             Microsoft.Extensions.Options.Options.Create(opts),
             NullLogger<CognitoClientRoleSyncService>.Instance);
     }
@@ -44,7 +53,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CgSyncOpts opts = new() { Enabled = false, TrackedAppClientIds = ["client-a"] };
         CognitoClientRoleSyncService sut = new(
-            _clientRoleManager, _store, _guidGenerator,
+            _clientRoleManager, _store, _guidGenerator, _clock,
             Microsoft.Extensions.Options.Options.Create(opts),
             NullLogger<CognitoClientRoleSyncService>.Instance);
 
@@ -127,5 +136,101 @@ public sealed class CognitoClientRoleSyncServiceTests
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         await _clientRoleManager.Received(1).GetClientRolesAsync("client-b", Arg.Any<CancellationToken>());
+    }
+
+    // ──── ADR-029 — orphan cleanup policy ────────────────────────────────
+
+    [Fact]
+    public async Task SyncAsync_KeepAndLog_ExistingRowNotReturnedByProvider_RowSurvives()
+    {
+        CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.KeepAndLog, "client-a");
+        var orphan = RoleMetadata.Create(
+            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            tenantId: null, clientId: "client-a");
+
+        _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
+        _store.ListByClientIdAsync("client-a", Arg.Any<CancellationToken>()).Returns([orphan]);
+
+        await sut.SyncAsync(TestContext.Current.CancellationToken);
+
+        orphan.IsOrphaned.ShouldBeFalse();
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+        await _store.DidNotReceive().RemoveAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SyncAsync_SoftDelete_ExistingRowNotReturnedByProvider_MarkedOrphaned()
+    {
+        CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
+        var orphan = RoleMetadata.Create(
+            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            tenantId: null, clientId: "client-a");
+
+        _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
+        _store.ListByClientIdAsync("client-a", Arg.Any<CancellationToken>()).Returns([orphan]);
+
+        await sut.SyncAsync(TestContext.Current.CancellationToken);
+
+        orphan.IsOrphaned.ShouldBeTrue();
+        orphan.OrphanedAt.ShouldBe(_clock.Now);
+        await _store.Received(1).UpdateAsync(
+            Arg.Is<RoleMetadata>(r => r.IsOrphaned), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SyncAsync_SoftDelete_AlreadyOrphaned_NoAdditionalWrite()
+    {
+        CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
+        var orphan = RoleMetadata.Create(
+            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            tenantId: null, clientId: "client-a");
+        orphan.MarkAsOrphaned(DateTimeOffset.UtcNow.AddDays(-3));
+
+        _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
+        _store.ListByClientIdAsync("client-a", Arg.Any<CancellationToken>()).Returns([orphan]);
+
+        await sut.SyncAsync(TestContext.Current.CancellationToken);
+
+        await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SyncAsync_HardDelete_ExistingRowNotReturnedByProvider_Removed()
+    {
+        CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.HardDelete, "client-a");
+        var orphan = RoleMetadata.Create(
+            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            tenantId: null, clientId: "client-a");
+
+        _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
+        _store.ListByClientIdAsync("client-a", Arg.Any<CancellationToken>()).Returns([orphan]);
+
+        await sut.SyncAsync(TestContext.Current.CancellationToken);
+
+        await _store.Received(1).RemoveAsync(orphan, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SyncAsync_RestoreOnReturn_OrphanedRowReturnedAgain_ClearsFlag()
+    {
+        CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
+        var previouslyOrphaned = RoleMetadata.Create(
+            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            tenantId: null, clientId: "client-a", description: "Edit docs");
+        previouslyOrphaned.MarkAsOrphaned(DateTimeOffset.UtcNow.AddHours(-1));
+
+        _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>())
+            .Returns([new IdentityRole("client-a:editor", "editor", "Edit docs") { ClientId = "client-a" }]);
+        _store.FindByNameAsync("editor", null, "client-a", Arg.Any<CancellationToken>())
+            .Returns(previouslyOrphaned);
+        _store.ListByClientIdAsync("client-a", Arg.Any<CancellationToken>()).Returns([previouslyOrphaned]);
+
+        await sut.SyncAsync(TestContext.Current.CancellationToken);
+
+        previouslyOrphaned.IsOrphaned.ShouldBeFalse();
+        previouslyOrphaned.OrphanedAt.ShouldBeNull();
+        await _store.Received(1).UpdateAsync(
+            Arg.Is<RoleMetadata>(r => !r.IsOrphaned && r.Name == "editor"),
+            Arg.Any<CancellationToken>());
     }
 }

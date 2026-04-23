@@ -26,6 +26,11 @@ internal sealed class NullRoleMetadataStore : IRoleMetadataStore
         Task.FromResult<IReadOnlyList<RoleMetadata>>([]);
 
     /// <inheritdoc />
+    public Task<IReadOnlyList<RoleMetadata>> ListByClientIdAsync(
+        string? clientId, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<RoleMetadata>>([]);
+
+    /// <inheritdoc />
     public Task AddAsync(RoleMetadata role, CancellationToken cancellationToken = default) =>
         throw new InvalidOperationException(
             "No IRoleMetadataStore implementation is registered. " +

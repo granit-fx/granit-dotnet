@@ -41,6 +41,14 @@ internal sealed class EfCoreRoleMetadataStore<TContext>(TContext context)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
     /// <inheritdoc />
+    public async Task<IReadOnlyList<RoleMetadata>> ListByClientIdAsync(
+        string? clientId, CancellationToken cancellationToken = default) =>
+        await context.RoleMetadata
+            .AsNoTracking()
+            .Where(r => r.ClientId == clientId)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+    /// <inheritdoc />
     public async Task AddAsync(RoleMetadata role, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(role);

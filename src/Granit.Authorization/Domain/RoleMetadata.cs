@@ -64,6 +64,26 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// </summary>
     public bool IsSystem { get; private set; }
 
+    /// <summary>
+    /// <see langword="true"/> when the client-role sync saw this row in a previous pass but
+    /// the upstream provider no longer returns it — only flipped by the
+    /// <see cref="OrphanedRolePolicy.SoftDelete"/> policy. Hard-deleted rows do not carry
+    /// this flag (they are physically removed).
+    /// </summary>
+    /// <remarks>
+    /// <c>FindByNameAsync</c> does <b>not</b> filter on this flag — orphaned rows keep
+    /// resolving so existing <c>PermissionGrant</c> entries continue to work until an
+    /// admin curates them. See ADR-029.
+    /// </remarks>
+    public bool IsOrphaned { get; private set; }
+
+    /// <summary>
+    /// Timestamp captured by the sync when <see cref="IsOrphaned"/> was flipped.
+    /// <see langword="null"/> on rows that were never orphaned, and on rows that have been
+    /// restored (<see cref="RestoreFromOrphaned"/> clears the stamp).
+    /// </summary>
+    public DateTimeOffset? OrphanedAt { get; private set; }
+
     /// <summary>Required by EF Core materialization — never call from application code.</summary>
     private RoleMetadata() { }
 
@@ -151,6 +171,47 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// </summary>
     public void MarkAsDeleted() =>
         AddDomainEvent(new RoleDeletedEvent(Id, Name, MultiTenancySide, TenantId, ClientId));
+
+    /// <summary>
+    /// Flips <see cref="IsOrphaned"/> to <see langword="true"/>, stamps <see cref="OrphanedAt"/>,
+    /// and raises <see cref="RoleOrphanedEvent"/>. Idempotent — if already orphaned, no state
+    /// change and no event. Called by the client-role sync under the
+    /// <see cref="OrphanedRolePolicy.SoftDelete"/> policy.
+    /// </summary>
+    /// <param name="now">Timestamp captured by the sync (typically <c>IClock.Now</c>).</param>
+    public void MarkAsOrphaned(DateTimeOffset now)
+    {
+        if (IsOrphaned)
+        {
+            return;
+        }
+
+        IsOrphaned = true;
+        OrphanedAt = now;
+
+        AddDomainEvent(new RoleOrphanedEvent(
+            Id, Name, MultiTenancySide, TenantId, ClientId, now));
+    }
+
+    /// <summary>
+    /// Clears the <see cref="IsOrphaned"/> flag and the <see cref="OrphanedAt"/> stamp,
+    /// raising <see cref="RoleRestoredEvent"/>. Idempotent — no state change and no event
+    /// when the row was not orphaned. Called by the sync when an upstream role that was
+    /// previously marked orphaned starts being returned again (admin re-added it).
+    /// </summary>
+    public void RestoreFromOrphaned()
+    {
+        if (!IsOrphaned)
+        {
+            return;
+        }
+
+        IsOrphaned = false;
+        OrphanedAt = null;
+
+        AddDomainEvent(new RoleRestoredEvent(
+            Id, Name, MultiTenancySide, TenantId, ClientId));
+    }
 
     private static void ValidateLengths(string name, string? clientId, string? description)
     {

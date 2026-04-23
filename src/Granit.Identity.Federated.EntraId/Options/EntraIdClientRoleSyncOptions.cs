@@ -1,3 +1,5 @@
+using Granit.Authorization;
+
 namespace Granit.Identity.Federated.EntraId.Options;
 
 /// <summary>
@@ -24,4 +26,12 @@ public sealed class EntraIdClientRoleSyncOptions
     /// (Microsoft's built-in apps, other SaaS integrations) that have no relevance here.
     /// </summary>
     public IReadOnlyList<string> TrackedAppIds { get; set; } = [];
+
+    /// <summary>
+    /// Policy applied to <see cref="Granit.Authorization.Domain.RoleMetadata"/> rows whose
+    /// upstream Entra App Role disappears between sync runs (deleted from the application
+    /// registration, or the Service Principal itself was removed). See ADR-029.
+    /// Default: <see cref="OrphanedRolePolicy.KeepAndLog"/> — preserves the Phase 2 behaviour.
+    /// </summary>
+    public OrphanedRolePolicy OrphanedRolePolicy { get; set; } = OrphanedRolePolicy.KeepAndLog;
 }
