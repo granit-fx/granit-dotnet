@@ -350,6 +350,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.datalookup.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.notifications.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -384,7 +390,8 @@
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.templating": {

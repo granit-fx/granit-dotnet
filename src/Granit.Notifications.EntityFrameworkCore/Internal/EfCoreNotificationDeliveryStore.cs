@@ -11,7 +11,7 @@ namespace Granit.Notifications.EntityFrameworkCore.Internal;
 /// <remarks>
 /// <para>
 /// Records are INSERT-only during the HDS retention period. After retention expires,
-/// <see cref="DeleteBeforeAsync"/> enables RGPD-compliant data minimization.
+/// <see cref="DeleteBeforeAsync"/> enables GDPR-compliant data minimization.
 /// </para>
 /// </remarks>
 internal sealed class EfCoreNotificationDeliveryStore(

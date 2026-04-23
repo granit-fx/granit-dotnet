@@ -81,11 +81,11 @@ public sealed class BlobEventsTests
     {
         var blobId = Guid.NewGuid();
 
-        BlobDeletedEvent evt = new(blobId, "docs", "RGPD Art. 17");
+        BlobDeletedEvent evt = new(blobId, "docs", "GDPR Art. 17");
 
         evt.BlobId.ShouldBe(blobId);
         evt.ContainerName.ShouldBe("docs");
-        evt.DeletionReason.ShouldBe("RGPD Art. 17");
+        evt.DeletionReason.ShouldBe("GDPR Art. 17");
     }
 
     [Fact]

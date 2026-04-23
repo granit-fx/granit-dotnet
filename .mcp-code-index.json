@@ -1754,7 +1754,8 @@
     {
       "name": "Granit.QueryEngine.Abstractions",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.DataLookup.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -12377,8 +12378,8 @@
       "fqn": "Granit.DataLookup.Endpoints.Dtos.LookupManifestEntryResponse",
       "kind": "record",
       "project": "Granit.DataLookup.Endpoints",
-      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
-      "line": 14,
+      "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestEntryResponse.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -12387,7 +12388,7 @@
       "kind": "record",
       "project": "Granit.DataLookup.Endpoints",
       "file": "src/Granit.DataLookup.Endpoints/Dtos/LookupManifestResponse.cs",
-      "line": 7,
+      "line": 5,
       "members": []
     },
     {
@@ -12563,7 +12564,7 @@
       "kind": "interface",
       "project": "Granit.DataLookup.Abstractions",
       "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "Resolve",
@@ -12584,8 +12585,8 @@
       "fqn": "Granit.DataLookup.Registry.LookupManifestEntry",
       "kind": "record",
       "project": "Granit.DataLookup.Abstractions",
-      "file": "src/Granit.DataLookup.Abstractions/Registry/ILookupRegistry.cs",
-      "line": 34,
+      "file": "src/Granit.DataLookup.Abstractions/Registry/LookupManifestEntry.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -12610,7 +12611,7 @@
       "kind": "interface",
       "project": "Granit.DataLookup.Abstractions",
       "file": "src/Granit.DataLookup.Abstractions/Sources/ILookupSource.cs",
-      "line": 32,
+      "line": 45,
       "members": [
         {
           "name": "SearchAsync",
@@ -17523,7 +17524,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Extensions/IdentityServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitIdentity",
@@ -17876,7 +17877,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.GoogleCloud",
       "file": "src/Granit.Identity.Federated.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityGoogleCloud",
@@ -19293,7 +19294,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -35573,7 +35574,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnBuilder.cs",
-      "line": 7,
+      "line": 9,
       "members": []
     },
     {
@@ -35582,7 +35583,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/ColumnDescriptor.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "PropertyName",
@@ -35979,7 +35980,7 @@
       "kind": "record",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/Meta/FilterableField.cs",
-      "line": 16,
+      "line": 24,
       "members": []
     },
     {

@@ -75,7 +75,7 @@ public sealed class WebhookDeliveryAttempt : Entity, IMultiTenant
     /// </summary>
     /// <remarks>
     /// When stored, this field contains health data in clear text. Encryption at rest
-    /// must be enabled on the database and RGPD validation by the DPO is required.
+    /// must be enabled on the database and GDPR validation by the DPO is required.
     /// </remarks>
     public string? Payload { get; set; }
 }

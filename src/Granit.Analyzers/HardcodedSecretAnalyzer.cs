@@ -11,7 +11,7 @@ namespace Granit.Analyzers;
 /// or property whose name suggests a secret (password, token, API key, etc.).
 /// </summary>
 /// <remarks>
-/// Hardcoded secrets violate ISO 27001 and RGPD compliance. Use Granit.Vault or
+/// Hardcoded secrets violate ISO 27001 and GDPR compliance. Use Granit.Vault or
 /// secure configuration (environment variables, Key Vault) instead.
 /// Always active — no opt-in needed.
 /// </remarks>
@@ -47,7 +47,7 @@ public sealed class HardcodedSecretAnalyzer : SingleRuleAnalyzerBase
         category: "Security",
         defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true,
-        description: "Hardcoded secrets violate ISO 27001 and RGPD compliance requirements. "
+        description: "Hardcoded secrets violate ISO 27001 and GDPR compliance requirements. "
             + "Store secrets in HashiCorp Vault via Granit.Vault or use secure "
             + "configuration providers.");
 

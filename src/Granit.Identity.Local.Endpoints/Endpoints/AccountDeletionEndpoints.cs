@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -39,6 +40,9 @@ internal static class AccountDeletionEndpoints
 [FromServices] IAccountDeletionService deletionService,
         CancellationToken cancellationToken)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.AccountDeletion);
+
         string userId = httpContext.User.FindFirst("sub")!.Value;
         string? username = httpContext.User.FindFirst("preferred_username")?.Value
                            ?? httpContext.User.FindFirst("name")?.Value;

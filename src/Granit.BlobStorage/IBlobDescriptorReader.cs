@@ -39,7 +39,7 @@ public interface IBlobDescriptorReader
     /// created before <paramref name="cutoff"/>, limited to <paramref name="batchSize"/> results.
     /// </summary>
     /// <remarks>
-    /// Used by RGPD cleanup background jobs to purge temporary containers (e.g. GDPR export archives)
+    /// Used by GDPR cleanup background jobs to purge temporary containers (e.g. GDPR export archives)
     /// after the retention period expires.
     /// </remarks>
     /// <param name="containerName">The blob container to search.</param>

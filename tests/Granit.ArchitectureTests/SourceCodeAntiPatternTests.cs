@@ -230,7 +230,7 @@ public sealed partial class SourceCodeAntiPatternTests
 
     /// <summary>
     /// Direct calls to <c>IResponseCookies.Append()</c> or <c>IResponseCookies.Delete()</c>
-    /// bypass the Strict Registry Pattern and RGPD consent checks enforced by
+    /// bypass the Strict Registry Pattern and GDPR consent checks enforced by
     /// <c>IGranitCookieManager</c>. Only <c>GranitCookieManager</c> (the manager implementation
     /// itself) is allowed to call these methods directly.
     /// Complements the <c>GRSEC004</c> Roslyn analyzer which is opt-in per project.
@@ -276,7 +276,7 @@ public sealed partial class SourceCodeAntiPatternTests
 
         violations.ShouldBeEmpty(
             "Direct calls to Response.Cookies.Append() / Delete() bypass the Strict Registry Pattern "
-            + "and RGPD consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead. "
+            + "and GDPR consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead. "
             + "If this is the cookie manager implementation itself, name the file GranitCookieManager.cs. "
             + $"Violators: {string.Join(", ", violations)}");
     }

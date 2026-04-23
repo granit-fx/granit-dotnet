@@ -357,6 +357,12 @@
           "Sylvan.Data.Excel": "[0.5.*, )"
         }
       },
+      "granit.datalookup.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.events": {
         "type": "Project",
         "dependencies": {
@@ -402,7 +408,8 @@
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
-          "Granit": "[0.1.0-dev, )"
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

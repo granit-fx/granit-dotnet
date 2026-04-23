@@ -69,7 +69,7 @@ internal sealed class WebhookDeliveryAttemptConfiguration : IEntityTypeConfigura
         builder.HasIndex(e => new { e.SubscriptionId, e.OccurredAt })
             .HasDatabaseName($"ix_{GranitWebhooksDbProperties.DbTablePrefix}delivery_attempts_subscriptionid_occurredat");
 
-        // RGPD: enables bulk export and erasure by tenant.
+        // GDPR: enables bulk export and erasure by tenant.
         builder.HasIndex(e => new { e.TenantId, e.OccurredAt })
             .HasDatabaseName($"ix_{GranitWebhooksDbProperties.DbTablePrefix}delivery_attempts_tenantid_occurredat");
 

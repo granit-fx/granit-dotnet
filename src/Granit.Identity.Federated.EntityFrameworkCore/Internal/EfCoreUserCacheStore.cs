@@ -165,7 +165,7 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context)
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
-    // -- RGPD --
+    // -- GDPR --
 
     public async Task DeleteByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)

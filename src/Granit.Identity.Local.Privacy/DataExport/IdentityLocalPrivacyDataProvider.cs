@@ -38,7 +38,7 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
 
         IList<string> roles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
 
-        IdentityLocalExportDto dto = new(
+        IdentityLocalExportResponse dto = new(
             Id: user.Id,
             UserName: user.UserName,
             Email: user.Email,
@@ -70,8 +70,8 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
     };
 }
 
-/// <summary>Data transfer record written to the <c>identity-local.json</c> fragment.</summary>
-internal sealed record IdentityLocalExportDto(
+/// <summary>Export record written to the <c>identity-local.json</c> fragment.</summary>
+internal sealed record IdentityLocalExportResponse(
     Guid Id,
     string? UserName,
     string? Email,

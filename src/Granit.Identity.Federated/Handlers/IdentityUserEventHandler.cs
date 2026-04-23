@@ -29,7 +29,7 @@ internal sealed partial class IdentityUserEventHandler(
     }
 
     /// <summary>
-    /// Handles a user deleted event by hard-deleting the cache entry (RGPD Art. 17).
+    /// Handles a user deleted event by hard-deleting the cache entry (GDPR Art. 17).
     /// </summary>
     public async Task HandleAsync(IdentityUserDeletedEto @event, CancellationToken cancellationToken)
     {
@@ -109,6 +109,6 @@ internal sealed partial class IdentityUserEventHandler(
     [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] User cache entry updated via {Source} for user {UserId}")]
     private partial void LogUserCacheUpdated(string userId, string source);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] RGPD: user cache entry deleted via webhook for user {UserId}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] GDPR: user cache entry deleted via webhook for user {UserId}")]
     private partial void LogUserCacheDeleted(string userId);
 }

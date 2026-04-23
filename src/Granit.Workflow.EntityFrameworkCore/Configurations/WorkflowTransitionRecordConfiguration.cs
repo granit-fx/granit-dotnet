@@ -55,7 +55,7 @@ internal sealed class WorkflowTransitionRecordConfiguration
         builder.HasIndex(e => new { e.EntityType, e.EntityId, e.TransitionedAt })
             .HasDatabaseName($"ix_{GranitWorkflowDbProperties.DbTablePrefix}transition_records_entity_type_id_at");
 
-        // RGPD: enables bulk export and erasure by tenant
+        // GDPR: enables bulk export and erasure by tenant
         builder.HasIndex(e => new { e.TenantId, e.TransitionedAt })
             .HasDatabaseName($"ix_{GranitWorkflowDbProperties.DbTablePrefix}transition_records_tenantid_at");
 

@@ -6,8 +6,9 @@ namespace Granit.Identity.Local.Diagnostics;
 /// Central <see cref="ActivitySource"/> for Granit.Identity.Local distributed tracing.
 /// </summary>
 /// <remarks>
-/// <c>Granit.Observability</c> adds this source automatically via
-/// <c>GranitActivitySourceRegistry</c> when both packages are used.
+/// Registered with <c>GranitActivitySourceRegistry</c> by
+/// <c>GranitIdentityLocalModule.ConfigureServices</c> so OpenTelemetry exporters
+/// configured via <c>WithTracing(...)</c> pick it up automatically.
 /// </remarks>
 internal static class IdentityLocalActivitySource
 {

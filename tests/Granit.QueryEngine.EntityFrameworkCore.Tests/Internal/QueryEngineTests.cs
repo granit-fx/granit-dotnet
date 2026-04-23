@@ -1,3 +1,4 @@
+using Granit.DataLookup.Descriptors;
 using Granit.QueryEngine.EntityFrameworkCore.Internal;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
@@ -292,6 +293,81 @@ public sealed class QueryEngineTests : IAsyncLifetime
         FilterableField priceField = metadata.FilterableFields
             .First(f => f.Name == "Price");
         priceField.EnumValues.ShouldBeNull();
+    }
+
+    [Fact]
+    public void GetMetadata_emits_lookup_descriptor_when_declared()
+    {
+        LookupDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        FilterableField tenantField = metadata.FilterableFields
+            .First(f => f.Name == "Name");
+        tenantField.Lookup.ShouldNotBeNull();
+        tenantField.Lookup!.Name.ShouldBe("tenants");
+        tenantField.Lookup.Kind.ShouldBe(LookupKind.QueryEngine);
+        tenantField.Lookup.RequiredPermission.ShouldBe("Platform.Tenants.Read");
+    }
+
+    [Fact]
+    public void GetMetadata_lookup_is_null_when_not_declared()
+    {
+        ProductQueryDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        foreach (FilterableField field in metadata.FilterableFields)
+        {
+            field.Lookup.ShouldBeNull();
+        }
+    }
+
+    [Fact]
+    public void GetMetadata_emits_lookup_with_scope_keys_and_endpoint_override()
+    {
+        CustomEndpointLookupDefinition definition = new();
+        QueryEngine<TestProduct> engine = new(definition, NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        QueryMetadata metadata = engine.GetMetadata();
+
+        FilterableField field = metadata.FilterableFields.First(f => f.Name == "Name");
+        field.Lookup.ShouldNotBeNull();
+        field.Lookup!.Name.ShouldBeNull();
+        field.Lookup.Endpoint.ShouldBe("/api/external/stripe/customers");
+        field.Lookup.ScopeKeys.ShouldBe(["tenantId"]);
+    }
+
+    private sealed class LookupDefinition : QueryDefinition<TestProduct>
+    {
+        public override string Name => "Test.Products.Lookup";
+
+        protected override void Configure(QueryDefinitionBuilder<TestProduct> builder) =>
+            builder
+                .Column(p => p.Name, c => c
+                    .Label("Name")
+                    .Filterable()
+                    .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
+                .Column(p => p.Price, c => c.Label("Price").Filterable())
+                .DefaultPageSize(10);
+    }
+
+    private sealed class CustomEndpointLookupDefinition : QueryDefinition<TestProduct>
+    {
+        public override string Name => "Test.Products.CustomLookup";
+
+        protected override void Configure(QueryDefinitionBuilder<TestProduct> builder) =>
+            builder
+                .Column(p => p.Name, c => c
+                    .Label("Name")
+                    .Filterable()
+                    .Lookup(new LookupDescriptor(
+                        Endpoint: "/api/external/stripe/customers",
+                        Kind: LookupKind.Simple,
+                        ScopeKeys: ["tenantId"])))
+                .DefaultPageSize(10);
     }
 
     private sealed class QuickFilterDefinition : QueryDefinition<TestProduct>

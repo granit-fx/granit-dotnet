@@ -39,7 +39,7 @@ internal sealed class BlobStorageSchemaExampleProvider : ISchemaExampleProvider
             [typeof(BlobDeleteRequest)] = new JsonObject
             {
                 ["containerName"] = "medical-images",
-                ["deletionReason"] = "RGPD Art. 17 erasure request",
+                ["deletionReason"] = "GDPR Art. 17 erasure request",
             },
             [typeof(BlobDownloadUrlRequest)] = new JsonObject
             {

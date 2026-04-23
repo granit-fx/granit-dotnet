@@ -18,14 +18,27 @@ namespace Granit.DataLookup.Sources;
 ///   before projecting to <see cref="LookupItem.Label"/>.
 ///   </description></item>
 ///   <item><description>
-///   Validate that every scope key declared in <see cref="ScopeKeys"/> is present and
-///   non-empty in <see cref="LookupQuery.Scope"/>. Missing keys are a client error
-///   (400), not a fallback to an unscoped query.
+///   Respect the ambient <c>ICurrentTenant</c> for multi-tenant isolation.
+///   </description></item>
+/// </list>
+/// <para>
+/// <b>Cross-cutting concerns — not enforced by the source itself.</b> Two responsibilities
+/// live in the endpoint layer (<c>Granit.DataLookup.Endpoints</c>) rather than in every
+/// source implementation:
+/// </para>
+/// <list type="bullet">
+///   <item><description>
+///   <b>Authorization</b> — <see cref="RequiredPermission"/> is checked by the dispatch
+///   handler before <see cref="SearchAsync"/> is invoked. Programmatic consumers that
+///   bypass the endpoints (e.g. server-side jobs, tests) take responsibility for
+///   enforcing the declared permission themselves.
 ///   </description></item>
 ///   <item><description>
-///   Respect the ambient <c>ICurrentTenant</c> for multi-tenant isolation. Authorization
-///   (<see cref="RequiredPermission"/>) is enforced by the endpoint layer before the
-///   source is invoked.
+///   <b>Scope validation</b> — the endpoint validates that every key declared in
+///   <see cref="ScopeKeys"/> is present and non-empty in <see cref="LookupQuery.Scope"/>,
+///   returning <c>400 Bad Request</c> on any missing value (no silent full-table scans).
+///   Programmatic consumers MUST apply the same check before calling
+///   <see cref="SearchAsync"/> directly.
 ///   </description></item>
 /// </list>
 /// </remarks>

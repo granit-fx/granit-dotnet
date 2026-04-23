@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Granit.Http.Idempotency.Attributes;
+using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Endpoints.Permissions;
@@ -35,6 +37,9 @@ internal static class AdminImpersonationEndpoints
         [FromServices] IImpersonationService impersonationService,
         CancellationToken cancellationToken = default)
     {
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.Impersonation);
+
         // Guard: cannot chain-impersonate
         if (httpContext.User.FindFirst("impersonator_id") is not null)
         {

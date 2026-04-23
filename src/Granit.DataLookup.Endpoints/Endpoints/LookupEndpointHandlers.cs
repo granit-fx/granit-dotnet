@@ -91,13 +91,21 @@ public static class LookupEndpointHandlers
     /// <summary>GET /api/granit/lookups/{name}/resolve?value=… — single item lookup for rehydration.</summary>
     public static async Task<Results<Ok<LookupItemResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>> ResolveAsync(
         string name,
-        [FromQuery] string value,
+        [FromQuery] string? value,
         [FromServices] ILookupRegistry registry,
         [FromServices] IPermissionChecker permissionChecker,
         [FromServices] DataLookupMetrics metrics,
         [FromServices] Granit.MultiTenancy.ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return TypedResults.Problem(
+                detail: "Missing required 'value' query parameter.",
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Missing lookup value");
+        }
+
         ILookupSource? source = registry.Resolve(name);
         if (source is null)
         {

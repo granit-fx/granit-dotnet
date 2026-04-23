@@ -79,10 +79,10 @@ public interface IUserLookupService
     /// <returns>The number of users refreshed.</returns>
     Task<int> RefreshStaleAsync(CancellationToken cancellationToken = default);
 
-    // -- RGPD --
+    // -- GDPR --
 
     /// <summary>
-    /// Permanently deletes the cached entry for a user (RGPD Art. 17 — right to erasure).
+    /// Permanently deletes the cached entry for a user (GDPR Art. 17 — right to erasure).
     /// </summary>
     /// <param name="userId">The user ID to erase.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
@@ -90,7 +90,7 @@ public interface IUserLookupService
 
     /// <summary>
     /// Replaces personally identifiable information in the cached entry with anonymized data
-    /// (RGPD Art. 18 — right to restriction of processing).
+    /// (GDPR Art. 18 — right to restriction of processing).
     /// </summary>
     /// <param name="userId">The user ID to pseudonymize.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

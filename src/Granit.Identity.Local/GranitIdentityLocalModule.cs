@@ -1,4 +1,5 @@
 using Granit.DataExchange.Extensions;
+using Granit.Diagnostics;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
@@ -36,6 +37,8 @@ public sealed class GranitIdentityLocalModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
+        GranitActivitySourceRegistry.Register(IdentityLocalActivitySource.Name);
+
         context.Services.TryAddSingleton<IdentityLocalMetrics>();
 
         // Query + Export definitions (ADR-020: owned by the base module).

@@ -270,7 +270,8 @@ internal sealed class QueryEngine<TEntity>(
                     c.PropertyName,
                     c.ClrType.Name,
                     FilterOperatorInference.GetOperators(c.ClrType),
-                    GetEnumValues(c.ClrType)))
+                    GetEnumValues(c.ClrType),
+                    c.Lookup))
                 .ToList(),
             SortableFields = _builder.Columns
                 .Where(c => c.IsSortable)

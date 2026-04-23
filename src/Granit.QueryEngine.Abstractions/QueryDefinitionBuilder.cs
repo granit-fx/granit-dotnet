@@ -66,6 +66,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             IsFilterable = builder.IsFilterableValue,
             IsVisible = builder.IsVisibleValue,
             Format = builder.FormatValue,
+            Lookup = builder.LookupValue,
         });
 
         return this;
@@ -98,6 +99,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             IsFilterable = builder.IsFilterableValue,
             IsVisible = builder.IsVisibleValue,
             Format = builder.FormatValue,
+            Lookup = builder.LookupValue,
             IsShadowProperty = true,
         });
 
@@ -132,6 +134,7 @@ public sealed class QueryDefinitionBuilder<TEntity> where TEntity : class
             IsFilterable = builder.IsFilterableValue,
             IsVisible = builder.IsVisibleValue,
             Format = builder.FormatValue,
+            Lookup = builder.LookupValue,
             IsShadowProperty = true,
         });
 

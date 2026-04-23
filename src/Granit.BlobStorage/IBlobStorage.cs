@@ -63,7 +63,7 @@ public interface IBlobStorage
     /// </remarks>
     /// <param name="containerName">Logical container the blob belongs to.</param>
     /// <param name="blobId">Blob identifier.</param>
-    /// <param name="deletionReason">Optional reason for the audit trail (e.g. "RGPD Art. 17 erasure").</param>
+    /// <param name="deletionReason">Optional reason for the audit trail (e.g. "GDPR Art. 17 erasure").</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="Exceptions.BlobNotFoundException">Blob not found for the current tenant.</exception>
     Task DeleteAsync(

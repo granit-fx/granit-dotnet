@@ -25,7 +25,7 @@ public sealed class GranitCookiesBuilder(IServiceCollection services)
     }
 
     /// <summary>
-    /// Registers the ASP.NET Core session cookie in the RGPD registry and overrides
+    /// Registers the ASP.NET Core session cookie in the GDPR registry and overrides
     /// the default cookie name to avoid leaking the technology stack.
     /// Call this when the application uses <c>AddSession()</c> / <c>UseSession()</c>.
     /// </summary>

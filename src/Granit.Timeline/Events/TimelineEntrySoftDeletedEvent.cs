@@ -3,7 +3,7 @@ using Granit.Events;
 namespace Granit.Timeline.Events;
 
 /// <summary>
-/// Raised when a timeline entry is soft-deleted (RGPD right to erasure).
+/// Raised when a timeline entry is soft-deleted (GDPR right to erasure).
 /// System log entries cannot be deleted (ISO 27001 audit trail).
 /// </summary>
 public sealed record TimelineEntrySoftDeletedEvent(

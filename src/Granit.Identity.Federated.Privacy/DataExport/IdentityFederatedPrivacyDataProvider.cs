@@ -45,7 +45,7 @@ public sealed class IdentityFederatedPrivacyDataProvider(
             return ReadOnlyMemory<byte>.Empty;
         }
 
-        IdentityFederatedExportDto dto = new(
+        IdentityFederatedExportResponse dto = new(
             CacheEntryId: entry.Id,
             ExternalUserId: entry.ExternalUserId,
             Username: entry.Username,
@@ -68,7 +68,7 @@ public sealed class IdentityFederatedPrivacyDataProvider(
     };
 }
 
-internal sealed record IdentityFederatedExportDto(
+internal sealed record IdentityFederatedExportResponse(
     Guid CacheEntryId,
     string ExternalUserId,
     string? Username,
