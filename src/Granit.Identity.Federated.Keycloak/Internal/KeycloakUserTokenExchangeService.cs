@@ -1,6 +1,10 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
+using Granit.Events;
+using Granit.Identity.Federated.Events;
+using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Options;
+using Granit.Identity.Federated.RateLimiting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -26,15 +30,30 @@ namespace Granit.Identity.Federated.Keycloak.Internal;
 /// Tokens are NOT cached because they are user-specific and short-lived. Each call performs
 /// a fresh token exchange.
 /// </para>
+/// <para>
+/// Every successful exchange:
+/// <list type="bullet">
+///   <item><description>Is gated by <see cref="ITokenExchangeRateLimiter"/> — production hosts must
+///   register a distributed implementation; the in-process default lets all calls through.</description></item>
+///   <item><description>Logs at <c>Information</c> level (operators can SIEM-route the message).</description></item>
+///   <item><description>Publishes <see cref="IdentityTokenExchangedEto"/> via
+///   <see cref="IDistributedEventBus"/> so the ISO 27001 audit trail can persist the operation.</description></item>
+/// </list>
+/// </para>
 /// </remarks>
 internal sealed partial class KeycloakUserTokenExchangeService(
     IHttpClientFactory httpClientFactory,
     IOptions<KeycloakAdminOptions> options,
+    ITokenExchangeRateLimiter rateLimiter,
+    IDistributedEventBus distributedEventBus,
+    TimeProvider timeProvider,
     ILogger<KeycloakUserTokenExchangeService> logger)
 {
 #pragma warning disable GRSEC003 // OAuth grant type URI constant, not a secret
     private const string TokenExchangeGrantType = "urn:ietf:params:oauth:grant-type:token-exchange";
 #pragma warning restore GRSEC003
+
+    private const string DefaultReason = "device-activity";
 
     /// <summary>
     /// Exchanges the service account credentials for a token representing the given user.
@@ -43,9 +62,22 @@ internal sealed partial class KeycloakUserTokenExchangeService(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A short-lived access token for the target user.</returns>
     /// <exception cref="InvalidOperationException">Thrown if the token endpoint returns an empty token.</exception>
+    /// <exception cref="KeycloakTokenExchangeRateLimitedException">
+    /// Thrown when the per-user rate limiter has rejected the call.
+    /// </exception>
     public async Task<string> ExchangeTokenForUserAsync(string userId, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(userId);
+
+        TokenExchangeRateLimitDecision decision = await rateLimiter
+            .CheckAsync(userId, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!decision.IsAllowed)
+        {
+            LogTokenExchangeRateLimited(userId, (long)decision.RetryAfter.TotalSeconds);
+            throw new KeycloakTokenExchangeRateLimitedException(userId, decision.RetryAfter);
+        }
 
         KeycloakAdminOptions opts = options.Value;
         HttpClient client = httpClientFactory.CreateClient("KeycloakAdmin");
@@ -72,13 +104,25 @@ internal sealed partial class KeycloakUserTokenExchangeService(
                 $"Keycloak token exchange for user '{userId}' returned an empty access token.");
         }
 
+        DateTimeOffset occurredAt = timeProvider.GetUtcNow();
         LogTokenExchangeSucceeded(userId, token.ExpiresIn);
+
+        // Publish the audit event so SIEM consumers (Wolverine handlers, audit pipelines)
+        // can persist an immutable trail of every privileged token-exchange operation.
+        await distributedEventBus.PublishAsync(
+            new IdentityTokenExchangedEto(userId, DefaultReason, occurredAt),
+            cancellationToken).ConfigureAwait(false);
 
         return token.AccessToken;
     }
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Token exchange succeeded for user {UserId}, expires in {ExpiresIn}s")]
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Keycloak token exchange succeeded for user {UserId} (expires in {ExpiresIn}s)")]
     private partial void LogTokenExchangeSucceeded(string userId, int expiresIn);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Keycloak token exchange rate-limited for user {UserId}; retry after {RetryAfterSeconds}s")]
+    private partial void LogTokenExchangeRateLimited(string userId, long retryAfterSeconds);
 
     private sealed record TokenExchangeResponse(
         [property: JsonPropertyName("access_token")] string AccessToken,

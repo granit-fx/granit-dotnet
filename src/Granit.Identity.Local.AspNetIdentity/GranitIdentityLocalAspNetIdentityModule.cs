@@ -3,6 +3,7 @@ using Granit.Identity.Extensions;
 using Granit.Identity.Local;
 using Granit.Identity.Local.AspNetIdentity.Internal;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
@@ -76,6 +77,44 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
         context.Services.TryAddScoped<IEmailChangeService, AspNetEmailChangeService>();
         context.Services.TryAddScoped<IEmailConfirmationService, AspNetEmailConfirmationService>();
+
+        // WebAuthn (FIDO2) — Fido2NetLib does the cryptographic ceremonies. Bind the
+        // Granit options once so AddFido2 can reuse the values.
+        context.Services.AddOptions<GranitPasskeyOptions>()
+            .BindConfiguration(GranitPasskeyOptions.SectionName)
+            .Validate(o => !string.IsNullOrWhiteSpace(o.ServerDomain),
+                $"{GranitPasskeyOptions.SectionName}:ServerDomain is required when passkeys are enabled.")
+            .Validate(o => o.AllowedOrigins is { Count: > 0 } && o.AllowedOrigins.All(u => !string.IsNullOrWhiteSpace(u)),
+                $"{GranitPasskeyOptions.SectionName}:AllowedOrigins must list at least one full URL " +
+                "(e.g. https://app.example.com). FIDO2 binds every assertion to a single origin; " +
+                "leaving this empty would let an attacker hosting a different origin relay assertions " +
+                "to this server.")
+            .ValidateOnStart();
+
+        context.Services.AddFido2(static (Fido2NetLib.Fido2Configuration fc) => { /* bound below */ })
+            .AddCachedMetadataService(_ => { });
+
+        // Re-bind from GranitPasskeyOptions so the host doesn't have to configure
+        // the same values twice.
+        context.Services.AddOptions<Fido2NetLib.Fido2Configuration>()
+            .Configure<IOptions<GranitPasskeyOptions>>((fc, granit) =>
+            {
+                GranitPasskeyOptions o = granit.Value;
+                fc.ServerDomain = o.ServerDomain;
+                fc.ServerName = o.ServerName;
+                fc.Origins = new HashSet<string>(o.AllowedOrigins, StringComparer.OrdinalIgnoreCase);
+                fc.TimestampDriftTolerance = (int)TimeSpan.FromSeconds(300).TotalMilliseconds;
+            });
+
+        context.Services.TryAddSingleton<PasskeyChallengeStore>();
+        context.Services.AddDistributedMemoryCache();
+
+        // Defense-in-depth: fail startup if a host opts out of unique-email enforcement
+        // without registering a tenant resolver. The headless login/2FA handlers disable
+        // the multi-tenant query filter when no tenant context is active and rely on
+        // unique emails to deterministically resolve the user across tenants.
+        context.Services.TryAddSingleton<IValidateOptions<IdentityOptions>, RequireUniqueEmailValidator>();
+        context.Services.AddOptions<IdentityOptions>().ValidateOnStart();
 
         // Defense-in-depth: fail startup if a host opts out of unique-email enforcement
         // without registering a tenant resolver. The headless login/2FA handlers disable

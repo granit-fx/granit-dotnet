@@ -1,6 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 
-namespace Granit.Identity.Federated.Cognito.Internal.Sync;
+namespace Granit.Identity.Federated.Cognito.Sync;
 
 /// <summary>
 /// Host-level data seed contributor that triggers

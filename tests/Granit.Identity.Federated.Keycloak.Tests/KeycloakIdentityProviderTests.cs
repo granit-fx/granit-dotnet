@@ -7,6 +7,7 @@ using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Options;
+using Granit.Identity.Federated.RateLimiting;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -86,9 +87,16 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         _metricsServiceProvider = metricsServices.BuildServiceProvider();
         _metrics = new IdentityMetrics(_metricsServiceProvider.GetRequiredService<IMeterFactory>());
 
+        ITokenExchangeRateLimiter rateLimiter = Substitute.For<ITokenExchangeRateLimiter>();
+        rateLimiter.CheckAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(TokenExchangeRateLimitDecision.Allowed);
+
         _tokenExchangeService = new KeycloakUserTokenExchangeService(
             exchangeFactory,
             Microsoft.Extensions.Options.Options.Create(_options),
+            rateLimiter,
+            _distributedEventBus,
+            TimeProvider.System,
             NullLogger<KeycloakUserTokenExchangeService>.Instance);
 
         _provider = new KeycloakIdentityProvider(
@@ -554,9 +562,16 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
         IHttpClientFactory seqFactory = Substitute.For<IHttpClientFactory>();
         seqFactory.CreateClient("KeycloakAdmin").Returns(seqClient);
 
+        ITokenExchangeRateLimiter exchangeRateLimiter = Substitute.For<ITokenExchangeRateLimiter>();
+        exchangeRateLimiter.CheckAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(TokenExchangeRateLimitDecision.Allowed);
+
         KeycloakUserTokenExchangeService exchangeSvc = new(
             seqFactory,
             Microsoft.Extensions.Options.Options.Create(opts),
+            exchangeRateLimiter,
+            _distributedEventBus,
+            TimeProvider.System,
             NullLogger<KeycloakUserTokenExchangeService>.Instance);
 
         KeycloakIdentityProvider provider = new(

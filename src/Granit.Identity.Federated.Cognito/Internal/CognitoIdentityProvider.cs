@@ -1,13 +1,16 @@
 using System.Diagnostics;
+using System.Net;
 using System.Text.RegularExpressions;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
+using Amazon.Runtime;
 using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.Cognito.Diagnostics;
 using Granit.Identity.Federated.Cognito.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,9 +28,18 @@ internal sealed partial class CognitoIdentityProvider(
     IDistributedEventBus distributedEventBus,
     ILogger<CognitoIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
+    private const string ProviderName = "cognito";
     private const string EmailAttribute = "email";
     private const string GivenNameAttribute = "given_name";
     private const string FamilyNameAttribute = "family_name";
+
+    /// <summary>
+    /// Detects authorisation failures wrapped in <see cref="AmazonServiceException"/>.
+    /// Cognito returns 401/403 plus the typed <see cref="NotAuthorizedException"/>; we
+    /// promote anything carrying those status codes to the federated unauthorized signal.
+    /// </summary>
+    private static bool IsAuthorizationFailure(AmazonServiceException ex) =>
+        ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
 
     private readonly CognitoAdminOptions _options = options.Value;
     private readonly CognitoClientRoleSyncOptions _clientRoleSyncOptions = clientRoleSyncOptions.Value;
@@ -76,6 +88,14 @@ internal sealed partial class CognitoIdentityProvider(
 
             return response.Users.Select(ToIdentityUser).ToList();
         }
+        catch (NotAuthorizedException ex)
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
+        }
+        catch (AmazonServiceException ex) when (IsAuthorizationFailure(ex))
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
+        }
         catch (Exception ex)
         {
             LogListUsersFailed(ex);
@@ -109,6 +129,14 @@ internal sealed partial class CognitoIdentityProvider(
         catch (UserNotFoundException)
         {
             return null;
+        }
+        catch (NotAuthorizedException ex)
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
+        }
+        catch (AmazonServiceException ex) when (IsAuthorizationFailure(ex))
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
         catch (Exception ex)
         {

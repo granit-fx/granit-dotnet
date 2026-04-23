@@ -1,6 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 
-namespace Granit.Identity.Federated.EntraId.Internal.Sync;
+namespace Granit.Identity.Federated.EntraId.Sync;
 
 /// <summary>
 /// Host-level data seed contributor that triggers

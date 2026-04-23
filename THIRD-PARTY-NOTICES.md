@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-16
+Dernière mise à jour : 2026-04-23
 
 ---
 
@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-04-16
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 83                 |
+| MIT          | 86                 |
 | Apache-2.0   | 34                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -105,6 +105,9 @@ Dernière mise à jour : 2026-04-16
 | AWSSDK.SecretsManager | 4.0.4.11 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleEmailV2 | 4.0.12.5 | Amazon Web Services, Inc. |
 | AWSSDK.SimpleNotificationService | 4.0.2.22 | Amazon Web Services, Inc. |
+| Fido2 | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
+| Fido2.AspNet | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
+| Fido2.Models | 4.0.1 | Copyright (c) 2018 Anders Åberg / passwordless-lib contributors |
 | FirebaseAdmin | 3.5.0 | Copyright (c) 2018 Google Inc. |
 | FluentValidation | 12.1.1 | Copyright (c) Jeremy Skinner, .NET Foundation 2008-2025 |
 | GoCardless | 9.5.0 | Copyright (c) 2017 GoCardless |

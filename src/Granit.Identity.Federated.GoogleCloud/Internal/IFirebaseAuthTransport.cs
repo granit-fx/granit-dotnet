@@ -9,7 +9,22 @@ internal interface IFirebaseAuthTransport
 {
     Task<UserRecord> GetUserAsync(string uid, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<ExportedUserRecord>> ListUsersAsync(CancellationToken cancellationToken = default);
+    /// <summary>
+    /// Lists a bounded slice of users from Firebase Auth, iterating page-by-page
+    /// over the Identity Toolkit cursor and stopping after the requested window.
+    /// </summary>
+    /// <param name="skip">Number of records to skip from the start of the directory. Defaults to 0.</param>
+    /// <param name="take">Maximum number of records to materialise. Defaults to 100.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <remarks>
+    /// Bounding the slice avoids materialising large directories (100k+ users) into
+    /// memory on every list call and limits the Identity Toolkit quota footprint —
+    /// see VULN-204 in the Identity audit.
+    /// </remarks>
+    Task<IReadOnlyList<ExportedUserRecord>> ListUsersAsync(
+        int? skip = null,
+        int? take = null,
+        CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Issues a minimal Identity Toolkit call to verify connectivity and credentials.

@@ -2,7 +2,7 @@ using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity;
-using Granit.Identity.Federated.Cognito.Internal.Sync;
+using Granit.Identity.Federated.Cognito.Sync;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
 using Granit.Timing;

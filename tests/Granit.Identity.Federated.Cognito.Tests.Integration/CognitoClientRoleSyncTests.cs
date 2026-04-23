@@ -4,7 +4,7 @@ using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Federated.Cognito.Internal;
-using Granit.Identity.Federated.Cognito.Internal.Sync;
+using Granit.Identity.Federated.Cognito.Sync;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -91,8 +91,11 @@ public sealed class CognitoClientRoleSyncTests : IClassFixture<CognitoWireMockFi
             NullLogger<CognitoIdentityProvider>.Instance);
 
         InMemoryRoleMetadataStore store = new();
+        Granit.Timing.IClock clock = Substitute.For<Granit.Timing.IClock>();
+        clock.Now.Returns(DateTimeOffset.UtcNow);
+
         CognitoClientRoleSyncService sync = new(
-            provider, store, new SimpleGuidGenerator(),
+            provider, store, new SimpleGuidGenerator(), clock,
             Microsoft.Extensions.Options.Options.Create(syncOpts),
             NullLogger<CognitoClientRoleSyncService>.Instance);
 

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Federated.EntraId.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Identity.Federated.EntraId — recurring re-sync of Entra ID App Roles on top of the Phase 2 boot-time contributor (ADR-030).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Federated.EntraId.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Federated.EntraId\Granit.Identity.Federated.EntraId.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,57 +1,48 @@
-using Amazon.CognitoIdentityProvider;
-using Amazon.CognitoIdentityProvider.Model;
 using Granit.Authorization;
 using Granit.Authorization.Domain;
 using Granit.Guids;
 using Granit.Identity;
-using Granit.Identity.Federated.Cognito.Options;
+using Granit.Identity.Federated.Keycloak.Exceptions;
+using Granit.Identity.Federated.Keycloak.Options;
 using Granit.Identity.Models;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
-namespace Granit.Identity.Federated.Cognito.Internal.Sync;
+namespace Granit.Identity.Federated.Keycloak.Sync;
 
 /// <summary>
-/// Pure sync logic — enumerates Cognito groups matching the
-/// <c>{appClientId}{Delimiter}*</c> naming convention for every tracked app-client id
+/// Pure sync logic — enumerates Keycloak client-scope roles for every tracked client
 /// and upserts matching <see cref="RoleMetadata"/> rows. Idempotent via the
 /// <c>(Name, TenantId, ClientId)</c> unique index with <c>NULLS NOT DISTINCT</c>.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Un-prefixed Cognito groups keep flowing through the existing realm-role path
-/// (<c>IIdentityRoleManager.GetRolesAsync</c> + role orchestrator) and surface as
-/// <c>ClientId = null</c>. This sync only processes groups whose name starts with a
-/// tracked-client prefix — no double-write.
-/// </para>
-/// <para>
-/// Failure policy: log &amp; skip. AWS unreachable, missing IAM permission, or an
-/// un-tracked client id in the configuration — each produces a log entry and moves on.
-/// The host never crashes on sync failure; the next boot is a natural retry. See
-/// ADR-027.
+/// Failure policy: log &amp; skip. Keycloak unreachable, service account missing
+/// <c>realm-management</c> permissions, or a tracked client id not present in Keycloak
+/// — each produces a log entry and moves on. The host never crashes on sync failure;
+/// the next boot (or a future scheduled job) is a natural retry.
 /// </para>
 /// <para>
 /// Orphan handling (ADR-029): after the upsert pass, rows in the store that are no
 /// longer returned by the upstream provider are processed per
-/// <see cref="CognitoClientRoleSyncOptions.OrphanedRolePolicy"/>. Restore-on-return
+/// <see cref="KeycloakClientRoleSyncOptions.OrphanedRolePolicy"/>. Restore-on-return
 /// is automatic — if a previously orphaned row starts being returned again the flag
 /// is cleared.
 /// </para>
 /// </remarks>
-internal sealed partial class CognitoClientRoleSyncService(
+public sealed partial class KeycloakClientRoleSyncService(
     IIdentityClientRoleManager clientRoleManager,
     IRoleMetadataStore roleMetadataStore,
     IGuidGenerator guidGenerator,
     IClock clock,
-    IOptions<CognitoClientRoleSyncOptions> options,
-    ILogger<CognitoClientRoleSyncService> logger)
+    IOptions<KeycloakClientRoleSyncOptions> options,
+    ILogger<KeycloakClientRoleSyncService> logger)
 {
     public async Task SyncAsync(CancellationToken cancellationToken)
     {
-        CognitoClientRoleSyncOptions opts = options.Value;
+        KeycloakClientRoleSyncOptions opts = options.Value;
 
         if (!opts.Enabled)
         {
@@ -59,13 +50,13 @@ internal sealed partial class CognitoClientRoleSyncService(
             return;
         }
 
-        if (opts.TrackedAppClientIds.Count == 0)
+        if (opts.TrackedClientIds.Count == 0)
         {
             LogNoTrackedClients(logger);
             return;
         }
 
-        foreach (string clientId in opts.TrackedAppClientIds)
+        foreach (string clientId in opts.TrackedClientIds)
         {
             await SyncClientAsync(clientId, opts.OrphanedRolePolicy, cancellationToken).ConfigureAwait(false);
         }
@@ -80,12 +71,17 @@ internal sealed partial class CognitoClientRoleSyncService(
             roles = await clientRoleManager.GetClientRolesAsync(clientId, cancellationToken)
                 .ConfigureAwait(false);
         }
-        catch (NotAuthorizedException ex)
+        catch (KeycloakClientNotFoundException)
+        {
+            LogClientNotFound(logger, clientId);
+            return;
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.Forbidden)
         {
             LogForbidden(logger, ex, clientId);
             return;
         }
-        catch (AmazonCognitoIdentityProviderException ex)
+        catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             LogClientSyncFailed(logger, ex, clientId);
             return;
@@ -122,6 +118,8 @@ internal sealed partial class CognitoClientRoleSyncService(
             }
             else if (existing.IsOrphaned)
             {
+                // Restore-on-return: the upstream role came back. Clear the orphan flag,
+                // then apply any description drift in the same Update roundtrip.
                 existing.RestoreFromOrphaned();
                 if (!string.Equals(existing.Description, role.Description, StringComparison.Ordinal))
                 {
@@ -202,23 +200,27 @@ internal sealed partial class CognitoClientRoleSyncService(
     }
 
     [LoggerMessage(Level = LogLevel.Debug,
-        Message = "Cognito client-role sync disabled — skipping.")]
+        Message = "Keycloak client-role sync disabled — skipping.")]
     private static partial void LogDisabled(ILogger logger);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cognito client-role sync enabled but no TrackedAppClientIds configured — skipping.")]
+        Message = "Keycloak client-role sync enabled but no TrackedClientIds configured — skipping.")]
     private static partial void LogNoTrackedClients(ILogger logger);
 
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Keycloak client '{ClientId}' not found in the configured realm — skipping sync for this client.")]
+    private static partial void LogClientNotFound(ILogger logger, string clientId);
+
     [LoggerMessage(Level = LogLevel.Error,
-        Message = "AWS Cognito returned NotAuthorized for client '{ClientId}'. The admin IAM principal needs: cognito-idp:ListGroups, cognito-idp:AdminListGroupsForUser, cognito-idp:ListUserPoolClients on the User Pool.")]
+        Message = "Keycloak admin API returned 403 for client '{ClientId}'. The admin service account needs realm-management roles: view-clients, query-clients, view-realm.")]
     private static partial void LogForbidden(ILogger logger, Exception exception, string clientId);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Cognito client-role sync failed for client '{ClientId}'; continuing with the next tracked client.")]
+        Message = "Keycloak client-role sync failed for client '{ClientId}'; continuing with the next tracked client.")]
     private static partial void LogClientSyncFailed(ILogger logger, Exception exception, string clientId);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cognito client-role sync for '{ClientId}' completed: " +
+        Message = "Keycloak client-role sync for '{ClientId}' completed: " +
                   "{Added} added, {Updated} updated, {Unchanged} unchanged, {Restored} restored, " +
                   "{OrphanedKept} kept-orphaned, {OrphanedSoftDeleted} soft-deleted, {OrphanedHardDeleted} hard-deleted.")]
     private static partial void LogClientSynced(
@@ -227,14 +229,14 @@ internal sealed partial class CognitoClientRoleSyncService(
         int orphanedKept, int orphanedSoftDeleted, int orphanedHardDeleted);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cognito orphaned role '{RoleName}' on clientId '{ClientId}' kept per policy — no state change.")]
+        Message = "Keycloak orphaned role '{RoleName}' on client '{ClientId}' kept per policy — no state change.")]
     private static partial void LogOrphanKept(ILogger logger, string roleName, string clientId);
 
     [LoggerMessage(Level = LogLevel.Information,
-        Message = "Cognito orphaned role '{RoleName}' on clientId '{ClientId}' marked as orphaned (soft delete).")]
+        Message = "Keycloak orphaned role '{RoleName}' on client '{ClientId}' marked as orphaned (soft delete).")]
     private static partial void LogOrphanSoftDeleted(ILogger logger, string roleName, string clientId);
 
     [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Cognito orphaned role '{RoleName}' on clientId '{ClientId}' hard-deleted — referenced grants cascaded out.")]
+        Message = "Keycloak orphaned role '{RoleName}' on client '{ClientId}' hard-deleted — referenced grants cascaded out.")]
     private static partial void LogOrphanHardDeleted(ILogger logger, string roleName, string clientId);
 }

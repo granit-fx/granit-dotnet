@@ -5,6 +5,7 @@ using Granit.Identity;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Internal;
+using Granit.Identity.Federated.RateLimiting;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
@@ -85,8 +86,12 @@ public sealed class KeycloakClientRoleTests : IDisposable
 
         KeycloakAdminTokenService tokenService = new(
             tokenFactory, opts, clock, NullLogger<KeycloakAdminTokenService>.Instance);
+        ITokenExchangeRateLimiter rateLimiter = Substitute.For<ITokenExchangeRateLimiter>();
+        rateLimiter.CheckAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(TokenExchangeRateLimitDecision.Allowed);
         KeycloakUserTokenExchangeService tokenExchangeService = new(
-            tokenFactory, opts, NullLogger<KeycloakUserTokenExchangeService>.Instance);
+            tokenFactory, opts, rateLimiter, _eventBus, TimeProvider.System,
+            NullLogger<KeycloakUserTokenExchangeService>.Instance);
 
         return new KeycloakIdentityProvider(
             tokenService, tokenExchangeService, adminFactory,

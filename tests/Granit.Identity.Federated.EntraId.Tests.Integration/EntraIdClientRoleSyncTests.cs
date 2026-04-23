@@ -3,7 +3,7 @@ using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Internal;
-using Granit.Identity.Federated.EntraId.Internal.Sync;
+using Granit.Identity.Federated.EntraId.Sync;
 using Granit.Identity.Models;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -85,7 +85,7 @@ public sealed class EntraIdClientRoleSyncTests : IClassFixture<EntraIdWireMockFi
             TrackedAppIds = trackedAppIds,
         };
         EntraIdClientRoleSyncService sync = new(
-            provider, store, new SimpleGuidGenerator(),
+            provider, store, new SimpleGuidGenerator(), clock,
             Microsoft.Extensions.Options.Options.Create(syncOpts),
             NullLogger<EntraIdClientRoleSyncService>.Instance);
 

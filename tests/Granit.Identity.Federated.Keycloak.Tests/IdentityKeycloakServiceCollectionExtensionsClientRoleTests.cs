@@ -36,6 +36,7 @@ public sealed class IdentityKeycloakServiceCollectionExtensionsClientRoleTests
         services.AddLogging();
         services.AddSingleton(Substitute.For<IClock>());
         services.AddSingleton(Substitute.For<IDistributedEventBus>());
+        services.AddSingleton(TimeProvider.System);
         services.AddGranitIdentity();
         services.AddGranitIdentityKeycloak();
 

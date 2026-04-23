@@ -308,6 +308,38 @@ public sealed class GoogleCloudIdentityProviderTests
         Dictionary<string, object> customClaims) =>
         CreateUserRecord(uid, email, displayName, customClaims);
 
+    // ── GetUsersAsync (VULN-204: bounded pagination, no in-memory filter) ─────
+
+    [Fact]
+    public async Task GetUsersAsync_WithoutSearch_DelegatesPaginationToTransport()
+    {
+        // VULN-204: previous implementation pulled every Firebase user into memory.
+        // Provider must now forward the (first, max) window verbatim to the transport
+        // so the bounded-page implementation can stop after the requested slice.
+        _transport.ListUsersAsync(0, 25, Arg.Any<CancellationToken>())
+            .Returns([]);
+
+        IReadOnlyList<IIdentityUser> users = await _sut.GetUsersAsync(
+            search: null, first: 0, max: 25, TestContext.Current.CancellationToken);
+
+        users.ShouldBeEmpty();
+        await _transport.Received(1).ListUsersAsync(0, 25, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetUsersAsync_WithSearch_ThrowsNotSupported()
+    {
+        // VULN-204: previously we materialised every user in memory and filtered
+        // by Email/DisplayName.Contains. Now refused — Firebase Admin SDK has no
+        // server-side search filter on ListUsers.
+        await Should.ThrowAsync<NotSupportedException>(async () =>
+            await _sut.GetUsersAsync(
+                search: "alice", first: null, max: null, TestContext.Current.CancellationToken));
+
+        await _transport.DidNotReceive().ListUsersAsync(
+            Arg.Any<int?>(), Arg.Any<int?>(), Arg.Any<CancellationToken>());
+    }
+
     private static void SetProperty(object target, string propertyName, object? value)
     {
         System.Reflection.PropertyInfo? prop = target.GetType().GetProperty(propertyName);

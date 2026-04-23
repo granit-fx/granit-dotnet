@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Security.Cryptography;
@@ -10,6 +11,7 @@ using Granit.Identity.Federated;
 using Granit.Identity.Federated.EntraId.Diagnostics;
 using Granit.Identity.Federated.EntraId.Exceptions;
 using Granit.Identity.Federated.EntraId.Options;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,6 +41,14 @@ internal sealed partial class EntraIdIdentityProvider(
     IDistributedEventBus distributedEventBus,
     ILogger<EntraIdIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
+    private const string ProviderName = "entra-id";
+
+    /// <summary>
+    /// Detects authorisation failures from Microsoft Graph (401 Unauthorized / 403 Forbidden).
+    /// </summary>
+    private static bool IsAuthorizationFailure(HttpRequestException ex) =>
+        ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
@@ -58,6 +68,11 @@ internal sealed partial class EntraIdIdentityProvider(
                 .ConfigureAwait(false);
 
             return response?.Value?.ConvertAll(ToIdentityUser) ?? [];
+        }
+        catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
@@ -87,6 +102,11 @@ internal sealed partial class EntraIdIdentityProvider(
                 .ConfigureAwait(false);
 
             return user is not null ? ToIdentityUser(user) : null;
+        }
+        catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
