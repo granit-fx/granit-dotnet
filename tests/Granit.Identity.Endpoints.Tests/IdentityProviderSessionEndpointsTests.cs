@@ -19,12 +19,16 @@ namespace Granit.Identity.Endpoints.Tests;
 public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
 {
     private const string AdminRole = "granit-identity-admin";
+    private const string SessionsViewerRole = "granit-identity-sessions-viewer";
+    private const string SessionsManagerRole = "granit-identity-sessions-manager";
     private const string Prefix = "/identity/provider";
 
     private readonly IIdentitySessionManager _sessionManager = Substitute.For<IIdentitySessionManager>();
     private readonly IIdentityProviderCapabilities _capabilities = Substitute.For<IIdentityProviderCapabilities>();
     private readonly WebApplication _app;
     private readonly HttpClient _adminClient;
+    private readonly HttpClient _sessionsViewerClient;
+    private readonly HttpClient _sessionsManagerClient;
 
     public IdentityProviderSessionEndpointsTests()
     {
@@ -55,6 +59,8 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
                 TestAuthHandler.SchemeName, _ => { });
 
+        // Admin holds every permission; the narrowly-scoped roles each hold exactly one
+        // so the permission split between Sessions.Read and Sessions.Manage can be asserted.
         builder.Services.AddAuthorizationBuilder()
             .AddPolicy(IdentityPermissions.Users.Read,
                 policy => policy.RequireRole(AdminRole))
@@ -69,9 +75,9 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
             .AddPolicy(IdentityPermissions.Groups.Manage,
                 policy => policy.RequireRole(AdminRole))
             .AddPolicy(IdentityPermissions.Sessions.Read,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireRole(AdminRole, SessionsViewerRole))
             .AddPolicy(IdentityPermissions.Sessions.Manage,
-                policy => policy.RequireRole(AdminRole))
+                policy => policy.RequireRole(AdminRole, SessionsManagerRole))
             .AddPolicy(IdentityPermissions.Passwords.Manage,
                 policy => policy.RequireRole(AdminRole));
         builder.Services.AddGranitIdentityEndpoints();
@@ -83,6 +89,8 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
         _app.StartAsync().GetAwaiter().GetResult();
 
         _adminClient = BuildClient(AdminRole);
+        _sessionsViewerClient = BuildClient(SessionsViewerRole);
+        _sessionsManagerClient = BuildClient(SessionsManagerRole);
     }
 
     public async ValueTask DisposeAsync() => await _app.DisposeAsync();
@@ -103,6 +111,15 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
         sessions[0].SessionId.ShouldBe("session-1");
     }
 
+    [Fact]
+    public async Task GetUserSessions_with_sessions_read_only_returns_200()
+    {
+        HttpResponseMessage response = await _sessionsViewerClient.GetAsync(
+            $"{Prefix}/users/user-1/sessions", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
     // -- GET /users/{userId}/devices --
 
     [Fact]
@@ -119,6 +136,15 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
         devices[0].IpAddress.ShouldBe("127.0.0.1");
     }
 
+    [Fact]
+    public async Task GetUserDevices_with_sessions_read_only_returns_200()
+    {
+        HttpResponseMessage response = await _sessionsViewerClient.GetAsync(
+            $"{Prefix}/users/user-1/devices", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+    }
+
     // -- DELETE /users/{userId}/sessions/{sessionId} --
 
     [Fact]
@@ -129,6 +155,26 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _sessionManager.Received(1).TerminateSessionAsync("user-1", "session-1", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TerminateSession_with_sessions_manage_returns_204()
+    {
+        HttpResponseMessage response = await _sessionsManagerClient.DeleteAsync(
+            $"{Prefix}/users/user-1/sessions/session-1", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+    }
+
+    [Fact]
+    public async Task TerminateSession_with_sessions_read_only_returns_403()
+    {
+        HttpResponseMessage response = await _sessionsViewerClient.DeleteAsync(
+            $"{Prefix}/users/user-1/sessions/session-1", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        await _sessionManager.DidNotReceive().TerminateSessionAsync(
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -152,6 +198,17 @@ public sealed class IdentityProviderSessionEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
         await _sessionManager.Received(1).TerminateAllSessionsAsync("user-1", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task TerminateAllSessions_with_sessions_read_only_returns_403()
+    {
+        HttpResponseMessage response = await _sessionsViewerClient.DeleteAsync(
+            $"{Prefix}/users/user-1/sessions", TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+        await _sessionManager.DidNotReceive().TerminateAllSessionsAsync(
+            Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     private HttpClient BuildClient(string role)
