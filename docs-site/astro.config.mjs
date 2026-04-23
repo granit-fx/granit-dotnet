@@ -38,6 +38,44 @@ export default defineConfig({
     "/dotnet/data/vault-encryption": "/dotnet/data/vault/",
     "/dotnet/data/vault-encryption/": "/dotnet/data/vault/",
     "/dotnet/data/vault-encryption/#key-rotation": "/dotnet/data/vault/encryption/",
+
+    // Pages renamed within /dotnet/.
+    "/dotnet/infrastructure/settings/": "/dotnet/infrastructure/application-settings/",
+    "/dotnet/infrastructure/wolverine/": "/dotnet/infrastructure/wolverine-messaging/",
+    "/dotnet/infrastructure/features/": "/dotnet/infrastructure/feature-flags/",
+    "/dotnet/api/webhooks/wolverine/": "/dotnet/api/webhooks/",
+    "/dotnet/concepts/multi-tenancy/persistence/": "/dotnet/concepts/multi-tenancy/",
+    "/dotnet/data/reference-data/": "/dotnet/business/reference-data/",
+    "/dotnet/security/privacy/": "/dotnet/compliance/privacy/",
+    "/dotnet/compliance/": "/dotnet/concepts/compliance/",
+
+    // Old top-level sections folded under /dotnet/.
+    "/guides/encrypt-sensitive-data/": "/dotnet/guides/encrypt-sensitive-data/",
+    "/guides/set-up-notifications/": "/dotnet/guides/set-up-notifications/",
+    "/getting-started/adding-authentication/": "/dotnet/getting-started/adding-authentication/",
+    "/infrastructure/notifications/": "/dotnet/infrastructure/notifications/",
+    "/architecture/patterns/null-object/": "/dotnet/architecture/patterns/null-object/",
+    "/architecture/patterns/observer-event/": "/dotnet/architecture/patterns/observer-event/",
+    "/architecture/patterns/multi-tenancy/": "/dotnet/architecture/patterns/multi-tenancy/",
+    "/architecture/patterns/transactional-outbox/": "/dotnet/architecture/patterns/transactional-outbox/",
+    "/architecture/patterns/template-method/": "/dotnet/architecture/patterns/template-method/",
+    "/architecture/patterns/strategy/": "/dotnet/architecture/patterns/strategy/",
+    "/architecture/patterns/feature-flags/": "/dotnet/architecture/patterns/feature-flags/",
+    "/architecture/patterns/rate-limiting/": "/dotnet/architecture/patterns/rate-limiting/",
+    "/architecture/patterns/bulkhead-isolation/": "/dotnet/architecture/patterns/bulkhead-isolation/",
+    "/architecture/adr/006-fluentvalidation/": "/dotnet/architecture/adr/006-fluentvalidation/",
+    "/architecture/adr-frontend/005-keycloak/": "/frontend/architecture/adr/005-keycloak/",
+
+    // Legacy /reference/modules/* — superseded by /dotnet/* layout.
+    "/reference/modules/utilities/": "/dotnet/core/time-provider-clock/",
+    "/reference/modules/workflow/": "/dotnet/business/workflow/",
+    "/reference/modules/localization/": "/dotnet/infrastructure/localization/",
+    "/reference/modules/observability/": "/dotnet/core/observability/",
+
+    // Legacy /reference/frontend/* — superseded by /frontend/* layout.
+    "/reference/frontend/settings/": "/frontend/infrastructure/settings/",
+    "/reference/frontend/reference-data/": "/frontend/business/reference-data/",
+    "/reference/frontend/templating/": "/frontend/business/templating/",
   },
   integrations: [
     starlight({
