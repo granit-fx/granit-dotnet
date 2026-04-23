@@ -143,6 +143,27 @@ public static class OidcConstants
 
         /// <summary>Post-logout redirect URI parameter.</summary>
         public const string PostLogoutRedirectUri = "post_logout_redirect_uri";
+
+        /// <summary>Subject token parameter (RFC 8693 §2.1 — token exchange).</summary>
+        public const string SubjectToken = "subject_token";
+
+        /// <summary>Subject token type parameter (RFC 8693 §2.1).</summary>
+        public const string SubjectTokenType = "subject_token_type";
+
+        /// <summary>Actor token parameter (RFC 8693 §2.1 — delegation chaining).</summary>
+        public const string ActorToken = "actor_token";
+
+        /// <summary>Actor token type parameter (RFC 8693 §2.1).</summary>
+        public const string ActorTokenType = "actor_token_type";
+
+        /// <summary>Audience parameter (RFC 8693 §2.1 — restricts the issued token's aud claim).</summary>
+        public const string Audience = "audience";
+
+        /// <summary>Resource parameter (RFC 8693 §2.1 / RFC 8707).</summary>
+        public const string Resource = "resource";
+
+        /// <summary>Requested token type parameter (RFC 8693 §2.1).</summary>
+        public const string RequestedTokenType = "requested_token_type";
     }
 
     /// <summary>

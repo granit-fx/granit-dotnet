@@ -1,6 +1,4 @@
 using Granit.Http.Resilience.Extensions;
-using Granit.Http.Resilience.Handlers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -83,50 +81,10 @@ public sealed class HttpResilienceServiceCollectionExtensionsTests
         client.ShouldNotBeNull();
     }
 
-    [Fact]
-    public void AddAuthTokenPropagation_RegistersAuthTokenPropagationHandler()
-    {
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-
-        builder.Services
-            .AddGranitHttpClient("auth-client")
-            .AddAuthTokenPropagation();
-
-        builder.Services.ShouldContain(d =>
-            d.ServiceType == typeof(AuthTokenPropagationHandler));
-    }
-
-    [Fact]
-    public void AddAuthTokenPropagation_ReturnsBuilder()
-    {
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-
-        IHttpClientBuilder clientBuilder = builder.Services
-            .AddGranitHttpClient("chain-client")
-            .AddAuthTokenPropagation();
-
-        clientBuilder.ShouldNotBeNull();
-        clientBuilder.Name.ShouldBe("chain-client");
-    }
-
-    [Fact]
-    public void AddAuthTokenPropagation_CalledTwice_DoesNotDuplicate()
-    {
-        HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-
-        builder.Services
-            .AddGranitHttpClient("dup-client")
-            .AddAuthTokenPropagation();
-
-        builder.Services
-            .AddGranitHttpClient("dup-client-2")
-            .AddAuthTokenPropagation();
-
-        int accessorCount = builder.Services.Count(d =>
-            d.ServiceType == typeof(IHttpContextAccessor));
-
-        accessorCount.ShouldBe(1);
-    }
+    // AddAuthTokenPropagation tests removed in the VULN-100 fix — the handler
+    // it registered was a confused-deputy vulnerability. Its replacement lives
+    // in Granit.Oidc.TokenManagement (AddOnBehalfOfHttpClient) and has its own
+    // test suite there.
 
     [Fact]
     public void AddGranitHttpClient_PerClientConfig_BindsFromConfiguration()

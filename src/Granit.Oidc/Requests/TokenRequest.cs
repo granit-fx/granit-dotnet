@@ -64,3 +64,63 @@ public sealed record ClientCredentialsTokenRequest : TokenRequest
     /// </summary>
     public string? Scope { get; init; }
 }
+
+/// <summary>
+/// Token request for the OAuth 2.0 Token Exchange grant type (RFC 8693 §2.1).
+/// Used for act-on-behalf-of flows where a service exchanges an inbound user
+/// access token for a downstream-scoped access token with a narrowed
+/// <c>audience</c> and reduced <c>scope</c>. Preferred over bearer-token
+/// propagation because the resulting token cannot be replayed against the
+/// original audience.
+/// </summary>
+public sealed record TokenExchangeTokenRequest : TokenRequest
+{
+    /// <summary>
+    /// The token whose identity is being exchanged — typically the inbound
+    /// user access token (RFC 8693 §2.1 <c>subject_token</c>).
+    /// </summary>
+    public required string SubjectToken { get; init; }
+
+    /// <summary>
+    /// RFC 8693 token type URI for the subject token — usually
+    /// <see cref="OidcConstants.TokenTypeIdentifiers.AccessToken"/>.
+    /// </summary>
+    public required string SubjectTokenType { get; init; }
+
+    /// <summary>
+    /// Requested audience — constrains the <c>aud</c> claim of the issued
+    /// token to the downstream API. Mandatory for a safe exchange: without it
+    /// the issued token may be a full equivalent of the caller's, defeating
+    /// the purpose.
+    /// </summary>
+    public required string Audience { get; init; }
+
+    /// <summary>
+    /// Optional scope(s) to request. When omitted the IdP may apply its own
+    /// scope-narrowing policy.
+    /// </summary>
+    public string? Scope { get; init; }
+
+    /// <summary>
+    /// Optional <c>resource</c> parameter (RFC 8693 §2.1 / RFC 8707).
+    /// </summary>
+    public string? Resource { get; init; }
+
+    /// <summary>
+    /// Optional requested token type. Defaults to
+    /// <see cref="OidcConstants.TokenTypeIdentifiers.AccessToken"/> at the IdP.
+    /// </summary>
+    public string? RequestedTokenType { get; init; }
+
+    /// <summary>
+    /// Optional actor token for delegation chaining (RFC 8693 §1.2 —
+    /// <c>actor_token</c>). Identifies the caller acting on behalf of the
+    /// subject.
+    /// </summary>
+    public string? ActorToken { get; init; }
+
+    /// <summary>
+    /// Optional actor token type URI.
+    /// </summary>
+    public string? ActorTokenType { get; init; }
+}

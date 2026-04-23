@@ -16922,18 +16922,12 @@
       "kind": "class",
       "project": "Granit.Http.Resilience",
       "file": "src/Granit.Http.Resilience/Extensions/HttpResilienceServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitHttpClient",
           "kind": "method",
           "signature": "AddGranitHttpClient(this IServiceCollection services, string name, Action<IServiceProvider, HttpClient>? configure = null)",
-          "returnType": "IHttpClientBuilder"
-        },
-        {
-          "name": "AddAuthTokenPropagation",
-          "kind": "method",
-          "signature": "AddAuthTokenPropagation(this IHttpClientBuilder builder)",
           "returnType": "IHttpClientBuilder"
         }
       ]
@@ -28364,7 +28358,7 @@
       "kind": "class",
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/OidcConstants.cs",
-      "line": 190,
+      "line": 211,
       "members": []
     },
     {
@@ -28438,7 +28432,7 @@
       "kind": "class",
       "project": "Granit.Oidc",
       "file": "src/Granit.Oidc/OidcConstants.cs",
-      "line": 151,
+      "line": 172,
       "members": []
     },
     {
@@ -28663,6 +28657,15 @@
       ]
     },
     {
+      "name": "TokenExchangeTokenRequest",
+      "fqn": "Granit.Oidc.Requests.TokenExchangeTokenRequest",
+      "kind": "record",
+      "project": "Granit.Oidc",
+      "file": "src/Granit.Oidc/Requests/TokenRequest.cs",
+      "line": 76,
+      "members": []
+    },
+    {
       "name": "TokenRequest",
       "fqn": "Granit.Oidc.Requests.TokenRequest",
       "kind": "record",
@@ -28774,7 +28777,7 @@
       "kind": "class",
       "project": "Granit.Oidc.TokenManagement",
       "file": "src/Granit.Oidc.TokenManagement/Extensions/TokenManagementServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitTokenManagement",
@@ -28825,6 +28828,70 @@
           "kind": "property",
           "signature": "string? ClientSecret",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "OnBehalfOfOptions",
+      "fqn": "Granit.Oidc.TokenManagement.Options.OnBehalfOfOptions",
+      "kind": "class",
+      "project": "Granit.Oidc.TokenManagement",
+      "file": "src/Granit.Oidc.TokenManagement/Options/OnBehalfOfOptions.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Authority",
+          "kind": "property",
+          "signature": "string Authority",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientId",
+          "kind": "property",
+          "signature": "string ClientId",
+          "returnType": "string"
+        },
+        {
+          "name": "ClientSecret",
+          "kind": "property",
+          "signature": "string? ClientSecret",
+          "returnType": "string?"
+        },
+        {
+          "name": "ClientSigningKeyJwk",
+          "kind": "property",
+          "signature": "string? ClientSigningKeyJwk",
+          "returnType": "string?"
+        },
+        {
+          "name": "Scopes",
+          "kind": "property",
+          "signature": "IList<string> Scopes",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "RequireDPoP",
+          "kind": "property",
+          "signature": "bool RequireDPoP",
+          "returnType": "bool"
+        },
+        {
+          "name": "AllowedHosts",
+          "kind": "property",
+          "signature": "string[] AllowedHosts",
+          "returnType": "string[]"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan TokenLifetimeSafetyMargin { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RequireHttps",
+          "kind": "property",
+          "signature": "bool RequireHttps",
+          "returnType": "bool"
         }
       ]
     },

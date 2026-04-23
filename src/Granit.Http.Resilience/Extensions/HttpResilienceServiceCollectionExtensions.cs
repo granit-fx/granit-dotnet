@@ -1,7 +1,5 @@
 using Granit.Http.Resilience.Diagnostics;
-using Granit.Http.Resilience.Handlers;
 using Granit.Http.Resilience.Options;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -72,24 +70,10 @@ public static class HttpResilienceServiceCollectionExtensions
         Action<HttpClient> configure)
         => services.AddGranitHttpClient(name, (_, client) => configure(client));
 
-    /// <summary>
-    /// Adds automatic propagation of the incoming <c>Authorization</c> header to outgoing
-    /// requests made by this <see cref="HttpClient"/>, enabling transparent token forwarding
-    /// for inter-service communication in microservice architectures.
-    /// </summary>
-    /// <param name="builder">The HTTP client builder.</param>
-    /// <returns>The <see cref="IHttpClientBuilder"/> for further chaining.</returns>
-    /// <remarks>
-    /// The handler only forwards the token when the outgoing request does not already
-    /// contain an <c>Authorization</c> header, allowing explicit overrides when needed.
-    /// Requires an active <see cref="HttpContext"/> — calls made outside an HTTP request
-    /// pipeline (e.g. background jobs) will not propagate any token.
-    /// </remarks>
-    public static IHttpClientBuilder AddAuthTokenPropagation(this IHttpClientBuilder builder)
-    {
-        builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-        builder.Services.TryAddTransient<AuthTokenPropagationHandler>();
-        builder.AddHttpMessageHandler<AuthTokenPropagationHandler>();
-        return builder;
-    }
+    // NOTE — AddAuthTokenPropagation removed in the VULN-100 fix.
+    // The handler blindly copied the inbound Authorization header to every
+    // outbound host, which is a confused-deputy vulnerability (OAuth2 Security
+    // BCP §4.8). Use `AddOnBehalfOfHttpClient` from Granit.Oidc.TokenManagement
+    // instead, which performs RFC 8693 token exchange to a narrowed audience
+    // and optionally binds the exchanged token with DPoP (RFC 9449).
 }

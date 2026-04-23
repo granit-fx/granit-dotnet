@@ -74,6 +74,38 @@ internal static class TokenRequestEncoder
                 }
 
                 break;
+
+            case TokenExchangeTokenRequest exchange:
+                parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.TokenExchange;
+                parameters[OidcConstants.Parameters.SubjectToken] = exchange.SubjectToken;
+                parameters[OidcConstants.Parameters.SubjectTokenType] = exchange.SubjectTokenType;
+                parameters[OidcConstants.Parameters.Audience] = exchange.Audience;
+                if (exchange.Scope is not null)
+                {
+                    parameters[OidcConstants.Parameters.Scope] = exchange.Scope;
+                }
+
+                if (exchange.Resource is not null)
+                {
+                    parameters[OidcConstants.Parameters.Resource] = exchange.Resource;
+                }
+
+                if (exchange.RequestedTokenType is not null)
+                {
+                    parameters[OidcConstants.Parameters.RequestedTokenType] = exchange.RequestedTokenType;
+                }
+
+                if (exchange.ActorToken is not null)
+                {
+                    parameters[OidcConstants.Parameters.ActorToken] = exchange.ActorToken;
+                }
+
+                if (exchange.ActorTokenType is not null)
+                {
+                    parameters[OidcConstants.Parameters.ActorTokenType] = exchange.ActorTokenType;
+                }
+
+                break;
         }
 
         foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
