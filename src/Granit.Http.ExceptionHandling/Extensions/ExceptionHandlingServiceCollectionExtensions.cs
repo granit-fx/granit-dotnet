@@ -1,7 +1,10 @@
+using System.Reflection;
+using Granit.DataProtection;
 using Granit.Http.ExceptionHandling.Internal;
 using Granit.Http.ExceptionHandling.Options;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Granit.Http.ExceptionHandling.Extensions;
 
@@ -31,6 +34,17 @@ public static class ExceptionHandlingServiceCollectionExtensions
         services.AddProblemDetails();
         services.AddExceptionHandler<GranitExceptionHandler>();
         services.AddSingleton<IExceptionStatusCodeMapper, DefaultExceptionStatusCodeMapper>();
+
+        // SensitivePropertyRegistry is a cross-cutting primitive (MCP, audit,
+        // and now ProblemDetails sanitization). TryAdd guards against
+        // duplicate registration when the consumer also uses Granit.Mcp.
+        services.TryAddSingleton(_ =>
+        {
+            IEnumerable<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                .Where(a => a.GetName().Name?.StartsWith("Granit", StringComparison.Ordinal) == true);
+            return new SensitivePropertyRegistry(assemblies);
+        });
+        services.TryAddSingleton<ValidationErrorsSanitizer>();
 
         if (configure is not null)
         {
