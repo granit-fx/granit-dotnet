@@ -831,6 +831,7 @@
       "name": "Granit.Identity.Federated",
       "deps": [
         "Granit.DataExchange.Abstractions",
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Identity",
         "Granit.QueryEngine.Abstractions"
       ],
@@ -17491,6 +17492,12 @@
           "kind": "property",
           "signature": "string SignatureHeaderName",
           "returnType": "string"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan ReplayWindow { get; set; } = TimeSpan."
         }
       ]
     },
@@ -17795,7 +17802,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/Domain/UserCacheEntry.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "ExternalUserId",
@@ -18071,6 +18078,15 @@
       ]
     },
     {
+      "name": "IdentityTokenExchangedEto",
+      "fqn": "Granit.Identity.Federated.Events.IdentityTokenExchangedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Events/IdentityTokenExchangedEto.cs",
+      "line": 26,
+      "members": []
+    },
+    {
       "name": "IdentityUserDeletedEto",
       "fqn": "Granit.Identity.Federated.Events.IdentityUserDeletedEto",
       "kind": "record",
@@ -18095,6 +18111,15 @@
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/Events/UserCacheEntryErasedEvent.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "IdentityProviderUnauthorizedException",
+      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderUnauthorizedException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderUnauthorizedException.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -18188,7 +18213,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 18,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18254,7 +18279,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityKeycloak",
@@ -18367,6 +18392,22 @@
           "kind": "method",
           "signature": "SyncAsync(CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheHasherOptions",
+      "fqn": "Granit.Identity.Federated.Options.UserCacheHasherOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Options/UserCacheHasherOptions.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "EmailLookupPepper",
+          "kind": "property",
+          "signature": "string EmailLookupPepper",
+          "returnType": "string"
         }
       ]
     },
@@ -18493,6 +18534,60 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ITokenExchangeRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.ITokenExchangeRateLimiter",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/ITokenExchangeRateLimiter.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "CheckAsync",
+          "kind": "method",
+          "signature": "CheckAsync(string targetUserId, CancellationToken cancellationToken)",
+          "returnType": "Task<TokenExchangeRateLimitDecision>"
+        }
+      ]
+    },
+    {
+      "name": "NullTokenExchangeRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.NullTokenExchangeRateLimiter",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/NullTokenExchangeRateLimiter.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "CheckAsync",
+          "kind": "method",
+          "signature": "CheckAsync(string targetUserId, CancellationToken cancellationToken)",
+          "returnType": "Task<TokenExchangeRateLimitDecision>"
+        }
+      ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Identity.Federated.RateLimiting.struct",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/ITokenExchangeRateLimiter.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(true, TimeSpan.Zero)",
+          "returnType": "TokenExchangeRateLimitDecision Allowed =>"
+        },
+        {
+          "name": "Denied",
+          "kind": "method",
+          "signature": "Denied(TimeSpan retryAfter)",
+          "returnType": "TokenExchangeRateLimitDecision"
         }
       ]
     },
@@ -19029,7 +19124,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountChangeEmailRequest.cs",
-      "line": 7,
+      "line": 11,
       "members": []
     },
     {
