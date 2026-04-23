@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Granit.Events;
+using Granit.Identity;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
 using Granit.Identity.Federated.Cognito.Diagnostics;
@@ -19,14 +20,16 @@ namespace Granit.Identity.Federated.Cognito.Internal;
 internal sealed partial class CognitoIdentityProvider(
     IAmazonCognitoIdentityProvider cognitoClient,
     IOptions<CognitoAdminOptions> options,
+    IOptions<CognitoClientRoleSyncOptions> clientRoleSyncOptions,
     IDistributedEventBus distributedEventBus,
-    ILogger<CognitoIdentityProvider> logger) : IIdentityProvider
+    ILogger<CognitoIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     private const string EmailAttribute = "email";
     private const string GivenNameAttribute = "given_name";
     private const string FamilyNameAttribute = "family_name";
 
     private readonly CognitoAdminOptions _options = options.Value;
+    private readonly CognitoClientRoleSyncOptions _clientRoleSyncOptions = clientRoleSyncOptions.Value;
 
     // ── IIdentityUserReader ────────────────────────────────────────────────
 
@@ -577,6 +580,184 @@ internal sealed partial class CognitoIdentityProvider(
         {
             LogCredentialVerificationFailed(ex);
             return false;
+        }
+    }
+
+    // ── IIdentityClientRoleManager (Phase 2) ───────────────────────────────
+    // Cognito groups are flat per User Pool with no native client binding. Granit
+    // infers client scope from a naming prefix: a group named
+    // "{appClientId}{Delimiter}{roleName}" is treated as a client role whose
+    // ClientId is {appClientId}. Un-prefixed groups keep flowing through the
+    // existing realm-role path — see ADR-027.
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<string>> GetClientsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.ListUserPoolClients);
+
+        try
+        {
+            List<string> clientIds = [];
+            string? paginationToken = null;
+
+            do
+            {
+                ListUserPoolClientsRequest request = new()
+                {
+                    UserPoolId = _options.UserPoolId,
+                    MaxResults = 60,
+                    NextToken = paginationToken,
+                };
+
+                ListUserPoolClientsResponse response = await cognitoClient
+                    .ListUserPoolClientsAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
+
+                clientIds.AddRange(response.UserPoolClients.Select(c => c.ClientId));
+                paginationToken = response.NextToken;
+            }
+            while (!string.IsNullOrEmpty(paginationToken));
+
+            return clientIds;
+        }
+        catch (Exception ex)
+        {
+            LogOperationFailed("ListUserPoolClients", ex);
+            return [];
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetClientRolesAsync(
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.GetClientRoles);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.ClientId, clientId);
+
+        string prefix = clientId + _clientRoleSyncOptions.Delimiter;
+
+        try
+        {
+            List<IdentityRole> roles = [];
+            string? paginationToken = null;
+
+            do
+            {
+                ListGroupsRequest request = new()
+                {
+                    UserPoolId = _options.UserPoolId,
+                    Limit = 60,
+                    NextToken = paginationToken,
+                };
+
+                ListGroupsResponse response = await cognitoClient
+                    .ListGroupsAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
+
+                foreach (GroupType group in response.Groups)
+                {
+                    if (!group.GroupName.StartsWith(prefix, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    string roleName = group.GroupName[prefix.Length..];
+                    if (string.IsNullOrEmpty(roleName))
+                    {
+                        continue;
+                    }
+
+                    roles.Add(new IdentityRole(
+                        Id: group.GroupName,
+                        Name: roleName,
+                        Description: group.Description)
+                    { ClientId = clientId });
+                }
+
+                paginationToken = response.NextToken;
+            }
+            while (!string.IsNullOrEmpty(paginationToken));
+
+            return roles;
+        }
+        catch (Exception ex)
+        {
+            LogOperationFailed("GetClientRoles", ex);
+            return [];
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<IdentityRole>> GetUserClientRolesAsync(
+        string userId,
+        string clientId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(clientId);
+
+        using Activity? activity = IdentityCognitoActivitySource.Source.StartActivity(
+            IdentityCognitoActivitySource.Operations.GetUserClientRoles);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.UserId, userId);
+        activity?.SetTag(IdentityCognitoActivitySource.Tags.ClientId, clientId);
+
+        string prefix = clientId + _clientRoleSyncOptions.Delimiter;
+
+        try
+        {
+            List<IdentityRole> roles = [];
+            string? paginationToken = null;
+
+            do
+            {
+                AdminListGroupsForUserRequest request = new()
+                {
+                    UserPoolId = _options.UserPoolId,
+                    Username = userId,
+                    Limit = 60,
+                    NextToken = paginationToken,
+                };
+
+                AdminListGroupsForUserResponse response = await cognitoClient
+                    .AdminListGroupsForUserAsync(request, cancellationToken)
+                    .ConfigureAwait(false);
+
+                foreach (GroupType group in response.Groups)
+                {
+                    if (!group.GroupName.StartsWith(prefix, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    string roleName = group.GroupName[prefix.Length..];
+                    if (string.IsNullOrEmpty(roleName))
+                    {
+                        continue;
+                    }
+
+                    roles.Add(new IdentityRole(
+                        Id: group.GroupName,
+                        Name: roleName,
+                        Description: group.Description)
+                    { ClientId = clientId });
+                }
+
+                paginationToken = response.NextToken;
+            }
+            while (!string.IsNullOrEmpty(paginationToken));
+
+            return roles;
+        }
+        catch (Exception ex)
+        {
+            LogOperationFailed("GetUserClientRoles", ex);
+            return [];
         }
     }
 
