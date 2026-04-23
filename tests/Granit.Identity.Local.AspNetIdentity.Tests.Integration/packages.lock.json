@@ -153,6 +153,29 @@
         "resolved": "4.4.0",
         "contentHash": "gwJEfIGS7FhykvtZoscwXj/XwW+mJY6UbAZk+qtLKFUGWC95kfKXnj8VkxsZQnWBxJemM/q664rGLN5nf+OHZw=="
       },
+      "Fido2": {
+        "type": "Transitive",
+        "resolved": "4.0.1",
+        "contentHash": "k/+JLt4J4k4zccYwtV1yiRMZEphwj+GacQeVj1p7foEp787a8vJFkHtLnyzSRsnbf9JDYEh7SF8VBWlTTbdsdQ==",
+        "dependencies": {
+          "Fido2.Models": "4.0.1",
+          "Microsoft.IdentityModel.JsonWebTokens": "8.2.0",
+          "NSec.Cryptography": "25.4.0"
+        }
+      },
+      "Fido2.Models": {
+        "type": "Transitive",
+        "resolved": "4.0.1",
+        "contentHash": "SepPhuYlDEWFwObg39xea9e5Ck5a7qpUP0vjIWzkEOCXDWsKQaW9sdN+m+h9phiCzb0r3w1yauypnHN11CozIw==",
+        "dependencies": {
+          "Microsoft.Bcl.Memory": "9.0.14"
+        }
+      },
+      "libsodium": {
+        "type": "Transitive",
+        "resolved": "1.0.20.1",
+        "contentHash": "pkiceEqJDQFHjbga3k/oPfTVX9g+GKJZ1VrkuiLhaymt9YNw1Dr7cX9hNuZuNaWcr9WD0moW55k4pMwzQ7JaZQ=="
+      },
       "Microsoft.ApplicationInsights": {
         "type": "Transitive",
         "resolved": "2.23.0",
@@ -167,6 +190,16 @@
         "type": "Transitive",
         "resolved": "6.0.0",
         "contentHash": "UcSjPsst+DfAdJGVDsu346FX0ci0ah+lw3WRtn18NUwEqRt70HaOQ7lI72vy3+1LxtqI3T5GWwV39rQSrCzAeg=="
+      },
+      "Microsoft.Bcl.Memory": {
+        "type": "Transitive",
+        "resolved": "9.0.14",
+        "contentHash": "laQCcjTM2FnbyznkAu9hwBuQh3z2/OtJKwjGkJOUevylFpFXZIUVq/+MU2jM0HQm1n5wsjjwtLIDOiWJ6Nai3A=="
+      },
+      "Microsoft.Bcl.TimeProvider": {
+        "type": "Transitive",
+        "resolved": "8.0.1",
+        "contentHash": "C7kWHJnMRY7EvJev2S8+yJHZ1y7A4ZlLbA4NE+O23BDIAN5mHeqND1m+SKv1ChRS5YlCDW7yAMUe7lttRsJaAA=="
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
@@ -187,6 +220,37 @@
         "type": "Transitive",
         "resolved": "10.0.7",
         "contentHash": "gCglFg/9Chu3lyJNytRuQAYM3mXQKNs1i01Cz2bc545QaHQ+LbBb4O5UCfu968Gro3ZVSOZ/ktilmPcaUSGSZA=="
+      },
+      "Microsoft.IdentityModel.Abstractions": {
+        "type": "Transitive",
+        "resolved": "8.2.0",
+        "contentHash": "27ClfnelIu92kLGOaz0vjdXR1Jv7hAdLffxxNgR8T0+IMWmxeVyO3cU8oohmuTrWUFOfd2tsSGaRNewnuClIZw=="
+      },
+      "Microsoft.IdentityModel.JsonWebTokens": {
+        "type": "Transitive",
+        "resolved": "8.2.0",
+        "contentHash": "/DAx+9HeqfkH/PccwHx7cUtQe9fYM6AxEmTla8WXUT+w+mapKLnigWmdKtF55hNvxiSnmGhSSCcG7XrvkpGKFA==",
+        "dependencies": {
+          "Microsoft.Bcl.TimeProvider": "8.0.1",
+          "Microsoft.IdentityModel.Tokens": "8.2.0"
+        }
+      },
+      "Microsoft.IdentityModel.Logging": {
+        "type": "Transitive",
+        "resolved": "8.2.0",
+        "contentHash": "mZsjOZlbmCZfM71y8Fyo+D5UJ1RZFvmKXkxTfE2llQ0/CrfEeWmbpoew51w++EWs+G8B/peZqR1DQtbX3bB6Fg==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Abstractions": "8.2.0"
+        }
+      },
+      "Microsoft.IdentityModel.Tokens": {
+        "type": "Transitive",
+        "resolved": "8.2.0",
+        "contentHash": "/I+6D3SwW8hQh5wznGzQCrS4L5y5Re/0AEKKfXXAduWzz4WKqJzY8RmjwZ6W66bIFUhPrqOy6zsLKPik4Ppnbw==",
+        "dependencies": {
+          "Microsoft.Bcl.TimeProvider": "8.0.1",
+          "Microsoft.IdentityModel.Logging": "8.2.0"
+        }
       },
       "Microsoft.OpenApi": {
         "type": "Transitive",
@@ -251,6 +315,14 @@
         "type": "Transitive",
         "resolved": "10.0.2",
         "contentHash": "q5RfBI+wywJSFUNDE1L4ZbHEHCFTblo8Uf6A6oe4feOUFYiUQXyAf9GBh5qEZpvJaHiEbpBPkQumjEhXCJxdrg=="
+      },
+      "NSec.Cryptography": {
+        "type": "Transitive",
+        "resolved": "25.4.0",
+        "contentHash": "Z3wPpG0xefMLmhn9T+Ka/EzAmMQPT0THL/5E4lf9cXI/N9rbGH0G23ZFpRcPnD0ast2k7ieG6QSVNIjmfPCXBQ==",
+        "dependencies": {
+          "libsodium": "[1.0.20.1, 1.0.21)"
+        }
       },
       "SharpZipLib": {
         "type": "Transitive",
@@ -478,6 +550,8 @@
       "granit.identity.local.aspnetidentity": {
         "type": "Project",
         "dependencies": {
+          "Fido2.AspNet": "[4.*, )",
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
@@ -575,6 +649,16 @@
         "contentHash": "H54UOpRoc4RmhQ4RA2lzDz43a/hAu/JN19Yyy/DNmH4XlRxhemfhifJyh9BaXNJOtGa2Dnu2xEeP4VSiTdUdAg==",
         "dependencies": {
           "Asp.Versioning.Mvc": "10.0.0"
+        }
+      },
+      "Fido2.AspNet": {
+        "type": "CentralTransitive",
+        "requested": "[4.*, )",
+        "resolved": "4.0.1",
+        "contentHash": "KupbLzUjy40wgQIW21sTl+KmlnJVdFqJqF7bGFhl/g2BzayagYvEl6yllIInZWsVu8AGHAO33OmeO8JZVH+z9w==",
+        "dependencies": {
+          "Fido2": "4.0.1",
+          "Fido2.Models": "4.0.1"
         }
       },
       "FluentValidation": {
