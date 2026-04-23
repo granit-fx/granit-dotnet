@@ -93,7 +93,7 @@ internal sealed partial class CognitoClientRoleSyncService(
 
             if (existing is null)
             {
-                RoleMetadata metadata = RoleMetadata.Create(
+                var metadata = RoleMetadata.Create(
                     id: guidGenerator.Create(),
                     name: role.Name,
                     multiTenancySide: MultiTenancySide.Host,
