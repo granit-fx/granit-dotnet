@@ -9,6 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Federated.Keycloak.Tests" />
     <InternalsVisibleTo Include="Granit.Identity.Federated.Keycloak.Tests.Integration" />
+    <InternalsVisibleTo Include="Granit.Identity.Federated.Keycloak.BackgroundJobs" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

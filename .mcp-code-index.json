@@ -847,6 +847,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.Cognito"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
@@ -868,6 +876,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.EntraId"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.GoogleCloud",
       "deps": [
         "Granit.Identity.Federated"
@@ -884,6 +900,14 @@
         "Granit.Identity.Federated",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.Keycloak"
       ],
       "framework": "net10.0"
     },
@@ -17466,12 +17490,6 @@
           "kind": "property",
           "signature": "string SignatureHeaderName",
           "returnType": "string"
-        },
-        {
-          "name": "FromMinutes",
-          "kind": "method",
-          "signature": "FromMinutes(5)",
-          "returnType": "TimeSpan ReplayWindow { get; set; } = TimeSpan."
         }
       ]
     },
@@ -17627,6 +17645,40 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedCognitoBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.GranitIdentityFederatedCognitoBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/GranitIdentityFederatedCognitoBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "CognitoClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.Jobs.CognitoClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Jobs/CognitoClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CognitoClientRoleSyncJob _, CognitoClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CognitoClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.Jobs.CognitoClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Jobs/CognitoClientRoleSyncJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "IdentityCognitoServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.Cognito.Extensions.IdentityCognitoServiceCollectionExtensions",
       "kind": "class",
@@ -17717,6 +17769,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "CognitoClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.Cognito.Sync.CognitoClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/Sync/CognitoClientRoleSyncService.cs",
+      "line": 44,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -17821,6 +17889,40 @@
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
       "line": 20,
+      "members": []
+    },
+    {
+      "name": "GranitIdentityFederatedEntraIdBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.GranitIdentityFederatedEntraIdBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/GranitIdentityFederatedEntraIdBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "EntraIdClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs.EntraIdClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(EntraIdClientRoleSyncJob _, EntraIdClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs.EntraIdClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncJob.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -17952,13 +18054,20 @@
       ]
     },
     {
-      "name": "IdentityTokenExchangedEto",
-      "fqn": "Granit.Identity.Federated.Events.IdentityTokenExchangedEto",
-      "kind": "record",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Events/IdentityTokenExchangedEto.cs",
-      "line": 26,
-      "members": []
+      "name": "EntraIdClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.EntraId.Sync.EntraIdClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Sync/EntraIdClientRoleSyncService.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "IdentityUserDeletedEto",
@@ -17985,15 +18094,6 @@
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/Events/UserCacheEntryErasedEvent.cs",
       "line": 11,
-      "members": []
-    },
-    {
-      "name": "IdentityProviderUnauthorizedException",
-      "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderUnauthorizedException",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Exceptions/IdentityProviderUnauthorizedException.cs",
-      "line": 20,
       "members": []
     },
     {
@@ -18087,7 +18187,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 20,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -18114,12 +18214,46 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedKeycloakBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.GranitIdentityFederatedKeycloakBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/GranitIdentityFederatedKeycloakBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "KeycloakClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.Jobs.KeycloakClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(KeycloakClientRoleSyncJob _, KeycloakClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.Jobs.KeycloakClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "IdentityKeycloakServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.Keycloak.Extensions.IdentityKeycloakServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Extensions/IdentityKeycloakServiceCollectionExtensions.cs",
-      "line": 19,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitIdentityKeycloak",
@@ -18216,6 +18350,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.Keycloak.Sync.KeycloakClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Sync/KeycloakClientRoleSyncService.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -18342,60 +18492,6 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "ITokenExchangeRateLimiter",
-      "fqn": "Granit.Identity.Federated.RateLimiting.ITokenExchangeRateLimiter",
-      "kind": "interface",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/RateLimiting/ITokenExchangeRateLimiter.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "CheckAsync",
-          "kind": "method",
-          "signature": "CheckAsync(string targetUserId, CancellationToken cancellationToken)",
-          "returnType": "Task<TokenExchangeRateLimitDecision>"
-        }
-      ]
-    },
-    {
-      "name": "NullTokenExchangeRateLimiter",
-      "fqn": "Granit.Identity.Federated.RateLimiting.NullTokenExchangeRateLimiter",
-      "kind": "class",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/RateLimiting/NullTokenExchangeRateLimiter.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "CheckAsync",
-          "kind": "method",
-          "signature": "CheckAsync(string targetUserId, CancellationToken cancellationToken)",
-          "returnType": "Task<TokenExchangeRateLimitDecision>"
-        }
-      ]
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Identity.Federated.RateLimiting.struct",
-      "kind": "record",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/RateLimiting/ITokenExchangeRateLimiter.cs",
-      "line": 35,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(true, TimeSpan.Zero)",
-          "returnType": "TokenExchangeRateLimitDecision Allowed =>"
-        },
-        {
-          "name": "Denied",
-          "kind": "method",
-          "signature": "Denied(TimeSpan retryAfter)",
-          "returnType": "TokenExchangeRateLimitDecision"
         }
       ]
     },
@@ -18932,7 +19028,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local.Endpoints",
       "file": "src/Granit.Identity.Local.Endpoints/Dtos/AccountChangeEmailRequest.cs",
-      "line": 11,
+      "line": 7,
       "members": []
     },
     {
