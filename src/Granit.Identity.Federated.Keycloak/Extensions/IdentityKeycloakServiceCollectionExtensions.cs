@@ -53,6 +53,13 @@ public static class IdentityKeycloakServiceCollectionExtensions
             client.Timeout = TimeSpan.FromSeconds(opts.TimeoutSeconds);
         });
 
+        // Defensive — KeycloakUserTokenExchangeService depends on TimeProvider for
+        // rate-limit / refresh-token clock decisions (see PR #1139). Register the
+        // system provider so hosts that don't compose Granit.Timing still resolve
+        // cleanly. Production hosts typically get this from AddGranitTiming; the
+        // TryAddSingleton keeps the default when already provided.
+        services.TryAddSingleton(TimeProvider.System);
+
         services.TryAddSingleton<KeycloakAdminTokenService>();
         services.TryAddTransient<KeycloakUserTokenExchangeService>();
 
