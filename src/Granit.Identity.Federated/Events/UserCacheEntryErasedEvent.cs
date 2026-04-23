@@ -3,7 +3,7 @@ using Granit.Events;
 namespace Granit.Identity.Federated.Events;
 
 /// <summary>
-/// Raised when a user cache entry is hard-deleted (RGPD Art. 17 erasure).
+/// Raised when a user cache entry is hard-deleted (GDPR Art. 17 erasure).
 /// Enables audit trail of personal data deletion for ISO 27001 compliance.
 /// </summary>
 /// <param name="ExternalUserId">The identity provider user identifier.</param>

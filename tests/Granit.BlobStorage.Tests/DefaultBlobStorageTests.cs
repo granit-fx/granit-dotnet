@@ -238,7 +238,7 @@ public sealed class DefaultBlobStorageTests
         _keyStrategy.ResolveBucketName("medical-images").Returns("granit-blobs");
 
         // Act
-        await _sut.DeleteAsync("medical-images", blobId, "RGPD Art. 17", TestContext.Current.CancellationToken);
+        await _sut.DeleteAsync("medical-images", blobId, "GDPR Art. 17", TestContext.Current.CancellationToken);
 
         // Assert — S3 physically deleted
         await _storeProvider.Received(1).DeleteAsync("granit-blobs", descriptor.ObjectKey, Arg.Any<CancellationToken>());
@@ -246,7 +246,7 @@ public sealed class DefaultBlobStorageTests
         await _writer.Received(1).UpdateAsync(
             Arg.Is<BlobDescriptor>(d =>
                 d.Status == BlobStatus.Deleted &&
-                d.DeletionReason == "RGPD Art. 17" &&
+                d.DeletionReason == "GDPR Art. 17" &&
                 d.DeletedAt == Now),
             Arg.Any<CancellationToken>());
     }
@@ -285,14 +285,14 @@ public sealed class DefaultBlobStorageTests
     [Fact]
     public async Task DeleteAsync_ShouldPreserveAuditRecord_AfterS3Delete()
     {
-        // Arrange — validates the RGPD/ISO 27001 constraint: the DB row must survive deletion
+        // Arrange — validates the GDPR/ISO 27001 constraint: the DB row must survive deletion
         var blobId = Guid.NewGuid();
         BlobDescriptor descriptor = BuildValidDescriptor(blobId);
         _reader.FindAsync(blobId, Arg.Any<CancellationToken>()).Returns(descriptor);
         _keyStrategy.ResolveBucketName(Arg.Any<string>()).Returns("granit-blobs");
 
         // Act
-        await _sut.DeleteAsync("medical-images", blobId, "RGPD erasure", TestContext.Current.CancellationToken);
+        await _sut.DeleteAsync("medical-images", blobId, "GDPR erasure", TestContext.Current.CancellationToken);
 
         // Assert — UpdateAsync called (not a delete from DB)
         await _writer.Received(1).UpdateAsync(Arg.Any<BlobDescriptor>(), Arg.Any<CancellationToken>());

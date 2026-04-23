@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,8 @@ public static class IdentityServiceCollectionExtensions
     public static IServiceCollection AddGranitIdentity(
         this IServiceCollection services)
     {
+        GranitActivitySourceRegistry.Register(IdentityActivitySource.Name);
+
         services.TryAddSingleton<IdentityMetrics>();
         services.TryAddScoped<IIdentityProvider, NullIdentityProvider>();
         RegisterFineGrainedInterfaces(services);

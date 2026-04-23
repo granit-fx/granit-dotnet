@@ -8,7 +8,7 @@ sidebar:
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-`@granit/cookies` defines an abstract `CookieConsentProvider` interface and RGPD
+`@granit/cookies` defines an abstract `CookieConsentProvider` interface and GDPR
 category types — mirroring `Granit.Http.Cookies` on the .NET backend.
 `@granit/react-cookies` wraps this into a React context. `@granit/cookies-klaro`
 provides a concrete Klaro CMP adapter.
@@ -21,7 +21,7 @@ The architecture is pluggable: swap `@granit/cookies-klaro` for any other CMP
 ## Package structure
 
 <FileTree>
-- @granit/cookies/ CMP interface, RGPD categories, backend DTOs (framework-agnostic)
+- @granit/cookies/ CMP interface, GDPR categories, backend DTOs (framework-agnostic)
   - @granit/react-cookies CookieConsentProvider component, useCookieConsent hook
   - @granit/cookies-klaro Klaro CMP adapter (static or dynamic config)
 </FileTree>

@@ -2,7 +2,7 @@ namespace Granit.DataExchange.Import.Mapping;
 
 /// <summary>
 /// Metadata about a target entity property, used for mapping suggestions.
-/// Contains only schema information — never business data (RGPD/ISO 27001 safe).
+/// Contains only schema information — never business data (GDPR/ISO 27001 safe).
 /// </summary>
 /// <param name="PropertyPath">Property path on the entity (e.g. <c>"Email"</c>, <c>"Lines.ProductName"</c>).</param>
 /// <param name="ClrTypeName">CLR type name (e.g. <c>"String"</c>, <c>"DateTimeOffset"</c>).</param>

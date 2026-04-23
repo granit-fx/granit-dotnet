@@ -5,7 +5,7 @@ namespace Granit.Http.Cookies;
 /// Declared in configuration and exposed to the front-end for CMP setup.
 /// </summary>
 /// <param name="Name">Unique service identifier (e.g. "matomo", "hubspot").</param>
-/// <param name="Category">RGPD consent category this service belongs to.</param>
+/// <param name="Category">GDPR consent category this service belongs to.</param>
 /// <param name="CookiePatterns">
 /// Optional regex patterns matching the cookies set by this service (e.g. "^_pk_").
 /// Used by CMPs to clean up cookies when consent is revoked.

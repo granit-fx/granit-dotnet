@@ -32,7 +32,7 @@ public static class CookieConsentEndpointRouteBuilderExtensions
             .WithName("GetCookieConsentConfig")
             .WithTags(options.TagName)
             .WithSummary("Returns the cookie consent configuration for CMP setup.")
-            .WithDescription("Returns the full list of internal cookies and third-party services registered in the application, categorized for RGPD consent management. The front-end CMP (Consent Management Platform) uses this response to render the cookie banner. Response is cached for 1 hour (Cache-Control: public, max-age=3600). Anonymous — no authentication required.")
+            .WithDescription("Returns the full list of internal cookies and third-party services registered in the application, categorized for GDPR consent management. The front-end CMP (Consent Management Platform) uses this response to render the cookie banner. Response is cached for 1 hour (Cache-Control: public, max-age=3600). Anonymous — no authentication required.")
             .Produces<CookieConsentConfigResponse>();
 
         return endpoints;

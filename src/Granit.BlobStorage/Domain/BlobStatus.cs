@@ -21,7 +21,7 @@ public enum BlobStatus
     Rejected,
 
     /// <summary>
-    /// RGPD Art. 17 erasure: S3 object physically deleted.
+    /// GDPR Art. 17 erasure: S3 object physically deleted.
     /// The <see cref="BlobDescriptor"/> record is retained for the ISO 27001 3-year audit trail.
     /// </summary>
     Deleted,

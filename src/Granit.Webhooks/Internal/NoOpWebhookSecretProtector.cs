@@ -7,7 +7,7 @@ namespace Granit.Webhooks.Internal;
 /// in plain text. Suitable for development and tests only.
 /// </summary>
 /// <remarks>
-/// For production (RGPD/ISO 27001), register a Vault-backed protector via
+/// For production (GDPR/ISO 27001), register a Vault-backed protector via
 /// <c>AddGranitWebhooksWithVaultSecrets(keyName)</c>.
 /// </remarks>
 internal sealed class NoOpWebhookSecretProtector : IWebhookSecretProtector

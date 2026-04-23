@@ -1,7 +1,7 @@
 # Granit.Http.Cookies.Klaro
 
 Klaro CMP integration for Granit.Http.Cookies. Implements `IConsentResolver` by parsing
-the Klaro consent cookie and mapping per-service consent to RGPD `CookieCategory`.
+the Klaro consent cookie and mapping per-service consent to GDPR `CookieCategory`.
 
 Part of the [granit](https://granit-fx.dev) framework.
 

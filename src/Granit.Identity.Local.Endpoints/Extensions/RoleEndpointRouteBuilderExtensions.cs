@@ -27,9 +27,10 @@ public static class RoleEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RolesRoutePrefix)
-            .WithTags(options.TagName)
-            .RequireAuthorization();
+            .WithTags(options.TagName);
 
+        // Each endpoint declares its own permission via RequireAuthorization(IdentityLocalPermissions.Roles.*),
+        // so a parent-level RequireAuthorization() would be redundant.
         group.MapGranitRoleEndpoints();
         return group;
     }

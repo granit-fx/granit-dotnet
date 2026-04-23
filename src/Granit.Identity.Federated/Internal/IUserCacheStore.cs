@@ -4,7 +4,7 @@ namespace Granit.Identity.Federated.Internal;
 
 /// <summary>
 /// Internal data access layer for identity user cache entries.
-/// Provides CRUD, search, RGPD, and diagnostic operations on <see cref="UserCacheEntry"/>.
+/// Provides CRUD, search, GDPR, and diagnostic operations on <see cref="UserCacheEntry"/>.
 /// </summary>
 internal interface IUserCacheStore
 {
@@ -50,14 +50,14 @@ internal interface IUserCacheStore
     /// <summary>Inserts or updates multiple cache entries in batch.</summary>
     Task UpsertManyAsync(IReadOnlyList<UserCacheEntry> entries, CancellationToken cancellationToken = default);
 
-    // -- RGPD --
+    // -- GDPR --
 
-    /// <summary>Permanently deletes the cache entry for a user (RGPD Art. 17).</summary>
+    /// <summary>Permanently deletes the cache entry for a user (GDPR Art. 17).</summary>
     Task DeleteByExternalIdAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Purges all cache entries for a tenant.</summary>
     Task DeleteAllByTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default);
 
-    /// <summary>Replaces PII with anonymized data (RGPD Art. 18).</summary>
+    /// <summary>Replaces PII with anonymized data (GDPR Art. 18).</summary>
     Task PseudonymizeAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default);
 }

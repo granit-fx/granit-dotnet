@@ -40,6 +40,7 @@ internal static class IdentityProviderUserWriteEndpoints
 
     private static async Task<Results<Created<IdentityUserResponse>, ProblemHttpResult>> CreateUserAsync(
         IdentityUserCreateRequest request,
+        HttpContext httpContext,
         [FromServices] IIdentityUserWriter userWriter,
         [FromServices] IIdentityProviderCapabilities capabilities,
         CancellationToken cancellationToken)
@@ -64,7 +65,8 @@ internal static class IdentityProviderUserWriteEndpoints
             .ConfigureAwait(false);
 
         IdentityUserResponse response = IdentityResponseMapper.ToResponse(created);
-        return TypedResults.Created($"/identity/provider/users/{response.UserId}", response);
+        string basePath = httpContext.Request.Path.Value!.TrimEnd('/');
+        return TypedResults.Created($"{basePath}/{response.UserId}", response);
     }
 
     private static async Task<NoContent> UpdateUserAsync(

@@ -11,7 +11,7 @@ namespace Granit.Analyzers;
 /// <c>IGranitCookieManager</c>.
 /// </summary>
 /// <remarks>
-/// Direct cookie manipulation bypasses the Strict Registry Pattern and RGPD consent checks.
+/// Direct cookie manipulation bypasses the Strict Registry Pattern and GDPR consent checks.
 /// Use <c>IGranitCookieManager.SetCookieAsync()</c> or <c>IGranitCookieManager.DeleteCookie()</c> instead.
 /// Opt-in: only activates when <c>Granit.Http.Cookies.IGranitCookieManager</c> is present in the compilation.
 /// </remarks>
@@ -25,12 +25,12 @@ public sealed class DirectCookieAccessAnalyzer : SingleRuleAnalyzerBase
         DiagnosticId,
         title: "Avoid direct IResponseCookies access — use IGranitCookieManager",
         messageFormat: "Use IGranitCookieManager instead of directly calling IResponseCookies.{0}() "
-            + "to enforce the Strict Registry Pattern and RGPD consent checks",
+            + "to enforce the Strict Registry Pattern and GDPR consent checks",
         category: "Security",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
         description: "Direct calls to IResponseCookies.Append() or Delete() bypass the cookie registry "
-            + "and RGPD consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead.");
+            + "and GDPR consent checks. Use IGranitCookieManager.SetCookieAsync() or DeleteCookie() instead.");
 
     /// <inheritdoc/>
     protected override DiagnosticDescriptor Rule => _rule;

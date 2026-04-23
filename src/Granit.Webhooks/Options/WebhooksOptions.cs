@@ -34,7 +34,7 @@ public sealed class WebhooksOptions
     /// <remarks>
     /// Enabling this option stores health data in clear text in the audit trail.
     /// Ensure encryption at rest is configured on the database and that your DPO has validated
-    /// this setting against RGPD data-minimization requirements.
+    /// this setting against GDPR data-minimization requirements.
     /// </remarks>
     public bool StorePayload { get; set; }
 }

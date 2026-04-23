@@ -111,6 +111,7 @@ internal static class GranitRoleEndpoints
 
     private static async Task<Results<Created<RoleResponse>, ProblemHttpResult>> CreateAsync(
         [FromBody] RoleCreateRequest request,
+        HttpContext httpContext,
         [FromServices] IGranitRoleOrchestrator orchestrator,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IOptions<RoleEndpointsOptions> options,
@@ -165,7 +166,8 @@ internal static class GranitRoleEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status409Conflict, detail: ex.Message);
         }
 
-        return TypedResults.Created($"/admin/roles/{created.Id:D}", Map(created));
+        string basePath = httpContext.Request.Path.Value!.TrimEnd('/');
+        return TypedResults.Created($"{basePath}/{created.Id:D}", Map(created));
     }
 
     private static async Task<Results<Ok<RoleResponse>, ProblemHttpResult>> RenameAsync(

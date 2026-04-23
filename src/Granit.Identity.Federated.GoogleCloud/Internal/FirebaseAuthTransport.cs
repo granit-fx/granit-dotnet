@@ -39,6 +39,26 @@ internal sealed class FirebaseAuthTransport(FirebaseAuth auth) : IFirebaseAuthTr
     }
 
     /// <inheritdoc />
+    public async Task PingAsync(CancellationToken cancellationToken = default)
+    {
+        ListUsersOptions options = new() { PageSize = 1 };
+        PagedAsyncEnumerable<ExportedUserRecords, ExportedUserRecord> pagedEnumerable = auth.ListUsersAsync(options);
+
+        IAsyncEnumerator<ExportedUserRecord> enumerator = pagedEnumerable.GetAsyncEnumerator(cancellationToken);
+        try
+        {
+            // Trigger the first network call. We don't care whether the project has users —
+            // a successful round-trip (even with an empty page) confirms the service account
+            // can authenticate and reach Identity Toolkit.
+            await enumerator.MoveNextAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public Task<UserRecord> CreateUserAsync(UserRecordArgs args, CancellationToken cancellationToken = default) =>
         auth.CreateUserAsync(args, cancellationToken);
 

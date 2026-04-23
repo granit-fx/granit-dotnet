@@ -15,7 +15,7 @@ public enum JobStoreMode
 
     /// <summary>
     /// Jobs are persisted in a relational database via EF Core.
-    /// Supports SQL Server and PostgreSQL (RGPD/ISO 27001 compliant).
+    /// Supports SQL Server and PostgreSQL (GDPR/ISO 27001 compliant).
     /// Requires <see cref="BackgroundJobsOptions.ConnectionString"/>.
     /// </summary>
     Durable = 1,

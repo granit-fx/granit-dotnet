@@ -9,7 +9,7 @@ namespace Granit.Timeline.Domain;
 /// A single entry in the activity stream for any <see cref="ITimelined"/> entity.
 /// Three entry types coexist in the same table:
 /// <list type="bullet">
-///   <item><see cref="TimelineEntryType.Comment"/> — human-authored, soft-deletable (RGPD).</item>
+///   <item><see cref="TimelineEntryType.Comment"/> — human-authored, soft-deletable (GDPR).</item>
 ///   <item><see cref="TimelineEntryType.InternalNote"/> — human-authored, staff-only, soft-deletable.</item>
 ///   <item><see cref="TimelineEntryType.SystemLog"/> — auto-generated, INSERT-only immutable (ISO 27001).</item>
 /// </list>

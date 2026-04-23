@@ -34,6 +34,9 @@ public static class AccountEndpointRouteBuilderExtensions
         configure?.Invoke(options);
 
         // ──── Account self-service (/api/account) — split into feature sub-tags ────
+        // Each MapGroup(string.Empty) below adds no route prefix; its only purpose is to attach a
+        // distinct OpenAPI tag. The auto-validation filter from MapGranitGroup propagates to the
+        // children, so MapGranitGroup is not needed at this level.
         RouteGroupBuilder accountGroup = endpoints.MapGranitGroup(options.AccountRoutePrefix);
 
         accountGroup.MapGroup(string.Empty).WithTags(options.LoginTagName).MapAccountLoginEndpoints();
@@ -57,10 +60,11 @@ public static class AccountEndpointRouteBuilderExtensions
         endpoints.MapGranitAccountConfig(options.AccountRoutePrefix, options.ConfigTagName);
 
         // ──── Admin management (/api/admin) ────
+        // Each endpoint declares its own permission via RequireAuthorization(IdentityLocalPermissions.Users.*),
+        // so a parent-level RequireAuthorization() would be redundant.
         RouteGroupBuilder adminGroup = endpoints
             .MapGranitGroup(options.AdminRoutePrefix)
-            .WithTags(options.ImpersonationTagName)
-            .RequireAuthorization();
+            .WithTags(options.ImpersonationTagName);
 
         adminGroup.MapAdminImpersonationEndpoints();
 

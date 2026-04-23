@@ -25,7 +25,7 @@ public static class TimelineEndpointRouteBuilderExtensions
     /// <list type="bullet">
     ///   <item><c>GET /{entityType}/{entityId}</c> — paginated activity stream</item>
     ///   <item><c>POST /{entityType}/{entityId}/entries</c> — post comment/note</item>
-    ///   <item><c>DELETE /{entityType}/{entityId}/entries/{id}</c> — soft-delete (RGPD)</item>
+    ///   <item><c>DELETE /{entityType}/{entityId}/entries/{id}</c> — soft-delete (GDPR)</item>
     ///   <item><c>POST /{entityType}/{entityId}/follow</c> — follow entity</item>
     ///   <item><c>DELETE /{entityType}/{entityId}/follow</c> — unfollow entity</item>
     ///   <item><c>GET /{entityType}/{entityId}/followers</c> — list followers</item>

@@ -206,7 +206,7 @@ public static class ModelBuilderExtensions
             .HasMaxLength(20)
             .IsRequired();
 
-        // FK: Translation.ParentId → Parent.Id, cascade delete (RGPD/ISO 27001 compliance)
+        // FK: Translation.ParentId → Parent.Id, cascade delete (GDPR/ISO 27001 compliance)
         builder.HasOne(t => t.Parent)
             .WithMany()
             .HasForeignKey(t => t.ParentId)

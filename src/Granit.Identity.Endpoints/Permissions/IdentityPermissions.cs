@@ -24,7 +24,7 @@ public static class IdentityPermissions
         /// <summary>Grants access to force sync (single or full) from the identity provider.</summary>
         public const string Sync = "Identity.Users.Sync";
 
-        /// <summary>Grants access to RGPD erasure and pseudonymization.</summary>
+        /// <summary>Grants access to GDPR erasure and pseudonymization.</summary>
         public const string Delete = "Identity.Users.Delete";
     }
 

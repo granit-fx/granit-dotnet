@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Identity.Endpoints</PackageId>
-    <Description>Minimal API endpoints for identity user cache management. Provides list, search, batch resolve, sync, RGPD erasure/pseudonymization, webhook reception, stats, and health check endpoints.</Description>
+    <Description>Minimal API endpoints for identity user cache management. Provides list, search, batch resolve, sync, GDPR erasure/pseudonymization, webhook reception, stats, and health check endpoints.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

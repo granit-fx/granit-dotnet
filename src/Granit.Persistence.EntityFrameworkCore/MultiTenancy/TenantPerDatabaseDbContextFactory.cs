@@ -18,7 +18,7 @@ namespace Granit.Persistence.EntityFrameworkCore.MultiTenancy;
 /// <para>
 /// Throws <see cref="InvalidOperationException"/> when no tenant is active.
 /// There is no silent fallback: accessing data without a tenant context would violate
-/// RGPD/ISO 27001 inter-tenant isolation requirements.
+/// GDPR/ISO 27001 inter-tenant isolation requirements.
 /// </para>
 /// <para>
 /// <see cref="AuditedEntityInterceptor"/> is wired automatically when available in DI,

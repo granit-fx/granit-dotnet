@@ -28,7 +28,7 @@ internal sealed class PrivacySchemaExampleProvider : ISchemaExampleProvider
             {
                 ["documentId"] = "privacy-policy",
                 ["displayName"] = "Privacy Policy",
-                ["description"] = "Initial draft based on RGPD Art. 13 disclosure requirements.",
+                ["description"] = "Initial draft based on GDPR Art. 13 disclosure requirements.",
                 ["templateName"] = "PrivacyPolicy",
             },
             [typeof(LegalDocumentUpdateRequest)] = new JsonObject

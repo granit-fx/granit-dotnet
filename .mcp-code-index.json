@@ -17513,7 +17513,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Extensions/IdentityServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitIdentity",
@@ -17866,7 +17866,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.GoogleCloud",
       "file": "src/Granit.Identity.Federated.GoogleCloud/Extensions/IdentityGoogleCloudServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityGoogleCloud",
@@ -19283,7 +19283,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",

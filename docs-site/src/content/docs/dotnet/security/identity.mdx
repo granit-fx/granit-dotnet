@@ -19,29 +19,37 @@ with GDPR erasure and pseudonymization built in.
 <FileTree>
 - Granit.Identity/ Abstractions (7 interfaces), null defaults
   - Granit.Identity.Federated/ Federated identity abstractions
-    - Granit.Identity.Federated.Keycloak Keycloak Admin API implementation
+    - Granit.Identity.Federated.Keycloak Keycloak Admin API implementation (+ realm-vs-client role distinction)
+    - Granit.Identity.Federated.EntraId Microsoft Graph API implementation (+ Entra ID App Role distinction)
     - Granit.Identity.Federated.Cognito AWS Cognito User Pool API implementation
     - Granit.Identity.Federated.GoogleCloud Google Cloud Identity Platform (Firebase Auth) implementation
     - Granit.Identity.Federated.EntityFrameworkCore User cache (cache-aside, login-time sync)
+    - Granit.Identity.Federated.Privacy Personal-data export provider for the federated user cache
   - Granit.Identity.Local/ Shared domain types for self-hosted identity providers
-    - Granit.Identity.Local.AspNetIdentity IIdentityProvider bridge for OpenIddict (local store)
+    - Granit.Identity.Local.AspNetIdentity ASP.NET Core Identity provider (GranitUser + role orchestration + tenant-aware lookup)
+    - Granit.Identity.Local.Endpoints Account self-service endpoints (login, register, profile, 2FA, passkey) + role CRUD + admin impersonation
     - Granit.Identity.Local.Notifications 9 security notifications (welcome, password reset, 2FA, email change, impersonation)
-  - Granit.Identity.Endpoints Minimal API endpoints (CRUD, sync, GDPR, webhook)
+    - Granit.Identity.Local.Privacy Personal-data export provider for the local identity store
+  - Granit.Identity.Endpoints Minimal API endpoints (provider CRUD, user cache sync, GDPR, webhook)
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
 | `Granit.Identity` | Abstractions, null defaults | — |
 | `Granit.Identity.Federated` | Federated identity abstractions | `Granit.Identity` |
-| `Granit.Identity.Federated.Keycloak` | Keycloak Admin API implementation | `Granit.Identity.Federated` |
+| `Granit.Identity.Federated.Keycloak` | Keycloak Admin API implementation (+ realm-vs-client role distinction) | `Granit.Identity.Federated` |
+| `Granit.Identity.Federated.EntraId` | Microsoft Graph API implementation (+ App Role boot-time sync) | `Granit.Identity.Federated` |
 | `Granit.Identity.Federated.Cognito` | AWS Cognito User Pool API implementation | `Granit.Identity.Federated` |
 | `Granit.Identity.Federated.GoogleCloud` | Firebase Auth implementation (Firebase Admin SDK) | `Granit.Identity.Federated` |
 | `Granit.Authentication.JwtBearer.GoogleCloud` | JWT Bearer for Firebase Auth + claims transformation | `Granit.Authentication.JwtBearer` |
 | `Granit.Identity.Federated.EntityFrameworkCore` | EF Core user cache | `Granit.Identity.Federated`, `Granit.Persistence` |
+| `Granit.Identity.Federated.Privacy` | Personal-data export provider for the federated user cache | `Granit.Identity.Federated`, `Granit.Privacy.BlobStorage` |
 | `Granit.Identity.Local` | Shared domain types for self-hosted identity providers | `Granit.Identity`, `Granit.Events`, `Granit.Guids`, `Granit.Settings`, `Granit.Timing` |
-| `Granit.Identity.Local.AspNetIdentity` | IIdentityProvider bridge for OpenIddict (local store) | `Granit.Identity.Local` |
+| `Granit.Identity.Local.AspNetIdentity` | ASP.NET Core Identity provider, role orchestration, tenant-aware role lookup | `Granit.Identity.Local`, `Granit.Persistence.EntityFrameworkCore` |
+| `Granit.Identity.Local.Endpoints` | Account self-service + role CRUD + admin impersonation REST endpoints | `Granit.Identity.Local`, `Granit.Authorization` |
 | `Granit.Identity.Local.Notifications` | 9 security email/in-app notifications (17 cultures) | `Granit.Identity.Local`, `Granit.Notifications.Abstractions`, `Granit.Templating` |
-| `Granit.Identity.Endpoints` | REST endpoints for user cache | `Granit.Identity`, `Granit.Authorization` |
+| `Granit.Identity.Local.Privacy` | Personal-data export provider for the local identity store | `Granit.Identity.Local`, `Granit.Privacy.BlobStorage` |
+| `Granit.Identity.Endpoints` | REST endpoints for user cache + provider CRUD + GDPR | `Granit.Identity`, `Granit.Authorization` |
 
 ## Dependency graph
 
@@ -50,19 +58,26 @@ graph TD
     I[Granit.Identity] --> C[Granit]
     IF[Granit.Identity.Federated] --> I
     IK[Granit.Identity.Federated.Keycloak] --> IF
+    IEI[Granit.Identity.Federated.EntraId] --> IF
     IC[Granit.Identity.Federated.Cognito] --> IF
     IGC[Granit.Identity.Federated.GoogleCloud] --> IF
     AGC[Granit.Authentication.JwtBearer.GoogleCloud] --> JB[Granit.Authentication.JwtBearer]
     IEF[Granit.Identity.Federated.EntityFrameworkCore] --> IF
     IEF --> P[Granit.Persistence]
+    IFP[Granit.Identity.Federated.Privacy] --> IF
+    IFP --> PR[Granit.Privacy.BlobStorage]
     IL[Granit.Identity.Local] --> I
     IL --> S[Granit.Settings]
     ILA[Granit.Identity.Local.AspNetIdentity] --> IL
+    ILE[Granit.Identity.Local.Endpoints] --> IL
+    ILE --> AZ[Granit.Authorization]
     ILN[Granit.Identity.Local.Notifications] --> IL
     ILN --> N[Granit.Notifications.Abstractions]
     ILN --> T[Granit.Templating]
+    ILP[Granit.Identity.Local.Privacy] --> IL
+    ILP --> PR
     IE[Granit.Identity.Endpoints] --> I
-    IE --> AZ[Granit.Authorization]
+    IE --> AZ
 ```
 
 ## Setup

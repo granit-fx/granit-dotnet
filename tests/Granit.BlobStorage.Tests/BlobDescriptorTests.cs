@@ -145,11 +145,11 @@ public sealed class BlobDescriptorTests
         descriptor.MarkAsValid("image/jpeg", 512_000, Now.AddMinutes(1));
         DateTimeOffset deletedAt = Now.AddDays(30);
 
-        descriptor.MarkAsDeleted(deletedAt, "RGPD Art. 17 erasure request");
+        descriptor.MarkAsDeleted(deletedAt, "GDPR Art. 17 erasure request");
 
         descriptor.Status.ShouldBe(BlobStatus.Deleted);
         descriptor.DeletedAt.ShouldBe(deletedAt);
-        descriptor.DeletionReason.ShouldBe("RGPD Art. 17 erasure request");
+        descriptor.DeletionReason.ShouldBe("GDPR Art. 17 erasure request");
         // Audit fields must be preserved — the DB record is never removed.
         descriptor.Id.ShouldNotBe(Guid.Empty);
         descriptor.TenantId.ShouldBe(TestTenantId);
@@ -246,12 +246,12 @@ public sealed class BlobDescriptorTests
         descriptor.MarkAsValid("image/jpeg", 512_000, Now);
         descriptor.ClearDomainEvents();
 
-        descriptor.MarkAsDeleted(Now.AddDays(1), "RGPD Art. 17");
+        descriptor.MarkAsDeleted(Now.AddDays(1), "GDPR Art. 17");
 
         BlobDeletedEvent evt = descriptor.DomainEvents.ShouldHaveSingleItem().ShouldBeOfType<BlobDeletedEvent>();
         evt.BlobId.ShouldBe(descriptor.Id);
         evt.ContainerName.ShouldBe("medical-images");
-        evt.DeletionReason.ShouldBe("RGPD Art. 17");
+        evt.DeletionReason.ShouldBe("GDPR Art. 17");
     }
 
     [Fact]
