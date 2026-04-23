@@ -5,19 +5,19 @@
       "Asp.Versioning.Mvc": {
         "type": "Direct",
         "requested": "[10.0.0-preview.*, )",
-        "resolved": "10.0.0-preview.2",
-        "contentHash": "AyrcDwLzJp8yRJaFjZMJXkR1Rx2UaJkwGrGlX8sxIt2F5ZGiZwn/puXkB/oEaq55TxLkpiXWAOHHFsiVptp0fA==",
+        "resolved": "10.0.0",
+        "contentHash": "W0wZ+0uZ0UK4KstjvEkNBZ0xxhBmxunwNg8582SVyyW7txQmSXibtm8fC4o82LaemPquYskms67bIbJOSrnlug==",
         "dependencies": {
-          "Asp.Versioning.Http": "10.0.0-preview.2"
+          "Asp.Versioning.Http": "10.0.0"
         }
       },
       "Asp.Versioning.Mvc.ApiExplorer": {
         "type": "Direct",
         "requested": "[10.0.0-preview.*, )",
-        "resolved": "10.0.0-preview.2",
-        "contentHash": "G/LhAaLQj+gsB8UXRNm65fxjsI7fe87itZExb+MvJOQdrXYalZKbwuzMntO95xM5cKDrDgLnCH64fl6w173aGg==",
+        "resolved": "10.0.0",
+        "contentHash": "H54UOpRoc4RmhQ4RA2lzDz43a/hAu/JN19Yyy/DNmH4XlRxhemfhifJyh9BaXNJOtGa2Dnu2xEeP4VSiTdUdAg==",
         "dependencies": {
-          "Asp.Versioning.Mvc": "10.0.0-preview.2"
+          "Asp.Versioning.Mvc": "10.0.0"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -28,15 +28,15 @@
       },
       "Asp.Versioning.Abstractions": {
         "type": "Transitive",
-        "resolved": "10.0.0-preview.2",
-        "contentHash": "I4CuGwl0nO98j6Ft6XlGBgzj1+goE/TSVlnHKgtRkuMZ0K4gy9I+Wyrtto8dyt0hWcFMDFAZ4lYNr58DSemH1g=="
+        "resolved": "10.0.0",
+        "contentHash": "cMRE5nvNMfBgfkb0XFWst/7UtyXCjoAXnV0L4Scx4P9fcf0idgrj1Z0c+3ylsy01K4cOib7dKhCBfpg5z3r0Kg=="
       },
       "Asp.Versioning.Http": {
         "type": "Transitive",
-        "resolved": "10.0.0-preview.2",
-        "contentHash": "4/QzujOrkGn9sMch3eHhR5LpVJ4Xo5T2BNg7U1/r4YwEa8JywzkoGQHjW7Nk0W8ljETnpoJaO5mrTsfEOnJK3A==",
+        "resolved": "10.0.0",
+        "contentHash": "xmNm9FM2d20NKy7i1osEQysf7pJ4iJjWnM6e8CoeIhUREqG8nugsfC82pGpmzlatjAJL5T52ieSpyW+GFdSsSQ==",
         "dependencies": {
-          "Asp.Versioning.Abstractions": "10.0.0-preview.2"
+          "Asp.Versioning.Abstractions": "10.0.0"
         }
       },
       "granit": {

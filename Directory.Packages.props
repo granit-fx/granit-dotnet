@@ -8,7 +8,7 @@
   <!-- Toutes les versions sont centralisées ici (Central Package Mgmt)    -->
   <!-- =================================================================== -->
   <ItemGroup Label="Localisation">
-    <PackageVersion Include="AngleSharp" Version="1.4.0" />
+    <PackageVersion Include="AngleSharp" Version="1.*" />
     <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Localization.Abstractions" Version="10.*" />
     <PackageVersion Include="SmartFormat" Version="3.*" />
@@ -118,12 +118,6 @@
     <PackageVersion Include="Mollie.Api" Version="4.*" />
     <PackageVersion Include="Stripe.net" Version="51.*" />
   </ItemGroup>
-  <!-- Security patches: transitive dependency version overrides -->
-  <!-- MimeKit 4.15.0 is vulnerable to GHSA-g7hc-96xr-gvvx (Moderate); -->
-  <!-- bumped to 4.16.0 to align with MailKit 4.16.0's transitive requirement. -->
-  <ItemGroup Label="Security overrides">
-    <PackageVersion Include="MimeKit" Version="4.16.0" />
-  </ItemGroup>
   <ItemGroup Label="Notifications">
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.*" />
     <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.*" />
@@ -131,6 +125,7 @@
     <PackageVersion Include="Azure.Communication.Sms" Version="1.*" />
     <PackageVersion Include="Microsoft.Azure.NotificationHubs" Version="4.*" />
     <PackageVersion Include="MailKit" Version="4.*" />
+    <PackageVersion Include="MimeKit" Version="4.*" />
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.*" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.*" />

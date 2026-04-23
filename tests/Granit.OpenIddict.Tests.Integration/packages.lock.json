@@ -33,11 +33,11 @@
       "Microsoft.NET.Test.Sdk": {
         "type": "Direct",
         "requested": "[18.*, )",
-        "resolved": "18.4.0",
-        "contentHash": "w49iZdL4HL6V25l41NVQLXWQ+e71GvSkKVteMrOL02gP/PUkcnO/1yEb2s9FntU4wGmJWfKnyrRAhcMHd9ZZNA==",
+        "resolved": "18.5.0",
+        "contentHash": "25WwwrAqPk8ZjUZchC0xlg0B89eHP4mGDOQwfwnM45/idYnIOQMT8NKWa8tY0HwRPTdFpdoPRBaoB7xU9lR+BA==",
         "dependencies": {
-          "Microsoft.CodeCoverage": "18.4.0",
-          "Microsoft.TestPlatform.TestHost": "18.4.0"
+          "Microsoft.CodeCoverage": "18.5.0",
+          "Microsoft.TestPlatform.TestHost": "18.5.0"
         }
       },
       "Npgsql.EntityFrameworkCore.PostgreSQL": {
@@ -161,8 +161,8 @@
       },
       "Microsoft.CodeCoverage": {
         "type": "Transitive",
-        "resolved": "18.4.0",
-        "contentHash": "9O0BtCfzCWrkAmK187ugKdq72HHOXoOUjuWFDVc2LsZZ0pOnA9bTt+Sg9q4cF+MoAaUU+MuWtvBuFsnduviJow=="
+        "resolved": "18.5.0",
+        "contentHash": "6SR2NJFwMvobXs5FhuKdpxhzotlhy/OJzSZv4fhxnN5snHIHfrCUzpZ1k0fffFx9fkLb+GB4+sRptpTfWeu2TQ=="
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
@@ -209,8 +209,8 @@
       },
       "Microsoft.Extensions.Http.Polly": {
         "type": "Transitive",
-        "resolved": "10.0.3",
-        "contentHash": "Dl3wUj5Fdk6AuPDCDBBcpnAW/mYfmfr+48g3fE4JCQiVSIjLGqjg1tyw5/dZnLHlC+tgzr6rntD7bBgigpZBhw==",
+        "resolved": "10.0.7",
+        "contentHash": "pcUsPoqMHvOp+QJsLA/Hlg/W+IBnAoUXKEBc7FqMcY0sUez15DOKXtbEo81TvHL9xwjWQcF3ZMayNpcvpI7Bqg==",
         "dependencies": {
           "Polly": "7.2.4",
           "Polly.Extensions.Http": "3.0.0"
@@ -319,15 +319,15 @@
       },
       "Microsoft.TestPlatform.ObjectModel": {
         "type": "Transitive",
-        "resolved": "18.4.0",
-        "contentHash": "4L6m2kS2pY5uJ9cpeRxzW22opr6ttScIRqsOpMDQpgENp/ZwxkkQCcmc6LRSURo2dFaaSW5KVflQZvroiJ7Wzg=="
+        "resolved": "18.5.0",
+        "contentHash": "8f6BFQZEk8EvQ4xTo5QpNwgOfoMs28/iZ81+2pWKtB+S/PiI49W0Cvj+apHxJH3ttnKPlGlhKSn070Ise8ETlg=="
       },
       "Microsoft.TestPlatform.TestHost": {
         "type": "Transitive",
-        "resolved": "18.4.0",
-        "contentHash": "gZsCHI+zOmZCcKZieIL4Jg14qKD2OGZOmX5DehuIk1EA9BN6Crm0+taXQNEuajOH1G9CCyBxw8VWR4t5tumcng==",
+        "resolved": "18.5.0",
+        "contentHash": "vDo0CJKJqa1fgJkXWtwLbx7SMPSp6KkLk6jkJKe8rH1EG8SCD26vaPaEsxhd17+CazffDohWIGkO6yir85C45A==",
         "dependencies": {
-          "Microsoft.TestPlatform.ObjectModel": "18.4.0",
+          "Microsoft.TestPlatform.ObjectModel": "18.5.0",
           "Newtonsoft.Json": "13.0.3"
         }
       },
@@ -348,88 +348,88 @@
       },
       "OpenIddict.Abstractions": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "HJgzgj7uTnQ6SQDx/NV6+KGhg35PhDHIxAfeXKf4+EUUM0NvJnY0cemyuxezWeZT+2ETnbzxE2yl2hQDQ5ODeA==",
+        "resolved": "7.5.0",
+        "contentHash": "4m3smhkdeWITo1UWc3zYyGketh0ELn6UZRuZEnzcyS6fuflvl1MNSHbg1wPTTGldlxcq6VwWvVvKWyaTW/25Ig==",
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "8.16.0"
         }
       },
       "OpenIddict.Client": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "OXIa4LdLlRX61xq/9y/57ZcWxg4QvQvjbP/imGEUToETYWrIwEqje5KPFnpO7V3eVDXgl1acfanGo5BnoK6Yjw==",
+        "resolved": "7.5.0",
+        "contentHash": "W22MGOGqWVOD2yVPCZmk4ZAH0ssZ/I+qfucBaeaCHpR65+I1vKVtL/tuuhUY1dbdvgARKS1bsZZvWDOroJ2kNQ==",
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "8.16.0",
           "Microsoft.IdentityModel.Protocols": "8.16.0",
-          "OpenIddict.Abstractions": "7.4.0"
+          "OpenIddict.Abstractions": "7.5.0"
         }
       },
       "OpenIddict.Client.SystemIntegration": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "0iEpO+TZ7CxWV+Wydiaaue8PKLvmOy13hLhLiewT3p8JZm8xkKBnC3qoKbFUYEHn7Z2ZdIpCUvkJIrb7aF7VBA==",
+        "resolved": "7.5.0",
+        "contentHash": "7Z4H1innZap7/ffNE6bsuC9WpwTn0wk+tjeRJD/6dJX4FSVJuVQ8N5yRMLCmXSS/aeVvyMwYpdylLXygI76I5g==",
         "dependencies": {
-          "OpenIddict.Client": "7.4.0"
+          "OpenIddict.Client": "7.5.0"
         }
       },
       "OpenIddict.Client.SystemNetHttp": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "0jYaa6Ezg5CVcmZhiDcxKrAMS1Lwlju84VpqJw/YBnQ9IISvmLrSRSCDfJ1dZKeSeX9DMTyUV8ng3F3JqyhgDQ==",
+        "resolved": "7.5.0",
+        "contentHash": "Os2tAOMwgkGuBykqDMwIHrcF2wJdhMyfG5uIZlDbIAamDZJriGc6AnVoRNxFiSWCuzhXBhDboZQviecBFc2mQw==",
         "dependencies": {
-          "Microsoft.Extensions.Http.Polly": "10.0.3",
+          "Microsoft.Extensions.Http.Polly": "10.0.7",
           "Microsoft.Extensions.Http.Resilience": "10.3.0",
-          "OpenIddict.Client": "7.4.0"
+          "OpenIddict.Client": "7.5.0"
         }
       },
       "OpenIddict.Client.WebIntegration": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "vYsEVPxoPxVwylkechXoF0mokts+FyFoL/46i9eWi2J05KbNbErBz43rEwVmq0qFn6ou0gQZ25dj+f8PA9rOlQ==",
+        "resolved": "7.5.0",
+        "contentHash": "0FNXGJdzdGIO523Dy07APoXmDJPjEIQt/e2SeAQYyrZ0bFC2eKDEdDsw2PLvIMnN5X9GC/n9DhQQWahrLIpXbA==",
         "dependencies": {
-          "OpenIddict.Client": "7.4.0",
-          "OpenIddict.Client.SystemNetHttp": "7.4.0"
+          "OpenIddict.Client": "7.5.0",
+          "OpenIddict.Client.SystemNetHttp": "7.5.0"
         }
       },
       "OpenIddict.Core": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "ERrIxz0IvZVv7+ouALe5QCnkdlR7+pN1D82Ap2dOLw80HpQFkc0qWda4/dvTny5wdiuoXzkjd/pNOc3P10/lJA==",
+        "resolved": "7.5.0",
+        "contentHash": "8IicfYNZDg2TRzeDG+TOlWjWsneLTFIe1Ai5PMFXgsfti07JDLuvznBTOpCdv7w5DdrrjXxk9xMdRWS8aZ358w==",
         "dependencies": {
-          "OpenIddict.Abstractions": "7.4.0"
+          "OpenIddict.Abstractions": "7.5.0"
         }
       },
       "OpenIddict.EntityFrameworkCore.Models": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "n13CeYAPImXpM2Vb83dCQoMSC2VYPgRp2q4GLp4YG/TA5Qd+X/Jza6eG+MLwx/2mYt8Xhxp+fVusDrUlpe8ZkA=="
+        "resolved": "7.5.0",
+        "contentHash": "n21lCWOkjvu0sA9EwnDrlZ61WdzAd2KuTUSBeJeF5QGe6Sw/nLvu7Yr1yZ1I8t5iQw+QlI7PQAVPLkLLlHE5Yw=="
       },
       "OpenIddict.Server": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "ZzFZWuPZS5NKzQq7V+u6lzgU56IhfJRxoTbySdimv1OYYsqOhEFRq19gCZMWBNCYOTHBxipAPdjnAXFytyGtrw==",
+        "resolved": "7.5.0",
+        "contentHash": "O8i4aNse1ilwdW/KX86WS6rtwpm+XccYOFKs+8bZeIA+DI3RFgc5nR2k2hEoBYf44ybLiGCWjDqJQdLKfXHhcw==",
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "8.16.0",
-          "OpenIddict.Abstractions": "7.4.0"
+          "OpenIddict.Abstractions": "7.5.0"
         }
       },
       "OpenIddict.Validation": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "SrRjeHnMF7h1hY0ZykQVyI4t+PmJ3Gq1PhQJr+LuLcO+fYkpEqyfCRdOxY+ThnXQJjSOYQxLhrBRg0u330TnKw==",
+        "resolved": "7.5.0",
+        "contentHash": "PpAaSD2KfFJn6sODf0JadCcdx2e2hNo23ULYqbv3lGnOLVB3Y8bQoGJNMovxzSq5nKMSLlqi5rtV3sFXln3Kkw==",
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "8.16.0",
           "Microsoft.IdentityModel.Protocols": "8.16.0",
-          "OpenIddict.Abstractions": "7.4.0"
+          "OpenIddict.Abstractions": "7.5.0"
         }
       },
       "OpenIddict.Validation.ServerIntegration": {
         "type": "Transitive",
-        "resolved": "7.4.0",
-        "contentHash": "7X9uh3T64DroGN0AQgXKC9FDjvWV7IBtW3yTjEdzk0ZqeXKEuTRPzrJdfUwkMx/60iLhAX8zQ2TToO15Z7i5pA==",
+        "resolved": "7.5.0",
+        "contentHash": "dsAjY4MytgSdMQFjmy+7cTcKTJF0rKiLOu9VAvsxg/mjQU/mDH1gjyQafAHoU9BwDIrbaBZlBRxUNPl14O1GBA==",
         "dependencies": {
-          "OpenIddict.Server": "7.4.0",
-          "OpenIddict.Validation": "7.4.0"
+          "OpenIddict.Server": "7.5.0",
+          "OpenIddict.Validation": "7.5.0"
         }
       },
       "Polly": {
@@ -903,59 +903,59 @@
       "OpenIddict": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "oum61BkFI5tEPZ96L23QE4kX51neQbTd2sbpHvgOTkCDc+r0oBI8VYwR3EBYrVdt3fqKvtCt8bKJVn73PBbtyQ==",
+        "resolved": "7.5.0",
+        "contentHash": "rZyPVHUXwUKEFQr4DO/iWKwmXnUE4IFMoHpYnyq5DgdgiKNFTkjZ4xc1P2ArnwvKNyuNsefGsj+JybGqXwIqsA==",
         "dependencies": {
-          "OpenIddict.Abstractions": "7.4.0",
-          "OpenIddict.Client": "7.4.0",
-          "OpenIddict.Client.SystemIntegration": "7.4.0",
-          "OpenIddict.Client.SystemNetHttp": "7.4.0",
-          "OpenIddict.Client.WebIntegration": "7.4.0",
-          "OpenIddict.Core": "7.4.0",
-          "OpenIddict.Server": "7.4.0",
-          "OpenIddict.Validation": "7.4.0",
-          "OpenIddict.Validation.ServerIntegration": "7.4.0",
-          "OpenIddict.Validation.SystemNetHttp": "7.4.0"
+          "OpenIddict.Abstractions": "7.5.0",
+          "OpenIddict.Client": "7.5.0",
+          "OpenIddict.Client.SystemIntegration": "7.5.0",
+          "OpenIddict.Client.SystemNetHttp": "7.5.0",
+          "OpenIddict.Client.WebIntegration": "7.5.0",
+          "OpenIddict.Core": "7.5.0",
+          "OpenIddict.Server": "7.5.0",
+          "OpenIddict.Validation": "7.5.0",
+          "OpenIddict.Validation.ServerIntegration": "7.5.0",
+          "OpenIddict.Validation.SystemNetHttp": "7.5.0"
         }
       },
       "OpenIddict.EntityFrameworkCore": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "dXjiwpamjYRHlyIS1rZKS9kaP4kfnc/r/e/Lokvl9y7u62J7uYXRE06IQ37K7ytQn710YAj7G+NXPAchLzA4RQ==",
+        "resolved": "7.5.0",
+        "contentHash": "3xamhrqh8y+l22wiyy+A9D/UvWPjsS6N8TGybpVlpJIFU5g2QGqk3JPamHuXn3gvwmP4OlwzgAZDzzLv8YWEeQ==",
         "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.3",
-          "OpenIddict.Core": "7.4.0",
-          "OpenIddict.EntityFrameworkCore.Models": "7.4.0"
+          "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
+          "OpenIddict.Core": "7.5.0",
+          "OpenIddict.EntityFrameworkCore.Models": "7.5.0"
         }
       },
       "OpenIddict.Server.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "zqftzqo2j/+tf6rGZMbcTz9wUcXZNqwtG9G+hg5qUG0F8nsDyt6dC608pB6ikJtW0xO1p+OmP3q0UmpNMhsBug==",
+        "resolved": "7.5.0",
+        "contentHash": "dPgoG/y7oJcngY+xILxrp+lgGjrOMIrlt/mQcGKMj/g+QlNW8Xod5ibAMbFIQUUWXGVKd+lZKPMa7wPfioLpTw==",
         "dependencies": {
-          "OpenIddict.Server": "7.4.0"
+          "OpenIddict.Server": "7.5.0"
         }
       },
       "OpenIddict.Validation.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "KQkDiHFUrTkCt6+kB51sVkTAlpia3Mz04lFFPvUL3nunro0aqysk4I5DhI7qjRyKIVrQGafjSVQcf+0V77t6ww==",
+        "resolved": "7.5.0",
+        "contentHash": "yTHifKNJLe0uH4fotBQcii8XpHYQOwmACXK2aEeAYadxYlysiO67glfxdETzeAfpJ/QM4cG7V2bjXUCZLCHEbg==",
         "dependencies": {
-          "OpenIddict.Validation": "7.4.0"
+          "OpenIddict.Validation": "7.5.0"
         }
       },
       "OpenIddict.Validation.SystemNetHttp": {
         "type": "CentralTransitive",
         "requested": "[7.*, )",
-        "resolved": "7.4.0",
-        "contentHash": "zBkL9kx6Z5PDnZjFUrkUnT/9jt2kjNVPoh9zw41BBkP8NKRPGjZk3y7av0qR51IgN1V+ZRQqmc1fQoK4qeOtjg==",
+        "resolved": "7.5.0",
+        "contentHash": "nRj7Ry1se+hURVx4KADZlnHyYQkK095ybpSq4CC29A+akqDK6GPP04T/zSxIK8bpQSepNqP4w2aWzDZCvcvg9w==",
         "dependencies": {
-          "Microsoft.Extensions.Http.Polly": "10.0.3",
+          "Microsoft.Extensions.Http.Polly": "10.0.7",
           "Microsoft.Extensions.Http.Resilience": "10.3.0",
-          "OpenIddict.Validation": "7.4.0"
+          "OpenIddict.Validation": "7.5.0"
         }
       },
       "OpenTelemetry.Api": {
@@ -967,8 +967,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.1",
-        "contentHash": "neS3aI7YVPDY7+I9U8nYXvSnSy6lPvGyn5w52m0MCvC5COajK4HF4vsx70OO6Fw9bd7WXOUikSBdUaLfyTzw3g=="
+        "resolved": "2.14.3",
+        "contentHash": "RUy9LiqIl8AY6j2veG2h5gLv31L/REoMMIYm2/7V73nEI/N0EnMpUjuz6FDNDrwhFi2hjqZGXYXA6Li8bZcilA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
