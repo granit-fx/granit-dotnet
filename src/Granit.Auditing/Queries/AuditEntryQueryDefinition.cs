@@ -17,7 +17,12 @@ public sealed class AuditEntryQueryDefinition : QueryDefinition<AuditEntry>
     protected override void Configure(QueryDefinitionBuilder<AuditEntry> builder)
     {
         builder
-            .Column(e => e.TenantId, c => c.Label("Tenant").LabelKey("Auditing.Columns.Tenant").Filterable().Sortable())
+            .Column(e => e.TenantId, c => c
+                .Label("Tenant")
+                .LabelKey("Auditing.Columns.Tenant")
+                .Filterable()
+                .Sortable()
+                .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
             .Column(e => e.Timestamp, c => c.Label("Timestamp").LabelKey("Auditing.Columns.Timestamp").Sortable())
             .Column(e => e.Category, c => c.Label("Category").LabelKey("Auditing.Columns.Category").Filterable().Sortable())
             .Column(e => e.UserId, c => c.Label("User ID").LabelKey("Auditing.Columns.UserId").Filterable().Sortable())

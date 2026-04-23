@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.DataLookup.EntityFrameworkCore\Granit.DataLookup.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Granit.Metering\Granit.Metering.csproj" />
   </ItemGroup>

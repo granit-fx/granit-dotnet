@@ -1,3 +1,4 @@
+using Granit.DataLookup.EntityFrameworkCore.Extensions;
 using Granit.Metering.Domain;
 using Granit.Metering.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -36,6 +37,16 @@ public static class MeteringEntityFrameworkCoreHostApplicationBuilderExtensions
         // Queryable sources for MapGranitQuery (host bypasses tenant filter for cross-tenant review).
         builder.Services.AddScoped<IQueryableSource<MeterDefinition>, EfMeterDefinitionQueryableSource>();
         builder.Services.AddScoped<IQueryableSource<UsageAggregate>, EfUsageAggregateQueryableSource>();
+
+        // Granit.DataLookup source: expose MeterDefinition as the "meter-definitions" lookup.
+        // Scoped by tenantId so UsageAggregate filters (and edit-form pickers elsewhere)
+        // only show meters belonging to the currently-selected tenant.
+        builder.Services.AddQueryableLookup<MeterDefinition, MeteringDbContext>(
+            name: "meter-definitions",
+            valueSelector: m => m.Id,
+            labelSelector: m => m.Name,
+            searchPredicate: (m, search) => m.Name.Contains(search) || m.Unit.Contains(search),
+            scopeKeys: ["tenantId"]);
 
         return builder;
     }
