@@ -43,6 +43,7 @@
       "src/Granit.Http.Cookies/Granit.Http.Cookies.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
+      "src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj",
       "src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj",
       "src/Granit.Identity.Federated.Cognito/Granit.Identity.Federated.Cognito.csproj",
       "src/Granit.Identity.Federated.EntityFrameworkCore/Granit.Identity.Federated.EntityFrameworkCore.csproj",

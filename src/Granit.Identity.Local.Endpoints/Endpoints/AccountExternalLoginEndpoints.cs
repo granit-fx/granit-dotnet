@@ -2,11 +2,13 @@ using Granit.Http.Idempotency.Attributes;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using IdentityConstants = Microsoft.AspNetCore.Identity.IdentityConstants;
 
 namespace Granit.Identity.Local.Endpoints.Endpoints;
 
@@ -104,22 +106,32 @@ internal static class AccountExternalLoginEndpoints
         [FromServices] IExternalLoginService externalLoginService,
         CancellationToken cancellationToken)
     {
-        // The auth server's client middleware populates HttpContext.User with the external
-        // provider's claims after a successful OAuth callback. The provider name is
-        // available from the authentication scheme or a query parameter.
-        string provider = httpContext.Request.Query["provider"].ToString();
+        // Resolve the provider from the external auth ticket — never from the query
+        // string. The query string is attacker-controlled: a malicious caller could
+        // target the Google OAuth callback URL with ?provider=GitHub and cause the
+        // link table to mis-attribute the resulting external login. ASP.NET Core
+        // Identity stores the originating scheme in
+        // AuthenticationProperties.Items["LoginProvider"] under the well-known
+        // IdentityConstants.ExternalScheme cookie.
+        AuthenticateResult authResult = await httpContext
+            .AuthenticateAsync(IdentityConstants.ExternalScheme)
+            .ConfigureAwait(false);
 
-        if (string.IsNullOrEmpty(provider))
+        if (!authResult.Succeeded
+            || authResult.Principal is null
+            || authResult.Properties is null
+            || !authResult.Properties.Items.TryGetValue("LoginProvider", out string? provider)
+            || string.IsNullOrEmpty(provider))
         {
             return TypedResults.Problem(
-                detail: "Missing 'provider' query parameter.",
+                detail: "External login callback did not carry an authentication scheme.",
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
         try
         {
             ProcessCallbackResult result = await externalLoginService
-                .ProcessCallbackAsync(httpContext.User, provider, cancellationToken)
+                .ProcessCallbackAsync(authResult.Principal, provider, cancellationToken)
                 .ConfigureAwait(false);
             return TypedResults.Ok(result);
         }

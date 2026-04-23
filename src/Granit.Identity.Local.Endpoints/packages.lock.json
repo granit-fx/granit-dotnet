@@ -107,6 +107,12 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.securityheaders": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity": {
         "type": "Project",
         "dependencies": {

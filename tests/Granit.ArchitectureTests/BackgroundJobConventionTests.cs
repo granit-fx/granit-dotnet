@@ -116,7 +116,7 @@ public sealed partial class BackgroundJobConventionTests
         string? dir = Path.GetDirectoryName(typeof(BackgroundJobConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Join(dir, ".git")))
+            string gitPath = Path.Join(dir, ".git"); if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

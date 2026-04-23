@@ -100,12 +100,18 @@ public sealed partial class CachingConventionTests
     private static string FindRepoRoot()
     {
         string dir = AppContext.BaseDirectory;
-        while (dir is not null && !Directory.Exists(Path.Join(dir, ".git")))
+        while (dir is not null)
         {
+            string gitPath = Path.Join(dir, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
+            {
+                return dir;
+            }
+
             dir = Path.GetDirectoryName(dir)!;
         }
 
-        return dir ?? throw new InvalidOperationException("Could not find repository root.");
+        throw new InvalidOperationException("Could not find repository root.");
     }
 
     [GeneratedRegex(@"\bIDistributedCache\b", RegexOptions.None, matchTimeoutMilliseconds: 1000)]

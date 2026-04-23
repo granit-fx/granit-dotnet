@@ -36,38 +36,33 @@ public static class IdentityEndpointRouteBuilderExtensions
         IdentityEndpointsOptions options = new();
         configure?.Invoke(options);
 
-        RouteGroupBuilder group = endpoints
+        // Each permission scope gets its own RouteGroupBuilder. Reusing the same group
+        // and stacking RequireAuthorization() accumulates policies (AND semantics), which
+        // would force every endpoint to satisfy every previously-registered permission —
+        // making sync and GDPR endpoints unreachable without the union of all permissions.
+        RouteGroupBuilder readGroup = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .WithTags(options.TagName);
+            .WithTags(options.TagName)
+            .RequireAuthorization(IdentityPermissions.Users.Read);
+        readGroup.MapCapabilitiesEndpoints();
+        readGroup.MapReadEndpoints();
+        readGroup.MapStatsEndpoints();
 
-        // Capabilities endpoint
-        group
-            .RequireAuthorization(IdentityPermissions.Users.Read)
-            .MapCapabilitiesEndpoints();
+        RouteGroupBuilder syncGroup = endpoints
+            .MapGranitGroup(options.RoutePrefix)
+            .WithTags(options.TagName)
+            .RequireAuthorization(IdentityPermissions.Users.Sync);
+        syncGroup.MapSyncEndpoints();
 
-        // Read endpoints (list, get, batch)
-        group
-            .RequireAuthorization(IdentityPermissions.Users.Read)
-            .MapReadEndpoints();
-
-        // Stats endpoint
-        group
-            .RequireAuthorization(IdentityPermissions.Users.Read)
-            .MapStatsEndpoints();
-
-        // Sync endpoints
-        group
-            .RequireAuthorization(IdentityPermissions.Users.Sync)
-            .MapSyncEndpoints();
-
-        // GDPR endpoints
-        group
-            .RequireAuthorization(IdentityPermissions.Users.Delete)
-            .MapGdprEndpoints();
+        RouteGroupBuilder gdprGroup = endpoints
+            .MapGranitGroup(options.RoutePrefix)
+            .WithTags(options.TagName)
+            .RequireAuthorization(IdentityPermissions.Users.Delete);
+        gdprGroup.MapGdprEndpoints();
 
         // Webhook endpoint (outside the authorized group — uses signature validation)
         endpoints.MapWebhookEndpoint("", options.WebhookTagName);
 
-        return group;
+        return readGroup;
     }
 }

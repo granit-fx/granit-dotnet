@@ -1,3 +1,4 @@
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
 using Granit.Identity.Local.Extensions;
@@ -38,7 +39,8 @@ internal static class AccountSessionEndpoints
                 + "Returns 400 if the current token is not an impersonation token.")
             .Produces<ImpersonationResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         return group;
     }

@@ -233,7 +233,8 @@ public sealed partial class NamingHomogeneityTests
         string? dir = Path.GetDirectoryName(typeof(NamingHomogeneityTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Combine(dir, ".git")))
+            string gitPath = Path.Combine(dir, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

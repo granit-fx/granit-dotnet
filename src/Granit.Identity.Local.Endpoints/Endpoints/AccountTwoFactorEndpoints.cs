@@ -1,5 +1,6 @@
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
@@ -33,7 +34,8 @@ internal static class AccountTwoFactorEndpoints
                 "Generates or returns the existing TOTP shared key for the user. "
                 + "The QR code URI can be rendered by the frontend for authenticator app scanning.")
             .Produces<AccountAuthenticatorKeyResponse>()
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         group.MapPost("/two-factor/enable", EnableAsync)
             .WithName("EnableTwoFactor")
@@ -46,7 +48,8 @@ internal static class AccountTwoFactorEndpoints
             .Produces<AccountTwoFactorEnableResponse>(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         group.MapPost("/two-factor/disable", DisableAsync)
             .WithName("DisableTwoFactor")
@@ -71,7 +74,8 @@ internal static class AccountTwoFactorEndpoints
             .Produces<AccountRecoveryCodesResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesValidationProblem()
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         return group;
     }

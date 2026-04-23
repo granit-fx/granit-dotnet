@@ -1,4 +1,5 @@
 using Granit.Http.Idempotency.Attributes;
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -23,7 +24,8 @@ internal static class AccountPasskeyEndpoints
             .WithSummary("Lists registered passkeys.")
             .WithDescription("Returns the list of WebAuthn passkeys registered for the authenticated user.")
             .Produces<IReadOnlyList<PasskeyInfoResponse>>()
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         group.MapPost("/passkeys/register/begin", BeginRegistrationAsync)
             .WithName("BeginPasskeyRegistration")
@@ -33,7 +35,8 @@ internal static class AccountPasskeyEndpoints
                 + "for browser-native passkey autofill support.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<string>(StatusCodes.Status200OK, "application/json")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .WithNoStoreResponse();
 
         group.MapPost("/passkeys/register/complete", CompleteRegistrationAsync)
             .WithName("CompletePasskeyRegistration")
@@ -52,7 +55,8 @@ internal static class AccountPasskeyEndpoints
                 + "and empty allowCredentials for Conditional UI autofill.")
             .Produces<string>(StatusCodes.Status200OK, "application/json")
             .AllowAnonymous()
-            .RequireRateLimiting("authentication");
+            .RequireRateLimiting("authentication")
+            .WithNoStoreResponse();
 
         group.MapPost("/passkeys/assertion/complete", CompleteAssertionAsync)
             .WithName("CompletePasskeyAssertion")
