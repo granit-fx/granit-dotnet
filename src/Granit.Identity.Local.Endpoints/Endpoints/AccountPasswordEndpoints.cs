@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Granit.Events;
 using Granit.Http.Idempotency.Attributes;
+using Granit.Http.Timing;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -104,6 +105,13 @@ internal static class AccountPasswordEndpoints
         [FromServices] IPasswordResetService passwordResetService,
         CancellationToken cancellationToken)
     {
+        // Pad the response to the same 500-700 ms floor as login. Without this, an
+        // attacker can enumerate registered emails by timing: a hit hashes a token
+        // and writes an outbox row, a miss returns immediately. Reuse the login
+        // bounds so /login and /forgot-password present the same surface.
+        await using var floor = MinimumResponseTimeGuard.Begin(
+            AccountLoginEndpoints.MinResponseFloorMs, AccountLoginEndpoints.MaxResponseFloorMs);
+
         using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
             IdentityLocalActivitySource.PasswordReset);
         activity?.SetTag(IdentityLocalActivitySource.TagProvider, "forgot");

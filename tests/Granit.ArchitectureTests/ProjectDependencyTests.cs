@@ -94,7 +94,7 @@ public sealed partial class ProjectDependencyTests
         string? dir = Path.GetDirectoryName(typeof(ProjectDependencyTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Join(dir, ".git")))
+            string gitPath = Path.Join(dir, ".git"); if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

@@ -926,6 +926,7 @@
         "Granit.Caching",
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
+        "Granit.Http.SecurityHeaders",
         "Granit.Identity.Local",
         "Granit.Settings",
         "Granit.Validation"
@@ -16979,6 +16980,22 @@
       ]
     },
     {
+      "name": "RouteHandlerBuilderNoStoreExtensions",
+      "fqn": "Granit.Http.SecurityHeaders.Extensions.RouteHandlerBuilderNoStoreExtensions",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Extensions/RouteHandlerBuilderNoStoreExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "WithNoStoreResponse",
+          "kind": "method",
+          "signature": "WithNoStoreResponse(this RouteHandlerBuilder builder)",
+          "returnType": "RouteHandlerBuilder"
+        }
+      ]
+    },
+    {
       "name": "SecurityApplicationBuilderExtensions",
       "fqn": "Granit.Http.SecurityHeaders.Extensions.SecurityApplicationBuilderExtensions",
       "kind": "class",
@@ -17007,6 +17024,22 @@
           "kind": "method",
           "signature": "AddGranitHttpSecurity(this IHostApplicationBuilder builder)",
           "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "NoStoreEndpointFilter",
+      "fqn": "Granit.Http.SecurityHeaders.Filters.NoStoreEndpointFilter",
+      "kind": "class",
+      "project": "Granit.Http.SecurityHeaders",
+      "file": "src/Granit.Http.SecurityHeaders/Filters/NoStoreEndpointFilter.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "InvokeAsync",
+          "kind": "method",
+          "signature": "InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)",
+          "returnType": "ValueTask<object?>"
         }
       ]
     },
@@ -17101,6 +17134,15 @@
           "returnType": "string?"
         }
       ]
+    },
+    {
+      "name": "MinimumResponseTimeGuard",
+      "fqn": "Granit.Http.Timing.MinimumResponseTimeGuard",
+      "kind": "struct",
+      "project": "Granit.Http.Abstractions",
+      "file": "src/Granit.Http.Abstractions/Timing/MinimumResponseTimeGuard.cs",
+      "line": 26,
+      "members": []
     },
     {
       "name": "IdentityMetrics",
@@ -17493,7 +17535,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityUserCreatedEto.cs",
-      "line": 11,
+      "line": 18,
       "members": []
     },
     {
@@ -18588,7 +18630,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -20547,7 +20589,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
-      "line": 14,
+      "line": 22,
       "members": []
     },
     {

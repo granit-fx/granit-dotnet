@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Identity.Local.AspNetIdentity;
 
@@ -75,6 +76,13 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.TryAddScoped<IPasswordResetService, AspNetPasswordResetService>();
         context.Services.TryAddScoped<IEmailChangeService, AspNetEmailChangeService>();
         context.Services.TryAddScoped<IEmailConfirmationService, AspNetEmailConfirmationService>();
+
+        // Defense-in-depth: fail startup if a host opts out of unique-email enforcement
+        // without registering a tenant resolver. The headless login/2FA handlers disable
+        // the multi-tenant query filter when no tenant context is active and rely on
+        // unique emails to deterministically resolve the user across tenants.
+        context.Services.TryAddSingleton<IValidateOptions<IdentityOptions>, RequireUniqueEmailValidator>();
+        context.Services.AddOptions<IdentityOptions>().ValidateOnStart();
     }
 
     /// <inheritdoc/>

@@ -38,6 +38,9 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
 
         IList<string> roles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
 
+        // CreatedBy / ModifiedBy intentionally omitted — those columns store administrator
+        // user identifiers, which are third-party personal data and would expose admin
+        // identities to the data subject (GDPR Art. 5(1)(c) — data minimisation).
         IdentityLocalExportResponse dto = new(
             Id: user.Id,
             UserName: user.UserName,
@@ -53,9 +56,7 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
             AccessFailedCount: user.AccessFailedCount,
             TenantId: user.TenantId,
             CreatedAt: user.CreatedAt,
-            CreatedBy: user.CreatedBy,
             ModifiedAt: user.ModifiedAt,
-            ModifiedBy: user.ModifiedBy,
             IsDeleted: user.IsDeleted,
             DeletedAt: user.DeletedAt,
             CustomAttributesJson: user.CustomAttributesJson,
@@ -70,7 +71,12 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
     };
 }
 
-/// <summary>Export record written to the <c>identity-local.json</c> fragment.</summary>
+/// <summary>
+/// Export record written to the <c>identity-local.json</c> fragment.
+/// Excludes the audit-trail attribution fields (<c>CreatedBy</c> / <c>ModifiedBy</c>)
+/// so administrator user identifiers — third-party personal data — do not leak via
+/// the data subject's GDPR Art. 15 export.
+/// </summary>
 internal sealed record IdentityLocalExportResponse(
     Guid Id,
     string? UserName,
@@ -86,9 +92,7 @@ internal sealed record IdentityLocalExportResponse(
     int AccessFailedCount,
     Guid? TenantId,
     DateTimeOffset CreatedAt,
-    string CreatedBy,
     DateTimeOffset? ModifiedAt,
-    string? ModifiedBy,
     bool IsDeleted,
     DateTimeOffset? DeletedAt,
     string? CustomAttributesJson,

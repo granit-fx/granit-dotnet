@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Granit.Http.Idempotency.Attributes;
+using Granit.Http.SecurityHeaders.Extensions;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Endpoints.Internal;
@@ -26,7 +27,8 @@ internal static class AdminImpersonationEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<ImpersonationResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(IdentityLocalPermissions.Users.Impersonate);
+            .RequireAuthorization(IdentityLocalPermissions.Users.Impersonate)
+            .WithNoStoreResponse();
 
         return group;
     }

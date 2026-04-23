@@ -170,11 +170,14 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.WebHost.UseTestServer();
         builder.Logging.ClearProviders();
 
-        // Authentication
+        // Authentication — primary scheme for app sessions, plus a stub external
+        // scheme so /external-logins/callback can verify provider resolution.
         builder.Services
             .AddAuthentication(TestAuthHandler.SchemeName)
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
-                TestAuthHandler.SchemeName, _ => { });
+                TestAuthHandler.SchemeName, _ => { })
+            .AddScheme<AuthenticationSchemeOptions, TestExternalAuthHandler>(
+                IdentityConstants.ExternalScheme, _ => { });
 
         // Authorization policies matching the permission names used by the endpoints
         builder.Services.AddAuthorizationBuilder()
@@ -298,6 +301,46 @@ internal sealed class TestAuthHandler(
         ClaimsPrincipal principal = new(identity);
         AuthenticationTicket ticket = new(principal, SchemeName);
 
+        return Task.FromResult(AuthenticateResult.Success(ticket));
+    }
+}
+
+/// <summary>
+/// Fake authentication handler bound to <see cref="IdentityConstants.ExternalScheme"/>.
+/// Authenticates when the <c>X-Test-External-Provider</c> header is present, and
+/// stores its value as the <c>LoginProvider</c> property item — the well-known key
+/// ASP.NET Core Identity reads via <c>SignInManager.GetExternalLoginInfoAsync</c>.
+/// </summary>
+internal sealed class TestExternalAuthHandler(
+    IOptionsMonitor<AuthenticationSchemeOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder) : AuthenticationHandler<AuthenticationSchemeOptions>(options, logger, encoder)
+{
+    public const string ProviderHeader = "X-Test-External-Provider";
+
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        if (!Request.Headers.TryGetValue(ProviderHeader, out Microsoft.Extensions.Primitives.StringValues providerHeader)
+            || string.IsNullOrEmpty(providerHeader.ToString()))
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+
+        string provider = providerHeader.ToString();
+
+        Claim[] claims =
+        [
+            new(ClaimTypes.NameIdentifier, "external-user-key"),
+            new(ClaimTypes.Email, "external@example.com"),
+        ];
+
+        ClaimsIdentity identity = new(claims, IdentityConstants.ExternalScheme);
+        ClaimsPrincipal principal = new(identity);
+
+        AuthenticationProperties properties = new();
+        properties.Items["LoginProvider"] = provider;
+
+        AuthenticationTicket ticket = new(principal, properties, IdentityConstants.ExternalScheme);
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 }

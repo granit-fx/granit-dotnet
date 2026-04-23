@@ -829,11 +829,32 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task ExternalLoginCallback_MissingProvider_Returns400()
     {
+        // No external auth ticket and no query string — endpoint cannot resolve a provider
+        // and rejects with 400. This guards the post-VULN-214 behaviour: query-string
+        // provider is no longer trusted, so a missing IdentityConstants.ExternalScheme
+        // ticket must fail closed.
         HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
             "/account/external-logins/callback",
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task ExternalLoginCallback_QueryStringIgnored_Returns400()
+    {
+        // The query string is attacker-controlled; the post-VULN-214 endpoint reads the
+        // provider from the IdentityConstants.ExternalScheme ticket only. A request that
+        // carries only ?provider=Google with no external ticket must be rejected.
+        HttpResponseMessage response = await _server.AnonymousClient.GetAsync(
+            "/account/external-logins/callback?provider=Google",
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+        await _server.ExternalLoginService.DidNotReceive().ProcessCallbackAsync(
+            Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
+            Arg.Any<string>(),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -843,9 +864,11 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
             .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));
 
-        HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/account/external-logins/callback?provider=Google",
-            TestContext.Current.CancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
     }
@@ -857,9 +880,11 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("DuplicateEmail: email already in use."));
 
-        HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/account/external-logins/callback?provider=Google",
-            TestContext.Current.CancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
     }
@@ -871,11 +896,40 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
             .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "GitHub", Arg.Any<CancellationToken>())
             .ThrowsAsync(new InvalidOperationException("User not found for external login."));
 
-        HttpResponseMessage response = await _server.AuthenticatedClient.GetAsync(
-            "/account/external-logins/callback?provider=GitHub",
-            TestContext.Current.CancellationToken);
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "GitHub");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
+    public async Task ExternalLoginCallback_QueryProviderIgnoredWhenSchemeDiffers_UsesScheme()
+    {
+        // VULN-214: even when the query string says "GitHub", the actual scheme on the
+        // external ticket ("Google") wins. Otherwise an attacker who lands an OAuth
+        // callback for one provider could mis-attribute the resulting external login.
+        _server.ExternalLoginService
+            .ProcessCallbackAsync(Arg.Any<System.Security.Claims.ClaimsPrincipal>(), "Google", Arg.Any<CancellationToken>())
+            .Returns(new ProcessCallbackResult(AccountEndpointsTestServer.TestUserId, false));
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, "/account/external-logins/callback?provider=GitHub");
+        request.Headers.Add(TestExternalAuthHandler.ProviderHeader, "Google");
+
+        HttpResponseMessage response = await _server.AnonymousClient.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        await _server.ExternalLoginService.Received(1).ProcessCallbackAsync(
+            Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
+            "Google",
+            Arg.Any<CancellationToken>());
+        await _server.ExternalLoginService.DidNotReceive().ProcessCallbackAsync(
+            Arg.Any<System.Security.Claims.ClaimsPrincipal>(),
+            "GitHub",
+            Arg.Any<CancellationToken>());
     }
 
     // -------------------------------------------------------------------------

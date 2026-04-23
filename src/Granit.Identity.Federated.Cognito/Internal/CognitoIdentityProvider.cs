@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Granit.Events;
@@ -50,6 +51,16 @@ internal sealed partial class CognitoIdentityProvider(
             if (!string.IsNullOrEmpty(search))
             {
                 // Cognito Filter supports: username, email, phone_number, name, given_name, family_name, preferred_username, cognito:user_status, status, sub
+                // Reject anything outside the safe character set: a stray quote in the search
+                // term would let a caller break out of the username prefix filter syntax (e.g.
+                // search="x\" or attribute=\"y" would change the predicate). The whitelist
+                // covers the characters legitimately used in Cognito usernames and emails.
+                if (!ValidSearchPattern().IsMatch(search))
+                {
+                    LogInvalidSearchInput(search.Length);
+                    return [];
+                }
+
                 // For broad search, filter on username prefix
                 request.Filter = $"username ^= \"{search}\"";
             }
@@ -811,4 +822,15 @@ internal sealed partial class CognitoIdentityProvider(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Credential verification failed")]
     private partial void LogCredentialVerificationFailed(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Rejected Cognito ListUsers search input ({Length} chars) — failed character whitelist")]
+    private partial void LogInvalidSearchInput(int length);
+
+    /// <summary>
+    /// Whitelist for Cognito <c>ListUsers</c> search input. Limited to characters that
+    /// legitimately appear in usernames and emails so a stray quote cannot break out of
+    /// the <c>username ^= "…"</c> filter syntax. Bounded length to limit DoS surface.
+    /// </summary>
+    [GeneratedRegex(@"^[A-Za-z0-9._@+\-]{1,128}$")]
+    private static partial Regex ValidSearchPattern();
 }

@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Events;
+using Granit.Http.Timing;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
@@ -71,24 +72,21 @@ internal static partial class AccountLoginEndpoints
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        long startTicks = Stopwatch.GetTimestamp();
-
-        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
-            IdentityLocalActivitySource.UserAuthentication);
-        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "password");
-
-        Results<Ok<AccountLoginResponse>, ProblemHttpResult> response = await HandleLoginCoreAsync(
-            request, signInManager, userManager, httpContext, cancellationToken)
-            .ConfigureAwait(false);
-
         // Enforce a minimum response time to prevent timing side-channels.
         // Without this, an attacker can distinguish "user not found" (~310ms with
         // dummy hash) from "wrong password on existing account" (~450ms with hash
         // + DB writes for lockout counter). The floor is randomized per request
         // (500-700ms) so an attacker cannot fingerprint a fixed threshold.
-        await EnforceMinimumResponseTimeAsync(startTicks).ConfigureAwait(false);
+        await using var floor = MinimumResponseTimeGuard.Begin(
+            MinResponseFloorMs, MaxResponseFloorMs);
 
-        return response;
+        using Activity? activity = IdentityLocalActivitySource.Source.StartActivity(
+            IdentityLocalActivitySource.UserAuthentication);
+        activity?.SetTag(IdentityLocalActivitySource.TagProvider, "password");
+
+        return await HandleLoginCoreAsync(
+            request, signInManager, userManager, httpContext, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleLoginCoreAsync(
@@ -325,12 +323,16 @@ internal static partial class AccountLoginEndpoints
     // ──── Timing attack mitigation ────
 
     /// <summary>
-    /// Minimum response time range (milliseconds) for the login endpoint.
-    /// A random floor between these bounds is picked per request so that
-    /// an attacker cannot fingerprint a fixed threshold.
+    /// Lower bound of the per-request response-time floor used by the login endpoints.
+    /// Shared with <c>AccountPasswordEndpoints.ForgotPasswordAsync</c> so credential
+    /// recovery and login present the same timing surface.
     /// </summary>
-    private const int MinResponseFloorMs = 500;
-    private const int MaxResponseFloorMs = 700;
+    internal const int MinResponseFloorMs = 500;
+
+    /// <summary>
+    /// Upper bound of the per-request response-time floor.
+    /// </summary>
+    internal const int MaxResponseFloorMs = 700;
 
     /// <summary>
     /// Pre-computed BCrypt/Argon2 hash used for dummy verification when the user
@@ -350,24 +352,6 @@ internal static partial class AccountLoginEndpoints
         // Use a random password each time to introduce natural timing jitter
         // and avoid a constant, fingerprint-able verification pattern.
         hasher.VerifyHashedPassword(null!, DummyPasswordHash, RandomNumberGenerator.GetHexString(32));
-    }
-
-    /// <summary>
-    /// Pads the response time to a randomized minimum floor (500-700ms) so that
-    /// all failure paths (user not found, wrong password, locked out) are
-    /// indistinguishable by timing. If the handler already took longer than the
-    /// floor, no delay is added.
-    /// </summary>
-    private static async Task EnforceMinimumResponseTimeAsync(long startTicks)
-    {
-        int floorMs = RandomNumberGenerator.GetInt32(MinResponseFloorMs, MaxResponseFloorMs + 1);
-        TimeSpan elapsed = Stopwatch.GetElapsedTime(startTicks);
-        int remainingMs = floorMs - (int)elapsed.TotalMilliseconds;
-
-        if (remainingMs > 0)
-        {
-            await Task.Delay(remainingMs).ConfigureAwait(false);
-        }
     }
 
     // ──── Lockout event publishing ────
