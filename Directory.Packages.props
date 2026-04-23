@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup Label="Identity (ASP.NET Core)">
     <PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.*" />
+    <PackageVersion Include="Fido2.AspNet" Version="4.*" />
   </ItemGroup>
   <ItemGroup Label="Identity (AWS Cognito)">
     <PackageVersion Include="AWSSDK.CognitoIdentityProvider" Version="4.*" />

@@ -913,6 +913,7 @@
     {
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
+        "Granit.Caching",
         "Granit.Identity",
         "Granit.Identity.Local",
         "Granit.Persistence.EntityFrameworkCore"
@@ -18687,7 +18688,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/GranitIdentityLocalAspNetIdentityModule.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "ConfigureServices",
@@ -20023,6 +20024,18 @@
           "returnType": "string"
         },
         {
+          "name": "ServerName",
+          "kind": "property",
+          "signature": "string ServerName",
+          "returnType": "string"
+        },
+        {
+          "name": "AllowedOrigins",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedOrigins",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
           "name": "FromMinutes",
           "kind": "method",
           "signature": "FromMinutes(5)",
@@ -20033,6 +20046,12 @@
           "kind": "property",
           "signature": "int ChallengeSize",
           "returnType": "int"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan ChallengeLifetime { get; set; } = TimeSpan."
         }
       ]
     },

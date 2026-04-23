@@ -1,5 +1,8 @@
-using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
+using Fido2NetLib;
+using Fido2NetLib.Exceptions;
+using Fido2NetLib.Objects;
 using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
@@ -13,15 +16,35 @@ using Microsoft.Extensions.Options;
 namespace Granit.Identity.Local.AspNetIdentity.Internal;
 
 /// <summary>
-/// <see cref="IPasskeyService"/> implementation using ASP.NET Core Identity's
-/// built-in WebAuthn support (.NET 10).
+/// <see cref="IPasskeyService"/> implementation that delegates the WebAuthn
+/// cryptographic ceremonies to <see cref="IFido2"/> (Fido2NetLib).
 /// </summary>
+/// <remarks>
+/// <para>
+/// Replaces the prior stub implementation that silently accepted any assertion whose
+/// credential id matched a stored row (VULN-001) and stored random server-generated
+/// bytes at registration (VULN-002). All cryptographic checks — challenge equality,
+/// origin validation, signature verification, sign-counter monotonicity — are now
+/// performed by <see cref="IFido2.MakeNewCredentialAsync"/> and
+/// <see cref="IFido2.MakeAssertionAsync"/>.
+/// </para>
+/// <para>
+/// Per-ceremony state (the challenge + options JSON) is round-tripped via
+/// <see cref="PasskeyChallengeStore"/> so the begin/complete handshake survives
+/// pod rotation in multi-instance deployments. Anonymous assertion ceremonies key
+/// the cache by the challenge itself (the assertion handler only learns the
+/// principal after the cryptographic check succeeds).
+/// </para>
+/// </remarks>
 internal sealed partial class AspNetPasskeyService(
     UserManager<GranitUser> userManager,
-    IOptions<GranitPasskeyOptions> passkeyOptions,
+    IFido2 fido2,
+    PasskeyChallengeStore challengeStore,
     IClock clock,
     ILogger<AspNetPasskeyService> logger) : IPasskeyService
 {
+    private static readonly JsonSerializerOptions s_optionsJson = new(JsonSerializerDefaults.Web);
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PasskeyInfo>> GetPasskeysAsync(
         string userId, CancellationToken cancellationToken = default)
@@ -35,54 +58,52 @@ internal sealed partial class AspNetPasskeyService(
 
         return passkeys.Select(p => new PasskeyInfo(
             new Guid(p.CredentialId.Length >= 16 ? p.CredentialId[..16] : p.CredentialId),
-            null, // Name is not stored in UserPasskeyInfo natively — would need extension
+            p.Name,
             p.CreatedAt,
             null)).ToList();
     }
 
     /// <inheritdoc/>
-    public Task<string> BeginRegistrationAsync(
+    public async Task<string> BeginRegistrationAsync(
         string userId, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        GranitPasskeyOptions options = passkeyOptions.Value;
-        byte[] challenge = RandomNumberGenerator.GetBytes(options.ChallengeSize);
+        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
-        // Build PublicKeyCredentialCreationOptions
-        var creationOptions = new
+        IList<UserPasskeyInfo> existing = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
+        IReadOnlyList<PublicKeyCredentialDescriptor> excludeCredentials = existing
+            .Select(p => new PublicKeyCredentialDescriptor(p.CredentialId))
+            .ToList();
+
+        string displayName = $"{user.FirstName} {user.LastName}".Trim();
+        Fido2User fidoUser = new()
         {
-            challenge = Convert.ToBase64String(challenge),
-            rp = new
-            {
-                name = "Granit",
-                id = options.ServerDomain,
-            },
-            user = new
-            {
-                id = Convert.ToBase64String(Guid.Parse(userId).ToByteArray()),
-                name = userId,
-                displayName = userId,
-            },
-            pubKeyCredParams = new[]
-            {
-                new { type = "public-key", alg = -7 },   // ES256
-                new { type = "public-key", alg = -257 },  // RS256
-            },
-            timeout = (long)options.AuthenticatorTimeout.TotalMilliseconds,
-            authenticatorSelection = new
-            {
-                authenticatorAttachment = "platform",
-                residentKey = "preferred",
-                userVerification = "preferred",
-            },
-            attestation = "none",
-            // Conditional UI support
-            mediation = "conditional",
+            Id = Encoding.UTF8.GetBytes(userId),
+            Name = user.UserName ?? userId,
+            DisplayName = displayName.Length > 0 ? displayName : (user.UserName ?? userId),
         };
 
+        AuthenticatorSelection authenticatorSelection = new()
+        {
+            ResidentKey = ResidentKeyRequirement.Preferred,
+            UserVerification = UserVerificationRequirement.Preferred,
+        };
+
+        CredentialCreateOptions options = fido2.RequestNewCredential(new RequestNewCredentialParams
+        {
+            User = fidoUser,
+            ExcludeCredentials = excludeCredentials,
+            AuthenticatorSelection = authenticatorSelection,
+            AttestationPreference = AttestationConveyancePreference.None,
+        });
+
+        string optionsJson = JsonSerializer.Serialize(options, s_optionsJson);
+        await challengeStore.SaveRegistrationAsync(userId, optionsJson, cancellationToken).ConfigureAwait(false);
+
         Log.RegistrationBegun(logger, userId);
-        return Task.FromResult(JsonSerializer.Serialize(creationOptions));
+        return optionsJson;
     }
 
     /// <inheritdoc/>
@@ -96,54 +117,83 @@ internal sealed partial class AspNetPasskeyService(
         GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
-        // Parse the credential response (simplified — production would validate attestation)
-        byte[] credentialId = RandomNumberGenerator.GetBytes(32); // Would come from parsed response
-        byte[] publicKey = RandomNumberGenerator.GetBytes(65);    // Would come from parsed response
+        string? originalOptionsJson = await challengeStore
+            .ConsumeRegistrationAsync(userId, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                "No active passkey registration ceremony found for the user. " +
+                "The challenge expired (default 5 min) or was already consumed.");
+
+        CredentialCreateOptions originalOptions = JsonSerializer
+            .Deserialize<CredentialCreateOptions>(originalOptionsJson, s_optionsJson)
+            ?? throw new InvalidOperationException("Stored registration options are corrupt.");
+
+        AuthenticatorAttestationRawResponse attestationResponse = JsonSerializer
+            .Deserialize<AuthenticatorAttestationRawResponse>(credentialJson, s_optionsJson)
+            ?? throw new InvalidOperationException("Attestation response payload is malformed.");
+
+        RegisteredPublicKeyCredential result = await fido2.MakeNewCredentialAsync(
+            new MakeNewCredentialParams
+            {
+                AttestationResponse = attestationResponse,
+                OriginalOptions = originalOptions,
+                IsCredentialIdUniqueToUserCallback = static (_, _) => Task.FromResult(true),
+            },
+            cancellationToken).ConfigureAwait(false);
 
         DateTimeOffset now = clock.Now;
-        var passkeyInfo = new UserPasskeyInfo(
-            credentialId: credentialId,
-            publicKey: publicKey,
+        UserPasskeyInfo passkeyInfo = new(
+            credentialId: result.Id,
+            publicKey: result.PublicKey,
             createdAt: now,
-            signCount: 0,
-            transports: ["internal"],
+            signCount: result.SignCount,
+            transports: result.Transports?.Select(t => t.ToString().ToLowerInvariant()).ToArray() ?? [],
             isUserVerified: true,
-            isBackupEligible: true,
-            isBackedUp: false,
-            attestationObject: [],
-            clientDataJson: []);
+            isBackupEligible: result.IsBackupEligible,
+            isBackedUp: result.IsBackedUp,
+            attestationObject: result.AttestationObject ?? [],
+            clientDataJson: result.AttestationClientDataJson ?? [])
+        {
+            Name = name,
+        };
 
-        await userManager.AddOrUpdatePasskeyAsync(user, passkeyInfo).ConfigureAwait(false);
+        IdentityResult store = await userManager.AddOrUpdatePasskeyAsync(user, passkeyInfo).ConfigureAwait(false);
+        if (!store.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Failed to persist passkey: {string.Join(", ", store.Errors.Select(e => e.Description))}");
+        }
 
         Log.RegistrationCompleted(logger, userId);
 
         return new PasskeyInfo(
-            new Guid(credentialId[..16]),
-            name,
-            now,
-            null);
+            Id: new Guid(result.Id.Length >= 16 ? result.Id[..16] : result.Id),
+            Name: name,
+            CreatedAt: now,
+            LastUsedAt: null);
     }
 
     /// <inheritdoc/>
-    public Task<string> BeginAssertionAsync(CancellationToken cancellationToken = default)
+    public async Task<string> BeginAssertionAsync(CancellationToken cancellationToken = default)
     {
-        GranitPasskeyOptions options = passkeyOptions.Value;
-        byte[] challenge = RandomNumberGenerator.GetBytes(options.ChallengeSize);
-
-        // PublicKeyCredentialRequestOptions with Conditional UI
-        var assertionOptions = new
+        AssertionOptions options = fido2.GetAssertionOptions(new GetAssertionOptionsParams
         {
-            challenge = Convert.ToBase64String(challenge),
-            timeout = (long)options.AuthenticatorTimeout.TotalMilliseconds,
-            rpId = options.ServerDomain,
-            // Empty allowCredentials — browser discovers passkeys for the RP ID
-            allowCredentials = Array.Empty<object>(),
-            userVerification = "preferred",
-            // Conditional UI — enables browser-native passkey autofill
-            mediation = "conditional",
-        };
+            // Conditional UI — empty allowCredentials so the browser surfaces every
+            // discoverable passkey for this RP.
+            AllowedCredentials = [],
+            UserVerification = UserVerificationRequirement.Preferred,
+        });
 
-        return Task.FromResult(JsonSerializer.Serialize(assertionOptions));
+        string optionsJson = JsonSerializer.Serialize(options, s_optionsJson);
+
+        // Key by the challenge so the completion handler — which has no other
+        // ceremony identifier — can recover the options after extracting the
+        // challenge from clientDataJSON.
+        string ceremonyId = Convert.ToBase64String(options.Challenge);
+        await challengeStore.SaveAssertionAsync(ceremonyId, optionsJson, cancellationToken)
+            .ConfigureAwait(false);
+
+        return optionsJson;
     }
 
     /// <inheritdoc/>
@@ -152,19 +202,43 @@ internal sealed partial class AspNetPasskeyService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(credentialJson);
 
-        // Parse the credential response to extract credentialId and find the user
-        using var doc = JsonDocument.Parse(credentialJson);
-
-        if (!doc.RootElement.TryGetProperty("id", out JsonElement idElement))
+        AuthenticatorAssertionRawResponse assertionResponse;
+        try
         {
-            Log.AssertionFailed(logger, "missing_credential_id");
+            assertionResponse = JsonSerializer
+                .Deserialize<AuthenticatorAssertionRawResponse>(credentialJson, s_optionsJson)
+                ?? throw new JsonException("payload was null");
+        }
+        catch (JsonException)
+        {
+            Log.AssertionFailed(logger, "malformed_assertion_payload");
             return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
         }
 
-        byte[] credentialId = Convert.FromBase64String(idElement.GetString()!);
+        // Recover the original challenge from clientDataJSON to look up the saved options.
+        string? challengeKey = TryExtractChallenge(assertionResponse.Response.ClientDataJson);
+        if (challengeKey is null)
+        {
+            Log.AssertionFailed(logger, "missing_challenge_in_client_data");
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
 
-        // Find user by credential ID — ASP.NET Core Identity .NET 10
-        GranitUser? user = await userManager.FindByPasskeyIdAsync(credentialId).ConfigureAwait(false);
+        string? originalOptionsJson = await challengeStore
+            .ConsumeAssertionAsync(challengeKey, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (originalOptionsJson is null)
+        {
+            Log.AssertionFailed(logger, "challenge_expired_or_unknown");
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
+
+        AssertionOptions originalOptions = JsonSerializer
+            .Deserialize<AssertionOptions>(originalOptionsJson, s_optionsJson)
+            ?? throw new InvalidOperationException("Stored assertion options are corrupt.");
+
+        GranitUser? user = await userManager.FindByPasskeyIdAsync(assertionResponse.RawId)
+            .ConfigureAwait(false);
 
         if (user is null)
         {
@@ -172,35 +246,92 @@ internal sealed partial class AspNetPasskeyService(
             return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
         }
 
-        // Validate the assertion signature against the stored public key.
-        // ASP.NET Core Identity .NET 10 validates clientDataJSON, authenticatorData,
-        // and signature via the passkey store. Full production validation is delegated
-        // to the WebAuthn library configured in the host (e.g. FIDO2 .NET).
-        // The service resolves the user — the endpoint handles SignInManager.SignInAsync().
         IList<UserPasskeyInfo> passkeys = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
-        bool credentialExists = passkeys.Any(p => p.CredentialId.AsSpan().SequenceEqual(credentialId));
+        UserPasskeyInfo? storedPasskey = passkeys
+            .FirstOrDefault(p => p.CredentialId.AsSpan().SequenceEqual(assertionResponse.RawId));
 
-        if (!credentialExists)
+        if (storedPasskey is null)
         {
-            Log.AssertionFailed(logger, "credential_not_found");
+            Log.AssertionFailed(logger, "credential_not_found_on_user");
             return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
         }
 
-        Log.AssertionCompleted(logger, user.Id.ToString());
-        return new GranitPasskeyAssertionResult(Succeeded: true, UserId: user.Id.ToString());
+        try
+        {
+            VerifyAssertionResult result = await fido2.MakeAssertionAsync(
+                new MakeAssertionParams
+                {
+                    AssertionResponse = assertionResponse,
+                    OriginalOptions = originalOptions,
+                    StoredPublicKey = storedPasskey.PublicKey,
+                    StoredSignatureCounter = (uint)storedPasskey.SignCount,
+                    IsUserHandleOwnerOfCredentialIdCallback =
+                        static (_, _) => Task.FromResult(true),
+                },
+                cancellationToken).ConfigureAwait(false);
+
+            // Persist the new sign counter so downgrade attempts (cloned authenticators)
+            // are caught by the next assertion's monotonicity check.
+            UserPasskeyInfo updated = new(
+                credentialId: storedPasskey.CredentialId,
+                publicKey: storedPasskey.PublicKey,
+                createdAt: storedPasskey.CreatedAt,
+                signCount: result.SignCount,
+                transports: storedPasskey.Transports,
+                isUserVerified: storedPasskey.IsUserVerified,
+                isBackupEligible: storedPasskey.IsBackupEligible,
+                isBackedUp: result.IsBackedUp,
+                attestationObject: storedPasskey.AttestationObject,
+                clientDataJson: storedPasskey.ClientDataJson)
+            {
+                Name = storedPasskey.Name,
+            };
+
+            await userManager.AddOrUpdatePasskeyAsync(user, updated).ConfigureAwait(false);
+
+            Log.AssertionCompleted(logger, user.Id.ToString());
+            return new GranitPasskeyAssertionResult(Succeeded: true, UserId: user.Id.ToString());
+        }
+        catch (Fido2VerificationException ex)
+        {
+            Log.AssertionVerificationFailed(logger, ex.Message);
+            return new GranitPasskeyAssertionResult(Succeeded: false, UserId: null);
+        }
     }
 
     /// <inheritdoc/>
-    public Task RenameAsync(
+    public async Task RenameAsync(
         string userId, Guid passkeyId, string newName,
         CancellationToken cancellationToken = default)
     {
-        // ASP.NET Core Identity's UserPasskeyInfo doesn't have a Name property.
-        // In a full implementation, we'd store names in a separate table or
-        // extend the passkey entity. For now, this is a documented limitation.
+        ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(newName);
+
+        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+            ?? throw new InvalidOperationException($"User '{userId}' not found.");
+
+        IList<UserPasskeyInfo> passkeys = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
+
+        // Match by Guid (first 16 bytes of the credential id) since the public API
+        // surfaces the truncated identifier, not the full credentialId.
+        byte[] passkeyIdBytes = passkeyId.ToByteArray();
+        UserPasskeyInfo? target = passkeys.FirstOrDefault(p =>
+            p.CredentialId.Length >= 16 && p.CredentialId.AsSpan(0, 16).SequenceEqual(passkeyIdBytes));
+
+        if (target is null)
+        {
+            throw new InvalidOperationException($"Passkey '{passkeyId}' not found for user '{userId}'.");
+        }
+
+        target.Name = newName;
+        IdentityResult result = await userManager.AddOrUpdatePasskeyAsync(user, target).ConfigureAwait(false);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"Failed to rename passkey: {string.Join(", ", result.Errors.Select(e => e.Description))}");
+        }
+
         Log.PasskeyRenamed(logger, userId, passkeyId);
-        return Task.CompletedTask;
     }
 
     /// <inheritdoc/>
@@ -236,6 +367,42 @@ internal sealed partial class AspNetPasskeyService(
         Log.PasskeyDeleted(logger, userId, passkeyId);
     }
 
+    /// <summary>
+    /// Pulls the <c>challenge</c> field out of <c>clientDataJSON</c> so the assertion
+    /// handler can look up the original options without needing a ceremony id from
+    /// the caller. The challenge is the unique anchor for a single ceremony.
+    /// </summary>
+    private static string? TryExtractChallenge(byte[] clientDataJson)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(clientDataJson);
+            if (!doc.RootElement.TryGetProperty("challenge", out JsonElement challengeElement))
+            {
+                return null;
+            }
+
+            string? base64UrlChallenge = challengeElement.GetString();
+            if (string.IsNullOrEmpty(base64UrlChallenge))
+            {
+                return null;
+            }
+
+            // WebAuthn encodes the challenge in base64url (no padding); convert to
+            // standard base64 so it matches the cache key set in BeginAssertionAsync.
+            string padded = base64UrlChallenge
+                .Replace('-', '+')
+                .Replace('_', '/');
+            padded = padded.PadRight(padded.Length + ((4 - (padded.Length % 4)) % 4), '=');
+            byte[] challengeBytes = Convert.FromBase64String(padded);
+            return Convert.ToBase64String(challengeBytes);
+        }
+        catch (Exception ex) when (ex is JsonException or FormatException)
+        {
+            return null;
+        }
+    }
+
     private static partial class Log
     {
         [LoggerMessage(Level = LogLevel.Debug, Message = "Passkey registration begun for user {UserId}")]
@@ -255,5 +422,9 @@ internal sealed partial class AspNetPasskeyService(
 
         [LoggerMessage(Level = LogLevel.Warning, Message = "Passkey assertion failed: {Reason}")]
         public static partial void AssertionFailed(ILogger logger, string reason);
+
+        [LoggerMessage(Level = LogLevel.Warning,
+            Message = "Passkey cryptographic verification rejected the assertion: {Reason}")]
+        public static partial void AssertionVerificationFailed(ILogger logger, string reason);
     }
 }
