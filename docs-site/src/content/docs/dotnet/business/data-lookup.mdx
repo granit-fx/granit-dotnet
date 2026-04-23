@@ -1,0 +1,163 @@
+---
+title: "Data Lookup — Unified Pickers for Filters and Forms"
+description: Declarative registry of named lookup sources — feeds QueryEngine filter pickers and edit-form dropdowns from a single contract with server-side label localization.
+sidebar:
+  label: Data Lookup
+  order: 17
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+Granit.DataLookup provides a unified primitive for typeahead pickers across the
+framework. A single `ILookupSource` contract powers QueryEngine filter bars, edit-form
+dropdowns, and any custom UI that needs a paginated, searchable list of values —
+no duplication between backend declarations and frontend components.
+
+## Why
+
+- **Filter pickers** — foreign-key columns in a grid (`TenantId`, `UserId`,
+  `MeterDefinitionId`) currently force users to type a GUID by hand. A lookup source
+  turns them into typeahead comboboxes.
+- **Edit forms** — selects in create/edit forms are often hardcoded (enums, constants)
+  or wired ad-hoc (one-off hooks). A registry-backed lookup consolidates them.
+- **Reference data** — code lists (countries, document types) already backed by
+  `Granit.ReferenceData` can be exposed as lookup sources with localized labels
+  without duplicating endpoints.
+
+## Package structure
+
+<FileTree>
+- Granit.DataLookup.Abstractions/ Contracts: LookupDescriptor, LookupItem, LookupResult, ILookupSource, ILookupRegistry
+  - Granit.DataLookup/ Runtime: scoped registry, EnumLookupSource&lt;TEnum&gt;, metrics, ActivitySource
+    - Granit.DataLookup.EntityFrameworkCore QueryableLookupSource&lt;T&gt; — wraps an IQueryable with value/label selectors
+    - Granit.DataLookup.Endpoints Minimal API: /api/granit/lookups manifest, search, resolve
+</FileTree>
+
+| Package | Role | Depends on |
+| ------- | ---- | ---------- |
+| `Granit.DataLookup.Abstractions` | Pure contracts (descriptors, DTOs, interfaces) | `Granit` |
+| `Granit.DataLookup` | `ILookupRegistry`, `EnumLookupSource<TEnum>`, metrics | `.Abstractions`, `Granit.Localization` |
+| `Granit.DataLookup.EntityFrameworkCore` | `QueryableLookupSource<T>` over `IQueryable<T>` | `Granit.DataLookup`, `Granit.Persistence` |
+| `Granit.DataLookup.Endpoints` | `/api/granit/lookups` minimal API, permissions, auth | `Granit.DataLookup`, `Granit.Authorization`, `Granit.Validation` |
+
+## Canonical shapes
+
+All sources project to a single response shape — the frontend never re-maps.
+
+```csharp
+public sealed record LookupItem(
+    object Value,
+    string Label,                              // already localized server-side
+    IReadOnlyDictionary<string, object?>? Extra = null);
+
+public sealed record LookupResult(
+    IReadOnlyList<LookupItem> Items,
+    int? TotalCount = null,
+    string? ContinuationToken = null);
+```
+
+The `LookupDescriptor` is emitted alongside column / field metadata:
+
+```csharp
+public sealed record LookupDescriptor(
+    string? Name = null,                       // registry key, preferred
+    string? Endpoint = null,                   // custom URL, fallback
+    LookupKind Kind = LookupKind.QueryEngine,  // QueryEngine | Simple | ReferenceData | Enum
+    string? RequiredPermission = null,
+    string? SearchParam = "search",
+    IReadOnlyList<string>? ScopeKeys = null);  // e.g. ["tenantId"] — frontend pushes values
+```
+
+## Declaring a source
+
+### CLR enum — zero DB roundtrip
+
+```csharp
+services.AddEnumLookup<AggregationType>(
+    name: "enum-aggregation-type",
+    requiredPermission: "Metering.Meters.Read");
+```
+
+Labels resolved via `Enum:{TypeName}.{Value}` localization keys across the 18
+cultures Granit supports.
+
+### `IQueryable<T>` — any entity with EF Core
+
+```csharp
+services.AddQueryableLookup<Tenant, PlatformDbContext>(
+    name: "tenants",
+    valueSelector: t => t.Id,
+    labelSelector: t => t.Name,
+    searchPredicate: (t, search) => t.Name.Contains(search),
+    requiredPermission: "Platform.Tenants.Read");
+```
+
+The source is resolved from DI per request and honors tenant filters,
+soft-delete filters, and any convention applied by `ApplyGranitConventions`.
+
+### Custom implementation
+
+Implement `ILookupSource` directly for non-database sources (external APIs,
+computed values, in-memory collections).
+
+## Endpoints
+
+Mapped once at startup:
+
+```csharp
+app.MapGranitDataLookups(opts =>
+{
+    opts.RoutePrefix = "api/granit/lookups";
+    opts.TagName = "Data Lookup";
+});
+```
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/granit/lookups` | Manifest of every registered source |
+| `GET` | `/api/granit/lookups/{name}` | Paginated search (`search`, `page`, `pageSize`, `scope.*`) |
+| `GET` | `/api/granit/lookups/{name}/resolve?value=…` | Resolve a single value for rehydration |
+
+Every response honors:
+
+- **`Accept-Language` header** — labels projected in the caller's culture server-side.
+- **Ambient `ICurrentTenant`** — sources see the tenant-filtered queryable.
+- **`RequiredPermission`** — enforced by the dispatch handler, with the framework's
+  auto-injected `401` / `403` responses.
+
+## Empty Scope Trap — two-layer mitigation
+
+Scoped lookups (e.g., `meters` filtered by `tenantId`) declare their required scope
+keys. Missing values are caught at both layers to avoid silent full-table scans:
+
+- **Backend** — the endpoint validates that every declared scope key is present and
+  non-empty. Missing keys return `400 Bad Request` with a `problem+json` body.
+- **Frontend** — `useLookup` checks `ScopeKeys` before emitting the HTTP request.
+  When a key is unresolved, React-Query is set to `enabled: false` and no request is sent.
+
+## Authorization
+
+The group policy `DataLookup.Lookups.Read` gates the entire module. Per-source
+`RequiredPermission` values layer on top and are enforced before the source is invoked.
+
+## Diagnostics
+
+| Meter / metric | Purpose |
+| --- | --- |
+| `Granit.DataLookup` | Meter name |
+| `granit.data_lookup.search.executed` | Successful search counter |
+| `granit.data_lookup.search.duration` | Search latency histogram (seconds) |
+| `granit.data_lookup.resolve.executed` | Single-value resolve counter |
+| `granit.data_lookup.scope.missing` | Rejected queries due to missing scope keys |
+
+All tags include `tenant_id` (coalesced to `"global"`) and `lookup_name`.
+Distributed tracing is emitted via the `Granit.DataLookup` `ActivitySource`.
+
+## See also
+
+- [QueryEngine](/dotnet/business/query-engine/) — declarative search; filter pickers
+  consume the `LookupDescriptor` emitted on `FilterableField.Lookup`.
+- [ReferenceData](/dotnet/business/reference-data/) — code lists exposed as
+  lookup sources with localized labels.
+- [ADR-023](/dotnet/architecture/adr/023-queryengine-reference-data-lookup/) —
+  architectural rationale and scope.

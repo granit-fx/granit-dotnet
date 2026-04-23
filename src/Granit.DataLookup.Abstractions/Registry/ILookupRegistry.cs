@@ -1,4 +1,3 @@
-using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Sources;
 
 namespace Granit.DataLookup.Registry;
@@ -23,16 +22,3 @@ public interface ILookupRegistry
     /// </summary>
     IReadOnlyList<LookupManifestEntry> GetManifest();
 }
-
-/// <summary>
-/// Public metadata about a registered lookup source.
-/// </summary>
-/// <param name="Name">Registry key.</param>
-/// <param name="Kind">Kind of backing source.</param>
-/// <param name="RequiredPermission">Permission required to invoke the source, if any.</param>
-/// <param name="ScopeKeys">Scope keys this source requires.</param>
-public sealed record LookupManifestEntry(
-    string Name,
-    LookupKind Kind,
-    string? RequiredPermission,
-    IReadOnlyList<string> ScopeKeys);
