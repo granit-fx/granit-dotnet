@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption.EntityFrameworkCore;
 
 namespace Granit.Identity.Federated.Domain;
 
@@ -26,20 +27,35 @@ public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
     /// <summary>User identifier in the external identity provider (e.g. Keycloak sub). Max 256 characters.</summary>
     public string ExternalUserId { get; set; } = string.Empty;
 
-    /// <summary>Login name. Max 256 characters.</summary>
+    /// <summary>Login name. Max 256 characters. Encrypted at rest.</summary>
     [SensitiveData]
+    [Encrypted]
     public string? Username { get; set; }
 
-    /// <summary>Email address. Max 512 characters.</summary>
+    /// <summary>
+    /// Email address. Max 512 characters. Encrypted at rest — the
+    /// admin search path looks up users via <see cref="EmailHash"/> instead of
+    /// scanning the ciphertext.
+    /// </summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string? Email { get; set; }
 
-    /// <summary>First name. Max 256 characters.</summary>
+    /// <summary>
+    /// HMAC-SHA256 of <c>email.ToLowerInvariant()</c> computed with a dedicated
+    /// lookup pepper. Indexed alongside <see cref="TenantId"/> for exact-match
+    /// search on encrypted data. Never surfaced to callers.
+    /// </summary>
+    public string? EmailHash { get; set; }
+
+    /// <summary>First name. Max 256 characters. Encrypted at rest.</summary>
     [SensitiveData]
+    [Encrypted]
     public string? FirstName { get; set; }
 
-    /// <summary>Last name. Max 256 characters.</summary>
+    /// <summary>Last name. Max 256 characters. Encrypted at rest.</summary>
     [SensitiveData]
+    [Encrypted]
     public string? LastName { get; set; }
 
     /// <summary>Whether the user account is active in the identity provider.</summary>

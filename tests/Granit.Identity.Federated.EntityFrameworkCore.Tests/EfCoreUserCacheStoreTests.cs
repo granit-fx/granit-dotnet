@@ -1,6 +1,8 @@
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
+using Granit.Identity.Federated.Internal;
 using Microsoft.EntityFrameworkCore;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -8,6 +10,24 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 
 public sealed class EfCoreUserCacheStoreTests
 {
+    private static readonly IUserLookupHasher Hasher = CreateHasher();
+
+    private static IUserLookupHasher CreateHasher()
+    {
+        // Deterministic stub — mirrors the real HmacUserLookupHasher's public contract
+        // (null in → null out, otherwise a stable lower-case token). Tests don't need
+        // HMAC semantics, just something that round-trips equality for exact-match.
+        IUserLookupHasher hasher = Substitute.For<IUserLookupHasher>();
+        hasher.ComputeEmailHash(Arg.Any<string?>())
+            .Returns(ci => ci.Arg<string?>() is { Length: > 0 } email
+                ? "hash:" + email.Trim().ToLowerInvariant()
+                : null);
+        return hasher;
+    }
+
+    private static EfCoreUserCacheStore<TestDbContext> CreateStore(TestDbContext context) =>
+        new(context, Hasher);
+
     private static TestDbContext CreateContext() =>
         new(new DbContextOptionsBuilder<TestDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -36,7 +56,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task FindByExternalIdAsync_ReturnsNull_WhenNotFound()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         UserCacheEntry? result = await store.FindByExternalIdAsync(
             "nonexistent", null, TestContext.Current.CancellationToken);
@@ -48,7 +68,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task UpsertAsync_InsertsNewEntry()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
         UserCacheEntry entry = CreateEntry();
 
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
@@ -63,7 +83,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task UpsertAsync_UpdatesExistingEntry()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
         UserCacheEntry entry = CreateEntry();
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
@@ -81,7 +101,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task FindByExternalIdsAsync_ReturnsBatchResults()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.UpsertAsync(CreateEntry("user-2", username: "jane"), TestContext.Current.CancellationToken);
@@ -96,7 +116,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task FindFirstByExternalIdAsync_ReturnsEntryRegardlessOfTenant()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
         var tenantId = Guid.NewGuid();
 
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
@@ -112,7 +132,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task MultiTenantIsolation_SameUserDifferentTenants()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
         var tenant1 = Guid.NewGuid();
         var tenant2 = Guid.NewGuid();
 
@@ -136,7 +156,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task UpsertManyAsync_InsertsAndUpdatesInBatch()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         // Pre-insert one entry
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
@@ -161,7 +181,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task GetCountAsync_ReturnsCorrectCount()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.UpsertAsync(CreateEntry("user-2"), TestContext.Current.CancellationToken);
@@ -174,7 +194,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task GetStaleCountAsync_CountsStaleEntries()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         UserCacheEntry fresh = CreateEntry("user-fresh");
         fresh.LastSyncedAt = DateTimeOffset.UtcNow;
@@ -194,7 +214,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task GetSyncRangeAsync_ReturnsOldestAndNewest()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         UserCacheEntry old = CreateEntry("user-old");
         old.LastSyncedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
@@ -215,7 +235,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task GetSyncRangeAsync_ReturnsNulls_WhenEmpty()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         (DateTimeOffset? oldest, DateTimeOffset? newest) = await store.GetSyncRangeAsync(
             null, TestContext.Current.CancellationToken);
@@ -228,7 +248,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task DeleteByExternalIdAsync_RemovesEntry()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.DeleteByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
@@ -242,7 +262,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task DeleteAllByTenantAsync_RemovesAllTenantEntries()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
         var tenantId = Guid.NewGuid();
 
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
@@ -262,7 +282,7 @@ public sealed class EfCoreUserCacheStoreTests
     public async Task PseudonymizeAsync_ReplacesPersonalData()
     {
         await using TestDbContext context = CreateContext();
-        var store = new EfCoreUserCacheStore<TestDbContext>(context);
+        EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.PseudonymizeAsync("user-1", null, TestContext.Current.CancellationToken);

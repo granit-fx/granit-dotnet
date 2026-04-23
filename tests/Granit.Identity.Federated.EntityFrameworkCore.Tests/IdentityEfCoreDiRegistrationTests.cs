@@ -24,6 +24,7 @@ public sealed class IdentityEfCoreDiRegistrationTests
         // Add dependencies required by CachedUserLookupService
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
+        services.AddSingleton(NSubstitute.Substitute.For<IUserLookupHasher>());
         services.AddLogging();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
