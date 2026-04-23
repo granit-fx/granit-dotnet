@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -10,6 +11,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -24,8 +27,11 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     private const string WebhookSecret = "test-webhook-secret-key-32-chars!";
     private const string WebhookUrl = "/identity/webhook";
 
+    private static readonly DateTimeOffset Now = new(2026, 4, 23, 14, 0, 0, TimeSpan.Zero);
+
     private readonly IUserLookupService _lookupService = Substitute.For<IUserLookupService>();
     private readonly IUserCacheStats _cacheStats = Substitute.For<IUserCacheStats>();
+    private readonly FakeTimeProvider _clock = new(Now);
     private readonly WebApplication _app;
     private readonly HttpClient _client;
 
@@ -49,6 +55,10 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         builder.Services.AddGranitIdentityEndpoints();
         builder.Services.AddSingleton(_lookupService);
         builder.Services.AddSingleton(_cacheStats);
+
+        // Replace the default TimeProvider so signature-replay-window tests can
+        // pin "now" deterministically.
+        builder.Services.Replace(ServiceDescriptor.Singleton<TimeProvider>(_clock));
 
         // Configure webhook with a secret
         builder.Services.Configure<IdentityWebhookOptions>(o =>
@@ -144,7 +154,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
     {
         string invalidJson = "{ not valid json }}}";
         byte[] body = Encoding.UTF8.GetBytes(invalidJson);
-        string signature = ComputeSignature(body);
+        string signature = ComputeSignature(body, _clock.GetUtcNow());
 
         using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
@@ -195,7 +205,7 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         // 65 KB > 64 KB limit
         string largeJson = new('x', 65 * 1024);
         byte[] body = Encoding.UTF8.GetBytes(largeJson);
-        string signature = ComputeSignature(body);
+        string signature = ComputeSignature(body, _clock.GetUtcNow());
 
         using HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
@@ -210,11 +220,11 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         ((int)response.StatusCode).ShouldBe(413);
     }
 
-    private static HttpRequestMessage CreateSignedRequest(object payload)
+    private HttpRequestMessage CreateSignedRequest(object payload, DateTimeOffset? signedAt = null)
     {
         string json = JsonSerializer.Serialize(payload);
         byte[] body = Encoding.UTF8.GetBytes(json);
-        string signature = ComputeSignature(body);
+        string signature = ComputeSignature(body, signedAt ?? _clock.GetUtcNow());
 
         HttpRequestMessage request = new(HttpMethod.Post, WebhookUrl)
         {
@@ -225,11 +235,33 @@ public sealed class IdentityWebhookEndpointsTests : IAsyncDisposable
         return request;
     }
 
-    private static string ComputeSignature(byte[] body)
+    private static string ComputeSignature(byte[] body, DateTimeOffset timestamp)
     {
+        long t = timestamp.ToUnixTimeSeconds();
         byte[] key = Encoding.UTF8.GetBytes(WebhookSecret);
-        byte[] hash = HMACSHA256.HashData(key, body);
-        return Convert.ToHexStringLower(hash);
+        byte[] prefix = Encoding.UTF8.GetBytes(t.ToString(CultureInfo.InvariantCulture) + ".");
+        byte[] toSign = new byte[prefix.Length + body.Length];
+        Buffer.BlockCopy(prefix, 0, toSign, 0, prefix.Length);
+        Buffer.BlockCopy(body, 0, toSign, prefix.Length, body.Length);
+        string hex = Convert.ToHexStringLower(HMACSHA256.HashData(key, toSign));
+        return $"t={t},v1={hex}";
+    }
+
+    [Fact]
+    public async Task Webhook_rejects_signature_outside_replay_window()
+    {
+        // Sign at a timestamp 10 minutes before the frozen "now" — well beyond the
+        // 5-minute default ReplayWindow. The receiver must reject as a replay.
+        var payload = new { eventType = "user_updated", userId = "user-1" };
+        DateTimeOffset signedAt = _clock.GetUtcNow().AddMinutes(-10);
+        using HttpRequestMessage request = CreateSignedRequest(payload, signedAt);
+
+        using HttpResponseMessage response = await _client.SendAsync(
+            request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
+        await _lookupService.DidNotReceive().RefreshByIdAsync(
+            Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 }
 

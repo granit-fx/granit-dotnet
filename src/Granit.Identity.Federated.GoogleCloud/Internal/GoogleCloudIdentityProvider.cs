@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Granit.Events;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.GoogleCloud.Diagnostics;
 using Granit.Identity.Federated.GoogleCloud.Options;
 using Granit.Identity.Models;
@@ -24,7 +26,17 @@ internal sealed partial class GoogleCloudIdentityProvider(
     IDistributedEventBus distributedEventBus,
     ILogger<GoogleCloudIdentityProvider> logger) : IIdentityProvider
 {
+    private const string ProviderName = "google-cloud";
     private readonly GoogleCloudIdentityOptions _options = options.Value;
+
+    /// <summary>
+    /// Detects authorisation failures from Identity Toolkit. <see cref="FirebaseException.ErrorCode"/>
+    /// surfaces <see cref="ErrorCode.Unauthenticated"/> (service-account credential missing or expired)
+    /// and <see cref="ErrorCode.PermissionDenied"/> (service account lacks the required IAM role) —
+    /// both must surface as the canonical federated unauthorised signal.
+    /// </summary>
+    private static bool IsAuthorizationFailure(FirebaseException ex) =>
+        ex.ErrorCode is ErrorCode.Unauthenticated or ErrorCode.PermissionDenied;
 
     // ── Users ─────────────────────────────────────────────────────────
 
@@ -35,37 +47,32 @@ internal sealed partial class GoogleCloudIdentityProvider(
         using Activity? activity = IdentityGoogleCloudActivitySource.Source.StartActivity(
             IdentityGoogleCloudActivitySource.Operations.ListUsers);
 
+        // Firebase Admin SDK's ListUsers cursor does not support server-side filter.
+        // The previous implementation materialised every user in memory then filtered —
+        // that is a DoS / mass-enumeration risk on directories with 100k+ users (VULN-204).
+        // Refuse search requests rather than silently fall back to the unsafe pattern.
+        if (!string.IsNullOrEmpty(search))
+        {
+            throw new NotSupportedException(
+                "Firebase Auth does not expose a server-side search filter on ListUsers. " +
+                "Granit refuses to materialise the full user directory in memory to filter it. " +
+                "Search is only available via the Identity Toolkit REST API (premium) or via " +
+                "the local Granit.Identity user-cache. Pass search=null to list users by page.");
+        }
+
         try
         {
-            IReadOnlyList<ExportedUserRecord> records = await transport.ListUsersAsync(cancellationToken).ConfigureAwait(false);
-            List<FederatedIdentityUser> users = [];
+            IReadOnlyList<ExportedUserRecord> records = await transport
+                .ListUsersAsync(first, max, cancellationToken)
+                .ConfigureAwait(false);
 
-            foreach (ExportedUserRecord user in records)
-            {
-                if (search is not null &&
-                    !(user.Email?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false) &&
-                    !(user.DisplayName?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false))
-                {
-                    continue;
-                }
-
-                users.Add(MapUser(user));
-            }
-
-            IEnumerable<FederatedIdentityUser> result = users.AsEnumerable();
-            if (first.HasValue)
-            {
-                result = result.Skip(first.Value);
-            }
-
-            if (max.HasValue)
-            {
-                result = result.Take(max.Value);
-            }
-
-            return result.ToList();
+            return records.Select(MapUser).Cast<IIdentityUser>().ToList();
         }
-        catch (Exception ex)
+        catch (FirebaseAuthException ex) when (IsAuthorizationFailure(ex))
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
+        }
+        catch (Exception ex) when (ex is not NotSupportedException)
         {
             LogListUsersFailed(ex);
             return [];
@@ -86,6 +93,10 @@ internal sealed partial class GoogleCloudIdentityProvider(
         catch (FirebaseAuthException ex) when (ex.AuthErrorCode == AuthErrorCode.UserNotFound)
         {
             return null;
+        }
+        catch (FirebaseAuthException ex) when (IsAuthorizationFailure(ex))
+        {
+            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
         catch (Exception ex)
         {

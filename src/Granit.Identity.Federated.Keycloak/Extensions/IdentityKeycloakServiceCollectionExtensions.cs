@@ -5,6 +5,7 @@ using Granit.Identity.Federated.Keycloak.HealthChecks;
 using Granit.Identity.Federated.Keycloak.Internal;
 using Granit.Identity.Federated.Keycloak.Internal.Sync;
 using Granit.Identity.Federated.Keycloak.Options;
+using Granit.Identity.Federated.RateLimiting;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -54,6 +55,12 @@ public static class IdentityKeycloakServiceCollectionExtensions
 
         services.TryAddSingleton<KeycloakAdminTokenService>();
         services.TryAddTransient<KeycloakUserTokenExchangeService>();
+
+        // Defensive registration: hosts that wire Keycloak via the DI extension (rather
+        // than via the module loader) still get the no-op rate limiter so the
+        // KeycloakUserTokenExchangeService dependency resolves. Production hosts should
+        // replace this with a Granit.RateLimiting-backed implementation (see VULN-207).
+        services.TryAddSingleton<ITokenExchangeRateLimiter, NullTokenExchangeRateLimiter>();
         services.AddIdentityProvider<KeycloakIdentityProvider>();
         services.Replace(ServiceDescriptor.Scoped<IIdentityProviderCapabilities, KeycloakIdentityProviderCapabilities>());
 
