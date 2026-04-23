@@ -170,6 +170,7 @@
   </ItemGroup>
   <ItemGroup Label="Tests">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.*" />
+    <PackageVersion Include="Testcontainers.Keycloak" Version="4.*" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.11.*" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.*" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.*" />

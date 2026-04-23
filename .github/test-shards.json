@@ -240,6 +240,7 @@
         "tests/Granit.Identity.Federated.EntraId.Tests",
         "tests/Granit.Identity.Federated.GoogleCloud.Tests",
         "tests/Granit.Identity.Federated.Keycloak.Tests",
+        "tests/Granit.Identity.Federated.Keycloak.Tests.Integration",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.Identity.Local.Endpoints.Tests",

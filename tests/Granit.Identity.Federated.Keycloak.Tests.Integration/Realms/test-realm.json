@@ -1,0 +1,52 @@
+{
+  "realm": "granit-test",
+  "enabled": true,
+  "sslRequired": "none",
+  "clients": [
+    {
+      "clientId": "granit-admin",
+      "enabled": true,
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "secret": "granit-admin-secret"
+    },
+    {
+      "clientId": "showcase-admin",
+      "enabled": true,
+      "publicClient": true
+    },
+    {
+      "clientId": "showcase-patient",
+      "enabled": true,
+      "publicClient": true
+    }
+  ],
+  "roles": {
+    "client": {
+      "showcase-admin": [
+        {
+          "name": "editor",
+          "description": "Edit showcase documents",
+          "clientRole": true
+        },
+        {
+          "name": "viewer",
+          "description": "Read showcase documents",
+          "clientRole": true
+        },
+        {
+          "name": "admin",
+          "description": "Full administrative access to showcase",
+          "clientRole": true
+        }
+      ],
+      "showcase-patient": [
+        {
+          "name": "viewer",
+          "description": "Patient-app viewer",
+          "clientRole": true
+        }
+      ]
+    }
+  }
+}
