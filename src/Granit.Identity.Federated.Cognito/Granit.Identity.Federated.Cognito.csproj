@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Federated.Cognito.Tests" />
+    <InternalsVisibleTo Include="Granit.Identity.Federated.Cognito.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
