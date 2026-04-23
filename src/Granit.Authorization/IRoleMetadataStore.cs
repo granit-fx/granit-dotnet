@@ -45,6 +45,19 @@ public interface IRoleMetadataStore
     /// </summary>
     Task<IReadOnlyList<RoleMetadata>> ListAllAsync(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Returns the roles scoped to the given OIDC <paramref name="clientId"/>. Pass
+    /// <see langword="null"/> to list realm-scoped rows (<c>ClientId IS NULL</c>).
+    /// </summary>
+    /// <remarks>
+    /// Used by the client-role sync (ADR-029) to compute the per-client orphan set —
+    /// the rows that were in the store last pass but are no longer returned by the
+    /// upstream provider.
+    /// </remarks>
+    Task<IReadOnlyList<RoleMetadata>> ListByClientIdAsync(
+        string? clientId,
+        CancellationToken cancellationToken = default);
+
     /// <summary>Adds a new role metadata row.</summary>
     Task AddAsync(RoleMetadata role, CancellationToken cancellationToken = default);
 

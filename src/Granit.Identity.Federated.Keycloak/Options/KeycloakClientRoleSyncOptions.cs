@@ -1,3 +1,5 @@
+using Granit.Authorization;
+
 namespace Granit.Identity.Federated.Keycloak.Options;
 
 /// <summary>
@@ -25,4 +27,11 @@ public sealed class KeycloakClientRoleSyncOptions
     /// have no application relevance.
     /// </summary>
     public IReadOnlyList<string> TrackedClientIds { get; set; } = [];
+
+    /// <summary>
+    /// Policy applied to <see cref="Granit.Authorization.Domain.RoleMetadata"/> rows whose
+    /// upstream Keycloak client role disappears between sync runs. See ADR-029.
+    /// Default: <see cref="OrphanedRolePolicy.KeepAndLog"/> — preserves the Phase 2 behaviour.
+    /// </summary>
+    public OrphanedRolePolicy OrphanedRolePolicy { get; set; } = OrphanedRolePolicy.KeepAndLog;
 }

@@ -6333,7 +6333,13 @@
           "name": "RoleMetadata",
           "kind": "method",
           "signature": "RoleMetadata()",
-          "returnType": "string? Description { get; private set; } public bool IsSystem { get; private set; } private"
+          "returnType": "string? Description { get; private set; } public bool IsSystem { get; private set; } public bool IsOrphaned { get; private set; } public DateTimeOffset? OrphanedAt { get; private set; } private"
+        },
+        {
+          "name": "MarkAsOrphaned",
+          "kind": "method",
+          "signature": "MarkAsOrphaned(DateTimeOffset now)",
+          "returnType": "void"
         }
       ]
     },
@@ -6554,6 +6560,24 @@
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/Events/RoleDeletedEvent.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "RoleOrphanedEvent",
+      "fqn": "Granit.Authorization.Events.RoleOrphanedEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/RoleOrphanedEvent.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "RoleRestoredEvent",
+      "fqn": "Granit.Authorization.Events.RoleRestoredEvent",
+      "kind": "record",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Events/RoleRestoredEvent.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -6888,6 +6912,12 @@
           "returnType": "Task<IReadOnlyList<RoleMetadata>>"
         },
         {
+          "name": "ListByClientIdAsync",
+          "kind": "method",
+          "signature": "ListByClientIdAsync(string? clientId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<RoleMetadata>>"
+        },
+        {
           "name": "AddAsync",
           "kind": "method",
           "signature": "AddAsync(RoleMetadata role, CancellationToken cancellationToken = default)",
@@ -6928,6 +6958,15 @@
           "returnType": "TimeSpan CacheDuration { get; set; } = TimeSpan."
         }
       ]
+    },
+    {
+      "name": "OrphanedRolePolicy",
+      "fqn": "Granit.Authorization.OrphanedRolePolicy",
+      "kind": "enum",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/OrphanedRolePolicy.cs",
+      "line": 14,
+      "members": []
     },
     {
       "name": "PermissionDefinition",
@@ -17647,7 +17686,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Options/CognitoClientRoleSyncOptions.cs",
-      "line": 23,
+      "line": 25,
       "members": [
         {
           "name": "Enabled",
@@ -17666,6 +17705,12 @@
           "kind": "property",
           "signature": "string Delimiter",
           "returnType": "string"
+        },
+        {
+          "name": "OrphanedRolePolicy",
+          "kind": "property",
+          "signature": "OrphanedRolePolicy OrphanedRolePolicy",
+          "returnType": "OrphanedRolePolicy"
         }
       ]
     },
@@ -17878,7 +17923,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Options/EntraIdClientRoleSyncOptions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "Enabled",
@@ -17891,6 +17936,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<string> TrackedAppIds",
           "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "OrphanedRolePolicy",
+          "kind": "property",
+          "signature": "OrphanedRolePolicy OrphanedRolePolicy",
+          "returnType": "OrphanedRolePolicy"
         }
       ]
     },
@@ -18122,7 +18173,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Options/KeycloakClientRoleSyncOptions.cs",
-      "line": 9,
+      "line": 11,
       "members": [
         {
           "name": "Enabled",
@@ -18135,6 +18186,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<string> TrackedClientIds",
           "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "OrphanedRolePolicy",
+          "kind": "property",
+          "signature": "OrphanedRolePolicy OrphanedRolePolicy",
+          "returnType": "OrphanedRolePolicy"
         }
       ]
     },

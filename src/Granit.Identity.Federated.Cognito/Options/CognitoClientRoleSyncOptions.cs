@@ -1,3 +1,5 @@
+using Granit.Authorization;
+
 namespace Granit.Identity.Federated.Cognito.Options;
 
 /// <summary>
@@ -50,4 +52,12 @@ public sealed class CognitoClientRoleSyncOptions
     /// when an existing deployment already uses a different separator.
     /// </remarks>
     public string Delimiter { get; set; } = ":";
+
+    /// <summary>
+    /// Policy applied to <see cref="Granit.Authorization.Domain.RoleMetadata"/> rows whose
+    /// upstream Cognito group disappears between sync runs (deleted from the User Pool or
+    /// renamed out of the tracked prefix). See ADR-029. Default:
+    /// <see cref="OrphanedRolePolicy.KeepAndLog"/> — preserves the Phase 2 behaviour.
+    /// </summary>
+    public OrphanedRolePolicy OrphanedRolePolicy { get; set; } = OrphanedRolePolicy.KeepAndLog;
 }
