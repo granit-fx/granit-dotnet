@@ -839,7 +839,10 @@
     {
       "name": "Granit.Identity.Federated.Cognito",
       "deps": [
-        "Granit.Identity.Federated"
+        "Granit.Authorization",
+        "Granit.Guids",
+        "Granit.Identity.Federated",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -17542,7 +17545,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Extensions/IdentityCognitoServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitIdentityCognito",
@@ -17593,6 +17596,34 @@
           "kind": "property",
           "signature": "string? AppClientId",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "CognitoClientRoleSyncOptions",
+      "fqn": "Granit.Identity.Federated.Cognito.Options.CognitoClientRoleSyncOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/Options/CognitoClientRoleSyncOptions.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        },
+        {
+          "name": "TrackedAppClientIds",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> TrackedAppClientIds",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "Delimiter",
+          "kind": "property",
+          "signature": "string Delimiter",
+          "returnType": "string"
         }
       ]
     },

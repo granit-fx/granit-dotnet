@@ -81,7 +81,11 @@ public static class IdentityProviderEndpointRouteBuilderExtensions
         // -- Sessions --
         RouteGroupBuilder sessionsRead = group.MapGranitGroup("/users/{userId}/sessions")
             .RequireAuthorization(IdentityPermissions.Sessions.Read);
-        sessionsRead.MapProviderSessionEndpoints();
+        sessionsRead.MapProviderSessionReadEndpoints();
+
+        RouteGroupBuilder sessionsWrite = group.MapGranitGroup("/users/{userId}/sessions")
+            .RequireAuthorization(IdentityPermissions.Sessions.Manage);
+        sessionsWrite.MapProviderSessionWriteEndpoints();
 
         RouteGroupBuilder devicesRead = group.MapGranitGroup("/users/{userId}/devices")
             .RequireAuthorization(IdentityPermissions.Sessions.Read);

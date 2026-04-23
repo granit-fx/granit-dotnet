@@ -33,6 +33,7 @@ public sealed class CognitoIdentityProviderTests
         _sut = new CognitoIdentityProvider(
             _cognitoClient,
             Microsoft.Extensions.Options.Options.Create(options),
+            Microsoft.Extensions.Options.Options.Create(new CognitoClientRoleSyncOptions()),
             _distributedEventBus,
             NullLogger<CognitoIdentityProvider>.Instance);
     }

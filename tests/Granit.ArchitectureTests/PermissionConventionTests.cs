@@ -108,6 +108,105 @@ public sealed partial class PermissionConventionTests
             $"Violators: {string.Join("; ", violations)}");
     }
 
+    /// <summary>
+    /// Every permission constant declared in <c>*Permissions.cs</c> must be referenced by at
+    /// least one <c>RequireAuthorization(...)</c> call in the same module. Catches dead
+    /// constants and, more importantly, constants that are documented but never wired —
+    /// e.g. a <c>Manage</c> permission left orphaned while writes inherit a <c>Read</c>
+    /// group's policy.
+    /// </summary>
+    [Fact]
+    public void Permission_constants_should_be_referenced_by_RequireAuthorization()
+    {
+        string srcDir = Path.Join(RepoRoot, "src");
+
+        List<string> violations = [];
+
+        foreach (string permissionFile in GetPermissionFiles(srcDir))
+        {
+            string moduleDir = ModuleDirectoryFor(permissionFile, srcDir);
+            string[] moduleFiles = Directory.GetFiles(moduleDir, "*.cs", SearchOption.AllDirectories);
+            string relativePermissionPath = Path.GetRelativePath(RepoRoot, permissionFile);
+
+            foreach ((string name, string value, int lineNumber) in EnumeratePermissionConstants(permissionFile))
+            {
+                if (name == "GroupName")
+                {
+                    continue;
+                }
+
+                bool referenced = false;
+                foreach (string file in moduleFiles)
+                {
+                    if (string.Equals(file, permissionFile, StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    if (file.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)
+                        || file.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar))
+                    {
+                        continue;
+                    }
+
+                    string content = File.ReadAllText(file);
+                    if (content.Contains($"\"{value}\"", StringComparison.Ordinal)
+                        || ContainsConstantReference(content, value))
+                    {
+                        referenced = true;
+                        break;
+                    }
+                }
+
+                if (!referenced)
+                {
+                    violations.Add($"{relativePermissionPath}:{lineNumber} {name} = \"{value}\" is never referenced");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Every permission constant must be wired to at least one RequireAuthorization call. " +
+            $"Orphaned constants: {string.Join("; ", violations)}");
+    }
+
+    private static string ModuleDirectoryFor(string permissionFile, string srcDir)
+    {
+        string relativePath = Path.GetRelativePath(srcDir, permissionFile);
+        string moduleName = relativePath.Split(Path.DirectorySeparatorChar)[0];
+        return Path.Join(srcDir, moduleName);
+    }
+
+    private static IEnumerable<(string Name, string Value, int LineNumber)> EnumeratePermissionConstants(string file)
+    {
+        int lineNumber = 0;
+        foreach (string line in File.ReadLines(file))
+        {
+            lineNumber++;
+            Match match = PermissionConstant().Match(line);
+            if (match.Success)
+            {
+                yield return (match.Groups[1].Value, match.Groups[2].Value, lineNumber);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Detects qualified references such as <c>IdentityPermissions.Sessions.Manage</c>
+    /// derived from the constant value <c>Identity.Sessions.Manage</c>.
+    /// </summary>
+    private static bool ContainsConstantReference(string content, string permissionValue)
+    {
+        string[] segments = permissionValue.Split('.');
+        if (segments.Length != 3)
+        {
+            return false;
+        }
+
+        string qualified = $".{segments[1]}.{segments[2]}";
+        return content.Contains(qualified, StringComparison.Ordinal);
+    }
+
     private static IEnumerable<string> GetPermissionFiles(string srcDir)
     {
         foreach (string csFile in Directory.GetFiles(srcDir, "*Permissions.cs", SearchOption.AllDirectories))
@@ -135,7 +234,8 @@ public sealed partial class PermissionConventionTests
         string? dir = Path.GetDirectoryName(typeof(PermissionConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            if (Directory.Exists(Path.Join(dir, ".git")))
+            string gitPath = Path.Join(dir, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

@@ -25,6 +25,9 @@ internal static class IdentityCognitoActivitySource
         public const string AddUserToGroup = "cognito.add-user-to-group";
         public const string RemoveUserFromGroup = "cognito.remove-user-from-group";
         public const string GlobalSignOut = "cognito.global-sign-out";
+        public const string ListUserPoolClients = "cognito.list-user-pool-clients";
+        public const string GetClientRoles = "cognito.get-client-roles";
+        public const string GetUserClientRoles = "cognito.get-user-client-roles";
 #pragma warning disable GRSEC003 // Operation names, not secrets
         public const string SetPassword = "cognito.set-password";
         public const string ResetPassword = "cognito.reset-password";
@@ -37,5 +40,6 @@ internal static class IdentityCognitoActivitySource
     {
         public const string UserPoolId = "cognito.user_pool_id";
         public const string UserId = "cognito.user_id";
+        public const string ClientId = "cognito.client_id";
     }
 }

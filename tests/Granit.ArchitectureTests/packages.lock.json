@@ -2157,7 +2157,10 @@
         "type": "Project",
         "dependencies": {
           "AWSSDK.CognitoIdentityProvider": "[4.*, )",
-          "Granit.Identity.Federated": "[0.1.0-dev, )"
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Identity.Federated": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
         }
       },
       "granit.identity.federated.entityframeworkcore": {
