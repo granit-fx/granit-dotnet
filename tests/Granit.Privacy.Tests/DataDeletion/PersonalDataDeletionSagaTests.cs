@@ -58,7 +58,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent();
 
-        await saga.StartAsync(evt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(evt, DefaultOptions(), context, _tracker, _metrics);
 
         saga.Id.ShouldBe(evt.RequestId);
         saga.UserId.ShouldBe(evt.UserId);
@@ -74,7 +74,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent();
 
-        await saga.StartAsync(evt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(evt, DefaultOptions(), context, _tracker, _metrics);
 
         await _tracker.Received(1).RecordDeferredAsync(
             evt.RequestId, evt.UserId, evt.Reason, evt.RequestedAt, evt.ScheduledDeletionAt,
@@ -88,7 +88,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent(graceDays: 30);
 
-        await saga.StartAsync(evt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(evt, DefaultOptions(), context, _tracker, _metrics);
 
         // Two ScheduleAsync calls: reminder + deadline
         await context.Received(2).PublishAsync(
@@ -103,7 +103,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto evt = CreateDeferredEvent(graceDays: 2); // < 3 days reminder
 
-        await saga.StartAsync(evt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(evt, DefaultOptions(), context, _tracker, _metrics);
 
         // Only deadline, no reminder
         await context.Received(1).PublishAsync(
@@ -119,7 +119,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
-        await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(startEvt, DefaultOptions(), context, _tracker, _metrics);
 
         DeletionReminderDueEto result = saga.Handle(
             new DeletionReminderDueEvent(startEvt.RequestId), _metrics);
@@ -135,7 +135,7 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
     {
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
         saga.Handle(new DeletionReminderDueEvent(saga.Id), _metrics);
 
@@ -150,9 +150,9 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
-        await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(startEvt, DefaultOptions(), context, _tracker, _metrics);
 
-        object[] results = await saga.HandleAsync(
+        object[] results = await saga.Handle(
             new DeletionDeadlineReachedEvent(startEvt.RequestId),
             _tracker, _metrics, _timeProvider);
 
@@ -166,9 +166,9 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
     {
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
-        await saga.HandleAsync(
+        await saga.Handle(
             new DeletionDeadlineReachedEvent(saga.Id),
             _tracker, _metrics, _timeProvider);
 
@@ -183,10 +183,10 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
     {
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
-        await saga.StartAsync(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(CreateDeferredEvent(), DefaultOptions(), context, _tracker, _metrics);
 
         DateTimeOffset cancelledAt = DateTimeOffset.UtcNow;
-        await saga.HandleAsync(
+        await saga.Handle(
             new DeletionCancelledEto(saga.Id, saga.UserId, cancelledAt),
             _tracker, _metrics);
 
@@ -200,9 +200,9 @@ public sealed class PersonalDataDeletionSagaTests : IDisposable
         PersonalDataDeletionSaga saga = new();
         IMessageContext context = Substitute.For<IMessageContext>();
         DeletionDeferredEto startEvt = CreateDeferredEvent();
-        await saga.StartAsync(startEvt, DefaultOptions(), context, _tracker, _metrics);
+        await saga.Start(startEvt, DefaultOptions(), context, _tracker, _metrics);
 
-        await saga.HandleAsync(
+        await saga.Handle(
             new DeletionCancelledEto(saga.Id, saga.UserId, DateTimeOffset.UtcNow),
             _tracker, _metrics);
 

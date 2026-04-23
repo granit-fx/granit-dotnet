@@ -34101,9 +34101,9 @@
           "returnType": "DateTimeOffset"
         },
         {
-          "name": "StartAsync",
+          "name": "Start",
           "kind": "method",
-          "signature": "StartAsync(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
+          "signature": "Start(DeletionDeferredEto @event, IOptions<GranitPrivacyOptions> options, IMessageContext context, IDeletionRequestTrackerWriter tracker, PrivacyMetrics metrics)",
           "returnType": "string? TenantId { get; set; } public bool ReminderSent { get; set; } public Task"
         }
       ]
@@ -34277,9 +34277,9 @@
           "returnType": "string"
         },
         {
-          "name": "StartAsync",
+          "name": "Start",
           "kind": "method",
-          "signature": "StartAsync(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
+          "signature": "Start(PersonalDataRequestedEto @event, IDataProviderRegistry registry, IOptions<GranitPrivacyOptions> options, IMessageContext context, PrivacyMetrics metrics)",
           "returnType": "string? TenantId { get; set; } public DateTimeOffset RequestedAt { get; set; } public Task<ExportCompletedEto?>"
         }
       ]

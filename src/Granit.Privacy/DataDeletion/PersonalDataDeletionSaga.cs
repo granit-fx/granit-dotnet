@@ -64,7 +64,10 @@ public sealed class PersonalDataDeletionSaga : Saga
     /// Starts the Saga when a user defers their deletion request.
     /// Schedules a reminder notification and the actual deletion deadline.
     /// </summary>
-    public async Task StartAsync(
+    // NOTE: Named `Start` (no `Async` suffix) so Wolverine's SagaChain discovers it.
+    // SagaChain.findByNames is strict-match and does NOT strip `Async`, unlike general
+    // handler discovery. An `Async`-suffixed name compiles to a silent no-op handler.
+    public async Task Start(
         DeletionDeferredEto @event,
         IOptions<GranitPrivacyOptions> options,
         IMessageContext context,
@@ -120,7 +123,8 @@ public sealed class PersonalDataDeletionSaga : Saga
     /// <see cref="PersonalDataDeletionRequestedEto"/> and sends a confirmation
     /// via <see cref="DeletionExecutedEto"/>.
     /// </summary>
-    public async Task<object[]> HandleAsync(
+    // NOTE: Named `Handle` (no `Async` suffix) — see the comment on `Start` above.
+    public async Task<object[]> Handle(
         DeletionDeadlineReachedEvent @event,
         IDeletionRequestTrackerWriter tracker,
         PrivacyMetrics metrics,
@@ -143,7 +147,8 @@ public sealed class PersonalDataDeletionSaga : Saga
     /// Handles cancellation — the Saga terminates and future scheduled events
     /// (reminder, deadline) are silently discarded by Wolverine.
     /// </summary>
-    public async Task HandleAsync(
+    // NOTE: Named `Handle` (no `Async` suffix) — see the comment on `Start` above.
+    public async Task Handle(
         DeletionCancelledEto @event,
         IDeletionRequestTrackerWriter tracker,
         PrivacyMetrics metrics)

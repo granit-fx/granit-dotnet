@@ -57,7 +57,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         var userId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, userId, DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.StartAsync(evt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(evt, registry, DefaultOptions(), context, _metrics);
 
         saga.Id.ShouldBe(requestId);
         saga.UserId.ShouldBe(userId);
@@ -75,7 +75,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         var requestId = Guid.NewGuid();
         PersonalDataRequestedEto evt = new(requestId, Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.StartAsync(evt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(evt, registry, DefaultOptions(), context, _metrics);
 
         // ScheduleAsync is an extension method that calls PublishAsync with DeliveryOptions.
         // NSubstitute cannot intercept extension methods, so we verify the underlying PublishAsync call.
@@ -91,7 +91,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result1 = saga.Handle(
             new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-1", "application/json"), _metrics);
@@ -111,7 +111,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
         ExportCompletedEto? result = saga.Handle(
@@ -138,7 +138,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("patients", "billing", "appointments");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "patients", "blob-patients", "application/json"), _metrics);
         saga.Handle(new PersonalDataPreparedEto(startEvt.RequestId, "billing", "blob-billing", "application/json"), _metrics);
@@ -162,7 +162,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         DataProviderRegistry emptyRegistry = new();
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        ExportCompletedEto? result = await saga.StartAsync(evt, emptyRegistry, DefaultOptions(), context, _metrics);
+        ExportCompletedEto? result = await saga.Start(evt, emptyRegistry, DefaultOptions(), context, _metrics);
 
         result.ShouldNotBeNull();
         result!.IsPartial.ShouldBeFalse();
@@ -209,7 +209,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         DataProviderRegistry registry = BuildRegistry("auth");
         PersonalDataRequestedEto evt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
 
-        await saga.StartAsync(evt, registry, options, context, _metrics);
+        await saga.Start(evt, registry, options, context, _metrics);
 
         // ScheduleAsync(message, TimeSpan) sets ScheduleDelay (relative), not ScheduledTime (absolute).
         await context.Received(1).PublishAsync(
@@ -230,7 +230,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         IMessageContext context = Substitute.For<IMessageContext>();
         DataProviderRegistry registry = BuildRegistry("auth");
         PersonalDataRequestedEto startEvt = new(Guid.NewGuid(), Guid.NewGuid(), DateTimeOffset.UtcNow, "EU_GDPR");
-        await saga.StartAsync(startEvt, registry, DefaultOptions(), context, _metrics);
+        await saga.Start(startEvt, registry, DefaultOptions(), context, _metrics);
 
         ExportCompletedEto? result = saga.Handle(
             new PersonalDataPreparedEto(startEvt.RequestId, "auth", "blob-auth", "application/json"), _metrics);

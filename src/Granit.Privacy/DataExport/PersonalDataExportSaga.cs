@@ -64,7 +64,10 @@ public sealed class PersonalDataExportSaga : Saga
     /// If no providers are registered, completes immediately.
     /// Otherwise, schedules a timeout to handle unresponsive providers.
     /// </summary>
-    public async Task<ExportCompletedEto?> StartAsync(
+    // NOTE: Named `Start` (no `Async` suffix) so Wolverine's SagaChain discovers it.
+    // SagaChain.findByNames is strict-match and does NOT strip `Async`, unlike general
+    // handler discovery. An `Async`-suffixed name compiles to a silent no-op handler.
+    public async Task<ExportCompletedEto?> Start(
         PersonalDataRequestedEto @event,
         IDataProviderRegistry registry,
         IOptions<GranitPrivacyOptions> options,

@@ -23,6 +23,24 @@ public sealed class SagaConventionTests
         "StartsOrHandleAsync",
     ];
 
+    // Base names Wolverine's SagaChain.findByNames matches STRICTLY (no `Async` stripping,
+    // unlike general HandlerDiscovery). Suffixing any of these with `Async` on a Saga
+    // produces a method that's discovered as a handler but silently filtered out of the
+    // generated chain — leading to a saga that's constructed but never initialized
+    // (Id stays Guid.Empty) and then fails lightweight-storage insert at runtime with
+    // `ArgumentOutOfRangeException: You must define the saga id`.
+    //
+    // Upstream reference: SagaChain.DetermineFrames in WolverineFx.
+    private static readonly string[] CodegenBaseNames =
+    [
+        "Start", "Starts",
+        "Handle", "Handles",
+        "Orchestrate", "Orchestrates",
+        "Consume", "Consumes",
+        "StartOrHandle", "StartsOrHandles",
+        "NotFound",
+    ];
+
     /// <summary>
     /// Wolverine resolves the saga id from the initiating message via (in order):
     /// <c>[SagaIdentity]</c>, <c>[SagaIdentityFrom]</c> on the parameter,
@@ -88,6 +106,77 @@ public sealed class SagaConventionTests
             "Every message that starts a Wolverine saga must expose a resolvable saga identity. " +
             "Without it, Wolverine persists the saga with Guid.Empty and the PostgreSQL " +
             "lightweight saga storage throws ArgumentOutOfRangeException at runtime.");
+    }
+
+    /// <summary>
+    /// Wolverine's <c>SagaChain.findByNames</c> matches codegen-relevant method names
+    /// strictly — it does NOT strip the <c>Async</c> suffix the way general
+    /// <c>HandlerDiscovery</c> does. Declaring <c>StartAsync</c> / <c>HandleAsync</c>
+    /// (or <c>OrchestrateAsync</c>, <c>ConsumeAsync</c>, etc.) on a Saga therefore
+    /// produces a silently-skipped handler: the saga is constructed but its method is
+    /// never invoked, so <c>Id</c> stays <see cref="Guid.Empty"/> and lightweight
+    /// saga storage throws at insert time.
+    /// </summary>
+    [Fact]
+    public void Saga_methods_must_not_use_Async_suffix_for_codegen_names()
+    {
+        string outputDir = Path.GetDirectoryName(typeof(SagaConventionTests).Assembly.Location)!;
+
+        Assembly[] granitAssemblies = Directory.GetFiles(outputDir, "Granit.*.dll")
+            .Where(path => !Path.GetFileNameWithoutExtension(path).Contains("Tests"))
+            .Select(TryLoadAssembly)
+            .Where(a => a is not null)
+            .ToArray()!;
+
+        List<string> violations = [];
+
+        foreach (Assembly assembly in granitAssemblies)
+        {
+            Type[] sagaTypes;
+            try
+            {
+                sagaTypes = assembly.GetTypes()
+                    .Where(t => !t.IsAbstract && typeof(Saga).IsAssignableFrom(t))
+                    .ToArray();
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                continue;
+            }
+
+            foreach (Type sagaType in sagaTypes)
+            {
+                MethodInfo[] methods = sagaType.GetMethods(
+                    BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+                foreach (MethodInfo method in methods)
+                {
+                    if (!method.Name.EndsWith("Async", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    string baseName = method.Name[..^"Async".Length];
+                    if (!CodegenBaseNames.Contains(baseName, StringComparer.Ordinal))
+                    {
+                        continue;
+                    }
+
+                    violations.Add(
+                        $"{sagaType.FullName}.{method.Name}: rename to '{baseName}'. " +
+                        "Wolverine's SagaChain.findByNames does not strip the 'Async' suffix, " +
+                        "so this method is silently skipped by codegen even though it's " +
+                        "visible to handler discovery.");
+                }
+            }
+        }
+
+        violations.ShouldBeEmpty(
+            "Saga methods that map to Wolverine codegen slots (Start/Handle/Orchestrate/" +
+            "Consume/NotFound) must NOT carry the 'Async' suffix — SagaChain matches them " +
+            "strictly and silently drops Async-suffixed variants, producing a saga that " +
+            "is persisted with Guid.Empty and then fails lightweight-storage insert at " +
+            "runtime.");
     }
 
     private static IEnumerable<MethodInfo> GetStartMethods(Type sagaType) =>
