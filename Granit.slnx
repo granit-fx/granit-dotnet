@@ -366,6 +366,7 @@
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests/Granit.Identity.Federated.Cognito.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Cognito.Tests.Integration/Granit.Identity.Federated.Cognito.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Identity.Federated.EntityFrameworkCore.Tests/Granit.Identity.Federated.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.EntraId.Tests/Granit.Identity.Federated.EntraId.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.EntraId.Tests.Integration/Granit.Identity.Federated.EntraId.Tests.Integration.csproj" />
