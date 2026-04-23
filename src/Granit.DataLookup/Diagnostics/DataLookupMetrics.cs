@@ -23,19 +23,19 @@ public sealed class DataLookupMetrics
         Meter meter = meterFactory.Create(MeterName);
 
         _searches = meter.CreateCounter<long>(
-            "granit.datalookup.search.executed",
+            "granit.data_lookup.search.executed",
             description: "Number of lookup search queries executed.");
 
         _resolves = meter.CreateCounter<long>(
-            "granit.datalookup.resolve.executed",
+            "granit.data_lookup.resolve.executed",
             description: "Number of single-value resolve lookups executed.");
 
         _missingScope = meter.CreateCounter<long>(
-            "granit.datalookup.scope.missing",
+            "granit.data_lookup.scope.missing",
             description: "Lookup queries rejected because one or more declared scope keys were missing.");
 
         _searchDuration = meter.CreateHistogram<double>(
-            "granit.datalookup.search.duration",
+            "granit.data_lookup.search.duration",
             unit: "s",
             description: "Duration of lookup search execution in seconds.");
     }

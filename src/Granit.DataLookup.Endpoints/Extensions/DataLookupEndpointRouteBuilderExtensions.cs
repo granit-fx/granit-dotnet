@@ -55,7 +55,6 @@ public static class DataLookupEndpointRouteBuilderExtensions
                 "context and any scope parameters declared by the source (scope.* query string).")
             .Produces<LookupResultResponse>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
-            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/{name}/resolve", LookupEndpointHandlers.ResolveAsync)
@@ -65,7 +64,7 @@ public static class DataLookupEndpointRouteBuilderExtensions
                 "Used by clients to rehydrate a previously selected value into a " +
                 "human-readable label. Returns 404 if the value is not present in the source.")
             .Produces<LookupItemResponse>()
-            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
