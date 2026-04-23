@@ -15,5 +15,8 @@ internal sealed class AccountChangeEmailRequestValidator : GranitValidator<Accou
             .NotEmpty()
             .EmailAddress()
             .MaximumLength(256);
+
+        RuleFor(x => x.CurrentPassword)
+            .NotEmpty();
     }
 }

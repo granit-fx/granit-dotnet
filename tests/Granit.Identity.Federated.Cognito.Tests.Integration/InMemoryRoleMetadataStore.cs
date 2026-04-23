@@ -25,6 +25,10 @@ internal sealed class InMemoryRoleMetadataStore : IRoleMetadataStore
 
     public Task<IReadOnlyList<RoleMetadata>> ListAllAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<RoleMetadata>>(_rows);
+    public Task<IReadOnlyList<RoleMetadata>> ListByClientIdAsync(
+        string? clientId, CancellationToken cancellationToken = default) =>
+        Task.FromResult<IReadOnlyList<RoleMetadata>>(_rows.Where(r => r.ClientId == clientId).ToList());
+
 
     public Task AddAsync(RoleMetadata role, CancellationToken cancellationToken = default)
     {

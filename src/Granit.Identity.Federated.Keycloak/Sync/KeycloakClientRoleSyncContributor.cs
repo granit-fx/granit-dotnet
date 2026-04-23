@@ -1,6 +1,6 @@
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 
-namespace Granit.Identity.Federated.Keycloak.Internal.Sync;
+namespace Granit.Identity.Federated.Keycloak.Sync;
 
 /// <summary>
 /// Host-level data seed contributor that triggers

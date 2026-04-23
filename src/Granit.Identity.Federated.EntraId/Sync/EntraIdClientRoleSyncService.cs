@@ -10,7 +10,7 @@ using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Identity.Federated.EntraId.Internal.Sync;
+namespace Granit.Identity.Federated.EntraId.Sync;
 
 /// <summary>
 /// Pure sync logic — enumerates Entra App Roles for every tracked application and
@@ -18,7 +18,7 @@ namespace Granit.Identity.Federated.EntraId.Internal.Sync;
 /// <c>(Name, TenantId, ClientId)</c> unique index. Failure policy: log &amp; skip.
 /// Orphan handling per ADR-029 (see <see cref="EntraIdClientRoleSyncOptions.OrphanedRolePolicy"/>).
 /// </summary>
-internal sealed partial class EntraIdClientRoleSyncService(
+public sealed partial class EntraIdClientRoleSyncService(
     IIdentityClientRoleManager clientRoleManager,
     IRoleMetadataStore roleMetadataStore,
     IGuidGenerator guidGenerator,

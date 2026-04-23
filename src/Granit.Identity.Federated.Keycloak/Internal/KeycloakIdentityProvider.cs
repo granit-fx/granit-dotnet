@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Granit.Diagnostics;
@@ -6,6 +7,7 @@ using Granit.Events;
 using Granit.Identity.Diagnostics;
 using Granit.Identity.Events;
 using Granit.Identity.Federated;
+using Granit.Identity.Federated.Exceptions;
 using Granit.Identity.Federated.Keycloak.Diagnostics;
 using Granit.Identity.Federated.Keycloak.Exceptions;
 using Granit.Identity.Federated.Keycloak.Options;
@@ -38,6 +40,16 @@ internal sealed partial class KeycloakIdentityProvider(
     ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     private const string ProviderName = "keycloak";
+
+    /// <summary>
+    /// Detects authorisation failures wrapped in <see cref="HttpRequestException"/>.
+    /// 401/403 from the Keycloak admin API mean either the service-account token has
+    /// expired or its <c>realm-management</c> role grants were revoked — both must be
+    /// surfaced to the caller rather than silently degrading to "no users".
+    /// </summary>
+    private static bool IsAuthorizationFailure(HttpRequestException ex) =>
+        ex.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden;
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<IIdentityUser>> GetUsersAsync(
         string? search = null,
@@ -59,9 +71,16 @@ internal sealed partial class KeycloakIdentityProvider(
 
             return users?.ConvertAll(ToIdentityUser) ?? [];
         }
+        catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            metrics.RecordOperationError(null, "list_users", ProviderName);
+            throw new IdentityProviderUnauthorizedException(ProviderName, "list_users", ex);
+        }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            metrics.RecordOperationError(null, "list_users", ProviderName);
             LogKeycloakGetUsersFailed(ex);
             return [];
         }
@@ -91,6 +110,12 @@ internal sealed partial class KeycloakIdentityProvider(
             metrics.RecordOperationDuration(null, "get_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
             return user is not null ? ToIdentityUser(user) : null;
+        }
+        catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
+        {
+            activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
+            metrics.RecordOperationError(null, "get_user", ProviderName);
+            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {

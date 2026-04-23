@@ -847,6 +847,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.Cognito"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.EntityFrameworkCore",
       "deps": [
         "Granit.Identity.Federated",
@@ -868,6 +876,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.EntraId"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.GoogleCloud",
       "deps": [
         "Granit.Identity.Federated"
@@ -884,6 +900,14 @@
         "Granit.Identity.Federated",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Identity.Federated.Keycloak"
       ],
       "framework": "net10.0"
     },
@@ -17622,6 +17646,40 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedCognitoBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.GranitIdentityFederatedCognitoBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/GranitIdentityFederatedCognitoBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "CognitoClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.Jobs.CognitoClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Jobs/CognitoClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CognitoClientRoleSyncJob _, CognitoClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CognitoClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.Cognito.BackgroundJobs.Jobs.CognitoClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Jobs/CognitoClientRoleSyncJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "IdentityCognitoServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.Cognito.Extensions.IdentityCognitoServiceCollectionExtensions",
       "kind": "class",
@@ -17712,6 +17770,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "CognitoClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.Cognito.Sync.CognitoClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Cognito",
+      "file": "src/Granit.Identity.Federated.Cognito/Sync/CognitoClientRoleSyncService.cs",
+      "line": 44,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -17816,6 +17890,40 @@
       "project": "Granit.Identity.Federated.EntityFrameworkCore",
       "file": "src/Granit.Identity.Federated.EntityFrameworkCore/GranitIdentityFederatedEntityFrameworkCoreModule.cs",
       "line": 20,
+      "members": []
+    },
+    {
+      "name": "GranitIdentityFederatedEntraIdBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.GranitIdentityFederatedEntraIdBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/GranitIdentityFederatedEntraIdBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "EntraIdClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs.EntraIdClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(EntraIdClientRoleSyncJob _, EntraIdClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs.EntraIdClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncJob.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -17943,6 +18051,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "EntraIdClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.EntraId.Sync.EntraIdClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Sync/EntraIdClientRoleSyncService.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },
@@ -18091,6 +18215,40 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedKeycloakBackgroundJobsModule",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.GranitIdentityFederatedKeycloakBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/GranitIdentityFederatedKeycloakBackgroundJobsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "KeycloakClientRoleSyncHandler",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.Jobs.KeycloakClientRoleSyncHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(KeycloakClientRoleSyncJob _, KeycloakClientRoleSyncService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakClientRoleSyncJob",
+      "fqn": "Granit.Identity.Federated.Keycloak.BackgroundJobs.Jobs.KeycloakClientRoleSyncJob",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
+      "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "IdentityKeycloakServiceCollectionExtensions",
       "fqn": "Granit.Identity.Federated.Keycloak.Extensions.IdentityKeycloakServiceCollectionExtensions",
       "kind": "class",
@@ -18193,6 +18351,22 @@
           "kind": "property",
           "signature": "OrphanedRolePolicy OrphanedRolePolicy",
           "returnType": "OrphanedRolePolicy"
+        }
+      ]
+    },
+    {
+      "name": "KeycloakClientRoleSyncService",
+      "fqn": "Granit.Identity.Federated.Keycloak.Sync.KeycloakClientRoleSyncService",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Sync/KeycloakClientRoleSyncService.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "SyncAsync",
+          "kind": "method",
+          "signature": "SyncAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

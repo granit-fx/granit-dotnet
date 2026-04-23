@@ -275,7 +275,8 @@ public sealed partial class ValidationConventionTests
         string? dir = Path.GetDirectoryName(typeof(ValidationConventionTests).Assembly.Location);
         while (dir is not null)
         {
-            string gitPath = Path.Join(dir, ".git"); if (Directory.Exists(gitPath) || File.Exists(gitPath))
+            string gitPath = Path.Join(dir, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

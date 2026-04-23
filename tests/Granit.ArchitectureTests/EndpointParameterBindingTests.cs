@@ -257,7 +257,8 @@ public sealed partial class EndpointParameterBindingTests
         string? dir = Path.GetDirectoryName(typeof(EndpointParameterBindingTests).Assembly.Location);
         while (dir is not null)
         {
-            string gitPath = Path.Join(dir, ".git"); if (Directory.Exists(gitPath) || File.Exists(gitPath))
+            string gitPath = Path.Join(dir, ".git");
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }

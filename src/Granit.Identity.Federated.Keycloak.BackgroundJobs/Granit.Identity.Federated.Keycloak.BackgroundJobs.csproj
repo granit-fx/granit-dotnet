@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Identity.Federated.Keycloak.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Identity.Federated.Keycloak — recurring re-sync of Keycloak client roles on top of the Phase 2 boot-time contributor (ADR-030).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Identity.Federated.Keycloak\Granit.Identity.Federated.Keycloak.csproj" />
+  </ItemGroup>
+
+</Project>

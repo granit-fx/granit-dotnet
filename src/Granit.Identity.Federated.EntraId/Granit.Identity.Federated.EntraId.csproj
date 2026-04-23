@@ -9,6 +9,7 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Identity.Federated.EntraId.Tests" />
     <InternalsVisibleTo Include="Granit.Identity.Federated.EntraId.Tests.Integration" />
+    <InternalsVisibleTo Include="Granit.Identity.Federated.EntraId.BackgroundJobs" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
