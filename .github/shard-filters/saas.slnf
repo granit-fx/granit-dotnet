@@ -13,6 +13,8 @@
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
+      "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",
+      "src/Granit.DataLookup/Granit.DataLookup.csproj",
       "src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",

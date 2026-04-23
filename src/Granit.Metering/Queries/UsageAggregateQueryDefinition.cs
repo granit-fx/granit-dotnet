@@ -16,8 +16,18 @@ public sealed class UsageAggregateQueryDefinition : QueryDefinition<UsageAggrega
     protected override void Configure(QueryDefinitionBuilder<UsageAggregate> builder)
     {
         builder
-            .Column(u => u.TenantId, c => c.Label("Tenant").LabelKey("Metering.Columns.Tenant").Filterable().Sortable())
-            .Column(u => u.MeterDefinitionId, c => c.Label("Meter").LabelKey("Metering.Columns.MeterDefinition").Filterable().Sortable())
+            .Column(u => u.TenantId, c => c
+                .Label("Tenant")
+                .LabelKey("Metering.Columns.Tenant")
+                .Filterable()
+                .Sortable()
+                .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
+            .Column(u => u.MeterDefinitionId, c => c
+                .Label("Meter")
+                .LabelKey("Metering.Columns.MeterDefinition")
+                .Filterable()
+                .Sortable()
+                .Lookup("meter-definitions", scopeKeys: ["tenantId"]))
             .Column(u => u.Period, c => c.Label("Period").LabelKey("Metering.Columns.Period").Filterable().Sortable())
             .Column(u => u.PeriodStart, c => c.Label("Period Start").LabelKey("Metering.Columns.PeriodStart").Sortable())
             .Column(u => u.PeriodEnd, c => c.Label("Period End").LabelKey("Metering.Columns.PeriodEnd").Sortable())

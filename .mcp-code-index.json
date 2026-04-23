@@ -1144,6 +1144,7 @@
     {
       "name": "Granit.Metering.EntityFrameworkCore",
       "deps": [
+        "Granit.DataLookup.EntityFrameworkCore",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Metering"
       ],
@@ -1172,6 +1173,7 @@
       "name": "Granit.MultiTenancy.EntityFrameworkCore",
       "deps": [
         "Granit.DataExchange.Abstractions",
+        "Granit.DataLookup.EntityFrameworkCore",
         "Granit.Events",
         "Granit.MultiTenancy",
         "Granit.Persistence.EntityFrameworkCore",
@@ -23630,7 +23632,7 @@
       "kind": "class",
       "project": "Granit.Metering.EntityFrameworkCore",
       "file": "src/Granit.Metering.EntityFrameworkCore/Extensions/MeteringEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitMeteringEntityFrameworkCore",
@@ -24360,7 +24362,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/Extensions/MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitMultiTenancyEntityFrameworkCore",

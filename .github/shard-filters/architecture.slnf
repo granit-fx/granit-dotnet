@@ -66,6 +66,7 @@
       "src/Granit.DataExchange.Excel/Granit.DataExchange.Excel.csproj",
       "src/Granit.DataExchange/Granit.DataExchange.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
+      "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",
       "src/Granit.DataLookup/Granit.DataLookup.csproj",
       "src/Granit.Diagnostics.Endpoints/Granit.Diagnostics.Endpoints.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",

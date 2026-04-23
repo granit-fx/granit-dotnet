@@ -16,7 +16,12 @@ public sealed class MeterDefinitionQueryDefinition : QueryDefinition<MeterDefini
     protected override void Configure(QueryDefinitionBuilder<MeterDefinition> builder)
     {
         builder
-            .Column(m => m.TenantId, c => c.Label("Tenant").LabelKey("Metering.Columns.Tenant").Filterable().Sortable())
+            .Column(m => m.TenantId, c => c
+                .Label("Tenant")
+                .LabelKey("Metering.Columns.Tenant")
+                .Filterable()
+                .Sortable()
+                .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
             .Column(m => m.Name, c => c.Label("Name").LabelKey("Metering.Columns.Name").Filterable().Sortable())
             .Column(m => m.Unit, c => c.Label("Unit").LabelKey("Metering.Columns.Unit").Filterable().Sortable())
             .Column(m => m.AggregationType, c => c.Label("Aggregation").LabelKey("Metering.Columns.AggregationType").Filterable().Sortable())

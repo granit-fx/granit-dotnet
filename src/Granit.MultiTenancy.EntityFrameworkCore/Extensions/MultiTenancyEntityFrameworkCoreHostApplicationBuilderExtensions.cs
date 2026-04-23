@@ -1,3 +1,4 @@
+using Granit.DataLookup.EntityFrameworkCore.Extensions;
 using Granit.Events.Extensions;
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.EntityFrameworkCore.Internal;
@@ -42,6 +43,16 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
 
         // Queryable source for the Granit query engine (filtering, pagination, sort over Tenant).
         builder.Services.TryAddScoped<IQueryableSource<Tenant>, EfTenantQueryableSource>();
+
+        // Granit.DataLookup source: exposes Tenant as the "tenants" lookup so admin
+        // UIs (QueryEngine filter picker + edit-form dropdowns) can pick a tenant by
+        // name without typing a GUID. Host-scope only — gated by Platform.Tenants.Read.
+        builder.Services.AddQueryableLookup<Tenant, MultiTenancyDbContext>(
+            name: "tenants",
+            valueSelector: t => t.Id,
+            labelSelector: t => t.Name,
+            searchPredicate: (t, search) => t.Name.Contains(search) || t.Identifier.Contains(search),
+            requiredPermission: "Platform.Tenants.Read");
 
         return builder;
     }
