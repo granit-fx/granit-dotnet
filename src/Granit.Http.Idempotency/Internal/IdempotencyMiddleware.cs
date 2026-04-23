@@ -65,6 +65,18 @@ internal sealed partial class IdempotencyMiddleware(
             return;
         }
 
+        // 2b. Reject oversized keys before any hashing or cache lookup. Bounds
+        // the work a single client can force per request; Kestrel's global
+        // header limit is a coarser, pipeline-wide guard.
+        if (idempotencyKey.Length > _opts.MaxKeyLength)
+        {
+            await WriteProblemAsync(context, StatusCodes.Status400BadRequest,
+                "Idempotency Key Too Long",
+                $"The '{_opts.HeaderName}' header value exceeds the maximum allowed length " +
+                $"of {_opts.MaxKeyLength} characters.").ConfigureAwait(false);
+            return;
+        }
+
         // 3. Reject multipart — boundaries are non-deterministic, hashing is unreliable
         if (context.Request.HasFormContentType)
         {
@@ -108,9 +120,19 @@ internal sealed partial class IdempotencyMiddleware(
                 return;
             }
 
-            // Key vanished between acquire failure and re-read (extreme TTL race) — proceed without lock.
-            // SetCompletedAsync (When.Exists) will silently no-op; response is returned but not stored.
+            // Extreme TTL race: key vanished between acquire failure and re-read.
+            // We DO NOT proceed without a lock — doing so would allow two pods to
+            // execute the same idempotent request concurrently (double payment,
+            // double email, etc.) the instant the lock's TTL ticks over. Instead,
+            // return 409 + Retry-After so the client retries in a window where
+            // we can re-acquire cleanly. Preserves the at-most-once guarantee.
+            int retryAfter = (int)_opts.InProgressTtl.TotalSeconds;
+            context.Response.Headers.RetryAfter = retryAfter.ToString();
             LogRaceCondition(_logger, redisKey);
+            await WriteProblemAsync(context, StatusCodes.Status409Conflict,
+                "Idempotency Race",
+                $"Could not acquire the idempotency lock for this request. Retry after {retryAfter}s.").ConfigureAwait(false);
+            return;
         }
 
         // 8. Execute downstream handler and capture the response
@@ -147,8 +169,29 @@ internal sealed partial class IdempotencyMiddleware(
             return;
         }
 
+        // Tombstoned entry: the request ran successfully once but its response
+        // is not replayable. Preserve the at-most-once guarantee by returning
+        // an explicit failure instead of re-executing the handler.
+        if (entry.State == IdempotencyState.Tombstoned)
+        {
+            int statusCode = entry.TombstoneReason switch
+            {
+                IdempotencyTombstoneReason.ResponseTooLarge => StatusCodes.Status413PayloadTooLarge,
+                _ => StatusCodes.Status500InternalServerError,
+            };
+            context.Response.Headers["X-Idempotency-Tombstone"] =
+                entry.TombstoneReason?.ToString() ?? "Unknown";
+            LogTombstoneReplay(_logger, redisKey, entry.TombstoneReason);
+            await WriteProblemAsync(context, statusCode,
+                "Idempotent Response Not Replayable",
+                "The original response for this idempotency key cannot be replayed. " +
+                "The request was executed successfully but its response was not cached " +
+                "(e.g. exceeded the replay size limit). Use a new idempotency key to retry.").ConfigureAwait(false);
+            return;
+        }
+
         // Replay the completed response
-        await ReplayResponseAsync(context, entry).ConfigureAwait(false);
+        await ReplayResponseAsync(context, entry, _opts).ConfigureAwait(false);
         LogReplay(_logger, redisKey, entry.StatusCode, entry.CompletedAt);
 
         // meta may carry per-endpoint TTL overrides — kept as parameter for symmetry
@@ -227,11 +270,36 @@ internal sealed partial class IdempotencyMiddleware(
             return;
         }
 
-        // Capture response headers (excluding hop-by-hop)
+        DateTimeOffset completedAt = _timeProvider.GetUtcNow();
+
+        // Response body too large to cache: store a tombstone so retries see
+        // an explicit "executed once, not replayable" state instead of re-
+        // executing the business handler. The original client has already
+        // received their full response at this point.
+        if (captureStream.Length > _opts.MaxResponseSizeBytes)
+        {
+            IdempotencyEntry tombstoneEntry = new()
+            {
+                State = IdempotencyState.Tombstoned,
+                PayloadHash = payloadHash,
+                CreatedAt = createdAt,
+                StatusCode = statusCode,
+                CompletedAt = completedAt,
+                TombstoneReason = IdempotencyTombstoneReason.ResponseTooLarge,
+            };
+
+            LogResponseTooLarge(_logger, redisKey, captureStream.Length, _opts.MaxResponseSizeBytes);
+            await _store.SetCompletedAsync(redisKey, tombstoneEntry, _opts.TombstoneTtl, CancellationToken.None).ConfigureAwait(false);
+            return;
+        }
+
+        // Capture response headers, filtering anything that must not be
+        // replayed to a later retry (Set-Cookie rotation, WWW-Authenticate
+        // challenges, etc. — see IdempotencyOptions.ExcludedResponseHeaders).
         Dictionary<string, string[]> headers = [];
         foreach (System.Collections.Generic.KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> h in context.Response.Headers)
         {
-            if (string.Equals(h.Key, "Transfer-Encoding", StringComparison.OrdinalIgnoreCase))
+            if (_opts.ExcludedResponseHeaders.Contains(h.Key))
             {
                 continue;
             }
@@ -258,7 +326,7 @@ internal sealed partial class IdempotencyMiddleware(
             StatusCode = statusCode,
             ResponseHeaders = headers.Count > 0 ? headers : null,
             ResponseBody = responseBody.Length > 0 ? responseBody : null,
-            CompletedAt = _timeProvider.GetUtcNow(),
+            CompletedAt = completedAt,
         };
 
         await _store.SetCompletedAsync(redisKey, completedEntry, completedTtl, CancellationToken.None).ConfigureAwait(false);
@@ -268,7 +336,7 @@ internal sealed partial class IdempotencyMiddleware(
     // Response replay
     // =========================================================================
 
-    private static async Task ReplayResponseAsync(HttpContext context, IdempotencyEntry entry)
+    private static async Task ReplayResponseAsync(HttpContext context, IdempotencyEntry entry, IdempotencyOptions opts)
     {
         context.Response.StatusCode = entry.StatusCode!.Value;
 
@@ -276,7 +344,11 @@ internal sealed partial class IdempotencyMiddleware(
         {
             foreach (System.Collections.Generic.KeyValuePair<string, string[]> h in entry.ResponseHeaders)
             {
-                if (string.Equals(h.Key, "Transfer-Encoding", StringComparison.OrdinalIgnoreCase))
+                // Defense in depth: the capture path filters the same headers
+                // but entries written before the exclusion list existed (or by
+                // a future option override during admin downgrade) must still
+                // be filtered at replay time.
+                if (opts.ExcludedResponseHeaders.Contains(h.Key))
                 {
                     continue;
                 }
@@ -408,6 +480,14 @@ internal sealed partial class IdempotencyMiddleware(
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "HTTP 499: client disconnected for key {Key}. InProgress lock expires naturally in {TtlSeconds}s.")]
     private static partial void LogClientDisconnected(ILogger logger, string key, int ttlSeconds);
+
+    [LoggerMessage(Level = LogLevel.Warning,
+        Message = "Idempotency response for key {Key} ({SizeBytes} bytes) exceeds MaxResponseSizeBytes ({MaxSizeBytes}). Storing tombstone; replays will return 413.")]
+    private static partial void LogResponseTooLarge(ILogger logger, string key, long sizeBytes, int maxSizeBytes);
+
+    [LoggerMessage(Level = LogLevel.Information,
+        Message = "Idempotency replay for tombstoned key {Key} (reason: {Reason}). Request was executed once; response is not replayable.")]
+    private static partial void LogTombstoneReplay(ILogger logger, string key, IdempotencyTombstoneReason? reason);
 
     // =========================================================================
     // Problem response helper (Utf8JsonWriter directly to response body — no MVC dependency)

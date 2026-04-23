@@ -16681,6 +16681,12 @@
           "returnType": "TimeSpan CompletedTtl { get; set; } = TimeSpan."
         },
         {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "TimeSpan TombstoneTtl { get; set; } = TimeSpan."
+        },
+        {
           "name": "FromSeconds",
           "kind": "method",
           "signature": "FromSeconds(30)",
@@ -16699,10 +16705,28 @@
           "returnType": "int"
         },
         {
+          "name": "MaxResponseSizeBytes",
+          "kind": "property",
+          "signature": "int MaxResponseSizeBytes",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxKeyLength",
+          "kind": "property",
+          "signature": "int MaxKeyLength",
+          "returnType": "int"
+        },
+        {
           "name": "is",
           "kind": "method",
           "signature": "is(>= 200 and < 300)",
           "returnType": "Func<int, bool> ShouldCacheStatusCode { get; set; } = sc => sc"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(StringComparer.OrdinalIgnoreCase)",
+          "returnType": "HashSet<string> ExcludedResponseHeaders { get; } ="
         }
       ]
     },
@@ -16713,6 +16737,15 @@
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Models/IdempotencyState.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "IdempotencyTombstoneReason",
+      "fqn": "Granit.Http.Idempotency.Models.IdempotencyTombstoneReason",
+      "kind": "enum",
+      "project": "Granit.Http.Idempotency",
+      "file": "src/Granit.Http.Idempotency/Models/IdempotencyTombstoneReason.cs",
+      "line": 12,
       "members": []
     },
     {

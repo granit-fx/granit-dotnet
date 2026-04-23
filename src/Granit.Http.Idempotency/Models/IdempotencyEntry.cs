@@ -25,4 +25,10 @@ public sealed record IdempotencyEntry
 
     /// <summary>UTC timestamp when the entry transitioned to Completed. <see langword="null"/> while InProgress.</summary>
     public DateTimeOffset? CompletedAt { get; init; }
+
+    /// <summary>
+    /// Reason the entry was tombstoned. Non-<see langword="null"/> only when
+    /// <see cref="State"/> is <see cref="IdempotencyState.Tombstoned"/>.
+    /// </summary>
+    public IdempotencyTombstoneReason? TombstoneReason { get; init; }
 }
