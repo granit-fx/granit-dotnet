@@ -136,10 +136,10 @@ public sealed class CrossSideAuthIntegrationTests : IAsyncDisposable
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
         await AuthenticateCookieAsync(cancellationToken);
 
-        HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
+        using HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
         AttachCookie(request);
 
-        HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
+        using HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         (await response.Content.ReadAsStringAsync(cancellationToken)).ShouldContain(CookieUserName);
     }
@@ -154,11 +154,11 @@ public sealed class CrossSideAuthIntegrationTests : IAsyncDisposable
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
         await AuthenticateCookieAsync(cancellationToken);
 
-        HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
+        using HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
         AttachCookie(request);
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "stub-bearer-token");
 
-        HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
+        using HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         string body = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -171,10 +171,10 @@ public sealed class CrossSideAuthIntegrationTests : IAsyncDisposable
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
-        HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
+        using HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "stub-bearer-token");
 
-        HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
+        using HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
         (await response.Content.ReadAsStringAsync(cancellationToken)).ShouldContain(BearerUserName);
     }
@@ -184,15 +184,15 @@ public sealed class CrossSideAuthIntegrationTests : IAsyncDisposable
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
 
-        HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
-        HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
+        using HttpRequestMessage request = new(HttpMethod.Get, "/whoami");
+        using HttpResponseMessage response = await _client.SendAsync(request, cancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
     }
 
     private async Task AuthenticateCookieAsync(CancellationToken cancellationToken)
     {
-        HttpResponseMessage response = await _client.PostAsync("/signin-cookie", content: null, cancellationToken);
+        using HttpResponseMessage response = await _client.PostAsync("/signin-cookie", content: null, cancellationToken);
         response.StatusCode.ShouldBe(HttpStatusCode.OK);
 
         // TestServer returns Set-Cookie headers on the response; capture the value for later reuse.
