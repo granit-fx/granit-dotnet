@@ -1,14 +1,15 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Subscriptions": "Abbonamenti",
-    "Permission:Subscriptions.Plans.Read": "Visualizzare i piani di abbonamento",
+    "Permission:Subscriptions.Phases.Manage": "Gestire le fasi dell'abbonamento (programmare modifiche di piano, sovrascrivere prezzi, applicare sconti)",
     "Permission:Subscriptions.Plans.Manage": "Gestire i piani di abbonamento (creare, pubblicare, archiviare)",
-    "Permission:Subscriptions.Subscriptions.Read": "Visualizzare gli abbonamenti",
-    "Permission:Subscriptions.Subscriptions.Manage": "Gestire gli abbonamenti (creare, annullare, cambiare piano)",
-    "Permission:Subscriptions.Prices.Read": "Visualizzare lo storico delle versioni dei prezzi",
+    "Permission:Subscriptions.Plans.Read": "Visualizzare i piani di abbonamento",
     "Permission:Subscriptions.Prices.Manage": "Gestire i prezzi (creare versioni, migrare abbonamenti)",
+    "Permission:Subscriptions.Prices.Read": "Visualizzare lo storico delle versioni dei prezzi",
+    "Permission:Subscriptions.Seats.Manage": "Gestire le assegnazioni dei posti (assegnare, revocare)",
     "Permission:Subscriptions.Seats.Read": "Visualizzare le assegnazioni dei posti",
-    "Permission:Subscriptions.Seats.Manage": "Gestire le assegnazioni dei posti (assegnare, revocare)"
+    "Permission:Subscriptions.Subscriptions.Manage": "Gestire gli abbonamenti (creare, annullare, cambiare piano)",
+    "Permission:Subscriptions.Subscriptions.Read": "Visualizzare gli abbonamenti",
+    "PermissionGroup:Subscriptions": "Abbonamenti"
   }
 }

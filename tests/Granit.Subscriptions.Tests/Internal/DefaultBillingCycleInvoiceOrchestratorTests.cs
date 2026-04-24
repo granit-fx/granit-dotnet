@@ -4,6 +4,7 @@ using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Internal;
+using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -18,6 +19,7 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
     private readonly IPlanReader _planReader = Substitute.For<IPlanReader>();
     private readonly IPricingResolver _pricingResolver = Substitute.For<IPricingResolver>();
     private readonly ICommandSender _commandSender = Substitute.For<ICommandSender>();
+    private readonly IClock _clock = Substitute.For<IClock>();
     private readonly ILogger<DefaultBillingCycleInvoiceOrchestrator> _logger =
         NullLoggerFactory.Instance.CreateLogger<DefaultBillingCycleInvoiceOrchestrator>();
     private readonly DefaultBillingCycleInvoiceOrchestrator _sut;
@@ -27,8 +29,9 @@ public sealed class DefaultBillingCycleInvoiceOrchestratorTests
 
     public DefaultBillingCycleInvoiceOrchestratorTests()
     {
+        _clock.Now.Returns(PeriodStart);
         _sut = new DefaultBillingCycleInvoiceOrchestrator(
-            _subscriptionReader, _planReader, _pricingResolver, _commandSender, _logger);
+            _subscriptionReader, _planReader, _pricingResolver, _commandSender, _clock, _logger);
     }
 
     private static Subscription CreateSubscription(Guid tenantId, PlanId planId, Guid? planPriceId = null)

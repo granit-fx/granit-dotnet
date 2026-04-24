@@ -1,14 +1,15 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscrições",
-    "Permission:Subscriptions.Plans.Read": "Ver planos de subscrição",
+    "Permission:Subscriptions.Phases.Manage": "Gerir fases de subscrição (agendar alterações de plano, substituir preços, aplicar descontos)",
     "Permission:Subscriptions.Plans.Manage": "Gerir planos de subscrição (criar, publicar, arquivar)",
-    "Permission:Subscriptions.Subscriptions.Read": "Ver subscrições",
-    "Permission:Subscriptions.Subscriptions.Manage": "Gerir subscrições (criar, cancelar, alterar plano)",
-    "Permission:Subscriptions.Prices.Read": "Ver histórico de versões de preços",
+    "Permission:Subscriptions.Plans.Read": "Ver planos de subscrição",
     "Permission:Subscriptions.Prices.Manage": "Gerir preços (criar versões, migrar assinaturas)",
+    "Permission:Subscriptions.Prices.Read": "Ver histórico de versões de preços",
+    "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)",
     "Permission:Subscriptions.Seats.Read": "Ver atribuições de lugares",
-    "Permission:Subscriptions.Seats.Manage": "Gerir atribuições de lugares (atribuir, revogar)"
+    "Permission:Subscriptions.Subscriptions.Manage": "Gerir subscrições (criar, cancelar, alterar plano)",
+    "Permission:Subscriptions.Subscriptions.Read": "Ver subscrições",
+    "PermissionGroup:Subscriptions": "Subscrições"
   }
 }

@@ -40125,22 +40125,6 @@
       "members": []
     },
     {
-      "name": "PricingTier",
-      "fqn": "Granit.Subscriptions.Domain.PricingTier",
-      "kind": "class",
-      "project": "Granit.Subscriptions",
-      "file": "src/Granit.Subscriptions/Domain/PricingTier.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, Guid planPriceId, int sortOrder, decimal? upToQuantity, decimal unitAmount, decimal? flatAmount = null)",
-          "returnType": "PricingTier"
-        }
-      ]
-    },
-    {
       "name": "Subscription",
       "fqn": "Granit.Subscriptions.Domain.Subscription",
       "kind": "class",
@@ -40171,6 +40155,12 @@
           "kind": "method",
           "signature": "AsReadOnly()",
           "returnType": "IReadOnlyList<SubscriptionExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "Phases",
+          "kind": "property",
+          "signature": "IReadOnlyList<SubscriptionPhase> Phases",
+          "returnType": "IReadOnlyList<SubscriptionPhase>"
         },
         {
           "name": "nameof",
@@ -40239,6 +40229,28 @@
       ]
     },
     {
+      "name": "SubscriptionPhase",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionPhase",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionPhase.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid subscriptionId, DateTimeOffset startDate, DateTimeOffset? endDate, PlanId planId, Guid? overridePriceId = null, decimal? discountPercent = null)",
+          "returnType": "SubscriptionPhase"
+        },
+        {
+          "name": "Covers",
+          "kind": "method",
+          "signature": "Covers(DateTimeOffset instant)",
+          "returnType": "Guid? OverridePriceId { get; private set; } public decimal? DiscountPercent { get; private set; } public bool"
+        }
+      ]
+    },
+    {
       "name": "SubscriptionSeat",
       "fqn": "Granit.Subscriptions.Domain.SubscriptionSeat",
       "kind": "class",
@@ -40261,15 +40273,6 @@
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/SubscriptionStatus.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "TieringMode",
-      "fqn": "Granit.Subscriptions.Domain.TieringMode",
-      "kind": "enum",
-      "project": "Granit.Subscriptions",
-      "file": "src/Granit.Subscriptions/Domain/TieringMode.cs",
-      "line": 7,
       "members": []
     },
     {
@@ -40515,6 +40518,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Phases",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Phases",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 50,
+      "members": []
     },
     {
       "name": "Plans",
@@ -41515,22 +41527,6 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
-        }
-      ]
-    },
-    {
-      "name": "TieredPricingCalculator",
-      "fqn": "Granit.Subscriptions.Pricing.TieredPricingCalculator",
-      "kind": "class",
-      "project": "Granit.Subscriptions",
-      "file": "src/Granit.Subscriptions/Pricing/TieredPricingCalculator.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Compute",
-          "kind": "method",
-          "signature": "Compute(decimal quantity, TieringMode mode, IReadOnlyList<PricingTier> tiers)",
-          "returnType": "decimal"
         }
       ]
     },

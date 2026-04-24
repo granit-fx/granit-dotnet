@@ -45,4 +45,17 @@ public static class SubscriptionsPermissions
         /// <summary>Manage seat assignments (assign, revoke).</summary>
         public const string Manage = "Subscriptions.Seats.Manage";
     }
+
+    /// <summary>Scheduled phase permissions (ramp deals, plan transitions).</summary>
+    public static class Phases
+    {
+        /// <summary>
+        /// Manage subscription phases (schedule plan changes, override prices, apply
+        /// flat percentage discounts). Restricted to admins because phases pin the
+        /// active plan + price for a specific time window — destructive at the
+        /// billing level (ISO 27001 A.9.4 — least privilege on revenue-impacting
+        /// operations).
+        /// </summary>
+        public const string Manage = "Subscriptions.Phases.Manage";
+    }
 }

@@ -1,14 +1,15 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Subscriptions": "Abonnementen",
-    "Permission:Subscriptions.Plans.Read": "Abonnementsplannen bekijken",
+    "Permission:Subscriptions.Phases.Manage": "Abonnementfasen beheren (planwijzigingen plannen, prijzen overschrijven, kortingen toepassen)",
     "Permission:Subscriptions.Plans.Manage": "Abonnementsplannen beheren (aanmaken, publiceren, archiveren)",
-    "Permission:Subscriptions.Subscriptions.Read": "Abonnementen bekijken",
-    "Permission:Subscriptions.Subscriptions.Manage": "Abonnementen beheren (aanmaken, annuleren, van plan wijzigen)",
-    "Permission:Subscriptions.Prices.Read": "Prijsversiegeschiedenis bekijken",
+    "Permission:Subscriptions.Plans.Read": "Abonnementsplannen bekijken",
     "Permission:Subscriptions.Prices.Manage": "Prijzen beheren (versies aanmaken, abonnementen migreren)",
+    "Permission:Subscriptions.Prices.Read": "Prijsversiegeschiedenis bekijken",
+    "Permission:Subscriptions.Seats.Manage": "Stoeltoewijzingen beheren (toewijzen, intrekken)",
     "Permission:Subscriptions.Seats.Read": "Stoeltoewijzingen bekijken",
-    "Permission:Subscriptions.Seats.Manage": "Stoeltoewijzingen beheren (toewijzen, intrekken)"
+    "Permission:Subscriptions.Subscriptions.Manage": "Abonnementen beheren (aanmaken, annuleren, van plan wijzigen)",
+    "Permission:Subscriptions.Subscriptions.Read": "Abonnementen bekijken",
+    "PermissionGroup:Subscriptions": "Abonnementen"
   }
 }

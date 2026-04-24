@@ -34,6 +34,14 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
         builder.HasMany(e => e.Seats).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
         builder.HasMany(e => e.ExternalMappings).WithOne().HasForeignKey("SubscriptionId").OnDelete(DeleteBehavior.Cascade);
 
+        builder.HasMany(e => e.Phases)
+            .WithOne()
+            .HasForeignKey(p => p.SubscriptionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(e => e.Phases)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
         builder.HasIndex(e => new { e.TenantId, e.Status })
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_tenant_status");
 

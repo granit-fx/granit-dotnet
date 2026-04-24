@@ -24,6 +24,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 {
     private readonly List<SubscriptionSeat> _seats = [];
     private readonly List<SubscriptionExternalMapping> _externalMappings = [];
+    private readonly List<SubscriptionPhase> _phases = [];
 
     private Subscription() { }
 
@@ -118,6 +119,15 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
     /// <summary>External provider mappings (Stripe, Mollie, etc.).</summary>
     public IReadOnlyList<SubscriptionExternalMapping> ExternalMappings => _externalMappings.AsReadOnly();
+
+    /// <summary>
+    /// Scheduled timeline segments. Each <see cref="SubscriptionPhase"/> covers
+    /// <c>[StartDate, EndDate)</c> and pins the active plan for that interval —
+    /// enabling ramp deals (<c>trial → standard → enterprise</c>). Empty by
+    /// default; the orchestrator falls back to <see cref="PlanId"/> when no
+    /// phase covers the billing instant (single-plan backward compat).
+    /// </summary>
+    public IReadOnlyList<SubscriptionPhase> Phases => _phases;
 
     /// <inheritdoc />
     public Guid? TenantId { get; private set; }
@@ -347,6 +357,64 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     {
         ArgumentNullException.ThrowIfNull(mapping);
         _externalMappings.Add(mapping);
+    }
+
+    // ── Phase scheduling ───────────────────────────────────────────────
+
+    /// <summary>
+    /// Adds a scheduled phase to the subscription's timeline. Throws if the new
+    /// phase overlaps any existing phase — overlap is defined on the half-open
+    /// interval <c>[StartDate, EndDate)</c>; touching endpoints
+    /// (<c>existing.EndDate == new.StartDate</c>) are allowed.
+    /// </summary>
+    public void AddPhase(SubscriptionPhase phase)
+    {
+        ArgumentNullException.ThrowIfNull(phase);
+
+        if (phase.SubscriptionId != Id)
+        {
+            throw new InvalidOperationException(
+                $"Phase '{phase.Id}' belongs to subscription '{phase.SubscriptionId}', not '{Id}'.");
+        }
+
+        foreach (SubscriptionPhase existing in _phases)
+        {
+            if (Overlaps(existing, phase))
+            {
+                throw new InvalidOperationException(
+                    $"Phase [{phase.StartDate:O}, {phase.EndDate?.ToString("O") ?? "∞"}) overlaps existing phase '{existing.Id}'.");
+            }
+        }
+
+        _phases.Add(phase);
+    }
+
+    /// <summary>Removes a previously-added phase. Returns <c>true</c> when a phase was actually removed.</summary>
+    public bool RemovePhase(Guid phaseId)
+    {
+        int removed = _phases.RemoveAll(p => p.Id == phaseId);
+        return removed > 0;
+    }
+
+    /// <summary>
+    /// Returns the phase that covers <paramref name="instant"/>, or <c>null</c>
+    /// when no phase covers it (caller falls back to <see cref="PlanId"/>).
+    /// At most one phase covers any given instant — guaranteed by
+    /// <see cref="AddPhase"/>'s overlap check.
+    /// </summary>
+    public SubscriptionPhase? GetActivePhase(DateTimeOffset instant) =>
+        _phases.FirstOrDefault(p => p.Covers(instant));
+
+    /// <summary>
+    /// True when two phases share at least one instant under the half-open
+    /// interval semantics. Touching endpoints (<c>a.EndDate == b.StartDate</c>)
+    /// do not overlap.
+    /// </summary>
+    private static bool Overlaps(SubscriptionPhase a, SubscriptionPhase b)
+    {
+        DateTimeOffset aEnd = a.EndDate ?? DateTimeOffset.MaxValue;
+        DateTimeOffset bEnd = b.EndDate ?? DateTimeOffset.MaxValue;
+        return a.StartDate < bEnd && b.StartDate < aEnd;
     }
 
     // ── Private helpers ────────────────────────────────────────────────

@@ -1,14 +1,15 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Subscriptions": "Suscripciones",
-    "Permission:Subscriptions.Plans.Read": "Ver planes de suscripción",
+    "Permission:Subscriptions.Phases.Manage": "Gestionar fases de suscripción (programar cambios de plan, anular precios, aplicar descuentos)",
     "Permission:Subscriptions.Plans.Manage": "Gestionar planes de suscripción (crear, publicar, archivar)",
-    "Permission:Subscriptions.Subscriptions.Read": "Ver suscripciones",
-    "Permission:Subscriptions.Subscriptions.Manage": "Gestionar suscripciones (crear, cancelar, cambiar de plan)",
-    "Permission:Subscriptions.Prices.Read": "Ver historial de versiones de precios",
+    "Permission:Subscriptions.Plans.Read": "Ver planes de suscripción",
     "Permission:Subscriptions.Prices.Manage": "Gestionar precios (crear versiones, migrar suscripciones)",
+    "Permission:Subscriptions.Prices.Read": "Ver historial de versiones de precios",
+    "Permission:Subscriptions.Seats.Manage": "Gestionar asignaciones de puestos (asignar, revocar)",
     "Permission:Subscriptions.Seats.Read": "Ver asignaciones de puestos",
-    "Permission:Subscriptions.Seats.Manage": "Gestionar asignaciones de puestos (asignar, revocar)"
+    "Permission:Subscriptions.Subscriptions.Manage": "Gestionar suscripciones (crear, cancelar, cambiar de plan)",
+    "Permission:Subscriptions.Subscriptions.Read": "Ver suscripciones",
+    "PermissionGroup:Subscriptions": "Suscripciones"
   }
 }

@@ -1,14 +1,15 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Subscriptions": "구독",
-    "Permission:Subscriptions.Plans.Read": "구독 플랜 보기",
+    "Permission:Subscriptions.Phases.Manage": "구독 단계 관리 (요금제 변경 예약, 가격 재정의, 할인 적용)",
     "Permission:Subscriptions.Plans.Manage": "구독 플랜 관리 (생성, 게시, 보관)",
-    "Permission:Subscriptions.Subscriptions.Read": "구독 보기",
-    "Permission:Subscriptions.Subscriptions.Manage": "구독 관리 (생성, 취소, 플랜 변경)",
-    "Permission:Subscriptions.Prices.Read": "가격 버전 이력 조회",
+    "Permission:Subscriptions.Plans.Read": "구독 플랜 보기",
     "Permission:Subscriptions.Prices.Manage": "가격 관리 (버전 생성, 구독 마이그레이션)",
+    "Permission:Subscriptions.Prices.Read": "가격 버전 이력 조회",
+    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)",
     "Permission:Subscriptions.Seats.Read": "시트 할당 보기",
-    "Permission:Subscriptions.Seats.Manage": "시트 할당 관리 (할당, 철회)"
+    "Permission:Subscriptions.Subscriptions.Manage": "구독 관리 (생성, 취소, 플랜 변경)",
+    "Permission:Subscriptions.Subscriptions.Read": "구독 보기",
+    "PermissionGroup:Subscriptions": "구독"
   }
 }

@@ -2,6 +2,8 @@ using Granit.Commands;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
+using Granit.Subscriptions.Domain.ValueObjects;
+using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Subscriptions.Internal;
@@ -15,6 +17,7 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
     IPlanReader planReader,
     IPricingResolver pricingResolver,
     ICommandSender commandSender,
+    IClock clock,
     ILogger<DefaultBillingCycleInvoiceOrchestrator> logger) : IBillingCycleInvoiceOrchestrator
 {
     public async Task CreateInvoiceAsync(
@@ -25,18 +28,24 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
         DateTimeOffset periodEnd,
         CancellationToken cancellationToken = default)
     {
-        Plan? plan = await planReader.GetByIdAsync(planId, cancellationToken)
+        // Pre-flight: short-circuit on the inbound plan's pricing model. If the
+        // BillingCycleCompleted event came from a usage plan, no flat invoice is
+        // ever produced — skip the subscription + phase lookups entirely.
+        // (Edge case: a SubscriptionPhase swapping the active plan from Flat to
+        // PerUnit / Tiered would be unusual and is intentionally not honored
+        // here — the upstream event carries the stored PlanId.)
+        Plan? inboundPlan = await planReader.GetByIdAsync(PlanId.Create(planId), cancellationToken)
             .ConfigureAwait(false);
 
-        if (plan is null)
+        if (inboundPlan is null)
         {
             Log.PlanNotFound(logger, planId);
             return;
         }
 
-        if (plan.PricingModel is PricingModel.PerUnit or PricingModel.Tiered)
+        if (inboundPlan.PricingModel is PricingModel.PerUnit or PricingModel.Tiered)
         {
-            Log.SkippingUsagePlan(logger, subscriptionId, plan.PricingModel);
+            Log.SkippingUsagePlan(logger, subscriptionId, inboundPlan.PricingModel);
             return;
         }
 
@@ -50,10 +59,31 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
             return;
         }
 
+        // Phase resolution: at billing time, an active SubscriptionPhase covering "now"
+        // pins the plan + optional override price + optional discount for this cycle.
+        // Falls back to subscription.PlanId / planPriceId when no phase covers "now"
+        // (single-plan subscriptions = backward compatible with pre-Phase-3 behavior).
+        SubscriptionPhase? activePhase = subscription.GetActivePhase(clock.Now);
+        PlanId effectivePlanId = activePhase?.PlanId ?? subscription.PlanId;
+        Guid? effectivePlanPriceId = activePhase?.OverridePriceId ?? subscription.PlanPriceId;
+        decimal? phaseDiscountPercent = activePhase?.DiscountPercent;
+
+        // Re-resolve the plan only when the active phase points to a different one.
+        Plan plan = effectivePlanId.Value == planId
+            ? inboundPlan
+            : (await planReader.GetByIdAsync(effectivePlanId, cancellationToken).ConfigureAwait(false))
+                ?? inboundPlan;
+
         decimal basePrice = await pricingResolver.ResolveBasePriceAsync(
-            subscription.PlanId, subscription.Currency, plan.DefaultInterval,
-            subscription.PlanPriceId, cancellationToken)
+            effectivePlanId, subscription.Currency, plan.DefaultInterval,
+            effectivePlanPriceId, cancellationToken)
             .ConfigureAwait(false);
+
+        // Apply the phase's flat percentage discount, if any (0–100; validated at entity creation).
+        if (phaseDiscountPercent is { } pct && pct > 0m)
+        {
+            basePrice = decimal.Round(basePrice * (1m - (pct / 100m)), 4, MidpointRounding.ToEven);
+        }
 
         if (basePrice <= 0)
         {

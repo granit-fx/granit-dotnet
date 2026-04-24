@@ -42,5 +42,11 @@ internal sealed class SubscriptionsPermissionDefinitionProvider : IPermissionDef
         group.AddPermission(SubscriptionsPermissions.Seats.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Seats.Manage"),
             MultiTenancySide.Both);
+
+        // Phases are admin-only: they pin the active plan + price for a window
+        // and apply percentage discounts — host-side ramp-deal authoring tool.
+        group.AddPermission(SubscriptionsPermissions.Phases.Manage,
+            LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Phases.Manage"),
+            MultiTenancySide.Host);
     }
 }

@@ -1,14 +1,15 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Subscriptions": "Subscriptions",
-    "Permission:Subscriptions.Plans.Read": "View subscription plans",
+    "Permission:Subscriptions.Phases.Manage": "Manage subscription phases (schedule plan changes, override prices, apply discounts)",
     "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
-    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
-    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
-    "Permission:Subscriptions.Prices.Read": "View price version history",
+    "Permission:Subscriptions.Plans.Read": "View subscription plans",
     "Permission:Subscriptions.Prices.Manage": "Manage prices (create versions, migrate subscriptions)",
+    "Permission:Subscriptions.Prices.Read": "View price version history",
+    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)",
     "Permission:Subscriptions.Seats.Read": "View seat assignments",
-    "Permission:Subscriptions.Seats.Manage": "Manage seat assignments (assign, revoke)"
+    "Permission:Subscriptions.Subscriptions.Manage": "Manage subscriptions (create, cancel, change plan)",
+    "Permission:Subscriptions.Subscriptions.Read": "View subscriptions",
+    "PermissionGroup:Subscriptions": "Subscriptions"
   }
 }
