@@ -6,6 +6,7 @@ using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
 using Granit.Metering.Recompute;
+using Granit.Metering.Recompute.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

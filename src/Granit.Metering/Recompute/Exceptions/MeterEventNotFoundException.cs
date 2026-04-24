@@ -1,4 +1,4 @@
-namespace Granit.Metering.Recompute;
+namespace Granit.Metering.Recompute.Exceptions;
 
 /// <summary>Raised when a deprecation targets a non-existent <see cref="Domain.MeterEvent"/>.</summary>
 public sealed class MeterEventNotFoundException(Guid eventId)

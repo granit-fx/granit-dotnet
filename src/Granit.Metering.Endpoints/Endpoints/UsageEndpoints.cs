@@ -6,6 +6,7 @@ using Granit.Metering.Dtos;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
 using Granit.Metering.Recompute;
+using Granit.Metering.Recompute.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;

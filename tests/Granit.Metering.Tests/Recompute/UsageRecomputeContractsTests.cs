@@ -1,4 +1,5 @@
 using Granit.Metering.Recompute;
+using Granit.Metering.Recompute.Exceptions;
 using Shouldly;
 using Xunit;
 

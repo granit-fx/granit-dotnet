@@ -1,4 +1,4 @@
-namespace Granit.Metering.Recompute;
+namespace Granit.Metering.Recompute.Exceptions;
 
 /// <summary>
 /// Raised when a recompute is rejected at the domain layer (unknown meter,

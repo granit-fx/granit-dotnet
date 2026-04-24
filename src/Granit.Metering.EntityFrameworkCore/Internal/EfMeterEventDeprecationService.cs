@@ -3,6 +3,7 @@ using Granit.Domain;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
 using Granit.Metering.Recompute;
+using Granit.Metering.Recompute.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

@@ -25003,6 +25003,31 @@
       ]
     },
     {
+      "name": "MeterEventNotFoundException",
+      "fqn": "Granit.Metering.Recompute.Exceptions.MeterEventNotFoundException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/Exceptions/MeterEventNotFoundException.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "UsageRecomputeRejectedException",
+      "fqn": "Granit.Metering.Recompute.Exceptions.UsageRecomputeRejectedException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/Exceptions/UsageRecomputeRejectedException.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ReasonCode",
+          "kind": "property",
+          "signature": "string ReasonCode",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IMeterEventDeprecationService",
       "fqn": "Granit.Metering.Recompute.IMeterEventDeprecationService",
       "kind": "interface",
@@ -25040,7 +25065,7 @@
       "kind": "interface",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Recompute/IUsageRecomputeService.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "RecomputeAsync",
@@ -25060,15 +25085,6 @@
       "members": []
     },
     {
-      "name": "MeterEventNotFoundException",
-      "fqn": "Granit.Metering.Recompute.MeterEventNotFoundException",
-      "kind": "class",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Recompute/Exceptions/MeterEventNotFoundException.cs",
-      "line": 4,
-      "members": []
-    },
-    {
       "name": "UsageBackfillResult",
       "fqn": "Granit.Metering.Recompute.UsageBackfillResult",
       "kind": "record",
@@ -25076,22 +25092,6 @@
       "file": "src/Granit.Metering/Recompute/IUsageBackfillService.cs",
       "line": 30,
       "members": []
-    },
-    {
-      "name": "UsageRecomputeRejectedException",
-      "fqn": "Granit.Metering.Recompute.UsageRecomputeRejectedException",
-      "kind": "class",
-      "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Recompute/Exceptions/UsageRecomputeRejectedException.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "ReasonCode",
-          "kind": "property",
-          "signature": "string ReasonCode",
-          "returnType": "string"
-        }
-      ]
     },
     {
       "name": "UsageRecomputeRequest",

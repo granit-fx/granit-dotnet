@@ -1,3 +1,5 @@
+using Granit.Metering.Recompute.Exceptions;
+
 namespace Granit.Metering.Recompute;
 
 /// <summary>

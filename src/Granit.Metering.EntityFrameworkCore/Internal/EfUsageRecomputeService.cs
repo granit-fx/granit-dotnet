@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
 using Granit.Metering.Recompute;
+using Granit.Metering.Recompute.Exceptions;
 using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Granit.Timing;
 using Granit.Workflow.Domain;
