@@ -1,6 +1,8 @@
+using Granit.Catalog.Endpoints.Endpoints;
 using Granit.Catalog.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
 namespace Granit.Catalog.Endpoints.Extensions;
@@ -23,8 +25,11 @@ public static class CatalogEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
 
-        // Product CRUD, lifecycle, and external mapping endpoints will be mounted
-        // here in commit 5.
+        RouteGroupBuilder productsGroup = group.MapGranitGroup(string.Empty)
+            .WithTags(options.ProductsTagName);
+        productsGroup.MapProductReadEndpoints();
+        productsGroup.MapProductWriteEndpoints();
+        productsGroup.MapProductExternalMappingEndpoints();
 
         return group;
     }
