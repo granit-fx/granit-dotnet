@@ -17,17 +17,6 @@ internal static class MeterDefinitionEndpoints
 {
     internal static RouteGroupBuilder MapMeterDefinitionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/meters", ListPublishedMetersAsync)
-            .WithName("ListPublishedMeters")
-            .WithSummary("Returns all published meter definitions for the current tenant.")
-            .WithDescription(
-                "Fetches the list of meter definitions currently in the Published lifecycle state — "
-                + "the only state that accepts ingestion. Draft and Archived meters are excluded; "
-                + "use the GET by ID endpoint to retrieve a specific meter regardless of status.")
-            .Produces<IReadOnlyList<MeterDefinitionResponse>>()
-            .RequireAuthorization(MeteringPermissions.Meters.Read)
-            .AllowHostAccess();
-
         group.MapGet("/meters/{id:guid}", GetMeterByIdAsync)
             .WithName("GetMeterDefinition")
             .WithSummary("Returns a meter definition by its unique identifier.")
@@ -105,17 +94,6 @@ internal static class MeterDefinitionEndpoints
             .RequireAuthorization(MeteringPermissions.Meters.Manage);
 
         return group;
-    }
-
-    private static async Task<Ok<IReadOnlyList<MeterDefinitionResponse>>> ListPublishedMetersAsync(
-        [FromServices] IMeterDefinitionReader reader,
-        CancellationToken cancellationToken)
-    {
-        IReadOnlyList<MeterDefinition> meters = await reader
-            .GetActiveAsync(cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Ok<IReadOnlyList<MeterDefinitionResponse>>(
-            meters.Select(MeterDefinitionResponse.FromEntity).ToList());
     }
 
     private static async Task<Results<Ok<MeterDefinitionResponse>, ProblemHttpResult>> GetMeterByIdAsync(
