@@ -1844,6 +1844,36 @@
           "ZiggyCreatures.FusionCache.Backplane.StackExchangeRedis": "[2.*, )"
         }
       },
+      "granit.catalog": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
+        }
+      },
+      "granit.catalog.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Catalog": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.catalog.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Catalog": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.customerbalance": {
         "type": "Project",
         "dependencies": {
@@ -1903,6 +1933,13 @@
           "Granit.DataExchange": "[0.1.0-dev, )"
         }
       },
+      "granit.dataexchange.blobstorage": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.DataExchange": "[0.1.0-dev, )"
+        }
+      },
       "granit.dataexchange.csv": {
         "type": "Project",
         "dependencies": {
@@ -1948,6 +1985,15 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.datalookup.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.DataLookup": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
         }
       },
       "granit.datalookup.entityframeworkcore": {
@@ -2200,6 +2246,13 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.federated.cognito.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Identity.Federated.Cognito": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.federated.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
@@ -2220,6 +2273,13 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.federated.entraid.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Identity.Federated.EntraId": "[0.1.0-dev, )"
+        }
+      },
       "granit.identity.federated.googlecloud": {
         "type": "Project",
         "dependencies": {
@@ -2237,6 +2297,13 @@
           "Granit.Identity.Federated": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )"
+        }
+      },
+      "granit.identity.federated.keycloak.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Identity.Federated.Keycloak": "[0.1.0-dev, )"
         }
       },
       "granit.identity.federated.privacy": {
@@ -2517,6 +2584,14 @@
           "Granit.Persistence.EntityFrameworkCore.Migrations": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
+      "granit.multitenancy.provisioning": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore.Hosting": "[0.1.0-dev, )",
+          "Granit.Wolverine": "[0.1.0-dev, )"
         }
       },
       "granit.notifications": {
@@ -4314,8 +4389,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.3",
-        "contentHash": "RUy9LiqIl8AY6j2veG2h5gLv31L/REoMMIYm2/7V73nEI/N0EnMpUjuz6FDNDrwhFi2hjqZGXYXA6Li8bZcilA=="
+        "resolved": "2.14.4",
+        "contentHash": "PyuqLRi7JXyTJm/rh+IWCA4Fct1SlZuWrdYiui5hiaBuSY88+roc4eWKfYaE6zrupBIwnEP8pJLe4ifvU7HtZA=="
       },
       "Scriban": {
         "type": "CentralTransitive",
@@ -4380,8 +4455,8 @@
       "Stripe.net": {
         "type": "CentralTransitive",
         "requested": "[51.*, )",
-        "resolved": "51.0.1",
-        "contentHash": "gCT5KoDEv8wNrnWKRBfDEFN2C/FaBOMX0XJwz2EefEC+sPIMSDJYizVflm0ntk105YDQKB6upp7+03pIibjp9g==",
+        "resolved": "51.1.0",
+        "contentHash": "q4Kj14NP0jaGKRkeuCTL2Mwn7BVgVUHowBiGJAX2fGiEIOVbdhpCERlNRTuvirN/5IGae6cCToS0+H/oSX395A==",
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
           "System.Configuration.ConfigurationManager": "9.0.0"

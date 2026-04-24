@@ -18,7 +18,6 @@
         "tests/Granit.Mcp.Tests",
         "tests/Granit.Analyzers.CodeFixes.Tests",
         "tests/Granit.Analyzers.Tests",
-
         "tests/Granit.Authorization.AI.Tests",
         "tests/Granit.BlobStorage.AI.Tests",
         "tests/Granit.Bundle.Tests",
@@ -321,7 +320,10 @@
         "tests/Granit.CustomerBalance.Tests",
         "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests",
         "tests/Granit.CustomerBalance.Endpoints.Tests",
-        "tests/Granit.CustomerBalance.BackgroundJobs.Tests"
+        "tests/Granit.CustomerBalance.BackgroundJobs.Tests",
+        "tests/Granit.Catalog.Tests",
+        "tests/Granit.Catalog.Endpoints.Tests",
+        "tests/Granit.Catalog.EntityFrameworkCore.Tests"
       ]
     },
     {
