@@ -13,12 +13,16 @@ public sealed class IdempotencyStateTests
     public void Completed_HasValue1() => ((byte)IdempotencyState.Completed).ShouldBe((byte)1);
 
     [Fact]
-    public void Enum_HasExactlyTwoValues()
+    public void Tombstoned_HasValue2() => ((byte)IdempotencyState.Tombstoned).ShouldBe((byte)2);
+
+    [Fact]
+    public void Enum_HasInProgressCompletedTombstoned()
     {
         string[] names = Enum.GetNames<IdempotencyState>();
 
-        names.Length.ShouldBe(2);
+        names.Length.ShouldBe(3);
         names.ShouldContain("InProgress");
         names.ShouldContain("Completed");
+        names.ShouldContain("Tombstoned");
     }
 }

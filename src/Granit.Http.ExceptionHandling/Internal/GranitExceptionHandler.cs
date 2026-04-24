@@ -33,9 +33,20 @@ internal sealed partial class GranitExceptionHandler(
     IProblemDetailsService problemDetailsService,
     IOptions<ExceptionHandlingOptions> options,
     ILoggerFactory loggerFactory,
+    ValidationErrorsSanitizer validationErrorsSanitizer,
     IStringLocalizerFactory? localizerFactory = null) : IExceptionHandler
 {
-    private static readonly string FallbackTitle = "An unexpected error occurred.";
+    private const string FallbackTitle = "An unexpected error occurred.";
+
+    // Generic 4xx titles — returned when ExposeInternalErrorDetails is false
+    // and the exception is not IUserFriendlyException. Avoids leaking business
+    // logic details, PII, or tenant identifiers embedded in raw exception
+    // messages (ISO 27001, GDPR Art. 32, OWASP ASVS V7.4.1).
+    private const string FallbackTitle404 = "Resource not found.";
+    private const string FallbackTitle403 = "Forbidden.";
+    private const string FallbackTitle409 = "Conflict.";
+    private const string FallbackTitle422 = "Validation failed.";
+    private const string FallbackTitle4xx = "Invalid request.";
 
     private readonly ILogger _logger = loggerFactory.CreateLogger<GranitExceptionHandler>();
 
@@ -134,7 +145,8 @@ internal sealed partial class GranitExceptionHandler(
 
         if (exception is IHasValidationErrors hasValidationErrors)
         {
-            problemDetails.Extensions["errors"] = hasValidationErrors.ValidationErrors;
+            problemDetails.Extensions["errors"] =
+                validationErrorsSanitizer.Sanitize(hasValidationErrors.ValidationErrors);
         }
 
         return problemDetails;
@@ -165,15 +177,26 @@ internal sealed partial class GranitExceptionHandler(
             return exception.Message;
         }
 
-        // For internal errors (5xx): mask the message in production.
-        // Only expose if ExposeInternalErrorDetails is true (development/staging).
-        if (statusCode >= 500)
+        // Dev/staging: expose raw message for debugging (all status codes).
+        if (options.Value.ExposeInternalErrorDetails)
         {
-            return options.Value.ExposeInternalErrorDetails ? exception.Message : FallbackTitle;
+            return exception.Message;
         }
 
-        // For 4xx without user-friendly marker: use the message (technical but not sensitive).
-        return exception.Message;
+        // Production: mask messages for both 5xx AND 4xx non-user-friendly.
+        // 4xx exception messages may contain internal context (user ids, tenant
+        // ids, SQL fragments, internal paths) that must not reach the client.
+        // Opt into exposing a specific 4xx message by implementing
+        // IUserFriendlyException on the exception type.
+        return statusCode switch
+        {
+            >= 500 => FallbackTitle,
+            StatusCodes.Status404NotFound => FallbackTitle404,
+            StatusCodes.Status403Forbidden => FallbackTitle403,
+            StatusCodes.Status409Conflict => FallbackTitle409,
+            StatusCodes.Status422UnprocessableEntity => FallbackTitle422,
+            _ => FallbackTitle4xx,
+        };
     }
 
     /// <summary>

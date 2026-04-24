@@ -28,6 +28,21 @@ internal sealed class IdempotencyOptionsValidator : IValidateOptions<Idempotency
             failures.Add($"{nameof(options.MaxBodySizeBytes)} must be greater than 0.");
         }
 
+        if (options.MaxResponseSizeBytes <= 0)
+        {
+            failures.Add($"{nameof(options.MaxResponseSizeBytes)} must be greater than 0.");
+        }
+
+        if (options.MaxKeyLength <= 0)
+        {
+            failures.Add($"{nameof(options.MaxKeyLength)} must be greater than 0.");
+        }
+
+        if (options.TombstoneTtl <= TimeSpan.Zero)
+        {
+            failures.Add($"{nameof(options.TombstoneTtl)} must be greater than zero.");
+        }
+
         if (options.ExecutionTimeout >= options.InProgressTtl)
         {
             failures.Add(

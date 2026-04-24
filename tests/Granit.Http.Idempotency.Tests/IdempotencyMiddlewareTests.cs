@@ -445,25 +445,26 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 8: Race condition — TryAcquire fails, re-read returns null
+    // Scenario 8: Race condition — TryAcquire fails, re-read returns null (VULN-301)
     // =========================================================================
 
     [Fact]
-    public async Task GivenRaceCondition_WhenAcquireFailsAndReReadNull_ProceedsWithoutLock()
+    public async Task GivenRaceCondition_WhenAcquireFailsAndReReadNull_Returns409()
     {
+        // Under an extreme TTL race (the lock vanishes between TryAcquire
+        // failure and the re-read), the middleware must NOT proceed without
+        // a lock — doing so would allow two pods to execute the same
+        // idempotent request concurrently. Returning 409 with Retry-After
+        // preserves the at-most-once guarantee; the client retries in a
+        // window where the lock can be re-acquired cleanly.
+
         IIdempotencyStore store = Substitute.For<IIdempotencyStore>();
 
-        // First GetAsync: null (no entry)
-        // TryAcquire: fails
-        // Second GetAsync (re-read): null (vanished)
         store.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult<IdempotencyEntry?>(null));
 
         store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
              .Returns(Task.FromResult(false));
-
-        store.SetCompletedAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
-             .Returns(Task.CompletedTask);
 
         (HttpClient client, IHost host) = await BuildTestHostAsync(store);
 
@@ -471,8 +472,19 @@ public sealed class IdempotencyMiddlewareTests
         {
             HttpResponseMessage response = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
 
-            // Handler still executes despite acquire failure
-            response.StatusCode.ShouldBe(HttpStatusCode.Created);
+            response.StatusCode.ShouldBe(HttpStatusCode.Conflict);
+            response.Headers.RetryAfter.ShouldNotBeNull();
+
+            string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            body.ShouldContain("Idempotency Race");
+
+            // Business handler MUST NOT have been invoked — the lock race
+            // is surfaced before any side effects can occur.
+            await store.DidNotReceive().SetCompletedAsync(
+                Arg.Any<string>(),
+                Arg.Any<IdempotencyEntry>(),
+                Arg.Any<TimeSpan>(),
+                Arg.Any<CancellationToken>());
         }
         finally
         {
@@ -855,4 +867,233 @@ public sealed class IdempotencyMiddlewareTests
             host.Dispose();
         }
     }
+
+    // =========================================================================
+    // Scenario 16: Set-Cookie NOT replayed (VULN-200)
+    // =========================================================================
+
+    [Fact]
+    public async Task GivenFirstRequestSetsCookie_WhenReplayed_DoesNotReEmitSetCookie()
+    {
+        // Capture path must strip Set-Cookie from stored headers so a replay
+        // does not re-emit a CSRF token / rotating session cookie that was
+        // meant for the original caller only.
+
+        IIdempotencyStore store = Substitute.For<IIdempotencyStore>();
+        IdempotencyEntry? captured = null;
+
+        store.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+             .Returns(_ => Task.FromResult<IdempotencyEntry?>(captured));
+
+        store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
+             .Returns(Task.FromResult(true));
+
+        store.SetCompletedAsync(
+                Arg.Any<string>(),
+                Arg.Do<IdempotencyEntry>(e => captured = e),
+                Arg.Any<TimeSpan>(),
+                Arg.Any<CancellationToken>())
+             .Returns(Task.CompletedTask);
+
+        RequestDelegate cookieSettingHandler = async ctx =>
+        {
+            ctx.Response.StatusCode = StatusCodes.Status200OK;
+            ctx.Response.ContentType = "application/json";
+            ctx.Response.Headers.Append("Set-Cookie", "csrf=abc123; Path=/; HttpOnly; Secure");
+            ctx.Response.Headers["X-Request-Id"] = "req-42";
+            await ctx.Response.WriteAsync("""{"ok":true}""");
+        };
+
+        (HttpClient client, IHost host) = await BuildTestHostAsync(store, endpointHandler: cookieSettingHandler);
+
+        try
+        {
+            // First request: handler runs, Set-Cookie emitted normally
+            HttpResponseMessage first = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
+            first.StatusCode.ShouldBe(HttpStatusCode.OK);
+            first.Headers.Contains("Set-Cookie").ShouldBeTrue("original caller must receive the cookie");
+
+            // Captured entry must NOT carry Set-Cookie in its stored headers
+            captured.ShouldNotBeNull();
+            captured.ResponseHeaders.ShouldNotBeNull();
+            captured.ResponseHeaders.Keys.ShouldNotContain(
+                k => string.Equals(k, "Set-Cookie", StringComparison.OrdinalIgnoreCase),
+                "Set-Cookie must be excluded from the stored replay headers");
+            captured.ResponseHeaders.ShouldContainKey("X-Request-Id");
+
+            // Second request (replay): the original caller's cookie must NOT
+            // be re-emitted to this new request.
+            HttpResponseMessage second = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
+            second.StatusCode.ShouldBe(HttpStatusCode.OK);
+            second.Headers.Contains("X-Idempotency-Replayed").ShouldBeTrue();
+            second.Headers.Contains("Set-Cookie").ShouldBeFalse(
+                "replay must not leak the original caller's cookie to a subsequent retry");
+        }
+        finally
+        {
+            host.Dispose();
+        }
+    }
+
+    // =========================================================================
+    // Scenario 17: Oversized response → tombstone + replay returns 413 (VULN-201)
+    // =========================================================================
+
+    [Fact]
+    public async Task GivenResponseExceedsMaxSize_WhenCaptured_StoresTombstoneEntry()
+    {
+        IIdempotencyStore store = Substitute.For<IIdempotencyStore>();
+        IdempotencyEntry? captured = null;
+
+        store.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+             .Returns(Task.FromResult<IdempotencyEntry?>(null));
+
+        store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
+             .Returns(Task.FromResult(true));
+
+        store.SetCompletedAsync(
+                Arg.Any<string>(),
+                Arg.Do<IdempotencyEntry>(e => captured = e),
+                Arg.Any<TimeSpan>(),
+                Arg.Any<CancellationToken>())
+             .Returns(Task.CompletedTask);
+
+        // Handler returns 2 KiB — greater than the 1 KiB limit we configure.
+        string largeBody = new('x', 2 * 1024);
+        RequestDelegate largeResponseHandler = async ctx =>
+        {
+            ctx.Response.StatusCode = StatusCodes.Status200OK;
+            ctx.Response.ContentType = "text/plain";
+            await ctx.Response.WriteAsync(largeBody);
+        };
+
+        (HttpClient client, IHost host) = await BuildTestHostAsync(
+            store,
+            configureOptions: opts =>
+            {
+                opts.MaxResponseSizeBytes = 1024;
+                opts.TombstoneTtl = TimeSpan.FromMinutes(10);
+            },
+            endpointHandler: largeResponseHandler);
+
+        try
+        {
+            // First request: caller receives the full 2 KiB response
+            HttpResponseMessage first = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
+            first.StatusCode.ShouldBe(HttpStatusCode.OK);
+            string firstBody = await first.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            firstBody.Length.ShouldBe(largeBody.Length);
+
+            // Stored entry must be a tombstone (not a full Completed entry)
+            captured.ShouldNotBeNull();
+            captured.State.ShouldBe(IdempotencyState.Tombstoned);
+            captured.TombstoneReason.ShouldBe(IdempotencyTombstoneReason.ResponseTooLarge);
+            captured.ResponseBody.ShouldBeNull("tombstones must not carry a response body");
+            captured.ResponseHeaders.ShouldBeNull("tombstones must not carry response headers");
+        }
+        finally
+        {
+            host.Dispose();
+        }
+    }
+
+    [Fact]
+    public async Task GivenTombstonedEntry_WhenRetriedWithSameBody_Returns413WithTombstoneHeader()
+    {
+        // Rather than seeding a tombstone by hand (the payload-hash match
+        // would require replicating the middleware's composite hashing),
+        // let the middleware itself tombstone on first request, then
+        // submit an identical second request to exercise the replay path.
+
+        IIdempotencyStore store = Substitute.For<IIdempotencyStore>();
+        IdempotencyEntry? captured = null;
+
+        store.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+             .Returns(_ => Task.FromResult<IdempotencyEntry?>(captured));
+
+        store.TryAcquireAsync(Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>())
+             .Returns(Task.FromResult(true));
+
+        store.SetCompletedAsync(
+                Arg.Any<string>(),
+                Arg.Do<IdempotencyEntry>(e => captured = e),
+                Arg.Any<TimeSpan>(),
+                Arg.Any<CancellationToken>())
+             .Returns(Task.CompletedTask);
+
+        string largeBody = new('x', 2 * 1024);
+        int handlerCalls = 0;
+        RequestDelegate largeHandler = async ctx =>
+        {
+            handlerCalls++;
+            ctx.Response.StatusCode = StatusCodes.Status200OK;
+            await ctx.Response.WriteAsync(largeBody);
+        };
+
+        (HttpClient client, IHost host) = await BuildTestHostAsync(
+            store,
+            configureOptions: opts => opts.MaxResponseSizeBytes = 1024,
+            endpointHandler: largeHandler);
+
+        try
+        {
+            // First request: tombstone is stored by the capture path
+            HttpResponseMessage first = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
+            first.StatusCode.ShouldBe(HttpStatusCode.OK);
+            captured.ShouldNotBeNull();
+            captured.State.ShouldBe(IdempotencyState.Tombstoned);
+
+            // Second request: must hit the tombstone path, return 413, and
+            // NOT re-execute the handler
+            HttpResponseMessage second = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
+
+            second.StatusCode.ShouldBe(HttpStatusCode.RequestEntityTooLarge);
+            second.Headers.Contains("X-Idempotency-Tombstone").ShouldBeTrue();
+            second.Headers.GetValues("X-Idempotency-Tombstone")
+                .ShouldContain(nameof(IdempotencyTombstoneReason.ResponseTooLarge));
+
+            string body = await second.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            body.ShouldContain("Not Replayable");
+
+            handlerCalls.ShouldBe(1, "tombstoned replays must NOT re-execute the business handler");
+        }
+        finally
+        {
+            host.Dispose();
+        }
+    }
+
+    // =========================================================================
+    // Scenario 18: Oversized idempotency key → 400 (VULN-300)
+    // =========================================================================
+
+    [Fact]
+    public async Task GivenIdempotencyKeyExceedsMaxLength_Returns400()
+    {
+        IIdempotencyStore store = Substitute.For<IIdempotencyStore>();
+
+        (HttpClient client, IHost host) = await BuildTestHostAsync(
+            store,
+            configureOptions: opts => opts.MaxKeyLength = 32);
+
+        try
+        {
+            string oversized = new('k', 64);
+            HttpResponseMessage response = await client.SendAsync(BuildRequest(oversized), TestContext.Current.CancellationToken);
+
+            response.StatusCode.ShouldBe(HttpStatusCode.BadRequest);
+            string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+            body.ShouldContain("Too Long");
+
+            // Must reject before any store interaction
+            await store.DidNotReceive().GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
+            await store.DidNotReceive().TryAcquireAsync(
+                Arg.Any<string>(), Arg.Any<IdempotencyEntry>(), Arg.Any<TimeSpan>(), Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            host.Dispose();
+        }
+    }
+
 }
