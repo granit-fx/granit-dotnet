@@ -24972,7 +24972,7 @@
       "fqn": "Granit.Metering.Recompute.UsageRecomputeRejectedException",
       "kind": "class",
       "project": "Granit.Metering",
-      "file": "src/Granit.Metering/Recompute/UsageRecomputeRejectedException.cs",
+      "file": "src/Granit.Metering/Recompute/Exceptions/UsageRecomputeRejectedException.cs",
       "line": 7,
       "members": [
         {
