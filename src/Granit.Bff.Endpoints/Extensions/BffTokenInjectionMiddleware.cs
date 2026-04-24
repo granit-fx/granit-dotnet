@@ -157,11 +157,17 @@ public sealed partial class BffTokenInjectionMiddleware
     /// Resolves the BFF frontend for the current request based on session cookies.
     /// When multiple frontends are configured on a single backend origin, the browser
     /// sends every <c>.bff-{name}</c> cookie it holds for that origin (they share
-    /// <c>Path=/</c>). Picking the first cookie found would mismatch the CSRF token
-    /// that the SPA obtained for its own frontend, which produces 403 responses on
-    /// mutating calls. Disambiguate by matching the request's <c>Origin</c> (or
-    /// <c>Referer</c> when <c>Origin</c> is absent) against each candidate's
-    /// <see cref="BffFrontendOptions.ClientUrl"/>.
+    /// <c>Path=/</c>). Even with a single cookie the choice can be wrong: on
+    /// <c>localhost</c> the port is not part of the cookie scope (RFC 6265), so a
+    /// cookie set by the SPA on <c>localhost:5173</c> is also sent by the browser
+    /// on requests to <c>localhost:5174</c>. Picking that cookie blindly would
+    /// mismatch the CSRF token the tenant SPA obtained for its own frontend and
+    /// produce a 403 on every mutating call (including <c>/api/v1/account/login</c>).
+    /// Disambiguate by matching the request's <c>Origin</c> (or <c>Referer</c> when
+    /// <c>Origin</c> is absent) against each candidate's
+    /// <see cref="BffFrontendOptions.ClientUrl"/>; when the caller origin is known
+    /// but matches no candidate, treat the request as sessionless so anonymous
+    /// endpoints proceed and authenticated endpoints challenge normally.
     /// </summary>
     internal static (BffFrontendOptions? Frontend, string? SessionId) ResolveFrontendFromCookies(
         HttpContext context, GranitBffOptions options)
@@ -182,24 +188,25 @@ public sealed partial class BffTokenInjectionMiddleware
             return (null, null);
         }
 
-        if (candidates.Count == 1)
+        string? callerOrigin = GetCallerOrigin(context.Request);
+
+        if (callerOrigin is null)
         {
+            // No Origin/Referer (same-origin GET navigation, server-to-server) —
+            // fall back to the first candidate to preserve single-frontend and
+            // monolithic setups.
             return candidates[0];
         }
 
-        string? callerOrigin = GetCallerOrigin(context.Request);
-        if (callerOrigin is not null)
+        foreach ((BffFrontendOptions frontend, string sessionId) in candidates)
         {
-            foreach ((BffFrontendOptions frontend, string sessionId) in candidates)
+            if (OriginMatchesClientUrl(callerOrigin, frontend.ClientUrl))
             {
-                if (OriginMatchesClientUrl(callerOrigin, frontend.ClientUrl))
-                {
-                    return (frontend, sessionId);
-                }
+                return (frontend, sessionId);
             }
         }
 
-        return candidates[0];
+        return (null, null);
     }
 
     private static string? GetCallerOrigin(HttpRequest request)

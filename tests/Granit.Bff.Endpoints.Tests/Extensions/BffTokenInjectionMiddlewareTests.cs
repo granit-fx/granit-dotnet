@@ -204,7 +204,7 @@ public sealed class BffTokenInjectionMiddlewareTests
     }
 
     [Fact]
-    public void ResolveFrontendFromCookies_BothCookiesPresent_UnknownOrigin_FallsBackToFirst()
+    public void ResolveFrontendFromCookies_BothCookiesPresent_UnknownOrigin_ReturnsNull()
     {
         BffFrontendOptions host = Frontend("host", "http://localhost:5173");
         BffFrontendOptions app = Frontend("app", "http://localhost:5174");
@@ -225,8 +225,42 @@ public sealed class BffTokenInjectionMiddlewareTests
         (BffFrontendOptions? frontend, string? sessionId) =
             BffTokenInjectionMiddleware.ResolveFrontendFromCookies(context, options);
 
-        frontend.ShouldBe(host);
-        sessionId.ShouldBe("session-host-aaa");
+        // Caller origin does not match any frontend's ClientUrl — granting one
+        // arbitrary session to a stranger would hand it CSRF-protected state it
+        // has no claim to. Drop both candidates instead.
+        frontend.ShouldBeNull();
+        sessionId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ResolveFrontendFromCookies_SingleCookie_OriginMismatch_ReturnsNull()
+    {
+        // Regression: on localhost the cookie scope ignores the port (RFC 6265),
+        // so a `.bff-host` cookie set by the host SPA on :5173 is also sent by
+        // the browser to :5174. With only one cookie the old fast path returned
+        // it unconditionally — the tenant SPA's mutating request (e.g. login)
+        // was then CSRF-validated against the host session's HMAC secret and
+        // rejected with 403.
+        BffFrontendOptions host = Frontend("host", "http://localhost:5173");
+        BffFrontendOptions app = Frontend("app", "http://localhost:5174");
+        GranitBffOptions options = new()
+        {
+            Authority = new Uri("https://auth.example.com"),
+            Frontends = [host, app],
+        };
+
+        HttpContext context = CreateContext(
+            new Dictionary<string, string>
+            {
+                [".bff-host"] = "session-host-aaa",
+            },
+            origin: "http://localhost:5174");
+
+        (BffFrontendOptions? frontend, string? sessionId) =
+            BffTokenInjectionMiddleware.ResolveFrontendFromCookies(context, options);
+
+        frontend.ShouldBeNull();
+        sessionId.ShouldBeNull();
     }
 
     [Fact]
