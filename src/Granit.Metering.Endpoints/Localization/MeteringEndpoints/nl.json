@@ -2,6 +2,7 @@
   "culture": "nl",
   "texts": {
     "Permission:Metering.Events.Backfill": "Historische meterevents inladen buiten het standaard ingestievenster (tot 365 dagen)",
+    "Permission:Metering.Events.Manage": "Individuele meterevents beheren (verkeerde of frauduleuze events afkeuren)",
     "Permission:Metering.Meters.Manage": "Meterdefinities beheren (aanmaken, bijwerken, publiceren, archiveren)",
     "Permission:Metering.Meters.Read": "Meterdefinities bekijken",
     "Permission:Metering.Usage.Read": "Gebruiksgegevens en quotumstatus bekijken",

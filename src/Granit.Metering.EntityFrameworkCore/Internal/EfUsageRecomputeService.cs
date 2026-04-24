@@ -39,11 +39,12 @@ internal sealed partial class EfUsageRecomputeService(
                 $"Recompute window is empty or inverted: from={request.From:O} to={request.To:O}.");
         }
 
-        if (request.To > clock.Now)
+        if (request.From > clock.Now)
         {
             throw new UsageRecomputeRejectedException(
                 "Granit:Metering:RecomputeWindowInFuture",
-                $"Recompute window upper bound {request.To:O} is in the future (now={clock.Now:O}).");
+                $"Recompute window lower bound {request.From:O} is in the future (now={clock.Now:O}). "
+                + "The upper bound may extend past now (no events past now will be considered).");
         }
 
         // Definitions are loaded with the tenant filter disabled because the recompute
@@ -96,7 +97,8 @@ internal sealed partial class EfUsageRecomputeService(
             .Where(e => e.MeterDefinitionId == definition.Id
                 && e.TenantId == definition.TenantId
                 && e.Timestamp >= windowStart
-                && e.Timestamp < windowEnd)
+                && e.Timestamp < windowEnd
+                && e.DeprecatedAt == null)
             .OrderBy(e => e.Timestamp)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);

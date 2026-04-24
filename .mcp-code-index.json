@@ -24367,6 +24367,12 @@
           "kind": "property",
           "signature": "decimal Quantity",
           "returnType": "decimal"
+        },
+        {
+          "name": "Deprecate",
+          "kind": "method",
+          "signature": "Deprecate(string reason, DateTimeOffset now)",
+          "returnType": "void"
         }
       ]
     },
@@ -24446,6 +24452,24 @@
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/BackfillUsageRequest.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "DeprecateEventRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "DeprecateEventResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventResponse.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -24979,6 +25003,22 @@
       ]
     },
     {
+      "name": "IMeterEventDeprecationService",
+      "fqn": "Granit.Metering.Recompute.IMeterEventDeprecationService",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DeprecateAsync",
+          "kind": "method",
+          "signature": "DeprecateAsync(Guid eventId, string reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task<MeterEventDeprecationResult>"
+        }
+      ]
+    },
+    {
       "name": "IUsageBackfillService",
       "fqn": "Granit.Metering.Recompute.IUsageBackfillService",
       "kind": "interface",
@@ -25009,6 +25049,24 @@
           "returnType": "Task<UsageRecomputeResult>"
         }
       ]
+    },
+    {
+      "name": "MeterEventDeprecationResult",
+      "fqn": "Granit.Metering.Recompute.MeterEventDeprecationResult",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "MeterEventNotFoundException",
+      "fqn": "Granit.Metering.Recompute.MeterEventNotFoundException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/Exceptions/MeterEventNotFoundException.cs",
+      "line": 4,
+      "members": []
     },
     {
       "name": "UsageBackfillResult",
@@ -30132,6 +30190,22 @@
       ]
     },
     {
+      "name": "OpenIddictApplicationClientSideExtensions",
+      "fqn": "Granit.OpenIddict.Extensions.OpenIddictApplicationClientSideExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Extensions/OpenIddictApplicationClientSideExtensions.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "SetClientSide",
+          "kind": "method",
+          "signature": "SetClientSide(this OpenIddictApplicationDescriptor descriptor, MultiTenancySide? clientSide)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictModule",
       "fqn": "Granit.OpenIddict.GranitOpenIddictModule",
       "kind": "class",
@@ -30292,7 +30366,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "Applications",
@@ -30314,7 +30388,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 33,
+      "line": 36,
       "members": []
     },
     {
@@ -30323,7 +30397,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 49,
+      "line": 53,
       "members": []
     },
     {
@@ -30400,7 +30474,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",
@@ -30416,8 +30490,37 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 10,
-      "members": []
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ClientSideAuthorizationHandler",
+      "fqn": "Granit.OpenIddict.Server.Handlers.ClientSideAuthorizationHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictServerHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictServerHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessSignInContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
     },
     {
       "name": "ClaimsDestinations",

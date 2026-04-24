@@ -114,16 +114,23 @@ public sealed class BffFrontendOptions
     public string[] Scopes { get; set; } = ["openid", "profile", "email", "roles", "offline_access"];
 
     /// <summary>
-    /// Declared scope of this frontend relative to the host/tenant boundary. When set,
-    /// downstream components (e.g. a custom OIDC server handler) may enforce that the
-    /// authenticating user's context matches: <see cref="MultiTenancySide.Host"/> rejects
-    /// users with a tenant context, <see cref="MultiTenancySide.Tenant"/> rejects users
-    /// without one. <see cref="MultiTenancySide.Both"/> or <see langword="null"/> leaves
-    /// the frontend unrestricted.
+    /// Declared scope of this frontend relative to the host/tenant boundary, kept
+    /// here as documentation and for host-application configuration convenience.
     /// </summary>
     /// <remarks>
-    /// Granit.Bff does not act on this value itself — it is purely declarative metadata
-    /// for consumers (typically the host application's OpenIddict server handler) to read.
+    /// <para>
+    /// Granit.Bff does not enforce this value. Enforcement lives in
+    /// <c>Granit.OpenIddict.Server</c> via <c>ClientSideAuthorizationHandler</c>,
+    /// which reads the policy from the OIDC application record — not from the BFF
+    /// frontend options — so deployments without <c>Granit.Bff</c> can still
+    /// restrict access to host-only or tenant-only clients.
+    /// </para>
+    /// <para>
+    /// The host application is expected to mirror this value onto the matching
+    /// <c>OidcApplicationSeedDescriptor.ClientSide</c> (or apply it directly to
+    /// the OIDC application's <c>Properties</c> bag via
+    /// <c>OpenIddictApplicationDescriptor.SetClientSide(...)</c>).
+    /// </para>
     /// </remarks>
     public MultiTenancySide? ClientSide { get; set; }
 
