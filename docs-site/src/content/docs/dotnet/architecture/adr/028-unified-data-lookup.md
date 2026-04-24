@@ -257,5 +257,5 @@ Follow-up items explicitly out of scope:
   `AsLookup`-decorated definitions too).
 - [`/dotnet/business/data-lookup/`](/dotnet/business/data-lookup/) —
   module documentation page.
-- [`/dotnet/guide/patterns/data-lookup/`](/dotnet/guide/patterns/data-lookup/)
+- [`/dotnet/architecture/patterns/data-lookup/`](/dotnet/architecture/patterns/data-lookup/)
   — adoption guide with recipes.
