@@ -32,5 +32,15 @@ internal sealed class PlanPriceConfiguration : IEntityTypeConfiguration<PlanPric
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}plan_prices_current");
 
         builder.Ignore(e => e.IsCurrent);
+
+        builder.Property(e => e.TieringMode);
+
+        builder.HasMany(e => e.Tiers)
+            .WithOne()
+            .HasForeignKey(t => t.PlanPriceId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Navigation(e => e.Tiers)
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
     }
 }

@@ -69,14 +69,25 @@ internal sealed partial class DefaultUsageInvoiceOrchestrator(
                 subscription.Id.ToString()));
         }
 
-        decimal unitPrice = await pricingResolver.ResolveUsageUnitPriceAsync(
+        // Tier-aware total: when the resolved PlanPrice carries Tiers + a TieringMode,
+        // ResolveUsageAmountAsync runs the bracket math (Volume or Graduated) and returns
+        // the total directly. For flat per-unit pricing it falls back to quantity × unit
+        // price — same number as the legacy code path. We still surface a derived "unit
+        // price" on the invoice line so consumers can sanity-check the math; for tiered
+        // pricing this is the effective average rate, not an authoritative per-unit price.
+        decimal usageTotal = await pricingResolver.ResolveUsageAmountAsync(
             subscription.PlanId, subscription.Currency, plan.DefaultInterval,
-            request.MeterDefinitionId.ToString(), subscription.PlanPriceId, cancellationToken)
+            request.MeterDefinitionId.ToString(), request.AggregatedValue,
+            subscription.PlanPriceId, cancellationToken)
             .ConfigureAwait(false);
+
+        decimal effectiveUnitPrice = request.AggregatedValue > 0m
+            ? usageTotal / request.AggregatedValue
+            : 0m;
 
         lineItems.Add(new CreateInvoiceLineItem(
             $"{request.MeterName}: {request.AggregatedValue} {request.Unit}",
-            request.AggregatedValue, unitPrice,
+            request.AggregatedValue, effectiveUnitPrice,
             InvoiceSourceType.Usage,
             request.MeterDefinitionId.ToString()));
 

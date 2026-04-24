@@ -28,4 +28,19 @@ public interface IPricingResolver
         PlanId planId, string currency, BillingInterval interval,
         string meterId, Guid? planPriceId = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Resolves the total amount owed for <paramref name="quantity"/> units of usage,
+    /// applying the plan's <see cref="PlanPrice.TieringMode"/> and tier sequence when
+    /// the price is tiered. For non-tiered prices, falls back to <c>quantity × unit price</c>.
+    /// </summary>
+    /// <remarks>
+    /// Returns <c>0</c> when the plan is not found, the price cannot be resolved, the
+    /// plan's <c>PricingModel</c> is not a usage variant (PerUnit / Tiered), or the
+    /// quantity is zero.
+    /// </remarks>
+    Task<decimal> ResolveUsageAmountAsync(
+        PlanId planId, string currency, BillingInterval interval,
+        string meterId, decimal quantity, Guid? planPriceId = null,
+        CancellationToken cancellationToken = default);
 }

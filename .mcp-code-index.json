@@ -39995,7 +39995,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval, DateTimeOffset effectiveFrom, Guid? productId = null)",
+          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval, DateTimeOffset effectiveFrom, Guid? productId = null, TieringMode? tieringMode = null)",
           "returnType": "PlanPrice"
         },
         {
@@ -40009,6 +40009,12 @@
           "kind": "property",
           "signature": "BillingInterval Interval",
           "returnType": "BillingInterval"
+        },
+        {
+          "name": "SetTiers",
+          "kind": "method",
+          "signature": "SetTiers(TieringMode mode, IEnumerable<PricingTier> tiers)",
+          "returnType": "void"
         }
       ]
     },
@@ -40020,6 +40026,22 @@
       "file": "src/Granit.Subscriptions/Domain/PricingModel.cs",
       "line": 6,
       "members": []
+    },
+    {
+      "name": "PricingTier",
+      "fqn": "Granit.Subscriptions.Domain.PricingTier",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PricingTier.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid planPriceId, int sortOrder, decimal? upToQuantity, decimal unitAmount, decimal? flatAmount = null)",
+          "returnType": "PricingTier"
+        }
+      ]
     },
     {
       "name": "Subscription",
@@ -40142,6 +40164,15 @@
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/SubscriptionStatus.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "TieringMode",
+      "fqn": "Granit.Subscriptions.Domain.TieringMode",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/TieringMode.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -40967,6 +40998,12 @@
           "kind": "method",
           "signature": "ResolveUsageUnitPriceAsync(PlanId planId, string currency, BillingInterval interval, string meterId, Guid? planPriceId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<decimal>"
+        },
+        {
+          "name": "ResolveUsageAmountAsync",
+          "kind": "method",
+          "signature": "ResolveUsageAmountAsync(PlanId planId, string currency, BillingInterval interval, string meterId, decimal quantity, Guid? planPriceId = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<decimal>"
         }
       ]
     },
@@ -41387,6 +41424,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "TieredPricingCalculator",
+      "fqn": "Granit.Subscriptions.Pricing.TieredPricingCalculator",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Pricing/TieredPricingCalculator.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Compute",
+          "kind": "method",
+          "signature": "Compute(decimal quantity, TieringMode mode, IReadOnlyList<PricingTier> tiers)",
+          "returnType": "decimal"
         }
       ]
     },

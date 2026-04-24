@@ -13,6 +13,7 @@ public static class SubscriptionsModelBuilderExtensions
     {
         modelBuilder.ApplyConfiguration(new PlanConfiguration());
         modelBuilder.ApplyConfiguration(new PlanPriceConfiguration());
+        modelBuilder.ApplyConfiguration(new PricingTierConfiguration());
         modelBuilder.ApplyConfiguration(new PlanFeatureValueConfiguration());
         modelBuilder.ApplyConfiguration(new PlanExternalMappingConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());

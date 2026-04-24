@@ -172,9 +172,9 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
         _pricingResolver.ResolveBasePriceAsync(
                 planId, "EUR", BillingInterval.Monthly, null, Arg.Any<CancellationToken>())
             .Returns(0m);
-        _pricingResolver.ResolveUsageUnitPriceAsync(
-                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), null, Arg.Any<CancellationToken>())
-            .Returns(0.05m);
+        _pricingResolver.ResolveUsageAmountAsync(
+                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), 500m, null, Arg.Any<CancellationToken>())
+            .Returns(500m * 0.05m);
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
@@ -209,9 +209,9 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
         _pricingResolver.ResolveBasePriceAsync(
                 planId, "EUR", BillingInterval.Monthly, null, Arg.Any<CancellationToken>())
             .Returns(49.99m);
-        _pricingResolver.ResolveUsageUnitPriceAsync(
-                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), null, Arg.Any<CancellationToken>())
-            .Returns(0.10m);
+        _pricingResolver.ResolveUsageAmountAsync(
+                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), 200m, null, Arg.Any<CancellationToken>())
+            .Returns(200m * 0.10m);
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
@@ -257,9 +257,9 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
         _pricingResolver.ResolveBasePriceAsync(
                 planId, "EUR", BillingInterval.Monthly, null, Arg.Any<CancellationToken>())
             .Returns(0m);
-        _pricingResolver.ResolveUsageUnitPriceAsync(
-                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), null, Arg.Any<CancellationToken>())
-            .Returns(0.25m);
+        _pricingResolver.ResolveUsageAmountAsync(
+                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), 75m, null, Arg.Any<CancellationToken>())
+            .Returns(75m * 0.25m);
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
@@ -290,15 +290,15 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
         _pricingResolver.ResolveBasePriceAsync(
                 planId, "EUR", BillingInterval.Monthly, planPriceId, Arg.Any<CancellationToken>())
             .Returns(29.99m);
-        _pricingResolver.ResolveUsageUnitPriceAsync(
-                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), planPriceId, Arg.Any<CancellationToken>())
-            .Returns(0.01m);
+        _pricingResolver.ResolveUsageAmountAsync(
+                planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), 150m, planPriceId, Arg.Any<CancellationToken>())
+            .Returns(150m * 0.01m);
 
         await _sut.CreateInvoiceAsync(request, TestContext.Current.CancellationToken);
 
         await _pricingResolver.Received(1).ResolveBasePriceAsync(
             planId, "EUR", BillingInterval.Monthly, planPriceId, Arg.Any<CancellationToken>());
-        await _pricingResolver.Received(1).ResolveUsageUnitPriceAsync(
-            planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), planPriceId, Arg.Any<CancellationToken>());
+        await _pricingResolver.Received(1).ResolveUsageAmountAsync(
+            planId, "EUR", BillingInterval.Monthly, meterDefId.ToString(), 150m, planPriceId, Arg.Any<CancellationToken>());
     }
 }
