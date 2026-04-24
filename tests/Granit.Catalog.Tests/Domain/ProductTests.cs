@@ -1,5 +1,6 @@
 using Granit.Catalog.Domain;
 using Granit.Catalog.Events;
+using Granit.Domain;
 using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
@@ -37,11 +38,12 @@ public sealed class ProductTests
     }
 
     [Fact]
-    public void Create_ShouldInitializeEmptyMetadataAndExternalMappings()
+    public void Create_ShouldInitializeEmptyExtraPropertiesAndExternalMappings()
     {
         Product product = NewDraftProduct();
 
-        product.Metadata.ShouldBeEmpty();
+        product.ExtraPropertiesJson.ShouldBeNull();
+        product.GetExtraProperties().ShouldBeEmpty();
         product.ExternalMappings.ShouldBeEmpty();
     }
 
@@ -251,35 +253,57 @@ public sealed class ProductTests
         removed.ShouldBeFalse();
     }
 
-    // ── Metadata ────────────────────────────────────────────────────────────
+    // ── Extra properties (IHasExtraProperties) ──────────────────────────────
 
     [Fact]
-    public void UpdateMetadata_ShouldReplaceDictionary()
+    public void ReplaceExtraProperties_ShouldStoreAsJson()
     {
         Product product = NewDraftProduct();
         Dictionary<string, string> meta = new() { ["region"] = "eu-west-1", ["tier"] = "premium" };
 
-        product.UpdateMetadata(meta);
+        product.ReplaceExtraProperties(meta);
 
-        product.Metadata.Count.ShouldBe(2);
-        product.Metadata["region"].ShouldBe("eu-west-1");
-        product.Metadata["tier"].ShouldBe("premium");
+        product.ExtraPropertiesJson.ShouldNotBeNull();
+        product.GetExtraProperty("region").ShouldBe("eu-west-1");
+        product.GetExtraProperty("tier").ShouldBe("premium");
     }
 
     [Fact]
-    public void UpdateMetadata_OnPublishedProduct_ShouldSucceed()
+    public void ReplaceExtraProperties_WithEmptyDictionary_ShouldClearJson()
+    {
+        Product product = NewDraftProduct();
+        product.ReplaceExtraProperties(new Dictionary<string, string> { ["foo"] = "bar" });
+
+        product.ReplaceExtraProperties(new Dictionary<string, string>());
+
+        product.ExtraPropertiesJson.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ReplaceExtraProperties_OnPublishedProduct_ShouldSucceed()
     {
         Product product = NewDraftProduct();
         product.Publish();
 
-        product.UpdateMetadata(new Dictionary<string, string> { ["channel"] = "marketplace" });
+        product.ReplaceExtraProperties(new Dictionary<string, string> { ["channel"] = "marketplace" });
 
-        product.Metadata["channel"].ShouldBe("marketplace");
+        product.GetExtraProperty("channel").ShouldBe("marketplace");
     }
 
     [Fact]
-    public void UpdateMetadata_WithNull_ShouldThrow() =>
-        Should.Throw<ArgumentNullException>(() => NewDraftProduct().UpdateMetadata(null!));
+    public void ReplaceExtraProperties_WithNull_ShouldThrow() =>
+        Should.Throw<ArgumentNullException>(() => NewDraftProduct().ReplaceExtraProperties(null!));
+
+    [Fact]
+    public void SetExtraProperty_ViaFrameworkExtension_ShouldRoundTrip()
+    {
+        Product product = NewDraftProduct();
+
+        product.SetExtraProperty("env", "prod");
+
+        product.GetExtraProperty("env").ShouldBe("prod");
+        product.HasExtraProperty("env").ShouldBeTrue();
+    }
 
     // ── IWorkflowStateful contract ──────────────────────────────────────────
 

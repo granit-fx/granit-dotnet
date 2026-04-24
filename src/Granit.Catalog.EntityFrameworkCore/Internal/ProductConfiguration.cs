@@ -1,21 +1,11 @@
-using System.Text.Json;
 using Granit.Catalog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Catalog.EntityFrameworkCore.Internal;
 
 internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
-    private static readonly ValueConverter<Dictionary<string, string>, string> MetadataConverter =
-        new(
-            v => JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
-            v => string.IsNullOrEmpty(v)
-                ? new Dictionary<string, string>(StringComparer.Ordinal)
-                : JsonSerializer.Deserialize<Dictionary<string, string>>(v, JsonSerializerOptions.Default)
-                  ?? new Dictionary<string, string>(StringComparer.Ordinal));
-
     public void Configure(EntityTypeBuilder<Product> builder)
     {
         builder.ToTable(
@@ -31,9 +21,10 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(e => e.Unit).HasMaxLength(64).IsRequired();
         builder.Property(e => e.LifecycleStatus).IsRequired();
 
-        builder.Property(e => e.Metadata)
-            .HasConversion(MetadataConverter)
-            .HasMaxLength(4000);
+        // IHasExtraProperties — JSON string serialized via the framework convention.
+        // Promoted-to-column shadow properties (when registered via MapProperty<T>())
+        // are kept in sync by ExtraPropertySyncInterceptor.
+        builder.Property(e => e.ExtraPropertiesJson).HasMaxLength(4000);
 
         builder.HasMany(e => e.ExternalMappings)
             .WithOne()

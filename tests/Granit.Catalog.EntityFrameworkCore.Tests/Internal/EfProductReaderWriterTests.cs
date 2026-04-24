@@ -1,6 +1,7 @@
 using Granit.Catalog;
 using Granit.Catalog.Domain;
 using Granit.Catalog.EntityFrameworkCore.Internal;
+using Granit.Domain;
 using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -158,16 +159,16 @@ public sealed class EfProductReaderWriterTests
     }
 
     [Fact]
-    public async Task UpdateAsync_WithMetadataChanges_ShouldRoundTrip()
+    public async Task UpdateAsync_WithExtraPropertiesChanges_ShouldRoundTrip()
     {
-        (IProductReader reader, IProductWriter writer, _) = BuildStores(nameof(UpdateAsync_WithMetadataChanges_ShouldRoundTrip));
+        (IProductReader reader, IProductWriter writer, _) = BuildStores(nameof(UpdateAsync_WithExtraPropertiesChanges_ShouldRoundTrip));
         Product product = NewProduct();
-        product.UpdateMetadata(new Dictionary<string, string> { ["region"] = "eu-west-1", ["channel"] = "saas" });
+        product.ReplaceExtraProperties(new Dictionary<string, string> { ["region"] = "eu-west-1", ["channel"] = "saas" });
         await writer.AddAsync(product, TestContext.Current.CancellationToken);
 
         Product? loaded = await reader.GetByIdAsync(product.Id, TestContext.Current.CancellationToken);
         loaded.ShouldNotBeNull();
-        loaded!.Metadata["region"].ShouldBe("eu-west-1");
-        loaded.Metadata["channel"].ShouldBe("saas");
+        loaded!.GetExtraProperty("region").ShouldBe("eu-west-1");
+        loaded.GetExtraProperty("channel").ShouldBe("saas");
     }
 }

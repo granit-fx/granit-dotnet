@@ -9927,7 +9927,7 @@
       "kind": "class",
       "project": "Granit.Catalog",
       "file": "src/Granit.Catalog/Domain/Product.cs",
-      "line": 24,
+      "line": 32,
       "members": [
         {
           "name": "Create",
@@ -9948,16 +9948,10 @@
           "returnType": "string?"
         },
         {
-          "name": "LifecycleStatus",
-          "kind": "property",
-          "signature": "WorkflowLifecycleStatus LifecycleStatus",
-          "returnType": "WorkflowLifecycleStatus"
-        },
-        {
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "WorkflowLifecycleStatus LifecycleStatus { get; private set; } public string? ExtraPropertiesJson { get; set; } public IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "GetWorkflowEntityId",
@@ -10005,12 +9999,66 @@
       "members": []
     },
     {
+      "name": "AddProductExternalMappingRequest",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.AddProductExternalMappingRequest",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductRequestDtos.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "ProductCreateRequest",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.ProductCreateRequest",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductRequestDtos.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ProductExternalMappingResponse",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.ProductExternalMappingResponse",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductResponse.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "ProductResponse",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.ProductResponse",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ProductUpdateRequest",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.ProductUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductRequestDtos.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "UpdateProductExtraPropertiesRequest",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.UpdateProductExtraPropertiesRequest",
+      "kind": "record",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Dtos/ProductRequestDtos.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "CatalogEndpointRouteBuilderExtensions",
       "fqn": "Granit.Catalog.Endpoints.Extensions.CatalogEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Catalog.Endpoints",
       "file": "src/Granit.Catalog.Endpoints/Extensions/CatalogEndpointRouteBuilderExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitCatalog",
@@ -10050,6 +10098,24 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "CatalogPermissions",
+      "fqn": "Granit.Catalog.Endpoints.Permissions.CatalogPermissions",
+      "kind": "class",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Permissions/CatalogPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "Products",
+      "fqn": "Granit.Catalog.Endpoints.Permissions.Products",
+      "kind": "class",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Permissions/CatalogPermissions.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "CatalogEntityFrameworkCoreHostApplicationBuilderExtensions",

@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Granit.Catalog.Events;
 using Granit.Domain;
 using Granit.Workflow.Domain;
@@ -16,12 +17,19 @@ namespace Granit.Catalog.Domain;
 /// for audit trails but are no longer purchasable.
 /// </para>
 /// <para>
+/// Implements <see cref="IHasExtraProperties"/> for free-form key/value attributes
+/// (Stripe-style metadata, integration sync attributes, ...). Use the extension methods
+/// in <see cref="ExtraPropertyExtensions"/> for typed read/write of individual entries,
+/// or <see cref="ReplaceExtraProperties(IReadOnlyDictionary{string, string})"/> for bulk
+/// replacement (used by the admin endpoint).
+/// </para>
+/// <para>
 /// MVP scope: Host-owned (no <see cref="IMultiTenant"/>) — mirroring <c>Plan</c>.
 /// The future e-commerce phase may extend this with multi-tenant scoping
 /// per ADR 032.
 /// </para>
 /// </remarks>
-public sealed class Product : AuditedAggregateRoot, IWorkflowStateful
+public sealed class Product : AuditedAggregateRoot, IWorkflowStateful, IHasExtraProperties
 {
     private readonly List<ProductExternalMapping> _externalMappings = [];
 
@@ -49,7 +57,6 @@ public sealed class Product : AuditedAggregateRoot, IWorkflowStateful
             Unit = unit,
             Description = description,
             LifecycleStatus = WorkflowLifecycleStatus.Draft,
-            Metadata = new Dictionary<string, string>(StringComparer.Ordinal),
         };
 
         product.AddDomainEvent(new ProductCreatedEvent(id, sku, name, type));
@@ -77,11 +84,13 @@ public sealed class Product : AuditedAggregateRoot, IWorkflowStateful
     /// <summary>Current lifecycle status (Draft, PendingReview, Published, Archived).</summary>
     public WorkflowLifecycleStatus LifecycleStatus { get; private set; }
 
-    /// <summary>
-    /// Free-form key/value metadata (Stripe-style). Use for non-billing attributes only —
-    /// MUST NOT contain PII (audit logs and exports may surface this content).
-    /// </summary>
-    public Dictionary<string, string> Metadata { get; private set; } = [];
+    /// <inheritdoc />
+    /// <remarks>
+    /// MUST NOT contain PII (audit logs, exports, and the SQL column itself surface this content).
+    /// EF Core persists this as a JSON string; the <c>ExtraPropertySyncInterceptor</c> handles
+    /// promotion to Shadow Properties when configured via <c>MapProperty&lt;T&gt;()</c>.
+    /// </remarks>
+    public string? ExtraPropertiesJson { get; set; }
 
     /// <summary>External provider mappings (Stripe, Avalara, Odoo, etc.).</summary>
     public IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings.AsReadOnly();
@@ -115,14 +124,17 @@ public sealed class Product : AuditedAggregateRoot, IWorkflowStateful
     }
 
     /// <summary>
-    /// Replaces the metadata dictionary. Allowed in any lifecycle state — metadata
-    /// drives integration syncs that may need to flow even for Published products.
+    /// Replaces all extra properties at once. Use the framework extension methods
+    /// (<see cref="ExtraPropertyExtensions.SetExtraProperty(IHasExtraProperties, string, string?)"/>)
+    /// for granular per-key updates. Allowed in any lifecycle state.
     /// </summary>
-    public void UpdateMetadata(IReadOnlyDictionary<string, string> metadata)
+    public void ReplaceExtraProperties(IReadOnlyDictionary<string, string> properties)
     {
-        ArgumentNullException.ThrowIfNull(metadata);
+        ArgumentNullException.ThrowIfNull(properties);
 
-        Metadata = new Dictionary<string, string>(metadata, StringComparer.Ordinal);
+        ExtraPropertiesJson = properties.Count > 0
+            ? JsonSerializer.Serialize(properties)
+            : null;
     }
 
     /// <summary>Publishes the product, making it available for use by Subscriptions and Metering.</summary>
