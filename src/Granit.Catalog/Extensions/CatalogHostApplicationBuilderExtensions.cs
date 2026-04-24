@@ -1,3 +1,7 @@
+using Granit.Catalog.Diagnostics;
+using Granit.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Catalog.Extensions;
@@ -11,14 +15,17 @@ public static class CatalogHostApplicationBuilderExtensions
     /// Adds the Granit catalog infrastructure (Product aggregate, lifecycle, external mappings).
     /// </summary>
     /// <remarks>
-    /// Registers the catalog domain services. EF Core persistence is added separately via
+    /// Registers metrics, the activity source, and (in subsequent commits) the
+    /// query/export definitions. EF Core persistence is added separately via
     /// <c>AddGranitCatalogEntityFrameworkCore</c>; HTTP endpoints via <c>MapGranitCatalog</c>.
     /// </remarks>
     public static IHostApplicationBuilder AddGranitCatalog(
         this IHostApplicationBuilder builder)
     {
-        // Domain services, metrics, query/export definitions, and activity source
-        // registration will be added as the module is fleshed out (commits 2-6).
+        builder.Services.TryAddSingleton<CatalogMetrics>();
+        GranitActivitySourceRegistry.Register(CatalogActivitySource.Name);
+
+        // Query/Export definitions and reader/writer interfaces are registered in commits 4-6.
         return builder;
     }
 }

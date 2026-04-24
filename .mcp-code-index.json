@@ -9913,6 +9913,15 @@
       ]
     },
     {
+      "name": "CatalogMetrics",
+      "fqn": "Granit.Catalog.Diagnostics.CatalogMetrics",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Diagnostics/CatalogMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "Product",
       "fqn": "Granit.Catalog.Domain.Product",
       "kind": "class",
@@ -10132,7 +10141,7 @@
       "kind": "class",
       "project": "Granit.Catalog",
       "file": "src/Granit.Catalog/Extensions/CatalogHostApplicationBuilderExtensions.cs",
-      "line": 8,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitCatalog",
