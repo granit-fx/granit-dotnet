@@ -447,6 +447,38 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Catalog",
+      "deps": [
+        "Granit",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.Localization",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Catalog.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Catalog",
+        "Granit.Http.Abstractions",
+        "Granit.QueryEngine.AspNetCore",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Catalog.EntityFrameworkCore",
+      "deps": [
+        "Granit.Guids",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Catalog"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
@@ -9877,6 +9909,142 @@
           "kind": "property",
           "signature": "string InstanceName",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "CatalogEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Catalog.Endpoints.Extensions.CatalogEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Extensions/CatalogEndpointRouteBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "MapGranitCatalog",
+          "kind": "method",
+          "signature": "MapGranitCatalog(this IEndpointRouteBuilder endpoints, Action<CatalogEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCatalogEndpointsModule",
+      "fqn": "Granit.Catalog.Endpoints.GranitCatalogEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/GranitCatalogEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "CatalogEndpointsOptions",
+      "fqn": "Granit.Catalog.Endpoints.Options.CatalogEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Catalog.Endpoints",
+      "file": "src/Granit.Catalog.Endpoints/Options/CatalogEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "ProductsTagName",
+          "kind": "property",
+          "signature": "string ProductsTagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "CatalogEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Catalog.EntityFrameworkCore.Extensions.CatalogEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Catalog.EntityFrameworkCore",
+      "file": "src/Granit.Catalog.EntityFrameworkCore/Extensions/CatalogEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitCatalogEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitCatalogEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "CatalogModelBuilderExtensions",
+      "fqn": "Granit.Catalog.EntityFrameworkCore.Extensions.CatalogModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Catalog.EntityFrameworkCore",
+      "file": "src/Granit.Catalog.EntityFrameworkCore/Extensions/CatalogModelBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ConfigureCatalogModule",
+          "kind": "method",
+          "signature": "ConfigureCatalogModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCatalogDbProperties",
+      "fqn": "Granit.Catalog.EntityFrameworkCore.GranitCatalogDbProperties",
+      "kind": "class",
+      "project": "Granit.Catalog.EntityFrameworkCore",
+      "file": "src/Granit.Catalog.EntityFrameworkCore/GranitCatalogDbProperties.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitCatalogEntityFrameworkCoreModule",
+      "fqn": "Granit.Catalog.EntityFrameworkCore.GranitCatalogEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Catalog.EntityFrameworkCore",
+      "file": "src/Granit.Catalog.EntityFrameworkCore/GranitCatalogEntityFrameworkCoreModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CatalogHostApplicationBuilderExtensions",
+      "fqn": "Granit.Catalog.Extensions.CatalogHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Extensions/CatalogHostApplicationBuilderExtensions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "AddGranitCatalog",
+          "kind": "method",
+          "signature": "AddGranitCatalog(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitCatalogModule",
+      "fqn": "Granit.Catalog.GranitCatalogModule",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/GranitCatalogModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

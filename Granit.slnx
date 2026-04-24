@@ -228,6 +228,9 @@
     <Project Path="src/Granit.Notifications/Granit.Notifications.csproj" />
   </Folder>
   <Folder Name="/src/SaaS/">
+    <Project Path="src/Granit.Catalog.Endpoints/Granit.Catalog.Endpoints.csproj" />
+    <Project Path="src/Granit.Catalog.EntityFrameworkCore/Granit.Catalog.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Catalog/Granit.Catalog.csproj" />
     <Project Path="src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj" />
     <Project Path="src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj" />
     <Project Path="src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj" />
@@ -542,6 +545,9 @@
     <Project Path="tests/Granit.Notifications.Zulip.Tests/Granit.Notifications.Zulip.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/SaaS/">
+    <Project Path="tests/Granit.Catalog.Endpoints.Tests/Granit.Catalog.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Catalog.EntityFrameworkCore.Tests/Granit.Catalog.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Catalog.Tests/Granit.Catalog.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.BackgroundJobs.Tests/Granit.CustomerBalance.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj" />

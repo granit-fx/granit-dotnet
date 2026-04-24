@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Catalog.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence layer for Granit.Catalog. Provides CatalogDbContext, EfProductReader, EfProductWriter, and entity configurations. Compatible with SQL Server and PostgreSQL.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Catalog.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Catalog\Granit.Catalog.csproj" />
+  </ItemGroup>
+
+</Project>
