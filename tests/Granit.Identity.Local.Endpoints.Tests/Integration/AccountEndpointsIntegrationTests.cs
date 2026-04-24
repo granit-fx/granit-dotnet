@@ -1,5 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local;
@@ -7,6 +9,7 @@ using Granit.Identity.Local.Domain;
 using Granit.Identity.Local.Endpoints.Dtos;
 using Granit.Identity.Local.Events;
 using Granit.Identity.Local.Services;
+using Granit.MultiTenancy;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
@@ -1172,6 +1175,53 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         result.ShouldNotBeNull();
         result.Succeeded.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Login_WithStaleTenantContext_DisablesFilterAndRealignsTenantToUser()
+    {
+        // Regression: when the browser carries a live Identity cookie from a prior
+        // login on another "side" (e.g. logged in on tenant SPA, now signing in on
+        // host SPA), TenantResolutionMiddleware resolves ICurrentTenant from the
+        // stale tenant_id claim. Before the fix, the handler only disabled the
+        // multi-tenant filter when ICurrentTenant was unavailable — so the lookup
+        // ran scoped to the wrong tenant and returned null, producing a 401 for
+        // credentials that were in fact valid.
+        var staleTenantId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        _server.CurrentTenant.IsAvailable.Returns(true);
+        _server.CurrentTenant.Id.Returns(staleTenantId);
+
+        var hostAdmin = new GranitUser
+        {
+            Id = AccountEndpointsTestServer.TestUserId,
+            Email = "host-admin@example.com",
+            TenantId = null,
+        };
+
+        _server.UserManager
+            .FindByEmailAsync("host-admin@example.com")
+            .Returns(hostAdmin);
+
+        _server.SignInManager
+            .PasswordSignInAsync(hostAdmin, "GoodP@ss1!", false, true)
+            .Returns(Microsoft.AspNetCore.Identity.SignInResult.Success);
+
+        HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
+            "/account/login",
+            new AccountLoginRequest("host-admin@example.com", "GoodP@ss1!"),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+
+        // The filter must have been disabled for the lookup — otherwise the host
+        // admin (TenantId == null) would be invisible while the stale tenant is
+        // active and the request would have returned 401.
+        _server.DataFilter.Received().Disable<IMultiTenant>();
+
+        // And the tenant context must be re-aligned with the resolved user's
+        // TenantId (null here) so PasswordSignInAsync and downstream operations
+        // no longer run within the stale tenant scope.
+        _server.CurrentTenant.Received().Change(null, Arg.Any<string?>());
     }
 
     // -------------------------------------------------------------------------

@@ -104,13 +104,15 @@ internal static partial class AccountLoginEndpoints
         IDataFilter? dataFilter = httpContext.RequestServices.GetService<IDataFilter>();
 
         // Resolve user by email or username.
-        // When no tenant context is active (single-URL app, login happens before authentication),
-        // disable the multi-tenant query filter so the user can be found across all tenants.
-        // RequireUniqueEmail=true guarantees no ambiguity.
+        // Always disable the multi-tenant filter for lookup: when the caller already
+        // has an Identity cookie from a prior login on another side (common on
+        // localhost where cookies ignore the port), ICurrentTenant resolves to the
+        // stale claim and a tenant-scoped query would hide any user whose TenantId
+        // does not match — making it impossible to log in as a host admin from a
+        // browser that previously authenticated a tenant user, and vice-versa.
+        // RequireUniqueEmail=true guarantees no ambiguity across tenants.
         GranitUser? user;
-        IDisposable? tenantFilterScope = currentTenant is { IsAvailable: false }
-            ? dataFilter?.Disable<IMultiTenant>()
-            : null;
+        IDisposable? tenantFilterScope = dataFilter?.Disable<IMultiTenant>();
         try
         {
             user = await userManager.FindByEmailAsync(request.Login).ConfigureAwait(false)
@@ -135,12 +137,12 @@ internal static partial class AccountLoginEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        // Establish the tenant context from the resolved user so that
-        // PasswordSignInAsync and downstream Identity operations run within
-        // the correct tenant scope. Change(null) for host admins is a no-op.
-        using IDisposable? tenantScope = currentTenant is not null && user.TenantId is not null
-            ? currentTenant.Change(user.TenantId)
-            : null;
+        // Re-align the tenant context with the resolved user so PasswordSignInAsync
+        // and downstream Identity operations run within the correct scope. Passing
+        // `user.TenantId` handles both cases: a host admin (null) clears any stale
+        // tenant inherited from a prior login, and a tenant user switches the
+        // context to their own tenant even if it differs from the stale claim.
+        using IDisposable? tenantScope = currentTenant?.Change(user.TenantId);
 
         Microsoft.AspNetCore.Identity.SignInResult result = await signInManager
             .PasswordSignInAsync(user, request.Password, isPersistent: request.RememberMe, lockoutOnFailure: true)
@@ -296,16 +298,26 @@ internal static partial class AccountLoginEndpoints
     }
 
     /// <summary>
-    /// Resolves the tenant context from the 2FA session cookie when no tenant is active.
-    /// Returns an <see cref="IDisposable"/> that restores the previous tenant on dispose,
-    /// or <c>null</c> if no tenant switch was needed.
+    /// Resolves the tenant context from the 2FA session cookie and aligns
+    /// <see cref="ICurrentTenant"/> with the user identified by the challenge.
+    /// Returns an <see cref="IDisposable"/> that restores the previous tenant on
+    /// dispose, or <c>null</c> when the 2FA user cannot be resolved (the handler
+    /// lets the subsequent sign-in call surface the failure).
     /// </summary>
+    /// <remarks>
+    /// The filter is disabled unconditionally during lookup: a stale tenant claim
+    /// inherited from a prior login on another side would otherwise scope the
+    /// query to the wrong tenant and hide the 2FA user, mirroring the password
+    /// login issue. The scope returned by <see cref="ICurrentTenant.Change"/> is
+    /// entered with the user's actual <c>TenantId</c> (null for host admins) so
+    /// the rest of the 2FA ceremony runs in the correct context.
+    /// </remarks>
     private static async Task<IDisposable?> ResolveTenantFromTwoFactorSessionAsync(
         SignInManager<GranitUser> signInManager,
         ICurrentTenant? currentTenant,
         IDataFilter? dataFilter)
     {
-        if (currentTenant is not { IsAvailable: false })
+        if (currentTenant is null)
         {
             return null;
         }
@@ -315,9 +327,7 @@ internal static partial class AccountLoginEndpoints
         GranitUser? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
             .ConfigureAwait(false);
 
-        return twoFactorUser?.TenantId is not null
-            ? currentTenant.Change(twoFactorUser.TenantId)
-            : null;
+        return twoFactorUser is null ? null : currentTenant.Change(twoFactorUser.TenantId);
     }
 
     // ──── Timing attack mitigation ────

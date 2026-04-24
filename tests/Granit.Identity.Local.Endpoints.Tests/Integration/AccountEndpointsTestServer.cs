@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using FluentValidation;
+using Granit.DataFiltering;
 using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
@@ -10,6 +11,7 @@ using Granit.Identity.Local.Endpoints.Extensions;
 using Granit.Identity.Local.Endpoints.Options;
 using Granit.Identity.Local.Endpoints.Permissions;
 using Granit.Identity.Local.Services;
+using Granit.MultiTenancy;
 using Granit.Settings.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -69,6 +71,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public TimeProvider TimeProvider { get; }
     public SignInManager<GranitUser> SignInManager { get; }
     public UserManager<GranitUser> UserManager { get; }
+    public ICurrentTenant CurrentTenant { get; }
+    public IDataFilter DataFilter { get; }
 
     private AccountEndpointsTestServer(
         WebApplication app,
@@ -93,7 +97,9 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         ISettingProvider settingProvider,
         TimeProvider timeProvider,
         SignInManager<GranitUser> signInManager,
-        UserManager<GranitUser> userManager)
+        UserManager<GranitUser> userManager,
+        ICurrentTenant currentTenant,
+        IDataFilter dataFilter)
     {
         _app = app;
         AuthenticatedClient = authenticatedClient;
@@ -118,6 +124,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         TimeProvider = timeProvider;
         SignInManager = signInManager;
         UserManager = userManager;
+        CurrentTenant = currentTenant;
+        DataFilter = dataFilter;
     }
 
     public static async Task<AccountEndpointsTestServer> CreateAsync()
@@ -138,6 +146,13 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IAccountDeletionService deletionService = Substitute.For<IAccountDeletionService>();
         IDistributedEventBus eventBus = Substitute.For<IDistributedEventBus>();
         IFusionCache fusionCache = Substitute.For<IFusionCache>();
+
+        // Multi-tenancy stand-ins — default to "no tenant, no filter" so all existing
+        // tests keep the pre-existing behaviour (filter untouched, no tenant switch).
+        // Tests that exercise tenant-switching wire up their own return values via
+        // the exposed CurrentTenant / DataFilter properties.
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        IDataFilter dataFilter = Substitute.For<IDataFilter>();
 
         ISettingProvider settingProvider = Substitute.For<ISettingProvider>();
 
@@ -205,6 +220,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(timeProvider);
         builder.Services.AddSingleton(signInManager);
         builder.Services.AddSingleton(userManager);
+        builder.Services.AddSingleton(currentTenant);
+        builder.Services.AddSingleton(dataFilter);
         builder.Services.AddSingleton<IPasswordHasher<GranitUser>, PasswordHasher<GranitUser>>();
 
         // Options
@@ -242,7 +259,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
             externalLoginService, externalProviderRegistry,
             passkeyService, impersonationService, deletionService,
             eventBus, fusionCache, settingProvider, timeProvider,
-            signInManager, userManager);
+            signInManager, userManager, currentTenant, dataFilter);
     }
 
     public async ValueTask DisposeAsync()
