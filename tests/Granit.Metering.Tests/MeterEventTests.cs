@@ -78,4 +78,60 @@ public sealed class MeterEventTests
 
         evt.Metadata.ShouldBeNull();
     }
+
+    // ======== Soft deprecation ========
+
+    [Fact]
+    public void Create_NewEvent_IsNotDeprecated()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-fresh", 1m, DateTimeOffset.UtcNow);
+
+        evt.DeprecatedAt.ShouldBeNull();
+        evt.DeprecationReason.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Deprecate_SetsTimestampAndReason()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-x", 1m, DateTimeOffset.UtcNow);
+        var now = DateTimeOffset.Parse("2026-04-24T15:30:00Z");
+
+        evt.Deprecate("billing-fix #123", now);
+
+        evt.DeprecatedAt.ShouldBe(now);
+        evt.DeprecationReason.ShouldBe("billing-fix #123");
+    }
+
+    [Fact]
+    public void Deprecate_TwiceOnSameEvent_ShouldThrow()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-twice", 1m, DateTimeOffset.UtcNow);
+        evt.Deprecate("first", DateTimeOffset.UtcNow);
+
+        Should.Throw<InvalidOperationException>(() =>
+            evt.Deprecate("second", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void Deprecate_WithEmptyReason_ShouldThrow()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-empty", 1m, DateTimeOffset.UtcNow);
+
+        Should.Throw<ArgumentException>(() => evt.Deprecate("  ", DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void Deprecate_WithReasonOverMaxLength_ShouldThrow()
+    {
+        var evt = MeterEvent.Create(
+            Guid.NewGuid(), Guid.NewGuid(), "key-long", 1m, DateTimeOffset.UtcNow);
+        string overLong = new('x', MeterEvent.DeprecationReasonMaxLength + 1);
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            evt.Deprecate(overLong, DateTimeOffset.UtcNow));
+    }
 }

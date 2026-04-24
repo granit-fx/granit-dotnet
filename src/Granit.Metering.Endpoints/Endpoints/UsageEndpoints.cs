@@ -5,6 +5,7 @@ using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
+using Granit.Metering.Recompute;
 using Granit.MultiTenancy;
 using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
@@ -63,6 +64,39 @@ internal static class UsageEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(MeteringPermissions.Usage.Record);
+
+        group.MapPost("/events/backfill", BackfillUsageEventsAsync)
+            .WithName("BackfillUsageEvents")
+            .WithSummary("Inserts historical usage events older than the standard 7-day ingestion window.")
+            .WithDescription(
+                "Accepts a batch of historical usage events with timestamps up to 365 days in the past "
+                + "(future timestamps are still rejected). Events are deduplicated via the per-tenant unique "
+                + "(TenantId, IdempotencyKey) index — duplicates are silently ignored. After insertion, the "
+                + "service groups events by meter and triggers an automatic recompute over each meter's spanning "
+                + "window so existing UsageAggregate rows immediately reflect the backfilled data. "
+                + "Idempotent at the HTTP layer via the standard Idempotency-Key header.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<BackfillUsageResponse>()
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .RequireAuthorization(MeteringPermissions.Events.Backfill);
+
+        group.MapPost("/events/{id:guid}/deprecate", DeprecateEventAsync)
+            .WithName("DeprecateMeterEvent")
+            .WithSummary("Soft-deprecates a single meter event so it stops contributing to aggregates.")
+            .WithDescription(
+                "Marks the event as deprecated (audit-safe alternative to DELETE; ISO 27001 A.12.4 keeps the row "
+                + "for the audit trail) and triggers an automatic recompute on the affected hourly bucket so the "
+                + "UsageAggregate immediately reflects the change. "
+                + "Returns 404 if the event does not exist; 409 if the event is already deprecated. "
+                + "The original IdempotencyKey remains reserved by the unique index — re-ingestion is rejected, "
+                + "preventing accidental resurrection of the deprecated event.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<DeprecateEventResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem()
+            .RequireAuthorization(MeteringPermissions.Events.Manage);
 
         return group;
     }
@@ -161,5 +195,107 @@ internal static class UsageEndpoints
         await recorder.RecordBatchAsync(events, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<Ok<BackfillUsageResponse>, ProblemHttpResult>> BackfillUsageEventsAsync(
+        BackfillUsageRequest request,
+        [FromServices] IUsageBackfillService backfillService,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IMeterDefinitionReader definitionReader,
+        CancellationToken cancellationToken)
+    {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        // Reject upfront if any referenced meter is missing or not Published. The
+        // recompute pass would also reject Archived meters, but catching it here gives
+        // a clean 422 with the offending id rather than a recompute error mid-batch.
+        var meterIds = request.Events.Select(e => e.MeterDefinitionId).Distinct().ToList();
+        foreach (Guid mid in meterIds)
+        {
+            MeterDefinition? def = await definitionReader
+                .GetByIdAsync(MeterDefinitionId.Create(mid), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (def is null)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+
+            if (def.LifecycleStatus != WorkflowLifecycleStatus.Published)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' is in '{def.LifecycleStatus}' status. "
+                        + "Only Published meters accept backfill.",
+                    statusCode: StatusCodes.Status422UnprocessableEntity);
+            }
+        }
+
+        var events = request.Events
+            .Select(e => MeterEvent.Create(
+                guidGenerator.Create(),
+                e.MeterDefinitionId,
+                e.IdempotencyKey,
+                e.Quantity,
+                e.Timestamp,
+                e.Metadata))
+            .ToList();
+
+        try
+        {
+            UsageBackfillResult result = await backfillService
+                .BackfillAsync(events, cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.Ok(new BackfillUsageResponse(
+                result.EventsAccepted,
+                result.MetersAffected,
+                result.AggregatesRebuilt));
+        }
+        catch (UsageRecomputeRejectedException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                title: ex.ReasonCode,
+                statusCode: StatusCodes.Status422UnprocessableEntity);
+        }
+    }
+
+    private static async Task<Results<Ok<DeprecateEventResponse>, ProblemHttpResult>> DeprecateEventAsync(
+        Guid id,
+        DeprecateEventRequest request,
+        [FromServices] IMeterEventDeprecationService service,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            MeterEventDeprecationResult result = await service
+                .DeprecateAsync(id, request.Reason, cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.Ok(new DeprecateEventResponse(
+                result.EventId,
+                result.MeterDefinitionId,
+                result.DeprecatedAt,
+                result.Recompute.AggregatesRebuilt));
+        }
+        catch (MeterEventNotFoundException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status404NotFound);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Raised by MeterEvent.Deprecate when the event is already deprecated.
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status409Conflict);
+        }
     }
 }

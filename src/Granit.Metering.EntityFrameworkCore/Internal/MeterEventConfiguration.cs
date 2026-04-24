@@ -19,6 +19,8 @@ internal sealed class MeterEventConfiguration : IEntityTypeConfiguration<MeterEv
         builder.Property(e => e.Quantity).HasPrecision(18, 6).IsRequired();
         builder.Property(e => e.Timestamp).IsRequired();
         builder.Property(e => e.Metadata).HasMaxLength(4000);
+        builder.Property(e => e.DeprecatedAt);
+        builder.Property(e => e.DeprecationReason).HasMaxLength(MeterEvent.DeprecationReasonMaxLength);
 
         // Deduplication index: unique per tenant + idempotency key
         builder.HasIndex(e => new { e.TenantId, e.IdempotencyKey })
