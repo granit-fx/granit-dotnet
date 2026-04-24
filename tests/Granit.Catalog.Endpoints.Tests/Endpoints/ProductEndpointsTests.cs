@@ -8,6 +8,9 @@ using Granit.Catalog.Endpoints.Dtos;
 using Granit.Catalog.Endpoints.Extensions;
 using Granit.Catalog.Endpoints.Permissions;
 using Granit.Guids;
+using Granit.MultiTenancy;
+using Granit.QueryEngine;
+using Granit.QueryEngine.Extensions;
 using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -63,6 +66,16 @@ public sealed class ProductEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_reader);
         builder.Services.AddSingleton(_writer);
         builder.Services.AddSingleton(_guidGenerator);
+
+        // Required by MapGranitCatalog's QueryEngine surface (/catalog/product-records).
+        // We register the minimum services needed for route registration to succeed;
+        // the QueryEngine routes themselves are exercised by integration tests in the
+        // EntityFrameworkCore.Tests suite once an IQueryableSource<Product> backed by
+        // the real DbContext exists.
+        builder.Services.AddGranitQueryEngine();
+        builder.Services.AddQueryDefinition<Product, Catalog.Queries.ProductQueryDefinition>();
+        builder.Services.AddSingleton(Substitute.For<IQueryableSource<Product>>());
+        builder.Services.AddSingleton(Substitute.For<ICurrentTenant>());
 
         _app = builder.Build();
         _app.MapGranitCatalog();

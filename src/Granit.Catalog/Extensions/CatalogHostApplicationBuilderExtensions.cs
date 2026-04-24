@@ -1,5 +1,10 @@
 using Granit.Catalog.Diagnostics;
+using Granit.Catalog.Domain;
+using Granit.Catalog.Exports;
+using Granit.Catalog.Queries;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -15,8 +20,8 @@ public static class CatalogHostApplicationBuilderExtensions
     /// Adds the Granit catalog infrastructure (Product aggregate, lifecycle, external mappings).
     /// </summary>
     /// <remarks>
-    /// Registers metrics, the activity source, and (in subsequent commits) the
-    /// query/export definitions. EF Core persistence is added separately via
+    /// Registers metrics, the activity source, and the query/export definitions for
+    /// admin grids and CSV/XLSX exports. EF Core persistence is added separately via
     /// <c>AddGranitCatalogEntityFrameworkCore</c>; HTTP endpoints via <c>MapGranitCatalog</c>.
     /// </remarks>
     public static IHostApplicationBuilder AddGranitCatalog(
@@ -25,7 +30,9 @@ public static class CatalogHostApplicationBuilderExtensions
         builder.Services.TryAddSingleton<CatalogMetrics>();
         GranitActivitySourceRegistry.Register(CatalogActivitySource.Name);
 
-        // Query/Export definitions and reader/writer interfaces are registered in commits 4-6.
+        builder.Services.AddQueryDefinition<Product, ProductQueryDefinition>();
+        builder.Services.AddExportDefinition<Product, ProductExportDefinition>();
+
         return builder;
     }
 }

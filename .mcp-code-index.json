@@ -10058,7 +10058,7 @@
       "kind": "class",
       "project": "Granit.Catalog.Endpoints",
       "file": "src/Granit.Catalog.Endpoints/Extensions/CatalogEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitCatalog",
@@ -10202,12 +10202,28 @@
       "members": []
     },
     {
+      "name": "ProductExportDefinition",
+      "fqn": "Granit.Catalog.Exports.ProductExportDefinition",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Exports/ProductExportDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "CatalogHostApplicationBuilderExtensions",
       "fqn": "Granit.Catalog.Extensions.CatalogHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Catalog",
       "file": "src/Granit.Catalog/Extensions/CatalogHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitCatalog",
@@ -10286,6 +10302,22 @@
           "kind": "method",
           "signature": "UpdateAsync(Product product, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ProductQueryDefinition",
+      "fqn": "Granit.Catalog.Queries.ProductQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Queries/ProductQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

@@ -1,5 +1,8 @@
+using Granit.Catalog.Domain;
 using Granit.Catalog.Endpoints.Endpoints;
 using Granit.Catalog.Endpoints.Options;
+using Granit.Catalog.Endpoints.Permissions;
+using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +33,14 @@ public static class CatalogEndpointRouteBuilderExtensions
         productsGroup.MapProductReadEndpoints();
         productsGroup.MapProductWriteEndpoints();
         productsGroup.MapProductExternalMappingEndpoints();
+
+        // QueryEngine admin grid — mounted on a dedicated sub-path to avoid colliding
+        // with the business endpoints above (/products returns only Published; the grid
+        // here exposes filter / sort / paginate / export across all lifecycle statuses).
+        // Convention mirrors Granit.Metering.Endpoints (/metering/meter-definitions).
+        group.MapGranitGroup("product-records")
+            .MapGranitQuery<Product>()
+            .RequireAuthorization(CatalogPermissions.Products.Read);
 
         return group;
     }
