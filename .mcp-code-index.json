@@ -9913,6 +9913,89 @@
       ]
     },
     {
+      "name": "Product",
+      "fqn": "Granit.Catalog.Domain.Product",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Domain/Product.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string sku, string name, ProductType type, string unit, string? description = null)",
+          "returnType": "Product"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Description",
+          "kind": "property",
+          "signature": "string? Description",
+          "returnType": "string?"
+        },
+        {
+          "name": "LifecycleStatus",
+          "kind": "property",
+          "signature": "WorkflowLifecycleStatus LifecycleStatus",
+          "returnType": "WorkflowLifecycleStatus"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "GetWorkflowEntityId",
+          "kind": "method",
+          "signature": "GetWorkflowEntityId()",
+          "returnType": "string"
+        },
+        {
+          "name": "Update",
+          "kind": "method",
+          "signature": "Update(string name, string? description, string unit)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ProductExternalMapping",
+      "fqn": "Granit.Catalog.Domain.ProductExternalMapping",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Domain/ProductExternalMapping.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "ProductExternalMapping"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ProductType",
+      "fqn": "Granit.Catalog.Domain.ProductType",
+      "kind": "enum",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Domain/ProductType.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "CatalogEndpointRouteBuilderExtensions",
       "fqn": "Granit.Catalog.Endpoints.Extensions.CatalogEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -10014,6 +10097,33 @@
       "project": "Granit.Catalog.EntityFrameworkCore",
       "file": "src/Granit.Catalog.EntityFrameworkCore/GranitCatalogEntityFrameworkCoreModule.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "ProductArchivedEvent",
+      "fqn": "Granit.Catalog.Events.ProductArchivedEvent",
+      "kind": "record",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Events/ProductArchivedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ProductCreatedEvent",
+      "fqn": "Granit.Catalog.Events.ProductCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Events/ProductCreatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ProductPublishedEvent",
+      "fqn": "Granit.Catalog.Events.ProductPublishedEvent",
+      "kind": "record",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Events/ProductPublishedEvent.cs",
+      "line": 7,
       "members": []
     },
     {
