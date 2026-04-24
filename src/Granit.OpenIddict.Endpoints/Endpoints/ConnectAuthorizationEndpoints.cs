@@ -132,7 +132,7 @@ internal static partial class ConnectAuthorizationEndpoints
         }
 
         // Align the tenant context with the resolved user for the rest of the flow
-        // (authorization record lookup, principal build, metrics). When the user is
+        // (authorization-record lookup, principal build, metrics). When the user is
         // a host admin (TenantId = null) this clears any stale tenant leaked from
         // a prior request; when the user is a tenant user this switches the scope
         // to their own tenant regardless of what the resolver pipeline produced.

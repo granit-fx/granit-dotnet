@@ -206,7 +206,15 @@ public sealed partial class LoggerMessagePiiConventionTests
     /// <summary>
     /// Matches class/record/struct declarations. Group 1: type name.
     /// </summary>
-    [GeneratedRegex(@"(?:class|record|struct)\s+(\w+)", RegexOptions.None)]
+    /// <remarks>
+    /// Anchored to start-of-line and accepts only word-character modifier tokens before
+    /// the keyword, so the keywords are not matched inside comments — comment lines
+    /// start with <c>//</c> or contain <c>*</c>, neither of which is a <c>\w</c>
+    /// character followed by whitespace. Without this guard, a comment like
+    /// <c>// (authorization record lookup, ...)</c> would set <c>currentClass</c> to
+    /// <c>"lookup"</c> and break the per-class exemption matching downstream.
+    /// </remarks>
+    [GeneratedRegex(@"^\s*(?:\w+\s+)*?(?:class|record|struct)\s+(\w+)", RegexOptions.None)]
     private static partial Regex ClassDeclaration();
 
     /// <summary>
