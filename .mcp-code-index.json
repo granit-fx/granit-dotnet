@@ -30080,6 +30080,22 @@
       ]
     },
     {
+      "name": "OpenIddictApplicationClientSideExtensions",
+      "fqn": "Granit.OpenIddict.Extensions.OpenIddictApplicationClientSideExtensions",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Extensions/OpenIddictApplicationClientSideExtensions.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "SetClientSide",
+          "kind": "method",
+          "signature": "SetClientSide(this OpenIddictApplicationDescriptor descriptor, MultiTenancySide? clientSide)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictModule",
       "fqn": "Granit.OpenIddict.GranitOpenIddictModule",
       "kind": "class",
@@ -30240,7 +30256,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 6,
+      "line": 8,
       "members": [
         {
           "name": "Applications",
@@ -30262,7 +30278,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 33,
+      "line": 36,
       "members": []
     },
     {
@@ -30271,7 +30287,7 @@
       "kind": "record",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictSeedingOptions.cs",
-      "line": 49,
+      "line": 53,
       "members": []
     },
     {
@@ -30348,7 +30364,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",
@@ -30364,8 +30380,37 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 10,
-      "members": []
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ClientSideAuthorizationHandler",
+      "fqn": "Granit.OpenIddict.Server.Handlers.ClientSideAuthorizationHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictServerHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictServerHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessSignInContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
     },
     {
       "name": "ClaimsDestinations",
