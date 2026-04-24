@@ -10057,7 +10057,7 @@
       "kind": "class",
       "project": "Granit.Catalog.EntityFrameworkCore",
       "file": "src/Granit.Catalog.EntityFrameworkCore/Extensions/CatalogEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 9,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitCatalogEntityFrameworkCore",
@@ -10073,7 +10073,7 @@
       "kind": "class",
       "project": "Granit.Catalog.EntityFrameworkCore",
       "file": "src/Granit.Catalog.EntityFrameworkCore/Extensions/CatalogModelBuilderExtensions.cs",
-      "line": 8,
+      "line": 9,
       "members": [
         {
           "name": "ConfigureCatalogModule",
@@ -10164,6 +10164,62 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IProductReader",
+      "fqn": "Granit.Catalog.IProductReader",
+      "kind": "interface",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/IProductReader.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Product?>"
+        },
+        {
+          "name": "GetBySkuAsync",
+          "kind": "method",
+          "signature": "GetBySkuAsync(string sku, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Product?>"
+        },
+        {
+          "name": "GetByStatusAsync",
+          "kind": "method",
+          "signature": "GetByStatusAsync(WorkflowLifecycleStatus status, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Product>>"
+        },
+        {
+          "name": "GetByExternalIdAsync",
+          "kind": "method",
+          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Product?>"
+        }
+      ]
+    },
+    {
+      "name": "IProductWriter",
+      "fqn": "Granit.Catalog.IProductWriter",
+      "kind": "interface",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/IProductWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Product product, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Product product, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },

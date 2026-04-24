@@ -1,3 +1,4 @@
+using Granit.Catalog.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Catalog.EntityFrameworkCore.Extensions;
@@ -10,8 +11,8 @@ public static class CatalogModelBuilderExtensions
     /// <summary>Applies all entity configurations for the Granit Catalog module.</summary>
     public static ModelBuilder ConfigureCatalogModule(this ModelBuilder modelBuilder)
     {
-        // Entity configurations (Product, ProductExternalMapping) will be applied
-        // here once they exist (commit 4 — persistence).
+        modelBuilder.ApplyConfiguration(new ProductConfiguration());
+        modelBuilder.ApplyConfiguration(new ProductExternalMappingConfiguration());
         return modelBuilder;
     }
 }

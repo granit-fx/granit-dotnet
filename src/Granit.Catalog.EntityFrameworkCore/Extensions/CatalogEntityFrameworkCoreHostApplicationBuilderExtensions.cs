@@ -1,4 +1,8 @@
+using Granit.Catalog.EntityFrameworkCore.Internal;
+using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Catalog.EntityFrameworkCore.Extensions;
@@ -18,7 +22,11 @@ public static class CatalogEntityFrameworkCoreHostApplicationBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        // DbContextFactory wiring + reader/writer registration will be added in commit 4.
+        builder.Services.AddGranitDbContext<CatalogDbContext>(configure);
+
+        builder.Services.TryAddScoped<IProductReader, EfProductReader>();
+        builder.Services.TryAddScoped<IProductWriter, EfProductWriter>();
+
         return builder;
     }
 }
