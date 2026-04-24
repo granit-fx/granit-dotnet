@@ -6,7 +6,8 @@ namespace Granit.Http.Cors.Internal;
 
 /// <summary>
 /// Validates <see cref="GranitCorsOptions"/> at startup.
-/// Enforces ISO 27001-compliant CORS rules.
+/// Enforces ISO 27001-compliant CORS rules and rejects malformed origin values
+/// that would silently break cross-origin requests in runtime.
 /// </summary>
 internal sealed class GranitCorsOptionsValidator(
     IHostEnvironment environment) : IValidateOptions<GranitCorsOptions>
@@ -37,6 +38,34 @@ internal sealed class GranitCorsOptionsValidator(
                 $"{nameof(GranitCorsOptions.AllowCredentials)} cannot be true when " +
                 $"{nameof(GranitCorsOptions.AllowedOrigins)} contains wildcard ('*'). " +
                 "This violates the CORS specification.");
+        }
+
+        // Format-check each non-wildcard origin AFTER the benign trailing slash
+        // is trimmed. Reject scheme/path/query/fragment malformations that
+        // otherwise silently fail CORS at runtime (and tempt operators to
+        // "just use '*'" to unblock the app).
+        foreach (string? origin in options.AllowedOrigins)
+        {
+            if (origin is null || origin == "*")
+            {
+                continue;
+            }
+
+            string normalized = origin.TrimEnd('/');
+
+            if (!Uri.TryCreate(normalized, UriKind.Absolute, out Uri? uri)
+                || uri.Scheme is not ("http" or "https")
+                || uri.AbsolutePath is not ("" or "/")
+                || !string.IsNullOrEmpty(uri.Query)
+                || !string.IsNullOrEmpty(uri.Fragment)
+                || uri.Port == 0)
+            {
+                errors.Add(
+                    $"CORS origin '{origin}' is not a valid origin. " +
+                    $"Expected form: 'https://host[:port]' " +
+                    "(scheme must be http/https; no path, query, or fragment). " +
+                    "A trailing slash is accepted and normalized automatically.");
+            }
         }
 
         return errors.Count > 0

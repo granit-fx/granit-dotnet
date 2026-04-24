@@ -35,4 +35,18 @@ public sealed record CookieDefinition(
     /// Only <see cref="CookieCategory.StrictlyNecessary"/> cookies should set this to <see langword="true"/>.
     /// </summary>
     public bool IsEssential { get; init; }
+
+    /// <summary>
+    /// Optional <c>Domain</c> attribute for the cookie. When set, the cookie is
+    /// sent to the specified domain and its subdomains. Used for SSO scenarios
+    /// where a single cookie spans multiple apps (e.g., <c>".example.com"</c>).
+    /// When <see langword="null"/> (default), the cookie is scoped to the
+    /// origin host only — the safer default.
+    /// </summary>
+    /// <remarks>
+    /// Must be propagated to both set and delete operations: omitting Domain on
+    /// delete leaves the cookie stranded in the browser when the original set
+    /// used an explicit Domain.
+    /// </remarks>
+    public string? Domain { get; init; }
 }

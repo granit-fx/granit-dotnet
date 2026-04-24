@@ -2,6 +2,7 @@ using Granit.Http.ApiDocumentation.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 
@@ -10,7 +11,7 @@ namespace Granit.Http.ApiDocumentation.Extensions;
 /// <summary>
 /// Extensions for enabling Granit OpenAPI endpoints and the Scalar interactive UI.
 /// </summary>
-public static class ApiDocumentationApplicationBuilderExtensions
+public static partial class ApiDocumentationApplicationBuilderExtensions
 {
     /// <summary>
     /// Maps OpenAPI JSON endpoints (<c>/openapi/v{n}.json</c>) and the Scalar interactive UI.
@@ -28,6 +29,22 @@ public static class ApiDocumentationApplicationBuilderExtensions
         if (!shouldEnable)
         {
             return app;
+        }
+
+        // VULN-204 — OpenAPI enumeration is a reconnaissance aid for attackers.
+        // If the app explicitly opted into production exposure but left the
+        // access policy unset, the endpoints inherit the host's default auth
+        // behaviour — which, absent a FallbackPolicy, is anonymous access.
+        // Emit a Warning at startup so the misconfiguration is visible in
+        // logs even before a real request hits the surface.
+        if (!app.Environment.IsDevelopment()
+            && options.EnableInProduction
+            && options.AuthorizationPolicy is null)
+        {
+            ILogger logger = app.Services
+                .GetRequiredService<ILoggerFactory>()
+                .CreateLogger("Granit.Http.ApiDocumentation");
+            LogProductionOpenApiWithoutPolicy(logger);
         }
 
         // Distinct() guards against the .NET configuration binder appending
@@ -86,4 +103,12 @@ public static class ApiDocumentationApplicationBuilderExtensions
 
         endpoint.RequireAuthorization(policy);
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "OpenAPI/Scalar is exposed in production with no AuthorizationPolicy configured. " +
+                  "The endpoint's access depends on the application's global fallback policy. " +
+                  "Set ApiDocumentation:AuthorizationPolicy to a named policy (e.g. \"ApiDocsReaders\") " +
+                  "or an empty string (explicit anonymous) to silence this warning.")]
+    private static partial void LogProductionOpenApiWithoutPolicy(ILogger logger);
 }

@@ -78,8 +78,12 @@ public sealed class GranitHttpSecurityModuleTests
     [Fact]
     public void AddGranitHttpSecurity_ConfiguresHsts_CustomValues()
     {
+        // Use 2 years — above the 6-month minimum enforced by the validator
+        // (VULN-206) and distinct from the 1-year default so the test still
+        // proves the override applied.
+        const int TwoYearsSeconds = 63_072_000;
         HostApplicationBuilder builder = Host.CreateApplicationBuilder();
-        builder.Configuration["SecurityHeaders:HstsMaxAgeSeconds"] = "86400";
+        builder.Configuration["SecurityHeaders:HstsMaxAgeSeconds"] = TwoYearsSeconds.ToString();
         builder.Configuration["SecurityHeaders:HstsIncludeSubDomains"] = "false";
         builder.Configuration["SecurityHeaders:HstsPreload"] = "true";
 
@@ -89,7 +93,7 @@ public sealed class GranitHttpSecurityModuleTests
         HstsOptions hsts =
             host.Services.GetRequiredService<IOptions<HstsOptions>>().Value;
 
-        hsts.MaxAge.ShouldBe(TimeSpan.FromSeconds(86_400));
+        hsts.MaxAge.ShouldBe(TimeSpan.FromSeconds(TwoYearsSeconds));
         hsts.IncludeSubDomains.ShouldBeFalse();
         hsts.Preload.ShouldBeTrue();
     }

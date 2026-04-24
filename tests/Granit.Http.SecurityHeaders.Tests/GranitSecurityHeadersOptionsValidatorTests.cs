@@ -158,19 +158,49 @@ public sealed class GranitSecurityHeadersOptionsValidatorTests
     // HSTS max-age
     // -------------------------------------------------------------------------
 
+    // VULN-206 — when HSTS is enabled, reject values below the OWASP
+    // 6-month minimum. A `max-age=0` with EnableHsts=true silently
+    // instructs browsers to forget HSTS, which is a downgrade a misconfig
+    // must not be able to cause.
+
     [Fact]
-    public void HstsMaxAgeSeconds_Negative_Fails()
+    public void HstsMaxAgeSeconds_NegativeWithHstsDisabled_Fails()
     {
         ValidateOptionsResult result = _validator.Validate(
-            null, new GranitSecurityHeadersOptions { HstsMaxAgeSeconds = -1 });
+            null, new GranitSecurityHeadersOptions { EnableHsts = false, HstsMaxAgeSeconds = -1 });
 
         result.Failed.ShouldBeTrue();
         result.FailureMessage.ShouldContain("HstsMaxAgeSeconds");
     }
 
     [Fact]
-    public void HstsMaxAgeSeconds_Zero_Passes() =>
-        _validator.Validate(null, new GranitSecurityHeadersOptions { HstsMaxAgeSeconds = 0 })
+    public void HstsMaxAgeSeconds_ZeroWithHstsEnabled_Fails()
+    {
+        ValidateOptionsResult result = _validator.Validate(
+            null, new GranitSecurityHeadersOptions { EnableHsts = true, HstsMaxAgeSeconds = 0 });
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("HstsMaxAgeSeconds");
+    }
+
+    [Fact]
+    public void HstsMaxAgeSeconds_BelowSixMonthsWithHstsEnabled_Fails()
+    {
+        ValidateOptionsResult result = _validator.Validate(
+            null, new GranitSecurityHeadersOptions { EnableHsts = true, HstsMaxAgeSeconds = 3600 });
+
+        result.Failed.ShouldBeTrue();
+        result.FailureMessage.ShouldContain("HstsMaxAgeSeconds");
+    }
+
+    [Fact]
+    public void HstsMaxAgeSeconds_ZeroWithHstsDisabled_Passes() =>
+        _validator.Validate(null, new GranitSecurityHeadersOptions { EnableHsts = false, HstsMaxAgeSeconds = 0 })
+            .Succeeded.ShouldBeTrue();
+
+    [Fact]
+    public void HstsMaxAgeSeconds_DefaultOneYear_Passes() =>
+        _validator.Validate(null, new GranitSecurityHeadersOptions { EnableHsts = true, HstsMaxAgeSeconds = 31_536_000 })
             .Succeeded.ShouldBeTrue();
 
     // -------------------------------------------------------------------------
@@ -180,10 +210,12 @@ public sealed class GranitSecurityHeadersOptionsValidatorTests
     [Fact]
     public void MultipleInvalidValues_ReportsAllFailures()
     {
+        // EnableHsts=false + negative HstsMaxAge still fails the "must be >= 0" check.
         ValidateOptionsResult result = _validator.Validate(null, new GranitSecurityHeadersOptions
         {
             XFrameOptions = "INVALID",
             ReferrerPolicy = "none",
+            EnableHsts = false,
             HstsMaxAgeSeconds = -1,
         });
 

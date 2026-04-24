@@ -32,4 +32,16 @@ public sealed class GranitCorsOptions
     /// contains wildcard (<c>*</c>) — this violates the CORS specification.
     /// </summary>
     public bool AllowCredentials { get; set; }
+
+    /// <summary>
+    /// Returns <see cref="AllowedOrigins"/> with any trailing slash trimmed.
+    /// The CORS spec defines an origin as a <c>scheme + host + port</c> tuple
+    /// with no path, so an entry like <c>"https://app.x.com/"</c> would silently
+    /// fail to match the browser's <c>Origin: https://app.x.com</c> header.
+    /// Normalising here preserves the developer copy-paste experience while
+    /// keeping <see cref="Internal.ConfigureCorsPolicyOptions"/> and
+    /// <see cref="Internal.GranitCorsOptionsValidator"/> aligned.
+    /// </summary>
+    internal string[] NormalizedOrigins =>
+        [.. AllowedOrigins.Select(static o => o?.TrimEnd('/') ?? string.Empty)];
 }

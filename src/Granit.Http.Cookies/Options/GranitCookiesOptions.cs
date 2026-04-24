@@ -16,9 +16,19 @@ public sealed class GranitCookiesOptions
 
     /// <summary>
     /// Default retention period in days for cookies that do not specify one.
-    /// Default: 365.
+    /// Default: <c>30</c>. Must be within <c>[1, 395]</c>; the upper bound
+    /// matches the CNIL 13-month hard cap (GDPR Art. 5(1)(e) — storage
+    /// limitation). Cookies that legitimately need a longer lifetime should
+    /// declare an explicit <see cref="CookieDefinition.RetentionDays"/>.
     /// </summary>
-    public int DefaultRetentionDays { get; set; } = 365;
+    public int DefaultRetentionDays { get; set; } = 30;
+
+    /// <summary>
+    /// Upper bound on any cookie's retention (days). CNIL caps analytics/
+    /// marketing cookies at 13 months; the 395-day value includes leap-year
+    /// slack.
+    /// </summary>
+    public const int MaxRetentionDays = 395;
 
     /// <summary>
     /// Third-party services that set cookies on the client (analytics, marketing, etc.).

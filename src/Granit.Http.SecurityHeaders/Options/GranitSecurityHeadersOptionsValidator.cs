@@ -70,7 +70,20 @@ internal sealed class GranitSecurityHeadersOptionsValidator
                 $"CrossOriginResourcePolicy '{corp}' is not valid. Allowed: {string.Join(", ", s_validCrossOriginResourcePolicies.Order())}.");
         }
 
-        if (options.HstsMaxAgeSeconds < 0)
+        // When HSTS is enabled, enforce the OWASP / RFC 6797 §12 minimum of
+        // 6 months. A value of 0 emits `max-age=0`, which instructs browsers
+        // to FORGET any previously cached HSTS policy — a silent downgrade
+        // that a misconfigured appsettings.json should not trigger. Callers
+        // that want HSTS off must set EnableHsts = false explicitly.
+        const int MinimumHstsMaxAgeSeconds = 15_552_000; // 6 months
+        if (options.EnableHsts && options.HstsMaxAgeSeconds < MinimumHstsMaxAgeSeconds)
+        {
+            (failures ??= []).Add(
+                $"HstsMaxAgeSeconds must be >= {MinimumHstsMaxAgeSeconds} (6 months, OWASP minimum) " +
+                $"when EnableHsts=true. Set EnableHsts=false to disable HSTS entirely. " +
+                $"Got {options.HstsMaxAgeSeconds}.");
+        }
+        else if (!options.EnableHsts && options.HstsMaxAgeSeconds < 0)
         {
             (failures ??= []).Add(
                 $"HstsMaxAgeSeconds must be >= 0, got {options.HstsMaxAgeSeconds}.");

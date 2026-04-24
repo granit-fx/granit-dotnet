@@ -21,6 +21,11 @@ internal sealed class GranitBulkheadOptionsValidator : IValidateOptions<GranitBu
             return ValidateOptionsResult.Fail("CleanupInterval must be a positive duration.");
         }
 
+        if (options.MaxLimiters < 1)
+        {
+            return ValidateOptionsResult.Fail("MaxLimiters must be at least 1.");
+        }
+
         foreach ((string policyName, BulkheadPolicyOptions policy) in options.Policies)
         {
             if (policy.PermitLimit < 1)

@@ -122,6 +122,54 @@ public sealed class GranitCorsOptionsValidatorTests
         result.Failures.Count().ShouldBeGreaterThanOrEqualTo(2);
     }
 
+    // VULN-207 — origin format validation with auto-trim for trailing slash
+
+    [Theory]
+    [InlineData("https://app.example.com")]
+    [InlineData("https://app.example.com/")]     // trailing slash silently normalized
+    [InlineData("https://app.example.com:8443")]
+    [InlineData("http://localhost:3000")]
+    public void Validate_WellFormedOrigin_ReturnsSuccess(string origin)
+    {
+        IHostEnvironment environment = CreateEnvironment("Production");
+        GranitCorsOptionsValidator sut = new(environment);
+        GranitCorsOptions options = new() { AllowedOrigins = [origin] };
+
+        ValidateOptionsResult result = sut.Validate(null, options);
+
+        result.Succeeded.ShouldBeTrue(
+            $"'{origin}' is a well-formed origin (trailing slash is tolerated).");
+    }
+
+    [Theory]
+    [InlineData("app.example.com")]                   // missing scheme
+    [InlineData("ftp://app.example.com")]             // wrong scheme
+    [InlineData("https://app.example.com/login")]     // path
+    [InlineData("https://app.example.com?foo=bar")]   // query
+    [InlineData("https://app.example.com#fragment")]  // fragment
+    public void Validate_MalformedOrigin_ReturnsFailed(string origin)
+    {
+        IHostEnvironment environment = CreateEnvironment("Production");
+        GranitCorsOptionsValidator sut = new(environment);
+        GranitCorsOptions options = new() { AllowedOrigins = [origin] };
+
+        ValidateOptionsResult result = sut.Validate(null, options);
+
+        result.Failed.ShouldBeTrue($"'{origin}' is not a valid CORS origin.");
+        result.FailureMessage.ShouldContain(origin);
+    }
+
+    [Fact]
+    public void NormalizedOrigins_TrailingSlash_IsStripped()
+    {
+        GranitCorsOptions options = new()
+        {
+            AllowedOrigins = ["https://app.example.com/", "https://admin.example.com"],
+        };
+
+        options.NormalizedOrigins.ShouldBe(["https://app.example.com", "https://admin.example.com"]);
+    }
+
     private static IHostEnvironment CreateEnvironment(string environmentName)
     {
         IHostEnvironment environment = Substitute.For<IHostEnvironment>();

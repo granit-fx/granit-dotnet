@@ -24,7 +24,9 @@ internal sealed class ConfigureCorsPolicyOptions(
             }
             else
             {
-                policy.WithOrigins(granitOptions.AllowedOrigins);
+                // Use NormalizedOrigins so an entry like "https://app.x.com/"
+                // still matches the browser's "Origin: https://app.x.com" header.
+                policy.WithOrigins(granitOptions.NormalizedOrigins);
             }
 
             policy.AllowAnyHeader();

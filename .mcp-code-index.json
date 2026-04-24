@@ -15487,7 +15487,7 @@
       "kind": "class",
       "project": "Granit.Http.ApiDocumentation",
       "file": "src/Granit.Http.ApiDocumentation/Extensions/ApiDocumentationApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "UseGranitApiDocumentation",
@@ -15743,7 +15743,7 @@
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/ConcurrencyLimiterRegistry.cs",
-      "line": 18,
+      "line": 28,
       "members": [
         {
           "name": "AcquireAsync",
@@ -15881,6 +15881,12 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan CleanupInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxLimiters",
+          "kind": "property",
+          "signature": "int MaxLimiters",
+          "returnType": "int"
         }
       ]
     },
@@ -16070,7 +16076,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/Extensions/CookiesServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitCookies",
@@ -16364,7 +16370,7 @@
       "kind": "class",
       "project": "Granit.Http.Cookies",
       "file": "src/Granit.Http.Cookies/Options/GranitCookiesOptions.cs",
-      "line": 43,
+      "line": 53,
       "members": [
         {
           "name": "Name",
@@ -16428,6 +16434,12 @@
           "kind": "property",
           "signature": "string[] AllowedOrigins",
           "returnType": "string[]"
+        },
+        {
+          "name": "AllowCredentials",
+          "kind": "property",
+          "signature": "bool AllowCredentials",
+          "returnType": "bool"
         }
       ]
     },
@@ -17010,7 +17022,7 @@
       "kind": "class",
       "project": "Granit.Http.ResponseCompression",
       "file": "src/Granit.Http.ResponseCompression/Options/GranitResponseCompressionOptions.cs",
-      "line": 19,
+      "line": 36,
       "members": [
         {
           "name": "EnableForHttps",

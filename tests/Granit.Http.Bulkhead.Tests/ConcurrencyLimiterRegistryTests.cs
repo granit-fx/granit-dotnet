@@ -1,5 +1,7 @@
 using System.Threading.RateLimiting;
 using Granit.Http.Bulkhead.Internal;
+using Granit.Http.Bulkhead.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;
@@ -13,7 +15,9 @@ public sealed class ConcurrencyLimiterRegistryTests : IDisposable
 
     public ConcurrencyLimiterRegistryTests()
     {
-        _registry = new ConcurrencyLimiterRegistry(_timeProvider);
+        _registry = new ConcurrencyLimiterRegistry(
+            _timeProvider,
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()));
     }
 
     public void Dispose() => _registry.Dispose();
@@ -162,5 +166,38 @@ public sealed class ConcurrencyLimiterRegistryTests : IDisposable
         _registry.Dispose();
 
         _registry.Count.ShouldBe(0);
+    }
+
+    // =========================================================================
+    // LRU eviction at MaxLimiters (VULN-302)
+    // =========================================================================
+
+    [Fact]
+    public async Task AcquireAsync_WhenAtMaxLimiters_EvictsLeastRecentlyUsed()
+    {
+        // Purpose-built tiny-cap registry to exercise the LRU path deterministically.
+        using ConcurrencyLimiterRegistry tinyRegistry = new(
+            _timeProvider,
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions { MaxLimiters = 3 }));
+
+        // Fill the registry — timestamps advance so "oldest" is unambiguous.
+        (await tinyRegistry.AcquireAsync("k1", 5, 0, TestContext.Current.CancellationToken)).Dispose();
+        _timeProvider.Advance(TimeSpan.FromSeconds(1));
+
+        (await tinyRegistry.AcquireAsync("k2", 5, 0, TestContext.Current.CancellationToken)).Dispose();
+        _timeProvider.Advance(TimeSpan.FromSeconds(1));
+
+        (await tinyRegistry.AcquireAsync("k3", 5, 0, TestContext.Current.CancellationToken)).Dispose();
+        tinyRegistry.Count.ShouldBe(3, "registry should now be at capacity");
+
+        // Touching k1 makes it the most-recently-used; k2 is now oldest.
+        _timeProvider.Advance(TimeSpan.FromSeconds(1));
+        (await tinyRegistry.AcquireAsync("k1", 5, 0, TestContext.Current.CancellationToken)).Dispose();
+
+        // New key must trigger eviction of k2 (oldest by LastUsed), not blow past cap.
+        _timeProvider.Advance(TimeSpan.FromSeconds(1));
+        (await tinyRegistry.AcquireAsync("k4", 5, 0, TestContext.Current.CancellationToken)).Dispose();
+
+        tinyRegistry.Count.ShouldBe(3, "LRU eviction must keep the registry at its cap");
     }
 }

@@ -50,6 +50,7 @@ internal sealed class GranitCookieManager(
             Secure = true,
             SameSite = definition.SameSite,
             Path = definition.Path,
+            Domain = definition.Domain,
             IsEssential = definition.IsEssential,
         };
 
@@ -81,6 +82,7 @@ internal sealed class GranitCookieManager(
             Secure = true,
             SameSite = definition.SameSite,
             Path = definition.Path,
+            Domain = definition.Domain, // must mirror Set; omitting leaves the cookie stranded in browser
         });
     }
 

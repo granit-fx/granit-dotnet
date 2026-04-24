@@ -3,6 +3,7 @@ using Granit.Http.Cookies.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Http.Cookies.Extensions;
 
@@ -36,6 +37,8 @@ public static class CookiesServiceCollectionExtensions
             .BindConfiguration(GranitCookiesOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.TryAddSingleton<IValidateOptions<GranitCookiesOptions>, GranitCookiesOptionsValidator>();
 
         GranitCookiesBuilder builder = new(services);
         configure(builder);

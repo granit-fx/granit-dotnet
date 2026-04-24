@@ -35,4 +35,15 @@ public sealed class GranitBulkheadOptions
 
     /// <summary>Interval between cleanup sweeps. Default: 5 minutes.</summary>
     public TimeSpan CleanupInterval { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Hard cap on the number of live limiters in the registry. When the cap
+    /// is hit, the least-recently-used limiter is evicted synchronously to
+    /// make room for a new one. Defaults to <c>10_000</c> — high enough to
+    /// accommodate real multi-tenant fleets, low enough to bound worst-case
+    /// memory if the idle-timeout sweeper falls behind or if attacker
+    /// traffic spams unique tenant ids faster than the cleanup interval.
+    /// Must be &gt;= 1.
+    /// </summary>
+    public int MaxLimiters { get; set; } = 10_000;
 }

@@ -1,6 +1,8 @@
 using System.Threading.RateLimiting;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Internal;
+using Granit.Http.Bulkhead.Options;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Time.Testing;
 using Shouldly;
 using Xunit;
@@ -13,7 +15,9 @@ public sealed class BulkheadLeaseTests : IDisposable
 
     public BulkheadLeaseTests()
     {
-        _registry = new ConcurrencyLimiterRegistry(TimeProvider.System);
+        _registry = new ConcurrencyLimiterRegistry(
+            TimeProvider.System,
+            Microsoft.Extensions.Options.Options.Create(new GranitBulkheadOptions()));
     }
 
     public void Dispose() => _registry.Dispose();
