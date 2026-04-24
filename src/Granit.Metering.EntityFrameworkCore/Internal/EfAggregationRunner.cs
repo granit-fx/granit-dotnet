@@ -81,7 +81,8 @@ internal sealed partial class EfAggregationRunner(
         List<MeterEvent> events = await db.MeterEvents
             .Where(e => e.MeterDefinitionId == definition.Id
                 && e.TenantId == definition.TenantId
-                && e.Id.CompareTo(watermark.LastProcessedEventId) > 0)
+                && e.Id.CompareTo(watermark.LastProcessedEventId) > 0
+                && e.DeprecatedAt == null)
             .OrderBy(e => e.Id)
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);

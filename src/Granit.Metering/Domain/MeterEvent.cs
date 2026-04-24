@@ -62,9 +62,48 @@ public sealed class MeterEvent : Entity, IMultiTenant
     /// <summary>Optional JSON metadata (e.g., endpoint, resource ID).</summary>
     public string? Metadata { get; private set; }
 
+    /// <summary>
+    /// When the event was soft-deprecated (UTC), or <c>null</c> when active.
+    /// Deprecated events stay on the table for audit (ISO 27001 A.12.4) but are
+    /// excluded from aggregation; the per-tenant unique index on
+    /// (TenantId, IdempotencyKey) still applies, so a re-ingestion with the
+    /// same key is rejected — no resurrection path.
+    /// </summary>
+    public DateTimeOffset? DeprecatedAt { get; private set; }
+
+    /// <summary>
+    /// Free-text reason captured at deprecation time (max 500 chars). Surfaces in
+    /// audit logs and admin UIs. <c>null</c> while the event is active.
+    /// </summary>
+    public string? DeprecationReason { get; private set; }
+
     /// <inheritdoc/>
     public Guid? TenantId { get; private set; }
 
     /// <summary>Explicit interface for interceptor injection.</summary>
     Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
+
+    /// <summary>Maximum length of <see cref="DeprecationReason"/>.</summary>
+    public const int DeprecationReasonMaxLength = 500;
+
+    /// <summary>
+    /// Soft-deprecates this event so the aggregator stops counting it. The event
+    /// row is preserved for audit. Idempotency is the caller's responsibility —
+    /// calling <c>Deprecate</c> on an already-deprecated event throws so the
+    /// HTTP layer can return 409.
+    /// </summary>
+    public void Deprecate(string reason, DateTimeOffset now)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+        ArgumentOutOfRangeException.ThrowIfGreaterThan(reason.Length, DeprecationReasonMaxLength);
+
+        if (DeprecatedAt is not null)
+        {
+            throw new InvalidOperationException(
+                $"Event '{Id}' is already deprecated (at {DeprecatedAt:O}).");
+        }
+
+        DeprecatedAt = now;
+        DeprecationReason = reason;
+    }
 }
