@@ -664,8 +664,8 @@
       "Stripe.net": {
         "type": "CentralTransitive",
         "requested": "[51.*, )",
-        "resolved": "51.0.1",
-        "contentHash": "gCT5KoDEv8wNrnWKRBfDEFN2C/FaBOMX0XJwz2EefEC+sPIMSDJYizVflm0ntk105YDQKB6upp7+03pIibjp9g==",
+        "resolved": "51.1.0",
+        "contentHash": "q4Kj14NP0jaGKRkeuCTL2Mwn7BVgVUHowBiGJAX2fGiEIOVbdhpCERlNRTuvirN/5IGae6cCToS0+H/oSX395A==",
         "dependencies": {
           "Newtonsoft.Json": "13.0.3",
           "System.Configuration.ConfigurationManager": "9.0.0"
