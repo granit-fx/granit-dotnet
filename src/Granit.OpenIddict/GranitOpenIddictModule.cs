@@ -85,6 +85,32 @@ public sealed class GranitOpenIddictModule : GranitModule
             IdentityCookieDefinitionContributor.DefaultApplicationCookieName,
             IdentityCookieDefinitionContributor.DevApplicationCookieName);
 
+        // When an incoming request carries an `Authorization` header, forward the
+        // Identity.Application cookie scheme to OpenIddict token validation (Bearer).
+        // BFF-integrated deployments serve the same backend to multiple SPAs (e.g.
+        // /host and /app) and the Identity cookie is shared across them (localhost
+        // in dev, shared parent domain in production). A user logging in on one
+        // side overwrites the cookie, and without this forward the cookie-authenticated
+        // principal wins over the BFF-injected Bearer token — authorising the request
+        // as the wrong user (403 on host admin endpoints once a tenant user has logged
+        // in, and vice-versa). Requests without an `Authorization` header (e.g. the
+        // OIDC server's `/connect/*` endpoints) keep using cookie auth unchanged.
+        context.Services.PostConfigure<Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationOptions>(
+            Microsoft.AspNetCore.Identity.IdentityConstants.ApplicationScheme,
+            options =>
+            {
+                // Scheme name is the well-known OpenIddict validation scheme. Using the
+                // string literal (rather than `OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme`)
+                // avoids forcing every Granit.OpenIddict consumer to pull in
+                // `OpenIddict.Validation.AspNetCore` as a direct reference — this base
+                // module stays free of the ASP.NET Core validation integration and the
+                // constant stays pinned to the OpenIddict contract.
+                options.ForwardDefaultSelector = httpContext =>
+                    httpContext.Request.Headers.ContainsKey(Microsoft.Net.Http.Headers.HeaderNames.Authorization)
+                        ? "OpenIddict.Validation.AspNetCore"
+                        : null;
+            });
+
         PostConfigureIdentityCookie(context.Services, isDevelopment,
             Microsoft.AspNetCore.Identity.IdentityConstants.TwoFactorUserIdScheme,
             IdentityCookieDefinitionContributor.DefaultTwoFactorCookieName,
