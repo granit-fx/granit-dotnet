@@ -2,6 +2,7 @@
   "culture": "pt-BR",
   "texts": {
     "Permission:Metering.Events.Backfill": "Reinserir eventos históricos do medidor além da janela padrão de ingestão (até 365 dias)",
+    "Permission:Metering.Events.Manage": "Gerenciar eventos individuais do medidor (depreciar eventos errôneos ou fraudulentos)",
     "Permission:Metering.Meters.Manage": "Gerenciar definições de medidores (criar, atualizar, publicar, arquivar)",
     "Permission:Metering.Meters.Read": "Visualizar definições de medidores",
     "Permission:Metering.Usage.Read": "Visualizar dados de uso e status de cotas",

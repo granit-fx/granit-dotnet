@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.OpenIddict.Options;
+using Granit.OpenIddict.Server.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -149,6 +150,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 OpenIddictConstants.Scopes.Profile,
                 OpenIddictConstants.Scopes.Roles,
                 "offline_access");
+
+            // ──── Custom event handlers ────
+            // Enforces the MultiTenancySide policy declared on each OIDC application
+            // at sign-in: host-only clients reject tenant users, tenant-only clients
+            // reject host users. See ClientSideAuthorizationHandler for semantics.
+            options.AddEventHandler(ClientSideAuthorizationHandler.Descriptor);
         });
 
         // ──── Validation — token validation for resource servers ────

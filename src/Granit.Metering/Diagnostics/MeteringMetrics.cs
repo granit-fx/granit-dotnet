@@ -23,6 +23,7 @@ public sealed class MeteringMetrics
     private readonly Counter<long> _quotasExceeded;
     private readonly Counter<long> _recomputesExecuted;
     private readonly Counter<long> _backfillsIngested;
+    private readonly Counter<long> _eventsDeprecated;
 
     /// <summary>Initializes metering metrics using the specified meter factory.</summary>
     public MeteringMetrics(IMeterFactory meterFactory)
@@ -56,6 +57,10 @@ public sealed class MeteringMetrics
         _backfillsIngested = meter.CreateCounter<long>(
             "granit.metering.backfills.events_ingested",
             description: "Number of historical events accepted by the backfill endpoint.");
+
+        _eventsDeprecated = meter.CreateCounter<long>(
+            "granit.metering.events.deprecated",
+            description: "Number of meter events soft-deprecated (excluded from aggregation while preserved for audit).");
     }
 
     /// <summary>Records a meter event insertion.</summary>
@@ -133,5 +138,16 @@ public sealed class MeteringMetrics
             { TenantIdTag, tenantId ?? GlobalTenant },
         };
         _backfillsIngested.Add(eventCount, tags);
+    }
+
+    /// <summary>Records a soft-deprecation of a single meter event.</summary>
+    public void RecordEventDeprecated(string? tenantId, Guid meterDefinitionId)
+    {
+        var tags = new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
+        };
+        _eventsDeprecated.Add(1, tags);
     }
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.OpenIddict.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
 using Microsoft.Extensions.Logging;
@@ -129,7 +130,12 @@ internal sealed partial class OpenIddictSeedContributor(
             ? BuildJsonWebKeySet(desired.SigningKeyJwk)
             : null;
 
-        return !JwksEqual(current.JsonWebKeySet, desiredJwks);
+        if (!JwksEqual(current.JsonWebKeySet, desiredJwks))
+        {
+            return true;
+        }
+
+        return current.GetClientSide() != desired.ClientSide;
     }
 
     /// <summary>
@@ -197,6 +203,10 @@ internal sealed partial class OpenIddictSeedContributor(
 
         // Consent type (default: implicit — auto-grant for first-party apps)
         appDescriptor.ConsentType = source.ConsentType ?? OpenIddictConstants.ConsentTypes.Implicit;
+
+        // Host/tenant policy — persisted in Properties so the OIDC server can enforce
+        // host-only / tenant-only client access without depending on Granit.Bff.
+        appDescriptor.SetClientSide(source.ClientSide);
     }
 
     private async Task SeedScopeAsync(

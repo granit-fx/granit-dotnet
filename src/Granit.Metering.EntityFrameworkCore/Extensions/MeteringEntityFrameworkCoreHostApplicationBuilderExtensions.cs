@@ -36,6 +36,7 @@ public static class MeteringEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IQuotaChecker, EfQuotaChecker>();
         builder.Services.TryAddScoped<IUsageRecomputeService, EfUsageRecomputeService>();
         builder.Services.TryAddScoped<IUsageBackfillService, EfUsageBackfillService>();
+        builder.Services.TryAddScoped<IMeterEventDeprecationService, EfMeterEventDeprecationService>();
 
         // Queryable sources for MapGranitQuery (host bypasses tenant filter for cross-tenant review).
         builder.Services.AddScoped<IQueryableSource<MeterDefinition>, EfMeterDefinitionQueryableSource>();

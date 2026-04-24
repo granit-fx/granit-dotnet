@@ -1,3 +1,5 @@
+using Granit.MultiTenancy;
+
 namespace Granit.OpenIddict.Options;
 
 /// <summary>
@@ -30,6 +32,7 @@ public sealed class GranitOpenIddictSeedingOptions
 /// <param name="PostLogoutRedirectUris">Allowed post-logout redirect URIs.</param>
 /// <param name="SigningKeyJwk">Optional public signing key as JWK JSON for <c>private_key_jwt</c> client authentication (RFC 7523). When set, the client authenticates with a signed JWT assertion instead of a shared secret.</param>
 /// <param name="ConsentType">The consent type for the application (<c>"implicit"</c>, <c>"explicit"</c>, or <c>"systematic"</c>). Default: <c>"implicit"</c> (auto-grant for first-party apps).</param>
+/// <param name="ClientSide">Optional host/tenant policy enforced at sign-in. <see cref="MultiTenancySide.Host"/> = only users with <c>TenantId = null</c> may obtain tokens for this client; <see cref="MultiTenancySide.Tenant"/> = only users with a non-null <c>TenantId</c>; <see cref="MultiTenancySide.Both"/> or <see langword="null"/> = no restriction. Stored on the OIDC application's <c>Properties</c> bag and enforced by <c>ClientSideAuthorizationHandler</c>.</param>
 public sealed record OidcApplicationSeedDescriptor(
     string ClientId,
     string? ClientSecret,
@@ -38,7 +41,8 @@ public sealed record OidcApplicationSeedDescriptor(
     string[] RedirectUris,
     string[] PostLogoutRedirectUris,
     string? SigningKeyJwk = null,
-    string? ConsentType = null);
+    string? ConsentType = null,
+    MultiTenancySide? ClientSide = null);
 
 /// <summary>
 /// Describes an OIDC scope to seed.
