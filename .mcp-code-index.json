@@ -40178,6 +40178,12 @@
           "returnType": "IReadOnlyList<SubscriptionDiscount>"
         },
         {
+          "name": "PriceOverrides",
+          "kind": "property",
+          "signature": "IReadOnlyList<SubscriptionPriceOverride> PriceOverrides",
+          "returnType": "IReadOnlyList<SubscriptionPriceOverride>"
+        },
+        {
           "name": "nameof",
           "kind": "method",
           "signature": "nameof(Status)",
@@ -40218,6 +40224,18 @@
           "kind": "method",
           "signature": "GetActiveDiscounts(DateTimeOffset instant)",
           "returnType": "IEnumerable<SubscriptionDiscount>"
+        },
+        {
+          "name": "AddPriceOverride",
+          "kind": "method",
+          "signature": "AddPriceOverride(SubscriptionPriceOverride priceOverride)",
+          "returnType": "void"
+        },
+        {
+          "name": "GetActivePriceOverride",
+          "kind": "method",
+          "signature": "GetActivePriceOverride(Guid planPriceId, DateTimeOffset instant)",
+          "returnType": "SubscriptionPriceOverride?"
         }
       ]
     },
@@ -40290,6 +40308,28 @@
           "kind": "method",
           "signature": "Covers(DateTimeOffset instant)",
           "returnType": "Guid? OverridePriceId { get; private set; } public decimal? DiscountPercent { get; private set; } public bool"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionPriceOverride",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionPriceOverride",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionPriceOverride.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid subscriptionId, Guid planPriceId, decimal amount, DateTimeOffset effectiveFrom, DateTimeOffset? effectiveUntil, string reason)",
+          "returnType": "SubscriptionPriceOverride"
+        },
+        {
+          "name": "Covers",
+          "kind": "method",
+          "signature": "Covers(Guid planPriceId, DateTimeOffset instant)",
+          "returnType": "bool"
         }
       ]
     },
@@ -40569,6 +40609,15 @@
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
       "line": 63,
+      "members": []
+    },
+    {
+      "name": "Overrides",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Overrides",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 75,
       "members": []
     },
     {

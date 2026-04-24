@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "Permission:Subscriptions.Discounts.Manage": "Manage subscription discounts (Percentage / FixedAmount / Trial extensions)",
+    "Permission:Subscriptions.Overrides.Manage": "Manage per-customer price overrides (enterprise negotiated pricing carve-outs)",
     "Permission:Subscriptions.Phases.Manage": "Manage subscription phases (schedule plan changes, override prices, apply discounts)",
     "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
     "Permission:Subscriptions.Plans.Read": "View subscription plans",

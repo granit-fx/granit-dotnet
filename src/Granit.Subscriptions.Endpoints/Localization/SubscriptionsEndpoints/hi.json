@@ -2,6 +2,7 @@
   "culture": "hi",
   "texts": {
     "Permission:Subscriptions.Discounts.Manage": "सदस्यता छूट प्रबंधित करें (प्रतिशत / निश्चित राशि / परीक्षण विस्तार)",
+    "Permission:Subscriptions.Overrides.Manage": "प्रति-ग्राहक मूल्य ओवरराइड प्रबंधित करें (बातचीत किए गए एंटरप्राइज़ मूल्य)",
     "Permission:Subscriptions.Phases.Manage": "सदस्यता चरण प्रबंधित करें (योजना परिवर्तन शेड्यूल करें, मूल्य ओवरराइड करें, छूट लागू करें)",
     "Permission:Subscriptions.Plans.Manage": "सब्सक्रिप्शन प्लान प्रबंधित करें (बनाएँ, प्रकाशित करें, संग्रहित करें)",
     "Permission:Subscriptions.Plans.Read": "सब्सक्रिप्शन प्लान देखें",

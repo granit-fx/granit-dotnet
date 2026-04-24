@@ -26,6 +26,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     private readonly List<SubscriptionExternalMapping> _externalMappings = [];
     private readonly List<SubscriptionPhase> _phases = [];
     private readonly List<SubscriptionDiscount> _discounts = [];
+    private readonly List<SubscriptionPriceOverride> _priceOverrides = [];
 
     private Subscription() { }
 
@@ -137,6 +138,14 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// <see cref="Pricing.SubscriptionDiscountCalculator"/>.
     /// </summary>
     public IReadOnlyList<SubscriptionDiscount> Discounts => _discounts;
+
+    /// <summary>
+    /// Per-<see cref="PlanPrice"/> negotiated price overrides. The pricing resolver
+    /// consults <see cref="GetActivePriceOverride"/> at billing time and uses the
+    /// matching override's <see cref="SubscriptionPriceOverride.Amount"/> instead
+    /// of the standard <c>PlanPrice.Amount</c> when one covers the billing instant.
+    /// </summary>
+    public IReadOnlyList<SubscriptionPriceOverride> PriceOverrides => _priceOverrides;
 
     /// <inheritdoc />
     public Guid? TenantId { get; private set; }
@@ -457,6 +466,36 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// </summary>
     public IEnumerable<SubscriptionDiscount> GetActiveDiscounts(DateTimeOffset instant) =>
         _discounts.Where(d => d.IsActiveAt(instant));
+
+    // ── Price overrides ────────────────────────────────────────────────
+
+    /// <summary>Attaches a per-PlanPrice override to the subscription.</summary>
+    public void AddPriceOverride(SubscriptionPriceOverride priceOverride)
+    {
+        ArgumentNullException.ThrowIfNull(priceOverride);
+
+        if (priceOverride.SubscriptionId != Id)
+        {
+            throw new InvalidOperationException(
+                $"Price override '{priceOverride.Id}' belongs to subscription '{priceOverride.SubscriptionId}', not '{Id}'.");
+        }
+
+        _priceOverrides.Add(priceOverride);
+    }
+
+    /// <summary>Removes a previously-added override. Returns <c>true</c> when one was actually removed.</summary>
+    public bool RemovePriceOverride(Guid overrideId) =>
+        _priceOverrides.RemoveAll(o => o.Id == overrideId) > 0;
+
+    /// <summary>
+    /// Returns the override that covers <paramref name="planPriceId"/> at
+    /// <paramref name="instant"/>, or <c>null</c> when none does. At most one
+    /// override is expected to cover any given (priceId, instant) pair —
+    /// non-overlap is a UX contract enforced by the HTTP-layer validator
+    /// (CRUD endpoints PR), not by the entity itself.
+    /// </summary>
+    public SubscriptionPriceOverride? GetActivePriceOverride(Guid planPriceId, DateTimeOffset instant) =>
+        _priceOverrides.FirstOrDefault(o => o.Covers(planPriceId, instant));
 
     // ── Private helpers ────────────────────────────────────────────────
 

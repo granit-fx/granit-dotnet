@@ -70,4 +70,15 @@ public static class SubscriptionsPermissions
         /// </summary>
         public const string Manage = "Subscriptions.Discounts.Manage";
     }
+
+    /// <summary>Per-PlanPrice negotiated override permissions.</summary>
+    public static class Overrides
+    {
+        /// <summary>
+        /// Manage per-customer price overrides on individual <c>PlanPrice</c>
+        /// records. Admin-only — overrides supersede the standard plan price
+        /// at billing time, directly impacting revenue. ISO 27001 A.9.4.
+        /// </summary>
+        public const string Manage = "Subscriptions.Overrides.Manage";
+    }
 }

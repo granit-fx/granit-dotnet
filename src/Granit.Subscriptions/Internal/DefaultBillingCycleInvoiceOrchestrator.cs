@@ -80,6 +80,21 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
             effectivePlanPriceId, cancellationToken)
             .ConfigureAwait(false);
 
+        // SubscriptionPriceOverride: a per-customer negotiated amount supersedes
+        // the standard PlanPrice.Amount when the override window covers "now".
+        // Looked up by the resolved PlanPrice id (effectivePlanPriceId) — if no
+        // pinned price exists we skip override lookup (no PlanPrice to target).
+        if (effectivePlanPriceId is { } overrideTargetId)
+        {
+            SubscriptionPriceOverride? activeOverride = subscription
+                .GetActivePriceOverride(overrideTargetId, clock.Now);
+
+            if (activeOverride is not null)
+            {
+                basePrice = activeOverride.Amount;
+            }
+        }
+
         // Short-circuit on a non-positive base price BEFORE running discount math —
         // discount application throws on negative input, and a 0 base price already
         // means "skip" by the existing convention.

@@ -2,6 +2,7 @@
   "culture": "de",
   "texts": {
     "Permission:Subscriptions.Discounts.Manage": "Abonnementrabatte verwalten (Prozentual / Fester Betrag / Testverlängerungen)",
+    "Permission:Subscriptions.Overrides.Manage": "Kundenspezifische Preisüberschreibungen verwalten (verhandelte Enterprise-Preise)",
     "Permission:Subscriptions.Phases.Manage": "Abonnementphasen verwalten (Planänderungen planen, Preise überschreiben, Rabatte anwenden)",
     "Permission:Subscriptions.Plans.Manage": "Abonnementpläne verwalten (erstellen, veröffentlichen, archivieren)",
     "Permission:Subscriptions.Plans.Read": "Abonnementpläne anzeigen",

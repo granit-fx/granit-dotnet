@@ -53,5 +53,10 @@ internal sealed class SubscriptionsPermissionDefinitionProvider : IPermissionDef
         group.AddPermission(SubscriptionsPermissions.Discounts.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Discounts.Manage"),
             MultiTenancySide.Host);
+
+        // Per-PlanPrice negotiated overrides (enterprise pricing carve-outs).
+        group.AddPermission(SubscriptionsPermissions.Overrides.Manage,
+            LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Overrides.Manage"),
+            MultiTenancySide.Host);
     }
 }

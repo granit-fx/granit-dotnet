@@ -18,6 +18,7 @@ public static class SubscriptionsModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new SubscriptionConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionPhaseConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionDiscountConfiguration());
+        modelBuilder.ApplyConfiguration(new SubscriptionPriceOverrideConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionSeatConfiguration());
         modelBuilder.ApplyConfiguration(new SubscriptionExternalMappingConfiguration());
         return modelBuilder;

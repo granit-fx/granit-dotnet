@@ -2,6 +2,7 @@
   "culture": "pl",
   "texts": {
     "Permission:Subscriptions.Discounts.Manage": "Zarządzanie zniżkami subskrypcji (Procent / Stała kwota / Przedłużenia okresu próbnego)",
+    "Permission:Subscriptions.Overrides.Manage": "Zarządzanie nadpisaniami ceny dla klientów (negocjowane ceny enterprise)",
     "Permission:Subscriptions.Phases.Manage": "Zarządzanie fazami subskrypcji (planowanie zmian planu, nadpisywanie cen, stosowanie zniżek)",
     "Permission:Subscriptions.Plans.Manage": "Zarządzanie planami subskrypcji (tworzenie, publikowanie, archiwizowanie)",
     "Permission:Subscriptions.Plans.Read": "Wyświetlanie planów subskrypcji",

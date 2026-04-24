@@ -2,6 +2,7 @@
   "culture": "sv",
   "texts": {
     "Permission:Subscriptions.Discounts.Manage": "Hantera prenumerationsrabatter (Procent / Fast belopp / Provförlängningar)",
+    "Permission:Subscriptions.Overrides.Manage": "Hantera prisåsidosättningar per kund (förhandlade enterprise-priser)",
     "Permission:Subscriptions.Phases.Manage": "Hantera prenumerationsfaser (schemalägga planändringar, åsidosätta priser, tillämpa rabatter)",
     "Permission:Subscriptions.Plans.Manage": "Hantera prenumerationsplaner (skapa, publicera, arkivera)",
     "Permission:Subscriptions.Plans.Read": "Visa prenumerationsplaner",
