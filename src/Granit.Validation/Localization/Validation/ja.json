@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' は {MaxLength} 文字以下である必要があります。{TotalLength} 文字入力されました。",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "AggregationType が CountDistinct でない限り、DistinctProperty は null でなければなりません。",
     "Granit:Validation:MeteringDistinctPropertyRequired": "AggregationType が CountDistinct の場合、DistinctProperty は必須です。",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "再計算ウィンドウの終了は開始より厳密に大きくなければなりません。",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' は {MinLength} 文字以上である必要があります。{TotalLength} 文字入力されました。",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' を空にすることはできません。",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' は '{ComparisonValue}' と等しくない必要があります。",

@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' 不能超过 {MaxLength} 个字符。您输入了 {TotalLength} 个字符。",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "除非 AggregationType 为 CountDistinct，否则 DistinctProperty 必须为 null。",
     "Granit:Validation:MeteringDistinctPropertyRequired": "当 AggregationType 为 CountDistinct 时，DistinctProperty 为必填项。",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "重算窗口的结束时间必须严格大于开始时间。",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' 至少需要 {MinLength} 个字符。您输入了 {TotalLength} 个字符。",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' 不能为空。",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' 不能等于 '{ComparisonValue}'。",

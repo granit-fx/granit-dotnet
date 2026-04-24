@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' får vara högst {MaxLength} tecken. Du angav {TotalLength} tecken.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty måste vara null om inte AggregationType är CountDistinct.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty krävs när AggregationType är CountDistinct.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "Slutet av omberäkningsfönstret måste vara strikt större än början.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' måste vara minst {MinLength} tecken. Du angav {TotalLength} tecken.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' får inte vara tomt.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' får inte vara lika med '{ComparisonValue}'.",

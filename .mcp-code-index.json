@@ -24476,6 +24476,24 @@
       "members": []
     },
     {
+      "name": "RecomputeUsageRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.RecomputeUsageRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/RecomputeUsageRequest.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "RecomputeUsageResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.RecomputeUsageResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/RecomputeUsageResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "RecordUsageRequest",
       "fqn": "Granit.Metering.Endpoints.Dtos.RecordUsageRequest",
       "kind": "record",
@@ -24573,7 +24591,7 @@
       "kind": "class",
       "project": "Granit.Metering.EntityFrameworkCore",
       "file": "src/Granit.Metering.EntityFrameworkCore/Extensions/MeteringEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitMeteringEntityFrameworkCore",
@@ -24932,6 +24950,56 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "IUsageRecomputeService",
+      "fqn": "Granit.Metering.Recompute.IUsageRecomputeService",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IUsageRecomputeService.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "RecomputeAsync",
+          "kind": "method",
+          "signature": "RecomputeAsync(UsageRecomputeRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UsageRecomputeResult>"
+        }
+      ]
+    },
+    {
+      "name": "UsageRecomputeRejectedException",
+      "fqn": "Granit.Metering.Recompute.UsageRecomputeRejectedException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/UsageRecomputeRejectedException.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ReasonCode",
+          "kind": "property",
+          "signature": "string ReasonCode",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "UsageRecomputeRequest",
+      "fqn": "Granit.Metering.Recompute.UsageRecomputeRequest",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/UsageRecomputeRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "UsageRecomputeResult",
+      "fqn": "Granit.Metering.Recompute.UsageRecomputeResult",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/UsageRecomputeResult.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "ApplicationInitializationContext",

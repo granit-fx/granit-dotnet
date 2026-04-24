@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}'은(는) {MaxLength}자 이하여야 합니다. {TotalLength}자를 입력하셨습니다.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "AggregationType이 CountDistinct가 아닌 한 DistinctProperty는 null이어야 합니다.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "AggregationType이 CountDistinct일 때 DistinctProperty는 필수입니다.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "재계산 창의 끝은 시작보다 엄격히 커야 합니다.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}'은(는) {MinLength}자 이상이어야 합니다. {TotalLength}자를 입력하셨습니다.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}'은(는) 비어 있을 수 없습니다.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}'은(는) '{ComparisonValue}'와(과) 같지 않아야 합니다.",

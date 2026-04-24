@@ -7,6 +7,7 @@ using Granit.Metering.Domain;
 using Granit.Persistence.EntityFrameworkCore.ExceptionHandling;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Metering.EntityFrameworkCore.Internal;
@@ -54,6 +55,16 @@ internal sealed partial class EfAggregationRunner(
         await using MeteringDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
+        // Mutually-exclude with on-demand recompute on the same (meter, tenant) — the
+        // recompute service acquires the same lock. The lock auto-releases at COMMIT/ROLLBACK
+        // so there is no leak risk on transient failure.
+        await using IDbContextTransaction tx = await db.Database
+            .BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+
+        await MeteringConcurrencyLock
+            .AcquireAsync(db, definition.Id, definition.TenantId, cancellationToken)
+            .ConfigureAwait(false);
+
         AggregationWatermark? watermark = await db.AggregationWatermarks
             .FirstOrDefaultAsync(
                 w => w.MeterDefinitionId == definition.Id
@@ -77,6 +88,7 @@ internal sealed partial class EfAggregationRunner(
 
         if (events.Count == 0)
         {
+            await tx.CommitAsync(cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -117,9 +129,11 @@ internal sealed partial class EfAggregationRunner(
         try
         {
             await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+            await tx.CommitAsync(cancellationToken).ConfigureAwait(false);
         }
         catch (DbUpdateException ex) when (DbUpdateExceptionHelper.IsDuplicateKeyException(ex))
         {
+            await tx.RollbackAsync(cancellationToken).ConfigureAwait(false);
             Log.AggregationCollisionIgnored(logger, definition.Name, ex);
             return;
         }

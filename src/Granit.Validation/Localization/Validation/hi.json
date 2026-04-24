@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' {MaxLength} अक्षर या उससे कम होना चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "जब तक AggregationType CountDistinct न हो, DistinctProperty शून्य होना चाहिए।",
     "Granit:Validation:MeteringDistinctPropertyRequired": "जब AggregationType CountDistinct हो तो DistinctProperty आवश्यक है।",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "पुनर्गणना विंडो का अंत प्रारंभ से सख्ती से अधिक होना चाहिए।",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' कम से कम {MinLength} अक्षरों का होना चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' खाली नहीं होना चाहिए।",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' '{ComparisonValue}' के बराबर नहीं होना चाहिए।",

@@ -5,6 +5,7 @@ using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
+using Granit.Metering.Recompute;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -88,6 +89,23 @@ internal static class MeterDefinitionEndpoints
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
+            .RequireAuthorization(MeteringPermissions.Meters.Manage);
+
+        group.MapPost("/meters/{id:guid}/recompute", RecomputeMeterUsageAsync)
+            .WithName("RecomputeMeterUsage")
+            .WithSummary("Recomputes UsageAggregate rows for a meter over a chosen window.")
+            .WithDescription(
+                "Re-runs the aggregation pipeline over the requested [from, to) window, "
+                + "rebuilding hourly UsageAggregate rows from the raw MeterEvent data. "
+                + "Window edges are snapped to hourly buckets server-side. The global ingestion "
+                + "watermark is never rewound — concurrent ingestion past the upper bound is unaffected. "
+                + "Mutually-excludes with the hourly aggregation job on the same (meter, tenant) via a "
+                + "transaction-scoped database lock. Returns 422 when the window is empty/inverted/in the "
+                + "future, when the meter is unknown, or when the meter is Archived.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<RecomputeUsageResponse>()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesValidationProblem()
             .RequireAuthorization(MeteringPermissions.Meters.Manage);
 
         group.MapPost("/meters/{id:guid}/deactivate", DeactivateMeterAsync)
@@ -249,5 +267,36 @@ internal static class MeterDefinitionEndpoints
         httpContext.Response.Headers["Link"] = "</metering/meters/{id}/archive>; rel=\"successor-version\"";
 
         return await ArchiveMeterAsync(id, reader, writer, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static async Task<Results<Ok<RecomputeUsageResponse>, ProblemHttpResult>> RecomputeMeterUsageAsync(
+        Guid id,
+        RecomputeUsageRequest request,
+        [FromServices] IUsageRecomputeService service,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            UsageRecomputeResult result = await service
+                .RecomputeAsync(
+                    new UsageRecomputeRequest(id, request.From, request.To),
+                    cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.Ok(new RecomputeUsageResponse(
+                result.MeterDefinitionId,
+                result.WindowStart,
+                result.WindowEnd,
+                result.EventsScanned,
+                result.AggregatesRebuilt,
+                result.DurationMilliseconds));
+        }
+        catch (UsageRecomputeRejectedException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                title: ex.ReasonCode,
+                statusCode: StatusCodes.Status422UnprocessableEntity);
+        }
     }
 }
