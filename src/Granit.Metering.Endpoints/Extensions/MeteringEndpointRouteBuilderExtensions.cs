@@ -34,9 +34,13 @@ public static class MeteringEndpointRouteBuilderExtensions
         group.MapUsageEndpoints();
 
         // Admin query endpoints — list / filter / sort / paginate / export via the QueryEngine.
-        // Mounted on dedicated sub-paths to avoid colliding with the business endpoints above
-        // (/meters returns only active meters; /usage returns a single aggregate by period).
-        group.MapGranitGroup("meter-definitions")
+        // GET /meters is now QueryEngine-backed: it returns a paged envelope (replacing the
+        // previous flat array of Published meters) and supports filtering on every column
+        // declared by MeterDefinitionQueryDefinition, including LifecycleStatus. URL-level
+        // collisions are avoided because the QueryEngine routes (`/`, `/meta`, `/saved-views`)
+        // do not overlap with the GUID-constrained CRUD routes (`/{id:guid}`, `/{id:guid}/...`)
+        // mapped above.
+        group.MapGranitGroup("meters")
             .MapGranitQuery<MeterDefinition>()
             .RequireAuthorization(MeteringPermissions.Meters.Read);
 
