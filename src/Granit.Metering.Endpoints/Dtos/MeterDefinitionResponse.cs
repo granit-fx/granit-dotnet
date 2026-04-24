@@ -11,13 +11,17 @@ namespace Granit.Metering.Endpoints.Dtos;
 /// <param name="Description">Optional description.</param>
 /// <param name="AggregationType">How events are aggregated into rollups.</param>
 /// <param name="Activated">Whether this meter accepts new events.</param>
+/// <param name="ProductId">
+/// Optional reference to a <c>Granit.Catalog.Product</c> identifier (soft, no SQL FK).
+/// </param>
 public sealed record MeterDefinitionResponse(
     Guid Id,
     string Name,
     string Unit,
     string? Description,
     AggregationType AggregationType,
-    bool Activated)
+    bool Activated,
+    Guid? ProductId)
 {
     internal static MeterDefinitionResponse FromEntity(MeterDefinition definition) => new(
         definition.Id,
@@ -25,5 +29,6 @@ public sealed record MeterDefinitionResponse(
         definition.Unit,
         definition.Description,
         definition.AggregationType,
-        definition.Activated);
+        definition.Activated,
+        definition.ProductId);
 }

@@ -115,4 +115,51 @@ public sealed class MeterDefinitionTests
         meter.Description.ShouldBeNull();
         meter.Name.ShouldBe("API Calls");
     }
+
+    // ======== ProductId — soft reference to Granit.Catalog.Product ========
+
+    [Fact]
+    public void Create_WithoutProductId_ShouldDefaultToNull()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum);
+
+        meter.ProductId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Create_WithProductId_ShouldStoreReference()
+    {
+        var productId = Guid.Parse("00000000-0000-0000-0000-000000000abc");
+
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum,
+            description: null, productId: productId);
+
+        meter.ProductId.ShouldBe(productId);
+    }
+
+    [Fact]
+    public void SetProduct_ShouldReplaceReference()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum);
+        var productId = Guid.NewGuid();
+
+        meter.SetProduct(productId);
+
+        meter.ProductId.ShouldBe(productId);
+    }
+
+    [Fact]
+    public void SetProduct_WithNull_ShouldDetach()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "API Calls", "requests", AggregationType.Sum,
+            description: null, productId: Guid.NewGuid());
+
+        meter.SetProduct(null);
+
+        meter.ProductId.ShouldBeNull();
+    }
 }

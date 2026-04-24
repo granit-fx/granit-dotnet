@@ -16,13 +16,19 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
 {
     private MeterDefinition() { }
 
-    /// <summary>Creates a new meter definition.</summary>
+    /// <summary>
+    /// Creates a new meter definition.
+    /// <paramref name="productId"/> is an optional soft reference (no SQL FK across
+    /// modules) to a <c>Granit.Catalog.Product</c> — the catalog item this meter
+    /// measures. The application layer is responsible for catalog deletion safety.
+    /// </summary>
     public static MeterDefinition Create(
         Guid id,
         string name,
         string unit,
         AggregationType aggregationType,
-        string? description = null)
+        string? description = null,
+        Guid? productId = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(unit);
@@ -35,6 +41,7 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
             AggregationType = aggregationType,
             Description = description,
             Activated = true,
+            ProductId = productId,
         };
     }
 
@@ -52,6 +59,21 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
 
     /// <summary>Whether this meter accepts new events.</summary>
     public bool Activated { get; private set; }
+
+    /// <summary>
+    /// Optional reference to a <c>Granit.Catalog.Product</c> identifier — the
+    /// catalog item this meter measures. Soft reference (no SQL FK); enables
+    /// invoice line item provenance and cross-module reporting (ORB-style audit
+    /// chain: <c>event → meter → product → invoice line</c>).
+    /// </summary>
+    public Guid? ProductId { get; private set; }
+
+    /// <summary>
+    /// Re-attaches the meter to a different catalog product (or detaches by
+    /// passing <c>null</c>). No lifecycle constraint — admins may re-target an
+    /// active meter without rebuilding its history.
+    /// </summary>
+    public void SetProduct(Guid? productId) => ProductId = productId;
 
     /// <inheritdoc/>
     public Guid? TenantId { get; private set; }

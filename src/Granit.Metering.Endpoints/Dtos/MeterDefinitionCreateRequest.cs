@@ -7,8 +7,13 @@ namespace Granit.Metering.Endpoints.Dtos;
 /// <param name="Unit">Unit of measure (e.g., "requests", "GB").</param>
 /// <param name="AggregationType">How events are aggregated into rollups.</param>
 /// <param name="Description">Optional description.</param>
+/// <param name="ProductId">
+/// Optional reference to a <c>Granit.Catalog.Product</c> identifier — the catalog
+/// item this meter measures. Soft reference (no SQL FK across modules).
+/// </param>
 public sealed record MeterDefinitionCreateRequest(
     string Name,
     string Unit,
     AggregationType AggregationType,
-    string? Description = null);
+    string? Description = null,
+    Guid? ProductId = null);

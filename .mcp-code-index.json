@@ -24306,7 +24306,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string name, string unit, AggregationType aggregationType, string? description = null)",
+          "signature": "Create(Guid id, string name, string unit, AggregationType aggregationType, string? description = null, Guid? productId = null)",
           "returnType": "MeterDefinition"
         },
         {
@@ -24316,10 +24316,16 @@
           "returnType": "string"
         },
         {
-          "name": "Description",
+          "name": "SetProduct",
+          "kind": "method",
+          "signature": "SetProduct(Guid? productId)",
+          "returnType": "string? Description { get; private set; } public AggregationType AggregationType { get; private set; } public bool Activated { get; private set; } public Guid? ProductId { get; private set; } public void"
+        },
+        {
+          "name": "TenantId",
           "kind": "property",
-          "signature": "string? Description",
-          "returnType": "string?"
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
         },
         {
           "name": "Update",
@@ -24423,7 +24429,7 @@
       "kind": "record",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionCreateRequest.cs",
-      "line": 10,
+      "line": 14,
       "members": []
     },
     {
@@ -24432,7 +24438,7 @@
       "kind": "record",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionResponse.cs",
-      "line": 14,
+      "line": 17,
       "members": []
     },
     {
