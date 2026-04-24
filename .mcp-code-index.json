@@ -16453,7 +16453,7 @@
       "kind": "class",
       "project": "Granit.Http.ExceptionHandling",
       "file": "src/Granit.Http.ExceptionHandling/Extensions/ExceptionHandlingServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitExceptionHandling",

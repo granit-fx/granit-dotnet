@@ -469,14 +469,47 @@ public sealed class GranitExceptionHandlerTests
     }
 
     // -------------------------------------------------------------------------
-    // 4xx non-user-friendly: title uses exception message
+    // 4xx non-user-friendly: title is masked in production (VULN-202)
     // -------------------------------------------------------------------------
+    // Exception messages from non-IUserFriendlyException exceptions may carry
+    // internal context (user ids, tenant ids, SQL fragments, internal paths).
+    // In production (ExposeInternalErrorDetails = false) we return a generic
+    // per-status title. Dev/staging still exposes the raw message for
+    // debugging.
 
     [Fact]
-    public async Task TryHandleAsync_4xxNonUserFriendly_TitleUsesExceptionMessage()
+    public async Task TryHandleAsync_4xxNonUserFriendly_Production_TitleIsGeneric()
     {
         // UnauthorizedAccessException is not IUserFriendlyException but maps to 403
-        using ServiceProvider sp = BuildServiceProvider();
+        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+
+        (_, _, string? title, _) = await InvokeHandlerAsync(
+            sp, new UnauthorizedAccessException("User 'alice@x.com' denied tenant 'acme'"));
+
+        title.ShouldBe("Forbidden.");
+        title!.ShouldNotContain("alice@x.com");
+        title!.ShouldNotContain("acme");
+    }
+
+    [Fact]
+    public async Task TryHandleAsync_4xxNonUserFriendly_Timeout_Production_TitleIsGeneric()
+    {
+        // TimeoutException (.NET built-in) is NOT IUserFriendlyException — its
+        // message may reference internal service URLs, SQL fragments, etc.
+        // Maps to 408 via DefaultExceptionStatusCodeMapper.
+        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+
+        (_, _, string? title, _) = await InvokeHandlerAsync(
+            sp, new TimeoutException("SQL query to 'internal-db-01' timed out after 30s"));
+
+        title.ShouldBe("Invalid request.");
+        title!.ShouldNotContain("internal-db-01");
+    }
+
+    [Fact]
+    public async Task TryHandleAsync_4xxNonUserFriendly_Development_TitleExposesMessage()
+    {
+        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = true);
 
         (_, _, string? title, _) = await InvokeHandlerAsync(
             sp, new UnauthorizedAccessException("Access denied to resource X"));
@@ -493,6 +526,19 @@ public sealed class GranitExceptionHandlerTests
             sp, new UnauthorizedAccessException("Access denied"));
 
         detail.ShouldBeNull("detail should be null for 4xx non-user-friendly exceptions");
+    }
+
+    [Fact]
+    public async Task TryHandleAsync_UserFriendly4xx_Production_KeepsMessage()
+    {
+        // IUserFriendlyException is deliberately exposed even in production — the
+        // opt-in contract for messages that are safe to show to the client.
+        using ServiceProvider sp = BuildServiceProvider(opts => opts.ExposeInternalErrorDetails = false);
+
+        (_, _, string? title, _) = await InvokeHandlerAsync(
+            sp, new BusinessException("Appointment:SlotUnavailable", "Slot already booked."));
+
+        title.ShouldBe("Slot already booked.");
     }
 
     // -------------------------------------------------------------------------
