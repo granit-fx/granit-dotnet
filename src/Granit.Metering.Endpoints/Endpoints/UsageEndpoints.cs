@@ -6,6 +6,7 @@ using Granit.Metering.Dtos;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
 using Granit.MultiTenancy;
+using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -138,11 +139,12 @@ internal static class UsageEndpoints
                     statusCode: StatusCodes.Status404NotFound);
             }
 
-            if (!def.Activated)
+            if (def.LifecycleStatus != WorkflowLifecycleStatus.Published)
             {
                 return TypedResults.Problem(
-                    detail: $"Meter definition '{mid}' is deactivated.",
-                    statusCode: StatusCodes.Status409Conflict);
+                    detail: $"Meter definition '{mid}' is in '{def.LifecycleStatus}' status. "
+                        + "Only Published meters accept ingestion.",
+                    statusCode: StatusCodes.Status422UnprocessableEntity);
             }
         }
 

@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "मीटरिंग",
     "Permission:Metering.Meters.Read": "मीटर परिभाषाएँ देखें",
-    "Permission:Metering.Meters.Manage": "मीटर परिभाषाएँ प्रबंधित करें (बनाएँ, अपडेट करें, निष्क्रिय करें)",
+    "Permission:Metering.Meters.Manage": "मीटर परिभाषाएँ प्रबंधित करें (बनाएँ, अपडेट करें, प्रकाशित करें, संग्रहीत करें)",
     "Permission:Metering.Usage.Read": "उपयोग डेटा और कोटा स्थिति देखें",
     "Permission:Metering.Usage.Record": "उपयोग इवेंट रिकॉर्ड करें"
   }

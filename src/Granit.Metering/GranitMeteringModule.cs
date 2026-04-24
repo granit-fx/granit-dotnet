@@ -1,6 +1,7 @@
 using Granit.Metering.Extensions;
 using Granit.Modularity;
 using Granit.Timing;
+using Granit.Workflow;
 
 namespace Granit.Metering;
 
@@ -12,7 +13,9 @@ namespace Granit.Metering;
 /// Add <c>Granit.Metering.EntityFrameworkCore</c> for persistence and
 /// <c>Granit.Metering.BackgroundJobs</c> for automated aggregation.
 /// </remarks>
-[DependsOn(typeof(GranitTimingModule))]
+[DependsOn(
+    typeof(GranitTimingModule),
+    typeof(GranitWorkflowModule))]
 public sealed class GranitMeteringModule : GranitModule
 {
     /// <inheritdoc/>

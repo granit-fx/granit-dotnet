@@ -18,7 +18,9 @@ internal sealed class MeterDefinitionConfiguration : IEntityTypeConfiguration<Me
         builder.Property(e => e.Unit).HasMaxLength(50).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(2000);
         builder.Property(e => e.AggregationType).IsRequired();
-        builder.Property(e => e.Activated).IsRequired().HasDefaultValue(true);
+        builder.Property(e => e.LifecycleStatus).IsRequired();
+        builder.HasIndex(e => e.LifecycleStatus)
+            .HasDatabaseName($"ix_{GranitMeteringDbProperties.DbTablePrefix}meter_definitions_lifecycle");
 
         // Soft reference to Granit.Catalog.Product — no SQL FK across modules.
         // Indexed for reverse lookups (find all meters for a given product).

@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "メータリング",
     "Permission:Metering.Meters.Read": "メーター定義を表示",
-    "Permission:Metering.Meters.Manage": "メーター定義を管理（作成、更新、無効化）",
+    "Permission:Metering.Meters.Manage": "メーター定義を管理（作成、更新、公開、アーカイブ）",
     "Permission:Metering.Usage.Read": "使用状況データとクォータステータスを表示",
     "Permission:Metering.Usage.Record": "使用イベントを記録"
   }

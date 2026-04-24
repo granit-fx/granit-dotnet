@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "Messtechnik",
     "Permission:Metering.Meters.Read": "Zählerdefinitionen anzeigen",
-    "Permission:Metering.Meters.Manage": "Zählerdefinitionen verwalten (erstellen, aktualisieren, deaktivieren)",
+    "Permission:Metering.Meters.Manage": "Zählerdefinitionen verwalten (erstellen, aktualisieren, veröffentlichen, archivieren)",
     "Permission:Metering.Usage.Read": "Nutzungsdaten und Kontingentstatus anzeigen",
     "Permission:Metering.Usage.Record": "Nutzungsereignisse erfassen"
   }

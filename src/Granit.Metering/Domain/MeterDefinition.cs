@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Granit.Domain;
 using Granit.Metering.Domain.ValueObjects;
 using Granit.MultiTenancy;
+using Granit.Workflow.Domain;
 
 namespace Granit.Metering.Domain;
 
@@ -8,16 +10,23 @@ namespace Granit.Metering.Domain;
 /// Defines a usage meter (e.g., API calls, storage GB, messages sent).
 /// </summary>
 /// <remarks>
-/// Each meter has a name, unit of measure, and aggregation strategy.
+/// <para>
+/// Meters follow a lifecycle managed by <see cref="WorkflowLifecycleStatus"/>:
+/// <c>Draft → Published → Archived</c>. Only <see cref="WorkflowLifecycleStatus.Published"/>
+/// meters accept ingestion. <c>Draft</c> lets admins author and review without polluting
+/// production aggregates; <c>Archived</c> preserves history but rejects new events.
+/// </para>
+/// <para>
 /// Meter events are recorded against a definition and aggregated into
 /// <see cref="UsageAggregate"/> rollups by background jobs.
+/// </para>
 /// </remarks>
-public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenant
+public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant, IWorkflowStateful
 {
     private MeterDefinition() { }
 
     /// <summary>
-    /// Creates a new meter definition.
+    /// Creates a new meter definition in <see cref="WorkflowLifecycleStatus.Draft"/> status.
     /// <paramref name="productId"/> is an optional soft reference (no SQL FK across
     /// modules) to a <c>Granit.Catalog.Product</c> — the catalog item this meter
     /// measures. The application layer is responsible for catalog deletion safety.
@@ -40,7 +49,7 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
             Unit = unit,
             AggregationType = aggregationType,
             Description = description,
-            Activated = true,
+            LifecycleStatus = WorkflowLifecycleStatus.Draft,
             ProductId = productId,
         };
     }
@@ -57,8 +66,22 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
     /// <summary>How events are aggregated into rollups.</summary>
     public AggregationType AggregationType { get; private set; }
 
-    /// <summary>Whether this meter accepts new events.</summary>
-    public bool Activated { get; private set; }
+    /// <summary>Current lifecycle status (Draft, Published, Archived).</summary>
+    public WorkflowLifecycleStatus LifecycleStatus { get; private set; }
+
+    /// <summary>
+    /// Computed compatibility alias for <see cref="LifecycleStatus"/> — <c>true</c> only when
+    /// <see cref="WorkflowLifecycleStatus.Published"/>.
+    /// </summary>
+    /// <remarks>
+    /// Kept for one release to ease migration of read-side consumers; new code should
+    /// reason about <see cref="LifecycleStatus"/> directly. Not mapped to a column —
+    /// the underlying <c>Activated</c> column is dropped by the
+    /// <c>MeterDefinition_StatusFromActivated</c> migration in consuming apps.
+    /// </remarks>
+    [NotMapped]
+    [Obsolete("Use LifecycleStatus instead. Removed in next major release.")]
+    public bool Activated => LifecycleStatus == WorkflowLifecycleStatus.Published;
 
     /// <summary>
     /// Optional reference to a <c>Granit.Catalog.Product</c> identifier — the
@@ -81,9 +104,21 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
     /// <summary>Explicit interface for interceptor injection.</summary>
     Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
 
-    /// <summary>Updates the meter definition metadata.</summary>
+    // ── IWorkflowStateful ──────────────────────────────────────────────
+
+    static string IWorkflowStateful.StatusPropertyName => nameof(LifecycleStatus);
+
+    static string IWorkflowStateful.WorkflowEntityType => "MeterDefinition";
+
+    /// <inheritdoc />
+    public string GetWorkflowEntityId() => Id.ToString();
+
+    // ── Behavior methods ───────────────────────────────────────────────
+
+    /// <summary>Updates the meter definition metadata. Only allowed in Draft status.</summary>
     public void Update(string name, string unit, string? description)
     {
+        EnsureDraft();
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(unit);
 
@@ -92,9 +127,43 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IActive, IMultiTenan
         Description = description;
     }
 
-    /// <summary>Deactivates the meter. No new events will be accepted.</summary>
-    public void Deactivate() => Activated = false;
+    /// <summary>Publishes the meter, allowing it to accept ingestion events.</summary>
+    public void Publish()
+    {
+        if (LifecycleStatus != WorkflowLifecycleStatus.Draft)
+        {
+            throw new InvalidOperationException(
+                $"Meter '{Id}' is in '{LifecycleStatus}' status. Only Draft meters can be published.");
+        }
 
-    /// <summary>Reactivates the meter.</summary>
-    public void Activate() => Activated = true;
+        LifecycleStatus = WorkflowLifecycleStatus.Published;
+    }
+
+    /// <summary>Archives the meter. Existing aggregates are preserved; new events are rejected.</summary>
+    public void Archive()
+    {
+        if (LifecycleStatus != WorkflowLifecycleStatus.Published)
+        {
+            throw new InvalidOperationException(
+                $"Meter '{Id}' is in '{LifecycleStatus}' status. Only Published meters can be archived.");
+        }
+
+        LifecycleStatus = WorkflowLifecycleStatus.Archived;
+    }
+
+    /// <summary>
+    /// Backward-compatible alias for <see cref="Archive"/>. Existing callers of
+    /// <c>POST /metering/meters/{id}/deactivate</c> still funnel through here.
+    /// </summary>
+    [Obsolete("Use Archive() instead. Removed in next major release.")]
+    public void Deactivate() => Archive();
+
+    private void EnsureDraft()
+    {
+        if (LifecycleStatus != WorkflowLifecycleStatus.Draft)
+        {
+            throw new InvalidOperationException(
+                $"Meter '{Id}' is in '{LifecycleStatus}' status. Only Draft meters can be modified.");
+        }
+    }
 }

@@ -1173,7 +1173,8 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Metering.Abstractions",
         "Granit.QueryEngine.Abstractions",
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Workflow"
       ],
       "framework": "net10.0"
     },
@@ -24301,7 +24302,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Domain/MeterDefinition.cs",
-      "line": 15,
+      "line": 24,
       "members": [
         {
           "name": "Create",
@@ -24316,10 +24317,16 @@
           "returnType": "string"
         },
         {
+          "name": "Description",
+          "kind": "property",
+          "signature": "string? Description",
+          "returnType": "string?"
+        },
+        {
           "name": "SetProduct",
           "kind": "method",
           "signature": "SetProduct(Guid? productId)",
-          "returnType": "string? Description { get; private set; } public AggregationType AggregationType { get; private set; } public bool Activated { get; private set; } public Guid? ProductId { get; private set; } public void"
+          "returnType": "Guid? ProductId { get; private set; } public void"
         },
         {
           "name": "TenantId",
@@ -24328,15 +24335,15 @@
           "returnType": "Guid?"
         },
         {
+          "name": "GetWorkflowEntityId",
+          "kind": "method",
+          "signature": "GetWorkflowEntityId()",
+          "returnType": "string"
+        },
+        {
           "name": "Update",
           "kind": "method",
           "signature": "Update(string name, string unit, string? description)",
-          "returnType": "void"
-        },
-        {
-          "name": "Activate",
-          "kind": "method",
-          "signature": "Activate()",
           "returnType": "void"
         }
       ]
@@ -24438,7 +24445,7 @@
       "kind": "record",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionResponse.cs",
-      "line": 17,
+      "line": 27,
       "members": []
     },
     {
@@ -24698,7 +24705,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/GranitMeteringModule.cs",
-      "line": 16,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",

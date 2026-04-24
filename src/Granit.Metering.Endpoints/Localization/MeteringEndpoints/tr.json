@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "Ölçümleme",
     "Permission:Metering.Meters.Read": "Sayaç tanımlarını görüntüle",
-    "Permission:Metering.Meters.Manage": "Sayaç tanımlarını yönet (oluştur, güncelle, devre dışı bırak)",
+    "Permission:Metering.Meters.Manage": "Sayaç tanımlarını yönet (oluştur, güncelle, yayınla, arşivle)",
     "Permission:Metering.Usage.Read": "Kullanım verilerini ve kota durumunu görüntüle",
     "Permission:Metering.Usage.Record": "Kullanım olaylarını kaydet"
   }

@@ -3,6 +3,7 @@ using Granit.Metering.Domain.ValueObjects;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
+using Granit.Workflow.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Metering.EntityFrameworkCore.Internal;
@@ -22,6 +23,7 @@ internal sealed class EfMeterDefinitionReader(
             .ConfigureAwait(false), cancellationToken);
 
     public Task<IReadOnlyList<MeterDefinition>> GetActiveAsync(CancellationToken cancellationToken = default) =>
-        // IActive query filter handles the Activated = true predicate.
-        ListAsync(Spec.For<MeterDefinition>(), cancellationToken);
+        ListAsync(
+            Spec.For<MeterDefinition>().Where(m => m.LifecycleStatus == WorkflowLifecycleStatus.Published),
+            cancellationToken);
 }

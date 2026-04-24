@@ -25,7 +25,7 @@ public sealed class MeterDefinitionQueryDefinition : QueryDefinition<MeterDefini
             .Column(m => m.Name, c => c.Label("Name").LabelKey("Metering.Columns.Name").Filterable().Sortable())
             .Column(m => m.Unit, c => c.Label("Unit").LabelKey("Metering.Columns.Unit").Filterable().Sortable())
             .Column(m => m.AggregationType, c => c.Label("Aggregation").LabelKey("Metering.Columns.AggregationType").Filterable().Sortable())
-            .Column(m => m.Activated, c => c.Label("Activated").LabelKey("Metering.Columns.Activated").Filterable().Sortable())
+            .Column(m => m.LifecycleStatus, c => c.Label("Status").LabelKey("Metering.Columns.LifecycleStatus").Filterable().Sortable())
             .Column(m => m.CreatedAt, c => c.Label("Created At").LabelKey("Metering.Columns.CreatedAt").Sortable())
             .Column(m => m.ModifiedAt, c => c.Label("Modified At").LabelKey("Metering.Columns.ModifiedAt").Sortable())
             .GlobalSearch(m => m.Name, m => m.Unit)

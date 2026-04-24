@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "Metering",
     "Permission:Metering.Meters.Read": "View meter definitions",
-    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, deactivate)",
+    "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, publish, archive)",
     "Permission:Metering.Usage.Read": "View usage data and quota status",
     "Permission:Metering.Usage.Record": "Record usage events"
   }

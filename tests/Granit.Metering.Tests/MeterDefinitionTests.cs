@@ -1,5 +1,6 @@
 using Granit.Metering.Domain;
 using Granit.Metering.Domain.ValueObjects;
+using Granit.Workflow.Domain;
 using Shouldly;
 using Xunit;
 
@@ -17,7 +18,10 @@ public sealed class MeterDefinitionTests
         meter.Unit.ShouldBe("requests");
         meter.AggregationType.ShouldBe(AggregationType.Sum);
         meter.Description.ShouldBe("HTTP requests");
-        meter.Activated.ShouldBeTrue();
+        meter.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Draft);
+#pragma warning disable CS0618
+        meter.Activated.ShouldBeFalse();
+#pragma warning restore CS0618
     }
 
     [Fact]
@@ -35,7 +39,7 @@ public sealed class MeterDefinitionTests
     }
 
     [Fact]
-    public void Update_ShouldChangeProperties()
+    public void Update_OnDraft_ShouldChangeProperties()
     {
         var meter = MeterDefinition.Create(
             Guid.NewGuid(), "Old", "old", AggregationType.Sum);
@@ -48,26 +52,84 @@ public sealed class MeterDefinitionTests
     }
 
     [Fact]
-    public void Deactivate_ShouldSetInactive()
+    public void Update_OnPublished_ShouldThrow()
     {
         var meter = MeterDefinition.Create(
-            Guid.NewGuid(), "Test", "unit", AggregationType.Count);
+            Guid.NewGuid(), "Old", "old", AggregationType.Sum);
+        meter.Publish();
 
-        meter.Deactivate();
-
-        meter.Activated.ShouldBeFalse();
+        Should.Throw<InvalidOperationException>(() => meter.Update("New", "new", null));
     }
 
     [Fact]
-    public void Activate_AfterDeactivate_ShouldRestore()
+    public void Publish_FromDraft_ShouldTransitionToPublished()
     {
         var meter = MeterDefinition.Create(
             Guid.NewGuid(), "Test", "unit", AggregationType.Count);
-        meter.Deactivate();
 
-        meter.Activate();
+        meter.Publish();
 
+        meter.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Published);
+#pragma warning disable CS0618
         meter.Activated.ShouldBeTrue();
+#pragma warning restore CS0618
+    }
+
+    [Fact]
+    public void Publish_FromPublished_ShouldThrow()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "Test", "unit", AggregationType.Count);
+        meter.Publish();
+
+        Should.Throw<InvalidOperationException>(() => meter.Publish());
+    }
+
+    [Fact]
+    public void Archive_FromPublished_ShouldTransitionToArchived()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "Test", "unit", AggregationType.Count);
+        meter.Publish();
+
+        meter.Archive();
+
+        meter.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Archived);
+#pragma warning disable CS0618
+        meter.Activated.ShouldBeFalse();
+#pragma warning restore CS0618
+    }
+
+    [Fact]
+    public void Archive_FromDraft_ShouldThrow()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "Test", "unit", AggregationType.Count);
+
+        Should.Throw<InvalidOperationException>(() => meter.Archive());
+    }
+
+    [Fact]
+    public void DeactivateAlias_ShouldArchivePublishedMeter()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "Test", "unit", AggregationType.Count);
+        meter.Publish();
+
+#pragma warning disable CS0618
+        meter.Deactivate();
+#pragma warning restore CS0618
+
+        meter.LifecycleStatus.ShouldBe(WorkflowLifecycleStatus.Archived);
+    }
+
+    [Fact]
+    public void GetWorkflowEntityId_ShouldReturnIdAsString()
+    {
+        var id = Guid.NewGuid();
+        var meter = MeterDefinition.Create(id, "Test", "unit", AggregationType.Count);
+
+        meter.GetWorkflowEntityId().ShouldBe(id.ToString());
     }
 
     [Fact]

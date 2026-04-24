@@ -54,13 +54,14 @@ public sealed class UsageEndpointsIdempotencyTests : IAsyncDisposable
 
     public UsageEndpointsIdempotencyTests()
     {
-        // Active meter required so the handler proceeds past the existence/active checks.
+        // Published meter required so the handler proceeds past the lifecycle ingestion gate.
         var activeMeter = MeterDefinition.Create(
             id: MeterId,
             name: "test.meter",
             unit: "call",
             aggregationType: AggregationType.Count,
             description: null);
+        activeMeter.Publish();
 
         _reader
             .GetByIdAsync(Arg.Any<MeterDefinitionId>(), Arg.Any<CancellationToken>())

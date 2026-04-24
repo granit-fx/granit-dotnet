@@ -17,13 +17,13 @@ internal static class MeterDefinitionEndpoints
 {
     internal static RouteGroupBuilder MapMeterDefinitionEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/meters", ListActiveMetersAsync)
-            .WithName("ListActiveMeters")
-            .WithSummary("Returns all active meter definitions for the current tenant.")
+        group.MapGet("/meters", ListPublishedMetersAsync)
+            .WithName("ListPublishedMeters")
+            .WithSummary("Returns all published meter definitions for the current tenant.")
             .WithDescription(
-                "Fetches the list of meter definitions that are currently active and accepting events. "
-                + "Inactive meters are excluded from the results. "
-                + "Use the GET by ID endpoint to retrieve a specific meter regardless of status.")
+                "Fetches the list of meter definitions currently in the Published lifecycle state — "
+                + "the only state that accepts ingestion. Draft and Archived meters are excluded; "
+                + "use the GET by ID endpoint to retrieve a specific meter regardless of status.")
             .Produces<IReadOnlyList<MeterDefinitionResponse>>()
             .RequireAuthorization(MeteringPermissions.Meters.Read)
             .AllowHostAccess();
@@ -33,7 +33,7 @@ internal static class MeterDefinitionEndpoints
             .WithSummary("Returns a meter definition by its unique identifier.")
             .WithDescription(
                 "Fetches the full metadata of a meter definition including its aggregation type, unit, "
-                + "and active status. Returns 404 if the meter does not exist.")
+                + "and lifecycle status. Returns 404 if the meter does not exist.")
             .Produces<MeterDefinitionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .RequireAuthorization(MeteringPermissions.Meters.Read)
@@ -44,7 +44,7 @@ internal static class MeterDefinitionEndpoints
             .WithSummary("Creates a new meter definition.")
             .WithDescription(
                 "Creates a meter definition with the specified name, unit, and aggregation type. "
-                + "The meter is created in an active state and immediately accepts events. "
+                + "The meter starts in Draft status; it must be Published before it accepts events. "
                 + "Names must be unique within the tenant scope.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<MeterDefinitionResponse>(StatusCodes.Status201Created)
@@ -53,33 +53,61 @@ internal static class MeterDefinitionEndpoints
 
         group.MapPut("/meters/{id:guid}", UpdateMeterAsync)
             .WithName("UpdateMeterDefinition")
-            .WithSummary("Updates a meter definition.")
+            .WithSummary("Updates a Draft meter definition.")
             .WithDescription(
-                "Updates the name, unit, and description of an existing meter definition. "
+                "Updates the name, unit, and description of a meter definition in Draft status. "
                 + "The aggregation type cannot be changed after creation to preserve data consistency. "
-                + "Returns 404 if the meter does not exist.")
+                + "Returns 404 if the meter does not exist, or 409 if the meter is not in Draft status.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<MeterDefinitionResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
+            .RequireAuthorization(MeteringPermissions.Meters.Manage);
+
+        group.MapPost("/meters/{id:guid}/publish", PublishMeterAsync)
+            .WithName("PublishMeterDefinition")
+            .WithSummary("Publishes a Draft meter definition.")
+            .WithDescription(
+                "Transitions a Draft meter to Published status. Only Published meters accept ingestion. "
+                + "Returns 404 if the meter does not exist, or 409 if the meter is not in Draft status.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .RequireAuthorization(MeteringPermissions.Meters.Manage);
+
+        group.MapPost("/meters/{id:guid}/archive", ArchiveMeterAsync)
+            .WithName("ArchiveMeterDefinition")
+            .WithSummary("Archives a Published meter definition.")
+            .WithDescription(
+                "Transitions a Published meter to Archived status. Existing aggregates and history are preserved; "
+                + "ingestion of new events is rejected. "
+                + "Returns 404 if the meter does not exist, or 409 if the meter is not in Published status.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(MeteringPermissions.Meters.Manage);
 
         group.MapPost("/meters/{id:guid}/deactivate", DeactivateMeterAsync)
             .WithName("DeactivateMeterDefinition")
-            .WithSummary("Deactivates a meter definition.")
+            .WithSummary("[DEPRECATED] Alias for /meters/{id}/archive — will be removed in next major release.")
             .WithDescription(
-                "Marks the meter as inactive so it no longer accepts new events. "
-                + "Existing usage data and aggregates are preserved. "
-                + "Returns 404 if the meter does not exist.")
+                "Deprecated alias for the Archive endpoint, kept for one release to ease migration. "
+                + "Same semantics: transitions a Published meter to Archived. The response carries "
+                + "the standard `Deprecation: true` and `Sunset` headers (RFC 8594). New callers MUST "
+                + "use `POST /meters/{id}/archive` instead.")
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .RequireAuthorization(MeteringPermissions.Meters.Manage);
 
         return group;
     }
 
-    private static async Task<Ok<IReadOnlyList<MeterDefinitionResponse>>> ListActiveMetersAsync(
+    private static async Task<Ok<IReadOnlyList<MeterDefinitionResponse>>> ListPublishedMetersAsync(
         [FromServices] IMeterDefinitionReader reader,
         CancellationToken cancellationToken)
     {
@@ -139,13 +167,21 @@ internal static class MeterDefinitionEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        definition.Update(request.Name, request.Unit, request.Description);
+        try
+        {
+            definition.Update(request.Name, request.Unit, request.Description);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+
         await writer.UpdateAsync(definition, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(MeterDefinitionResponse.FromEntity(definition));
     }
 
-    private static async Task<Results<NoContent, ProblemHttpResult>> DeactivateMeterAsync(
+    private static async Task<Results<NoContent, ProblemHttpResult>> PublishMeterAsync(
         Guid id,
         [FromServices] IMeterDefinitionReader reader,
         [FromServices] IMeterDefinitionWriter writer,
@@ -159,9 +195,58 @@ internal static class MeterDefinitionEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        definition.Deactivate();
-        await writer.UpdateAsync(definition, cancellationToken).ConfigureAwait(false);
+        try
+        {
+            definition.Publish();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
 
+        await writer.UpdateAsync(definition, cancellationToken).ConfigureAwait(false);
         return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> ArchiveMeterAsync(
+        Guid id,
+        [FromServices] IMeterDefinitionReader reader,
+        [FromServices] IMeterDefinitionWriter writer,
+        CancellationToken cancellationToken)
+    {
+        MeterDefinition? definition = await reader
+            .GetByIdAsync(MeterDefinitionId.Create(id), cancellationToken).ConfigureAwait(false);
+
+        if (definition is null)
+        {
+            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+        }
+
+        try
+        {
+            definition.Archive();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+
+        await writer.UpdateAsync(definition, cancellationToken).ConfigureAwait(false);
+        return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> DeactivateMeterAsync(
+        Guid id,
+        HttpContext httpContext,
+        [FromServices] IMeterDefinitionReader reader,
+        [FromServices] IMeterDefinitionWriter writer,
+        CancellationToken cancellationToken)
+    {
+        // RFC 8594 deprecation signal — kept for one release as alias for /archive.
+        httpContext.Response.Headers["Deprecation"] = "true";
+        httpContext.Response.Headers["Sunset"] = "Wed, 31 Dec 2026 23:59:59 GMT";
+        httpContext.Response.Headers["Link"] = "</metering/meters/{id}/archive>; rel=\"successor-version\"";
+
+        return await ArchiveMeterAsync(id, reader, writer, cancellationToken).ConfigureAwait(false);
     }
 }

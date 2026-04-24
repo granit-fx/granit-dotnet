@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "미터링",
     "Permission:Metering.Meters.Read": "미터 정의 조회",
-    "Permission:Metering.Meters.Manage": "미터 정의 관리 (생성, 수정, 비활성화)",
+    "Permission:Metering.Meters.Manage": "미터 정의 관리 (생성, 수정, 게시, 보관)",
     "Permission:Metering.Usage.Read": "사용량 데이터 및 할당량 상태 조회",
     "Permission:Metering.Usage.Record": "사용 이벤트 기록"
   }

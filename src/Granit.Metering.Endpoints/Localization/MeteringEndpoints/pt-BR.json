@@ -3,7 +3,7 @@
   "texts": {
     "PermissionGroup:Metering": "Medição",
     "Permission:Metering.Meters.Read": "Visualizar definições de medidores",
-    "Permission:Metering.Meters.Manage": "Gerenciar definições de medidores (criar, atualizar, desativar)",
+    "Permission:Metering.Meters.Manage": "Gerenciar definições de medidores (criar, atualizar, publicar, arquivar)",
     "Permission:Metering.Usage.Read": "Visualizar dados de uso e status de cotas",
     "Permission:Metering.Usage.Record": "Registrar eventos de uso"
   }
