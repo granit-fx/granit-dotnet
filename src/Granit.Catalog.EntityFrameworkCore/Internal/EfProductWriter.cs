@@ -30,13 +30,14 @@ internal sealed class EfProductWriter(
 
             db.Set<Product>().Update(product);
 
-            foreach (EntityEntry<ProductExternalMapping> entry in db.ChangeTracker.Entries<ProductExternalMapping>())
+            IEnumerable<EntityEntry<ProductExternalMapping>> orphans = db.ChangeTracker
+                .Entries<ProductExternalMapping>()
+                .Where(entry => entry.State == EntityState.Modified
+                                && !existingMappingIds.Contains(entry.Entity.Id));
+
+            foreach (EntityEntry<ProductExternalMapping> entry in orphans)
             {
-                if (entry.State == EntityState.Modified
-                    && !existingMappingIds.Contains(entry.Entity.Id))
-                {
-                    entry.State = EntityState.Added;
-                }
+                entry.State = EntityState.Added;
             }
         }, cancellationToken);
 }

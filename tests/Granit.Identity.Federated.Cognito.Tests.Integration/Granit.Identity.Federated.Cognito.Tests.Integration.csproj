@@ -8,6 +8,13 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="WireMock.Net" />
+    <!--
+      Promotes the OpenTelemetry.Exporter.OpenTelemetryProtocol transitive (pinned
+      to 1.14.0 by WireMock.Net 1.25.0) to a direct dep so the central 1.15.* floor
+      wins. 1.14.0 is flagged by GHSA-mr8r-92fq-pj8p and GHSA-q834-8qmm-v933 and
+      breaks NU1902-as-error in CI. Remove once WireMock bumps its dependency.
+    -->
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />

@@ -15,73 +15,49 @@ public sealed class CatalogMetricsTests
     [Fact]
     public void RecordProductCreated_ShouldEmit_OneCount()
     {
-        CatalogMetrics metrics = BuildMetrics(out MeterListener listener, "granit.catalog.product.created", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        CatalogMetrics metrics = BuildMetrics(out MeterListener rawListener, "granit.catalog.product.created", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        using MeterListener listener = rawListener;
 
-        try
-        {
-            metrics.RecordProductCreated(tenantId: "tenant-1");
+        metrics.RecordProductCreated(tenantId: "tenant-1");
 
-            captured.ShouldHaveSingleItem();
-            captured[0].Value.ShouldBe(1);
-        }
-        finally
-        {
-            listener.Dispose();
-        }
+        captured.ShouldHaveSingleItem();
+        captured[0].Value.ShouldBe(1);
     }
 
     [Fact]
     public void RecordProductPublished_ShouldTagWithTenantId()
     {
-        CatalogMetrics metrics = BuildMetrics(out MeterListener listener, "granit.catalog.product.published", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        CatalogMetrics metrics = BuildMetrics(out MeterListener rawListener, "granit.catalog.product.published", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        using MeterListener listener = rawListener;
 
-        try
-        {
-            metrics.RecordProductPublished(tenantId: "tenant-42");
+        metrics.RecordProductPublished(tenantId: "tenant-42");
 
-            captured.ShouldHaveSingleItem();
-            captured[0].Tags.ShouldContain(t => t.Key == "tenant_id" && (string?)t.Value == "tenant-42");
-        }
-        finally
-        {
-            listener.Dispose();
-        }
+        captured.ShouldHaveSingleItem();
+        captured[0].Tags.ShouldContain(t => t.Key == "tenant_id" && (string?)t.Value == "tenant-42");
     }
 
     [Fact]
     public void RecordProductPublished_WithNullTenant_ShouldUseGlobalTag()
     {
-        CatalogMetrics metrics = BuildMetrics(out MeterListener listener, "granit.catalog.product.published", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        CatalogMetrics metrics = BuildMetrics(out MeterListener rawListener, "granit.catalog.product.published", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        using MeterListener listener = rawListener;
 
-        try
-        {
-            metrics.RecordProductPublished(tenantId: null);
+        metrics.RecordProductPublished(tenantId: null);
 
-            captured.ShouldHaveSingleItem();
-            captured[0].Tags.ShouldContain(t => t.Key == "tenant_id" && (string?)t.Value == "global");
-        }
-        finally
-        {
-            listener.Dispose();
-        }
+        captured.ShouldHaveSingleItem();
+        captured[0].Tags.ShouldContain(t => t.Key == "tenant_id" && (string?)t.Value == "global");
     }
 
     [Fact]
     public void RecordExternalMappingAdded_ShouldTagWithProvider()
     {
-        CatalogMetrics metrics = BuildMetrics(out MeterListener listener, "granit.catalog.product.external_mapping.added", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        CatalogMetrics metrics = BuildMetrics(out MeterListener rawListener, "granit.catalog.product.external_mapping.added", out List<(long Value, IReadOnlyList<KeyValuePair<string, object?>> Tags)> captured);
+        using MeterListener listener = rawListener;
 
-        try
-        {
-            metrics.RecordExternalMappingAdded(tenantId: null, providerName: "stripe");
+        metrics.RecordExternalMappingAdded(tenantId: null, providerName: "stripe");
 
-            captured.ShouldHaveSingleItem();
-            captured[0].Tags.ShouldContain(t => t.Key == "provider" && (string?)t.Value == "stripe");
-        }
-        finally
-        {
-            listener.Dispose();
-        }
+        captured.ShouldHaveSingleItem();
+        captured[0].Tags.ShouldContain(t => t.Key == "provider" && (string?)t.Value == "stripe");
     }
 
     [Fact]
