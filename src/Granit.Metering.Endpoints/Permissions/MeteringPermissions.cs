@@ -25,4 +25,17 @@ public static class MeteringPermissions
         /// <summary>Record usage events.</summary>
         public const string Record = "Metering.Usage.Record";
     }
+
+    /// <summary>Raw <c>MeterEvent</c> administrative permissions.</summary>
+    public static class Events
+    {
+        /// <summary>
+        /// Manage individual meter events — currently used by the soft-deprecation
+        /// endpoint. Deliberately separated from <see cref="Usage.Record"/> (which
+        /// gates ingestion) because deprecation is destructive at the billing-data
+        /// level and must be restricted to admins (ISO 27001 A.9.4 — least
+        /// privilege on event tampering operations).
+        /// </summary>
+        public const string Manage = "Metering.Events.Manage";
+    }
 }

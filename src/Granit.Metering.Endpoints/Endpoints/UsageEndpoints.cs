@@ -5,6 +5,7 @@ using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
+using Granit.Metering.Recompute;
 using Granit.MultiTenancy;
 using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
@@ -63,6 +64,23 @@ internal static class UsageEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(MeteringPermissions.Usage.Record);
+
+        group.MapPost("/events/{id:guid}/deprecate", DeprecateEventAsync)
+            .WithName("DeprecateMeterEvent")
+            .WithSummary("Soft-deprecates a single meter event so it stops contributing to aggregates.")
+            .WithDescription(
+                "Marks the event as deprecated (audit-safe alternative to DELETE; ISO 27001 A.12.4 keeps the row "
+                + "for the audit trail) and triggers an automatic recompute on the affected hourly bucket so the "
+                + "UsageAggregate immediately reflects the change. "
+                + "Returns 404 if the event does not exist; 409 if the event is already deprecated. "
+                + "The original IdempotencyKey remains reserved by the unique index — re-ingestion is rejected, "
+                + "preventing accidental resurrection of the deprecated event.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<DeprecateEventResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem()
+            .RequireAuthorization(MeteringPermissions.Events.Manage);
 
         return group;
     }
@@ -161,5 +179,38 @@ internal static class UsageEndpoints
         await recorder.RecordBatchAsync(events, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<Ok<DeprecateEventResponse>, ProblemHttpResult>> DeprecateEventAsync(
+        Guid id,
+        DeprecateEventRequest request,
+        [FromServices] IMeterEventDeprecationService service,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            MeterEventDeprecationResult result = await service
+                .DeprecateAsync(id, request.Reason, cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.Ok(new DeprecateEventResponse(
+                result.EventId,
+                result.MeterDefinitionId,
+                result.DeprecatedAt,
+                result.Recompute.AggregatesRebuilt));
+        }
+        catch (MeterEventNotFoundException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status404NotFound);
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Raised by MeterEvent.Deprecate when the event is already deprecated.
+            return TypedResults.Problem(
+                detail: ex.Message,
+                statusCode: StatusCodes.Status409Conflict);
+        }
     }
 }

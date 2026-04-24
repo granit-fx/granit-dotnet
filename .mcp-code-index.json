@@ -24367,6 +24367,12 @@
           "kind": "property",
           "signature": "decimal Quantity",
           "returnType": "decimal"
+        },
+        {
+          "name": "Deprecate",
+          "kind": "method",
+          "signature": "Deprecate(string reason, DateTimeOffset now)",
+          "returnType": "void"
         }
       ]
     },
@@ -24429,6 +24435,24 @@
           "returnType": "QuotaStatus"
         }
       ]
+    },
+    {
+      "name": "DeprecateEventRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "DeprecateEventResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventResponse.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "MeterDefinitionCreateRequest",
@@ -24557,6 +24581,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Events",
+      "fqn": "Granit.Metering.Endpoints.Permissions.Events",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Permissions/MeteringPermissions.cs",
+      "line": 30,
+      "members": []
     },
     {
       "name": "MeteringPermissions",
@@ -24952,6 +24985,22 @@
       ]
     },
     {
+      "name": "IMeterEventDeprecationService",
+      "fqn": "Granit.Metering.Recompute.IMeterEventDeprecationService",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DeprecateAsync",
+          "kind": "method",
+          "signature": "DeprecateAsync(Guid eventId, string reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task<MeterEventDeprecationResult>"
+        }
+      ]
+    },
+    {
       "name": "IUsageRecomputeService",
       "fqn": "Granit.Metering.Recompute.IUsageRecomputeService",
       "kind": "interface",
@@ -24966,6 +25015,24 @@
           "returnType": "Task<UsageRecomputeResult>"
         }
       ]
+    },
+    {
+      "name": "MeterEventDeprecationResult",
+      "fqn": "Granit.Metering.Recompute.MeterEventDeprecationResult",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "MeterEventNotFoundException",
+      "fqn": "Granit.Metering.Recompute.MeterEventNotFoundException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/MeterEventNotFoundException.cs",
+      "line": 4,
+      "members": []
     },
     {
       "name": "UsageRecomputeRejectedException",
