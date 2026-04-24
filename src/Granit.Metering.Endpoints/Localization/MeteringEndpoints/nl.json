@@ -1,10 +1,11 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Metering": "Metrologie",
-    "Permission:Metering.Meters.Read": "Meterdefinities bekijken",
+    "Permission:Metering.Events.Backfill": "Historische meterevents inladen buiten het standaard ingestievenster (tot 365 dagen)",
     "Permission:Metering.Meters.Manage": "Meterdefinities beheren (aanmaken, bijwerken, publiceren, archiveren)",
+    "Permission:Metering.Meters.Read": "Meterdefinities bekijken",
     "Permission:Metering.Usage.Read": "Gebruiksgegevens en quotumstatus bekijken",
-    "Permission:Metering.Usage.Record": "Gebruiksgebeurtenissen registreren"
+    "Permission:Metering.Usage.Record": "Gebruiksgebeurtenissen registreren",
+    "PermissionGroup:Metering": "Metrologie"
   }
 }

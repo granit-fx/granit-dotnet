@@ -25,4 +25,17 @@ public static class MeteringPermissions
         /// <summary>Record usage events.</summary>
         public const string Record = "Metering.Usage.Record";
     }
+
+    /// <summary>Raw <c>MeterEvent</c> administrative permissions.</summary>
+    public static class Events
+    {
+        /// <summary>
+        /// Backfill historical events older than the standard 7-day ingestion
+        /// window (up to 365 days). Deliberately separated from
+        /// <see cref="Usage.Record"/> because backfilling triggers automatic
+        /// recomputes on past <c>UsageAggregate</c> rows — destructive at the
+        /// billing-data level (ISO 27001 A.9.4 — least privilege).
+        /// </summary>
+        public const string Backfill = "Metering.Events.Backfill";
+    }
 }

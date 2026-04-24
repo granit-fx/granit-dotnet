@@ -1,10 +1,11 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Metering": "मीटरिंग",
-    "Permission:Metering.Meters.Read": "मीटर परिभाषाएँ देखें",
+    "Permission:Metering.Events.Backfill": "मानक इनजेशन विंडो से पुराने ऐतिहासिक मीटर इवेंट जोड़ें (365 दिनों तक)",
     "Permission:Metering.Meters.Manage": "मीटर परिभाषाएँ प्रबंधित करें (बनाएँ, अपडेट करें, प्रकाशित करें, संग्रहीत करें)",
+    "Permission:Metering.Meters.Read": "मीटर परिभाषाएँ देखें",
     "Permission:Metering.Usage.Read": "उपयोग डेटा और कोटा स्थिति देखें",
-    "Permission:Metering.Usage.Record": "उपयोग इवेंट रिकॉर्ड करें"
+    "Permission:Metering.Usage.Record": "उपयोग इवेंट रिकॉर्ड करें",
+    "PermissionGroup:Metering": "मीटरिंग"
   }
 }

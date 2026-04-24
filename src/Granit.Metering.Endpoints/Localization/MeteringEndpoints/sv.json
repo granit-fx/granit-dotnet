@@ -1,10 +1,11 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Metering": "Mätning",
-    "Permission:Metering.Meters.Read": "Visa mätardefinitioner",
+    "Permission:Metering.Events.Backfill": "Fyll i historiska mätarhändelser bortom standardingestionsfönstret (upp till 365 dagar)",
     "Permission:Metering.Meters.Manage": "Hantera mätardefinitioner (skapa, uppdatera, publicera, arkivera)",
+    "Permission:Metering.Meters.Read": "Visa mätardefinitioner",
     "Permission:Metering.Usage.Read": "Visa användningsdata och kvotstatus",
-    "Permission:Metering.Usage.Record": "Registrera användningshändelser"
+    "Permission:Metering.Usage.Record": "Registrera användningshändelser",
+    "PermissionGroup:Metering": "Mätning"
   }
 }

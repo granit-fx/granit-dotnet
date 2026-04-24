@@ -9,6 +9,9 @@ internal sealed class RecordUsageRequestValidator : AbstractValidator<RecordUsag
 {
     internal const int MaxBatchSize = 1000;
 
+    /// <summary>Max event age accepted by the standard ingestion endpoint.</summary>
+    internal static readonly TimeSpan StandardMaxAge = TimeSpan.FromDays(7);
+
     public RecordUsageRequestValidator(IClock clock)
     {
         RuleFor(x => x.Events)
@@ -17,13 +20,13 @@ internal sealed class RecordUsageRequestValidator : AbstractValidator<RecordUsag
             .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.Events)
-            .SetValidator(new MeterEventRequestValidator(clock));
+            .SetValidator(new MeterEventRequestValidator(clock, StandardMaxAge));
     }
 }
 
 internal sealed class MeterEventRequestValidator : AbstractValidator<MeterEventRequest>
 {
-    public MeterEventRequestValidator(IClock clock)
+    public MeterEventRequestValidator(IClock clock, TimeSpan maxAge)
     {
         RuleFor(x => x.MeterDefinitionId)
             .NotEmpty();
@@ -38,7 +41,7 @@ internal sealed class MeterEventRequestValidator : AbstractValidator<MeterEventR
         RuleFor(x => x.Timestamp)
             .NotEmpty()
             .LessThanOrEqualTo(clock.Now.AddMinutes(5))
-            .GreaterThan(clock.Now.AddDays(-7));
+            .GreaterThan(clock.Now - maxAge);
 
         RuleFor(x => x.Metadata)
             .MaximumLength(4000)

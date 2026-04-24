@@ -1,10 +1,11 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:Metering": "Medição",
-    "Permission:Metering.Meters.Read": "Visualizar definições de medidores",
+    "Permission:Metering.Events.Backfill": "Reinserir eventos históricos do medidor além da janela padrão de ingestão (até 365 dias)",
     "Permission:Metering.Meters.Manage": "Gerenciar definições de medidores (criar, atualizar, publicar, arquivar)",
+    "Permission:Metering.Meters.Read": "Visualizar definições de medidores",
     "Permission:Metering.Usage.Read": "Visualizar dados de uso e status de cotas",
-    "Permission:Metering.Usage.Record": "Registrar eventos de uso"
+    "Permission:Metering.Usage.Record": "Registrar eventos de uso",
+    "PermissionGroup:Metering": "Medição"
   }
 }

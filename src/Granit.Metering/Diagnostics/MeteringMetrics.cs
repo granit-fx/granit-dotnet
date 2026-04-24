@@ -22,6 +22,7 @@ public sealed class MeteringMetrics
     private readonly Counter<long> _quotaThresholdsReached;
     private readonly Counter<long> _quotasExceeded;
     private readonly Counter<long> _recomputesExecuted;
+    private readonly Counter<long> _backfillsIngested;
 
     /// <summary>Initializes metering metrics using the specified meter factory.</summary>
     public MeteringMetrics(IMeterFactory meterFactory)
@@ -51,6 +52,10 @@ public sealed class MeteringMetrics
         _recomputesExecuted = meter.CreateCounter<long>(
             "granit.metering.recomputes.executed",
             description: "Number of on-demand UsageAggregate recompute operations executed.");
+
+        _backfillsIngested = meter.CreateCounter<long>(
+            "granit.metering.backfills.events_ingested",
+            description: "Number of historical events accepted by the backfill endpoint.");
     }
 
     /// <summary>Records a meter event insertion.</summary>
@@ -118,5 +123,15 @@ public sealed class MeteringMetrics
             { "aggregates_rebuilt", aggregatesRebuilt },
         };
         _recomputesExecuted.Add(1, tags);
+    }
+
+    /// <summary>Records a backfill batch (counter incremented by the number of events ingested).</summary>
+    public void RecordBackfill(string? tenantId, long eventCount)
+    {
+        var tags = new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenant },
+        };
+        _backfillsIngested.Add(eventCount, tags);
     }
 }
