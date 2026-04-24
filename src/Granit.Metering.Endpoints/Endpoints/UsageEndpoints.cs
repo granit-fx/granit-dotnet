@@ -5,6 +5,7 @@ using Granit.Metering.Domain.ValueObjects;
 using Granit.Metering.Dtos;
 using Granit.Metering.Endpoints.Dtos;
 using Granit.Metering.Endpoints.Permissions;
+using Granit.Metering.Recompute;
 using Granit.MultiTenancy;
 using Granit.Workflow.Domain;
 using Microsoft.AspNetCore.Builder;
@@ -63,6 +64,22 @@ internal static class UsageEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(MeteringPermissions.Usage.Record);
+
+        group.MapPost("/events/backfill", BackfillUsageEventsAsync)
+            .WithName("BackfillUsageEvents")
+            .WithSummary("Inserts historical usage events older than the standard 7-day ingestion window.")
+            .WithDescription(
+                "Accepts a batch of historical usage events with timestamps up to 365 days in the past "
+                + "(future timestamps are still rejected). Events are deduplicated via the per-tenant unique "
+                + "(TenantId, IdempotencyKey) index — duplicates are silently ignored. After insertion, the "
+                + "service groups events by meter and triggers an automatic recompute over each meter's spanning "
+                + "window so existing UsageAggregate rows immediately reflect the backfilled data. "
+                + "Idempotent at the HTTP layer via the standard Idempotency-Key header.")
+            .WithMetadata(new IdempotentAttribute { Required = false })
+            .Produces<BackfillUsageResponse>()
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .RequireAuthorization(MeteringPermissions.Events.Backfill);
 
         return group;
     }
@@ -161,5 +178,74 @@ internal static class UsageEndpoints
         await recorder.RecordBatchAsync(events, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.NoContent();
+    }
+
+    private static async Task<Results<Ok<BackfillUsageResponse>, ProblemHttpResult>> BackfillUsageEventsAsync(
+        BackfillUsageRequest request,
+        [FromServices] IUsageBackfillService backfillService,
+        [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IMeterDefinitionReader definitionReader,
+        CancellationToken cancellationToken)
+    {
+        if (!currentTenant.IsAvailable)
+        {
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        // Reject upfront if any referenced meter is missing or not Published. The
+        // recompute pass would also reject Archived meters, but catching it here gives
+        // a clean 422 with the offending id rather than a recompute error mid-batch.
+        var meterIds = request.Events.Select(e => e.MeterDefinitionId).Distinct().ToList();
+        foreach (Guid mid in meterIds)
+        {
+            MeterDefinition? def = await definitionReader
+                .GetByIdAsync(MeterDefinitionId.Create(mid), cancellationToken)
+                .ConfigureAwait(false);
+
+            if (def is null)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+
+            if (def.LifecycleStatus != WorkflowLifecycleStatus.Published)
+            {
+                return TypedResults.Problem(
+                    detail: $"Meter definition '{mid}' is in '{def.LifecycleStatus}' status. "
+                        + "Only Published meters accept backfill.",
+                    statusCode: StatusCodes.Status422UnprocessableEntity);
+            }
+        }
+
+        var events = request.Events
+            .Select(e => MeterEvent.Create(
+                guidGenerator.Create(),
+                e.MeterDefinitionId,
+                e.IdempotencyKey,
+                e.Quantity,
+                e.Timestamp,
+                e.Metadata))
+            .ToList();
+
+        try
+        {
+            UsageBackfillResult result = await backfillService
+                .BackfillAsync(events, cancellationToken)
+                .ConfigureAwait(false);
+
+            return TypedResults.Ok(new BackfillUsageResponse(
+                result.EventsAccepted,
+                result.MetersAffected,
+                result.AggregatesRebuilt));
+        }
+        catch (UsageRecomputeRejectedException ex)
+        {
+            return TypedResults.Problem(
+                detail: ex.Message,
+                title: ex.ReasonCode,
+                statusCode: StatusCodes.Status422UnprocessableEntity);
+        }
     }
 }

@@ -1,10 +1,11 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Metering": "Pomiary",
-    "Permission:Metering.Meters.Read": "Wyświetlanie definicji mierników",
+    "Permission:Metering.Events.Backfill": "Wstawianie historycznych zdarzeń miernika poza standardowym oknem (do 365 dni)",
     "Permission:Metering.Meters.Manage": "Zarządzanie definicjami mierników (tworzenie, aktualizacja, publikacja, archiwizacja)",
+    "Permission:Metering.Meters.Read": "Wyświetlanie definicji mierników",
     "Permission:Metering.Usage.Read": "Wyświetlanie danych o użyciu i stanu limitów",
-    "Permission:Metering.Usage.Record": "Rejestrowanie zdarzeń użycia"
+    "Permission:Metering.Usage.Record": "Rejestrowanie zdarzeń użycia",
+    "PermissionGroup:Metering": "Pomiary"
   }
 }

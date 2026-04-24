@@ -1,10 +1,11 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Metering": "Metrologia",
-    "Permission:Metering.Meters.Read": "Visualizzare le definizioni dei contatori",
+    "Permission:Metering.Events.Backfill": "Inserire eventi storici oltre la finestra di ingestione standard (fino a 365 giorni)",
     "Permission:Metering.Meters.Manage": "Gestire le definizioni dei contatori (creare, aggiornare, pubblicare, archiviare)",
+    "Permission:Metering.Meters.Read": "Visualizzare le definizioni dei contatori",
     "Permission:Metering.Usage.Read": "Visualizzare i dati di utilizzo e lo stato delle quote",
-    "Permission:Metering.Usage.Record": "Registrare eventi di utilizzo"
+    "Permission:Metering.Usage.Record": "Registrare eventi di utilizzo",
+    "PermissionGroup:Metering": "Metrologia"
   }
 }

@@ -1,10 +1,11 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Metering": "Měření",
-    "Permission:Metering.Meters.Read": "Zobrazit definice měřičů",
+    "Permission:Metering.Events.Backfill": "Doplnění historických událostí měřiče mimo standardní okno (až 365 dní)",
     "Permission:Metering.Meters.Manage": "Spravovat definice měřičů (vytvořit, aktualizovat, publikovat, archivovat)",
+    "Permission:Metering.Meters.Read": "Zobrazit definice měřičů",
     "Permission:Metering.Usage.Read": "Zobrazit data o využití a stav kvót",
-    "Permission:Metering.Usage.Record": "Zaznamenat události využití"
+    "Permission:Metering.Usage.Record": "Zaznamenat události využití",
+    "PermissionGroup:Metering": "Měření"
   }
 }

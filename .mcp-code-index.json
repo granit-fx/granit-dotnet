@@ -24431,6 +24431,24 @@
       ]
     },
     {
+      "name": "BackfillUsageRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.BackfillUsageRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/BackfillUsageRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BackfillUsageResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.BackfillUsageResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/BackfillUsageRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "MeterDefinitionCreateRequest",
       "fqn": "Granit.Metering.Endpoints.Dtos.MeterDefinitionCreateRequest",
       "kind": "record",
@@ -24557,6 +24575,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Events",
+      "fqn": "Granit.Metering.Endpoints.Permissions.Events",
+      "kind": "class",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Permissions/MeteringPermissions.cs",
+      "line": 30,
+      "members": []
     },
     {
       "name": "MeteringPermissions",
@@ -24952,6 +24979,22 @@
       ]
     },
     {
+      "name": "IUsageBackfillService",
+      "fqn": "Granit.Metering.Recompute.IUsageBackfillService",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IUsageBackfillService.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "BackfillAsync",
+          "kind": "method",
+          "signature": "BackfillAsync(IReadOnlyList<MeterEvent> events, CancellationToken cancellationToken = default)",
+          "returnType": "Task<UsageBackfillResult>"
+        }
+      ]
+    },
+    {
       "name": "IUsageRecomputeService",
       "fqn": "Granit.Metering.Recompute.IUsageRecomputeService",
       "kind": "interface",
@@ -24966,6 +25009,15 @@
           "returnType": "Task<UsageRecomputeResult>"
         }
       ]
+    },
+    {
+      "name": "UsageBackfillResult",
+      "fqn": "Granit.Metering.Recompute.UsageBackfillResult",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IUsageBackfillService.cs",
+      "line": 30,
+      "members": []
     },
     {
       "name": "UsageRecomputeRejectedException",

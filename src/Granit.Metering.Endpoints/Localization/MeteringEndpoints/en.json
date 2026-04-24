@@ -1,10 +1,11 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Metering": "Metering",
-    "Permission:Metering.Meters.Read": "View meter definitions",
+    "Permission:Metering.Events.Backfill": "Backfill historical meter events older than the standard ingestion window (up to 365 days)",
     "Permission:Metering.Meters.Manage": "Manage meter definitions (create, update, publish, archive)",
+    "Permission:Metering.Meters.Read": "View meter definitions",
     "Permission:Metering.Usage.Read": "View usage data and quota status",
-    "Permission:Metering.Usage.Record": "Record usage events"
+    "Permission:Metering.Usage.Record": "Record usage events",
+    "PermissionGroup:Metering": "Metering"
   }
 }

@@ -1,10 +1,11 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Metering": "Messtechnik",
-    "Permission:Metering.Meters.Read": "Zählerdefinitionen anzeigen",
+    "Permission:Metering.Events.Backfill": "Historische Zählerereignisse jenseits des Standard-Ingestionsfensters einspielen (bis zu 365 Tage)",
     "Permission:Metering.Meters.Manage": "Zählerdefinitionen verwalten (erstellen, aktualisieren, veröffentlichen, archivieren)",
+    "Permission:Metering.Meters.Read": "Zählerdefinitionen anzeigen",
     "Permission:Metering.Usage.Read": "Nutzungsdaten und Kontingentstatus anzeigen",
-    "Permission:Metering.Usage.Record": "Nutzungsereignisse erfassen"
+    "Permission:Metering.Usage.Record": "Nutzungsereignisse erfassen",
+    "PermissionGroup:Metering": "Messtechnik"
   }
 }

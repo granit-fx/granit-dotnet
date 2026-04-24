@@ -1,10 +1,11 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Metering": "Ölçümleme",
-    "Permission:Metering.Meters.Read": "Sayaç tanımlarını görüntüle",
+    "Permission:Metering.Events.Backfill": "Standart alım penceresinin ötesindeki geçmiş sayaç olaylarını geri doldur (365 güne kadar)",
     "Permission:Metering.Meters.Manage": "Sayaç tanımlarını yönet (oluştur, güncelle, yayınla, arşivle)",
+    "Permission:Metering.Meters.Read": "Sayaç tanımlarını görüntüle",
     "Permission:Metering.Usage.Read": "Kullanım verilerini ve kota durumunu görüntüle",
-    "Permission:Metering.Usage.Record": "Kullanım olaylarını kaydet"
+    "Permission:Metering.Usage.Record": "Kullanım olaylarını kaydet",
+    "PermissionGroup:Metering": "Ölçümleme"
   }
 }
