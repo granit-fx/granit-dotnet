@@ -514,6 +514,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
+          "OpenTelemetry.Api": "[1.15.*, )",
           "ZiggyCreatures.FusionCache": "[2.*, )",
           "ZiggyCreatures.FusionCache.OpenTelemetry": "[2.*, )",
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"

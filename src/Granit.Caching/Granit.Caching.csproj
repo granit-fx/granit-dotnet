@@ -23,6 +23,14 @@
     <PackageReference Include="ZiggyCreatures.FusionCache" />
     <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" />
     <PackageReference Include="ZiggyCreatures.FusionCache.OpenTelemetry" />
+    <!--
+      Forces the central OpenTelemetry.Api floor (1.15.*) to win against the exact
+      transitive pin in ZiggyCreatures.FusionCache.OpenTelemetry 2.6.0 (which
+      requests OpenTelemetry.Api 1.14.0 — flagged by GHSA-g94r-2vxg-569j as a
+      moderate-severity vulnerability and broken by NU1902-as-error in CI).
+      Remove once Ziggy bumps its dependency.
+    -->
+    <PackageReference Include="OpenTelemetry.Api" />
   </ItemGroup>
 
   <ItemGroup>
