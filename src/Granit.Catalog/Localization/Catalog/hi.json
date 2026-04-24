@@ -1,0 +1,13 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "नाम",
+    "Catalog.Columns.Description": "विवरण",
+    "Catalog.Columns.Type": "प्रकार",
+    "Catalog.Columns.Unit": "इकाई",
+    "Catalog.Columns.LifecycleStatus": "स्थिति",
+    "Catalog.Columns.CreatedAt": "बनाया गया",
+    "Catalog.Columns.ModifiedAt": "संशोधित"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Catalog": "カタログ",
+    "Permission:Catalog.Products.Read": "カタログ商品の閲覧",
+    "Permission:Catalog.Products.Manage": "カタログ商品の管理(作成、更新、公開、アーカイブ、外部マッピング)"
+  }
+}

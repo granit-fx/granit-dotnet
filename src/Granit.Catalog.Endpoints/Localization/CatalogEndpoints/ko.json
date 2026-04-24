@@ -1,0 +1,8 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:Catalog": "카탈로그",
+    "Permission:Catalog.Products.Read": "카탈로그 제품 보기",
+    "Permission:Catalog.Products.Manage": "카탈로그 제품 관리 (생성, 업데이트, 게시, 보관, 외부 매핑)"
+  }
+}

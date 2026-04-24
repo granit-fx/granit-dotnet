@@ -1,0 +1,13 @@
+{
+  "culture": "es",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "Nombre",
+    "Catalog.Columns.Description": "Descripción",
+    "Catalog.Columns.Type": "Tipo",
+    "Catalog.Columns.Unit": "Unidad",
+    "Catalog.Columns.LifecycleStatus": "Estado",
+    "Catalog.Columns.CreatedAt": "Creado el",
+    "Catalog.Columns.ModifiedAt": "Modificado el"
+  }
+}

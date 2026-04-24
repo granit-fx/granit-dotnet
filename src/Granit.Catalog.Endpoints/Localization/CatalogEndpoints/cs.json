@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Catalog": "Katalog",
+    "Permission:Catalog.Products.Read": "Zobrazit produkty katalogu",
+    "Permission:Catalog.Products.Manage": "Spravovat produkty katalogu (vytvářet, upravovat, publikovat, archivovat, externí mapování)"
+  }
+}

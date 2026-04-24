@@ -1,0 +1,13 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "Naam",
+    "Catalog.Columns.Description": "Beschrijving",
+    "Catalog.Columns.Type": "Type",
+    "Catalog.Columns.Unit": "Eenheid",
+    "Catalog.Columns.LifecycleStatus": "Status",
+    "Catalog.Columns.CreatedAt": "Aangemaakt op",
+    "Catalog.Columns.ModifiedAt": "Gewijzigd op"
+  }
+}

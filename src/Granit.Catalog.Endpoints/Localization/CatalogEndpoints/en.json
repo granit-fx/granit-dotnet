@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:Catalog": "Catalog",
+    "Permission:Catalog.Products.Read": "View catalog products",
+    "Permission:Catalog.Products.Manage": "Manage catalog products (create, update, publish, archive, external mappings)"
+  }
+}

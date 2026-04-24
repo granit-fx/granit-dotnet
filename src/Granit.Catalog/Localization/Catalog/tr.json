@@ -1,0 +1,13 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "Ad",
+    "Catalog.Columns.Description": "Açıklama",
+    "Catalog.Columns.Type": "Tür",
+    "Catalog.Columns.Unit": "Birim",
+    "Catalog.Columns.LifecycleStatus": "Durum",
+    "Catalog.Columns.CreatedAt": "Oluşturulma",
+    "Catalog.Columns.ModifiedAt": "Değiştirilme"
+  }
+}

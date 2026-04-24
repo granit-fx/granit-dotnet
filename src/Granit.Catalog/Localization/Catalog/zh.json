@@ -1,0 +1,13 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "名称",
+    "Catalog.Columns.Description": "描述",
+    "Catalog.Columns.Type": "类型",
+    "Catalog.Columns.Unit": "单位",
+    "Catalog.Columns.LifecycleStatus": "状态",
+    "Catalog.Columns.CreatedAt": "创建时间",
+    "Catalog.Columns.ModifiedAt": "修改时间"
+  }
+}

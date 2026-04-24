@@ -1,0 +1,13 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "Název",
+    "Catalog.Columns.Description": "Popis",
+    "Catalog.Columns.Type": "Typ",
+    "Catalog.Columns.Unit": "Jednotka",
+    "Catalog.Columns.LifecycleStatus": "Stav",
+    "Catalog.Columns.CreatedAt": "Vytvořeno",
+    "Catalog.Columns.ModifiedAt": "Změněno"
+  }
+}

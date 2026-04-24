@@ -1,0 +1,13 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "Namn",
+    "Catalog.Columns.Description": "Beskrivning",
+    "Catalog.Columns.Type": "Typ",
+    "Catalog.Columns.Unit": "Enhet",
+    "Catalog.Columns.LifecycleStatus": "Status",
+    "Catalog.Columns.CreatedAt": "Skapad",
+    "Catalog.Columns.ModifiedAt": "Ändrad"
+  }
+}

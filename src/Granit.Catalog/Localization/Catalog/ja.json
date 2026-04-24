@@ -1,0 +1,13 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Catalog.Columns.Sku": "SKU",
+    "Catalog.Columns.Name": "名称",
+    "Catalog.Columns.Description": "説明",
+    "Catalog.Columns.Type": "タイプ",
+    "Catalog.Columns.Unit": "単位",
+    "Catalog.Columns.LifecycleStatus": "ステータス",
+    "Catalog.Columns.CreatedAt": "作成日時",
+    "Catalog.Columns.ModifiedAt": "更新日時"
+  }
+}
