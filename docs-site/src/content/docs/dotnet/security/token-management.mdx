@@ -37,10 +37,15 @@ and first-class DPoP support.
 | **Machine-to-machine API calls** | **`Granit.Oidc.TokenManagement`** | **Client credentials** | **Backend services, workers, jobs** |
 | Low-level token endpoint operations | `Granit.Oidc` | Any grant type | Custom flows, migration code |
 
-:::tip
-If your service calls another API on behalf of itself (not a user), Token Management
-is the right choice. If you need to forward a user's token or exchange it via
-`on_behalf_of`, use the BFF pattern or implement a custom flow with `ITokenEndpointService`.
+:::tip[Machine-to-machine vs on-behalf-of-a-user]
+- Calling another API **as this service** (scheduled job, webhook consumer,
+  background worker) → stay on this page and use `AddClientCredentialsHttpClient`.
+- Calling another API **on behalf of an inbound user** → see
+  [Inter-service Authorization](/dotnet/security/inter-service-authorization/)
+  for `AddOnBehalfOfHttpClient` (OAuth 2.0 Token Exchange, RFC 8693).
+- Forwarding the caller's `Authorization` header verbatim is a confused-deputy
+  vulnerability and is **not supported** — the former `AddAuthTokenPropagation`
+  extension has been removed.
 :::
 
 ## Package structure
