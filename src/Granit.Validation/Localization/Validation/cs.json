@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' nesmí mít více než {MaxLength} znaků. Zadali jste {TotalLength} znaků.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty musí být null, pokud AggregationType není CountDistinct.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty je vyžadováno, pokud je AggregationType CountDistinct.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "Konec okna přepočtu musí být striktně větší než začátek.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' musí mít alespoň {MinLength} znaků. Zadali jste {TotalLength} znaků.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' nesmí být prázdné.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' se nesmí rovnat '{ComparisonValue}'.",

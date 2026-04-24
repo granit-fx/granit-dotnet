@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' mag maximaal {MaxLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty moet null zijn, tenzij AggregationType CountDistinct is.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty is vereist wanneer AggregationType CountDistinct is.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "Het einde van het herberekeningsvenster moet strikt groter zijn dan het begin.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' moet minstens {MinLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' mag niet leeg zijn.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' mag niet gelijk zijn aan '{ComparisonValue}'.",

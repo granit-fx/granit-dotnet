@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' {MaxLength} karakter veya daha az olmalıdır. {TotalLength} karakter girdiniz.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "AggregationType CountDistinct olmadıkça DistinctProperty boş olmalıdır.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "AggregationType CountDistinct olduğunda DistinctProperty zorunludur.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "Yeniden hesaplama penceresi sonu, başlangıçtan kesinlikle büyük olmalıdır.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' en az {MinLength} karakter olmalıdır. {TotalLength} karakter girdiniz.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' boş olmamalıdır.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}', '{ComparisonValue}' değerine eşit olmamalıdır.",

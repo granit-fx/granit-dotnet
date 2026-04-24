@@ -63,6 +63,7 @@
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' nie może mieć więcej niż {MaxLength} znaków. Wprowadzono {TotalLength} znaków.",
     "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty musi być null, chyba że AggregationType to CountDistinct.",
     "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty jest wymagany, gdy AggregationType to CountDistinct.",
+    "Granit:Validation:MeteringRecomputeWindowInvalid": "Koniec okna ponownego obliczenia musi być ściśle większy niż początek.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' musi mieć co najmniej {MinLength} znaków. Wprowadzono {TotalLength} znaków.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' nie może być puste.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' nie może być równe '{ComparisonValue}'.",

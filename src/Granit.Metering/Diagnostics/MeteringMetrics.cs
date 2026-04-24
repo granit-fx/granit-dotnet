@@ -21,6 +21,7 @@ public sealed class MeteringMetrics
     private readonly Counter<long> _aggregationsCompleted;
     private readonly Counter<long> _quotaThresholdsReached;
     private readonly Counter<long> _quotasExceeded;
+    private readonly Counter<long> _recomputesExecuted;
 
     /// <summary>Initializes metering metrics using the specified meter factory.</summary>
     public MeteringMetrics(IMeterFactory meterFactory)
@@ -46,6 +47,10 @@ public sealed class MeteringMetrics
         _quotasExceeded = meter.CreateCounter<long>(
             "granit.metering.quota.exceeded",
             description: "Number of quota exceeded alerts triggered.");
+
+        _recomputesExecuted = meter.CreateCounter<long>(
+            "granit.metering.recomputes.executed",
+            description: "Number of on-demand UsageAggregate recompute operations executed.");
     }
 
     /// <summary>Records a meter event insertion.</summary>
@@ -101,5 +106,17 @@ public sealed class MeteringMetrics
             { MeterDefinitionIdTag, meterDefinitionId.ToString() },
         };
         _quotasExceeded.Add(1, tags);
+    }
+
+    /// <summary>Records a successful on-demand recompute over a window.</summary>
+    public void RecordRecompute(string? tenantId, Guid meterDefinitionId, long aggregatesRebuilt)
+    {
+        var tags = new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { MeterDefinitionIdTag, meterDefinitionId.ToString() },
+            { "aggregates_rebuilt", aggregatesRebuilt },
+        };
+        _recomputesExecuted.Add(1, tags);
     }
 }
