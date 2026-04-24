@@ -11,10 +11,16 @@ public sealed class PlanPrice : Entity
 {
     private PlanPrice() { }
 
-    /// <summary>Creates a new plan price.</summary>
+    /// <summary>
+    /// Creates a new plan price.
+    /// <paramref name="productId"/> is an optional soft reference (no SQL FK across
+    /// modules) to a <c>Granit.Catalog.Product</c> — the catalog item this price
+    /// tarifs. Survives price versioning: a replaced price keeps its original
+    /// <see cref="ProductId"/>, and the new version may carry the same or a different one.
+    /// </summary>
     public static PlanPrice Create(
         Guid id, decimal amount, string currency, BillingInterval interval,
-        DateTimeOffset effectiveFrom) =>
+        DateTimeOffset effectiveFrom, Guid? productId = null) =>
         new()
         {
             Id = id,
@@ -22,6 +28,7 @@ public sealed class PlanPrice : Entity
             Currency = currency,
             Interval = interval,
             EffectiveFrom = effectiveFrom,
+            ProductId = productId,
         };
 
     /// <summary>Price amount in the smallest currency unit (e.g., cents).</summary>
@@ -41,6 +48,13 @@ public sealed class PlanPrice : Entity
 
     /// <summary>When this price was replaced by a newer version. Null if still current.</summary>
     public DateTimeOffset? ReplacedAt { get; private set; }
+
+    /// <summary>
+    /// Optional reference to a <c>Granit.Catalog.Product</c> identifier — the
+    /// catalog item this price tarifs. Soft reference (no SQL FK across modules);
+    /// preserved across price versions.
+    /// </summary>
+    public Guid? ProductId { get; private set; }
 
     /// <summary>
     /// Whether this price is the current version in the timeline (not replaced by a newer

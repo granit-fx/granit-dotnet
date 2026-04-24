@@ -100,7 +100,8 @@ internal static class PriceVersioningEndpoints
             request.Amount,
             request.Currency.ToUpperInvariant(),
             interval,
-            now);
+            now,
+            request.ProductId);
 
         try
         {

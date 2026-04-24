@@ -20,6 +20,13 @@ internal sealed class PlanPriceConfiguration : IEntityTypeConfiguration<PlanPric
         builder.Property(e => e.ReplacedByPriceId);
         builder.Property(e => e.ReplacedAt);
 
+        // Soft reference to Granit.Catalog.Product — no SQL FK across modules.
+        // Indexed for reverse lookups (find all prices for a given product).
+        builder.Property(e => e.ProductId);
+        builder.HasIndex(e => e.ProductId)
+            .HasFilter("\"ProductId\" IS NOT NULL")
+            .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}plan_prices_product");
+
         builder.HasIndex(e => new { e.ReplacedByPriceId })
             .HasFilter("\"ReplacedByPriceId\" IS NULL")
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}plan_prices_current");

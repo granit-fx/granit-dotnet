@@ -39868,7 +39868,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval, DateTimeOffset effectiveFrom)",
+          "signature": "Create(Guid id, decimal amount, string currency, BillingInterval interval, DateTimeOffset effectiveFrom, Guid? productId = null)",
           "returnType": "PlanPrice"
         },
         {
@@ -40076,7 +40076,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
-      "line": 13,
+      "line": 22,
       "members": []
     },
     {
@@ -40085,7 +40085,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
-      "line": 19,
+      "line": 28,
       "members": []
     },
     {
@@ -40094,7 +40094,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
-      "line": 4,
+      "line": 12,
       "members": []
     },
     {
@@ -40103,7 +40103,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/PriceVersioningDtos.cs",
-      "line": 10,
+      "line": 19,
       "members": []
     },
     {

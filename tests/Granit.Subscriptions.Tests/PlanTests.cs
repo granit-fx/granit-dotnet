@@ -299,4 +299,45 @@ public sealed class PlanTests
         plan.Publish();
         return plan;
     }
+
+    // ── PlanPrice.ProductId — soft reference to Granit.Catalog.Product ──────
+
+    [Fact]
+    public void PlanPriceCreate_WithoutProductId_ShouldDefaultToNull()
+    {
+        var price = PlanPrice.Create(
+            Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, DateTimeOffset.UtcNow);
+
+        price.ProductId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void PlanPriceCreate_WithProductId_ShouldStoreReference()
+    {
+        var productId = Guid.Parse("00000000-0000-0000-0000-000000000abc");
+
+        var price = PlanPrice.Create(
+            Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly,
+            DateTimeOffset.UtcNow, productId);
+
+        price.ProductId.ShouldBe(productId);
+    }
+
+    [Fact]
+    public void AddPriceVersion_ShouldPreserveOriginalProductIdOnReplacedPrice()
+    {
+        var originalProductId = Guid.NewGuid();
+        var newProductId = Guid.NewGuid();
+        var plan = Plan.Create(Guid.NewGuid(), "Pro", null, PricingModel.Flat, BillingInterval.Monthly);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        var v1 = PlanPrice.Create(Guid.NewGuid(), 29.99m, "EUR", BillingInterval.Monthly, now, originalProductId);
+        plan.AddPrice(v1);
+
+        var v2 = PlanPrice.Create(Guid.NewGuid(), 39.99m, "EUR", BillingInterval.Monthly, now, newProductId);
+        PlanPrice? replaced = plan.AddPriceVersion(v2, now);
+
+        replaced.ShouldNotBeNull();
+        replaced!.ProductId.ShouldBe(originalProductId);
+        plan.Prices.First(p => p.IsCurrent).ProductId.ShouldBe(newProductId);
+    }
 }
