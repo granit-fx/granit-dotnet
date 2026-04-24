@@ -340,4 +340,83 @@ public sealed class BffTokenInjectionMiddlewareTests
         frontend.ShouldBe(app);
         sessionId.ShouldBe("session-app-bbb");
     }
+
+    // ──── Exhaustive 3 × 3 matrix (cookie setup × request origin) ────
+    //
+    // Security-critical regression surface: with a shared-origin BFF on localhost
+    // (ports are not part of the cookie scope — RFC 6265) every combination of
+    // held session(s) and caller origin must resolve to either the caller's own
+    // session or (null, null). A match that crosses the caller's origin would
+    // let a SPA on :5174 operate under the session bound to :5173 — and every
+    // subsequent mutating request would be CSRF-validated against the wrong
+    // HMAC secret (observed as the "403 on /account/login" symptom when logging
+    // in on the second frontend after logging in on the first).
+
+    public static IEnumerable<object?[]> MatrixCases()
+    {
+        const string HostUrl = "http://localhost:5173";
+        const string AppUrl = "http://localhost:5174";
+        const string UnknownUrl = "http://attacker.example:8080";
+        const string HostSession = "session-host-aaa";
+        const string AppSession = "session-app-bbb";
+
+        // Setup, origin, expectedFrontendName (null = must reject), expectedSession
+        // HOST-ONLY cookie
+        yield return ["host-only", HostUrl, "host", HostSession];
+        yield return ["host-only", AppUrl, null, null];         // cross-side → drop
+        yield return ["host-only", UnknownUrl, null, null];     // stranger origin → drop
+
+        // APP-ONLY cookie
+        yield return ["app-only", HostUrl, null, null];         // cross-side → drop
+        yield return ["app-only", AppUrl, "app", AppSession];
+        yield return ["app-only", UnknownUrl, null, null];      // stranger origin → drop
+
+        // BOTH cookies (the bug scenario after user logs in on both sides)
+        yield return ["both", HostUrl, "host", HostSession];
+        yield return ["both", AppUrl, "app", AppSession];
+        yield return ["both", UnknownUrl, null, null];          // stranger origin → drop
+    }
+
+    [Theory]
+    [MemberData(nameof(MatrixCases))]
+    public void ResolveFrontendFromCookies_Matrix(
+        string setup, string origin, string? expectedFrontend, string? expectedSession)
+    {
+        BffFrontendOptions host = Frontend("host", "http://localhost:5173");
+        BffFrontendOptions app = Frontend("app", "http://localhost:5174");
+        GranitBffOptions options = new()
+        {
+            Authority = new Uri("https://auth.example.com"),
+            Frontends = [host, app],
+        };
+
+        Dictionary<string, string> cookies = setup switch
+        {
+            "host-only" => new() { [".bff-host"] = "session-host-aaa" },
+            "app-only" => new() { [".bff-app"] = "session-app-bbb" },
+            "both" => new()
+            {
+                [".bff-host"] = "session-host-aaa",
+                [".bff-app"] = "session-app-bbb",
+            },
+            _ => throw new ArgumentOutOfRangeException(nameof(setup)),
+        };
+
+        HttpContext context = CreateContext(cookies, origin: origin);
+
+        (BffFrontendOptions? frontend, string? sessionId) =
+            BffTokenInjectionMiddleware.ResolveFrontendFromCookies(context, options);
+
+        if (expectedFrontend is null)
+        {
+            frontend.ShouldBeNull();
+            sessionId.ShouldBeNull();
+        }
+        else
+        {
+            frontend.ShouldNotBeNull();
+            frontend!.Name.ShouldBe(expectedFrontend);
+            sessionId.ShouldBe(expectedSession);
+        }
+    }
 }
