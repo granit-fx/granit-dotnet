@@ -2,6 +2,7 @@
   "culture": "fr",
   "texts": {
     "Permission:Metering.Events.Backfill": "Insérer des événements historiques au-delà de la fenêtre d'ingestion standard (jusqu'à 365 jours)",
+    "Permission:Metering.Events.Manage": "Gérer les événements individuels (déprécier les événements erronés ou frauduleux)",
     "Permission:Metering.Meters.Manage": "Gérer les définitions de compteurs (créer, modifier, publier, archiver)",
     "Permission:Metering.Meters.Read": "Consulter les définitions de compteurs",
     "Permission:Metering.Usage.Read": "Consulter les données d'utilisation et l'état des quotas",

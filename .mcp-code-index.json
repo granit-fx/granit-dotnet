@@ -24367,6 +24367,12 @@
           "kind": "property",
           "signature": "decimal Quantity",
           "returnType": "decimal"
+        },
+        {
+          "name": "Deprecate",
+          "kind": "method",
+          "signature": "Deprecate(string reason, DateTimeOffset now)",
+          "returnType": "void"
         }
       ]
     },
@@ -24446,6 +24452,24 @@
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/BackfillUsageRequest.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "DeprecateEventRequest",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventRequest",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "DeprecateEventResponse",
+      "fqn": "Granit.Metering.Endpoints.Dtos.DeprecateEventResponse",
+      "kind": "record",
+      "project": "Granit.Metering.Endpoints",
+      "file": "src/Granit.Metering.Endpoints/Dtos/DeprecateEventResponse.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -24979,6 +25003,22 @@
       ]
     },
     {
+      "name": "IMeterEventDeprecationService",
+      "fqn": "Granit.Metering.Recompute.IMeterEventDeprecationService",
+      "kind": "interface",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DeprecateAsync",
+          "kind": "method",
+          "signature": "DeprecateAsync(Guid eventId, string reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task<MeterEventDeprecationResult>"
+        }
+      ]
+    },
+    {
       "name": "IUsageBackfillService",
       "fqn": "Granit.Metering.Recompute.IUsageBackfillService",
       "kind": "interface",
@@ -25009,6 +25049,24 @@
           "returnType": "Task<UsageRecomputeResult>"
         }
       ]
+    },
+    {
+      "name": "MeterEventDeprecationResult",
+      "fqn": "Granit.Metering.Recompute.MeterEventDeprecationResult",
+      "kind": "record",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/IMeterEventDeprecationService.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "MeterEventNotFoundException",
+      "fqn": "Granit.Metering.Recompute.MeterEventNotFoundException",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Recompute/Exceptions/MeterEventNotFoundException.cs",
+      "line": 4,
+      "members": []
     },
     {
       "name": "UsageBackfillResult",
@@ -40022,6 +40080,22 @@
       "members": []
     },
     {
+      "name": "PricingTier",
+      "fqn": "Granit.Subscriptions.Domain.PricingTier",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PricingTier.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid planPriceId, int sortOrder, decimal? upToQuantity, decimal unitAmount, decimal? flatAmount = null)",
+          "returnType": "PricingTier"
+        }
+      ]
+    },
+    {
       "name": "Subscription",
       "fqn": "Granit.Subscriptions.Domain.Subscription",
       "kind": "class",
@@ -40142,6 +40216,15 @@
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/SubscriptionStatus.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "TieringMode",
+      "fqn": "Granit.Subscriptions.Domain.TieringMode",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/TieringMode.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -41387,6 +41470,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "TieredPricingCalculator",
+      "fqn": "Granit.Subscriptions.Pricing.TieredPricingCalculator",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Pricing/TieredPricingCalculator.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Compute",
+          "kind": "method",
+          "signature": "Compute(decimal quantity, TieringMode mode, IReadOnlyList<PricingTier> tiers)",
+          "returnType": "decimal"
         }
       ]
     },

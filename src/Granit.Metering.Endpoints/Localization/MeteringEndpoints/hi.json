@@ -2,6 +2,7 @@
   "culture": "hi",
   "texts": {
     "Permission:Metering.Events.Backfill": "मानक इनजेशन विंडो से पुराने ऐतिहासिक मीटर इवेंट जोड़ें (365 दिनों तक)",
+    "Permission:Metering.Events.Manage": "व्यक्तिगत मीटर इवेंट प्रबंधित करें (गलत या धोखाधड़ी वाले इवेंट को अप्रचलित करें)",
     "Permission:Metering.Meters.Manage": "मीटर परिभाषाएँ प्रबंधित करें (बनाएँ, अपडेट करें, प्रकाशित करें, संग्रहीत करें)",
     "Permission:Metering.Meters.Read": "मीटर परिभाषाएँ देखें",
     "Permission:Metering.Usage.Read": "उपयोग डेटा और कोटा स्थिति देखें",

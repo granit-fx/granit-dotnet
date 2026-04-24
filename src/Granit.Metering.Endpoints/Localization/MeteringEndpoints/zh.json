@@ -2,6 +2,7 @@
   "culture": "zh",
   "texts": {
     "Permission:Metering.Events.Backfill": "回填超出标准摄取窗口的历史计量器事件（最长 365 天）",
+    "Permission:Metering.Events.Manage": "管理单个计量器事件（弃用错误或欺诈性事件）",
     "Permission:Metering.Meters.Manage": "管理计量器定义（创建、更新、发布、归档）",
     "Permission:Metering.Meters.Read": "查看计量器定义",
     "Permission:Metering.Usage.Read": "查看使用数据和配额状态",

@@ -2,6 +2,7 @@
   "culture": "ja",
   "texts": {
     "Permission:Metering.Events.Backfill": "標準の取り込みウィンドウを超える過去のメーターイベントをバックフィル（最大365日）",
+    "Permission:Metering.Events.Manage": "個別のメーターイベントを管理（誤ったまたは不正なイベントを廃止）",
     "Permission:Metering.Meters.Manage": "メーター定義を管理（作成、更新、公開、アーカイブ）",
     "Permission:Metering.Meters.Read": "メーター定義を表示",
     "Permission:Metering.Usage.Read": "使用状況データとクォータステータスを表示",
