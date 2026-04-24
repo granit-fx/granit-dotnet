@@ -77,7 +77,7 @@ public sealed class DefaultSubscriptionReactivationServiceTests
     {
         var tenantId = Guid.NewGuid();
         Subscription sub = CreatePastDueSubscription(tenantId);
-        _reader.GetActiveForTenantAsync(tenantId, Arg.Any<CancellationToken>())
+        _reader.GetPastDueForTenantAsync(tenantId, Arg.Any<CancellationToken>())
             .Returns(sub);
 
         bool result = await _sut.TryReactivateAsync(tenantId, TestContext.Current.CancellationToken);
