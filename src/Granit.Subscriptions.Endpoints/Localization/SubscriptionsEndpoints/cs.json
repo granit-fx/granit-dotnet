@@ -1,6 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "Permission:Subscriptions.Discounts.Manage": "Správa slev předplatného (Procenta / Pevná částka / Prodloužení zkušebního období)",
     "Permission:Subscriptions.Phases.Manage": "Správa fází předplatného (plánování změn plánu, přepsání cen, aplikace slev)",
     "Permission:Subscriptions.Plans.Manage": "Spravovat plány předplatného (vytvořit, publikovat, archivovat)",
     "Permission:Subscriptions.Plans.Read": "Zobrazit plány předplatného",

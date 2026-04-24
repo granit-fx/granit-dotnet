@@ -3,6 +3,7 @@ using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
+using Granit.Subscriptions.Pricing;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -79,13 +80,29 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
             effectivePlanPriceId, cancellationToken)
             .ConfigureAwait(false);
 
+        // Short-circuit on a non-positive base price BEFORE running discount math —
+        // discount application throws on negative input, and a 0 base price already
+        // means "skip" by the existing convention.
+        if (basePrice <= 0m)
+        {
+            Log.ZeroPrice(logger, subscriptionId);
+            return;
+        }
+
         // Apply the phase's flat percentage discount, if any (0–100; validated at entity creation).
         if (phaseDiscountPercent is { } pct && pct > 0m)
         {
             basePrice = decimal.Round(basePrice * (1m - (pct / 100m)), 4, MidpointRounding.ToEven);
         }
 
-        if (basePrice <= 0)
+        // Apply attached SubscriptionDiscount entries in declaration order — each
+        // discount stacks cumulatively on the running total. Trial discounts are
+        // skipped at billing (they extend the trial period elsewhere). The
+        // calculator clamps the result to ≥ 0.
+        basePrice = SubscriptionDiscountCalculator.Apply(
+            basePrice, subscription.GetActiveDiscounts(clock.Now), clock.Now);
+
+        if (basePrice <= 0m)
         {
             Log.ZeroPrice(logger, subscriptionId);
             return;

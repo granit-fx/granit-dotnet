@@ -25,6 +25,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     private readonly List<SubscriptionSeat> _seats = [];
     private readonly List<SubscriptionExternalMapping> _externalMappings = [];
     private readonly List<SubscriptionPhase> _phases = [];
+    private readonly List<SubscriptionDiscount> _discounts = [];
 
     private Subscription() { }
 
@@ -128,6 +129,14 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// phase covers the billing instant (single-plan backward compat).
     /// </summary>
     public IReadOnlyList<SubscriptionPhase> Phases => _phases;
+
+    /// <summary>
+    /// Negotiated discounts attached to this subscription. The billing-cycle
+    /// orchestrator applies every <see cref="SubscriptionDiscount.IsActiveAt"/>
+    /// entry to the base price in declaration order — see
+    /// <see cref="Pricing.SubscriptionDiscountCalculator"/>.
+    /// </summary>
+    public IReadOnlyList<SubscriptionDiscount> Discounts => _discounts;
 
     /// <inheritdoc />
     public Guid? TenantId { get; private set; }
@@ -416,6 +425,38 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         DateTimeOffset bEnd = b.EndDate ?? DateTimeOffset.MaxValue;
         return a.StartDate < bEnd && b.StartDate < aEnd;
     }
+
+    // ── Discounts ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Attaches a discount to the subscription. Cumulative — multiple discounts
+    /// stack on the running total in declaration order (see
+    /// <see cref="Pricing.SubscriptionDiscountCalculator"/>).
+    /// </summary>
+    public void AddDiscount(SubscriptionDiscount discount)
+    {
+        ArgumentNullException.ThrowIfNull(discount);
+
+        if (discount.SubscriptionId != Id)
+        {
+            throw new InvalidOperationException(
+                $"Discount '{discount.Id}' belongs to subscription '{discount.SubscriptionId}', not '{Id}'.");
+        }
+
+        _discounts.Add(discount);
+    }
+
+    /// <summary>Removes a previously-added discount. Returns <c>true</c> when a discount was actually removed.</summary>
+    public bool RemoveDiscount(Guid discountId) =>
+        _discounts.RemoveAll(d => d.Id == discountId) > 0;
+
+    /// <summary>
+    /// Returns the discounts active at <paramref name="instant"/> in declaration
+    /// order — i.e. the input the orchestrator hands to
+    /// <see cref="Pricing.SubscriptionDiscountCalculator.Apply"/>.
+    /// </summary>
+    public IEnumerable<SubscriptionDiscount> GetActiveDiscounts(DateTimeOffset instant) =>
+        _discounts.Where(d => d.IsActiveAt(instant));
 
     // ── Private helpers ────────────────────────────────────────────────
 

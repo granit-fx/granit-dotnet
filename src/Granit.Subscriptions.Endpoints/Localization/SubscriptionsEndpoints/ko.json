@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Permission:Subscriptions.Discounts.Manage": "구독 할인 관리 (비율 / 고정 금액 / 체험 연장)",
     "Permission:Subscriptions.Phases.Manage": "구독 단계 관리 (요금제 변경 예약, 가격 재정의, 할인 적용)",
     "Permission:Subscriptions.Plans.Manage": "구독 플랜 관리 (생성, 게시, 보관)",
     "Permission:Subscriptions.Plans.Read": "구독 플랜 보기",

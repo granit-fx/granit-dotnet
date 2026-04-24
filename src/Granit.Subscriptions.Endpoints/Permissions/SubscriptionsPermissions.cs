@@ -58,4 +58,16 @@ public static class SubscriptionsPermissions
         /// </summary>
         public const string Manage = "Subscriptions.Phases.Manage";
     }
+
+    /// <summary>Negotiated discount permissions.</summary>
+    public static class Discounts
+    {
+        /// <summary>
+        /// Manage subscription discounts (Percentage / FixedAmount / Trial extensions).
+        /// Admin-only — discounts directly reduce billed amounts and feed the
+        /// invoice line at billing time. ISO 27001 A.9.4 (least privilege on
+        /// revenue-impacting operations).
+        /// </summary>
+        public const string Manage = "Subscriptions.Discounts.Manage";
+    }
 }

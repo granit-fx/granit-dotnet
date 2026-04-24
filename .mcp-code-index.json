@@ -39980,6 +39980,15 @@
       "members": []
     },
     {
+      "name": "DiscountType",
+      "fqn": "Granit.Subscriptions.Domain.DiscountType",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/DiscountType.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "Plan",
       "fqn": "Granit.Subscriptions.Domain.Plan",
       "kind": "class",
@@ -40163,6 +40172,12 @@
           "returnType": "IReadOnlyList<SubscriptionPhase>"
         },
         {
+          "name": "Discounts",
+          "kind": "property",
+          "signature": "IReadOnlyList<SubscriptionDiscount> Discounts",
+          "returnType": "IReadOnlyList<SubscriptionDiscount>"
+        },
+        {
           "name": "nameof",
           "kind": "method",
           "signature": "nameof(Status)",
@@ -40197,6 +40212,34 @@
           "kind": "method",
           "signature": "ChangePlan(PlanId newPlanId)",
           "returnType": "void"
+        },
+        {
+          "name": "GetActiveDiscounts",
+          "kind": "method",
+          "signature": "GetActiveDiscounts(DateTimeOffset instant)",
+          "returnType": "IEnumerable<SubscriptionDiscount>"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionDiscount",
+      "fqn": "Granit.Subscriptions.Domain.SubscriptionDiscount",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/SubscriptionDiscount.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid subscriptionId, DiscountType type, decimal value, string reason, DateTimeOffset? expiresAt = null)",
+          "returnType": "SubscriptionDiscount"
+        },
+        {
+          "name": "IsActiveAt",
+          "kind": "method",
+          "signature": "IsActiveAt(DateTimeOffset instant)",
+          "returnType": "DateTimeOffset? ExpiresAt { get; private set; } public bool"
         }
       ]
     },
@@ -40518,6 +40561,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Discounts",
+      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Discounts",
+      "kind": "class",
+      "project": "Granit.Subscriptions.Endpoints",
+      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
+      "line": 63,
+      "members": []
     },
     {
       "name": "Phases",
@@ -41527,6 +41579,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "SubscriptionDiscountCalculator",
+      "fqn": "Granit.Subscriptions.Pricing.SubscriptionDiscountCalculator",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Pricing/SubscriptionDiscountCalculator.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Apply",
+          "kind": "method",
+          "signature": "Apply(decimal baseAmount, IEnumerable<SubscriptionDiscount> discounts, DateTimeOffset now)",
+          "returnType": "decimal"
         }
       ]
     },

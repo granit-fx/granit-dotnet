@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Permission:Subscriptions.Discounts.Manage": "サブスクリプション割引を管理（パーセンテージ / 固定金額 / トライアル延長）",
     "Permission:Subscriptions.Phases.Manage": "サブスクリプションフェーズを管理（プラン変更のスケジュール、価格上書き、割引適用）",
     "Permission:Subscriptions.Plans.Manage": "サブスクリプションプランの管理（作成、公開、アーカイブ）",
     "Permission:Subscriptions.Plans.Read": "サブスクリプションプランの表示",

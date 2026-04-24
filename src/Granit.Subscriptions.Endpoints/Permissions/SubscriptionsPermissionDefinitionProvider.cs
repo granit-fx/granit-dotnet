@@ -48,5 +48,10 @@ internal sealed class SubscriptionsPermissionDefinitionProvider : IPermissionDef
         group.AddPermission(SubscriptionsPermissions.Phases.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Phases.Manage"),
             MultiTenancySide.Host);
+
+        // Discounts are admin-only: they reduce billed amounts at invoice time.
+        group.AddPermission(SubscriptionsPermissions.Discounts.Manage,
+            LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Discounts.Manage"),
+            MultiTenancySide.Host);
     }
 }

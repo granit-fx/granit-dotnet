@@ -1,6 +1,7 @@
 {
   "culture": "pt",
   "texts": {
+    "Permission:Subscriptions.Discounts.Manage": "Gerir descontos de subscrição (Percentagem / Valor fixo / Extensões de avaliação)",
     "Permission:Subscriptions.Phases.Manage": "Gerir fases de subscrição (agendar alterações de plano, substituir preços, aplicar descontos)",
     "Permission:Subscriptions.Plans.Manage": "Gerir planos de subscrição (criar, publicar, arquivar)",
     "Permission:Subscriptions.Plans.Read": "Ver planos de subscrição",
