@@ -136,7 +136,7 @@ Content-Type: application/json
 | Scenario | Response | Header |
 |----------|----------|--------|
 | First request (lock acquired) | Normal business response | -- |
-| Retry with same body (response cached) | Original response replayed | `X-Idempotency-Replayed: true` |
+| Retry with same body (response cached) | Original response replayed | `Idempotent-Replayed: true` |
 | Concurrent request (execution in progress) | `409 Conflict` | `Retry-After: 30` |
 | Retry with different body | `422 Unprocessable Entity` | -- |
 | Execution timeout | `503 Service Unavailable` | -- |

@@ -5,7 +5,7 @@
 //   1. Double-click (InProgress) → HTTP 409 + Retry-After header
 //   2. Payload mutation (Completed, wrong hash) → HTTP 422
 //   3. Execution timeout → HTTP 503 + DeleteAsync called
-//   4. Successful replay → X-Idempotency-Replayed: true (no business logic re-executed)
+//   4. Successful replay → Idempotent-Replayed: true (no business logic re-executed)
 // =============================================================================
 
 using System.Net;
@@ -713,7 +713,7 @@ public sealed class IdempotencyMiddlewareTests
             HttpResponseMessage second = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
 
             second.StatusCode.ShouldBe(HttpStatusCode.Created);
-            second.Headers.Contains("X-Idempotency-Replayed").ShouldBeTrue();
+            second.Headers.Contains("Idempotent-Replayed").ShouldBeTrue();
             string replayBody = await second.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
             replayBody.ShouldContain("42");
         }
@@ -806,7 +806,7 @@ public sealed class IdempotencyMiddlewareTests
     }
 
     // =========================================================================
-    // Scenario 15: Successful replay → X-Idempotency-Replayed (no re-execution)
+    // Scenario 15: Successful replay → Idempotent-Replayed (no re-execution)
     // =========================================================================
 
     [Fact]
@@ -857,8 +857,8 @@ public sealed class IdempotencyMiddlewareTests
 
             // Assert
             second.StatusCode.ShouldBe(HttpStatusCode.Created);
-            second.Headers.Contains("X-Idempotency-Replayed").ShouldBeTrue();
-            second.Headers.GetValues("X-Idempotency-Replayed").ShouldContain("true");
+            second.Headers.Contains("Idempotent-Replayed").ShouldBeTrue();
+            second.Headers.GetValues("Idempotent-Replayed").ShouldContain("true");
 
             handlerCallCount.ShouldBe(1, "business logic must not be re-executed on replay");
         }
@@ -925,7 +925,7 @@ public sealed class IdempotencyMiddlewareTests
             // be re-emitted to this new request.
             HttpResponseMessage second = await client.SendAsync(BuildRequest(), TestContext.Current.CancellationToken);
             second.StatusCode.ShouldBe(HttpStatusCode.OK);
-            second.Headers.Contains("X-Idempotency-Replayed").ShouldBeTrue();
+            second.Headers.Contains("Idempotent-Replayed").ShouldBeTrue();
             second.Headers.Contains("Set-Cookie").ShouldBeFalse(
                 "replay must not leak the original caller's cookie to a subsequent retry");
         }

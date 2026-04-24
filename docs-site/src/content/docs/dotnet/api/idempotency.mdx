@@ -61,7 +61,7 @@ flowchart TD
     START([Request arrives]) --> ABSENT{Key absent?}
     ABSENT -- Yes --> ACQUIRE[TryAcquire\nSET NX PX → InProgress]
     ABSENT -- No: InProgress --> CONFLICT[409 Request In Progress]
-    ABSENT -- No: Completed --> REPLAY[Replay cached response\nX-Idempotency-Replayed: true]
+    ABSENT -- No: Completed --> REPLAY[Replay cached response\nIdempotent-Replayed: true]
     ACQUIRE --> EXECUTE[Execute handler]
     EXECUTE -- 2xx / cacheable 4xx --> COMPLETE[SetCompleted\nSET XX PX → Completed]
     EXECUTE -- 5xx / timeout --> RELEASE[DELETE key → Absent]
@@ -108,7 +108,7 @@ different body.
 | Payload hash mismatch | 422 | Idempotency Key Conflict |
 | Execution timeout | 503 | Execution Timeout |
 
-Replayed responses include an `X-Idempotency-Replayed: true` header.
+Replayed responses include an `Idempotent-Replayed: true` header.
 
 ## Configuration reference
 

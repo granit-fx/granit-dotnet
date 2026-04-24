@@ -357,7 +357,7 @@ internal sealed partial class IdempotencyMiddleware(
             }
         }
 
-        context.Response.Headers["X-Idempotency-Replayed"] = "true";
+        context.Response.Headers["Idempotent-Replayed"] = "true";
 
         if (entry.ResponseBody is { Length: > 0 })
         {

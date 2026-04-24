@@ -478,7 +478,7 @@ The `Granit.Http.Idempotency` package provides Stripe-style idempotency via the
 | Scenario | Response |
 |----------|----------|
 | First request | Executes handler, caches response for 24h |
-| Duplicate with same body | Replays cached response + `X-Idempotency-Replayed: true` |
+| Duplicate with same body | Replays cached response + `Idempotent-Replayed: true` |
 | Duplicate with different body | `422` with detail "payload does not match" |
 | Concurrent duplicate | `409` with `Retry-After` header |
 | Missing required key | `422` with detail about missing header |
