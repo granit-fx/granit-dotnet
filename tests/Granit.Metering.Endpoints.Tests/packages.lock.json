@@ -583,6 +583,14 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.http.idempotency": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.IO.RecyclableMemoryStream": "[3.*, )"
+        }
+      },
       "granit.localization": {
         "type": "Project",
         "dependencies": {
@@ -810,6 +818,12 @@
           "Microsoft.Extensions.Primitives": "10.0.7"
         }
       },
+      "Microsoft.IO.RecyclableMemoryStream": {
+        "type": "CentralTransitive",
+        "requested": "[3.*, )",
+        "resolved": "3.0.1",
+        "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
+      },
       "OpenTelemetry.Api": {
         "type": "CentralTransitive",
         "requested": "[1.15.*, )",
@@ -819,8 +833,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.3",
-        "contentHash": "RUy9LiqIl8AY6j2veG2h5gLv31L/REoMMIYm2/7V73nEI/N0EnMpUjuz6FDNDrwhFi2hjqZGXYXA6Li8bZcilA=="
+        "resolved": "2.14.4",
+        "contentHash": "PyuqLRi7JXyTJm/rh+IWCA4Fct1SlZuWrdYiui5hiaBuSY88+roc4eWKfYaE6zrupBIwnEP8pJLe4ifvU7HtZA=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

@@ -46,7 +46,13 @@ internal static class UsageEndpoints
             .WithSummary("Records one or more usage events.")
             .WithDescription(
                 "Accepts a batch of usage events and records them against their respective meter definitions. "
-                + "Duplicate events (same idempotency key within a tenant) are silently ignored. "
+                + "Idempotency is enforced at two complementary layers: "
+                + "(1) the HTTP `Idempotency-Key` header (required, RFC 8700) protects against network-level replay of the entire batch — "
+                + "duplicate sends with the same header value return the cached response with `Idempotent-Replayed: true`, "
+                + "and reuse with a different payload returns 422; "
+                + "(2) per-event `IdempotencyKey` payload field is unique within a tenant — duplicate events across different batches are silently ignored "
+                + "(allows partial-overlap retries to safely add only new events). "
+                + "Requests without the `Idempotency-Key` header are rejected 422. "
                 + "All events must have a positive quantity and a non-empty idempotency key.")
             .WithMetadata(new IdempotentAttribute())
             .Produces(StatusCodes.Status204NoContent)
@@ -54,6 +60,7 @@ internal static class UsageEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(MeteringPermissions.Usage.Record);
 
         return group;

@@ -277,6 +277,44 @@ paginate, export to CSV/XLSX, and save per-user views. When called without a
 tenant context (host admin), the multi-tenant query filter is bypassed so the
 host can review usage cross-tenant.
 
+## Idempotency model
+
+`POST /api/granit/metering/events` enforces idempotency at **two complementary
+layers** — neither replaces the other.
+
+### HTTP layer — request envelope dedup
+
+- **Mechanism**: `Idempotency-Key` header (RFC 8700, Stripe-style), required
+- **Scope**: the whole request envelope (the batch as a unit)
+- **Failure modes**:
+  - Missing header → 422
+  - Same key + different body → 422
+  - Replay returns the cached response with `Idempotent-Replayed: true`
+
+### Database layer — per-event dedup
+
+- **Mechanism**: `UNIQUE (TenantId, IdempotencyKey)` on `meter_events`
+- **Scope**: each event in the batch
+- **Failure mode**: duplicate event silently ignored (insert-first pattern)
+
+**Why both?** They protect against different threats:
+
+- **HTTP layer** prevents network-level replay of the entire batch (proxy retry,
+  client SDK retry without state). Without it, a flaky network could cause two
+  separate ingestions of the same batch under different HTTP keys.
+- **Database layer** allows safe partial-overlap retries: a client that resends
+  `[A, B, C, D]` after a previous successful `[A, B, C]` will only insert `D`
+  (the others are deduplicated against the per-event `IdempotencyKey`).
+
+**Client guidance**:
+
+- Generate a fresh UUID for the `Idempotency-Key` HTTP header on every new
+  logical send. Reuse it across retries of *the same* batch.
+- Generate a stable per-event `IdempotencyKey` payload value (e.g.,
+  `"{external_request_id}:{event_index}"`) so partial retries deduplicate
+  correctly at the DB layer.
+- Never put PII in either key (audit logs and Redis store retain them).
+
 ## See also
 
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography
