@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",
     "Granit:Validation:MaxQuickFilterEntries": "Je povoleno maximálně 20 rychlých filtrů.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' nesmí mít více než {MaxLength} znaků. Zadali jste {TotalLength} znaků.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty musí být null, pokud AggregationType není CountDistinct.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty je vyžadováno, pokud je AggregationType CountDistinct.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' musí mít alespoň {MinLength} znaků. Zadali jste {TotalLength} znaků.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' nesmí být prázdné.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' se nesmí rovnat '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' nesmí být prázdné.",
     "Granit:Validation:NullValidator": "'{PropertyName}' musí být prázdné.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Částka platby je mimo povolený rozsah.",
     "Granit:Validation:PredicateValidator": "Zadaná podmínka nebyla splněna pro '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' nemá správný formát.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
     "Granit:Validation:ScheduledAction:FutureDate": "Plánované datum musí být v budoucnosti.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'.",
-    "Granit:Validation:PaymentAmountOutOfRange": "Částka platby je mimo povolený rozsah.",
-    "Granit:Validation:UrlMustBeHttps": "Adresa URL musí používat HTTPS."
+    "Granit:Validation:UrlMustBeHttps": "Adresa URL musí používat HTTPS.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'."
   }
 }

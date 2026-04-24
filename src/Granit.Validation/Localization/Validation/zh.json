@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
     "Granit:Validation:MaxQuickFilterEntries": "最多允许 20 个快速筛选。",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' 不能超过 {MaxLength} 个字符。您输入了 {TotalLength} 个字符。",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "除非 AggregationType 为 CountDistinct，否则 DistinctProperty 必须为 null。",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "当 AggregationType 为 CountDistinct 时，DistinctProperty 为必填项。",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' 至少需要 {MinLength} 个字符。您输入了 {TotalLength} 个字符。",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' 不能为空。",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' 不能等于 '{ComparisonValue}'。",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' 不能为空。",
     "Granit:Validation:NullValidator": "'{PropertyName}' 必须为空。",
+    "Granit:Validation:PaymentAmountOutOfRange": "付款金额超出允许范围。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' 的指定条件未满足。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' 的格式不正确。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' 总共不能超过 {ExpectedPrecision} 位数字，其中允许 {ExpectedScale} 位小数。",
     "Granit:Validation:ScheduledAction:FutureDate": "计划日期必须是将来的日期。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。",
-    "Granit:Validation:PaymentAmountOutOfRange": "付款金额超出允许范围。",
-    "Granit:Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。"
+    "Granit:Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。",
+    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。"
   }
 }

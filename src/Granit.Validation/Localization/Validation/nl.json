@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",
     "Granit:Validation:MaxQuickFilterEntries": "Maximaal 20 snelfilters zijn toegestaan.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' mag maximaal {MaxLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty moet null zijn, tenzij AggregationType CountDistinct is.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty is vereist wanneer AggregationType CountDistinct is.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' moet minstens {MinLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' mag niet leeg zijn.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' mag niet gelijk zijn aan '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' mag niet leeg zijn.",
     "Granit:Validation:NullValidator": "'{PropertyName}' moet leeg zijn.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Het betalingsbedrag valt buiten het toegestane bereik.",
     "Granit:Validation:PredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' heeft niet het juiste formaat.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
     "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen.",
-    "Granit:Validation:PaymentAmountOutOfRange": "Het betalingsbedrag valt buiten het toegestane bereik.",
-    "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken."
+    "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
   }
 }

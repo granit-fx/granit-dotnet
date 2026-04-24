@@ -224,4 +224,43 @@ public sealed class MeterDefinitionTests
 
         meter.ProductId.ShouldBeNull();
     }
+
+    // ======== CountDistinct + DistinctProperty pairing ========
+
+    [Fact]
+    public void Create_CountDistinct_WithoutDistinctProperty_ShouldThrow()
+    {
+        Should.Throw<ArgumentException>(() =>
+            MeterDefinition.Create(
+                Guid.NewGuid(), "MAU", "users", AggregationType.CountDistinct));
+    }
+
+    [Fact]
+    public void Create_CountDistinct_WithEmptyDistinctProperty_ShouldThrow()
+    {
+        Should.Throw<ArgumentException>(() =>
+            MeterDefinition.Create(
+                Guid.NewGuid(), "MAU", "users", AggregationType.CountDistinct,
+                description: null, productId: null, distinctProperty: "  "));
+    }
+
+    [Fact]
+    public void Create_CountDistinct_WithDistinctProperty_ShouldStoreIt()
+    {
+        var meter = MeterDefinition.Create(
+            Guid.NewGuid(), "MAU", "users", AggregationType.CountDistinct,
+            description: null, productId: null, distinctProperty: "user_id");
+
+        meter.AggregationType.ShouldBe(AggregationType.CountDistinct);
+        meter.DistinctProperty.ShouldBe("user_id");
+    }
+
+    [Fact]
+    public void Create_NonCountDistinct_WithDistinctProperty_ShouldThrow()
+    {
+        Should.Throw<ArgumentException>(() =>
+            MeterDefinition.Create(
+                Guid.NewGuid(), "Sum", "calls", AggregationType.Sum,
+                description: null, productId: null, distinctProperty: "user_id"));
+    }
 }

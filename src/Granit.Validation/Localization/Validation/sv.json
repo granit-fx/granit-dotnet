@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
     "Granit:Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' får vara högst {MaxLength} tecken. Du angav {TotalLength} tecken.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty måste vara null om inte AggregationType är CountDistinct.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty krävs när AggregationType är CountDistinct.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' måste vara minst {MinLength} tecken. Du angav {TotalLength} tecken.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' får inte vara tomt.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' får inte vara lika med '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' får inte vara tomt.",
     "Granit:Validation:NullValidator": "'{PropertyName}' måste vara tomt.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Betalningsbeloppet ligger utanför det tillåtna intervallet.",
     "Granit:Validation:PredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' har inte korrekt format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' får inte ha fler än {ExpectedPrecision} siffror totalt, varav {ExpectedScale} decimaler.",
     "Granit:Validation:ScheduledAction:FutureDate": "Schemalagt datum måste vara i framtiden.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'.",
-    "Granit:Validation:PaymentAmountOutOfRange": "Betalningsbeloppet ligger utanför det tillåtna intervallet.",
-    "Granit:Validation:UrlMustBeHttps": "URL:en måste använda HTTPS."
+    "Granit:Validation:UrlMustBeHttps": "URL:en måste använda HTTPS.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'."
   }
 }

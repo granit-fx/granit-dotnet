@@ -24307,7 +24307,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string name, string unit, AggregationType aggregationType, string? description = null, Guid? productId = null)",
+          "signature": "Create(Guid id, string name, string unit, AggregationType aggregationType, string? description = null, Guid? productId = null, string? distinctProperty = null)",
           "returnType": "MeterDefinition"
         },
         {
@@ -24436,7 +24436,7 @@
       "kind": "record",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionCreateRequest.cs",
-      "line": 14,
+      "line": 19,
       "members": []
     },
     {
@@ -24445,7 +24445,7 @@
       "kind": "record",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/Dtos/MeterDefinitionResponse.cs",
-      "line": 27,
+      "line": 32,
       "members": []
     },
     {

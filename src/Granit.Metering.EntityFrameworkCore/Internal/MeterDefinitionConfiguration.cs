@@ -18,6 +18,7 @@ internal sealed class MeterDefinitionConfiguration : IEntityTypeConfiguration<Me
         builder.Property(e => e.Unit).HasMaxLength(50).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(2000);
         builder.Property(e => e.AggregationType).IsRequired();
+        builder.Property(e => e.DistinctProperty).HasMaxLength(200);
         builder.Property(e => e.LifecycleStatus).IsRequired();
         builder.HasIndex(e => e.LifecycleStatus)
             .HasDatabaseName($"ix_{GranitMeteringDbProperties.DbTablePrefix}meter_definitions_lifecycle");

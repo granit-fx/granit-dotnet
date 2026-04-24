@@ -1,5 +1,7 @@
 using FluentValidation;
+using Granit.Metering.Domain;
 using Granit.Metering.Endpoints.Dtos;
+using Granit.Validation.Extensions;
 
 namespace Granit.Metering.Endpoints.Validators;
 
@@ -20,5 +22,16 @@ internal sealed class MeterDefinitionCreateRequestValidator : AbstractValidator<
 
         RuleFor(x => x.Description)
             .MaximumLength(1024);
+
+        RuleFor(x => x.DistinctProperty)
+            .NotEmpty()
+            .MaximumLength(200)
+            .WithErrorCodeAndMessage("Granit:Validation:MeteringDistinctPropertyRequired")
+            .When(x => x.AggregationType == AggregationType.CountDistinct);
+
+        RuleFor(x => x.DistinctProperty)
+            .Empty()
+            .WithErrorCodeAndMessage("Granit:Validation:MeteringDistinctPropertyNotAllowed")
+            .When(x => x.AggregationType != AggregationType.CountDistinct);
     }
 }

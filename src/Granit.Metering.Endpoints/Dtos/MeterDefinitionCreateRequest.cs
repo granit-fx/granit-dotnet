@@ -11,9 +11,15 @@ namespace Granit.Metering.Endpoints.Dtos;
 /// Optional reference to a <c>Granit.Catalog.Product</c> identifier — the catalog
 /// item this meter measures. Soft reference (no SQL FK across modules).
 /// </param>
+/// <param name="DistinctProperty">
+/// JSON property name inside <c>MeterEvent.Metadata</c> whose distinct values are
+/// counted. <strong>Required</strong> when <see cref="AggregationType"/> is
+/// <see cref="AggregationType.CountDistinct"/>; must be <c>null</c> for all others.
+/// </param>
 public sealed record MeterDefinitionCreateRequest(
     string Name,
     string Unit,
     AggregationType AggregationType,
     string? Description = null,
-    Guid? ProductId = null);
+    Guid? ProductId = null,
+    string? DistinctProperty = null);

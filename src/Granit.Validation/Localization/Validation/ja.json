@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
     "Granit:Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' は {MaxLength} 文字以下である必要があります。{TotalLength} 文字入力されました。",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "AggregationType が CountDistinct でない限り、DistinctProperty は null でなければなりません。",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "AggregationType が CountDistinct の場合、DistinctProperty は必須です。",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' は {MinLength} 文字以上である必要があります。{TotalLength} 文字入力されました。",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' を空にすることはできません。",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' は '{ComparisonValue}' と等しくない必要があります。",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' を空にすることはできません。",
     "Granit:Validation:NullValidator": "'{PropertyName}' は空である必要があります。",
+    "Granit:Validation:PaymentAmountOutOfRange": "支払い金額が許容範囲外です。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
     "Granit:Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。",
-    "Granit:Validation:PaymentAmountOutOfRange": "支払い金額が許容範囲外です。",
-    "Granit:Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。"
+    "Granit:Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。",
+    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
   }
 }

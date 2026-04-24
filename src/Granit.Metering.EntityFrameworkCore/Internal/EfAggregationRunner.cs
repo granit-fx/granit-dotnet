@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Guids;
@@ -83,7 +84,7 @@ internal sealed partial class EfAggregationRunner(
         DateTimeOffset periodStart = new(now.Year, now.Month, now.Day, now.Hour, 0, 0, now.Offset);
         DateTimeOffset periodEnd = periodStart.AddHours(1);
 
-        decimal aggregatedValue = Aggregate(definition.AggregationType, events);
+        decimal aggregatedValue = Aggregate(definition, events);
 
         UsageAggregate? existing = await db.UsageAggregates
             .FirstOrDefaultAsync(
@@ -131,15 +132,79 @@ internal sealed partial class EfAggregationRunner(
         Log.AggregationBatchCompleted(logger, definition.Name, events.Count);
     }
 
-    private static decimal Aggregate(AggregationType type, List<MeterEvent> events) =>
-        type switch
+    internal static decimal Aggregate(MeterDefinition definition, List<MeterEvent> events) =>
+        definition.AggregationType switch
         {
             AggregationType.Sum => events.Sum(e => e.Quantity),
             AggregationType.Max => events.Max(e => e.Quantity),
             AggregationType.Count => events.Count,
             AggregationType.Last => events[^1].Quantity,
+            AggregationType.CountDistinct => CountDistinctValues(events, definition.DistinctProperty),
             _ => events.Sum(e => e.Quantity),
         };
+
+    /// <summary>
+    /// Counts distinct, non-null string values of <paramref name="property"/> extracted
+    /// from each event's <c>Metadata</c> JSON. Events with null/empty/invalid metadata,
+    /// or missing the property, are excluded entirely (never bucketed as a synthetic
+    /// <c>null</c>). Numbers and booleans are stringified ordinally so
+    /// <c>{"id": 1}</c> and <c>{"id": "1"}</c> hash to the same bucket.
+    /// </summary>
+    private static decimal CountDistinctValues(List<MeterEvent> events, string? property)
+    {
+        if (string.IsNullOrWhiteSpace(property))
+        {
+            return 0m;
+        }
+
+        HashSet<string> distinct = new(StringComparer.Ordinal);
+
+        foreach (MeterEvent ev in events)
+        {
+            if (string.IsNullOrWhiteSpace(ev.Metadata))
+            {
+                continue;
+            }
+
+            string? value = TryExtractStringValue(ev.Metadata, property);
+            if (value is not null)
+            {
+                distinct.Add(value);
+            }
+        }
+
+        return distinct.Count;
+    }
+
+    private static string? TryExtractStringValue(string metadataJson, string property)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(metadataJson);
+            if (doc.RootElement.ValueKind != JsonValueKind.Object)
+            {
+                return null;
+            }
+
+            if (!doc.RootElement.TryGetProperty(property, out JsonElement value))
+            {
+                return null;
+            }
+
+            return value.ValueKind switch
+            {
+                JsonValueKind.String => value.GetString(),
+                JsonValueKind.Number => value.GetRawText(),
+                JsonValueKind.True => "true",
+                JsonValueKind.False => "false",
+                _ => null,
+            };
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
 
     private static partial class Log
     {

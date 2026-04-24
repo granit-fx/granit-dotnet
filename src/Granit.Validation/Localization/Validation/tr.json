@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
     "Granit:Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' {MaxLength} karakter veya daha az olmalıdır. {TotalLength} karakter girdiniz.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "AggregationType CountDistinct olmadıkça DistinctProperty boş olmalıdır.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "AggregationType CountDistinct olduğunda DistinctProperty zorunludur.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' en az {MinLength} karakter olmalıdır. {TotalLength} karakter girdiniz.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' boş olmamalıdır.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}', '{ComparisonValue}' değerine eşit olmamalıdır.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' boş olmamalıdır.",
     "Granit:Validation:NullValidator": "'{PropertyName}' boş olmalıdır.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Ödeme tutarı izin verilen aralığın dışında.",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' doğru biçimde değil.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' toplamda {ExpectedPrecision} basamaktan fazla olmamalı ve {ExpectedScale} ondalık basamağa izin verilmelidir.",
     "Granit:Validation:ScheduledAction:FutureDate": "Planlanan tarih gelecekte olmalıdır.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır.",
-    "Granit:Validation:PaymentAmountOutOfRange": "Ödeme tutarı izin verilen aralığın dışında.",
-    "Granit:Validation:UrlMustBeHttps": "URL, HTTPS kullanmalıdır."
+    "Granit:Validation:UrlMustBeHttps": "URL, HTTPS kullanmalıdır.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır."
   }
 }

@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "Dozwolonych jest maksymalnie 20 ustawień wstępnych.",
     "Granit:Validation:MaxQuickFilterEntries": "Dozwolonych jest maksymalnie 20 szybkich filtrów.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' nie może mieć więcej niż {MaxLength} znaków. Wprowadzono {TotalLength} znaków.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty musi być null, chyba że AggregationType to CountDistinct.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty jest wymagany, gdy AggregationType to CountDistinct.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' musi mieć co najmniej {MinLength} znaków. Wprowadzono {TotalLength} znaków.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' nie może być puste.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' nie może być równe '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' nie może być puste.",
     "Granit:Validation:NullValidator": "'{PropertyName}' musi być puste.",
+    "Granit:Validation:PaymentAmountOutOfRange": "Kwota płatności jest poza dozwolonym zakresem.",
     "Granit:Validation:PredicateValidator": "Określony warunek nie został spełniony dla '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' ma nieprawidłowy format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nie może mieć więcej niż {ExpectedPrecision} cyfr łącznie, w tym {ExpectedScale} miejsc po przecinku.",
     "Granit:Validation:ScheduledAction:FutureDate": "Zaplanowana data musi być w przyszłości.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Ważne do' musi być późniejsze niż 'Ważne od'.",
-    "Granit:Validation:PaymentAmountOutOfRange": "Kwota płatności jest poza dozwolonym zakresem.",
-    "Granit:Validation:UrlMustBeHttps": "Adres URL musi używać protokołu HTTPS."
+    "Granit:Validation:UrlMustBeHttps": "Adres URL musi używać protokołu HTTPS.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Ważne do' musi być późniejsze niż 'Ważne od'."
   }
 }

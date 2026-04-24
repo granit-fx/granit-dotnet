@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "Se permiten un máximo de 20 preajustes.",
     "Granit:Validation:MaxQuickFilterEntries": "Se permiten un máximo de 20 filtros rápidos.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' debe tener como máximo {MaxLength} caracteres. Ha introducido {TotalLength} caracteres.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty debe ser nulo a menos que AggregationType sea CountDistinct.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty es obligatorio cuando AggregationType es CountDistinct.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' debe tener como mínimo {MinLength} caracteres. Ha introducido {TotalLength} caracteres.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' no puede estar vacío.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' no debe ser igual a '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' no puede estar vacío.",
     "Granit:Validation:NullValidator": "'{PropertyName}' debe estar vacío.",
+    "Granit:Validation:PaymentAmountOutOfRange": "El importe del pago está fuera del rango permitido.",
     "Granit:Validation:PredicateValidator": "La condición especificada para '{PropertyName}' no se ha cumplido.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' no tiene el formato correcto.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' no debe tener más de {ExpectedPrecision} dígitos en total, de los cuales {ExpectedScale} decimales.",
     "Granit:Validation:ScheduledAction:FutureDate": "La fecha programada debe ser en el futuro.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Válido hasta' debe ser posterior a 'Válido desde'.",
-    "Granit:Validation:PaymentAmountOutOfRange": "El importe del pago está fuera del rango permitido.",
-    "Granit:Validation:UrlMustBeHttps": "La URL debe usar HTTPS."
+    "Granit:Validation:UrlMustBeHttps": "La URL debe usar HTTPS.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Válido hasta' debe ser posterior a 'Válido desde'."
   }
 }

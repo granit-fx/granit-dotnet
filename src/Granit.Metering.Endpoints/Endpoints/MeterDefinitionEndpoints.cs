@@ -143,7 +143,8 @@ internal static class MeterDefinitionEndpoints
             request.Unit,
             request.AggregationType,
             request.Description,
-            request.ProductId);
+            request.ProductId,
+            request.DistinctProperty);
 
         await writer.AddAsync(definition, cancellationToken).ConfigureAwait(false);
 

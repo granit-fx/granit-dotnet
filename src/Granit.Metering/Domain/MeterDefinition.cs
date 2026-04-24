@@ -30,6 +30,10 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant, IWorkf
     /// <paramref name="productId"/> is an optional soft reference (no SQL FK across
     /// modules) to a <c>Granit.Catalog.Product</c> — the catalog item this meter
     /// measures. The application layer is responsible for catalog deletion safety.
+    /// <paramref name="distinctProperty"/> is required when
+    /// <paramref name="aggregationType"/> is <see cref="AggregationType.CountDistinct"/>
+    /// — the JSON path inside <c>MeterEvent.Metadata</c> whose distinct values are
+    /// counted (e.g. <c>"user_id"</c>).
     /// </summary>
     public static MeterDefinition Create(
         Guid id,
@@ -37,10 +41,26 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant, IWorkf
         string unit,
         AggregationType aggregationType,
         string? description = null,
-        Guid? productId = null)
+        Guid? productId = null,
+        string? distinctProperty = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(unit);
+
+        if (aggregationType == AggregationType.CountDistinct
+            && string.IsNullOrWhiteSpace(distinctProperty))
+        {
+            throw new ArgumentException(
+                "DistinctProperty is required when AggregationType is CountDistinct.",
+                nameof(distinctProperty));
+        }
+
+        if (aggregationType != AggregationType.CountDistinct && distinctProperty is not null)
+        {
+            throw new ArgumentException(
+                "DistinctProperty must be null unless AggregationType is CountDistinct.",
+                nameof(distinctProperty));
+        }
 
         return new MeterDefinition
         {
@@ -51,6 +71,7 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant, IWorkf
             Description = description,
             LifecycleStatus = WorkflowLifecycleStatus.Draft,
             ProductId = productId,
+            DistinctProperty = distinctProperty,
         };
     }
 
@@ -65,6 +86,15 @@ public sealed class MeterDefinition : AuditedAggregateRoot, IMultiTenant, IWorkf
 
     /// <summary>How events are aggregated into rollups.</summary>
     public AggregationType AggregationType { get; private set; }
+
+    /// <summary>
+    /// JSON path inside <c>MeterEvent.Metadata</c> whose distinct values are counted
+    /// when <see cref="AggregationType"/> is <see cref="AggregationType.CountDistinct"/>.
+    /// Required for that type, must be <c>null</c> for all others. Events whose
+    /// metadata does not contain the property are excluded from the count
+    /// (treated as missing — never counted as a synthetic <c>null</c> bucket).
+    /// </summary>
+    public string? DistinctProperty { get; private set; }
 
     /// <summary>Current lifecycle status (Draft, Published, Archived).</summary>
     public WorkflowLifecycleStatus LifecycleStatus { get; private set; }

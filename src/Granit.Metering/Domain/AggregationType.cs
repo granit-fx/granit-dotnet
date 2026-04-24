@@ -16,4 +16,12 @@ public enum AggregationType
 
     /// <summary>Last recorded event quantity in the period (gauge-style).</summary>
     Last = 3,
+
+    /// <summary>
+    /// Distinct count of values extracted from a JSON path in <c>MeterEvent.Metadata</c>
+    /// (e.g. <c>"user_id"</c> for monthly active users). Requires
+    /// <see cref="MeterDefinition.DistinctProperty"/> to be set; events whose metadata
+    /// does not contain the property are excluded from the count.
+    /// </summary>
+    CountDistinct = 4,
 }

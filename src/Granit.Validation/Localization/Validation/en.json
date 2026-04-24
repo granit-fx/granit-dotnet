@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "At most 20 preset entries are allowed.",
     "Granit:Validation:MaxQuickFilterEntries": "At most 20 quick filters are allowed.",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' must be {MaxLength} characters or fewer. You entered {TotalLength} characters.",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "DistinctProperty must be null unless AggregationType is CountDistinct.",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "DistinctProperty is required when AggregationType is CountDistinct.",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' must be at least {MinLength} characters. You entered {TotalLength} characters.",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' must not be empty.",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' must not be equal to '{ComparisonValue}'.",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' must not be empty.",
     "Granit:Validation:NullValidator": "'{PropertyName}' must be empty.",
+    "Granit:Validation:PaymentAmountOutOfRange": "The payment amount is out of the allowed range.",
     "Granit:Validation:PredicateValidator": "The specified condition was not met for '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' is not in the correct format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' must not be more than {ExpectedPrecision} digits in total, with allowance for {ExpectedScale} decimals.",
     "Granit:Validation:ScheduledAction:FutureDate": "Scheduled date must be in the future.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Valid to' must be after 'Valid from'.",
-    "Granit:Validation:PaymentAmountOutOfRange": "The payment amount is out of the allowed range.",
-    "Granit:Validation:UrlMustBeHttps": "The URL must use HTTPS."
+    "Granit:Validation:UrlMustBeHttps": "The URL must use HTTPS.",
+    "Granit:Validation:ValidToAfterValidFrom": "'Valid to' must be after 'Valid from'."
   }
 }

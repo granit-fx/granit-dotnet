@@ -61,17 +61,19 @@
     "Granit:Validation:MaxPresetEntries": "अधिकतम 20 प्रीसेट प्रविष्टियाँ अनुमत हैं।",
     "Granit:Validation:MaxQuickFilterEntries": "अधिकतम 20 त्वरित फ़िल्टर अनुमत हैं।",
     "Granit:Validation:MaximumLengthValidator": "'{PropertyName}' {MaxLength} अक्षर या उससे कम होना चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",
+    "Granit:Validation:MeteringDistinctPropertyNotAllowed": "जब तक AggregationType CountDistinct न हो, DistinctProperty शून्य होना चाहिए।",
+    "Granit:Validation:MeteringDistinctPropertyRequired": "जब AggregationType CountDistinct हो तो DistinctProperty आवश्यक है।",
     "Granit:Validation:MinimumLengthValidator": "'{PropertyName}' कम से कम {MinLength} अक्षरों का होना चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",
     "Granit:Validation:NotEmptyValidator": "'{PropertyName}' खाली नहीं होना चाहिए।",
     "Granit:Validation:NotEqualValidator": "'{PropertyName}' '{ComparisonValue}' के बराबर नहीं होना चाहिए।",
     "Granit:Validation:NotNullValidator": "'{PropertyName}' खाली नहीं होना चाहिए।",
     "Granit:Validation:NullValidator": "'{PropertyName}' खाली होना चाहिए।",
+    "Granit:Validation:PaymentAmountOutOfRange": "भुगतान राशि अनुमत सीमा से बाहर है।",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' के लिए निर्दिष्ट शर्त पूरी नहीं हुई।",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' सही प्रारूप में नहीं है।",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' कुल {ExpectedPrecision} अंकों से अधिक नहीं होना चाहिए, {ExpectedScale} दशमलव की अनुमति के साथ।",
     "Granit:Validation:ScheduledAction:FutureDate": "निर्धारित तिथि भविष्य में होनी चाहिए।",
-    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।",
-    "Granit:Validation:PaymentAmountOutOfRange": "भुगतान राशि अनुमत सीमा से बाहर है।",
-    "Granit:Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।"
+    "Granit:Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।",
+    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।"
   }
 }

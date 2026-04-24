@@ -24,6 +24,11 @@ namespace Granit.Metering.Endpoints.Dtos;
 /// Current lifecycle status of the meter (Draft / Published / Archived). Only
 /// <see cref="WorkflowLifecycleStatus.Published"/> meters accept ingestion.
 /// </param>
+/// <param name="DistinctProperty">
+/// JSON property name inside <c>MeterEvent.Metadata</c> whose distinct values are
+/// counted. Set when <see cref="AggregationType"/> is
+/// <see cref="AggregationType.CountDistinct"/>; <c>null</c> for all others.
+/// </param>
 public sealed record MeterDefinitionResponse(
     Guid Id,
     string Name,
@@ -32,7 +37,8 @@ public sealed record MeterDefinitionResponse(
     AggregationType AggregationType,
     bool Activated,
     Guid? ProductId,
-    WorkflowLifecycleStatus LifecycleStatus)
+    WorkflowLifecycleStatus LifecycleStatus,
+    string? DistinctProperty)
 {
     internal static MeterDefinitionResponse FromEntity(MeterDefinition definition)
     {
@@ -45,7 +51,8 @@ public sealed record MeterDefinitionResponse(
             definition.AggregationType,
             definition.Activated,
             definition.ProductId,
-            definition.LifecycleStatus);
+            definition.LifecycleStatus,
+            definition.DistinctProperty);
 #pragma warning restore CS0618
     }
 }
