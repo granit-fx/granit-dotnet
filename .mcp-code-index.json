@@ -1226,6 +1226,7 @@
       "name": "Granit.MultiTenancy.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Guids",
         "Granit.Http.ApiDocumentation",
         "Granit.MultiTenancy",
         "Granit.Validation"
@@ -16263,7 +16264,7 @@
       "kind": "class",
       "project": "Granit.Http.Bulkhead",
       "file": "src/Granit.Http.Bulkhead/Extensions/BulkheadServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitBulkhead",
@@ -21875,6 +21876,69 @@
       "members": []
     },
     {
+      "name": "CreditNoteIssuedEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.CreditNoteIssuedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceFinalizedEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceFinalizedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "InvoiceOverdueEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceOverdueEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoicePaidEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.InvoicePaidEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceUncollectibleEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceUncollectibleEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceVoidedEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceVoidedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "OverpaymentDetectedEto",
+      "fqn": "Granit.Invoicing.Abstractions.Events.OverpaymentDetectedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "GranitInvoicingBackgroundJobsModule",
       "fqn": "Granit.Invoicing.BackgroundJobs.GranitInvoicingBackgroundJobsModule",
       "kind": "class",
@@ -22044,7 +22108,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/Invoice.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "Create",
@@ -22353,8 +22417,15 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "InvoicingEndpointsOptions",
@@ -22384,7 +22455,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/Permissions/InvoicingPermissions.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -22463,75 +22534,12 @@
       "members": []
     },
     {
-      "name": "CreditNoteIssuedEto",
-      "fqn": "Granit.Invoicing.Events.CreditNoteIssuedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "InvoiceCreatedEvent",
       "fqn": "Granit.Invoicing.Events.InvoiceCreatedEvent",
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Events/InvoiceCreatedEvent.cs",
       "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceFinalizedEto",
-      "fqn": "Granit.Invoicing.Events.InvoiceFinalizedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "InvoiceOverdueEto",
-      "fqn": "Granit.Invoicing.Events.InvoiceOverdueEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoicePaidEto",
-      "fqn": "Granit.Invoicing.Events.InvoicePaidEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceUncollectibleEto",
-      "fqn": "Granit.Invoicing.Events.InvoiceUncollectibleEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceVoidedEto",
-      "fqn": "Granit.Invoicing.Events.InvoiceVoidedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "OverpaymentDetectedEto",
-      "fqn": "Granit.Invoicing.Events.OverpaymentDetectedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
-      "line": 9,
       "members": []
     },
     {
@@ -22964,7 +22972,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Odoo",
       "file": "src/Granit.Invoicing.Odoo/Domain/OdooPartnerMapping.cs",
-      "line": 8,
+      "line": 12,
       "members": [
         {
           "name": "Create",
@@ -25441,7 +25449,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/Extensions/MultiTenancyEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitMultiTenancy",
@@ -25457,7 +25465,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Endpoints",
       "file": "src/Granit.MultiTenancy.Endpoints/GranitMultiTenancyEndpointsModule.cs",
-      "line": 21,
+      "line": 23,
       "members": []
     },
     {
@@ -25538,7 +25546,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.EntityFrameworkCore",
       "file": "src/Granit.MultiTenancy.EntityFrameworkCore/GranitMultiTenancyEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 28,
       "members": []
     },
     {
@@ -25656,7 +25664,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/GranitMultiTenancyModule.cs",
-      "line": 11,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -42240,6 +42248,12 @@
           "name": "ProductTaxCode",
           "kind": "property",
           "signature": "string ProductTaxCode",
+          "returnType": "string"
+        },
+        {
+          "name": "Currency",
+          "kind": "property",
+          "signature": "string Currency",
           "returnType": "string"
         }
       ]

@@ -43,6 +43,8 @@ public sealed partial class ValidationConventionTests
         "TemplatePreviewRequest",
         // Nested sub-type validated via ChildRules in AIChatRequestValidator — never sent as direct body
         "AIChatMessageRequest",
+        // Nested sub-type validated via ChildRules + MeterEventRules in RecordUsage/BackfillUsageRequestValidator — never sent as direct body
+        "MeterEventRequest",
     };
 
     // -------------------------------------------------------------------------
