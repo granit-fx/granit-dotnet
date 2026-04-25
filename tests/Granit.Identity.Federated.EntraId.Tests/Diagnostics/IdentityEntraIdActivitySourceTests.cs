@@ -24,8 +24,8 @@ public sealed class IdentityEntraIdActivitySourceTests : IDisposable
     public void Dispose() => _listener.Dispose();
 
     [Fact]
-    public void Name_is_Granit_Identity_EntraId() =>
-        IdentityEntraIdActivitySource.Name.ShouldBe("Granit.Identity.EntraId");
+    public void Name_is_Granit_Identity_Federated_EntraId() =>
+        IdentityEntraIdActivitySource.Name.ShouldBe("Granit.Identity.Federated.EntraId");
 
     [Fact]
     public void StartActivity_returns_activity_when_listener_attached()
