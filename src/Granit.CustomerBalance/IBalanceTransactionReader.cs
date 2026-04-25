@@ -17,4 +17,15 @@ public interface IBalanceTransactionReader
     Task<IReadOnlyList<BalanceTransaction>> GetExpiredCreditsAsync(
         DateTimeOffset now,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns promotional credit transactions whose <c>ExpiresAt</c> falls in the
+    /// half-open interval <c>(now, now + window]</c> AND that have not yet been
+    /// noticed in the current UTC day (idempotency guard so the daily job does not
+    /// republish the same warning).
+    /// </summary>
+    Task<IReadOnlyList<BalanceTransaction>> GetCreditsNearExpirationAsync(
+        DateTimeOffset now,
+        TimeSpan window,
+        CancellationToken cancellationToken = default);
 }

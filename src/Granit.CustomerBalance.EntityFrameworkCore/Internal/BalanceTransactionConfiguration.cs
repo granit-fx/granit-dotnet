@@ -24,5 +24,7 @@ internal sealed class BalanceTransactionConfiguration : IEntityTypeConfiguration
         builder.HasIndex(e => e.ExpiresAt)
             .HasFilter($"\"Source\" = {(int)TransactionSource.Promotional} AND \"Type\" = {(int)TransactionType.Credit}")
             .HasDatabaseName($"ix_{GranitCustomerBalanceDbProperties.DbTablePrefix}transactions_expires_at");
+
+        builder.Property(e => e.LastPreExpirationNoticedAt);
     }
 }

@@ -20,6 +20,7 @@ public sealed class CustomerBalanceMetrics
     private readonly Counter<long> _credited;
     private readonly Counter<long> _debited;
     private readonly Counter<long> _expired;
+    private readonly Counter<long> _preExpirationWarnings;
 
     /// <summary>Initializes customer balance metrics using the specified meter factory.</summary>
     public CustomerBalanceMetrics(IMeterFactory meterFactory)
@@ -37,6 +38,10 @@ public sealed class CustomerBalanceMetrics
         _expired = meter.CreateCounter<long>(
             "granit.customer_balance.credit.expired",
             description: "Number of promotional credits expired.");
+
+        _preExpirationWarnings = meter.CreateCounter<long>(
+            "granit.customer_balance.preexpiration.warnings_sent",
+            description: "Number of CreditNearExpirationEto warnings published by the daily pre-expiration scan.");
     }
 
     /// <summary>Records a credit transaction.</summary>
@@ -72,5 +77,16 @@ public sealed class CustomerBalanceMetrics
             { CurrencyTag, currency },
         };
         _expired.Add(1, tags);
+    }
+
+    /// <summary>Records a pre-expiration warning published by the daily scan.</summary>
+    public void RecordPreExpirationWarning(string? tenantId, string currency)
+    {
+        var tags = new TagList
+        {
+            { TenantIdTag, tenantId ?? GlobalTenant },
+            { CurrencyTag, currency },
+        };
+        _preExpirationWarnings.Add(1, tags);
     }
 }

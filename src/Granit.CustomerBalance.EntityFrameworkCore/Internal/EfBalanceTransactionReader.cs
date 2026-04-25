@@ -44,4 +44,27 @@ internal sealed class EfBalanceTransactionReader(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
+
+    public async Task<IReadOnlyList<BalanceTransaction>> GetCreditsNearExpirationAsync(
+        DateTimeOffset now,
+        TimeSpan window,
+        CancellationToken cancellationToken = default)
+    {
+        DateTimeOffset cutoff = now + window;
+        DateTimeOffset todayStart = new(now.Year, now.Month, now.Day, 0, 0, 0, TimeSpan.Zero);
+
+        await using CustomerBalanceDbContext context = await _contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await context.Transactions
+            .Where(t =>
+                t.Source == TransactionSource.Promotional &&
+                t.Type == TransactionType.Credit &&
+                t.ExpiresAt != null &&
+                t.ExpiresAt > now &&
+                t.ExpiresAt <= cutoff &&
+                (t.LastPreExpirationNoticedAt == null
+                    || t.LastPreExpirationNoticedAt < todayStart))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+    }
 }

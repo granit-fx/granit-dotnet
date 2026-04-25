@@ -7,6 +7,7 @@ using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Invoicing;
 using Granit.QueryEngine.Extensions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +26,10 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton<CustomerBalanceMetrics>();
+        builder.Services.AddOptions<CustomerBalanceOptions>()
+            .Bind(builder.Configuration.GetSection(CustomerBalanceOptions.SectionName));
         builder.Services.TryAddTransient<ICreditExpirationService, DefaultCreditExpirationService>();
+        builder.Services.TryAddTransient<IPreExpirationScanService, DefaultPreExpirationScanService>();
         builder.Services.TryAddTransient<IAdminCreditService, DefaultAdminCreditService>();
         builder.Services.TryAddTransient<IAdminDebitService, DefaultAdminDebitService>();
         builder.Services.TryAddTransient<IOverpaymentCreditService, DefaultOverpaymentCreditService>();

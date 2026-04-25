@@ -69,4 +69,22 @@ public sealed class BalanceTransaction : Entity
 
     /// <summary>When this transaction was recorded.</summary>
     public DateTimeOffset CreatedAt { get; private set; }
+
+    /// <summary>
+    /// Notification side-channel (not part of the ledger semantics): the most
+    /// recent UTC instant the daily pre-expiration scan published a
+    /// <c>CreditNearExpirationEto</c> for this credit. Used by the scan service
+    /// to short-circuit duplicate publications within the same day; the field
+    /// is mutated in-place via <see cref="MarkPreExpirationNoticed"/> and does
+    /// NOT alter <see cref="Amount"/>, <see cref="Type"/>, or any ledger field.
+    /// </summary>
+    public DateTimeOffset? LastPreExpirationNoticedAt { get; private set; }
+
+    /// <summary>
+    /// Records that a pre-expiration notice has been published for this credit
+    /// at <paramref name="now"/>. Idempotent at the day-bucket level — callers
+    /// gate on <see cref="LastPreExpirationNoticedAt"/> &lt; today before invoking.
+    /// </summary>
+    public void MarkPreExpirationNoticed(DateTimeOffset now) =>
+        LastPreExpirationNoticedAt = now;
 }

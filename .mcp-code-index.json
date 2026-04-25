@@ -10366,6 +10366,47 @@
       "members": []
     },
     {
+      "name": "CreditPreExpirationScanHandler",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditPreExpirationScanHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditPreExpirationScanHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditPreExpirationScanJob _, IPreExpirationScanService scanService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditPreExpirationScanJob",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditPreExpirationScanJob",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditPreExpirationScanJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CustomerBalanceOptions",
+      "fqn": "Granit.CustomerBalance.CustomerBalanceOptions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/CustomerBalanceOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "PreExpirationWarningDays",
+          "kind": "property",
+          "signature": "int PreExpirationWarningDays",
+          "returnType": "int"
+        }
+      ]
+    },
+    {
       "name": "CustomerBalanceMetrics",
       "fqn": "Granit.CustomerBalance.Diagnostics.CustomerBalanceMetrics",
       "kind": "class",
@@ -10421,7 +10462,14 @@
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Domain/BalanceTransaction.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "MarkPreExpirationNoticed",
+          "kind": "method",
+          "signature": "MarkPreExpirationNoticed(DateTimeOffset now)",
+          "returnType": "Guid? ReferenceId { get; private set; } public string? ReferenceType { get; private set; } public DateTimeOffset? ExpiresAt { get; private set; } public DateTimeOffset CreatedAt { get; private set; } public DateTimeOffset? LastPreExpirationNoticedAt { get; private set; } public void"
+        }
+      ]
     },
     {
       "name": "TransactionSource",
@@ -10689,6 +10737,15 @@
       "members": []
     },
     {
+      "name": "CreditNearExpirationEto",
+      "fqn": "Granit.CustomerBalance.Events.CreditNearExpirationEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/CreditNearExpirationEto.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "InsufficientBalanceException",
       "fqn": "Granit.CustomerBalance.Exceptions.InsufficientBalanceException",
       "kind": "class",
@@ -10735,7 +10792,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -10878,6 +10935,12 @@
           "kind": "method",
           "signature": "GetExpiredCreditsAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        },
+        {
+          "name": "GetCreditsNearExpirationAsync",
+          "kind": "method",
+          "signature": "GetCreditsNearExpirationAsync(DateTimeOffset now, TimeSpan window, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
         }
       ]
     },
@@ -10910,6 +10973,22 @@
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IPreExpirationScanService",
+      "fqn": "Granit.CustomerBalance.IPreExpirationScanService",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IPreExpirationScanService.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ScanAsync",
+          "kind": "method",
+          "signature": "ScanAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
