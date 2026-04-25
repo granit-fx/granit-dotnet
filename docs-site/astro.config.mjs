@@ -364,6 +364,11 @@ export default defineConfig({
                       autogenerate: { directory: "dotnet/architecture/adr" },
                       collapsed: true,
                     },
+                    {
+                      label: "Spikes",
+                      autogenerate: { directory: "dotnet/architecture/spikes" },
+                      collapsed: true,
+                    },
                   ],
                 },
               ],
