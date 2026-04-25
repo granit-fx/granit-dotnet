@@ -58,7 +58,77 @@ plan.AddPrice(PlanPrice.Create(Guid.NewGuid(), 299.99m, "EUR", BillingInterval.Y
 | `Flat` | Fixed price per interval |
 | `PerSeat` | Price multiplied by seat count |
 | `PerUnit` | Price per unit of consumption |
-| `Tiered` | Volume-based pricing tiers |
+| `Tiered` | Bracketed pricing — see [Tiered pricing](#tiered-pricing--pricingtier-adr-034) |
+
+`PlanPrice.ProductId` (`Guid?`) is an optional soft reference to a
+`Granit.Catalog.Product`, preserved across price versions. The orchestrator
+propagates it onto invoice lines (see ADR-036).
+
+## Tiered pricing — `PricingTier` (ADR-034)
+
+When a `PlanPrice` carries a non-empty `Tiers` collection and a `TieringMode`,
+the usage orchestrator computes the invoice amount via
+`TieredPricingCalculator.Compute(quantity, mode, tiers)`:
+
+```csharp
+var price = PlanPrice.Create(
+    Guid.NewGuid(), amount: 0m, "EUR", BillingInterval.Monthly,
+    effectiveFrom: clock.Now, productId: apiProduct.Id,
+    tieringMode: TieringMode.Graduated);
+
+price.SetTiers(TieringMode.Graduated, [
+    PricingTier.Create(upToQuantity: 10_000m, unitAmount: 0.10m, sortOrder: 0),
+    PricingTier.Create(upToQuantity: 100_000m, unitAmount: 0.05m, sortOrder: 1),
+    PricingTier.Create(upToQuantity: null,    unitAmount: 0.02m, sortOrder: 2), // open-ended last tier
+]);
+```
+
+| `TieringMode` | Math |
+| ------------- | ---- |
+| `Volume` | The bracket containing `quantity` is selected; its `UnitAmount` applies to the **full quantity** |
+| `Graduated` | Each bracket charged at its own `UnitAmount`; results summed (`PricingTier.FlatAmount` is added on top per bracket if set) |
+
+Validator invariants (enforced at the create endpoint):
+
+- Ascending `UpToQuantity`
+- Exactly one open-ended tier (`UpToQuantity = null`), which must be last
+- `TieringMode` is required when `Tiers.Count > 0`, must be `null` otherwise
+
+## Scheduled plan changes — `SubscriptionPhase` (ADR-034)
+
+A subscription can carry zero or more `SubscriptionPhase` entries. Each phase
+covers a half-open `[StartDate, EndDate)` window and pins:
+
+- a `PlanId` (the plan active during that window)
+- an optional `OverridePriceId` (a specific `PlanPrice` row, used for grandfathered enterprise terms)
+- an optional `DiscountPercent` (0–100, applied to the resolved base price)
+
+```csharp
+subscription.SchedulePhase(SubscriptionPhase.Create(
+    startDate: clock.Now.AddMonths(3),
+    endDate:   clock.Now.AddMonths(6),
+    planId:    promotionalPlanId,
+    overridePriceId: null,
+    discountPercent: 20m));   // 20% off for 3 months starting 3 months from now
+```
+
+At billing time, `subscription.GetActivePhase(clock.Now)` resolves the phase
+covering "now". When no phase covers the instant, the orchestrator falls back
+to `subscription.PlanId` / `PlanPriceId` (single-phase = backward compatible
+with pre-Phase-3 behavior).
+
+The orchestrator combines all four ingredients in one pass: phase-resolved
+plan → phase-pinned override price (if any) → phase-flat discount → cumulative
+`SubscriptionDiscount` stack. Implementation lives in
+`DefaultBillingCycleInvoiceOrchestrator`; the math is covered in detail in
+[ADR-034](/dotnet/architecture/adr/034-subscriptions-phases-and-tiered-pricing/).
+
+:::note[No HTTP surface yet]
+`PricingTier`, `SubscriptionPhase`, `SubscriptionDiscount`, and
+`SubscriptionPriceOverride` are domain entities populated through configuration
+tooling (Stripe sync, internal admin scripts, EF Core migrations). Admin
+endpoints will land in a follow-up — see [ADR-034 §6](/dotnet/architecture/adr/034-subscriptions-phases-and-tiered-pricing/#6-no-http-endpoints-in-this-iteration--orchestrator-only).
+:::
 
 ## Subscription FSM
 
@@ -166,18 +236,37 @@ var subscription = Subscription.Create(
 
 ## Pricing resolution
 
-`IPricingResolver` resolves prices from the plan's `PlanPrice` entries:
+`IPricingResolver` resolves prices from the plan's `PlanPrice` entries.
+`planPriceId` (optional) lets the caller pin a specific price version (used
+for grandfathered subscriptions and `SubscriptionPhase.OverridePriceId`):
 
 ```csharp
 public interface IPricingResolver
 {
     Task<decimal> ResolveBasePriceAsync(
-        PlanId planId, string currency, BillingInterval interval, CancellationToken ct);
+        PlanId planId, string currency, BillingInterval interval,
+        Guid? planPriceId = null, CancellationToken ct = default);
+
     Task<decimal> ResolveUsageUnitPriceAsync(
         PlanId planId, string currency, BillingInterval interval,
-        string meterId, CancellationToken ct);
+        string meterId, Guid? planPriceId = null, CancellationToken ct = default);
+
+    /// <summary>
+    /// Returns the total amount owed for the given quantity, applying tiered
+    /// pricing (Volume / Graduated) when the resolved PlanPrice carries a
+    /// non-empty Tiers collection. Falls back to quantity × unit-price for
+    /// flat per-unit pricing.
+    /// </summary>
+    Task<decimal> ResolveUsageAmountAsync(
+        PlanId planId, string currency, BillingInterval interval,
+        string meterId, decimal quantity, Guid? planPriceId = null,
+        CancellationToken ct = default);
 }
 ```
+
+`ResolveUsageAmountAsync` is the canonical entry point for usage billing —
+it dispatches to `TieredPricingCalculator` when tiers are present and
+falls back to `quantity × unit price` otherwise.
 
 ## Billing cycle orchestration
 
@@ -325,3 +414,5 @@ Default channels: Email + InApp. Email templates are Phase 2 (requires `Granit.T
 - [Metering](/dotnet/saas/metering/) — usage-based metering
 - [Scheduling](/dotnet/infrastructure/scheduling/) — scheduled plan changes
 - [Feature Flags](/dotnet/infrastructure/feature-flags/) — plan-driven cascade
+- [ADR-034 — Subscriptions phases & tiered pricing](/dotnet/architecture/adr/034-subscriptions-phases-and-tiered-pricing/)
+- [ADR-036 — Invoicing line item source convention](/dotnet/architecture/adr/036-invoicing-line-source-convention/) — `PlanPrice.ProductId` propagation

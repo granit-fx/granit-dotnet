@@ -27,15 +27,18 @@ API call metering, IoT telemetry, storage tracking, or any usage-based scenario.
 
 ### MeterDefinition (AggregateRoot)
 
-Defines what to measure and how to aggregate:
+Defines what to measure and how to aggregate. Implements `IWorkflowStateful`
+with the `Draft → Published → Archived` lifecycle (ADR-033) — only `Published`
+meters accept ingestion.
 
 ```csharp
 var meter = MeterDefinition.Create(
     Guid.NewGuid(), "API Calls", "requests",
-    AggregationType.Sum, "HTTP API request counter");
+    AggregationType.Sum, "HTTP API request counter",
+    productId: catalogProductId);          // optional Granit.Catalog.Product reference
 
-meter.Deactivate();  // Stops accepting new events
-meter.Activate();    // Re-enables event recording
+meter.Publish();   // Draft → Published; ingestion accepted
+meter.Archive();   // Published → Archived; aggregates remain readable, ingestion rejected
 ```
 
 | Aggregation type | Description |
@@ -44,6 +47,20 @@ meter.Activate();    // Re-enables event recording
 | `Max` | Maximum event quantity in the period |
 | `Count` | Count of events (ignores quantity) |
 | `Last` | Last recorded value (gauge-style) |
+| `CountDistinct` | Count of distinct values at `MeterDefinition.DistinctProperty` (a JSON path inside `MeterEvent.Metadata`). Events whose metadata does not contain the property are excluded from the count. |
+
+For `CountDistinct`, `DistinctProperty` is **required** at meter creation and
+**must be `null`** for every other aggregation type — the validator enforces both
+directions.
+
+`MeterDefinition.ProductId` (`Guid?`) is an optional soft reference to a
+`Granit.Catalog.Product` (no SQL FK across modules). When set, downstream invoice
+lines surface the product id automatically (see ADR-036).
+
+The legacy `Activated` boolean is retained one release as a computed alias
+(`Activated => LifecycleStatus == Published`) and marked `[Obsolete]`. The
+`POST /meters/{id}/deactivate` endpoint stays one release as an alias for
+`POST /meters/{id}/archive`.
 
 ### MeterEvent (Entity — append-only)
 
@@ -173,6 +190,66 @@ The threshold percentage is configurable via `GranitMeteringOptions`:
 }
 ```
 
+## Admin reprocessing — recompute, backfill, deprecate (ADR-033)
+
+Three cold-path operations for fixing billing data. All three acquire a
+**transaction-scoped advisory lock** per `(meter, tenant)` so they mutually
+exclude with the hourly aggregator job and with each other (PostgreSQL
+`pg_advisory_xact_lock(hashtext(...))`, SQL Server `sp_getapplock @LockOwner='Transaction'`).
+
+### Recompute on-demand
+
+Rebuilds `UsageAggregate` rows for an arbitrary window. Window edges snap to
+hourly buckets server-side. The global ingestion watermark is **never rewound** —
+events past `to` keep flowing through the hot path.
+
+```http
+POST /api/granit/metering/meters/{id}/recompute
+{
+  "from": "2026-04-01T00:00:00Z",
+  "to":   "2026-04-15T00:00:00Z"
+}
+
+→ 200 RecomputeUsageResponse {
+    meterDefinitionId, windowStart, windowEnd,
+    eventsScanned, aggregatesRebuilt, durationMilliseconds
+  }
+```
+
+Permission: `Metering.Meters.Manage`.
+
+### Backfill historical events
+
+Same shape as `POST /events`, but the per-event age validator allows up to
+**365 days** instead of the standard 7-day window. Auto-triggers a recompute
+on every meter window the backfilled events touched.
+
+```http
+POST /api/granit/metering/events/backfill
+{ "events": [ { meterDefinitionId, idempotencyKey, quantity, timestamp, metadata }, ... ] }
+
+→ 200 BackfillUsageResponse { eventsAccepted, metersAffected, aggregatesRebuilt }
+```
+
+Permission: `Metering.Events.Backfill` (deliberately separated from
+`Metering.Usage.Record` because backfill is destructive at the billing-data
+level — ISO 27001 A.9.4 — least privilege).
+
+### Soft-deprecate an event
+
+Marks an individual event as discarded for billing purposes. The event row is
+preserved (audit trail, `DeprecatedAt` + `DeprecationReason` columns); the
+auto-recompute on the affected hourly bucket follows.
+
+```http
+POST /api/granit/metering/events/{id}/deprecate
+{ "reason": "duplicate from retried client" }
+
+→ 200 DeprecateEventResponse { eventId, meterDefinitionId, deprecatedAt, aggregatesRebuilt }
+```
+
+Permission: `Metering.Events.Manage`.
+
 ## Integration with Subscriptions
 
 When a billing-period aggregation completes, `UsageSummaryReadyEto` is published.
@@ -224,9 +301,15 @@ Table prefix: `metering_` (configurable via `GranitMeteringDbProperties.DbTableP
 | `Id` | GUID | Primary key |
 | `Name` | varchar(200) | Meter display name |
 | `Unit` | varchar(50) | Unit of measure |
-| `AggregationType` | int | Sum/Max/Count/Last |
-| `Activated` | bool | Accepts new events |
+| `AggregationType` | int | Sum / Max / Count / Last / CountDistinct |
+| `LifecycleStatus` | int | Draft / Published / Archived (ADR-033) |
+| `DistinctProperty` | varchar(256)? | JSON path inside `MeterEvent.Metadata` (`CountDistinct` only) |
+| `ProductId` | GUID? | Soft reference to `Granit.Catalog.Product` (no FK) |
 | `TenantId` | GUID? | Multi-tenant isolation |
+
+The legacy `Activated` column is dropped by the
+`MeterDefinition_StatusFromActivated` migration (`Activated => true` ⇒
+`LifecycleStatus = Published`, `Activated => false` ⇒ `Archived`).
 
 ### metering_meter_events
 
@@ -238,6 +321,8 @@ Table prefix: `metering_` (configurable via `GranitMeteringDbProperties.DbTableP
 | `Quantity` | decimal(18,6) | Measured quantity |
 | `Timestamp` | datetimeoffset | When usage occurred |
 | `Metadata` | varchar(4000) | Optional JSON context |
+| `DeprecatedAt` | datetimeoffset? | Set when the event is soft-deprecated; aggregator skips it |
+| `DeprecationReason` | varchar(500)? | Audit trail for the deprecation |
 | `TenantId` | GUID? | Multi-tenant isolation |
 
 **Indexes:**
@@ -262,9 +347,14 @@ Table prefix: `metering_` (configurable via `GranitMeteringDbProperties.DbTableP
 | GET | `/api/granit/metering/meters` | `Metering.Meters.Read` |
 | POST | `/api/granit/metering/meters` | `Metering.Meters.Manage` |
 | PUT | `/api/granit/metering/meters/{id}` | `Metering.Meters.Manage` |
+| POST | `/api/granit/metering/meters/{id}/publish` | `Metering.Meters.Manage` |
+| POST | `/api/granit/metering/meters/{id}/archive` | `Metering.Meters.Manage` |
+| POST | `/api/granit/metering/meters/{id}/recompute` | `Metering.Meters.Manage` |
 | GET | `/api/granit/metering/usage` | `Metering.Usage.Read` |
 | GET | `/api/granit/metering/quota/{meterId}` | `Metering.Usage.Read` |
 | POST | `/api/granit/metering/events` | `Metering.Usage.Record` |
+| POST | `/api/granit/metering/events/backfill` | `Metering.Events.Backfill` |
+| POST | `/api/granit/metering/events/{id}/deprecate` | `Metering.Events.Manage` |
 | GET | `/api/granit/metering/meter-definitions` | `Metering.Meters.Read` |
 | GET | `/api/granit/metering/usage-aggregates` | `Metering.Usage.Read` |
 
@@ -320,3 +410,6 @@ layers** — neither replaces the other.
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography
 - [Subscriptions](/dotnet/saas/subscriptions/) — billing cycle orchestration
 - [Invoicing](/dotnet/saas/invoicing/) — invoice creation from usage data
+- [ADR-033 — Metering hybrid](/dotnet/architecture/adr/033-metering-hybrid-lifecycle-and-recompute/) — lifecycle, CountDistinct, recompute, backfill, deprecate
+- [ADR-036 — Invoicing line item source convention](/dotnet/architecture/adr/036-invoicing-line-source-convention/) — `MeterDefinition.ProductId` propagation
+- [Spike — SQL ad-hoc metric definitions (DEFER)](/dotnet/architecture/spikes/metering-sql-ad-hoc-metrics/)
