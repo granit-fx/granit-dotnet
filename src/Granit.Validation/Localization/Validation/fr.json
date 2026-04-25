@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "50 plages CIDR maximum autorisées.",
     "Granit:Validation:MaxCustomAttributes": "Le nombre maximum d'attributs personnalisés est dépassé.",
     "Granit:Validation:MaxEmbeddingInputs": "Nombre maximum d'entrées d'embedding dépassé.",
-    "Granit:Validation:MaxExtraProperties": "50 propriétés supplémentaires maximum autorisées.",
+    "Granit:Validation:MaxMetadataKeys": "50 clés de métadonnées maximum autorisées.",
     "Granit:Validation:MaxFilterEntries": "50 entrées de filtre maximum sont autorisées.",
     "Granit:Validation:MaxPermissions": "100 permissions maximum autorisées.",
     "Granit:Validation:MaxPresetEntries": "20 entrées de préréglage maximum sont autorisées.",

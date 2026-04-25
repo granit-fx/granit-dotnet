@@ -1,8 +1,8 @@
 ---
-title: "ExtraProperties \u2014 Entity Extensibility"
-description: Extend any entity with a JSON property bag and optional SQL column promotion via IHasExtraProperties — no schema changes, no subclassing, with automatic Shadow Property synchronization.
+title: "Metadata \u2014 Entity Extensibility"
+description: Extend any entity with a JSON property bag and optional SQL column promotion via IHasMetadata — no schema changes, no subclassing, with automatic Shadow Property synchronization.
 sidebar:
-  label: ExtraProperties
+  label: Metadata
   order: 9
   badge:
     text: New
@@ -11,33 +11,33 @@ sidebar:
 
 import { FileTree, Tabs, TabItem } from "@astrojs/starlight/components";
 
-`IHasExtraProperties` is a domain interface that adds a JSON property bag to any
+`IHasMetadata` is a domain interface that adds a JSON property bag to any
 entity. Applications can attach arbitrary key-value pairs at runtime without
 schema changes. For properties that need SQL indexes or query filtering, the
 `MapProperty<T>()` API promotes them to real EF Core Shadow Properties — stored
-in dedicated columns, automatically synchronized by the `ExtraPropertySyncInterceptor`.
+in dedicated columns, automatically synchronized by the `MetadataSyncInterceptor`.
 
 ## Where it lives
 
 <FileTree>
 
 - Granit/Domain/
-  - IHasExtraProperties.cs interface
-  - ExtraPropertyExtensions.cs Get/Set/Has helpers
-- Granit.Persistence/ExtraProperties/
-  - ExtraPropertyMappingOptions.cs MapProperty&lt;T&gt;() fluent API
-  - ExtraPropertySyncInterceptor.cs SaveChanges interceptor
-  - IExtraPropertyMappingRegistry.cs mapping resolution
-  - ExtraPropertyModelBuilderExtensions.cs EF Core Shadow Properties
+  - IHasMetadata.cs interface
+  - MetadataExtensions.cs Get/Set/Has helpers
+- Granit.Persistence/Metadata/
+  - MetadataMappingOptions.cs MapProperty&lt;T&gt;() fluent API
+  - MetadataSyncInterceptor.cs SaveChanges interceptor
+  - IMetadataMappingRegistry.cs mapping resolution
+  - MetadataModelBuilderExtensions.cs EF Core Shadow Properties
 
 </FileTree>
 
 ## The interface
 
 ```csharp
-public interface IHasExtraProperties
+public interface IHasMetadata
 {
-    string? ExtraPropertiesJson { get; set; }
+    string? MetadataJson { get; set; }
 }
 ```
 
@@ -46,33 +46,33 @@ Any entity implementing this interface gets a `jsonb` column (PostgreSQL) or
 
 ## Reading and writing properties
 
-The `ExtraPropertyExtensions` class provides typed access without requiring
+The `MetadataExtensions` class provides typed access without requiring
 manual JSON serialization:
 
 ```csharp
 // Set a property
-invoice.SetExtraProperty("CostCenter", "CC-4200");
-invoice.SetExtraProperty("Priority", "3");
+invoice.SetMetadataValue("CostCenter", "CC-4200");
+invoice.SetMetadataValue("Priority", "3");
 
 // Get as string
-string? costCenter = invoice.GetExtraProperty("CostCenter");
+string? costCenter = invoice.GetMetadataValue("CostCenter");
 
 // Get with type parsing (uses IParsable<T>)
-int? priority = invoice.GetExtraProperty<int>("Priority");
-bool? isUrgent = invoice.GetExtraProperty<bool>("IsUrgent");
+int? priority = invoice.GetMetadataValue<int>("Priority");
+bool? isUrgent = invoice.GetMetadataValue<bool>("IsUrgent");
 
 // Check existence
-bool hasCostCenter = invoice.HasExtraProperty("CostCenter");
+bool hasCostCenter = invoice.HasMetadataValue("CostCenter");
 
 // Remove (pass null)
-invoice.SetExtraProperty("CostCenter", null);
+invoice.SetMetadataValue("CostCenter", null);
 
 // Get all as dictionary
-IReadOnlyDictionary<string, string> all = invoice.GetExtraProperties();
+IReadOnlyDictionary<string, string> all = invoice.GetMetadata();
 ```
 
 :::note
-`GetExtraProperty<T>()` uses `IParsable<T>.TryParse()` — it works with `int`,
+`GetMetadataValue<T>()` uses `IParsable<T>.TryParse()` — it works with `int`,
 `bool`, `Guid`, `DateTimeOffset`, `decimal`, and any type implementing `IParsable<T>`.
 Returns `default` when the property is missing or unparseable.
 :::
@@ -85,16 +85,16 @@ Returns `default` when the property is missing or unparseable.
 | `ReferenceDataEntity` | `Granit.ReferenceData` | All reference data types inherit it |
 | `UserCacheEntry` | `Granit.Identity.Federated.EntityFrameworkCore` | Federated identity cache |
 
-You can implement `IHasExtraProperties` on any of your own entities:
+You can implement `IHasMetadata` on any of your own entities:
 
 ```csharp
-public sealed class Invoice : AuditedEntity, IHasExtraProperties
+public sealed class Invoice : AuditedEntity, IHasMetadata
 {
     public string InvoiceNumber { get; set; } = string.Empty;
     public decimal Amount { get; set; }
 
-    // IHasExtraProperties
-    public string? ExtraPropertiesJson { get; set; }
+    // IHasMetadata
+    public string? MetadataJson { get; set; }
 }
 ```
 
@@ -104,7 +104,7 @@ Properties stored in the JSON bag cannot be indexed or filtered at SQL level.
 When you need query performance, promote them to real EF Core Shadow Properties:
 
 ```csharp
-services.AddExtraPropertyMappings<Invoice>(opts =>
+services.AddMetadataMappings<Invoice>(opts =>
 {
     opts.MapProperty<string>("CostCenter", maxLength: 20, isRequired: true);
     opts.MapProperty<int>("Priority");
@@ -112,7 +112,7 @@ services.AddExtraPropertyMappings<Invoice>(opts =>
 });
 ```
 
-This creates real SQL columns on the entity's table. The `ExtraPropertySyncInterceptor`
+This creates real SQL columns on the entity's table. The `MetadataSyncInterceptor`
 handles synchronization at save time:
 
 1. **On save**: reads the JSON bag, moves mapped values to their Shadow Properties
@@ -121,10 +121,10 @@ handles synchronization at save time:
 
 ```mermaid
 flowchart LR
-    A[SetExtraProperty] --> B{Is mapped?}
+    A[SetMetadataValue] --> B{Is mapped?}
     B -->|No| C[JSON column]
     B -->|Yes| D[Shadow Property column]
-    D --> E[ExtraPropertySyncInterceptor]
+    D --> E[MetadataSyncInterceptor]
     E --> F[Removes from JSON]
 ```
 
@@ -138,7 +138,7 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     base.OnModelCreating(modelBuilder);
 
     // Apply Shadow Properties for Invoice extra properties
-    modelBuilder.ApplyExtraPropertyMappings(invoiceExtensionOptions);
+    modelBuilder.ApplyMetadataMappings(invoiceExtensionOptions);
 
     modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
 }
@@ -161,15 +161,15 @@ filtering and sorting — transparently handled by `FilterExpressionBuilder` and
 
 ## DI registration
 
-The ExtraProperties infrastructure is registered automatically when any module
-calls `AddExtraPropertyInfrastructure()` or `AddExtraPropertyMappings<T>()`:
+The Metadata infrastructure is registered automatically when any module
+calls `AddMetadataInfrastructure()` or `AddMetadataMappings<T>()`:
 
 ```csharp
 // Register infrastructure (interceptor + registry) — idempotent
-services.AddExtraPropertyInfrastructure();
+services.AddMetadataInfrastructure();
 
 // Register mappings for a specific entity type
-services.AddExtraPropertyMappings<Invoice>(opts =>
+services.AddMetadataMappings<Invoice>(opts =>
 {
     opts.MapProperty<string>("CostCenter", maxLength: 20);
 });
@@ -177,29 +177,29 @@ services.AddExtraPropertyMappings<Invoice>(opts =>
 
 :::tip
 `Granit.ReferenceData.EntityFrameworkCore` and `Granit.OpenIddict.EntityFrameworkCore`
-call `AddExtraPropertyInfrastructure()` automatically — you only need to call it
-explicitly if you add `IHasExtraProperties` to your own entities.
+call `AddMetadataInfrastructure()` automatically — you only need to call it
+explicitly if you add `IHasMetadata` to your own entities.
 :::
 
 ## Architecture
 
 ### Performance safeguards
 
-The `ExtraPropertySyncInterceptor` is designed for minimal overhead:
+The `MetadataSyncInterceptor` is designed for minimal overhead:
 
-- **Single instance**: one interceptor handles all `IHasExtraProperties` entity types
+- **Single instance**: one interceptor handles all `IHasMetadata` entity types
 - **ConcurrentDictionary cache**: mapping lookup happens once per entity type per app lifetime
-- **ChangeTracker filter**: only `Added`/`Modified` entries implementing `IHasExtraProperties` are inspected
+- **ChangeTracker filter**: only `Added`/`Modified` entries implementing `IHasMetadata` are inspected
 - **Early exit**: when no mappings are registered for an entity type, zero work is done
 
 ### Registry
 
-The `IExtraPropertyMappingRegistry` aggregates all mappings by entity type. It is
-populated at startup by `ExtraPropertyMappingRegistryInitializer` (an `IHostedService`)
-from all registered `IConfigureExtraPropertyRegistry` contributors.
+The `IMetadataMappingRegistry` aggregates all mappings by entity type. It is
+populated at startup by `MetadataMappingRegistryInitializer` (an `IHostedService`)
+from all registered `IConfigureMetadataRegistry` contributors.
 
 ## See also
 
-- [Reference Data](/dotnet/business/reference-data/) -- uses ExtraProperties for dynamic reference data types
+- [Reference Data](/dotnet/business/reference-data/) -- uses Metadata for dynamic reference data types
 - [Persistence](/dotnet/data/persistence/) -- isolated DbContext pattern and EF Core conventions
 - [Module System](/dotnet/core/module-system/) -- DependsOn and lifecycle hooks

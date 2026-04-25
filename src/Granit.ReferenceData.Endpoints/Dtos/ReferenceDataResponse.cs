@@ -26,7 +26,7 @@ namespace Granit.ReferenceData.Endpoints.Dtos;
 /// <param name="ValidFrom">Optional start of validity period.</param>
 /// <param name="ValidTo">Optional end of validity period.</param>
 /// <param name="ParentCode">Parent code for hierarchical reference data (<c>null</c> for root entries).</param>
-/// <param name="ExtraProperties">Additional custom properties (JSON bag + shadow properties merged).</param>
+/// <param name="Metadata">Additional custom properties (JSON bag + shadow properties merged).</param>
 public sealed record ReferenceDataResponse(
     Guid Id,
     string Code,
@@ -51,4 +51,4 @@ public sealed record ReferenceDataResponse(
     DateTimeOffset? ValidFrom,
     DateTimeOffset? ValidTo,
     string? ParentCode,
-    Dictionary<string, string>? ExtraProperties);
+    Dictionary<string, string>? Metadata);

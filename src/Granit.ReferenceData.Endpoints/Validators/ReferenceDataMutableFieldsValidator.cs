@@ -24,7 +24,7 @@ internal sealed class ReferenceDataMutableFieldsValidator<T> : GranitValidator<T
     internal const int MaxLabelLength = 250;
 
     /// <summary>Maximum number of extra properties per entry.</summary>
-    internal const int MaxExtraProperties = 50;
+    internal const int MaxMetadataKeys = 50;
 
     public ReferenceDataMutableFieldsValidator()
     {
@@ -59,12 +59,12 @@ internal sealed class ReferenceDataMutableFieldsValidator<T> : GranitValidator<T
             .MaximumLength(MaxCodeLength)
             .When(x => x.ParentCode is not null);
 
-        RuleFor(x => x.ExtraProperties)
-            .Must(ep => ep is null || ep.Count <= MaxExtraProperties)
-            .WithErrorCodeAndMessage("Granit:Validation:MaxExtraProperties")
-            .When(x => x.ExtraProperties is not null);
+        RuleFor(x => x.Metadata)
+            .Must(ep => ep is null || ep.Count <= MaxMetadataKeys)
+            .WithErrorCodeAndMessage("Granit:Validation:MaxMetadataKeys")
+            .When(x => x.Metadata is not null);
 
-        RuleForEach(x => x.ExtraProperties)
+        RuleForEach(x => x.Metadata)
             .ChildRules(kvp =>
             {
                 kvp.RuleFor(x => x.Key)
@@ -74,6 +74,6 @@ internal sealed class ReferenceDataMutableFieldsValidator<T> : GranitValidator<T
                 kvp.RuleFor(x => x.Value)
                     .MaximumLength(4000);
             })
-            .When(x => x.ExtraProperties is { Count: > 0 });
+            .When(x => x.Metadata is { Count: > 0 });
     }
 }

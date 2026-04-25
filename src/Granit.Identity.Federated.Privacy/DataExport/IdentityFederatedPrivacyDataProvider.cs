@@ -57,7 +57,7 @@ public sealed class IdentityFederatedPrivacyDataProvider(
             TenantId: entry.TenantId,
             CreatedAt: entry.CreatedAt,
             ModifiedAt: entry.ModifiedAt,
-            ExtraPropertiesJson: entry.ExtraPropertiesJson);
+            MetadataJson: entry.MetadataJson);
 
         return JsonSerializer.SerializeToUtf8Bytes(dto, ExportJsonOptions);
     }
@@ -80,4 +80,4 @@ internal sealed record IdentityFederatedExportResponse(
     Guid? TenantId,
     DateTimeOffset CreatedAt,
     DateTimeOffset? ModifiedAt,
-    string? ExtraPropertiesJson);
+    string? MetadataJson);

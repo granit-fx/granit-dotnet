@@ -107,32 +107,32 @@ public sealed class FederatedIdentityUserTests
     }
 
     [Fact]
-    public void ExtraProperties_DefaultsToNull()
+    public void Metadata_DefaultsToNull()
     {
         var user = new FederatedIdentityUser("id", "alice", "alice@test.com", "Alice", "Doe", true);
 
-        user.ExtraProperties.ShouldBeNull();
+        user.Metadata.ShouldBeNull();
     }
 
     [Fact]
-    public void ExtraProperties_ViaInterface_NeverNull()
+    public void Metadata_ViaInterface_NeverNull()
     {
         IIdentityUser user = new FederatedIdentityUser("id", "alice", "alice@test.com", "Alice", "Doe", true);
 
-        user.ExtraProperties.ShouldNotBeNull();
-        user.ExtraProperties.ShouldBeEmpty();
+        user.Metadata.ShouldNotBeNull();
+        user.Metadata.ShouldBeEmpty();
     }
 
     [Fact]
-    public void ExtraProperties_WhenProvided_AreAccessible()
+    public void Metadata_WhenProvided_AreAccessible()
     {
         var extras = new Dictionary<string, string> { ["license"] = "MD-12345", ["department"] = "Cardiology" };
         var user = new FederatedIdentityUser("id", "alice", "alice@test.com", "Alice", "Doe", true, extras);
 
-        user.ExtraProperties.ShouldNotBeNull();
-        user.ExtraProperties!.Count.ShouldBe(2);
-        user.ExtraProperties["license"].ShouldBe("MD-12345");
-        user.ExtraProperties["department"].ShouldBe("Cardiology");
+        user.Metadata.ShouldNotBeNull();
+        user.Metadata!.Count.ShouldBe(2);
+        user.Metadata["license"].ShouldBe("MD-12345");
+        user.Metadata["department"].ShouldBe("Cardiology");
     }
 
     [Fact]

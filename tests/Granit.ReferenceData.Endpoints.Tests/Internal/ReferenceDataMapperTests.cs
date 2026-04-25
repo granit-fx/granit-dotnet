@@ -68,7 +68,7 @@ public sealed class ReferenceDataMapperTests
     }
 
     [Fact]
-    public void ToResponse_with_no_extra_properties_sets_null()
+    public void ToResponse_with_no_metadata_sets_null()
     {
         TestEntity entity = new()
         {
@@ -78,25 +78,25 @@ public sealed class ReferenceDataMapperTests
 
         ReferenceDataResponse response = ReferenceDataMapper.ToResponse(entity);
 
-        response.ExtraProperties.ShouldBeNull();
+        response.Metadata.ShouldBeNull();
     }
 
     [Fact]
-    public void ToResponse_with_extra_properties_returns_dictionary()
+    public void ToResponse_with_metadata_returns_dictionary()
     {
         TestEntity entity = new()
         {
             Code = "BE",
             LabelEn = "Belgium",
-            ExtraPropertiesJson = """{"Alpha3Code":"BEL","Population":"11000000"}""",
+            MetadataJson = """{"Alpha3Code":"BEL","Population":"11000000"}""",
         };
 
         ReferenceDataResponse response = ReferenceDataMapper.ToResponse(entity);
 
-        response.ExtraProperties.ShouldNotBeNull();
-        response.ExtraProperties!.Count.ShouldBe(2);
-        response.ExtraProperties["Alpha3Code"].ShouldBe("BEL");
-        response.ExtraProperties["Population"].ShouldBe("11000000");
+        response.Metadata.ShouldNotBeNull();
+        response.Metadata!.Count.ShouldBe(2);
+        response.Metadata["Alpha3Code"].ShouldBe("BEL");
+        response.Metadata["Population"].ShouldBe("11000000");
     }
 
     [Fact]
@@ -106,12 +106,12 @@ public sealed class ReferenceDataMapperTests
         {
             Code = "BE",
             LabelEn = "Belgium",
-            ExtraPropertiesJson = "{}",
+            MetadataJson = "{}",
         };
 
         ReferenceDataResponse response = ReferenceDataMapper.ToResponse(entity);
 
-        response.ExtraProperties.ShouldBeNull();
+        response.Metadata.ShouldBeNull();
     }
 
     [Fact]

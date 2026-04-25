@@ -1,6 +1,6 @@
 ---
 title: "Reference Data \u2014 Lookup Tables & Enums"
-description: Multilingual lookup table management for countries, currencies, and custom statuses — 17-culture i18n labels, ExtraProperties extensibility, hierarchical types, EF Core seeding, and generic CRUD endpoints.
+description: Multilingual lookup table management for countries, currencies, and custom statuses — 17-culture i18n labels, Metadata extensibility, hierarchical types, EF Core seeding, and generic CRUD endpoints.
 sidebar:
   label: Reference Data
   order: 5
@@ -11,7 +11,7 @@ import { FileTree, Tabs, TabItem } from "@astrojs/starlight/components";
 `ReferenceDataEntity` is an abstract base class for i18n lookup tables (countries,
 currencies, document types). Each entity has a unique `Code`, 14 language labels,
 automatic label resolution based on `CurrentUICulture`, and an extensible
-`ExtraProperties` JSON bag for application-specific fields.
+`Metadata` JSON bag for application-specific fields.
 
 ## Package structure
 
@@ -33,7 +33,7 @@ automatic label resolution based on `CurrentUICulture`, and an extensible
 
 ```csharp
 public abstract class ReferenceDataEntity
-    : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents
+    : AuditedEntity, IActive, IHasMetadata, IEmitEntityLifecycleEvents
 {
     public string Code { get; set; }
 
@@ -51,8 +51,8 @@ public abstract class ReferenceDataEntity
     public DateTimeOffset? ValidFrom { get; set; }
     public DateTimeOffset? ValidTo { get; set; }
 
-    // ExtraProperties — JSON property bag for application-level extensibility
-    public string? ExtraPropertiesJson { get; set; }
+    // Metadata — JSON property bag for application-level extensibility
+    public string? MetadataJson { get; set; }
 
     // Optional parent code for hierarchical reference data
     public string? ParentCode { get; set; }
@@ -129,31 +129,31 @@ app.MapGranitAllReferenceData();
 </TabItem>
 </Tabs>
 
-## ExtraProperties — application-level extensibility
+## Metadata — application-level extensibility
 
-Every `ReferenceDataEntity` implements `IHasExtraProperties`. This provides a
-JSON property bag (`ExtraPropertiesJson` column) for attaching custom metadata
+Every `ReferenceDataEntity` implements `IHasMetadata`. This provides a
+JSON property bag (`MetadataJson` column) for attaching custom metadata
 without schema changes.
 
 ```csharp
 // Write extra properties
-country.SetExtraProperty("Continent", "Europe");
-country.SetExtraProperty("Population", "11500000");
+country.SetMetadataValue("Continent", "Europe");
+country.SetMetadataValue("Population", "11500000");
 
 // Read extra properties
-string? continent = country.GetExtraProperty("Continent");
-int? population = country.GetExtraProperty<int>("Population");
-bool hasContinent = country.HasExtraProperty("Continent");
+string? continent = country.GetMetadataValue("Continent");
+int? population = country.GetMetadataValue<int>("Population");
+bool hasContinent = country.HasMetadataValue("Continent");
 
 // Remove an extra property
-country.SetExtraProperty("Continent", null);
+country.SetMetadataValue("Continent", null);
 ```
 
 ### Promoting properties to SQL columns
 
 Properties that need SQL indexes or query filtering can be promoted to real
 columns via `MapProperty<T>()`. These become EF Core Shadow Properties —
-indexable and queryable, while remaining accessible through `GetExtraProperty()`.
+indexable and queryable, while remaining accessible through `GetMetadataValue()`.
 
 ```csharp
 services.AddReferenceData<AppDbContext>(rd =>
@@ -165,7 +165,7 @@ services.AddReferenceData<AppDbContext>(rd =>
 ```
 
 :::note
-The `ExtraPropertySyncInterceptor` automatically moves mapped property values
+The `MetadataSyncInterceptor` automatically moves mapped property values
 from the JSON bag to their SQL columns at save time, preventing data duplication.
 :::
 
@@ -256,7 +256,7 @@ for building dynamic query UIs. Disable with `IncludeMetaEndpoint = false`.
 | `PUT` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Update an entry |
 | `DELETE` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
 
-Create and update requests accept `ExtraProperties` (max 50 entries) and `ParentCode`.
+Create and update requests accept `Metadata` (max 50 entries) and `ParentCode`.
 
 ### Permissions
 
@@ -269,7 +269,7 @@ Create and update requests accept `ExtraProperties` (max 50 entries) and `Parent
 ### Validation
 
 The `Code` field must match `^[A-Za-z0-9_.\-]+$` (letters, digits, hyphens,
-underscores, dots). Maximum 50 characters. `ExtraProperties` is limited to 50
+underscores, dots). Maximum 50 characters. `Metadata` is limited to 50
 key-value pairs (keys max 50 chars, values max 4 000 chars).
 
 ## QueryEngine integration
@@ -321,16 +321,16 @@ public sealed class CountrySeeder : IReferenceDataSeeder<Country>
 
 | Category | Key types | Package |
 |----------|-----------|---------|
-| Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasExtraProperties` | `Granit.ReferenceData`, `Granit` |
+| Entity | `ReferenceDataEntity`, `DynamicReferenceDataEntity`, `IHasMetadata` | `Granit.ReferenceData`, `Granit` |
 | Store | `IReferenceDataStoreReader<T>`, `IReferenceDataStoreWriter<T>`, `IReferenceDataSeeder<T>` | `Granit.ReferenceData` |
 | Registration | `AddReferenceDataStore<T, TDb>()`, `AddReferenceData<TDb>()`, `ReferenceDataBuilder` | `Granit.ReferenceData.EntityFrameworkCore` |
 | Endpoints | `MapGranitReferenceData<T>()`, `MapGranitAllReferenceData()` | `Granit.ReferenceData.Endpoints` |
 | Registry | `ReferenceDataRegistry`, `ReferenceDataTypeRegistration` | `Granit.ReferenceData` |
-| ExtraProperties | `ExtraPropertyExtensions`, `ExtraPropertyMappingOptions<T>` | `Granit`, `Granit.Persistence` |
+| Metadata | `MetadataExtensions`, `MetadataMappingOptions<T>` | `Granit`, `Granit.Persistence` |
 
 ## See also
 
 - [Use Reference Data guide](/dotnet/guides/use-reference-data/) -- step-by-step walkthrough
 - [Localization](/dotnet/infrastructure/localization/) -- i18n for UI strings and error messages
 - [Persistence](/dotnet/data/persistence/) -- isolated DbContext pattern for all EF Core stores
-- [ExtraProperties](/dotnet/core/extra-properties/) -- JSON property bag for entity extensibility
+- [Metadata](/dotnet/core/metadata/) -- JSON property bag for entity extensibility

@@ -21,10 +21,10 @@ internal sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(e => e.Unit).HasMaxLength(64).IsRequired();
         builder.Property(e => e.LifecycleStatus).IsRequired();
 
-        // IHasExtraProperties — JSON string serialized via the framework convention.
+        // IHasMetadata — JSON string serialized via the framework convention.
         // Promoted-to-column shadow properties (when registered via MapProperty<T>())
-        // are kept in sync by ExtraPropertySyncInterceptor.
-        builder.Property(e => e.ExtraPropertiesJson).HasMaxLength(4000);
+        // are kept in sync by MetadataSyncInterceptor.
+        builder.Property(e => e.MetadataJson).HasMaxLength(4000);
 
         builder.HasMany(e => e.ExternalMappings)
             .WithOne()

@@ -14,7 +14,7 @@ namespace Granit.ReferenceData.Options;
 /// </para>
 /// <para>
 /// Additional properties can be stored in the JSON bag via
-/// <see cref="Granit.Domain.ExtraPropertyExtensions.SetExtraProperty"/> without
+/// <see cref="Granit.Domain.MetadataExtensions.SetMetadataValue"/> without
 /// needing to declare them here.
 /// </para>
 /// </remarks>
@@ -79,7 +79,7 @@ public sealed class ReferenceDataExtensionOptions
     /// Maps a property as a real SQL column on the reference data table.
     /// </summary>
     /// <typeparam name="T">The CLR type of the property.</typeparam>
-    /// <param name="name">The property name (used as column name and ExtraProperties key).</param>
+    /// <param name="name">The property name (used as column name and Metadata key).</param>
     /// <param name="maxLength">Maximum string length (only for <see cref="string"/> properties).</param>
     /// <param name="isRequired">Whether the column is NOT NULL. Default: <see langword="false"/>.</param>
     /// <param name="isFilterable">Whether the property is filterable in QueryEngine. Default: <see langword="false"/>.</param>
@@ -101,7 +101,7 @@ public sealed class ReferenceDataExtensionOptions
 /// <summary>
 /// Describes a single dynamic property mapping for a reference data type.
 /// </summary>
-/// <param name="Name">The property name (column name + ExtraProperties key).</param>
+/// <param name="Name">The property name (column name + Metadata key).</param>
 /// <param name="ClrType">The CLR type of the property.</param>
 /// <param name="MaxLength">Maximum string length (<see langword="null"/> for non-string types).</param>
 /// <param name="IsRequired">Whether the column is NOT NULL.</param>

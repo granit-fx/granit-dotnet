@@ -2,26 +2,26 @@ using Granit.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+namespace Granit.Persistence.EntityFrameworkCore.Metadata;
 
 /// <summary>
 /// EF Core <see cref="ModelBuilder"/> extensions for applying extra property mappings
 /// as Shadow Properties on entity types.
 /// </summary>
-public static class ExtraPropertyModelBuilderExtensions
+public static class MetadataModelBuilderExtensions
 {
     /// <summary>
     /// Applies extra property mappings for <typeparamref name="TEntity"/>, adding
     /// EF Core Shadow Properties as real SQL columns for each mapped property.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type implementing <see cref="IHasExtraProperties"/>.</typeparam>
+    /// <typeparam name="TEntity">The entity type implementing <see cref="IHasMetadata"/>.</typeparam>
     /// <param name="modelBuilder">The EF Core model builder.</param>
     /// <param name="options">The extra property mapping options declaring which properties to map.</param>
     /// <returns>The model builder for chaining.</returns>
-    public static ModelBuilder ApplyExtraPropertyMappings<TEntity>(
+    public static ModelBuilder ApplyMetadataMappings<TEntity>(
         this ModelBuilder modelBuilder,
-        ExtraPropertyMappingOptions<TEntity> options)
-        where TEntity : class, IHasExtraProperties
+        MetadataMappingOptions<TEntity> options)
+        where TEntity : class, IHasMetadata
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         ArgumentNullException.ThrowIfNull(options);
@@ -33,7 +33,7 @@ public static class ExtraPropertyModelBuilderExtensions
 
         modelBuilder.Entity<TEntity>(b =>
         {
-            foreach (ExtraPropertyMapping mapping in options.Mappings)
+            foreach (MetadataMapping mapping in options.Mappings)
             {
                 PropertyBuilder prop = b.Property(mapping.ClrType, mapping.Name);
 

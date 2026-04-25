@@ -37,8 +37,8 @@ internal static class ProductWriteEndpoints
             .ProducesValidationProblem()
             .RequireAuthorization(CatalogPermissions.Products.Manage);
 
-        group.MapPut("/products/{id:guid}/extra-properties", UpdateProductExtraPropertiesAsync)
-            .WithName("UpdateCatalogProductExtraProperties")
+        group.MapPut("/products/{id:guid}/metadata", UpdateProductMetadataAsync)
+            .WithName("UpdateCatalogProductMetadata")
             .WithSummary("Replaces the product extra properties dictionary.")
             .WithDescription(
                 "Allowed in any lifecycle state — extra properties may need to flow even for Published "
@@ -125,9 +125,9 @@ internal static class ProductWriteEndpoints
         return TypedResults.Ok(ProductResponse.FromEntity(product));
     }
 
-    private static async Task<Results<Ok<ProductResponse>, ProblemHttpResult>> UpdateProductExtraPropertiesAsync(
+    private static async Task<Results<Ok<ProductResponse>, ProblemHttpResult>> UpdateProductMetadataAsync(
         Guid id,
-        UpdateProductExtraPropertiesRequest request,
+        UpdateProductMetadataRequest request,
         [FromServices] IProductReader productReader,
         [FromServices] IProductWriter productWriter,
         CancellationToken cancellationToken)
@@ -138,7 +138,7 @@ internal static class ProductWriteEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        product.ReplaceExtraProperties(request.ExtraProperties);
+        product.ReplaceMetadata(request.Metadata);
         await productWriter.UpdateAsync(product, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(ProductResponse.FromEntity(product));
     }

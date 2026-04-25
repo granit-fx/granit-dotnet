@@ -104,8 +104,8 @@ public abstract class ExportDefinition<TEntity> : IExportDefinitionDescriptor
     /// <summary>
     /// Gets whether mapped extra properties should be appended to the export fields.
     /// </summary>
-    public bool GetIncludeExtraProperties() => GetBuilder().IncludeExtraPropertiesFlag;
+    public bool GetIncludeMetadata() => GetBuilder().IncludeMetadataFlag;
 
     /// <inheritdoc/>
-    bool IExportDefinitionDescriptor.IncludeExtraProperties => GetIncludeExtraProperties();
+    bool IExportDefinitionDescriptor.IncludeMetadata => GetIncludeMetadata();
 }

@@ -21,14 +21,14 @@ namespace Granit.Identity.Local.Domain;
 /// <see cref="IdentityUser{TKey}.ConcurrencyStamp"/> property.
 /// </para>
 /// <para>
-/// Implements <see cref="IHasExtraProperties"/> via explicit interface mapping to
-/// <see cref="CustomAttributesJson"/>. The generic <c>ExtraPropertySyncInterceptor</c>
+/// Implements <see cref="IHasMetadata"/> via explicit interface mapping to
+/// <see cref="CustomAttributesJson"/>. The generic <c>MetadataSyncInterceptor</c>
 /// in <c>Granit.Persistence.EntityFrameworkCore</c> handles Shadow Property synchronization.
 /// </para>
 /// </remarks>
-public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasExtraProperties
+public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasMetadata
 {
-    private IReadOnlyDictionary<string, string>? _parsedExtraProperties;
+    private IReadOnlyDictionary<string, string>? _parsedMetadata;
 
     /// <summary>Gets or sets the user's first name.</summary>
     public string? FirstName { get; set; }
@@ -88,36 +88,36 @@ public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasE
 #pragma warning restore GRSEC001
 
     /// <inheritdoc/>
-    IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
-        _parsedExtraProperties ??= DeserializeExtraProperties();
+    IReadOnlyDictionary<string, string> IIdentityUser.Metadata =>
+        _parsedMetadata ??= DeserializeMetadata();
 
-    // ──── IHasExtraProperties (explicit — maps to CustomAttributesJson) ────
+    // ──── IHasMetadata (explicit — maps to CustomAttributesJson) ────
 
     /// <inheritdoc/>
-    string? IHasExtraProperties.ExtraPropertiesJson
+    string? IHasMetadata.MetadataJson
     {
         get => CustomAttributesJson;
         set
         {
             CustomAttributesJson = value;
-            _parsedExtraProperties = null;
+            _parsedMetadata = null;
         }
     }
 
-    // ──── ExtraProperties helpers ────
+    // ──── Metadata helpers ────
 
     /// <summary>Sets an extra property. Pass <see langword="null"/> to remove.</summary>
-    public void SetExtraProperty(string name, string? value)
+    public void SetMetadataValue(string name, string? value)
     {
-        ((IHasExtraProperties)this).SetExtraProperty(name, value);
-        _parsedExtraProperties = null;
+        ((IHasMetadata)this).SetMetadataValue(name, value);
+        _parsedMetadata = null;
     }
 
     /// <summary>Gets an extra property by name.</summary>
-    public string? GetExtraProperty(string name) =>
-        ((IHasExtraProperties)this).GetExtraProperty(name);
+    public string? GetMetadataValue(string name) =>
+        ((IHasMetadata)this).GetMetadataValue(name);
 
-    private ReadOnlyDictionary<string, string> DeserializeExtraProperties()
+    private ReadOnlyDictionary<string, string> DeserializeMetadata()
     {
         if (string.IsNullOrWhiteSpace(CustomAttributesJson))
         {

@@ -2,11 +2,11 @@ namespace Granit.DataExchange.Export;
 
 /// <summary>
 /// Provides additional export fields for entities with dynamic properties
-/// (e.g. <c>IHasExtraProperties</c> with mapped extra properties).
+/// (e.g. <c>IHasMetadata</c> with mapped extra properties).
 /// </summary>
 /// <remarks>
 /// The default implementation returns an empty list. The EF Core layer
-/// registers an implementation that reads from <c>IExtraPropertyMappingRegistry</c>.
+/// registers an implementation that reads from <c>IMetadataMappingRegistry</c>.
 /// </remarks>
 public interface IExtraExportFieldProvider
 {

@@ -24,12 +24,12 @@ namespace Granit.ReferenceData.Domain;
 /// are filtered out by the EF Core global query filter unless explicitly disabled.
 /// </para>
 /// <para>
-/// Implements <see cref="IHasExtraProperties"/> to support application-level extensibility
+/// Implements <see cref="IHasMetadata"/> to support application-level extensibility
 /// via a JSON property bag. Properties can be promoted to real SQL columns via
-/// <c>ExtraPropertyMappingOptions&lt;T&gt;.MapProperty()</c> for indexing and querying.
+/// <c>MetadataMappingOptions&lt;T&gt;.MapProperty()</c> for indexing and querying.
 /// </para>
 /// </remarks>
-public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraProperties, IEmitEntityLifecycleEvents, IMultiTenant
+public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasMetadata, IEmitEntityLifecycleEvents, IMultiTenant
 {
     /// <inheritdoc/>
     public Guid? TenantId { get; set; }
@@ -136,7 +136,7 @@ public abstract class ReferenceDataEntity : AuditedEntity, IActive, IHasExtraPro
     public DateTimeOffset? ValidTo { get; set; }
 
     /// <inheritdoc/>
-    public string? ExtraPropertiesJson { get; set; }
+    public string? MetadataJson { get; set; }
 
     /// <summary>
     /// Optional parent code for hierarchical reference data (e.g., regions → countries).

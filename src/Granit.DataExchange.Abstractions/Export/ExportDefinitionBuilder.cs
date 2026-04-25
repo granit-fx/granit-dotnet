@@ -24,7 +24,7 @@ public sealed class ExportDefinitionBuilder<TEntity> where TEntity : class
     internal List<ExportFieldDescriptor> Fields { get; } = [];
     internal bool IncludeIdFlag { get; private set; }
     internal bool IncludeBusinessKeyFlag { get; private set; }
-    internal bool IncludeExtraPropertiesFlag { get; private set; }
+    internal bool IncludeMetadataFlag { get; private set; }
 
     /// <summary>
     /// Declares a simple exportable field on the entity.
@@ -106,18 +106,18 @@ public sealed class ExportDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
-    /// Includes mapped extra properties (from <c>IExtraPropertyMappingRegistry</c>)
+    /// Includes mapped extra properties (from <c>IMetadataMappingRegistry</c>)
     /// as additional export fields after the explicitly declared fields.
     /// </summary>
     /// <remarks>
-    /// Only applicable to entities implementing <c>IHasExtraProperties</c> that have
+    /// Only applicable to entities implementing <c>IHasMetadata</c> that have
     /// extra properties mapped via <c>MapProperty&lt;T&gt;()</c>. The extra fields are
     /// discovered at runtime by <see cref="IExtraExportFieldProvider"/> and their values
     /// are resolved by <see cref="IExportExtraValueResolver"/>.
     /// </remarks>
-    public ExportDefinitionBuilder<TEntity> IncludeExtraProperties()
+    public ExportDefinitionBuilder<TEntity> IncludeMetadata()
     {
-        IncludeExtraPropertiesFlag = true;
+        IncludeMetadataFlag = true;
         return this;
     }
 

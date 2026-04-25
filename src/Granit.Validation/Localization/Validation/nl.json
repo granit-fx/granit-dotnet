@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "Maximaal 50 CIDR-bereiken toegestaan.",
     "Granit:Validation:MaxCustomAttributes": "Het maximale aantal aangepaste attributen is overschreden.",
     "Granit:Validation:MaxEmbeddingInputs": "Maximaal aantal embedding-invoeren overschreden.",
-    "Granit:Validation:MaxExtraProperties": "Maximaal 50 extra eigenschappen toegestaan.",
+    "Granit:Validation:MaxMetadataKeys": "Maximaal 50 metadata-sleutels toegestaan.",
     "Granit:Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
     "Granit:Validation:MaxPermissions": "Maximaal 100 machtigingen toegestaan.",
     "Granit:Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",

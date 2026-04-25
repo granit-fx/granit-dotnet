@@ -15,6 +15,6 @@ internal sealed record FakeIdentityUser(
     string? LastName,
     bool Enabled) : IIdentityUser
 {
-    public IReadOnlyDictionary<string, string> ExtraProperties { get; init; } =
+    public IReadOnlyDictionary<string, string> Metadata { get; init; } =
         ReadOnlyDictionary<string, string>.Empty;
 }

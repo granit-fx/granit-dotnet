@@ -212,9 +212,9 @@ internal sealed partial class ExportOrchestrator(
     {
         IReadOnlyList<ExportFieldDescriptor> definitionFields = definition.GetFields();
 
-        // Merge extra property fields when IncludeExtraProperties is enabled
+        // Merge extra property fields when IncludeMetadata is enabled
         IReadOnlyList<ExportFieldDescriptor> allFields;
-        if (definition.IncludeExtraProperties)
+        if (definition.IncludeMetadata)
         {
             IReadOnlyList<ExportFieldDescriptor> extraFields = extraFieldProvider.GetExtraFields(definition.EntityType);
             if (extraFields.Count > 0)
@@ -309,7 +309,7 @@ internal sealed partial class ExportOrchestrator(
 
         // Build set of extra property names for fast lookup during row extraction
         HashSet<string>? extraPropertyNames = null;
-        if (definition.IncludeExtraProperties)
+        if (definition.IncludeMetadata)
         {
             IReadOnlyList<ExportFieldDescriptor> extraFields = extraFieldProvider.GetExtraFields(definition.EntityType);
             if (extraFields.Count > 0)

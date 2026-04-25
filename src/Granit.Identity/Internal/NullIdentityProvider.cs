@@ -128,7 +128,7 @@ internal sealed class NullIdentityProvider : IIdentityProvider
         string UserId, string? Username, string? Email,
         string? FirstName, string? LastName, bool Enabled) : IIdentityUser
     {
-        public IReadOnlyDictionary<string, string> ExtraProperties { get; } =
+        public IReadOnlyDictionary<string, string> Metadata { get; } =
             System.Collections.ObjectModel.ReadOnlyDictionary<string, string>.Empty;
     }
 }

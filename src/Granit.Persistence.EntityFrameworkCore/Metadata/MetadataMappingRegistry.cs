@@ -1,33 +1,33 @@
 using System.Collections.Concurrent;
 
-namespace Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+namespace Granit.Persistence.EntityFrameworkCore.Metadata;
 
 /// <summary>
-/// Default implementation of <see cref="IExtraPropertyMappingRegistry"/>.
+/// Default implementation of <see cref="IMetadataMappingRegistry"/>.
 /// Populated at DI registration time; thread-safe for concurrent reads.
 /// </summary>
-internal sealed class ExtraPropertyMappingRegistry : IExtraPropertyMappingRegistry
+internal sealed class MetadataMappingRegistry : IMetadataMappingRegistry
 {
     private static readonly HashSet<string> EmptyNames = [];
-    private static readonly IReadOnlyList<ExtraPropertyMapping> EmptyMappings = [];
+    private static readonly IReadOnlyList<MetadataMapping> EmptyMappings = [];
 
-    private readonly ConcurrentDictionary<Type, (HashSet<string> Names, IReadOnlyList<ExtraPropertyMapping> Mappings)>
+    private readonly ConcurrentDictionary<Type, (HashSet<string> Names, IReadOnlyList<MetadataMapping> Mappings)>
         _registrations = new();
 
     /// <inheritdoc/>
     public HashSet<string> GetMappedPropertyNames(Type entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);
-        return _registrations.TryGetValue(entityType, out (HashSet<string> Names, IReadOnlyList<ExtraPropertyMapping> Mappings) entry)
+        return _registrations.TryGetValue(entityType, out (HashSet<string> Names, IReadOnlyList<MetadataMapping> Mappings) entry)
             ? entry.Names
             : EmptyNames;
     }
 
     /// <inheritdoc/>
-    public IReadOnlyList<ExtraPropertyMapping> GetMappings(Type entityType)
+    public IReadOnlyList<MetadataMapping> GetMappings(Type entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);
-        return _registrations.TryGetValue(entityType, out (HashSet<string> Names, IReadOnlyList<ExtraPropertyMapping> Mappings) entry)
+        return _registrations.TryGetValue(entityType, out (HashSet<string> Names, IReadOnlyList<MetadataMapping> Mappings) entry)
             ? entry.Mappings
             : EmptyMappings;
     }
@@ -37,7 +37,7 @@ internal sealed class ExtraPropertyMappingRegistry : IExtraPropertyMappingRegist
     /// </summary>
     /// <param name="entityType">The CLR type of the entity.</param>
     /// <param name="mappings">The property mappings to register.</param>
-    internal void Register(Type entityType, IReadOnlyList<ExtraPropertyMapping> mappings)
+    internal void Register(Type entityType, IReadOnlyList<MetadataMapping> mappings)
     {
         ArgumentNullException.ThrowIfNull(entityType);
         ArgumentNullException.ThrowIfNull(mappings);
@@ -60,7 +60,7 @@ internal sealed class ExtraPropertyMappingRegistry : IExtraPropertyMappingRegist
                     existing.Names.Add(name);
                 }
 
-                List<ExtraPropertyMapping> merged = [.. existing.Mappings, .. mappings];
+                List<MetadataMapping> merged = [.. existing.Mappings, .. mappings];
                 return (existing.Names, merged);
             });
     }

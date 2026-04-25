@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "最多允许 50 个 CIDR 范围。",
     "Granit:Validation:MaxCustomAttributes": "已超过自定义属性的最大数量。",
     "Granit:Validation:MaxEmbeddingInputs": "嵌入输入数量已超过上限。",
-    "Granit:Validation:MaxExtraProperties": "最多允许 50 个额外属性。",
+    "Granit:Validation:MaxMetadataKeys": "最多允许 50 个元数据键。",
     "Granit:Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
     "Granit:Validation:MaxPermissions": "最多允许 100 个权限。",
     "Granit:Validation:MaxPresetEntries": "最多允许 20 个预设条目。",

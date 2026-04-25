@@ -1,11 +1,11 @@
-namespace Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+namespace Granit.Persistence.EntityFrameworkCore.Metadata;
 
 /// <summary>
-/// Singleton registry that aggregates all <see cref="ExtraPropertyMappingOptions{TEntity}"/>
-/// by entity type. Used by <see cref="ExtraPropertySyncInterceptor"/> to resolve
+/// Singleton registry that aggregates all <see cref="MetadataMappingOptions{TEntity}"/>
+/// by entity type. Used by <see cref="MetadataSyncInterceptor"/> to resolve
 /// mapped property names at save time.
 /// </summary>
-public interface IExtraPropertyMappingRegistry
+public interface IMetadataMappingRegistry
 {
     /// <summary>
     /// Gets the set of mapped property names for the given entity type.
@@ -21,5 +21,5 @@ public interface IExtraPropertyMappingRegistry
     /// </summary>
     /// <param name="entityType">The CLR type of the entity.</param>
     /// <returns>The list of property mappings.</returns>
-    IReadOnlyList<ExtraPropertyMapping> GetMappings(Type entityType);
+    IReadOnlyList<MetadataMapping> GetMappings(Type entityType);
 }

@@ -6,7 +6,7 @@ namespace Granit.Identity.Endpoints.Internal;
 internal static class IdentityResponseMapper
 {
     internal static IdentityUserResponse ToResponse(IIdentityUser user) =>
-        new(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.Enabled, user.ExtraProperties);
+        new(user.UserId, user.Username, user.Email, user.FirstName, user.LastName, user.Enabled, user.Metadata);
 
     internal static IdentityRoleResponse ToResponse(IdentityRole role) =>
         new(role.Id, role.Name, role.Description);

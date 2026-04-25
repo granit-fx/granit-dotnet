@@ -1,20 +1,20 @@
 using Granit.DataExchange.Export;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 
 namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 
 /// <summary>
-/// <see cref="IExtraExportFieldProvider"/> backed by <see cref="IExtraPropertyMappingRegistry"/>.
+/// <see cref="IExtraExportFieldProvider"/> backed by <see cref="IMetadataMappingRegistry"/>.
 /// Returns one <see cref="ExportFieldDescriptor"/> per mapped extra property.
 /// </summary>
 internal sealed class EfCoreExtraExportFieldProvider(
-    IExtraPropertyMappingRegistry registry) : IExtraExportFieldProvider
+    IMetadataMappingRegistry registry) : IExtraExportFieldProvider
 {
     public IReadOnlyList<ExportFieldDescriptor> GetExtraFields(Type entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);
 
-        IReadOnlyList<ExtraPropertyMapping> mappings = registry.GetMappings(entityType);
+        IReadOnlyList<MetadataMapping> mappings = registry.GetMappings(entityType);
         if (mappings.Count == 0)
         {
             return [];
@@ -23,7 +23,7 @@ internal sealed class EfCoreExtraExportFieldProvider(
         List<ExportFieldDescriptor> fields = new(mappings.Count);
         for (int i = 0; i < mappings.Count; i++)
         {
-            ExtraPropertyMapping mapping = mappings[i];
+            MetadataMapping mapping = mappings[i];
             Type clrType = Nullable.GetUnderlyingType(mapping.ClrType) ?? mapping.ClrType;
 
             fields.Add(new ExportFieldDescriptor(

@@ -23,7 +23,7 @@ namespace Granit.Identity.Federated.Domain;
 /// </remarks>
 public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
 {
-    private IReadOnlyDictionary<string, string>? _parsedExtraProperties;
+    private IReadOnlyDictionary<string, string>? _parsedMetadata;
     /// <summary>User identifier in the external identity provider (e.g. Keycloak sub). Max 256 characters.</summary>
     public string ExternalUserId { get; set; } = string.Empty;
 
@@ -68,7 +68,7 @@ public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
     public Guid? TenantId { get; set; }
 
     /// <summary>JSON column for extra properties from the federated provider.</summary>
-    public string? ExtraPropertiesJson { get; set; }
+    public string? MetadataJson { get; set; }
 
     // ──── IIdentityUser (explicit implementation) ────
 
@@ -85,18 +85,18 @@ public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
     bool IIdentityUser.Enabled => Enabled;
 
     /// <inheritdoc/>
-    IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
-        _parsedExtraProperties ??= DeserializeExtraProperties();
+    IReadOnlyDictionary<string, string> IIdentityUser.Metadata =>
+        _parsedMetadata ??= DeserializeMetadata();
 
-    private ReadOnlyDictionary<string, string> DeserializeExtraProperties()
+    private ReadOnlyDictionary<string, string> DeserializeMetadata()
     {
-        if (string.IsNullOrWhiteSpace(ExtraPropertiesJson))
+        if (string.IsNullOrWhiteSpace(MetadataJson))
         {
             return ReadOnlyDictionary<string, string>.Empty;
         }
 
         Dictionary<string, string>? parsed =
-            JsonSerializer.Deserialize<Dictionary<string, string>>(ExtraPropertiesJson);
+            JsonSerializer.Deserialize<Dictionary<string, string>>(MetadataJson);
 
         return parsed is { Count: > 0 }
             ? new ReadOnlyDictionary<string, string>(parsed)

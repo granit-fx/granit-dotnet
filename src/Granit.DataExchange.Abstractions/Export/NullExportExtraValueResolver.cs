@@ -11,9 +11,9 @@ internal sealed class NullExportExtraValueResolver : IExportExtraValueResolver
 {
     public object? ResolveExtraValue(object entity, string propertyName)
     {
-        if (entity is IHasExtraProperties hasExtra)
+        if (entity is IHasMetadata hasExtra)
         {
-            return hasExtra.GetExtraProperty(propertyName);
+            return hasExtra.GetMetadataValue(propertyName);
         }
 
         return null;

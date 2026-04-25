@@ -4,7 +4,7 @@ using Granit.Domain;
 using Granit.Identity.Local.Domain;
 using Granit.OpenIddict.Domain;
 using Granit.OpenIddict.Entities.OpenIddict;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,7 +46,7 @@ public static class OpenIddictModelBuilderExtensions
     public static ModelBuilder ConfigureOpenIddictModule(
         this ModelBuilder modelBuilder,
         IDataFilter? dataFilter = null,
-        ExtraPropertyMappingOptions<GranitUser>? extensionOptions = null)
+        MetadataMappingOptions<GranitUser>? extensionOptions = null)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
@@ -186,7 +186,7 @@ public static class OpenIddictModelBuilderExtensions
         {
             modelBuilder.Entity<GranitUser>(b =>
             {
-                foreach (ExtraPropertyMapping mapping in extensionOptions.Mappings)
+                foreach (MetadataMapping mapping in extensionOptions.Mappings)
                 {
                     Microsoft.EntityFrameworkCore.Metadata.Builders.PropertyBuilder prop =
                         b.Property(mapping.ClrType, mapping.Name);

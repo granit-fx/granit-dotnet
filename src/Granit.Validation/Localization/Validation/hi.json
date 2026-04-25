@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "अधिकतम 50 CIDR श्रेणियाँ अनुमत हैं।",
     "Granit:Validation:MaxCustomAttributes": "कस्टम विशेषताओं की अधिकतम संख्या पार हो गई।",
     "Granit:Validation:MaxEmbeddingInputs": "एम्बेडिंग इनपुट की अधिकतम संख्या पार हो गई।",
-    "Granit:Validation:MaxExtraProperties": "अधिकतम 50 अतिरिक्त प्रॉपर्टी अनुमत हैं।",
+    "Granit:Validation:MaxMetadataKeys": "अधिकतम 50 मेटाडेटा कीज़ अनुमत हैं।",
     "Granit:Validation:MaxFilterEntries": "अधिकतम 50 फ़िल्टर प्रविष्टियाँ अनुमत हैं।",
     "Granit:Validation:MaxPermissions": "अधिकतम 100 अनुमतियाँ अनुमत हैं।",
     "Granit:Validation:MaxPresetEntries": "अधिकतम 20 प्रीसेट प्रविष्टियाँ अनुमत हैं।",

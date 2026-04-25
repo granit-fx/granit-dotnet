@@ -6,14 +6,14 @@ namespace Granit.ReferenceData.Endpoints.Internal;
 
 /// <summary>
 /// Maps <see cref="ReferenceDataEntity"/> instances to <see cref="ReferenceDataResponse"/> DTOs,
-/// ensuring EF entities (and their <c>ExtraPropertiesJson</c> column) are never exposed directly.
+/// ensuring EF entities (and their <c>MetadataJson</c> column) are never exposed directly.
 /// </summary>
 internal static class ReferenceDataMapper
 {
     internal static ReferenceDataResponse ToResponse<TEntity>(TEntity entity)
         where TEntity : ReferenceDataEntity
     {
-        IReadOnlyDictionary<string, string> extras = entity.GetExtraProperties();
+        IReadOnlyDictionary<string, string> extras = entity.GetMetadata();
 
         return new ReferenceDataResponse(
             entity.Id,

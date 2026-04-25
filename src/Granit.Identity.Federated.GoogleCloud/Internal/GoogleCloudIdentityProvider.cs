@@ -330,7 +330,7 @@ internal sealed partial class GoogleCloudIdentityProvider(
             FirstName: ExtractFirstName(user.DisplayName),
             LastName: ExtractLastName(user.DisplayName),
             Enabled: !user.Disabled,
-            ExtraProperties: user.CustomClaims?.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? string.Empty));
+            Metadata: user.CustomClaims?.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? string.Empty));
 
     private List<string> ExtractRoleNames(IReadOnlyDictionary<string, object>? customClaims)
     {

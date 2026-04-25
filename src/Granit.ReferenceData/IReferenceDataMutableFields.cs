@@ -64,5 +64,5 @@ public interface IReferenceDataMutableFields
     string? ParentCode { get; }
 
     /// <summary>Optional extra properties (key-value pairs stored in JSON bag).</summary>
-    Dictionary<string, string>? ExtraProperties { get; }
+    Dictionary<string, string>? Metadata { get; }
 }

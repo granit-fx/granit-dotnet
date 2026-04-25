@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using Granit.DataExchange.Export;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +18,7 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 /// </remarks>
 internal sealed class EfCoreExportExtraValueResolver(
     IServiceProvider serviceProvider,
-    IExtraPropertyMappingRegistry registry) : IExportExtraValueResolver
+    IMetadataMappingRegistry registry) : IExportExtraValueResolver
 {
     private readonly ConcurrentDictionary<Type, DbContext?> _contextCache = new();
 

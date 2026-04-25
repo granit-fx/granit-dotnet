@@ -9952,7 +9952,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "WorkflowLifecycleStatus LifecycleStatus { get; private set; } public string? ExtraPropertiesJson { get; set; } public IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "WorkflowLifecycleStatus LifecycleStatus { get; private set; } public string? MetadataJson { get; set; } public IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "GetWorkflowEntityId",
@@ -10045,8 +10045,8 @@
       "members": []
     },
     {
-      "name": "UpdateProductExtraPropertiesRequest",
-      "fqn": "Granit.Catalog.Endpoints.Dtos.UpdateProductExtraPropertiesRequest",
+      "name": "UpdateProductMetadataRequest",
+      "fqn": "Granit.Catalog.Endpoints.Dtos.UpdateProductMetadataRequest",
       "kind": "record",
       "project": "Granit.Catalog.Endpoints",
       "file": "src/Granit.Catalog.Endpoints/Dtos/ProductRequestDtos.cs",
@@ -11455,9 +11455,9 @@
           "returnType": "bool"
         },
         {
-          "name": "GetIncludeExtraProperties",
+          "name": "GetIncludeMetadata",
           "kind": "method",
-          "signature": "GetIncludeExtraProperties()",
+          "signature": "GetIncludeMetadata()",
           "returnType": "bool"
         }
       ]
@@ -11603,9 +11603,9 @@
           "returnType": "bool"
         },
         {
-          "name": "IncludeExtraProperties",
+          "name": "IncludeMetadata",
           "kind": "property",
-          "signature": "bool IncludeExtraProperties",
+          "signature": "bool IncludeMetadata",
           "returnType": "bool"
         }
       ]
@@ -13946,22 +13946,6 @@
       "members": []
     },
     {
-      "name": "ExtraPropertyExtensions",
-      "fqn": "Granit.Domain.ExtraPropertyExtensions",
-      "kind": "class",
-      "project": "Granit",
-      "file": "src/Granit/Domain/ExtraPropertyExtensions.cs",
-      "line": 20,
-      "members": [
-        {
-          "name": "GetExtraProperties",
-          "kind": "method",
-          "signature": "GetExtraProperties(this IHasExtraProperties entity)",
-          "returnType": "IReadOnlyDictionary<string, string>"
-        }
-      ]
-    },
-    {
       "name": "FullAuditedAggregateRoot",
       "fqn": "Granit.Domain.FullAuditedAggregateRoot",
       "kind": "class",
@@ -14041,11 +14025,11 @@
       ]
     },
     {
-      "name": "IHasExtraProperties",
-      "fqn": "Granit.Domain.IHasExtraProperties",
+      "name": "IHasMetadata",
+      "fqn": "Granit.Domain.IHasMetadata",
       "kind": "interface",
       "project": "Granit",
-      "file": "src/Granit/Domain/IHasExtraProperties.cs",
+      "file": "src/Granit/Domain/IHasMetadata.cs",
       "line": 19,
       "members": []
     },
@@ -14111,6 +14095,22 @@
       "file": "src/Granit/Domain/IVersioned.cs",
       "line": 20,
       "members": []
+    },
+    {
+      "name": "MetadataExtensions",
+      "fqn": "Granit.Domain.MetadataExtensions",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/MetadataExtensions.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "GetMetadata",
+          "kind": "method",
+          "signature": "GetMetadata(this IHasMetadata entity)",
+          "returnType": "IReadOnlyDictionary<string, string>"
+        }
+      ]
     },
     {
       "name": "SingleValueObject",
@@ -30129,7 +30129,7 @@
         {
           "name": "ConfigureOpenIddictModule",
           "kind": "method",
-          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, ExtraPropertyMappingOptions<GranitUser>? extensionOptions = null)",
+          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, MetadataMappingOptions<GranitUser>? extensionOptions = null)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -33388,78 +33388,6 @@
       "members": []
     },
     {
-      "name": "ExtraPropertyMapping",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyMapping",
-      "kind": "record",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyMapping.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "ExtraPropertyMappingOptions",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyMappingOptions",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyMappingOptions.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "Mappings",
-          "kind": "property",
-          "signature": "List<ExtraPropertyMapping> Mappings",
-          "returnType": "List<ExtraPropertyMapping>"
-        }
-      ]
-    },
-    {
-      "name": "ExtraPropertyModelBuilderExtensions",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyModelBuilderExtensions.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "ExtraPropertyServiceCollectionExtensions",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.ExtraPropertyServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/ExtraPropertyServiceCollectionExtensions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "AddExtraPropertyInfrastructure",
-          "kind": "method",
-          "signature": "AddExtraPropertyInfrastructure(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "IExtraPropertyMappingRegistry",
-      "fqn": "Granit.Persistence.EntityFrameworkCore.ExtraProperties.IExtraPropertyMappingRegistry",
-      "kind": "interface",
-      "project": "Granit.Persistence.EntityFrameworkCore",
-      "file": "src/Granit.Persistence.EntityFrameworkCore/ExtraProperties/IExtraPropertyMappingRegistry.cs",
-      "line": 8,
-      "members": [
-        {
-          "name": "GetMappedPropertyNames",
-          "kind": "method",
-          "signature": "GetMappedPropertyNames(Type entityType)",
-          "returnType": "HashSet<string>"
-        },
-        {
-          "name": "GetMappings",
-          "kind": "method",
-          "signature": "GetMappings(Type entityType)",
-          "returnType": "IReadOnlyList<ExtraPropertyMapping>"
-        }
-      ]
-    },
-    {
       "name": "GranitDbDefaults",
       "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDbDefaults",
       "kind": "class",
@@ -33786,6 +33714,78 @@
           "kind": "method",
           "signature": "SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)",
           "returnType": "InterceptionResult<int>"
+        }
+      ]
+    },
+    {
+      "name": "IMetadataMappingRegistry",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Metadata.IMetadataMappingRegistry",
+      "kind": "interface",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Metadata/IMetadataMappingRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetMappedPropertyNames",
+          "kind": "method",
+          "signature": "GetMappedPropertyNames(Type entityType)",
+          "returnType": "HashSet<string>"
+        },
+        {
+          "name": "GetMappings",
+          "kind": "method",
+          "signature": "GetMappings(Type entityType)",
+          "returnType": "IReadOnlyList<MetadataMapping>"
+        }
+      ]
+    },
+    {
+      "name": "MetadataMapping",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Metadata.MetadataMapping",
+      "kind": "record",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Metadata/MetadataMapping.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "MetadataMappingOptions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Metadata.MetadataMappingOptions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Metadata/MetadataMappingOptions.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Mappings",
+          "kind": "property",
+          "signature": "List<MetadataMapping> Mappings",
+          "returnType": "List<MetadataMapping>"
+        }
+      ]
+    },
+    {
+      "name": "MetadataModelBuilderExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Metadata.MetadataModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Metadata/MetadataModelBuilderExtensions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "MetadataServiceCollectionExtensions",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.Metadata.MetadataServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/Metadata/MetadataServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddMetadataInfrastructure",
+          "kind": "method",
+          "signature": "AddMetadataInfrastructure(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
         }
       ]
     },

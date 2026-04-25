@@ -6,7 +6,7 @@ namespace Granit.ReferenceData.Domain;
 /// strongly-typed subclass is needed.
 /// </summary>
 /// <remarks>
-/// Custom fields are stored via <see cref="ReferenceDataEntity.ExtraPropertiesJson"/>
+/// Custom fields are stored via <see cref="ReferenceDataEntity.MetadataJson"/>
 /// or promoted to SQL columns via <c>MapProperty&lt;T&gt;()</c>.
 /// </remarks>
 public sealed class DynamicReferenceDataEntity : ReferenceDataEntity;

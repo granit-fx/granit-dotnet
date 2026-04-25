@@ -5,13 +5,13 @@ using Granit.Validation;
 namespace Granit.Catalog.Endpoints.Validators;
 
 /// <summary>
-/// Validates <see cref="UpdateProductExtraPropertiesRequest"/>.
+/// Validates <see cref="UpdateProductMetadataRequest"/>.
 /// </summary>
-internal sealed class UpdateProductExtraPropertiesRequestValidator : GranitValidator<UpdateProductExtraPropertiesRequest>
+internal sealed class UpdateProductMetadataRequestValidator : GranitValidator<UpdateProductMetadataRequest>
 {
     /// <summary>
     /// Cap on the number of entries to bound the JSON payload size persisted in
-    /// <c>ExtraPropertiesJson</c> (max 4000 chars at the EF column level).
+    /// <c>MetadataJson</c> (max 4000 chars at the EF column level).
     /// </summary>
     internal const int MaxEntries = 50;
 
@@ -21,14 +21,14 @@ internal sealed class UpdateProductExtraPropertiesRequestValidator : GranitValid
     /// <summary>Per-value length cap (matches Stripe's metadata value limit).</summary>
     internal const int MaxValueLength = 500;
 
-    public UpdateProductExtraPropertiesRequestValidator()
+    public UpdateProductMetadataRequestValidator()
     {
-        RuleFor(x => x.ExtraProperties)
+        RuleFor(x => x.Metadata)
             .NotNull()
             .Must(d => d.Count <= MaxEntries)
             .WithMessage($"Extra properties must contain at most {MaxEntries} entries.");
 
-        RuleForEach(x => x.ExtraProperties).ChildRules(entry =>
+        RuleForEach(x => x.Metadata).ChildRules(entry =>
         {
             entry.RuleFor(e => e.Key)
                 .NotEmpty()

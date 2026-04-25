@@ -2,7 +2,7 @@ using Granit.DataLookup.Sources;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Granit.QueryEngine;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.EntityFrameworkCore.Internal;
@@ -113,7 +113,7 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
     /// </item>
     /// <item>
     /// <description>
-    /// An <see cref="ExtraPropertySyncInterceptor"/> for Shadow Property synchronization
+    /// An <see cref="MetadataSyncInterceptor"/> for Shadow Property synchronization
     /// </description>
     /// </item>
     /// <item>
@@ -152,8 +152,8 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
         ReferenceDataBuilder builder = new();
         configure(builder);
 
-        // Register the generic ExtraProperty infrastructure
-        services.AddExtraPropertyInfrastructure();
+        // Register the generic Metadata infrastructure
+        services.AddMetadataInfrastructure();
 
         foreach (ReferenceDataTypeRegistration registration in builder.Registrations)
         {
@@ -181,14 +181,14 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
                     sp.GetRequiredService<ICurrentTenant>(),
                     sp.GetRequiredService<IGuidGenerator>()));
 
-            // 2. Register ExtraProperty mappings for shadow columns
+            // 2. Register Metadata mappings for shadow columns
             if (registration.Options.PropertyMappings.Count > 0)
             {
-                services.AddExtraPropertyMappings<ReferenceDataEntity>(opts =>
+                services.AddMetadataMappings<ReferenceDataEntity>(opts =>
                 {
                     foreach (ReferenceDataPropertyMapping mapping in registration.Options.PropertyMappings)
                     {
-                        opts.Mappings.Add(new ExtraPropertyMapping(
+                        opts.Mappings.Add(new MetadataMapping(
                             mapping.Name, mapping.ClrType, mapping.MaxLength,
                             mapping.IsRequired, mapping.IsFilterable, mapping.IsSortable));
                     }

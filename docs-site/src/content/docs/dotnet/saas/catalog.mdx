@@ -35,7 +35,7 @@ in [ADR 032](/dotnet/architecture/adr/032-catalog-product-shared-billing-aggrega
 
 ### `Product` (aggregate root)
 
-`AuditedAggregateRoot, IWorkflowStateful, IHasExtraProperties` — the catalog item.
+`AuditedAggregateRoot, IWorkflowStateful, IHasMetadata` — the catalog item.
 
 Fields:
 
@@ -44,8 +44,8 @@ Fields:
 - `Type`: `Service` | `Metered` | `Physical` | `Digital`
 - `Unit` (free text — `"call"`, `"GB"`, `"seat"`, `"license"`, ...)
 - `LifecycleStatus`: `Draft` → `Published` → `Archived` (via `WorkflowLifecycleStatus`)
-- `ExtraPropertiesJson` (string?) — Stripe-style metadata via `IHasExtraProperties`;
-  use the framework extensions (`GetExtraProperty`, `SetExtraProperty`, ...)
+- `MetadataJson` (string?) — Stripe-style metadata via `IHasMetadata`;
+  use the framework extensions (`GetMetadataValue`, `SetMetadataValue`, ...)
 - `ExternalMappings` — provider integrations (Stripe `prod_xxx`, Avalara tax codes,
   Odoo product ids, ...)
 
@@ -57,8 +57,8 @@ Behaviors:
   as a fresh product)
 - `Publish()` — Draft → Published; unlocks references from Metering / Subscriptions
 - `Archive()` — Published → Archived; existing references unaffected
-- `ReplaceExtraProperties(dict)` — bulk replace; for granular updates, use the
-  framework `SetExtraProperty(name, value)` extension
+- `ReplaceMetadata(dict)` — bulk replace; for granular updates, use the
+  framework `SetMetadataValue(name, value)` extension
 - `AddExternalMapping(mapping)` / `RemoveExternalMapping(mappingId)` — allowed
   in any lifecycle state
 
@@ -96,7 +96,7 @@ stateDiagram-v2
 ```
 
 - **Draft**: editable; not yet usable by Metering or Subscriptions
-- **Published**: immutable except for `ExtraProperties` and `ExternalMappings`;
+- **Published**: immutable except for `Metadata` and `ExternalMappings`;
   new meters and plan prices may reference it
 - **Archived**: tombstone; existing references keep working; new attachments
   are blocked at the application layer
@@ -135,7 +135,7 @@ Writes (`Catalog.Products.Manage`, all idempotent):
 
 - `POST /catalog/products` — create in Draft
 - `PUT  /catalog/products/{id}` — update editable fields (Draft only)
-- `PUT  /catalog/products/{id}/extra-properties` — bulk-replace extra properties
+- `PUT  /catalog/products/{id}/metadata` — bulk-replace extra properties
 - `POST /catalog/products/{id}/publish` — Draft → Published
 - `POST /catalog/products/{id}/archive` — Published → Archived
 - `POST   /catalog/products/{id}/external-mappings` — add a Stripe / Avalara / Odoo mapping

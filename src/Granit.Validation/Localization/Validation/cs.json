@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "Je povoleno maximálně 50 rozsahů CIDR.",
     "Granit:Validation:MaxCustomAttributes": "Byl překročen maximální počet vlastních atributů.",
     "Granit:Validation:MaxEmbeddingInputs": "Byl překročen maximální počet vstupů embeddingu.",
-    "Granit:Validation:MaxExtraProperties": "Maximálně 50 dodatečných vlastností povoleno.",
+    "Granit:Validation:MaxMetadataKeys": "Maximálně 50 klíčů metadat povoleno.",
     "Granit:Validation:MaxFilterEntries": "Je povoleno maximálně 50 položek filtru.",
     "Granit:Validation:MaxPermissions": "Je povoleno maximálně 100 oprávnění.",
     "Granit:Validation:MaxPresetEntries": "Je povoleno maximálně 20 předvoleb.",

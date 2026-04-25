@@ -913,7 +913,7 @@ internal sealed partial class CognitoIdentityProvider(
             FirstName: attributes.GetValueOrDefault(GivenNameAttribute),
             LastName: attributes.GetValueOrDefault(FamilyNameAttribute),
             Enabled: user.Enabled == true,
-            ExtraProperties: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
+            Metadata: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
                 .ToDictionary(a => a.Key, a => a.Value));
     }
 
@@ -929,7 +929,7 @@ internal sealed partial class CognitoIdentityProvider(
             FirstName: attributes.GetValueOrDefault(GivenNameAttribute),
             LastName: attributes.GetValueOrDefault(FamilyNameAttribute),
             Enabled: response.Enabled == true,
-            ExtraProperties: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
+            Metadata: attributes.Where(a => a.Key.StartsWith("custom:", StringComparison.Ordinal))
                 .ToDictionary(a => a.Key, a => a.Value));
     }
 

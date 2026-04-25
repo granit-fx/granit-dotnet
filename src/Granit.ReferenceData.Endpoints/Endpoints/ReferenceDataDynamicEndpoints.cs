@@ -81,7 +81,7 @@ internal static class ReferenceDataDynamicEndpoints
             .RequireAuthorization(ReferenceDataPermissions.Entries.Manage)
             .WithName($"Update{typeName}")
             .WithSummary($"Updates an existing {typeName} entry.")
-            .WithDescription($"Updates labels, sort order, active status, and validity dates. ExtraProperties use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if not found.")
+            .WithDescription($"Updates labels, sort order, active status, and validity dates. Metadata use merge semantics: properties in the request are added or updated, properties not in the request are preserved. Returns 404 if not found.")
             .Produces(StatusCodes.Status200OK)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
@@ -216,11 +216,11 @@ internal static class ReferenceDataDynamicEndpoints
             Activated = true,
         };
 
-        if (request.ExtraProperties is { Count: > 0 })
+        if (request.Metadata is { Count: > 0 })
         {
-            foreach ((string key, string value) in request.ExtraProperties)
+            foreach ((string key, string value) in request.Metadata)
             {
-                entity.SetExtraProperty(key, value);
+                entity.SetMetadataValue(key, value);
             }
         }
 
@@ -269,11 +269,11 @@ internal static class ReferenceDataDynamicEndpoints
         existing.ValidTo = request.ValidTo;
         existing.ParentCode = request.ParentCode;
 
-        if (request.ExtraProperties is not null)
+        if (request.Metadata is not null)
         {
-            foreach ((string key, string value) in request.ExtraProperties)
+            foreach ((string key, string value) in request.Metadata)
             {
-                existing.SetExtraProperty(key, value);
+                existing.SetMetadataValue(key, value);
             }
         }
 

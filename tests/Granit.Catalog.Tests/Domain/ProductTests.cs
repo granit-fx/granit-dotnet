@@ -38,12 +38,12 @@ public sealed class ProductTests
     }
 
     [Fact]
-    public void Create_ShouldInitializeEmptyExtraPropertiesAndExternalMappings()
+    public void Create_ShouldInitializeEmptyMetadataAndExternalMappings()
     {
         Product product = NewDraftProduct();
 
-        product.ExtraPropertiesJson.ShouldBeNull();
-        product.GetExtraProperties().ShouldBeEmpty();
+        product.MetadataJson.ShouldBeNull();
+        product.GetMetadata().ShouldBeEmpty();
         product.ExternalMappings.ShouldBeEmpty();
     }
 
@@ -253,56 +253,56 @@ public sealed class ProductTests
         removed.ShouldBeFalse();
     }
 
-    // ── Extra properties (IHasExtraProperties) ──────────────────────────────
+    // ── Extra properties (IHasMetadata) ──────────────────────────────
 
     [Fact]
-    public void ReplaceExtraProperties_ShouldStoreAsJson()
+    public void ReplaceMetadata_ShouldStoreAsJson()
     {
         Product product = NewDraftProduct();
         Dictionary<string, string> meta = new() { ["region"] = "eu-west-1", ["tier"] = "premium" };
 
-        product.ReplaceExtraProperties(meta);
+        product.ReplaceMetadata(meta);
 
-        product.ExtraPropertiesJson.ShouldNotBeNull();
-        product.GetExtraProperty("region").ShouldBe("eu-west-1");
-        product.GetExtraProperty("tier").ShouldBe("premium");
+        product.MetadataJson.ShouldNotBeNull();
+        product.GetMetadataValue("region").ShouldBe("eu-west-1");
+        product.GetMetadataValue("tier").ShouldBe("premium");
     }
 
     [Fact]
-    public void ReplaceExtraProperties_WithEmptyDictionary_ShouldClearJson()
+    public void ReplaceMetadata_WithEmptyDictionary_ShouldClearJson()
     {
         Product product = NewDraftProduct();
-        product.ReplaceExtraProperties(new Dictionary<string, string> { ["foo"] = "bar" });
+        product.ReplaceMetadata(new Dictionary<string, string> { ["foo"] = "bar" });
 
-        product.ReplaceExtraProperties(new Dictionary<string, string>());
+        product.ReplaceMetadata(new Dictionary<string, string>());
 
-        product.ExtraPropertiesJson.ShouldBeNull();
+        product.MetadataJson.ShouldBeNull();
     }
 
     [Fact]
-    public void ReplaceExtraProperties_OnPublishedProduct_ShouldSucceed()
+    public void ReplaceMetadata_OnPublishedProduct_ShouldSucceed()
     {
         Product product = NewDraftProduct();
         product.Publish();
 
-        product.ReplaceExtraProperties(new Dictionary<string, string> { ["channel"] = "marketplace" });
+        product.ReplaceMetadata(new Dictionary<string, string> { ["channel"] = "marketplace" });
 
-        product.GetExtraProperty("channel").ShouldBe("marketplace");
+        product.GetMetadataValue("channel").ShouldBe("marketplace");
     }
 
     [Fact]
-    public void ReplaceExtraProperties_WithNull_ShouldThrow() =>
-        Should.Throw<ArgumentNullException>(() => NewDraftProduct().ReplaceExtraProperties(null!));
+    public void ReplaceMetadata_WithNull_ShouldThrow() =>
+        Should.Throw<ArgumentNullException>(() => NewDraftProduct().ReplaceMetadata(null!));
 
     [Fact]
-    public void SetExtraProperty_ViaFrameworkExtension_ShouldRoundTrip()
+    public void SetMetadataValue_ViaFrameworkExtension_ShouldRoundTrip()
     {
         Product product = NewDraftProduct();
 
-        product.SetExtraProperty("env", "prod");
+        product.SetMetadataValue("env", "prod");
 
-        product.GetExtraProperty("env").ShouldBe("prod");
-        product.HasExtraProperty("env").ShouldBeTrue();
+        product.GetMetadataValue("env").ShouldBe("prod");
+        product.HasMetadataValue("env").ShouldBeTrue();
     }
 
     // ── IWorkflowStateful contract ──────────────────────────────────────────

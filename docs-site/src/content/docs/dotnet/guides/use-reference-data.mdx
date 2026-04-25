@@ -1,6 +1,6 @@
 ---
 title: "Use Reference Data \u2014 Lookup Tables Guide"
-description: Manage multilingual lookup tables (countries, currencies, document types) with generic EF Core CRUD endpoints, ExtraProperties extensibility, hierarchical types, in-memory caching, seeding, ISO 27001 audit trail, and 17-culture i18n labels.
+description: Manage multilingual lookup tables (countries, currencies, document types) with generic EF Core CRUD endpoints, Metadata extensibility, hierarchical types, in-memory caching, seeding, ISO 27001 audit trail, and 17-culture i18n labels.
 sidebar:
   order: 18
   label: Use reference data
@@ -14,7 +14,7 @@ ISO 27001 audit trail, automatic inactive-entry filtering, and in-memory caching
 
 Two registration modes are available: **strongly-typed** (subclass `ReferenceDataEntity`)
 for domain-specific CLR properties, and **dynamic** (no subclass) for simple types
-extended via `ExtraProperties` and `MapProperty<T>()`.
+extended via `Metadata` and `MapProperty<T>()`.
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ dotnet add package Granit.ReferenceData.Endpoints
 
 Every reference data type inherits from `ReferenceDataEntity`, which provides
 `Code`, 14 label properties, `Label` (culture-resolved), `Activated`, `SortOrder`,
-`ValidFrom`, `ValidTo`, `ExtraPropertiesJson`, and `ParentCode`.
+`ValidFrom`, `ValidTo`, `MetadataJson`, and `ParentCode`.
 
 Add domain-specific properties to the subclass:
 
@@ -154,12 +154,12 @@ services.AddReferenceData<AppDbContext>(rd =>
 
 This registers keyed `IReferenceDataStoreReader<DynamicReferenceDataEntity>` and
 `IReferenceDataStoreWriter<DynamicReferenceDataEntity>` per type name, an
-`ExtraPropertySyncInterceptor` for Shadow Property synchronization, and a
+`MetadataSyncInterceptor` for Shadow Property synchronization, and a
 `QueryDefinition` for advanced querying.
 
-:::tip[MapProperty vs ExtraProperties]
+:::tip[MapProperty vs Metadata]
 `MapProperty<T>()` creates a real SQL column (indexable, filterable via QueryEngine).
-Properties not declared via `MapProperty` are stored in the `ExtraPropertiesJson`
+Properties not declared via `MapProperty` are stored in the `MetadataJson`
 JSON column — flexible but not queryable at SQL level.
 :::
 
@@ -265,35 +265,35 @@ The list endpoint uses the QueryEngine. Query parameters follow standard syntax:
 | `PUT` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Update an entry |
 | `DELETE` | `/{prefix}/{entities}/{code}` | `Entries.Manage` | Deactivate (soft delete) |
 
-Create and update requests accept optional `ExtraProperties` (max 50 entries) and `ParentCode`.
+Create and update requests accept optional `Metadata` (max 50 entries) and `ParentCode`.
 The `Code` field must match `^[A-Za-z0-9_.\-]+$`.
 
-## Step 7 -- Use ExtraProperties
+## Step 7 -- Use Metadata
 
 Every reference data entity supports a JSON property bag for custom metadata:
 
 ```csharp
 // Write
-country.SetExtraProperty("Continent", "Europe");
-country.SetExtraProperty("Population", "11500000");
+country.SetMetadataValue("Continent", "Europe");
+country.SetMetadataValue("Population", "11500000");
 
 // Read (string)
-string? continent = country.GetExtraProperty("Continent");
+string? continent = country.GetMetadataValue("Continent");
 
 // Read (typed — uses IParsable<T>)
-int? population = country.GetExtraProperty<int>("Population");
+int? population = country.GetMetadataValue<int>("Population");
 
 // Check existence
-bool hasPop = country.HasExtraProperty("Population");
+bool hasPop = country.HasMetadataValue("Population");
 
 // Remove
-country.SetExtraProperty("Continent", null);
+country.SetMetadataValue("Continent", null);
 ```
 
 :::caution
 Properties promoted via `MapProperty<T>()` are automatically excluded from the JSON
-bag at save time by the `ExtraPropertySyncInterceptor`. Do not write them manually
-via `SetExtraProperty` — use the SQL column instead.
+bag at save time by the `MetadataSyncInterceptor`. Do not write them manually
+via `SetMetadataValue` — use the SQL column instead.
 :::
 
 ## Step 8 -- Query in code

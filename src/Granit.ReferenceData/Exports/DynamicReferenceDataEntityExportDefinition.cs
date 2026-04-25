@@ -11,7 +11,7 @@ public sealed class DynamicReferenceDataEntityExportDefinition : ExportDefinitio
     {
         builder
             .IncludeId()
-            .IncludeExtraProperties()
+            .IncludeMetadata()
             .Field(e => e.Code)
             .Field(e => e.LabelEn)
             .Field(e => e.LabelFr)

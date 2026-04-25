@@ -116,9 +116,9 @@ public abstract class ReferenceDataEntityTypeConfiguration<TEntity>
         builder.Property(e => e.ValidFrom);
         builder.Property(e => e.ValidTo);
 
-        // ExtraProperties — JSON property bag for application-level extensibility
-        builder.Property(e => e.ExtraPropertiesJson)
-               .HasColumnName("extra_properties_json");
+        // Metadata — JSON property bag for application-level extensibility
+        builder.Property(e => e.MetadataJson)
+               .HasColumnName("metadata_json");
 
         // ParentCode — optional self-referencing hierarchy
         builder.Property(e => e.ParentCode)

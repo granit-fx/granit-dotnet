@@ -16,12 +16,12 @@ public sealed record ProductUpdateRequest(
 
 /// <summary>Request to replace all extra properties of a product (any lifecycle status).</summary>
 /// <remarks>
-/// Maps to <see cref="Granit.Domain.IHasExtraProperties.ExtraPropertiesJson"/> via
-/// <c>Product.ReplaceExtraProperties</c>. MUST NOT contain PII (audit logs and exports
+/// Maps to <see cref="Granit.Domain.IHasMetadata.MetadataJson"/> via
+/// <c>Product.ReplaceMetadata</c>. MUST NOT contain PII (audit logs and exports
 /// surface this content).
 /// </remarks>
-public sealed record UpdateProductExtraPropertiesRequest(
-    IReadOnlyDictionary<string, string> ExtraProperties);
+public sealed record UpdateProductMetadataRequest(
+    IReadOnlyDictionary<string, string> Metadata);
 
 /// <summary>Request to add an external provider mapping to a product.</summary>
 public sealed record AddProductExternalMappingRequest(

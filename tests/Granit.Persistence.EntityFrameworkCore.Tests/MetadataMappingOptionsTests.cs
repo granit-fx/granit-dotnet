@@ -1,21 +1,21 @@
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Shouldly;
 using Xunit;
 
 namespace Granit.Persistence.EntityFrameworkCore.Tests;
 
-public sealed class ExtraPropertyMappingOptionsTests
+public sealed class MetadataMappingOptionsTests
 {
-    private sealed class TestEntity : IHasExtraProperties
+    private sealed class TestEntity : IHasMetadata
     {
-        public string? ExtraPropertiesJson { get; set; }
+        public string? MetadataJson { get; set; }
     }
 
     [Fact]
     public void MapProperty_AddsMapping()
     {
-        ExtraPropertyMappingOptions<TestEntity> options = new();
+        MetadataMappingOptions<TestEntity> options = new();
 
         options.MapProperty<string>("Name", maxLength: 100, isRequired: true);
 
@@ -29,7 +29,7 @@ public sealed class ExtraPropertyMappingOptionsTests
     [Fact]
     public void MapProperty_WithFilterableAndSortable()
     {
-        ExtraPropertyMappingOptions<TestEntity> options = new();
+        MetadataMappingOptions<TestEntity> options = new();
 
         options.MapProperty<int>("Score", isFilterable: true, isSortable: true);
 
@@ -42,7 +42,7 @@ public sealed class ExtraPropertyMappingOptionsTests
     [Fact]
     public void MapProperty_ThrowsOnNullName()
     {
-        ExtraPropertyMappingOptions<TestEntity> options = new();
+        MetadataMappingOptions<TestEntity> options = new();
 
         Should.Throw<ArgumentException>(() => options.MapProperty<string>(null!));
     }
@@ -50,7 +50,7 @@ public sealed class ExtraPropertyMappingOptionsTests
     [Fact]
     public void MapProperty_MultipleProperties()
     {
-        ExtraPropertyMappingOptions<TestEntity> options = new();
+        MetadataMappingOptions<TestEntity> options = new();
 
         options.MapProperty<string>("A");
         options.MapProperty<bool>("B");

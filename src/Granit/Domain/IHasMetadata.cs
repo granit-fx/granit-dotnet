@@ -6,17 +6,17 @@ namespace Granit.Domain;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Properties stored in <see cref="ExtraPropertiesJson"/> are flexible key-value pairs
+/// Properties stored in <see cref="MetadataJson"/> are flexible key-value pairs
 /// that do not require schema changes. For properties that need SQL indexes or query
-/// filtering, use <c>ExtraPropertyMappingOptions&lt;T&gt;.MapProperty()</c> to promote
+/// filtering, use <c>MetadataMappingOptions&lt;T&gt;.MapProperty()</c> to promote
 /// them to real SQL columns (Shadow Properties).
 /// </para>
 /// <para>
-/// Use the extension methods in <see cref="ExtraPropertyExtensions"/> for typed
+/// Use the extension methods in <see cref="MetadataExtensions"/> for typed
 /// access to individual properties.
 /// </para>
 /// </remarks>
-public interface IHasExtraProperties
+public interface IHasMetadata
 {
     /// <summary>
     /// Gets or sets the JSON-serialized extra properties string.
@@ -25,5 +25,5 @@ public interface IHasExtraProperties
     /// Stored as a <c>jsonb</c> column (PostgreSQL) or <c>nvarchar(max)</c> (SQL Server).
     /// The value is a JSON object with string keys and string values.
     /// </remarks>
-    string? ExtraPropertiesJson { get; set; }
+    string? MetadataJson { get; set; }
 }

@@ -159,16 +159,16 @@ public sealed class EfProductReaderWriterTests
     }
 
     [Fact]
-    public async Task UpdateAsync_WithExtraPropertiesChanges_ShouldRoundTrip()
+    public async Task UpdateAsync_WithMetadataChanges_ShouldRoundTrip()
     {
-        (IProductReader reader, IProductWriter writer, _) = BuildStores(nameof(UpdateAsync_WithExtraPropertiesChanges_ShouldRoundTrip));
+        (IProductReader reader, IProductWriter writer, _) = BuildStores(nameof(UpdateAsync_WithMetadataChanges_ShouldRoundTrip));
         Product product = NewProduct();
-        product.ReplaceExtraProperties(new Dictionary<string, string> { ["region"] = "eu-west-1", ["channel"] = "saas" });
+        product.ReplaceMetadata(new Dictionary<string, string> { ["region"] = "eu-west-1", ["channel"] = "saas" });
         await writer.AddAsync(product, TestContext.Current.CancellationToken);
 
         Product? loaded = await reader.GetByIdAsync(product.Id, TestContext.Current.CancellationToken);
         loaded.ShouldNotBeNull();
-        loaded!.GetExtraProperty("region").ShouldBe("eu-west-1");
-        loaded.GetExtraProperty("channel").ShouldBe("saas");
+        loaded!.GetMetadataValue("region").ShouldBe("eu-west-1");
+        loaded.GetMetadataValue("channel").ShouldBe("saas");
     }
 }

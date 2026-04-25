@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "최대 50개의 CIDR 범위가 허용됩니다.",
     "Granit:Validation:MaxCustomAttributes": "사용자 정의 속성의 최대 수를 초과했습니다.",
     "Granit:Validation:MaxEmbeddingInputs": "최대 임베딩 입력 수를 초과했습니다.",
-    "Granit:Validation:MaxExtraProperties": "추가 속성은 최대 50개까지 허용됩니다.",
+    "Granit:Validation:MaxMetadataKeys": "메타데이터 키는 최대 50개까지 허용됩니다.",
     "Granit:Validation:MaxFilterEntries": "필터 항목은 최대 50개까지 허용됩니다.",
     "Granit:Validation:MaxPermissions": "최대 100개의 권한이 허용됩니다.",
     "Granit:Validation:MaxPresetEntries": "프리셋 항목은 최대 20개까지 허용됩니다.",

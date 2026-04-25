@@ -5,7 +5,7 @@ namespace Granit.DataExchange.Export;
 /// </summary>
 /// <remarks>
 /// <para>
-/// The default implementation reads from the <c>ExtraPropertiesJson</c> bag,
+/// The default implementation reads from the <c>MetadataJson</c> bag,
 /// which only contains <b>unmapped</b> properties. The EF Core implementation
 /// reads from shadow properties via <c>DbContext.Entry()</c>, which contains
 /// the actual column values for mapped properties.

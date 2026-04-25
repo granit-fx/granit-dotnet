@@ -693,9 +693,9 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.ExtraProperties.Count.ShouldBe(2);
-        result.ExtraProperties["license"].ShouldBe("MD-12345");
-        result.ExtraProperties["department"].ShouldBe("Cardiology");
+        result.Metadata.Count.ShouldBe(2);
+        result.Metadata["license"].ShouldBe("MD-12345");
+        result.Metadata["department"].ShouldBe("Cardiology");
     }
 
     [Fact]
@@ -707,11 +707,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.ExtraProperties["roles"].ShouldBe("admin");
+        result.Metadata["roles"].ShouldBe("admin");
     }
 
     [Fact]
-    public async Task GetUserAsync_WithoutAttributes_ExtraPropertiesAreEmpty()
+    public async Task GetUserAsync_WithoutAttributes_MetadataIsEmpty()
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true}""";
 
@@ -719,11 +719,11 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.ExtraProperties.ShouldBeEmpty();
+        result.Metadata.ShouldBeEmpty();
     }
 
     [Fact]
-    public async Task GetUserAsync_WithEmptyAttributes_ExtraPropertiesAreEmpty()
+    public async Task GetUserAsync_WithEmptyAttributes_MetadataIsEmpty()
     {
         _handler.ResponseBody = """{"id":"user-1","username":"alice","email":"alice@test.com","firstName":"Alice","lastName":"Doe","enabled":true,"attributes":{}}""";
 
@@ -731,7 +731,7 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.ExtraProperties.ShouldBeEmpty();
+        result.Metadata.ShouldBeEmpty();
     }
 
     [Fact]
@@ -743,8 +743,8 @@ public sealed class KeycloakIdentityProviderTests : IDisposable
             cancellationToken: TestContext.Current.CancellationToken);
 
         result.Count.ShouldBe(2);
-        result[0].ExtraProperties["dept"].ShouldBe("IT");
-        result[1].ExtraProperties.ShouldBeEmpty();
+        result[0].Metadata["dept"].ShouldBe("IT");
+        result[1].Metadata.ShouldBeEmpty();
     }
 
     // --- Feature 1: GetUserRolesAsync tests ---

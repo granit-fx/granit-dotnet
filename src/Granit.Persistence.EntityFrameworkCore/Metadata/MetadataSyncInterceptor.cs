@@ -5,26 +5,26 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+namespace Granit.Persistence.EntityFrameworkCore.Metadata;
 
 /// <summary>
-/// EF Core interceptor that synchronizes <see cref="IHasExtraProperties.ExtraPropertiesJson"/>
+/// EF Core interceptor that synchronizes <see cref="IHasMetadata.MetadataJson"/>
 /// with dynamically mapped Shadow Properties, preventing data duplication.
 /// </summary>
 /// <remarks>
 /// <para>
-/// A single instance handles <b>all</b> entity types implementing <see cref="IHasExtraProperties"/>.
-/// Property mappings are resolved once per entity type from <see cref="IExtraPropertyMappingRegistry"/>
+/// A single instance handles <b>all</b> entity types implementing <see cref="IHasMetadata"/>.
+/// Property mappings are resolved once per entity type from <see cref="IMetadataMappingRegistry"/>
 /// and cached in a <see cref="ConcurrentDictionary{TKey,TValue}"/> for the app's lifetime.
 /// </para>
 /// <para>
-/// On save: for each modified <see cref="IHasExtraProperties"/> entity, reads the JSON bag,
+/// On save: for each modified <see cref="IHasMetadata"/> entity, reads the JSON bag,
 /// writes mapped values to their Shadow Properties, and removes them from the JSON to avoid
 /// storing the same data twice.
 /// </para>
 /// </remarks>
-internal sealed class ExtraPropertySyncInterceptor(
-    IExtraPropertyMappingRegistry registry) : SaveChangesInterceptor
+internal sealed class MetadataSyncInterceptor(
+    IMetadataMappingRegistry registry) : SaveChangesInterceptor
 {
     private readonly ConcurrentDictionary<Type, HashSet<string>> _cache = new();
 
@@ -42,14 +42,14 @@ internal sealed class ExtraPropertySyncInterceptor(
         foreach (EntityEntry entry in eventData.Context.ChangeTracker
             .Entries()
             .Where(e => e.State is EntityState.Added or EntityState.Modified
-                     && e.Entity is IHasExtraProperties))
+                     && e.Entity is IHasMetadata))
         {
             Type entityType = entry.Entity.GetType();
             HashSet<string> mappedNames = _cache.GetOrAdd(entityType, registry.GetMappedPropertyNames);
 
             if (mappedNames.Count > 0)
             {
-                SyncProperties(entry, (IHasExtraProperties)entry.Entity, mappedNames);
+                SyncProperties(entry, (IHasMetadata)entry.Entity, mappedNames);
             }
         }
 
@@ -69,14 +69,14 @@ internal sealed class ExtraPropertySyncInterceptor(
         foreach (EntityEntry entry in eventData.Context.ChangeTracker
             .Entries()
             .Where(e => e.State is EntityState.Added or EntityState.Modified
-                     && e.Entity is IHasExtraProperties))
+                     && e.Entity is IHasMetadata))
         {
             Type entityType = entry.Entity.GetType();
             HashSet<string> mappedNames = _cache.GetOrAdd(entityType, registry.GetMappedPropertyNames);
 
             if (mappedNames.Count > 0)
             {
-                SyncProperties(entry, (IHasExtraProperties)entry.Entity, mappedNames);
+                SyncProperties(entry, (IHasMetadata)entry.Entity, mappedNames);
             }
         }
 
@@ -85,12 +85,12 @@ internal sealed class ExtraPropertySyncInterceptor(
 
     private static void SyncProperties(
         EntityEntry entry,
-        IHasExtraProperties entity,
+        IHasMetadata entity,
         HashSet<string> mappedNames)
     {
-        Dictionary<string, string> jsonProps = string.IsNullOrWhiteSpace(entity.ExtraPropertiesJson)
+        Dictionary<string, string> jsonProps = string.IsNullOrWhiteSpace(entity.MetadataJson)
             ? []
-            : JsonSerializer.Deserialize<Dictionary<string, string>>(entity.ExtraPropertiesJson) ?? [];
+            : JsonSerializer.Deserialize<Dictionary<string, string>>(entity.MetadataJson) ?? [];
 
         bool jsonModified = false;
 
@@ -106,7 +106,7 @@ internal sealed class ExtraPropertySyncInterceptor(
 
         if (jsonModified)
         {
-            entity.ExtraPropertiesJson = jsonProps.Count > 0
+            entity.MetadataJson = jsonProps.Count > 0
                 ? JsonSerializer.Serialize(jsonProps)
                 : null;
         }

@@ -1,6 +1,6 @@
 using Granit.DataExchange.Export;
 using Granit.Domain;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,8 +17,8 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 /// so that explicit per-entity <c>IExportDataSource&lt;T&gt;</c> registrations always take precedence.
 /// </para>
 /// <para>
-/// When the entity implements <see cref="IHasExtraProperties"/> and has mapped extra
-/// properties in the <see cref="IExtraPropertyMappingRegistry"/>, tracking is enabled
+/// When the entity implements <see cref="IHasMetadata"/> and has mapped extra
+/// properties in the <see cref="IMetadataMappingRegistry"/>, tracking is enabled
 /// so shadow property values can be read via <c>DbContext.Entry()</c>. The caller
 /// (orchestrator) is responsible for periodic <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker"/>
 /// clearing to prevent memory bloat.
@@ -32,7 +32,7 @@ namespace Granit.DataExchange.EntityFrameworkCore.Internal.Export;
 /// </remarks>
 internal sealed class DbContextExportDataSource<TEntity>(
     IServiceProvider serviceProvider,
-    IExtraPropertyMappingRegistry registry) : IExportDataSource<TEntity>
+    IMetadataMappingRegistry registry) : IExportDataSource<TEntity>
     where TEntity : class
 {
     /// <inheritdoc/>
@@ -40,7 +40,7 @@ internal sealed class DbContextExportDataSource<TEntity>(
     {
         DbContext context = DbContextResolver.Resolve(serviceProvider, typeof(TEntity));
 
-        bool needsTracking = typeof(IHasExtraProperties).IsAssignableFrom(typeof(TEntity))
+        bool needsTracking = typeof(IHasMetadata).IsAssignableFrom(typeof(TEntity))
                              && registry.GetMappedPropertyNames(typeof(TEntity)).Count > 0;
 
         return needsTracking

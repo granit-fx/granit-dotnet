@@ -8,7 +8,7 @@ public sealed record IdentityUserResponse(
     string? FirstName,
     string? LastName,
     bool Enabled,
-    IReadOnlyDictionary<string, string> ExtraProperties);
+    IReadOnlyDictionary<string, string> Metadata);
 
 /// <summary>Identity provider role.</summary>
 public sealed record IdentityRoleResponse(

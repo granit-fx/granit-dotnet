@@ -412,7 +412,7 @@ public sealed class PatientExportDefinition : ExportDefinition<Patient>
 |--------|-------------|
 | `.IncludeId()` | Include entity `Id` column for roundtrip import compatibility |
 | `.IncludeBusinessKey()` | Include business key columns from the matching import definition |
-| `.IncludeExtraProperties()` | Append mapped extra properties (from `MapProperty<T>()`) as additional export fields at runtime |
+| `.IncludeMetadata()` | Append mapped extra properties (from `MapProperty<T>()`) as additional export fields at runtime |
 
 **Navigation fields** use a two-argument `Field()` overload for dot-notation traversal.
 The developer must ensure the corresponding `Include()` is present in the
@@ -470,7 +470,7 @@ display a visual indicator (e.g. "default export — customize via ExportDefinit
 **Data source fallback** — `DbContextExportDataSource<T>` discovers the correct
 `DbContext` at runtime by scanning Granit assemblies for `DbContext` subclasses.
 The queryable uses `AsNoTracking()` for performance, except when the entity has
-mapped extra properties (`IHasExtraProperties` with `MapProperty<T>()`) — in that
+mapped extra properties (`IHasMetadata` with `MapProperty<T>()`) — in that
 case tracking is enabled so shadow property values can be read, with periodic
 `ChangeTracker.Clear()` to prevent memory bloat during bulk exports.
 Navigation properties are NOT auto-included — for navigation fields, use an explicit
@@ -499,7 +499,7 @@ the same entity type — explicit registrations always take precedence.
 
 - **ISO 8601 dates** — all `DateTimeOffset` fields use `"O"` format (roundtrip, preserves offset)
 - **Money formatting** — all `decimal` financial fields use `"#,##0.00"`
-- **Extra properties** — `DynamicReferenceDataEntity` uses `.IncludeExtraProperties()` to export
+- **Extra properties** — `DynamicReferenceDataEntity` uses `.IncludeMetadata()` to export
   mapped extra properties (from `MapProperty<T>()`) as regular columns
 - **Excluded entities** — `ApiKeyEntry`, `GranitOpenIddictToken`, `SigningKey`, and other
   security-sensitive entities are intentionally excluded (see issue #996 for the full list)

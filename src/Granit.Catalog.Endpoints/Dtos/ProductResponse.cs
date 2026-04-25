@@ -12,7 +12,7 @@ public sealed record ProductResponse(
     string Type,
     string Unit,
     string LifecycleStatus,
-    IReadOnlyDictionary<string, string> ExtraProperties,
+    IReadOnlyDictionary<string, string> Metadata,
     IReadOnlyList<ProductExternalMappingResponse> ExternalMappings)
 {
     internal static ProductResponse FromEntity(Product product) => new(
@@ -23,7 +23,7 @@ public sealed record ProductResponse(
         product.Type.ToString(),
         product.Unit,
         product.LifecycleStatus.ToString(),
-        product.GetExtraProperties(),
+        product.GetMetadata(),
         product.ExternalMappings.Select(ProductExternalMappingResponse.FromEntity).ToList());
 }
 

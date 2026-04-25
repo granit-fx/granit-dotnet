@@ -55,7 +55,7 @@
     "Granit:Validation:MaxCidrRanges": "En fazla 50 CIDR aralığına izin verilir.",
     "Granit:Validation:MaxCustomAttributes": "Maksimum özel öznitelik sayısı aşıldı.",
     "Granit:Validation:MaxEmbeddingInputs": "Maksimum gömme girişi sayısı aşıldı.",
-    "Granit:Validation:MaxExtraProperties": "En fazla 50 ek özellik izin verilmektedir.",
+    "Granit:Validation:MaxMetadataKeys": "En fazla 50 meta veri anahtarına izin verilmektedir.",
     "Granit:Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
     "Granit:Validation:MaxPermissions": "En fazla 100 izne izin verilir.",
     "Granit:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",

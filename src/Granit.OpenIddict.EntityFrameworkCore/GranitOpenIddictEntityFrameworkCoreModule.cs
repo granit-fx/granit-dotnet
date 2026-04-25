@@ -9,7 +9,7 @@ using Granit.OpenIddict.Server;
 using Granit.OpenIddict.Services;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Persistence.EntityFrameworkCore.DataSeeding;
-using Granit.Persistence.EntityFrameworkCore.ExtraProperties;
+using Granit.Persistence.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -40,9 +40,9 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
 
-        // GranitUser implements IHasExtraProperties — apps can extend user properties
-        // by calling AddExtraPropertyMappings<GranitUser> in their own module.
-        // The ExtraPropertySyncInterceptor in Granit.Persistence handles sync automatically.
-        context.Services.AddExtraPropertyInfrastructure();
+        // GranitUser implements IHasMetadata — apps can extend user properties
+        // by calling AddMetadataMappings<GranitUser> in their own module.
+        // The MetadataSyncInterceptor in Granit.Persistence handles sync automatically.
+        context.Services.AddMetadataInfrastructure();
     }
 }

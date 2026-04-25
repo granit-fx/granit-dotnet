@@ -17,10 +17,10 @@ namespace Granit.Catalog.Domain;
 /// for audit trails but are no longer purchasable.
 /// </para>
 /// <para>
-/// Implements <see cref="IHasExtraProperties"/> for free-form key/value attributes
+/// Implements <see cref="IHasMetadata"/> for free-form key/value attributes
 /// (Stripe-style metadata, integration sync attributes, ...). Use the extension methods
-/// in <see cref="ExtraPropertyExtensions"/> for typed read/write of individual entries,
-/// or <see cref="ReplaceExtraProperties(IReadOnlyDictionary{string, string})"/> for bulk
+/// in <see cref="MetadataExtensions"/> for typed read/write of individual entries,
+/// or <see cref="ReplaceMetadata(IReadOnlyDictionary{string, string})"/> for bulk
 /// replacement (used by the admin endpoint).
 /// </para>
 /// <para>
@@ -29,7 +29,7 @@ namespace Granit.Catalog.Domain;
 /// per ADR 032.
 /// </para>
 /// </remarks>
-public sealed class Product : AuditedAggregateRoot, IWorkflowStateful, IHasExtraProperties
+public sealed class Product : AuditedAggregateRoot, IWorkflowStateful, IHasMetadata
 {
     private readonly List<ProductExternalMapping> _externalMappings = [];
 
@@ -87,10 +87,10 @@ public sealed class Product : AuditedAggregateRoot, IWorkflowStateful, IHasExtra
     /// <inheritdoc />
     /// <remarks>
     /// MUST NOT contain PII (audit logs, exports, and the SQL column itself surface this content).
-    /// EF Core persists this as a JSON string; the <c>ExtraPropertySyncInterceptor</c> handles
+    /// EF Core persists this as a JSON string; the <c>MetadataSyncInterceptor</c> handles
     /// promotion to Shadow Properties when configured via <c>MapProperty&lt;T&gt;()</c>.
     /// </remarks>
-    public string? ExtraPropertiesJson { get; set; }
+    public string? MetadataJson { get; set; }
 
     /// <summary>External provider mappings (Stripe, Avalara, Odoo, etc.).</summary>
     public IReadOnlyList<ProductExternalMapping> ExternalMappings => _externalMappings.AsReadOnly();
@@ -125,14 +125,14 @@ public sealed class Product : AuditedAggregateRoot, IWorkflowStateful, IHasExtra
 
     /// <summary>
     /// Replaces all extra properties at once. Use the framework extension methods
-    /// (<see cref="ExtraPropertyExtensions.SetExtraProperty(IHasExtraProperties, string, string?)"/>)
+    /// (<see cref="MetadataExtensions.SetMetadataValue(IHasMetadata, string, string?)"/>)
     /// for granular per-key updates. Allowed in any lifecycle state.
     /// </summary>
-    public void ReplaceExtraProperties(IReadOnlyDictionary<string, string> properties)
+    public void ReplaceMetadata(IReadOnlyDictionary<string, string> properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
 
-        ExtraPropertiesJson = properties.Count > 0
+        MetadataJson = properties.Count > 0
             ? JsonSerializer.Serialize(properties)
             : null;
     }

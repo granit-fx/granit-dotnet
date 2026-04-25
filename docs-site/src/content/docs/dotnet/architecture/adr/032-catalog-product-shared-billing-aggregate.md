@@ -119,15 +119,15 @@ use case fundamental to billing. Fixing the filter today would lock us
 into a design before the e-commerce phase has been cadred. See
 "Path forward" below.
 
-### Free-form metadata: `IHasExtraProperties`, not a new dictionary
+### Free-form metadata: `IHasMetadata`, not a new dictionary
 
-`Product : IHasExtraProperties` reuses the framework's existing
-extension surface (`GetExtraProperty`, `SetExtraProperty`,
-`ExtraPropertySyncInterceptor`, `MapProperty<T>` for SQL promotion).
+`Product : IHasMetadata` reuses the framework's existing
+extension surface (`GetMetadataValue`, `SetMetadataValue`,
+`MetadataSyncInterceptor`, `MapProperty<T>` for SQL promotion).
 
 A first iteration introduced a `Dictionary<string, string> Metadata`
 property; on review it was rejected because Granit already standardizes
-this concept via `IHasExtraProperties` (`GranitUser`, `OpenIddict`,
+this concept via `IHasMetadata` (`GranitUser`, `OpenIddict`,
 others use it). Two parallel patterns for the same concept = exactly the
 sort of inconsistency the framework convention exists to prevent. A
 separate tech-debt issue (#1183) tracks a possible framework-wide rename
@@ -214,6 +214,6 @@ Today's design forecloses neither.
 - EPIC #1155 — ORB alignment programme
 - Feature #1157 — Phase 1 (Catalog scaffold)
 - Stories #1162 (scaffold), #1163 (Metering wiring), #1164 (Subscriptions wiring)
-- Tech-debt #1183 — proposed framework-wide `ExtraProperties → Metadata` rename
+- Tech-debt #1183 — proposed framework-wide `Metadata → Metadata` rename
 - ORB documentation — <https://docs.withorb.com>
 - Stripe Products API — <https://docs.stripe.com/api/products>

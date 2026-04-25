@@ -53,15 +53,15 @@ public interface IIdentityUser
     /// <para>
     /// For <c>GranitUser</c>: deserialized from <c>CustomAttributesJson</c> (JSONB column).
     /// For Keycloak: flattened user attributes.
-    /// For <c>CachedIdentityUser</c>: deserialized from <c>ExtraPropertiesJson</c>.
+    /// For <c>CachedIdentityUser</c>: deserialized from <c>MetadataJson</c>.
     /// </para>
     /// <para>
     /// Applications can define typed accessors via extension methods:
     /// <code>
     /// public static string? GetDepartment(this IIdentityUser user)
-    ///     => user.ExtraProperties.GetValueOrDefault("Department");
+    ///     => user.Metadata.GetValueOrDefault("Department");
     /// </code>
     /// </para>
     /// </remarks>
-    IReadOnlyDictionary<string, string> ExtraProperties { get; }
+    IReadOnlyDictionary<string, string> Metadata { get; }
 }

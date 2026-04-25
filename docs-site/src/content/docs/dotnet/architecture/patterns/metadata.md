@@ -1,14 +1,14 @@
 ---
-title: "Extra Properties Pattern — Schema-Free Entity Extensibility"
+title: "Metadata Pattern — Schema-Free Entity Extensibility"
 description: "JSON property bag on EF Core entities with optional SQL column promotion for indexing. Enables application-level extensibility without framework schema changes."
 sidebar:
-  label: Extra Properties
+  label: Metadata
   order: 59
 ---
 
 ## Definition
 
-The Extra Properties pattern adds a schema-free JSON property bag to any EF Core
+The Metadata pattern adds a schema-free JSON property bag to any EF Core
 entity, enabling applications to store custom key-value pairs without modifying
 the framework's database schema. Properties that need SQL indexing or query
 filtering can be **promoted** to real SQL columns at startup.
@@ -21,17 +21,17 @@ Also known as: **Property Bag**, **EAV** (legacy), **user_metadata** (Auth0),
 ```mermaid
 flowchart LR
     subgraph Entity["Entity (e.g., GranitUser)"]
-        JSON["ExtraPropertiesJson<br/>(JSONB column)"]
+        JSON["MetadataJson<br/>(JSONB column)"]
         COL1["JobTitle<br/>(SQL column)"]
         COL2["IsVip<br/>(SQL column)"]
     end
 
-    APP["Application code"] -->|SetExtraProperty| JSON
+    APP["Application code"] -->|SetMetadataValue| JSON
     APP -->|MapProperty&lt;T&gt;| COL1
     APP -->|MapProperty&lt;T&gt;| COL2
 
     subgraph Read["Read path"]
-        R1["entity.GetExtraProperty('key')"] --> JSON
+        R1["entity.GetMetadataValue('key')"] --> JSON
         R2["EF.Property&lt;bool&gt;(u, 'IsVip')"] --> COL2
     end
 
@@ -46,44 +46,44 @@ flowchart LR
 
 ```csharp
 // Granit.Domain
-public interface IHasExtraProperties
+public interface IHasMetadata
 {
-    string? ExtraPropertiesJson { get; set; }
+    string? MetadataJson { get; set; }
 }
 ```
 
-Any entity implementing `IHasExtraProperties` gets automatic JSON-backed
+Any entity implementing `IHasMetadata` gets automatic JSON-backed
 extensibility. The framework provides typed extension methods:
 
 ```csharp
 // Read
-string? dept = entity.GetExtraProperty("Department");
-bool? isVip = entity.GetExtraProperty<bool>("IsVip");
-bool exists = entity.HasExtraProperty("LicenseNumber");
+string? dept = entity.GetMetadataValue("Department");
+bool? isVip = entity.GetMetadataValue<bool>("IsVip");
+bool exists = entity.HasMetadataValue("LicenseNumber");
 
 // Write
-entity.SetExtraProperty("Department", "Engineering");
-entity.SetExtraProperty("LicenseNumber", null); // removes
+entity.SetMetadataValue("Department", "Engineering");
+entity.SetMetadataValue("LicenseNumber", null); // removes
 ```
 
 ## Granit implementation
 
 ### Level 1 — JSON bag (zero config)
 
-Every `IHasExtraProperties` entity stores properties in a `jsonb` column
+Every `IHasMetadata` entity stores properties in a `jsonb` column
 (PostgreSQL) or `nvarchar(max)` (SQL Server). No migrations needed — the column
 is always present.
 
 ```csharp
 // Any entity
-public class ReferenceDataEntity : AuditedEntity, IHasExtraProperties
+public class ReferenceDataEntity : AuditedEntity, IHasMetadata
 {
-    public string? ExtraPropertiesJson { get; set; }
+    public string? MetadataJson { get; set; }
 }
 
 // Usage
-country.SetExtraProperty("Alpha3Code", "BEL");
-country.SetExtraProperty("IsEuMember", "true");
+country.SetMetadataValue("Alpha3Code", "BEL");
+country.SetMetadataValue("IsEuMember", "true");
 ```
 
 ### Level 2 — SQL column promotion (for indexing)
@@ -93,7 +93,7 @@ to real EF Core Shadow Properties at startup:
 
 ```csharp
 // In the host application's module (ConfigureServices)
-services.AddExtraPropertyMappings<GranitUser>(options =>
+services.AddMetadataMappings<GranitUser>(options =>
 {
     options.MapProperty<string>("JobTitle", maxLength: 128);
     options.MapProperty<string>("Department", maxLength: 64);
@@ -110,7 +110,7 @@ dotnet ef migrations add AddUserExtensions --context OpenIddictDbContext
 
 ### Level 3 — Sync interceptor (no duplication)
 
-The `ExtraPropertySyncInterceptor` in `Granit.Persistence` ensures that
+The `MetadataSyncInterceptor` in `Granit.Persistence` ensures that
 promoted properties are **excluded** from the JSON bag at save time:
 
 - **Mapped property set via JSON** → interceptor moves value to SQL column,
@@ -126,8 +126,8 @@ JSON for the rest).
 | Entity | Package | JSON column |
 |--------|---------|-------------|
 | `GranitUser` | `Granit.OpenIddict` | `CustomAttributesJson` |
-| `UserCacheEntry` | `Granit.Identity.Federated.EntityFrameworkCore` | `ExtraPropertiesJson` |
-| `ReferenceDataEntity` | `Granit.ReferenceData.EntityFrameworkCore` | `ExtraPropertiesJson` |
+| `UserCacheEntry` | `Granit.Identity.Federated.EntityFrameworkCore` | `MetadataJson` |
+| `ReferenceDataEntity` | `Granit.ReferenceData.EntityFrameworkCore` | `MetadataJson` |
 
 ## When to use each strategy
 
@@ -141,7 +141,7 @@ JSON for the rest).
 
 | Framework | Mechanism | SQL promotion | Schema-free |
 |-----------|-----------|:---:|:---:|
-| **Granit** | `IHasExtraProperties` + `MapProperty<T>` | Yes | Yes |
+| **Granit** | `IHasMetadata` + `MapProperty<T>` | Yes | Yes |
 | **Auth0** | `user_metadata` / `app_metadata` | No | Yes |
 | **Keycloak** | `attributes` dictionary | No | Yes |
 | **Entra ID** | `extensionAttribute1-15` | Yes (fixed) | No (15 max) |
@@ -151,19 +151,19 @@ JSON for the rest).
 
 | File | Purpose |
 |------|---------|
-| `src/Granit/Domain/IHasExtraProperties.cs` | Interface |
-| `src/Granit/Domain/ExtraPropertyExtensions.cs` | Get/Set/Has extension methods |
-| `src/Granit.Persistence/ExtraProperties/ExtraPropertyMappingOptions.cs` | `MapProperty<T>()` config |
-| `src/Granit.Persistence/ExtraProperties/ExtraPropertySyncInterceptor.cs` | Save-time sync (no duplication) |
-| `src/Granit.Persistence/ExtraProperties/ExtraPropertyModelBuilderExtensions.cs` | Applies Shadow Properties to ModelBuilder |
-| `src/Granit.Persistence/ExtraProperties/ExtraPropertyServiceCollectionExtensions.cs` | DI registration helpers |
+| `src/Granit/Domain/IHasMetadata.cs` | Interface |
+| `src/Granit/Domain/MetadataExtensions.cs` | Get/Set/Has extension methods |
+| `src/Granit.Persistence/Metadata/MetadataMappingOptions.cs` | `MapProperty<T>()` config |
+| `src/Granit.Persistence/Metadata/MetadataSyncInterceptor.cs` | Save-time sync (no duplication) |
+| `src/Granit.Persistence/Metadata/MetadataModelBuilderExtensions.cs` | Applies Shadow Properties to ModelBuilder |
+| `src/Granit.Persistence/Metadata/MetadataServiceCollectionExtensions.cs` | DI registration helpers |
 
 ## Anti-patterns
 
-- **Don't store structured data in ExtraProperties** — use a Companion Entity for
+- **Don't store structured data in Metadata** — use a Companion Entity for
   complex types with relationships
 - **Don't query JSON with EF Core** — promote to SQL column if you need `WHERE`
-- **Don't use ExtraProperties for security-sensitive data** — the JSON column is not
+- **Don't use Metadata for security-sensitive data** — the JSON column is not
   encrypted (use `IStringEncryptionService` separately)
 - **Don't duplicate** — if a property is promoted to SQL, it must NOT also be in JSON
   (the interceptor enforces this)

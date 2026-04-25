@@ -145,5 +145,5 @@ Three packages following the standard Granit module anatomy:
 ## Related
 
 - [BFF full documentation](/dotnet/security/bff/) — complete guide with getting started, architecture, security
-- [Extra Properties pattern](/dotnet/architecture/patterns/extra-properties/) — entity extensibility
+- [Metadata pattern](/dotnet/architecture/patterns/metadata/) — entity extensibility
 - [Cache-Aside pattern](/dotnet/architecture/patterns/cache-aside/) — FusionCache for token storage

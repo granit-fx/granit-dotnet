@@ -16,7 +16,7 @@ namespace Granit.Identity.Federated;
 /// <param name="FirstName">First name.</param>
 /// <param name="LastName">Last name.</param>
 /// <param name="Enabled">Whether the user account is active.</param>
-/// <param name="ExtraProperties">
+/// <param name="Metadata">
 /// Provider-specific attributes (e.g., Keycloak user attributes, Entra ID extension attributes).
 /// <see langword="null"/> when the provider does not return attributes or the user has none.
 /// </param>
@@ -27,12 +27,12 @@ public sealed record FederatedIdentityUser(
     string? FirstName,
     string? LastName,
     bool Enabled,
-    IReadOnlyDictionary<string, string>? ExtraProperties = null) : IIdentityUser
+    IReadOnlyDictionary<string, string>? Metadata = null) : IIdentityUser
 {
     private static readonly IReadOnlyDictionary<string, string> EmptyProperties =
         ReadOnlyDictionary<string, string>.Empty;
 
     /// <inheritdoc/>
-    IReadOnlyDictionary<string, string> IIdentityUser.ExtraProperties =>
-        ExtraProperties ?? EmptyProperties;
+    IReadOnlyDictionary<string, string> IIdentityUser.Metadata =>
+        Metadata ?? EmptyProperties;
 }
