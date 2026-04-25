@@ -20,30 +20,42 @@ internal sealed class RecordUsageRequestValidator : AbstractValidator<RecordUsag
             .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.Events)
-            .SetValidator(new MeterEventRequestValidator(clock, StandardMaxAge));
+            .ChildRules(events => MeterEventRules.Apply(events, clock, StandardMaxAge));
     }
 }
 
-internal sealed class MeterEventRequestValidator : AbstractValidator<MeterEventRequest>
+/// <summary>
+/// Per-event rule definitions shared between the standard
+/// <see cref="RecordUsageRequestValidator"/> (7-day window) and
+/// <see cref="BackfillUsageRequestValidator"/> (365-day window).
+/// </summary>
+/// <remarks>
+/// Static class — deliberately NOT an <c>AbstractValidator</c> so that
+/// FluentValidation's <c>AddValidatorsFromAssembly(includeInternalTypes: true)</c>
+/// scanner skips it (no <c>IValidator</c> implementation to discover). Exposing it
+/// as a typed validator would have the DI container try to construct it, which
+/// fails because <see cref="TimeSpan"/> isn't a registered service.
+/// </remarks>
+internal static class MeterEventRules
 {
-    public MeterEventRequestValidator(IClock clock, TimeSpan maxAge)
+    public static void Apply(InlineValidator<MeterEventRequest> events, IClock clock, TimeSpan maxAge)
     {
-        RuleFor(x => x.MeterDefinitionId)
+        events.RuleFor(x => x.MeterDefinitionId)
             .NotEmpty();
 
-        RuleFor(x => x.IdempotencyKey)
+        events.RuleFor(x => x.IdempotencyKey)
             .NotEmpty()
             .MaximumLength(256);
 
-        RuleFor(x => x.Quantity)
+        events.RuleFor(x => x.Quantity)
             .GreaterThan(0);
 
-        RuleFor(x => x.Timestamp)
+        events.RuleFor(x => x.Timestamp)
             .NotEmpty()
             .LessThanOrEqualTo(clock.Now.AddMinutes(5))
             .GreaterThan(clock.Now - maxAge);
 
-        RuleFor(x => x.Metadata)
+        events.RuleFor(x => x.Metadata)
             .MaximumLength(4000)
             .When(x => x.Metadata is not null);
     }

@@ -40576,15 +40576,6 @@
       ]
     },
     {
-      "name": "Phases",
-      "fqn": "Granit.Subscriptions.Endpoints.Permissions.Phases",
-      "kind": "class",
-      "project": "Granit.Subscriptions.Endpoints",
-      "file": "src/Granit.Subscriptions.Endpoints/Permissions/SubscriptionsPermissions.cs",
-      "line": 50,
-      "members": []
-    },
-    {
       "name": "Plans",
       "fqn": "Granit.Subscriptions.Endpoints.Permissions.Plans",
       "kind": "class",

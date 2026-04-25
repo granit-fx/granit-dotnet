@@ -27,6 +27,6 @@ internal sealed class BackfillUsageRequestValidator : AbstractValidator<Backfill
             .WithErrorCodeAndMessage("Granit:Validation:MaxBatchSize");
 
         RuleForEach(x => x.Events)
-            .SetValidator(new MeterEventRequestValidator(clock, MaxAge));
+            .ChildRules(events => MeterEventRules.Apply(events, clock, MaxAge));
     }
 }
