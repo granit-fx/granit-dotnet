@@ -57,7 +57,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Unauthorized);
@@ -85,7 +85,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage response = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
 
         response.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
@@ -107,7 +107,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage post = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
         post.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
     }
@@ -124,7 +124,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage post = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
         post.StatusCode.ShouldBe(HttpStatusCode.Created);
 
@@ -145,7 +145,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage post = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
         post.StatusCode.ShouldBe(HttpStatusCode.Created);
         RoleResponseLite? created = await post.Content
@@ -172,7 +172,7 @@ public sealed class GranitRoleEndpointsPermissionTests
 
         HttpResponseMessage post = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
         RoleResponseLite? created = await post.Content
             .ReadFromJsonAsync<RoleResponseLite>(TestContext.Current.CancellationToken);
@@ -191,7 +191,7 @@ public sealed class GranitRoleEndpointsPermissionTests
         // POST is refused with the Delete-only grant.
         HttpResponseMessage post = await client.PostAsJsonAsync(
             "/admin/roles",
-            new { name = "Auditor", multiTenancySide = (int)MultiTenancySides.Host },
+            new { name = "Auditor", multiTenancySides = (int)MultiTenancySides.Host },
             TestContext.Current.CancellationToken);
         post.StatusCode.ShouldBe(HttpStatusCode.Forbidden);
 

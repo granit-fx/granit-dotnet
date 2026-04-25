@@ -123,7 +123,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Manager",
-                multiTenancySide = (int)MultiTenancySides.Tenant,
+                multiTenancySides = (int)MultiTenancySides.Tenant,
                 tenantId = _tenantA,
                 description = "Tenant-A managers.",
             },
@@ -150,7 +150,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Manager",
-                multiTenancySide = (int)MultiTenancySides.Tenant,
+                multiTenancySides = (int)MultiTenancySides.Tenant,
                 tenantId = _tenantB,
             },
             TestContext.Current.CancellationToken);
@@ -169,7 +169,7 @@ public sealed class GranitRoleEndpointsTests
                 new
                 {
                     name = "Manager",
-                    multiTenancySide = (int)MultiTenancySides.Tenant,
+                    multiTenancySides = (int)MultiTenancySides.Tenant,
                     tenantId = _tenantA,
                 },
                 TestContext.Current.CancellationToken);
@@ -296,7 +296,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Auditor",
-                multiTenancySide = (int)MultiTenancySides.Host,
+                multiTenancySides = (int)MultiTenancySides.Host,
                 tenantId = (Guid?)null,
                 description = "Read-only platform auditor.",
             },
@@ -325,7 +325,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name,
-                multiTenancySide = (int)side,
+                multiTenancySides = (int)side,
                 tenantId,
             },
             TestContext.Current.CancellationToken);
