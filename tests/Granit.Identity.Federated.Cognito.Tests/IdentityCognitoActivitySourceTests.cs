@@ -8,7 +8,7 @@ public sealed class IdentityCognitoActivitySourceTests
 {
     [Fact]
     public void Source_HasCorrectName() =>
-        IdentityCognitoActivitySource.Source.Name.ShouldBe("Granit.Identity.Cognito");
+        IdentityCognitoActivitySource.Source.Name.ShouldBe("Granit.Identity.Federated.Cognito");
 
     [Fact]
     public void Operations_ListUsers_HasCorrectValue() =>
