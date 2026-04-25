@@ -127,15 +127,15 @@ internal sealed partial class DefaultDocumentExtractor<TResult>(
     [LoggerMessage(Level = LogLevel.Warning, Message = "Low confidence extraction for {TypeName}: {Confidence:F2} < threshold {Threshold:F2}")]
     private partial void LogLowConfidence(string typeName, double confidence, double threshold);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Extraction failed for {TypeName}: {ErrorMessage}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Extraction failed for {TypeName}: {ErrorMessage}")]
     private partial void LogExtractionFailed(string typeName, string errorMessage);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Extraction timed out for {TypeName} after {TimeoutSeconds}s")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Extraction timed out for {TypeName} after {TimeoutSeconds}s")]
     private partial void LogExtractionTimeout(string typeName, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Deserialization returned null for {TypeName}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Deserialization returned null for {TypeName}")]
     private partial void LogDeserializationNull(string typeName);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM response for {TypeName}: {ErrorMessage}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to deserialize LLM response for {TypeName}: {ErrorMessage}")]
     private partial void LogDeserializationFailed(string typeName, string errorMessage);
 }

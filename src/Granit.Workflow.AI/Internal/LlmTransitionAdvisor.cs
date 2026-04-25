@@ -150,15 +150,15 @@ internal sealed partial class LlmTransitionAdvisor(
     [LoggerMessage(Level = LogLevel.Warning, Message = "LLM recommended transition '{RecommendedTransition}' is not in the allowed set for {EntityType}")]
     private partial void LogInvalidRecommendation(string entityType, string recommendedTransition);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to deserialize LLM recommendation response for {EntityType}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to deserialize LLM recommendation response for {EntityType}")]
     private partial void LogDeserializationFailed(string entityType);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation timed out for {EntityType} after {TimeoutSeconds}s")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Transition recommendation timed out for {EntityType} after {TimeoutSeconds}s")]
     private partial void LogTimeout(string entityType, int timeoutSeconds);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Failed to parse LLM recommendation JSON for {EntityType}: {ErrorMessage}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to parse LLM recommendation JSON for {EntityType}: {ErrorMessage}")]
     private partial void LogJsonError(string entityType, string errorMessage);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Transition recommendation failed for {EntityType}: {ErrorMessage}")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Transition recommendation failed for {EntityType}: {ErrorMessage}")]
     private partial void LogError(string entityType, string errorMessage);
 }
