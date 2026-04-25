@@ -23,30 +23,30 @@ internal sealed class PrivacyPermissionDefinitionProvider : IPermissionDefinitio
             PrivacyPermissions.Export.Execute,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Export.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             PrivacyPermissions.Deletion.Execute,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Deletion.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             PrivacyPermissions.Purposes.Read,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Purposes.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             PrivacyPermissions.Agreements.Read,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Agreements.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             PrivacyPermissions.Agreements.Create,
             LocalizableString.Create<PrivacyEndpointsLocalizationResource>(
                 "Permission:Privacy.Agreements.Create"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

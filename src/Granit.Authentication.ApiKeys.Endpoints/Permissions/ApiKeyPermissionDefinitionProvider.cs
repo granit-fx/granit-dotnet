@@ -22,30 +22,30 @@ internal sealed class ApiKeyPermissionDefinitionProvider : IPermissionDefinition
             ApiKeyPermissions.Keys.Read,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
                 "Permission:AuthenticationApiKeys.Keys.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Create,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
                 "Permission:AuthenticationApiKeys.Keys.Create"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Revoke,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
                 "Permission:AuthenticationApiKeys.Keys.Revoke"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             ApiKeyPermissions.Keys.Rotate,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
                 "Permission:AuthenticationApiKeys.Keys.Rotate"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             ApiKeyPermissions.Keys.UpdateScopes,
             LocalizableString.Create<ApiKeysEndpointsLocalizationResource>(
                 "Permission:AuthenticationApiKeys.Keys.UpdateScopes"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

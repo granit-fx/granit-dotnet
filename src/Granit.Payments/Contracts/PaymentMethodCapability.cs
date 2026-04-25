@@ -18,7 +18,7 @@ namespace Granit.Payments.Contracts;
 public sealed record PaymentMethodCapability(
     IReadOnlySet<string> SupportedCountries,
     IReadOnlySet<string> SupportedCurrencies,
-    PaymentMethodSequenceType SupportedSequenceTypes,
+    PaymentMethodSequenceTypes SupportedSequenceTypes,
     IReadOnlyDictionary<string, PaymentMethodAmountBound> AmountBounds)
 {
     /// <summary>
@@ -28,8 +28,8 @@ public sealed record PaymentMethodCapability(
     public static PaymentMethodCapability Wildcard { get; } = new(
         SupportedCountries: ImmutableHashSet<string>.Empty,
         SupportedCurrencies: ImmutableHashSet<string>.Empty,
-        SupportedSequenceTypes: PaymentMethodSequenceType.OneOff
-            | PaymentMethodSequenceType.First
-            | PaymentMethodSequenceType.Recurring,
+        SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff
+            | PaymentMethodSequenceTypes.First
+            | PaymentMethodSequenceTypes.Recurring,
         AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty);
 }

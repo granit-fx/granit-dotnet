@@ -23,70 +23,70 @@ internal sealed class IdentityPermissionDefinitionProvider : IPermissionDefiniti
             IdentityPermissions.Users.Read,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Users.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Users.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Users.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Users.Sync,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Users.Sync"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Users.Delete,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Users.Delete"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Roles
         group.AddPermission(
             IdentityPermissions.Roles.Read,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Roles.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Roles.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Roles.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Groups
         group.AddPermission(
             IdentityPermissions.Groups.Read,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Groups.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Groups.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Groups.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Sessions
         group.AddPermission(
             IdentityPermissions.Sessions.Read,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Sessions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             IdentityPermissions.Sessions.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Sessions.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Passwords
         group.AddPermission(
             IdentityPermissions.Passwords.Manage,
             LocalizableString.Create<IdentityEndpointsLocalizationResource>(
                 "Permission:Identity.Passwords.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

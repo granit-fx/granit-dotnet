@@ -35,7 +35,7 @@ internal sealed partial class SepaDirectDebitPaymentProvider(
                 Capability: new PaymentMethodCapability(
                     SupportedCountries: PaymentMethodCountries.SepaZone,
                     SupportedCurrencies: PaymentMethodCurrencies.EurOnly,
-                    SupportedSequenceTypes: PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring,
+                    SupportedSequenceTypes: PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring,
                     AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)),
         ];
         return Task.FromResult(catalog);

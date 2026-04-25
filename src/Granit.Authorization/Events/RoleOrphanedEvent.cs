@@ -16,14 +16,14 @@ namespace Granit.Authorization.Events;
 /// </remarks>
 /// <param name="RoleId">Aggregate identifier.</param>
 /// <param name="Name">Role name at the moment of orphaning.</param>
-/// <param name="MultiTenancySide">Side applicability (unchanged).</param>
+/// <param name="MultiTenancySides">Side applicability (unchanged).</param>
 /// <param name="TenantId">Tenant scope (unchanged).</param>
 /// <param name="ClientId">OIDC client scope (unchanged) — the sync's <c>TrackedClientId</c> key.</param>
 /// <param name="OrphanedAt">Timestamp captured by the sync when the flag was flipped.</param>
 public sealed record RoleOrphanedEvent(
     Guid RoleId,
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId,
     DateTimeOffset OrphanedAt) : IDomainEvent;

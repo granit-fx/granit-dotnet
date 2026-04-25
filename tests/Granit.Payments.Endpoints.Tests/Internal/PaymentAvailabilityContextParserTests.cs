@@ -62,10 +62,10 @@ public sealed class PaymentAvailabilityContextParserTests
     }
 
     [Theory]
-    [InlineData("oneoff", PaymentMethodSequenceType.OneOff)]
-    [InlineData("First", PaymentMethodSequenceType.First)]
-    [InlineData("RECURRING", PaymentMethodSequenceType.Recurring)]
-    public void SequenceType_CaseInsensitive(string input, PaymentMethodSequenceType expected)
+    [InlineData("oneoff", PaymentMethodSequenceTypes.OneOff)]
+    [InlineData("First", PaymentMethodSequenceTypes.First)]
+    [InlineData("RECURRING", PaymentMethodSequenceTypes.Recurring)]
+    public void SequenceType_CaseInsensitive(string input, PaymentMethodSequenceTypes expected)
     {
         PaymentAvailabilityContext? context = PaymentAvailabilityContextParser
             .TryParse(country: null, currency: null, amount: null, sequenceType: input, out string? error);
@@ -96,7 +96,7 @@ public sealed class PaymentAvailabilityContextParserTests
         context!.CountryCode.ShouldBe("BE");
         context.CurrencyCode.ShouldBe("EUR");
         context.Amount.ShouldBe(25m);
-        context.SequenceType.ShouldBe(PaymentMethodSequenceType.OneOff);
+        context.SequenceType.ShouldBe(PaymentMethodSequenceTypes.OneOff);
     }
 
     [Fact]
@@ -106,6 +106,6 @@ public sealed class PaymentAvailabilityContextParserTests
             .TryParse(country: "BE", currency: null, amount: null, sequenceType: null, out string? error);
 
         error.ShouldBeNull();
-        context!.SequenceType.ShouldBe(PaymentMethodSequenceType.OneOff);
+        context!.SequenceType.ShouldBe(PaymentMethodSequenceTypes.OneOff);
     }
 }

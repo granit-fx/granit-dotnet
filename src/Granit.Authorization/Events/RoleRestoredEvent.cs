@@ -11,12 +11,12 @@ namespace Granit.Authorization.Events;
 /// </summary>
 /// <param name="RoleId">Aggregate identifier.</param>
 /// <param name="Name">Role name at the moment of restoration.</param>
-/// <param name="MultiTenancySide">Side applicability (unchanged).</param>
+/// <param name="MultiTenancySides">Side applicability (unchanged).</param>
 /// <param name="TenantId">Tenant scope (unchanged).</param>
 /// <param name="ClientId">OIDC client scope (unchanged).</param>
 public sealed record RoleRestoredEvent(
     Guid RoleId,
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId) : IDomainEvent;

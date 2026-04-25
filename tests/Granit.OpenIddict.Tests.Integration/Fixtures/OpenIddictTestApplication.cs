@@ -69,6 +69,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
 
         // Explicit issuer — TestServer has no real URL for OpenIddict to auto-detect
         builder.Configuration["OpenIddict:Issuer"] = TestIssuer;
+        // TestServer runs as Production by default; ephemeral signing/encryption keys
+        // are forbidden there unless explicitly opted in. Persistent keys are not
+        // worth provisioning for an in-memory integration suite.
+        builder.Configuration["OpenIddict:AllowEphemeralKeys"] = "true";
 
         // 1. Register OpenIddict EF Core + Server + Identity
         builder.AddGranitOpenIddict(

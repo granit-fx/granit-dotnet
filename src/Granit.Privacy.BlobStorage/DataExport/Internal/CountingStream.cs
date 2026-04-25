@@ -1,3 +1,5 @@
+using Granit.Privacy.BlobStorage.DataExport.Exceptions;
+
 namespace Granit.Privacy.BlobStorage.DataExport.Internal;
 
 /// <summary>
@@ -92,15 +94,3 @@ internal sealed class CountingStream(Stream inner, long maxBytes) : Stream
     }
 }
 
-/// <summary>
-/// Raised by <see cref="CountingStream"/> when the archive write exceeds the configured cap.
-/// Caught by the archive assembler to transition the request to
-/// <see cref="Granit.Privacy.DataExport.ExportRequestState.SizeLimitExceeded"/>.
-/// </summary>
-public sealed class PrivacyExportSizeLimitExceededException(long maxBytes, long observedBytes)
-    : Exception($"Export archive exceeded the configured size limit of {maxBytes} bytes (observed {observedBytes}).")
-{
-    public long MaxBytes { get; } = maxBytes;
-
-    public long ObservedBytes { get; } = observedBytes;
-}

@@ -26,7 +26,7 @@ internal static class PaymentMethodLabelResolver
     /// <example><c>sepa_debit</c> → <c>Sepa Debit</c>; <c>klarna_pay_later</c> → <c>Klarna Pay Later</c>.</example>
     private static string ToTitleCase(string snakeOrKebab) =>
         string.Join(' ', snakeOrKebab
-            .Split(['_', '-'])
+            .Split('_', '-')
             .Select(word => word.Length == 0
                 ? word
                 : char.ToUpperInvariant(word[0]) + word[1..]));

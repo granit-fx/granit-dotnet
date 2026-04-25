@@ -12,12 +12,12 @@ namespace Granit.Authorization.Events;
 /// </remarks>
 /// <param name="RoleId">Aggregate identifier.</param>
 /// <param name="Name">Role name.</param>
-/// <param name="MultiTenancySide">Side applicability declared at creation.</param>
-/// <param name="TenantId">Tenant scope (<see langword="null"/> for <see cref="MultiTenancySide.Host"/> / <see cref="MultiTenancySide.Both"/>).</param>
+/// <param name="MultiTenancySides">Side applicability declared at creation.</param>
+/// <param name="TenantId">Tenant scope (<see langword="null"/> for <see cref="MultiTenancySides.Host"/> / <see cref="MultiTenancySides.Both"/>).</param>
 /// <param name="ClientId">OIDC client scope (<see langword="null"/> for realm / global roles).</param>
 public sealed record RoleCreatedEvent(
     Guid RoleId,
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId) : IDomainEvent;

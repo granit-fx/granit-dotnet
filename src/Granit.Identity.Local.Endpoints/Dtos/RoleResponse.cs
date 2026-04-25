@@ -5,7 +5,7 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 /// <summary>Role detail payload returned by the CRUD endpoints.</summary>
 /// <param name="Id">Aggregate identifier.</param>
 /// <param name="Name">Role display name.</param>
-/// <param name="MultiTenancySide">Host / Tenant / Both applicability.</param>
+/// <param name="MultiTenancySides">Host / Tenant / Both applicability.</param>
 /// <param name="TenantId">Tenant scope (null for Host / Both).</param>
 /// <param name="ClientId">OIDC client scope — reserved for future realm / client role distinction; currently always null.</param>
 /// <param name="Description">Optional description.</param>
@@ -15,7 +15,7 @@ namespace Granit.Identity.Local.Endpoints.Dtos;
 public sealed record RoleResponse(
     Guid Id,
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId,
     string? Description,

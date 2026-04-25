@@ -14,7 +14,7 @@ namespace Granit.Authorization.Tests.Domain;
 public sealed class RoleMetadataOrphanTests
 {
     private static RoleMetadata CreateSut() => RoleMetadata.Create(
-        Guid.NewGuid(), "tester", MultiTenancySide.Host,
+        Guid.NewGuid(), "tester", MultiTenancySides.Host,
         tenantId: null, clientId: "client-a");
 
     [Fact]

@@ -31,8 +31,8 @@ internal static class MollieCatalog
     private static readonly ImmutableHashSet<string> Global =
         ImmutableHashSet<string>.Empty;
 
-    private const PaymentMethodSequenceType AllSequences =
-        PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring;
+    private const PaymentMethodSequenceTypes AllSequences =
+        PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring;
 
     /// <summary>Ordered catalog entries covering Mollie's European surface.</summary>
     public static IReadOnlyList<PaymentMethodCatalogEntry> Entries { get; } =
@@ -43,46 +43,46 @@ internal static class MollieCatalog
         // Bank redirects — typically OneOff | First (mandate setup possible), per-country
         new(PaymentMethods.Bancontact, PaymentMethodCategory.BankRedirect, "Bancontact",
             new(Set("BE"), PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First, NoBounds)),
 
         new(PaymentMethods.Ideal, PaymentMethodCategory.BankRedirect, "iDEAL",
             new(Set("NL"), PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First, NoBounds)),
 
         new(PaymentMethods.Eps, PaymentMethodCategory.BankRedirect, "EPS",
-            new(Set("AT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("AT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Giropay, PaymentMethodCategory.BankRedirect, "Giropay",
-            new(Set("DE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("DE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Przelewy24, PaymentMethodCategory.BankRedirect, "Przelewy24",
-            new(Set("PL"), Set("PLN", "EUR"), PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("PL"), Set("PLN", "EUR"), PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Twint, PaymentMethodCategory.BankRedirect, "TWINT",
-            new(Set("CH"), Set("CHF"), PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("CH"), Set("CHF"), PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Trustly, PaymentMethodCategory.BankRedirect, "Trustly",
             new(Set("SE", "FI", "EE", "LV", "LT", "DK", "NO", "GB"), GlobalCurrencies,
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.MyBank, PaymentMethodCategory.BankRedirect, "MyBank",
-            new(Set("IT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("IT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Belfius, PaymentMethodCategory.BankRedirect, "Belfius Pay Button",
-            new(Set("BE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("BE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Kbc, PaymentMethodCategory.BankRedirect, "KBC/CBC Payment Button",
-            new(Set("BE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("BE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         // Bank transfer — SEPA zone, EUR, OneOff
         new(PaymentMethods.BankTransfer, PaymentMethodCategory.BankTransfer, "Bank transfer",
             new(PaymentMethodCountries.SepaZone, PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         // SEPA Direct Debit — mandate-based, First | Recurring
         new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit, "SEPA Direct Debit",
             new(PaymentMethodCountries.SepaZone, PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring, NoBounds)),
+                PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring, NoBounds)),
 
         // Wallets — global
         new(PaymentMethods.ApplePay, PaymentMethodCategory.Wallet, "Apple Pay",
@@ -96,7 +96,7 @@ internal static class MollieCatalog
             new(
                 Set("AT", "BE", "CH", "CZ", "DE", "DK", "ES", "FI", "FR", "GB", "IE", "IT", "NL", "NO", "PL", "PT", "SE", "US"),
                 Set("EUR", "GBP", "SEK", "DKK", "NOK", "CHF", "USD"),
-                PaymentMethodSequenceType.OneOff,
+                PaymentMethodSequenceTypes.OneOff,
                 Bounds(
                     ("EUR", 1m, 10_000m),
                     ("GBP", 1m, 10_000m),
@@ -110,14 +110,14 @@ internal static class MollieCatalog
             new(
                 Set("AT", "CH", "DE", "NL"),
                 Set("EUR", "CHF"),
-                PaymentMethodSequenceType.OneOff,
+                PaymentMethodSequenceTypes.OneOff,
                 Bounds(
                     ("EUR", 5m, 1_500m),
                     ("CHF", 5m, 1_500m)))),
 
         // Vouchers — country-specific
         new(PaymentMethods.Paysafecard, PaymentMethodCategory.Voucher, "Paysafecard",
-            new(Global, Set("EUR", "USD"), PaymentMethodSequenceType.OneOff,
+            new(Global, Set("EUR", "USD"), PaymentMethodSequenceTypes.OneOff,
                 Bounds(("EUR", 1m, 1_000m), ("USD", 1m, 1_000m)))),
     ];
 

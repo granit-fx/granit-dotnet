@@ -6,7 +6,7 @@ namespace Granit.Authorization.Domain;
 
 /// <summary>
 /// Declarative metadata for a role: its name, tenant scope, owning OIDC client (if any),
-/// and <see cref="Granit.MultiTenancy.MultiTenancySide"/>.
+/// and <see cref="Granit.MultiTenancy.MultiTenancySides"/>.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -22,9 +22,9 @@ namespace Granit.Authorization.Domain;
 /// <c>CHECK</c> constraint:
 /// </para>
 /// <list type="bullet">
-///   <item><see cref="MultiTenancySide.Host"/> ⇒ <see cref="TenantId"/> must be <see langword="null"/>.</item>
-///   <item><see cref="MultiTenancySide.Both"/> ⇒ <see cref="TenantId"/> must be <see langword="null"/> (role is defined globally but assignable in any tenant context).</item>
-///   <item><see cref="MultiTenancySide.Tenant"/> ⇒ <see cref="TenantId"/> must be non-null.</item>
+///   <item><see cref="MultiTenancySides.Host"/> ⇒ <see cref="TenantId"/> must be <see langword="null"/>.</item>
+///   <item><see cref="MultiTenancySides.Both"/> ⇒ <see cref="TenantId"/> must be <see langword="null"/> (role is defined globally but assignable in any tenant context).</item>
+///   <item><see cref="MultiTenancySides.Tenant"/> ⇒ <see cref="TenantId"/> must be non-null.</item>
 /// </list>
 /// <para>
 /// Uniqueness is enforced on the composite <c>(Name, TenantId, ClientId)</c> with
@@ -37,7 +37,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// <summary>Human-readable role name, e.g. <c>"TenantAdministrator"</c>. Max 256 characters.</summary>
     public string Name { get; private set; } = string.Empty;
 
-    /// <summary>Tenant scope. Non-null only when <see cref="MultiTenancySide"/> is <see cref="MultiTenancySide.Tenant"/>.</summary>
+    /// <summary>Tenant scope. Non-null only when <see cref="MultiTenancySides"/> is <see cref="MultiTenancySides.Tenant"/>.</summary>
     public Guid? TenantId { get; private set; }
 
     /// <summary>
@@ -51,8 +51,8 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// </remarks>
     public string? ClientId { get; private set; }
 
-    /// <summary>Host / tenant applicability side. Default on new declarations is <see cref="MultiTenancySide.Both"/>.</summary>
-    public MultiTenancySide MultiTenancySide { get; private set; } = MultiTenancySide.Both;
+    /// <summary>Host / tenant applicability side. Default on new declarations is <see cref="MultiTenancySides.Both"/>.</summary>
+    public MultiTenancySides MultiTenancySides { get; private set; } = MultiTenancySides.Both;
 
     /// <summary>Optional description displayed in admin UIs. Max 2048 characters.</summary>
     public string? Description { get; private set; }
@@ -100,14 +100,14 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// <param name="id">Aggregate identifier (typically supplied by <c>IGuidGenerator</c>).</param>
     /// <param name="name">Role name. Max 256 chars, non-empty.</param>
     /// <param name="multiTenancySide">Side applicability.</param>
-    /// <param name="tenantId">Tenant scope. Must be non-null iff side is <see cref="MultiTenancySide.Tenant"/>.</param>
+    /// <param name="tenantId">Tenant scope. Must be non-null iff side is <see cref="MultiTenancySides.Tenant"/>.</param>
     /// <param name="clientId">Optional OIDC client scope. Max 256 chars.</param>
     /// <param name="description">Optional description. Max 2048 chars.</param>
     /// <param name="isSystem">Mark as seeded by the platform.</param>
     public static RoleMetadata Create(
         Guid id,
         string name,
-        MultiTenancySide multiTenancySide,
+        MultiTenancySides multiTenancySide,
         Guid? tenantId,
         string? clientId = null,
         string? description = null,
@@ -121,7 +121,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         {
             Id = id,
             Name = name,
-            MultiTenancySide = multiTenancySide,
+            MultiTenancySides = multiTenancySide,
             TenantId = tenantId,
             ClientId = clientId,
             Description = description,
@@ -161,7 +161,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         Description = newDescription;
 
         AddDomainEvent(new RoleUpdatedEvent(
-            Id, Name, previousName, MultiTenancySide, TenantId, ClientId));
+            Id, Name, previousName, MultiTenancySides, TenantId, ClientId));
     }
 
     /// <summary>
@@ -170,7 +170,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
     /// the still-tracked <c>Deleted</c> entry.
     /// </summary>
     public void MarkAsDeleted() =>
-        AddDomainEvent(new RoleDeletedEvent(Id, Name, MultiTenancySide, TenantId, ClientId));
+        AddDomainEvent(new RoleDeletedEvent(Id, Name, MultiTenancySides, TenantId, ClientId));
 
     /// <summary>
     /// Flips <see cref="IsOrphaned"/> to <see langword="true"/>, stamps <see cref="OrphanedAt"/>,
@@ -190,7 +190,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         OrphanedAt = now;
 
         AddDomainEvent(new RoleOrphanedEvent(
-            Id, Name, MultiTenancySide, TenantId, ClientId, now));
+            Id, Name, MultiTenancySides, TenantId, ClientId, now));
     }
 
     /// <summary>
@@ -210,7 +210,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         OrphanedAt = null;
 
         AddDomainEvent(new RoleRestoredEvent(
-            Id, Name, MultiTenancySide, TenantId, ClientId));
+            Id, Name, MultiTenancySides, TenantId, ClientId));
     }
 
     private static void ValidateLengths(string name, string? clientId, string? description)
@@ -231,20 +231,20 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
         }
     }
 
-    private static void ValidateSideTenantConsistency(MultiTenancySide side, Guid? tenantId)
+    private static void ValidateSideTenantConsistency(MultiTenancySides side, Guid? tenantId)
     {
         switch (side)
         {
-            case MultiTenancySide.Host:
-            case MultiTenancySide.Both:
+            case MultiTenancySides.Host:
+            case MultiTenancySides.Both:
                 if (tenantId is not null)
                 {
                     throw new ArgumentException(
-                        $"Role with MultiTenancySide '{side}' must have a null TenantId.",
+                        $"Role with MultiTenancySides '{side}' must have a null TenantId.",
                         nameof(tenantId));
                 }
                 break;
-            case MultiTenancySide.Tenant:
+            case MultiTenancySides.Tenant:
                 if (tenantId is null)
                 {
                     throw new ArgumentException(
@@ -254,7 +254,7 @@ public sealed class RoleMetadata : AuditedAggregateRoot, IMultiTenant
                 break;
             default:
                 throw new ArgumentOutOfRangeException(
-                    nameof(side), side, "Unknown MultiTenancySide value.");
+                    nameof(side), side, "Unknown MultiTenancySides value.");
         }
     }
 }

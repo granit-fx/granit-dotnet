@@ -22,7 +22,7 @@ public sealed class GranitRoleLookupTests
     {
         _currentTenant.IsAvailable.Returns(false);
         var hostRole = RoleMetadata.Create(
-            Guid.NewGuid(), "SuperAdmin", MultiTenancySide.Host, tenantId: null);
+            Guid.NewGuid(), "SuperAdmin", MultiTenancySides.Host, tenantId: null);
         _store.FindByNameAsync("SuperAdmin", null, null, Arg.Any<CancellationToken>())
             .Returns(hostRole);
 
@@ -51,7 +51,7 @@ public sealed class GranitRoleLookupTests
         _currentTenant.Id.Returns(tenantId);
 
         var tenantRole = RoleMetadata.Create(
-            Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantId);
+            Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantId);
         _store.FindByNameAsync("Manager", tenantId, null, Arg.Any<CancellationToken>())
             .Returns(tenantRole);
 
@@ -75,7 +75,7 @@ public sealed class GranitRoleLookupTests
         _currentTenant.Id.Returns(tenantId);
 
         var bothRole = RoleMetadata.Create(
-            Guid.NewGuid(), "User", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "User", MultiTenancySides.Both, tenantId: null);
         _store.FindByNameAsync("User", tenantId, null, Arg.Any<CancellationToken>())
             .Returns((RoleMetadata?)null);
         _store.FindByNameAsync("User", (Guid?)null, null, Arg.Any<CancellationToken>())

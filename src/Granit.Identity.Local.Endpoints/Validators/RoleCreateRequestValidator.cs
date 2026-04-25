@@ -18,16 +18,16 @@ internal sealed class RoleCreateRequestValidator : GranitValidator<RoleCreateReq
         RuleFor(x => x.Description)
             .MaximumLength(2048);
 
-        RuleFor(x => x.MultiTenancySide)
+        RuleFor(x => x.MultiTenancySides)
             .IsInEnum();
 
         // Side ↔ TenantId consistency (mirrors RoleMetadata.Create domain invariant).
         RuleFor(x => x)
-            .Must(x => x.MultiTenancySide != MultiTenancySide.Tenant || x.TenantId is not null)
+            .Must(x => x.MultiTenancySides != MultiTenancySides.Tenant || x.TenantId is not null)
             .WithErrorCodeAndMessage("Granit:Identity:Role:TenantIdRequired");
 
         RuleFor(x => x)
-            .Must(x => x.MultiTenancySide == MultiTenancySide.Tenant || x.TenantId is null)
+            .Must(x => x.MultiTenancySides == MultiTenancySides.Tenant || x.TenantId is null)
             .WithErrorCodeAndMessage("Granit:Identity:Role:TenantIdForbidden");
     }
 }

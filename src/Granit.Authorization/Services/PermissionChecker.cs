@@ -15,7 +15,7 @@ namespace Granit.Authorization.Services;
 /// <item>AlwaysAllow (dev/test, authenticated users only) → granted</item>
 /// <item>AdminRole bypass (root of trust, case-insensitive) → granted without DB</item>
 /// <item>Permission undefined → <see cref="InvalidOperationException"/></item>
-/// <item>Permission's <see cref="MultiTenancySide"/> incompatible with current tenant context → denied</item>
+/// <item>Permission's <see cref="MultiTenancySides"/> incompatible with current tenant context → denied</item>
 /// <item>For each registered <see cref="IPermissionGrantProvider"/> (default order: User, Role, Client),
 ///   query each of the provider's keys through cache / store. First positive match wins (fail-fast).</item>
 /// </list>
@@ -285,8 +285,8 @@ internal sealed class PermissionChecker(
     // multi-tenancy should not declare Tenant-sided permissions in the first place.
     internal static bool IsCompatibleWithCurrentSide(PermissionDefinition definition, ICurrentTenant currentTenant) =>
         currentTenant.IsAvailable
-            ? definition.MultiTenancySide.HasFlag(MultiTenancySide.Tenant)
-            : definition.MultiTenancySide.HasFlag(MultiTenancySide.Host);
+            ? definition.MultiTenancySides.HasFlag(MultiTenancySides.Tenant)
+            : definition.MultiTenancySides.HasFlag(MultiTenancySides.Host);
 
     private static PermissionGrantLookupContext BuildLookupContext(
         ICurrentUserService currentUserService,

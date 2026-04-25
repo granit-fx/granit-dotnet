@@ -217,7 +217,7 @@ internal static partial class PermissionGrantEndpoints
     private static partial Regex ValidNameRegex();
 
     /// <summary>
-    /// Applies the <see cref="MultiTenancySide"/> visibility matrix to a role name.
+    /// Applies the <see cref="MultiTenancySides"/> visibility matrix to a role name.
     /// Returns <see langword="true"/> when the role either has no <see cref="RoleMetadata"/>
     /// row (legacy / externally-managed role, not under Granit's visibility regime) or
     /// its row is visible in the caller's context.
@@ -259,11 +259,11 @@ internal static partial class PermissionGrantEndpoints
             return true;
         }
 
-        return role.MultiTenancySide switch
+        return role.MultiTenancySides switch
         {
-            MultiTenancySide.Host => false,
-            MultiTenancySide.Both => true,
-            MultiTenancySide.Tenant => role.TenantId == currentTenant.Id,
+            MultiTenancySides.Host => false,
+            MultiTenancySides.Both => true,
+            MultiTenancySides.Tenant => role.TenantId == currentTenant.Id,
             _ => false,
         };
     }

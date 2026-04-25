@@ -19,9 +19,9 @@ internal sealed class CatalogPermissionDefinitionProvider : IPermissionDefinitio
         // a Both-sided variant or a separate Tenant.* permission set will be added.
         group.AddPermission(CatalogPermissions.Products.Read,
             LocalizableString.Create<CatalogEndpointsLocalizationResource>("Permission:Catalog.Products.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
         group.AddPermission(CatalogPermissions.Products.Manage,
             LocalizableString.Create<CatalogEndpointsLocalizationResource>("Permission:Catalog.Products.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

@@ -47,12 +47,12 @@ internal sealed class BackgroundJobsPermissionDefinitionProvider : IPermissionDe
             BackgroundJobsPermissions.Jobs.Read,
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
                 "Permission:BackgroundJobs.Jobs.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         group.AddPermission(
             BackgroundJobsPermissions.Jobs.Manage,
             LocalizableString.Create<BackgroundJobsEndpointsLocalizationResource>(
                 "Permission:BackgroundJobs.Jobs.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

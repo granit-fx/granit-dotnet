@@ -80,7 +80,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         await _store.Received(2).AddAsync(
-            Arg.Is<RoleMetadata>(r => r.ClientId == appId && r.MultiTenancySide == MultiTenancySide.Host
+            Arg.Is<RoleMetadata>(r => r.ClientId == appId && r.MultiTenancySides == MultiTenancySides.Host
                 && !r.IsSystem && r.TenantId == null),
             Arg.Any<CancellationToken>());
         await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
@@ -92,7 +92,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "22222222-2222-2222-2222-222222222222";
         EntraIdClientRoleSyncService sut = BuildSut(appId);
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "Editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "Editor", MultiTenancySides.Host,
             tenantId: null, clientId: appId, description: "Edit docs");
         _clientRoleManager.GetClientRolesAsync(appId, Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("r1", "Editor", "Edit docs") { ClientId = appId }]);
@@ -111,7 +111,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "33333333-3333-3333-3333-333333333333";
         EntraIdClientRoleSyncService sut = BuildSut(appId);
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "Editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "Editor", MultiTenancySides.Host,
             tenantId: null, clientId: appId, description: "OLD description");
         _clientRoleManager.GetClientRolesAsync(appId, Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("r1", "Editor", "NEW description") { ClientId = appId }]);
@@ -151,7 +151,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "55555555-5555-5555-5555-555555555555";
         EntraIdClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.KeepAndLog, appId);
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "Gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "Gone", MultiTenancySides.Host,
             tenantId: null, clientId: appId);
 
         _clientRoleManager.GetClientRolesAsync(appId, Arg.Any<CancellationToken>()).Returns([]);
@@ -170,7 +170,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "66666666-6666-6666-6666-666666666666";
         EntraIdClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, appId);
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "Gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "Gone", MultiTenancySides.Host,
             tenantId: null, clientId: appId);
 
         _clientRoleManager.GetClientRolesAsync(appId, Arg.Any<CancellationToken>()).Returns([]);
@@ -190,7 +190,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "77777777-7777-7777-7777-777777777777";
         EntraIdClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, appId);
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "Gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "Gone", MultiTenancySides.Host,
             tenantId: null, clientId: appId);
         orphan.MarkAsOrphaned(DateTimeOffset.UtcNow.AddDays(-3));
 
@@ -208,7 +208,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "88888888-8888-8888-8888-888888888888";
         EntraIdClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.HardDelete, appId);
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "Gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "Gone", MultiTenancySides.Host,
             tenantId: null, clientId: appId);
 
         _clientRoleManager.GetClientRolesAsync(appId, Arg.Any<CancellationToken>()).Returns([]);
@@ -225,7 +225,7 @@ public sealed class EntraIdClientRoleSyncServiceTests
         const string appId = "99999999-9999-9999-9999-999999999999";
         EntraIdClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, appId);
         var previouslyOrphaned = RoleMetadata.Create(
-            Guid.NewGuid(), "Editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "Editor", MultiTenancySides.Host,
             tenantId: null, clientId: appId, description: "Edit docs");
         previouslyOrphaned.MarkAsOrphaned(DateTimeOffset.UtcNow.AddHours(-1));
 

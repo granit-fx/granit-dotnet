@@ -41,24 +41,24 @@ internal sealed class DataExchangePermissionDefinitionProvider : IPermissionDefi
             DataExchangePermissions.Imports.Read,
             LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
                 "Permission:DataExchange.Imports.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             DataExchangePermissions.Imports.Execute,
             LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
                 "Permission:DataExchange.Imports.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             DataExchangePermissions.Exports.Read,
             LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
                 "Permission:DataExchange.Exports.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             DataExchangePermissions.Exports.Execute,
             LocalizableString.Create<DataExchangeEndpointsLocalizationResource>(
                 "Permission:DataExchange.Exports.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

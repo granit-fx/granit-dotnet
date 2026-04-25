@@ -17,30 +17,30 @@ internal sealed class SubscriptionsPermissionDefinitionProvider : IPermissionDef
         // Plans and Prices are the SaaS catalog: they are authored at the host level only.
         group.AddPermission(SubscriptionsPermissions.Plans.Read,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Plans.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
         group.AddPermission(SubscriptionsPermissions.Plans.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Plans.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
         group.AddPermission(SubscriptionsPermissions.Prices.Read,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Prices.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
         group.AddPermission(SubscriptionsPermissions.Prices.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Prices.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         // Subscriptions and Seats: the host provisions and adjusts tenant subscriptions,
         // and each tenant also needs to see/manage its own plan and seats. Both-sided.
         group.AddPermission(SubscriptionsPermissions.Subscriptions.Read,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Subscriptions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(SubscriptionsPermissions.Subscriptions.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Subscriptions.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(SubscriptionsPermissions.Seats.Read,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Seats.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(SubscriptionsPermissions.Seats.Manage,
             LocalizableString.Create<SubscriptionsEndpointsLocalizationResource>("Permission:Subscriptions.Seats.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

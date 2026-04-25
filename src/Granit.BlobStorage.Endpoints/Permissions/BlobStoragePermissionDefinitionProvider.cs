@@ -22,12 +22,12 @@ internal sealed class BlobStoragePermissionDefinitionProvider : IPermissionDefin
             BlobStoragePermissions.Administration.Read,
             LocalizableString.Create<BlobStorageEndpointsLocalizationResource>(
                 "Permission:BlobStorage.Administration.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             BlobStoragePermissions.Administration.Manage,
             LocalizableString.Create<BlobStorageEndpointsLocalizationResource>(
                 "Permission:BlobStorage.Administration.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

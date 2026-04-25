@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using Granit.Json;
@@ -159,8 +160,10 @@ public static class GranitHostBuilderExtensions
     }
 
     /// <summary>
-    /// Marker type to prevent duplicate JSON converter registration.
+    /// Marker type to prevent duplicate JSON converter registration. Intentionally empty —
+    /// presence in DI signals that <c>AddGranit</c> already configured JSON defaults.
     /// </summary>
+    [SuppressMessage("Minor Code Smell", "S2094:Classes should not be empty", Justification = "Marker type — used as a DI registration sentinel to detect duplicate AddGranit calls; an interface would expose a useless contract.")]
     private sealed record GranitJsonDefaultsMarker;
 
     private static IReadOnlyList<Assembly> GetDistinctModuleAssemblies(

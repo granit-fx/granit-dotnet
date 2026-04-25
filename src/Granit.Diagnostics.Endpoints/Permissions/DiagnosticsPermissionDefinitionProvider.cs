@@ -24,6 +24,6 @@ internal sealed class DiagnosticsPermissionDefinitionProvider : IPermissionDefin
             DiagnosticsPermissions.Monitoring.Read,
             LocalizableString.Create<DiagnosticsEndpointsLocalizationResource>(
                 "Permission:Diagnostics.Monitoring.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

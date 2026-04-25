@@ -19,7 +19,7 @@ public sealed class RoleMetadataQueryDefinition : QueryDefinition<RoleMetadata>
             .Column(r => r.Name, c => c.Label("Name").LabelKey("Authorization.Columns.RoleName").Filterable().Sortable())
             .Column(r => r.TenantId, c => c.Label("Tenant").LabelKey("Authorization.Columns.Tenant").Filterable().Sortable())
             .Column(r => r.ClientId, c => c.Label("Client").LabelKey("Authorization.Columns.ClientId").Filterable().Sortable())
-            .Column(r => r.MultiTenancySide, c => c.Label("Side").LabelKey("Authorization.Columns.MultiTenancySide").Filterable().Sortable())
+            .Column(r => r.MultiTenancySides, c => c.Label("Side").LabelKey("Authorization.Columns.MultiTenancySides").Filterable().Sortable())
             .Column(r => r.Description, c => c.Label("Description").LabelKey("Authorization.Columns.Description").Filterable())
             .Column(r => r.IsSystem, c => c.Label("System").LabelKey("Authorization.Columns.IsSystem").Filterable().Sortable())
             .Column(r => r.CreatedAt, c => c.Label("Created At").LabelKey("Authorization.Columns.CreatedAt").Sortable())

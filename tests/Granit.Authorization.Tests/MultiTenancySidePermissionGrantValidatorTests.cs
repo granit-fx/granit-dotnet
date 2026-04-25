@@ -21,7 +21,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task TenantOnlyPermission_HostLevelGrant_Rejected()
     {
         PermissionGrantValidationResult result = await Validate(
-            permissionSide: MultiTenancySide.Tenant,
+            permissionSide: MultiTenancySides.Tenant,
             providerName: R,
             providerKey: "accountant",
             grantTenantId: null);
@@ -34,7 +34,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task HostOnlyPermission_TenantGrant_Rejected()
     {
         PermissionGrantValidationResult result = await Validate(
-            permissionSide: MultiTenancySide.Host,
+            permissionSide: MultiTenancySides.Host,
             providerName: R,
             providerKey: "accountant",
             grantTenantId: TenantA);
@@ -46,8 +46,8 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     [Fact]
     public async Task BothPermission_AnyScope_Accepted_WhenNoRoleMetadata()
     {
-        (await Validate(MultiTenancySide.Both, R, "accountant", null)).IsValid.ShouldBeTrue();
-        (await Validate(MultiTenancySide.Both, R, "accountant", TenantA)).IsValid.ShouldBeTrue();
+        (await Validate(MultiTenancySides.Both, R, "accountant", null)).IsValid.ShouldBeTrue();
+        (await Validate(MultiTenancySides.Both, R, "accountant", TenantA)).IsValid.ShouldBeTrue();
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
         IRoleMetadataStore store = Substitute.For<IRoleMetadataStore>();
 
         PermissionGrantValidationResult result = await Validate(
-            permissionSide: MultiTenancySide.Both,
+            permissionSide: MultiTenancySides.Both,
             providerName: PermissionGrantProviderNames.User,
             providerKey: Guid.NewGuid().ToString(),
             grantTenantId: TenantA,
@@ -77,7 +77,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
         IRoleMetadataStore store = Substitute.For<IRoleMetadataStore>();
 
         PermissionGrantValidationResult result = await Validate(
-            permissionSide: MultiTenancySide.Both,
+            permissionSide: MultiTenancySides.Both,
             providerName: PermissionGrantProviderNames.Client,
             providerKey: "client-a",
             grantTenantId: null,
@@ -96,7 +96,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task HostRole_HostGrant_Accepted()
     {
         IRoleMetadataStore store = StoreWithRole(HostRole("SuperAdmin"));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Host, R, "SuperAdmin", null, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Host, R, "SuperAdmin", null, store);
         result.IsValid.ShouldBeTrue();
     }
 
@@ -104,7 +104,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task HostRole_TenantGrant_Rejected()
     {
         IRoleMetadataStore store = StoreWithRole(HostRole("SuperAdmin"));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Both, R, "SuperAdmin", TenantA, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Both, R, "SuperAdmin", TenantA, store);
         result.IsValid.ShouldBeFalse();
         result.ReasonCode.ShouldBe("role_side_forbidden");
     }
@@ -113,7 +113,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task TenantRole_HostGrant_Rejected()
     {
         IRoleMetadataStore store = StoreWithRole(TenantRole("Manager", TenantA));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Both, R, "Manager", null, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Both, R, "Manager", null, store);
         result.IsValid.ShouldBeFalse();
         result.ReasonCode.ShouldBe("role_side_forbidden");
     }
@@ -122,7 +122,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task TenantRole_MatchingTenantGrant_Accepted()
     {
         IRoleMetadataStore store = StoreWithRole(TenantRole("Manager", TenantA));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Tenant, R, "Manager", TenantA, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Tenant, R, "Manager", TenantA, store);
         result.IsValid.ShouldBeTrue();
     }
 
@@ -136,7 +136,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
         store.FindByNameAsync("Manager", null, null, Arg.Any<CancellationToken>())
              .Returns(TenantRole("Manager", TenantA));
 
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Tenant, R, "Manager", TenantB, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Tenant, R, "Manager", TenantB, store);
         result.IsValid.ShouldBeFalse();
         result.ReasonCode.ShouldBe("role_tenant_mismatch");
     }
@@ -145,7 +145,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task BothRole_HostGrant_Accepted()
     {
         IRoleMetadataStore store = StoreWithRole(BothRole("User"));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Both, R, "User", null, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Both, R, "User", null, store);
         result.IsValid.ShouldBeTrue();
     }
 
@@ -153,7 +153,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     public async Task BothRole_TenantGrant_Accepted()
     {
         IRoleMetadataStore store = StoreWithRole(BothRole("User"));
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Both, R, "User", TenantA, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Both, R, "User", TenantA, store);
         result.IsValid.ShouldBeTrue();
     }
 
@@ -164,7 +164,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
         store.FindByNameAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
              .Returns((RoleMetadata?)null);
 
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Both, R, "legacy-role", TenantA, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Both, R, "legacy-role", TenantA, store);
 
         result.IsValid.ShouldBeTrue();
     }
@@ -183,7 +183,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
         store.FindByNameAsync("Manager", null, null, Arg.Any<CancellationToken>())
              .Returns(globalRole);
 
-        PermissionGrantValidationResult result = await Validate(MultiTenancySide.Tenant, R, "Manager", TenantA, store);
+        PermissionGrantValidationResult result = await Validate(MultiTenancySides.Tenant, R, "Manager", TenantA, store);
 
         result.IsValid.ShouldBeTrue();
         // Assert: only the tenant-scoped lookup was needed (global fallback not called).
@@ -196,7 +196,7 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     // ─────────────────────────────────────────────────────────────────────
 
     private static async Task<PermissionGrantValidationResult> Validate(
-        MultiTenancySide permissionSide,
+        MultiTenancySides permissionSide,
         string providerName,
         string providerKey,
         Guid? grantTenantId,
@@ -225,11 +225,11 @@ public sealed class MultiTenancySidePermissionGrantValidatorTests
     }
 
     private static RoleMetadata HostRole(string name) =>
-        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySide.Host, tenantId: null);
+        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySides.Host, tenantId: null);
 
     private static RoleMetadata BothRole(string name) =>
-        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySide.Both, tenantId: null);
+        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySides.Both, tenantId: null);
 
     private static RoleMetadata TenantRole(string name, Guid tenantId) =>
-        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySide.Tenant, tenantId);
+        RoleMetadata.Create(Guid.NewGuid(), name, MultiTenancySides.Tenant, tenantId);
 }

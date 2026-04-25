@@ -30,21 +30,21 @@ internal static class PaymentMethodCapabilityMapper
     public static PaymentMethodCapabilityResponse? ToResponseOrNull(PaymentMethodCapability? capability) =>
         capability is null ? null : ToResponse(capability);
 
-    private static List<string> FlagsToNames(PaymentMethodSequenceType flags)
+    private static List<string> FlagsToNames(PaymentMethodSequenceTypes flags)
     {
         List<string> names = new(3);
 
-        if (flags.HasFlag(PaymentMethodSequenceType.OneOff))
+        if (flags.HasFlag(PaymentMethodSequenceTypes.OneOff))
         {
             names.Add("oneoff");
         }
 
-        if (flags.HasFlag(PaymentMethodSequenceType.First))
+        if (flags.HasFlag(PaymentMethodSequenceTypes.First))
         {
             names.Add("first");
         }
 
-        if (flags.HasFlag(PaymentMethodSequenceType.Recurring))
+        if (flags.HasFlag(PaymentMethodSequenceTypes.Recurring))
         {
             names.Add("recurring");
         }

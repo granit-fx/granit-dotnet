@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 
@@ -17,6 +18,7 @@ public sealed class InvoiceLineItem : Entity
     /// <param name="taxRate">Tax rate as a decimal fraction (e.g., 0.21 for 21%). Null if untaxed.</param>
     /// <param name="period">Billing period this line item covers.</param>
     /// <param name="productId">Optional <c>Granit.Catalog.Product</c> identifier — stable label across renames of the underlying meter or plan price.</param>
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Each parameter is a distinct domain concept (id, description, quantity, unit price, source, tax, period, product); a wrapper type would not represent any real aggregate.")]
     public static InvoiceLineItem Create(
         Guid id, string description, decimal quantity, decimal unitPrice,
         LineItemSource source,

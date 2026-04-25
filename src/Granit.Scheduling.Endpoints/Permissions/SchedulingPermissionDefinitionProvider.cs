@@ -23,12 +23,12 @@ internal sealed class SchedulingPermissionDefinitionProvider : IPermissionDefini
             SchedulingPermissions.Actions.Read,
             LocalizableString.Create<SchedulingEndpointsLocalizationResource>(
                 "Permission:Scheduling.Actions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             SchedulingPermissions.Actions.Manage,
             LocalizableString.Create<SchedulingEndpointsLocalizationResource>(
                 "Permission:Scheduling.Actions.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

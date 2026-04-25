@@ -24,7 +24,7 @@ internal sealed partial class MigrationBatchExecutor(
     /// </summary>
     public async Task<RunMigrationBatchCommand?> ExecuteBatchAsync(
         RunMigrationBatchCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         MigrationCycleRegistration? registration = registry.Find(command.CycleId);
         if (registration is null)

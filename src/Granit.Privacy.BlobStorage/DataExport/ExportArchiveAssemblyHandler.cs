@@ -5,6 +5,7 @@ using System.Text.Json;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Options;
+using Granit.Privacy.BlobStorage.DataExport.Exceptions;
 using Granit.Privacy.BlobStorage.DataExport.Internal;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.DataExport.Events;

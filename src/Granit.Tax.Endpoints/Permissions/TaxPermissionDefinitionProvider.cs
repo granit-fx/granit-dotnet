@@ -17,15 +17,15 @@ internal sealed class TaxPermissionDefinitionProvider : IPermissionDefinitionPro
         // tenant's own billing flow (tenant). Validations run from either context.
         group.AddPermission(TaxPermissions.Rates.Read,
             LocalizableString.Create<TaxEndpointsLocalizationResource>("Permission:Tax.Rates.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(TaxPermissions.Rates.Manage,
             LocalizableString.Create<TaxEndpointsLocalizationResource>("Permission:Tax.Rates.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(TaxPermissions.Validations.Read,
             LocalizableString.Create<TaxEndpointsLocalizationResource>("Permission:Tax.Validations.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(TaxPermissions.Validations.Execute,
             LocalizableString.Create<TaxEndpointsLocalizationResource>("Permission:Tax.Validations.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

@@ -19,7 +19,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// </para>
 /// <para>
 /// Host-scope roles (<see cref="Granit.Authorization.Domain.RoleMetadata"/> with
-/// <see cref="MultiTenancySide.Host"/> or <see cref="MultiTenancySide.Both"/>) are seeded and
+/// <see cref="MultiTenancySides.Host"/> or <see cref="MultiTenancySides.Both"/>) are seeded and
 /// resolved outside a tenant context, so their normalized names stay un-prefixed.
 /// </para>
 /// <para>
