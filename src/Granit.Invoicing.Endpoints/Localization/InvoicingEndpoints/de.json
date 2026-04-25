@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Rechnungsstellung",
     "Permission:Invoicing.Invoices.Read": "Rechnungen anzeigen",
+    "Permission:Invoicing.Invoices.Create": "Rechnungen erstellen",
     "Permission:Invoicing.Invoices.Manage": "Rechnungen verwalten (erstellen, abschließen, stornieren)",
     "Permission:Invoicing.Invoices.Download": "Rechnungsdokumente herunterladen (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Gutschriften anzeigen",

@@ -80,11 +80,11 @@ public sealed class QueryableLookupSourceTests : IDisposable
             queryableFactory: () => _db.Tenants.AsQueryable(),
             valueSelector: t => t.Id,
             labelSelector: t => t.Name,
-            requiredPermission: "Platform.Tenants.Read",
+            requiredPermission: "MultiTenancy.Tenants.Read",
             scopeKeys: ["orgId"]);
 
         source.Name.ShouldBe("tenants");
-        source.RequiredPermission.ShouldBe("Platform.Tenants.Read");
+        source.RequiredPermission.ShouldBe("MultiTenancy.Tenants.Read");
         source.ScopeKeys.ShouldBe(["orgId"]);
     }
 

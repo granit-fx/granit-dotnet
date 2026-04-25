@@ -8,6 +8,7 @@ public static class InvoicingPermissions
     public static class Invoices
     {
         public const string Read = "Invoicing.Invoices.Read";
+        public const string Create = "Invoicing.Invoices.Create";
         public const string Manage = "Invoicing.Invoices.Manage";
         public const string Download = "Invoicing.Invoices.Download";
     }

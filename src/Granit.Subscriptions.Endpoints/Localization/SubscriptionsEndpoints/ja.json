@@ -1,7 +1,6 @@
 {
   "culture": "ja",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "サブスクリプションフェーズを管理（プラン変更のスケジュール、価格上書き、割引適用）",
     "Permission:Subscriptions.Plans.Manage": "サブスクリプションプランの管理（作成、公開、アーカイブ）",
     "Permission:Subscriptions.Plans.Read": "サブスクリプションプランの表示",
     "Permission:Subscriptions.Prices.Manage": "価格を管理（バージョン作成、サブスクリプション移行）",

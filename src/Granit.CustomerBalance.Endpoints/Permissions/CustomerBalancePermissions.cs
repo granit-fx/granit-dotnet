@@ -9,14 +9,14 @@ public static class CustomerBalancePermissions
     /// <summary>Balance account resource permissions.</summary>
     public static class Accounts
     {
-        /// <summary>View balance accounts.</summary>
+        /// <summary>Read balance accounts.</summary>
         public const string Read = "CustomerBalance.Accounts.Read";
     }
 
     /// <summary>Balance transaction resource permissions.</summary>
     public static class Transactions
     {
-        /// <summary>View transaction history.</summary>
+        /// <summary>Read transaction history.</summary>
         public const string Read = "CustomerBalance.Transactions.Read";
     }
 

@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.Invoicing.Events;
+namespace Granit.Invoicing.Abstractions.Events;
 
 /// <summary>
 /// Published when a payment exceeds the invoice total.

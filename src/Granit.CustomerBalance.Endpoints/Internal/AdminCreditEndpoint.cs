@@ -21,7 +21,7 @@ internal static class AdminCreditEndpoint
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
         if (!Enum.TryParse<TransactionSource>(request.Source, ignoreCase: true, out TransactionSource source)

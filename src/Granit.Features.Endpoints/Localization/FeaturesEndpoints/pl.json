@@ -2,7 +2,7 @@
   "culture": "pl",
   "texts": {
     "PermissionGroup:Features": "Funkcjonalności",
-    "Permission:Features.Flags.Read": "Przeglądaj definicje funkcjonalności",
+    "Permission:Features.Flags.Read": "Odczytaj definicje funkcjonalności",
     "Permission:Features.Flags.Manage": "Zarządzaj nadpisaniami funkcjonalności (ustawiaj, usuwaj)"
   }
 }

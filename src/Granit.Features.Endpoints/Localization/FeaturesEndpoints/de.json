@@ -2,7 +2,7 @@
   "culture": "de",
   "texts": {
     "PermissionGroup:Features": "Funktionen",
-    "Permission:Features.Flags.Read": "Funktionsdefinitionen anzeigen",
+    "Permission:Features.Flags.Read": "Funktionsdefinitionen lesen",
     "Permission:Features.Flags.Manage": "Funktionsüberschreibungen verwalten (setzen, löschen)"
   }
 }

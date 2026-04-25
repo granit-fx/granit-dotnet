@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "开票管理",
     "Permission:Invoicing.Invoices.Read": "查看发票",
+    "Permission:Invoicing.Invoices.Create": "创建发票",
     "Permission:Invoicing.Invoices.Manage": "管理发票（创建、定稿、作废）",
     "Permission:Invoicing.Invoices.Download": "下载发票文档（PDF）",
     "Permission:Invoicing.CreditNotes.Read": "查看贷项通知单",

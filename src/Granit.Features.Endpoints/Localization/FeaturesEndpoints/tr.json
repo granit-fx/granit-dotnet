@@ -2,7 +2,7 @@
   "culture": "tr",
   "texts": {
     "PermissionGroup:Features": "Özellikler",
-    "Permission:Features.Flags.Read": "Özellik tanımlarını görüntüle",
+    "Permission:Features.Flags.Read": "Özellik tanımlarını oku",
     "Permission:Features.Flags.Manage": "Özellik geçersiz kılmalarını yönet (ayarla, sil)"
   }
 }

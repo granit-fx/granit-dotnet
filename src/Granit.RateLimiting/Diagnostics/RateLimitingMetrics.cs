@@ -18,10 +18,10 @@ public sealed class RateLimitingMetrics
     {
         Meter meter = meterFactory.Create(MeterName);
         _allowedCounter = meter.CreateCounter<long>(
-            "granit.rate_limiting.requests.allowed",
+            "granit.ratelimiting.requests.allowed",
             description: "Number of requests allowed by rate limiting.");
         _rejectedCounter = meter.CreateCounter<long>(
-            "granit.rate_limiting.requests.rejected",
+            "granit.ratelimiting.requests.rejected",
             description: "Number of requests rejected by rate limiting.");
     }
 

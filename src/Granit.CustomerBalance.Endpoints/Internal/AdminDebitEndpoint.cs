@@ -18,7 +18,7 @@ internal static class AdminDebitEndpoint
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
         Guid tenantId = currentTenant.Id!.Value;

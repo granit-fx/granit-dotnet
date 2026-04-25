@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.Invoicing.Events;
+namespace Granit.Invoicing.Abstractions.Events;
 
 /// <summary>Published when an invoice is marked as uncollectible (bad debt).</summary>
 public sealed record InvoiceUncollectibleEto(Guid InvoiceId, Guid TenantId) : IIntegrationEvent;

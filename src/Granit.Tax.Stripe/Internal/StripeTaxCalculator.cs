@@ -23,7 +23,7 @@ internal sealed partial class StripeTaxCalculator(
     {
         var calcOptions = new CalculationCreateOptions
         {
-            Currency = request.BuyerAddress.Country == "US" ? "usd" : "eur",
+            Currency = options.Value.Currency.ToLowerInvariant(),
             CustomerDetails = new CalculationCustomerDetailsOptions
             {
                 Address = new AddressOptions

@@ -1,5 +1,7 @@
+using Granit.DataExchange;
 using Granit.Modularity;
 using Granit.MultiTenancy.Extensions;
+using Granit.QueryEngine;
 
 namespace Granit.MultiTenancy;
 
@@ -8,6 +10,8 @@ namespace Granit.MultiTenancy;
 /// Resolves the tenant from the HTTP header or the JWT claim (standard ClaimsPrincipal).
 /// Compatible with any identity provider (Keycloak, Auth0, Azure AD, etc.).
 /// </summary>
+[DependsOn(typeof(GranitDataExchangeAbstractionsModule))]
+[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitMultiTenancyModule : GranitModule
 {
     /// <inheritdoc/>

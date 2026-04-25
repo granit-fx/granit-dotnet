@@ -7,6 +7,6 @@ namespace Granit.Catalog.EntityFrameworkCore;
 /// Granit module for EF Core persistence of the catalog (Product aggregate).
 /// </summary>
 [DependsOn(
-    typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitCatalogModule))]
+    typeof(GranitCatalogModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitCatalogEntityFrameworkCoreModule : GranitModule;

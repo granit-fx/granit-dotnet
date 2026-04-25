@@ -46,13 +46,13 @@ public static class MultiTenancyEntityFrameworkCoreHostApplicationBuilderExtensi
 
         // Granit.DataLookup source: exposes Tenant as the "tenants" lookup so admin
         // UIs (QueryEngine filter picker + edit-form dropdowns) can pick a tenant by
-        // name without typing a GUID. Host-scope only — gated by Platform.Tenants.Read.
+        // name without typing a GUID. Host-scope only — gated by MultiTenancy.Tenants.Read.
         builder.Services.AddQueryableLookup<Tenant, MultiTenancyDbContext>(
             name: "tenants",
             valueSelector: t => t.Id,
             labelSelector: t => t.Name,
             searchPredicate: (t, search) => t.Name.Contains(search) || t.Identifier.Contains(search),
-            requiredPermission: "Platform.Tenants.Read");
+            requiredPermission: "MultiTenancy.Tenants.Read");
 
         return builder;
     }

@@ -1,7 +1,6 @@
 {
   "culture": "nl",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Abonnementfasen beheren (planwijzigingen plannen, prijzen overschrijven, kortingen toepassen)",
     "Permission:Subscriptions.Plans.Manage": "Abonnementsplannen beheren (aanmaken, publiceren, archiveren)",
     "Permission:Subscriptions.Plans.Read": "Abonnementsplannen bekijken",
     "Permission:Subscriptions.Prices.Manage": "Prijzen beheren (versies aanmaken, abonnementen migreren)",

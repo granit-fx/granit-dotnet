@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "चालान",
     "Permission:Invoicing.Invoices.Read": "चालान देखें",
+    "Permission:Invoicing.Invoices.Create": "चालान बनाएँ",
     "Permission:Invoicing.Invoices.Manage": "चालान प्रबंधित करें (बनाएँ, अंतिम रूप दें, रद्द करें)",
     "Permission:Invoicing.Invoices.Download": "चालान दस्तावेज़ डाउनलोड करें (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "क्रेडिट नोट देखें",

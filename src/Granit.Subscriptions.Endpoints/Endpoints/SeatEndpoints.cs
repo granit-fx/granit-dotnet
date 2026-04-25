@@ -4,6 +4,7 @@ using Granit.MultiTenancy;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
+using Granit.Subscriptions.Endpoints.Internal;
 using Granit.Subscriptions.Endpoints.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -62,7 +63,7 @@ internal static class SeatEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(EndpointConstants.TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader
@@ -91,7 +92,7 @@ internal static class SeatEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(EndpointConstants.TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader
@@ -132,7 +133,7 @@ internal static class SeatEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(EndpointConstants.TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         Subscription? sub = await reader

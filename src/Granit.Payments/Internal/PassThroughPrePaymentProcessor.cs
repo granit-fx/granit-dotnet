@@ -1,5 +1,5 @@
 using Granit.Invoicing;
-using Granit.Invoicing.Events;
+using Granit.Invoicing.Abstractions.Events;
 
 namespace Granit.Payments.Internal;
 

@@ -1,7 +1,6 @@
 {
   "culture": "zh",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "管理订阅阶段（计划变更、价格覆盖、应用折扣）",
     "Permission:Subscriptions.Plans.Manage": "管理订阅计划（创建、发布、归档）",
     "Permission:Subscriptions.Plans.Read": "查看订阅计划",
     "Permission:Subscriptions.Prices.Manage": "管理价格（创建版本、迁移订阅）",

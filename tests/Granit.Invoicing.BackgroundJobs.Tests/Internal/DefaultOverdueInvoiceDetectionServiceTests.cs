@@ -1,8 +1,8 @@
 using Granit.Events;
 using Granit.Invoicing;
+using Granit.Invoicing.Abstractions.Events;
 using Granit.Invoicing.BackgroundJobs.Internal;
 using Granit.Invoicing.Domain;
-using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;

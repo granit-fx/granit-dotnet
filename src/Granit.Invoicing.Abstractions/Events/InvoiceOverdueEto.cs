@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.Invoicing.Events;
+namespace Granit.Invoicing.Abstractions.Events;
 
 /// <summary>Published when an invoice is overdue (Open + past DueAt).</summary>
 public sealed record InvoiceOverdueEto(

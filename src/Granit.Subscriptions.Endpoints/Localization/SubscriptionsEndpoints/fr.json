@@ -1,7 +1,6 @@
 {
   "culture": "fr",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Gérer les phases d'abonnement (planifier des changements de plan, surcharger les prix, appliquer des remises)",
     "Permission:Subscriptions.Plans.Manage": "Gérer les plans d'abonnement (créer, publier, archiver)",
     "Permission:Subscriptions.Plans.Read": "Consulter les plans d'abonnement",
     "Permission:Subscriptions.Prices.Manage": "Gérer les prix (créer des versions, migrer les abonnements)",

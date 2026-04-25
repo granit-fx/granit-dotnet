@@ -1,3 +1,4 @@
+using Granit.Diagnostics;
 using Granit.Http.Bulkhead.Abstractions;
 using Granit.Http.Bulkhead.Diagnostics;
 using Granit.Http.Bulkhead.Exceptions;
@@ -55,6 +56,9 @@ public static class BulkheadServiceCollectionExtensions
 
     private static IServiceCollection AddGranitBulkheadCore(this IServiceCollection services)
     {
+        // ActivitySource registration
+        GranitActivitySourceRegistry.Register(BulkheadActivitySource.Name);
+
         // Options validation
         services.AddSingleton<IValidateOptions<GranitBulkheadOptions>, GranitBulkheadOptionsValidator>();
 

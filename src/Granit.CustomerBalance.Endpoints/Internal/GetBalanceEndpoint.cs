@@ -17,7 +17,7 @@ internal static class GetBalanceEndpoint
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
         BalanceAccount? account = await accountReader

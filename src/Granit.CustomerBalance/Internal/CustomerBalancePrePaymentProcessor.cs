@@ -3,7 +3,7 @@ using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
 using Granit.Invoicing;
-using Granit.Invoicing.Events;
+using Granit.Invoicing.Abstractions.Events;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 

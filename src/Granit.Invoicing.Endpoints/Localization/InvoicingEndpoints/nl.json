@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Facturatie",
     "Permission:Invoicing.Invoices.Read": "Facturen bekijken",
+    "Permission:Invoicing.Invoices.Create": "Facturen aanmaken",
     "Permission:Invoicing.Invoices.Manage": "Facturen beheren (aanmaken, afronden, annuleren)",
     "Permission:Invoicing.Invoices.Download": "Factuurdocumenten downloaden (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Creditnota's bekijken",

@@ -2,7 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Features": "Funktioner",
-    "Permission:Features.Flags.Read": "Visa funktionsdefinitioner",
+    "Permission:Features.Flags.Read": "Läsa funktionsdefinitioner",
     "Permission:Features.Flags.Manage": "Hantera funktionsöverskrivningar (ange, ta bort)"
   }
 }

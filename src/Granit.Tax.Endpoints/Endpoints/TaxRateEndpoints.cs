@@ -17,7 +17,7 @@ internal static class TaxRateEndpoints
 {
     internal static RouteGroupBuilder MapRateEndpoints(this RouteGroupBuilder group)
     {
-        group.MapGet("/{countryCode}", GetRateByCountryAsync)
+        group.MapGet("/{countryCode:length(2)}", GetRateByCountryAsync)
             .WithName("GetTaxRateByCountry")
             .WithSummary("Returns the current tax rate for a specific country.")
             .WithDescription(

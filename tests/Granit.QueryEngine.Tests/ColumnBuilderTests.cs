@@ -123,12 +123,12 @@ public sealed class ColumnBuilderTests
     {
         ColumnBuilder<TestEntity> builder = new();
 
-        builder.Lookup("tenants", requiredPermission: "Platform.Tenants.Read");
+        builder.Lookup("tenants", requiredPermission: "MultiTenancy.Tenants.Read");
 
         builder.LookupValue.ShouldNotBeNull();
         builder.LookupValue!.Name.ShouldBe("tenants");
         builder.LookupValue.Kind.ShouldBe(LookupKind.QueryEngine);
-        builder.LookupValue.RequiredPermission.ShouldBe("Platform.Tenants.Read");
+        builder.LookupValue.RequiredPermission.ShouldBe("MultiTenancy.Tenants.Read");
         builder.LookupValue.Endpoint.ShouldBeNull();
     }
 

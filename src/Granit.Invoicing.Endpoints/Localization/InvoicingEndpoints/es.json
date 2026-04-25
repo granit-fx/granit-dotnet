@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Facturación",
     "Permission:Invoicing.Invoices.Read": "Consultar facturas",
+    "Permission:Invoicing.Invoices.Create": "Crear facturas",
     "Permission:Invoicing.Invoices.Manage": "Gestionar facturas (crear, finalizar, anular)",
     "Permission:Invoicing.Invoices.Download": "Descargar documentos de factura (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Consultar notas de crédito",

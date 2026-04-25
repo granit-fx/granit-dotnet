@@ -23,7 +23,7 @@ internal static class TaxValidationEndpoints
                 "Submits a tax identification number (e.g., EU VAT, UK VAT, US EIN) for online verification. "
                 + "Uses the configured provider (VIES for EU, Stripe for other jurisdictions). "
                 + "Results are cached according to the configured TTL to avoid repeated API calls.")
-            .Produces<TaxValidateResponse>(StatusCodes.Status200OK)
+            .Produces<TaxValidateResponse>()
             .ProducesValidationProblem();
 
         return group;

@@ -37,7 +37,7 @@ namespace Granit.DataLookup.Descriptors;
 /// Kind of backing source. Informational only — does not affect routing.
 /// </param>
 /// <param name="RequiredPermission">
-/// Permission string (e.g. <c>"Platform.Tenants.Read"</c>) the principal must hold to
+/// Permission string (e.g. <c>"MultiTenancy.Tenants.Read"</c>) the principal must hold to
 /// call the lookup. When null, the lookup is considered public (within tenant scope).
 /// The frontend also uses this to hide the picker from users who lack the permission.
 /// </param>

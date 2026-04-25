@@ -1,3 +1,4 @@
+using Granit.Guids;
 using Granit.MultiTenancy.Endpoints.Dtos;
 using Granit.MultiTenancy.Endpoints.Options;
 using Granit.MultiTenancy.Endpoints.Permissions;
@@ -32,7 +33,6 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)
-            .RequireAuthorization()
             .WithTags(options.TagName);
 
         RouteGroupBuilder tenantsGroup = group.MapGranitGroup("tenants");
@@ -156,9 +156,10 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         CreateTenantRequest body,
         [FromServices] ITenantWriter writer,
         [FromServices] ITenantReader reader,
+        [FromServices] IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
-        var id = Guid.CreateVersion7();
+        Guid id = guidGenerator.Create();
 
         await writer
             .CreateAsync(id, body.Name, body.Identifier, body.ContactEmail, body.Jurisdiction, cancellationToken)

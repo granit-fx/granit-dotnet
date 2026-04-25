@@ -50,9 +50,9 @@ internal static class InvoiceEndpoints
                 "Line items can be added after creation. Requires tenant context.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<InvoiceResponse>(StatusCodes.Status201Created)
-            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem()
-            .RequireAuthorization(InvoicingPermissions.Invoices.Manage)
+            .RequireAuthorization(InvoicingPermissions.Invoices.Create)
             .AllowHostAccess();
 
         return group;
@@ -100,7 +100,7 @@ internal static class InvoiceEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
         var invoice = Invoice.Create(

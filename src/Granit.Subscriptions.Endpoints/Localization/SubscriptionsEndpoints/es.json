@@ -1,7 +1,6 @@
 {
   "culture": "es",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Gestionar fases de suscripción (programar cambios de plan, anular precios, aplicar descuentos)",
     "Permission:Subscriptions.Plans.Manage": "Gestionar planes de suscripción (crear, publicar, archivar)",
     "Permission:Subscriptions.Plans.Read": "Ver planes de suscripción",
     "Permission:Subscriptions.Prices.Manage": "Gestionar precios (crear versiones, migrar suscripciones)",

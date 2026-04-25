@@ -1,7 +1,6 @@
 {
   "culture": "it",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Gestire le fasi dell'abbonamento (programmare modifiche di piano, sovrascrivere prezzi, applicare sconti)",
     "Permission:Subscriptions.Plans.Manage": "Gestire i piani di abbonamento (creare, pubblicare, archiviare)",
     "Permission:Subscriptions.Plans.Read": "Visualizzare i piani di abbonamento",
     "Permission:Subscriptions.Prices.Manage": "Gestire i prezzi (creare versioni, migrare abbonamenti)",

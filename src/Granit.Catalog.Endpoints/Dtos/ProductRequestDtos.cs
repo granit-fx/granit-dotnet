@@ -14,7 +14,7 @@ public sealed record ProductUpdateRequest(
     string? Description,
     string Unit);
 
-/// <summary>Request to replace all extra properties of a product (any lifecycle status).</summary>
+/// <summary>Request to replace all metadata of a product (any lifecycle status).</summary>
 /// <remarks>
 /// Maps to <see cref="Granit.Domain.IHasMetadata.MetadataJson"/> via
 /// <c>Product.ReplaceMetadata</c>. MUST NOT contain PII (audit logs and exports

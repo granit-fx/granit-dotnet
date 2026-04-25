@@ -2,7 +2,7 @@
   "culture": "cs",
   "texts": {
     "PermissionGroup:Features": "Funkce",
-    "Permission:Features.Flags.Read": "Zobrazit definice funkcí",
+    "Permission:Features.Flags.Read": "Číst definice funkcí",
     "Permission:Features.Flags.Manage": "Spravovat přepsání funkcí (nastavit, smazat)"
   }
 }

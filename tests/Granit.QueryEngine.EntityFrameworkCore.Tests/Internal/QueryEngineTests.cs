@@ -308,7 +308,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
         tenantField.Lookup.ShouldNotBeNull();
         tenantField.Lookup!.Name.ShouldBe("tenants");
         tenantField.Lookup.Kind.ShouldBe(LookupKind.QueryEngine);
-        tenantField.Lookup.RequiredPermission.ShouldBe("Platform.Tenants.Read");
+        tenantField.Lookup.RequiredPermission.ShouldBe("MultiTenancy.Tenants.Read");
     }
 
     [Fact]
@@ -349,7 +349,7 @@ public sealed class QueryEngineTests : IAsyncLifetime
                 .Column(p => p.Name, c => c
                     .Label("Name")
                     .Filterable()
-                    .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
+                    .Lookup("tenants", requiredPermission: "MultiTenancy.Tenants.Read"))
                 .Column(p => p.Price, c => c.Label("Price").Filterable())
                 .DefaultPageSize(10);
     }

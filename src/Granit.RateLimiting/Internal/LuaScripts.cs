@@ -78,6 +78,7 @@ internal static class LuaScripts
     /// ARGV[3] = replenishment period in milliseconds
     /// Returns: {allowed (0/1), tokens_remaining, retry_after_ms}
     /// </summary>
+#pragma warning disable GRSEC003 // "TokenBucket" is a rate-limiting algorithm name, not a credential.
     public const string TokenBucket = """
         local key = KEYS[1]
         local token_limit = tonumber(ARGV[1])
@@ -120,4 +121,5 @@ internal static class LuaScripts
 
         return {allowed, tokens, retry_ms}
         """;
+#pragma warning restore GRSEC003
 }

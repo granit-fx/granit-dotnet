@@ -1,7 +1,6 @@
 {
   "culture": "cs",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Správa fází předplatného (plánování změn plánu, přepsání cen, aplikace slev)",
     "Permission:Subscriptions.Plans.Manage": "Spravovat plány předplatného (vytvořit, publikovat, archivovat)",
     "Permission:Subscriptions.Plans.Read": "Zobrazit plány předplatného",
     "Permission:Subscriptions.Prices.Manage": "Spravovat ceny (vytvářet verze, migrovat předplatné)",

@@ -14,4 +14,10 @@ public sealed class StripeTaxOptions
 
     /// <summary>Default product tax code (SaaS = txcd_10000000).</summary>
     public string ProductTaxCode { get; set; } = "txcd_10000000";
+
+    /// <summary>
+    /// ISO 4217 currency code used for Stripe Tax calculations. Defaults to <c>"eur"</c>.
+    /// Stripe expects lowercase (e.g., <c>"eur"</c>, <c>"usd"</c>).
+    /// </summary>
+    public string Currency { get; set; } = "eur";
 }

@@ -21,7 +21,7 @@ public sealed class UsageAggregateQueryDefinition : QueryDefinition<UsageAggrega
                 .LabelKey("Metering.Columns.Tenant")
                 .Filterable()
                 .Sortable()
-                .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
+                .Lookup("tenants", requiredPermission: "MultiTenancy.Tenants.Read"))
             .Column(u => u.MeterDefinitionId, c => c
                 .Label("Meter")
                 .LabelKey("Metering.Columns.MeterDefinition")

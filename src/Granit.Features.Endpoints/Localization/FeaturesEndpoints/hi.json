@@ -2,7 +2,7 @@
   "culture": "hi",
   "texts": {
     "PermissionGroup:Features": "सुविधाएँ",
-    "Permission:Features.Flags.Read": "सुविधा परिभाषाएँ देखें",
+    "Permission:Features.Flags.Read": "सुविधा परिभाषाएँ पढ़ें",
     "Permission:Features.Flags.Manage": "सुविधा ओवरराइड प्रबंधित करें (सेट करें, हटाएँ)"
   }
 }

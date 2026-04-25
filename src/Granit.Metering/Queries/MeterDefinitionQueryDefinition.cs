@@ -21,7 +21,7 @@ public sealed class MeterDefinitionQueryDefinition : QueryDefinition<MeterDefini
                 .LabelKey("Metering.Columns.Tenant")
                 .Filterable()
                 .Sortable()
-                .Lookup("tenants", requiredPermission: "Platform.Tenants.Read"))
+                .Lookup("tenants", requiredPermission: "MultiTenancy.Tenants.Read"))
             .Column(m => m.Name, c => c.Label("Name").LabelKey("Metering.Columns.Name").Filterable().Sortable())
             .Column(m => m.Unit, c => c.Label("Unit").LabelKey("Metering.Columns.Unit").Filterable().Sortable())
             .Column(m => m.AggregationType, c => c.Label("Aggregation").LabelKey("Metering.Columns.AggregationType").Filterable().Sortable())

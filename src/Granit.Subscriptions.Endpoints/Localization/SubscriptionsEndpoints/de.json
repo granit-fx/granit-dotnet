@@ -1,7 +1,6 @@
 {
   "culture": "de",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Abonnementphasen verwalten (Planänderungen planen, Preise überschreiben, Rabatte anwenden)",
     "Permission:Subscriptions.Plans.Manage": "Abonnementpläne verwalten (erstellen, veröffentlichen, archivieren)",
     "Permission:Subscriptions.Plans.Read": "Abonnementpläne anzeigen",
     "Permission:Subscriptions.Prices.Manage": "Preise verwalten (Versionen erstellen, Abonnements migrieren)",

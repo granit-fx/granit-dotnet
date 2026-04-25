@@ -5,6 +5,10 @@ namespace Granit.Invoicing.Odoo.Domain;
 /// <summary>
 /// Maps a Granit tenant to an Odoo <c>res.partner</c> record.
 /// </summary>
+// TODO(audit/A3): Persistence is not yet implemented. A dedicated
+// Granit.Invoicing.Odoo.EntityFrameworkCore package is required to back this
+// aggregate with a DbContext, configurations, and migrations. Tracked in the
+// Invoicing audit findings.
 public sealed class OdooPartnerMapping : Entity
 {
     private OdooPartnerMapping() { }

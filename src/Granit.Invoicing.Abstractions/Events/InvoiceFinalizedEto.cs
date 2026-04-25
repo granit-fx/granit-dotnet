@@ -1,7 +1,7 @@
 using Granit.Events;
 using Granit.Invoicing.Domain;
 
-namespace Granit.Invoicing.Events;
+namespace Granit.Invoicing.Abstractions.Events;
 
 /// <summary>Published when an invoice is finalized. Triggers payment collection.</summary>
 public sealed record InvoiceFinalizedEto(

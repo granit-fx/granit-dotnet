@@ -1,4 +1,4 @@
-using Granit.Invoicing.Events;
+using Granit.Invoicing.Abstractions.Events;
 using Granit.MultiTenancy;
 
 namespace Granit.CustomerBalance.Handlers;

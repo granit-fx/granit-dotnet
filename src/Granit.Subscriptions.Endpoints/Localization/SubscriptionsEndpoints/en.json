@@ -1,7 +1,6 @@
 {
   "culture": "en",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Manage subscription phases (schedule plan changes, override prices, apply discounts)",
     "Permission:Subscriptions.Plans.Manage": "Manage subscription plans (create, publish, archive)",
     "Permission:Subscriptions.Plans.Read": "View subscription plans",
     "Permission:Subscriptions.Prices.Manage": "Manage prices (create versions, migrate subscriptions)",

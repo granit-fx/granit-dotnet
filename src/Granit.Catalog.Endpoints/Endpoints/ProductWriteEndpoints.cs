@@ -18,7 +18,7 @@ internal static class ProductWriteEndpoints
         group.MapPost("/products", CreateProductAsync)
             .WithName("CreateCatalogProduct")
             .WithSummary("Creates a new product in Draft status.")
-            .WithDescription("Creates a product that can be configured (extra properties, external mappings) before publishing.")
+            .WithDescription("Creates a product that can be configured (metadata, external mappings) before publishing.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<ProductResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -39,9 +39,9 @@ internal static class ProductWriteEndpoints
 
         group.MapPut("/products/{id:guid}/metadata", UpdateProductMetadataAsync)
             .WithName("UpdateCatalogProductMetadata")
-            .WithSummary("Replaces the product extra properties dictionary.")
+            .WithSummary("Replaces the product metadata dictionary.")
             .WithDescription(
-                "Allowed in any lifecycle state — extra properties may need to flow even for Published "
+                "Allowed in any lifecycle state — metadata may need to flow even for Published "
                 + "products (e.g., adjusting Stripe sync attributes). MUST NOT contain PII.")
             .WithMetadata(new IdempotentAttribute())
             .Produces<ProductResponse>()

@@ -35,6 +35,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
                 "Returns the current credit balance for the authenticated tenant in the specified currency. "
                 + "Returns zero balance if no account exists for that currency.")
             .Produces<CustomerBalanceResponse>()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(CustomerBalancePermissions.Accounts.Read)
             .AllowHostAccess();
 
@@ -46,6 +47,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
                 + "Ordered by creation date descending (most recent first). "
                 + "Each entry shows the transaction type, amount, source, and optional reference.")
             .Produces<IReadOnlyList<BalanceTransactionResponse>>()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(CustomerBalancePermissions.Transactions.Read)
             .AllowHostAccess();
 
@@ -59,6 +61,7 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
             .Produces<CustomerBalanceResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(CustomerBalancePermissions.Credits.Manage)
             .AllowHostAccess();
 
@@ -69,11 +72,10 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
                 "Creates a ManualAdjustment debit transaction on the tenant's balance account — "
                 + "for corrections, scheduled drawdowns, and non-invoice adjustments. "
                 + "Returns 404 when no account exists for the (tenant, currency); 422 when the balance "
-                + "is insufficient. Idempotent at the application level when the same ReferenceId is "
-                + "supplied — replays return the original outcome without double-debiting.")
+                + "is insufficient or tenant context is missing. Idempotent at the application level when "
+                + "the same ReferenceId is supplied — replays return the original outcome without double-debiting.")
             .Produces<CustomerBalanceResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .RequireAuthorization(CustomerBalancePermissions.Credits.Manage)

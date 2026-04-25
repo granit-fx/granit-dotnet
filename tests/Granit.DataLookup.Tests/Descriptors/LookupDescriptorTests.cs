@@ -22,8 +22,8 @@ public sealed class LookupDescriptorTests
     [Fact]
     public void Records_with_same_values_are_equal()
     {
-        LookupDescriptor a = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "Platform.Tenants.Read");
-        LookupDescriptor b = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "Platform.Tenants.Read");
+        LookupDescriptor a = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "MultiTenancy.Tenants.Read");
+        LookupDescriptor b = new(Name: "tenants", Kind: LookupKind.QueryEngine, RequiredPermission: "MultiTenancy.Tenants.Read");
 
         a.ShouldBe(b);
         a.GetHashCode().ShouldBe(b.GetHashCode());

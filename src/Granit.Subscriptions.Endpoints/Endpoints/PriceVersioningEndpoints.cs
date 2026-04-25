@@ -39,6 +39,7 @@ internal static class PriceVersioningEndpoints
                 "ordered from newest to oldest. Includes replaced prices for audit trail.")
             .Produces<IReadOnlyList<PlanPriceResponse>>()
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesValidationProblem()
             .RequireAuthorization(SubscriptionsPermissions.Prices.Read);
 
         group.MapPost("/subscriptions/{id:guid}/migrate-price", MigratePriceAsync)

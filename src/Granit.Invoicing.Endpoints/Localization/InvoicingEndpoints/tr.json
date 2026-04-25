@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Faturalandırma",
     "Permission:Invoicing.Invoices.Read": "Faturaları görüntüle",
+    "Permission:Invoicing.Invoices.Create": "Fatura oluştur",
     "Permission:Invoicing.Invoices.Manage": "Faturaları yönet (oluştur, kesinleştir, iptal et)",
     "Permission:Invoicing.Invoices.Download": "Fatura belgelerini indir (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Alacak dekontlarını görüntüle",

@@ -2,7 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Features": "功能管理",
-    "Permission:Features.Flags.Read": "查看功能定义",
+    "Permission:Features.Flags.Read": "读取功能定义",
     "Permission:Features.Flags.Manage": "管理功能覆盖（设置、删除）"
   }
 }

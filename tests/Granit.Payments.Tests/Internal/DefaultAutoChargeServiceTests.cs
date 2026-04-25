@@ -1,7 +1,7 @@
 using Granit.Commands;
 using Granit.Invoicing;
+using Granit.Invoicing.Abstractions.Events;
 using Granit.Invoicing.Domain;
-using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
 using Granit.Payments.Domain;

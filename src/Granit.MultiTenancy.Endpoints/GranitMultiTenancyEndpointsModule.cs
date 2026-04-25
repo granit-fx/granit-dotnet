@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
@@ -15,6 +16,7 @@ namespace Granit.MultiTenancy.Endpoints;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitGuidsModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitMultiTenancyModule),
     typeof(GranitValidationModule))]

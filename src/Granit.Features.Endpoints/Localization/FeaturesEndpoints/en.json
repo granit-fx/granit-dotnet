@@ -2,7 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:Features": "Features",
-    "Permission:Features.Flags.Read": "View feature definitions",
+    "Permission:Features.Flags.Read": "Read feature definitions",
     "Permission:Features.Flags.Manage": "Manage feature overrides (set, delete)"
   }
 }

@@ -1,10 +1,4 @@
 {
   "culture": "fr-CA",
-  "texts": {
-    "PermissionGroup:MultiTenancy": "Multi-Tenant",
-    "Permission:MultiTenancy.Tenants.Read": "Consulter les informations des locataires",
-    "Permission:MultiTenancy.Tenants.Create": "Créer de nouveaux locataires",
-    "Permission:MultiTenancy.Tenants.Update": "Modifier les détails des locataires",
-    "Permission:MultiTenancy.Tenants.Manage": "Gérer le cycle de vie des locataires (activer, désactiver)"
-  }
+  "texts": {}
 }

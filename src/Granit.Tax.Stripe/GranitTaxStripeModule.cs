@@ -27,7 +27,7 @@ public sealed class GranitTaxStripeModule : GranitModule
             .ValidateOnStart();
 
         context.Services.AddGranitHttpClient("StripeTax");
-        context.Services.AddScoped<IStripeClient>(sp =>
+        context.Services.TryAddScoped<IStripeClient>(sp =>
         {
             IOptions<StripeTaxOptions> opts = sp.GetRequiredService<IOptions<StripeTaxOptions>>();
             HttpClient httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("StripeTax");

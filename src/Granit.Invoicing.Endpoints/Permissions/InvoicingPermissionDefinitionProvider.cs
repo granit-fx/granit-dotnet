@@ -20,6 +20,9 @@ internal sealed class InvoicingPermissionDefinitionProvider : IPermissionDefinit
         group.AddPermission(InvoicingPermissions.Invoices.Read,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Read"),
             MultiTenancySide.Both);
+        group.AddPermission(InvoicingPermissions.Invoices.Create,
+            LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Create"),
+            MultiTenancySide.Both);
         group.AddPermission(InvoicingPermissions.Invoices.Manage,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Manage"),
             MultiTenancySide.Both);

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Invoicing",
     "Permission:Invoicing.Invoices.Read": "View invoices",
+    "Permission:Invoicing.Invoices.Create": "Create invoices",
     "Permission:Invoicing.Invoices.Manage": "Manage invoices (create, finalize, void)",
     "Permission:Invoicing.Invoices.Download": "Download invoice documents (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "View credit notes",

@@ -1,7 +1,6 @@
 {
   "culture": "sv",
   "texts": {
-    "Permission:Subscriptions.Phases.Manage": "Hantera prenumerationsfaser (schemalägga planändringar, åsidosätta priser, tillämpa rabatter)",
     "Permission:Subscriptions.Plans.Manage": "Hantera prenumerationsplaner (skapa, publicera, arkivera)",
     "Permission:Subscriptions.Plans.Read": "Visa prenumerationsplaner",
     "Permission:Subscriptions.Prices.Manage": "Hantera priser (skapa versioner, migrera prenumerationer)",

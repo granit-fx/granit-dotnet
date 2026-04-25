@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Invoicing": "Fakturering",
     "Permission:Invoicing.Invoices.Read": "Visa fakturor",
+    "Permission:Invoicing.Invoices.Create": "Skapa fakturor",
     "Permission:Invoicing.Invoices.Manage": "Hantera fakturor (skapa, slutföra, makulera)",
     "Permission:Invoicing.Invoices.Download": "Ladda ner fakturadokument (PDF)",
     "Permission:Invoicing.CreditNotes.Read": "Visa kreditnotor",
