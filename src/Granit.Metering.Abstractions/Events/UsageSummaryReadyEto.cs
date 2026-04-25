@@ -14,4 +14,5 @@ public sealed record UsageSummaryReadyEto(
     decimal AggregatedValue,
     long EventCount,
     DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd) : IIntegrationEvent;
+    DateTimeOffset PeriodEnd,
+    Guid? MeterProductId = null) : IIntegrationEvent;

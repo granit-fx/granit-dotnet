@@ -18,5 +18,7 @@ internal sealed class InvoiceLineItemConfiguration : IEntityTypeConfiguration<In
         builder.Property(e => e.TaxAmount).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.SourceType).IsRequired();
         builder.Property(e => e.SourceId).HasMaxLength(256);
+        builder.Property(e => e.ProductId);
+        builder.HasIndex(e => e.ProductId);
     }
 }

@@ -19,7 +19,7 @@ public sealed class InvoiceTests
 
         invoice.AddLineItem(InvoiceLineItem.Create(
             Guid.NewGuid(), "Pro Plan - Monthly", 1, 29.99m,
-            new LineItemSource(InvoiceSourceType.Subscription)));
+            new LineItemSource(InvoiceSourceType.Subscription, Guid.NewGuid().ToString())));
 
         return invoice;
     }

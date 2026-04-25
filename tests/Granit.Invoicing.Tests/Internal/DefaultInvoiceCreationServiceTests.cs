@@ -58,7 +58,7 @@ public sealed class DefaultInvoiceCreationServiceTests
                     Quantity: 1m,
                     UnitPrice: 50m,
                     InvoiceSourceType.Subscription,
-                    $"sub_{i}"))
+                    Guid.NewGuid().ToString()))
                 .ToList(),
             periodStart,
             periodEnd);

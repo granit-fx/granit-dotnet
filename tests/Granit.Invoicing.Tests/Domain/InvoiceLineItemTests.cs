@@ -26,7 +26,7 @@ public sealed class InvoiceLineItemTests
     {
         var lineItem = InvoiceLineItem.Create(
             Guid.NewGuid(), "Pro Plan", 1, 100.00m,
-            new LineItemSource(InvoiceSourceType.Subscription),
+            new LineItemSource(InvoiceSourceType.Subscription, Guid.NewGuid().ToString()),
             taxRate: 0.21m);
 
         lineItem.TaxRate.ShouldBe(0.21m);
@@ -53,7 +53,7 @@ public sealed class InvoiceLineItemTests
 
         var lineItem = InvoiceLineItem.Create(
             Guid.NewGuid(), "Monthly sub", 1, 29.99m,
-            new LineItemSource(InvoiceSourceType.Subscription),
+            new LineItemSource(InvoiceSourceType.Subscription, Guid.NewGuid().ToString()),
             period: new BillingPeriod(start, end));
 
         lineItem.PeriodStart.ShouldBe(start);
@@ -63,12 +63,13 @@ public sealed class InvoiceLineItemTests
     [Fact]
     public void Create_ShouldSetSourceFields()
     {
+        var meterId = Guid.NewGuid();
         var lineItem = InvoiceLineItem.Create(
             Guid.NewGuid(), "Usage charges", 150, 0.05m,
-            new LineItemSource(InvoiceSourceType.Usage, "meter_abc"));
+            new LineItemSource(InvoiceSourceType.Usage, meterId.ToString()));
 
         lineItem.SourceType.ShouldBe(InvoiceSourceType.Usage);
-        lineItem.SourceId.ShouldBe("meter_abc");
+        lineItem.SourceId.ShouldBe(meterId.ToString());
     }
 
     [Fact]
@@ -124,7 +125,7 @@ public sealed class InvoiceLineItemTests
     {
         var lineItem = InvoiceLineItem.Create(
             Guid.NewGuid(), "Free trial", 1, 0m,
-            new LineItemSource(InvoiceSourceType.Subscription));
+            new LineItemSource(InvoiceSourceType.Subscription, Guid.NewGuid().ToString()));
 
         lineItem.Amount.ShouldBe(0m);
         lineItem.UnitPrice.ShouldBe(0m);

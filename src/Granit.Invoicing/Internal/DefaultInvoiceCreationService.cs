@@ -36,7 +36,8 @@ internal sealed partial class DefaultInvoiceCreationService(
                 lineItem.Description,
                 lineItem.Quantity,
                 lineItem.UnitPrice,
-                new LineItemSource(lineItem.SourceType, lineItem.SourceId)));
+                new LineItemSource(lineItem.SourceType, lineItem.SourceId),
+                productId: lineItem.ProductId));
         }
 
         if (taxCalculator is not null && invoice.BillingAddress is not null)

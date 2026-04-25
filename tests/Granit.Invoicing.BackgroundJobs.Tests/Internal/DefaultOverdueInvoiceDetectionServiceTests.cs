@@ -54,7 +54,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
 
         invoice.AddLineItem(InvoiceLineItem.Create(
             Guid.NewGuid(), "Test item", 1m, 100m,
-            new Domain.ValueObjects.LineItemSource(InvoiceSourceType.Subscription, "sub_1")));
+            new Domain.ValueObjects.LineItemSource(InvoiceSourceType.Subscription, Guid.NewGuid().ToString())));
 
         invoice.Finalize("INV-001", Now.AddDays(-35), dueAt: Now.AddDays(-5));
         return invoice;

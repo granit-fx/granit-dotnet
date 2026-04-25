@@ -117,6 +117,31 @@ public enum InvoiceSourceType
 This makes Invoicing agnostic — future `Granit.Commerce` can create invoices
 with `OneShot` line items using the exact same infrastructure.
 
+### Source convention (ADR-036)
+
+`Subscription` and `Usage` lines MUST carry a Guid `SourceId` referencing the
+originating entity:
+
+| `SourceType` | `SourceId` |
+| ------------ | ---------- |
+| `Subscription` | `Subscription.Id` (or `PlanPrice.Id`) |
+| `Usage` | `MeterDefinition.Id` |
+| `OneShot` | Free-form (SKU, external id, or `null`) |
+| `Credit` | Free-form (refund reference, credit memo, or `null`) |
+
+`InvoiceLineItem.Create` rejects non-Guid `SourceId` for the two billing
+source types — the audit chain `event → metric → product → invoice line` is
+SQL-queryable by construction.
+
+### `ProductId` propagation
+
+`InvoiceLineItem.ProductId` (`Guid?`) is a soft reference to a
+`Granit.Catalog.Product`. The `Subscriptions` orchestrators populate it from
+`PlanPrice.ProductId` (Subscription line) or from `MeterDefinition.ProductId`
+forwarded via `UsageSummaryReadyEto.MeterProductId` (Usage line). The field
+survives meter / price renames and replacements, keeping invoice lines
+attributable to a stable catalog item for cross-cutting reporting.
+
 ## Provider abstractions
 
 | Interface | Purpose | Phase |

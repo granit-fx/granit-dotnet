@@ -52,7 +52,8 @@ public class BillingCycleUsagePublisher
                         aggregate.AggregatedValue,
                         aggregate.EventCount,
                         eto.PeriodStart,
-                        eto.PeriodEnd),
+                        eto.PeriodEnd,
+                        MeterProductId: meter.ProductId),
                     cancellationToken).ConfigureAwait(false);
             }
         }

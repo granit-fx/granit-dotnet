@@ -29,10 +29,22 @@ public sealed record CreateInvoiceCommand(
 /// <param name="Quantity">Quantity.</param>
 /// <param name="UnitPrice">Price per unit.</param>
 /// <param name="SourceType">Origin (Subscription, Usage, OneShot, Credit).</param>
-/// <param name="SourceId">Optional source entity identifier.</param>
+/// <param name="SourceId">
+///   Source entity identifier. Convention (see ADR-036): when <see cref="SourceType"/> is
+///   <see cref="InvoiceSourceType.Usage"/>, this MUST be the <c>MeterDefinition.Id</c> as a Guid string;
+///   when <see cref="SourceType"/> is <see cref="InvoiceSourceType.Subscription"/>, this MUST be the
+///   <c>Subscription.Id</c> (or <c>PlanPrice.Id</c>) as a Guid string. <see cref="InvoiceSourceType.OneShot"/>
+///   and <see cref="InvoiceSourceType.Credit"/> are free-form.
+/// </param>
+/// <param name="ProductId">
+///   Optional <c>Granit.Catalog.Product</c> identifier. Should be propagated from the upstream entity's
+///   <c>ProductId</c> (e.g. <c>MeterDefinition.ProductId</c>, <c>PlanPrice.ProductId</c>) so that the
+///   invoice line carries a stable label across renames of the underlying source.
+/// </param>
 public sealed record CreateInvoiceLineItem(
     string Description,
     decimal Quantity,
     decimal UnitPrice,
     InvoiceSourceType SourceType,
-    string? SourceId = null);
+    string? SourceId = null,
+    Guid? ProductId = null);

@@ -19,7 +19,8 @@ public class UsageSummaryReadyHandler
         {
             var request = new CreateUsageInvoiceRequest(
                 eto.TenantId, eto.MeterDefinitionId, eto.MeterName,
-                eto.AggregatedValue, eto.Unit, eto.PeriodStart, eto.PeriodEnd);
+                eto.AggregatedValue, eto.Unit, eto.PeriodStart, eto.PeriodEnd,
+                MeterProductId: eto.MeterProductId);
 
             await orchestrator.CreateInvoiceAsync(request, cancellationToken).ConfigureAwait(false);
         }

@@ -60,13 +60,22 @@ internal sealed partial class DefaultUsageInvoiceOrchestrator(
             subscription.PlanPriceId, cancellationToken)
             .ConfigureAwait(false);
 
+        // ADR-036: ProductId on the Subscription line is taken from the resolved
+        // PlanPrice (current price for the (currency, interval) slot) — survives
+        // price versioning, since the PlanPrice carries its own ProductId across
+        // versions. PlanPriceId-pinned subscriptions resolve through the same path.
+        Guid? subscriptionProductId = plan
+            .GetCurrentPrice(subscription.Currency, plan.DefaultInterval)
+            ?.ProductId;
+
         if (basePrice > 0)
         {
             lineItems.Add(new CreateInvoiceLineItem(
                 $"{plan.Name} — {plan.DefaultInterval}",
                 1, basePrice,
                 InvoiceSourceType.Subscription,
-                subscription.Id.ToString()));
+                subscription.Id.ToString(),
+                ProductId: subscriptionProductId));
         }
 
         // Tier-aware total: when the resolved PlanPrice carries Tiers + a TieringMode,
@@ -89,7 +98,8 @@ internal sealed partial class DefaultUsageInvoiceOrchestrator(
             $"{request.MeterName}: {request.AggregatedValue} {request.Unit}",
             request.AggregatedValue, effectiveUnitPrice,
             InvoiceSourceType.Usage,
-            request.MeterDefinitionId.ToString()));
+            request.MeterDefinitionId.ToString(),
+            ProductId: request.MeterProductId));
 
         var command = new CreateInvoiceCommand(
             TenantId: request.TenantId,

@@ -10,7 +10,8 @@ public sealed record CreateUsageInvoiceRequest(
     decimal AggregatedValue,
     string Unit,
     DateTimeOffset PeriodStart,
-    DateTimeOffset PeriodEnd);
+    DateTimeOffset PeriodEnd,
+    Guid? MeterProductId = null);
 
 /// <summary>
 /// Creates consolidated invoices (fixed + usage) for PerUnit/Tiered plans.

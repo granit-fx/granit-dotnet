@@ -93,6 +93,16 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
 
         var lineItems = new List<CreateInvoiceLineItem>();
 
+        // ADR-036: ProductId tracks the resolved PlanPrice (current price for the
+        // (currency, interval) slot). If a SubscriptionPhase pinned an OverridePriceId
+        // pointing to a different PlanPrice, prefer that one — overrides may carry
+        // their own ProductId for a renamed/refactored catalog item.
+        Guid? subscriptionProductId =
+            (effectivePlanPriceId is { } pinnedId
+                ? plan.Prices.FirstOrDefault(p => p.Id == pinnedId)
+                : plan.GetCurrentPrice(subscription.Currency, plan.DefaultInterval))
+                ?.ProductId;
+
         if (plan.PricingModel == PricingModel.PerSeat)
         {
             int seatCount = subscription.Seats.Count;
@@ -100,7 +110,8 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
                 $"{plan.Name} — {seatCount} seat(s)",
                 seatCount, basePrice,
                 InvoiceSourceType.Subscription,
-                subscriptionId.ToString()));
+                subscriptionId.ToString(),
+                ProductId: subscriptionProductId));
         }
         else
         {
@@ -108,7 +119,8 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
                 $"{plan.Name} — {plan.DefaultInterval}",
                 1, basePrice,
                 InvoiceSourceType.Subscription,
-                subscriptionId.ToString()));
+                subscriptionId.ToString(),
+                ProductId: subscriptionProductId));
         }
 
         var command = new CreateInvoiceCommand(

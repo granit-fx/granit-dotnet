@@ -35,7 +35,6 @@ export default defineConfig({
   redirects: {
     // The Vault documentation was split into a dedicated `vault/` folder.
     // Preserve external and in-repo links that still point at the old URL.
-    "/dotnet/data/vault-encryption": "/dotnet/data/vault/",
     "/dotnet/data/vault-encryption/": "/dotnet/data/vault/",
     "/dotnet/data/vault-encryption/#key-rotation": "/dotnet/data/vault/encryption/",
 

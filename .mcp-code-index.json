@@ -21946,7 +21946,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Abstractions",
       "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
-      "line": 33,
+      "line": 44,
       "members": []
     },
     {
@@ -22178,7 +22178,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string description, decimal quantity, decimal unitPrice, LineItemSource source, decimal? taxRate = null, BillingPeriod? period = null)",
+          "signature": "Create(Guid id, string description, decimal quantity, decimal unitPrice, LineItemSource source, decimal? taxRate = null, BillingPeriod? period = null, Guid? productId = null)",
           "returnType": "InvoiceLineItem"
         }
       ]
@@ -41368,7 +41368,7 @@
       "kind": "interface",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/IUsageInvoiceOrchestrator.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "CreateInvoiceAsync",
