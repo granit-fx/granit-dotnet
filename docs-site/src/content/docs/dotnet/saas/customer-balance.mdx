@@ -139,6 +139,65 @@ builder.AddGranitCustomerBalanceEntityFrameworkCore(options => ...);
 // Billing integration (optional — requires Invoicing + Wolverine)
 builder.AddModule<GranitCustomerBalanceWolverineModule>();
 
-// Credit expiration (optional)
+// Credit expiration + pre-expiration warning (optional)
 builder.AddModule<GranitCustomerBalanceBackgroundJobsModule>();
 ```
+
+## ORB alignment
+
+`Granit.CustomerBalance` is the framework's implementation of ORB-style Credits.
+The two vocabularies map term-by-term — full table and rationale in
+[ADR-035](/dotnet/architecture/adr/035-customer-balance-orb-credits-mapping/).
+
+Highlights:
+
+| ORB | Granit |
+| --- | --- |
+| Credit grant | `IAdminCreditService.ApplyAsync` (`source: Promotional`) |
+| Drawdown (invoice) | `CustomerBalancePrePaymentProcessor` (`source: InvoiceDeduction`) |
+| Manual drawdown | `IAdminDebitService.DebitAsync` (`source: ManualAdjustment`) |
+| Refund credit | `Credit(... source: RefundCredit)` |
+| Overpayment | `OverpaymentCreditHandler` consumes `OverpaymentDetectedEto` |
+| Expiration | `CreditExpirationScanJob` + `CreditExpiredEto` |
+| Pre-expiration notice | `CreditPreExpirationScanJob` + `CreditNearExpirationEto` |
+
+Configurable knobs (`CustomerBalanceOptions`, section `Granit:CustomerBalance`):
+
+- `PreExpirationWarningDays` — days before expiry at which the daily scan emits
+  `CreditNearExpirationEto`. Default 7.
+
+Subscribing to the early-warning event from a SaaS app:
+
+```csharp
+public sealed class CreditExpiringNotifier
+{
+    public async Task Handle(
+        CreditNearExpirationEto eto,
+        INotificationService notifications,
+        CancellationToken cancellationToken)
+    {
+        await notifications.SendAsync(
+            tenantId: eto.TenantId,
+            template: "credit-expiring-soon",
+            data: new
+            {
+                amount = eto.ExpiringAmount,
+                currency = eto.Currency,
+                daysLeft = eto.DaysUntilExpiration,
+            },
+            cancellationToken);
+    }
+}
+```
+
+Wolverine auto-discovers the handler from the assembly. Per-tenant
+notification routing (email vs in-app vs push) belongs to the consuming
+app's `Granit.Notifications` configuration.
+
+### Deliberate non-goals
+
+`Granit.CustomerBalance` does not implement drawdown ordering strategies
+(FIFO / EarliestExpiringFirst / LargestFirst), per-period drawdown quotas,
+or distributed-saga coordination — see ADR-035 for the rationale on each.
+The default behaviour treats credits as fungible against the running
+balance, which covers ≥ 95 % of B2B SaaS billing scenarios.
