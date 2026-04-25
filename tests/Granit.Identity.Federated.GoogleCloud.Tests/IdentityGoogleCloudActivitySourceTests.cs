@@ -8,11 +8,11 @@ public sealed class IdentityGoogleCloudActivitySourceTests
 {
     [Fact]
     public void Name_IsCorrect() =>
-        IdentityGoogleCloudActivitySource.Name.ShouldBe("Granit.Identity.GoogleCloud");
+        IdentityGoogleCloudActivitySource.Name.ShouldBe("Granit.Identity.Federated.GoogleCloud");
 
     [Fact]
     public void Source_HasCorrectName() =>
-        IdentityGoogleCloudActivitySource.Source.Name.ShouldBe("Granit.Identity.GoogleCloud");
+        IdentityGoogleCloudActivitySource.Source.Name.ShouldBe("Granit.Identity.Federated.GoogleCloud");
 
     [Fact]
     public void Operations_ListUsers_IsCorrect() =>

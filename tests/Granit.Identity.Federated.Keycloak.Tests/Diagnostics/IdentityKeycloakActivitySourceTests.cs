@@ -23,8 +23,8 @@ public sealed class IdentityKeycloakActivitySourceTests : IDisposable
     public void Dispose() => _listener.Dispose();
 
     [Fact]
-    public void Name_is_Granit_Identity_Keycloak() =>
-        IdentityKeycloakActivitySource.Name.ShouldBe("Granit.Identity.Keycloak");
+    public void Name_is_Granit_Identity_Federated_Keycloak() =>
+        IdentityKeycloakActivitySource.Name.ShouldBe("Granit.Identity.Federated.Keycloak");
 
     [Fact]
     public void StartActivity_returns_activity_when_listener_attached()
