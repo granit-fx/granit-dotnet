@@ -1,3 +1,5 @@
+using Granit.Privacy.BlobStorage.DataExport.Exceptions;
+
 namespace Granit.Privacy.BlobStorage.DataExport.Internal;
 
 /// <summary>

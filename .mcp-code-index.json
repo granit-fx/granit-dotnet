@@ -34684,12 +34684,21 @@
       ]
     },
     {
+      "name": "PrivacyExportSizeLimitExceededException",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.Exceptions.PrivacyExportSizeLimitExceededException",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/Exceptions/PrivacyExportSizeLimitExceededException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "ExportArchiveAssemblyHandler",
       "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportArchiveAssemblyHandler",
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
-      "line": 44,
+      "line": 45,
       "members": [
         {
           "name": "HandleAsync",
@@ -34715,15 +34724,6 @@
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
       "line": 34,
-      "members": []
-    },
-    {
-      "name": "PrivacyExportSizeLimitExceededException",
-      "fqn": "Granit.Privacy.BlobStorage.DataExport.PrivacyExportSizeLimitExceededException",
-      "kind": "class",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/DataExport/PrivacyExportSizeLimitExceededException.cs",
-      "line": 8,
       "members": []
     },
     {

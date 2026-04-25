@@ -1,4 +1,4 @@
-namespace Granit.Privacy.BlobStorage.DataExport;
+namespace Granit.Privacy.BlobStorage.DataExport.Exceptions;
 
 /// <summary>
 /// Raised by the streaming archive assembler when a privacy export write exceeds the
