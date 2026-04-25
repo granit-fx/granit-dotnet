@@ -27,6 +27,7 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         builder.Services.TryAddSingleton<CustomerBalanceMetrics>();
         builder.Services.TryAddTransient<ICreditExpirationService, DefaultCreditExpirationService>();
         builder.Services.TryAddTransient<IAdminCreditService, DefaultAdminCreditService>();
+        builder.Services.TryAddTransient<IAdminDebitService, DefaultAdminDebitService>();
         builder.Services.TryAddTransient<IOverpaymentCreditService, DefaultOverpaymentCreditService>();
 
         // Replace default pre-payment processor to deduct available credit before PSP charges.

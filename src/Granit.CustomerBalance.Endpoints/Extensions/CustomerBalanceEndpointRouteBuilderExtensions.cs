@@ -62,6 +62,23 @@ public static class CustomerBalanceEndpointRouteBuilderExtensions
             .RequireAuthorization(CustomerBalancePermissions.Credits.Manage)
             .AllowHostAccess();
 
+        group.MapPost("/balance/debit", AdminDebitEndpoint.HandleAsync)
+            .WithName("ApplyAdminDebit")
+            .WithSummary("Debits the tenant's balance manually (admin tooling).")
+            .WithDescription(
+                "Creates a ManualAdjustment debit transaction on the tenant's balance account — "
+                + "for corrections, scheduled drawdowns, and non-invoice adjustments. "
+                + "Returns 404 when no account exists for the (tenant, currency); 422 when the balance "
+                + "is insufficient. Idempotent at the application level when the same ReferenceId is "
+                + "supplied — replays return the original outcome without double-debiting.")
+            .Produces<CustomerBalanceResponse>()
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .RequireAuthorization(CustomerBalancePermissions.Credits.Manage)
+            .AllowHostAccess();
+
         return group;
     }
 }

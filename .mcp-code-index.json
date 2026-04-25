@@ -10495,6 +10495,15 @@
       "members": []
     },
     {
+      "name": "AdminDebitRequest",
+      "fqn": "Granit.CustomerBalance.Endpoints.Dtos.AdminDebitRequest",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Endpoints",
+      "file": "src/Granit.CustomerBalance.Endpoints/Dtos/AdminDebitRequest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "BalanceTransactionResponse",
       "fqn": "Granit.CustomerBalance.Endpoints.Dtos.BalanceTransactionResponse",
       "kind": "record",
@@ -10780,6 +10789,22 @@
           "name": "ApplyAsync",
           "kind": "method",
           "signature": "ApplyAsync(Guid tenantId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task<BalanceAccount>"
+        }
+      ]
+    },
+    {
+      "name": "IAdminDebitService",
+      "fqn": "Granit.CustomerBalance.IAdminDebitService",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IAdminDebitService.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "DebitAsync",
+          "kind": "method",
+          "signature": "DebitAsync(Guid tenantId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -40131,6 +40156,22 @@
       "members": []
     },
     {
+      "name": "PricingTier",
+      "fqn": "Granit.Subscriptions.Domain.PricingTier",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/PricingTier.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid planPriceId, int sortOrder, decimal? upToQuantity, decimal unitAmount, decimal? flatAmount = null)",
+          "returnType": "PricingTier"
+        }
+      ]
+    },
+    {
       "name": "Subscription",
       "fqn": "Granit.Subscriptions.Domain.Subscription",
       "kind": "class",
@@ -40279,6 +40320,15 @@
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/SubscriptionStatus.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "TieringMode",
+      "fqn": "Granit.Subscriptions.Domain.TieringMode",
+      "kind": "enum",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Domain/TieringMode.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -41539,6 +41589,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "TieredPricingCalculator",
+      "fqn": "Granit.Subscriptions.Pricing.TieredPricingCalculator",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Pricing/TieredPricingCalculator.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Compute",
+          "kind": "method",
+          "signature": "Compute(decimal quantity, TieringMode mode, IReadOnlyList<PricingTier> tiers)",
+          "returnType": "decimal"
         }
       ]
     },
