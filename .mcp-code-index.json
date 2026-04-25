@@ -7093,7 +7093,7 @@
         {
           "name": "AddPermission",
           "kind": "method",
-          "signature": "AddPermission(string name, LocalizableString? displayName = null, MultiTenancySide multiTenancySide = MultiTenancySide.Both)",
+          "signature": "AddPermission(string name, LocalizableString? displayName = null, MultiTenancySides multiTenancySide = MultiTenancySides.Both)",
           "returnType": "PermissionDefinition"
         }
       ]
@@ -8133,8 +8133,8 @@
         {
           "name": "ClientSide",
           "kind": "property",
-          "signature": "MultiTenancySide? ClientSide",
-          "returnType": "MultiTenancySide?"
+          "signature": "MultiTenancySides? ClientSide",
+          "returnType": "MultiTenancySides?"
         },
         {
           "name": "StaticFilesPath",
@@ -12945,7 +12945,7 @@
       "kind": "class",
       "project": "Granit.DataLookup.Endpoints",
       "file": "src/Granit.DataLookup.Endpoints/Endpoints/LookupEndpointHandlers.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {
@@ -15120,7 +15120,7 @@
       "kind": "class",
       "project": "Granit",
       "file": "src/Granit/Extensions/GranitHostBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranit",
@@ -18299,7 +18299,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito",
       "file": "src/Granit.Identity.Federated.Cognito/Sync/CognitoClientRoleSyncService.cs",
-      "line": 44,
+      "line": 45,
       "members": [
         {
           "name": "SyncAsync",
@@ -18589,7 +18589,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId",
       "file": "src/Granit.Identity.Federated.EntraId/Sync/EntraIdClientRoleSyncService.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "SyncAsync",
@@ -18925,7 +18925,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak",
       "file": "src/Granit.Identity.Federated.Keycloak/Sync/KeycloakClientRoleSyncService.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "SyncAsync",
@@ -22207,7 +22207,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/InvoiceLineItem.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "Create",
@@ -25765,11 +25765,11 @@
       ]
     },
     {
-      "name": "MultiTenancySide",
-      "fqn": "Granit.MultiTenancy.MultiTenancySide",
+      "name": "MultiTenancySides",
+      "fqn": "Granit.MultiTenancy.MultiTenancySides",
       "kind": "enum",
       "project": "Granit",
-      "file": "src/Granit/MultiTenancy/MultiTenancySide.cs",
+      "file": "src/Granit/MultiTenancy/MultiTenancySides.cs",
       "line": 24,
       "members": []
     },
@@ -30266,7 +30266,7 @@
         {
           "name": "SetClientSide",
           "kind": "method",
-          "signature": "SetClientSide(this OpenIddictApplicationDescriptor descriptor, MultiTenancySide? clientSide)",
+          "signature": "SetClientSide(this OpenIddictApplicationDescriptor descriptor, MultiTenancySides? clientSide)",
           "returnType": "void"
         }
       ]
@@ -30817,7 +30817,7 @@
         {
           "name": "new",
           "kind": "method",
-          "signature": "new(SupportedCountries: ImmutableHashSet<string>.Empty, SupportedCurrencies: ImmutableHashSet<string>.Empty, SupportedSequenceTypes: PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring, AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)",
+          "signature": "new(SupportedCountries: ImmutableHashSet<string>.Empty, SupportedCurrencies: ImmutableHashSet<string>.Empty, SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring, AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)",
           "returnType": "PaymentMethodCapability Wildcard { get; } ="
         }
       ]
@@ -31053,7 +31053,7 @@
           "name": "Activate",
           "kind": "method",
           "signature": "Activate()",
-          "returnType": "bool Activated { get; private set; } public ImmutableHashSet<string>? SupportedCountries { get; private set; } public ImmutableHashSet<string>? SupportedCurrencies { get; private set; } public PaymentMethodSequenceType? SupportedSequenceTypes { get; private set; } public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; } public void"
+          "returnType": "bool Activated { get; private set; } public ImmutableHashSet<string>? SupportedCountries { get; private set; } public ImmutableHashSet<string>? SupportedCurrencies { get; private set; } public PaymentMethodSequenceTypes? SupportedSequenceTypes { get; private set; } public ImmutableDictionary<string, PaymentMethodAmountBound>? AmountBounds { get; private set; } public void"
         },
         {
           "name": "Deactivate",
@@ -31102,11 +31102,11 @@
       ]
     },
     {
-      "name": "PaymentMethodSequenceType",
-      "fqn": "Granit.Payments.Domain.PaymentMethodSequenceType",
+      "name": "PaymentMethodSequenceTypes",
+      "fqn": "Granit.Payments.Domain.PaymentMethodSequenceTypes",
       "kind": "enum",
       "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Domain/PaymentMethodSequenceType.cs",
+      "file": "src/Granit.Payments/Domain/PaymentMethodSequenceTypes.cs",
       "line": 14,
       "members": []
     },
@@ -34684,12 +34684,21 @@
       ]
     },
     {
+      "name": "PrivacyExportSizeLimitExceededException",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.Exceptions.PrivacyExportSizeLimitExceededException",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/Exceptions/PrivacyExportSizeLimitExceededException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "ExportArchiveAssemblyHandler",
       "fqn": "Granit.Privacy.BlobStorage.DataExport.ExportArchiveAssemblyHandler",
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
-      "line": 44,
+      "line": 45,
       "members": [
         {
           "name": "HandleAsync",
@@ -34715,15 +34724,6 @@
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
       "line": 34,
-      "members": []
-    },
-    {
-      "name": "PrivacyExportSizeLimitExceededException",
-      "fqn": "Granit.Privacy.BlobStorage.DataExport.Internal.PrivacyExportSizeLimitExceededException",
-      "kind": "class",
-      "project": "Granit.Privacy.BlobStorage",
-      "file": "src/Granit.Privacy.BlobStorage/DataExport/Internal/CountingStream.cs",
-      "line": 100,
       "members": []
     },
     {
@@ -36848,7 +36848,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {

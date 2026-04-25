@@ -117,7 +117,7 @@ internal static class GranitRoleEndpoints
     {
         RoleEndpointsOptions opts = options.Value;
 
-        if (request.MultiTenancySide == MultiTenancySide.Tenant && !opts.AllowTenantRoles)
+        if (request.MultiTenancySides == MultiTenancySides.Tenant && !opts.AllowTenantRoles)
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
@@ -126,7 +126,7 @@ internal static class GranitRoleEndpoints
         }
 
         // Tenant admins may only create roles in their own tenant.
-        if (currentTenant.IsAvailable && request.MultiTenancySide == MultiTenancySide.Tenant
+        if (currentTenant.IsAvailable && request.MultiTenancySides == MultiTenancySides.Tenant
             && request.TenantId != currentTenant.Id)
         {
             return TypedResults.Problem(
@@ -135,7 +135,7 @@ internal static class GranitRoleEndpoints
         }
 
         // Tenant admins cannot create Host or Both roles (platform-level scope).
-        if (currentTenant.IsAvailable && request.MultiTenancySide != MultiTenancySide.Tenant)
+        if (currentTenant.IsAvailable && request.MultiTenancySides != MultiTenancySides.Tenant)
         {
             return TypedResults.Problem(
                 statusCode: StatusCodes.Status403Forbidden,
@@ -148,7 +148,7 @@ internal static class GranitRoleEndpoints
             created = await orchestrator.CreateAsync(
                 new CreateRoleCommand(
                     Name: request.Name,
-                    MultiTenancySide: request.MultiTenancySide,
+                    MultiTenancySides: request.MultiTenancySides,
                     TenantId: request.TenantId,
                     ClientId: null,
                     Description: request.Description,
@@ -251,11 +251,11 @@ internal static class GranitRoleEndpoints
         }
 
         // Tenant admin context.
-        return role.MultiTenancySide switch
+        return role.MultiTenancySides switch
         {
-            MultiTenancySide.Host => false,
-            MultiTenancySide.Both => true,
-            MultiTenancySide.Tenant => role.TenantId == currentTenant.Id,
+            MultiTenancySides.Host => false,
+            MultiTenancySides.Both => true,
+            MultiTenancySides.Tenant => role.TenantId == currentTenant.Id,
             _ => false,
         };
     }
@@ -271,14 +271,14 @@ internal static class GranitRoleEndpoints
             return true;
         }
 
-        return role.MultiTenancySide == MultiTenancySide.Tenant
+        return role.MultiTenancySides == MultiTenancySides.Tenant
             && role.TenantId == currentTenant.Id;
     }
 
     private static RoleResponse Map(RoleMetadata role) =>
         new(role.Id,
             role.Name,
-            role.MultiTenancySide,
+            role.MultiTenancySides,
             role.TenantId,
             role.ClientId,
             role.Description,

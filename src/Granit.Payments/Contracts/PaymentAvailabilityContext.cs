@@ -16,4 +16,4 @@ public sealed record PaymentAvailabilityContext(
     string? CountryCode,
     string? CurrencyCode,
     decimal? Amount,
-    PaymentMethodSequenceType SequenceType = PaymentMethodSequenceType.OneOff);
+    PaymentMethodSequenceTypes SequenceType = PaymentMethodSequenceTypes.OneOff);

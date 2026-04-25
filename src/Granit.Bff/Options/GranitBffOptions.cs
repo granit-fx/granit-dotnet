@@ -132,7 +132,7 @@ public sealed class BffFrontendOptions
     /// <c>OpenIddictApplicationDescriptor.SetClientSide(...)</c>).
     /// </para>
     /// </remarks>
-    public MultiTenancySide? ClientSide { get; set; }
+    public MultiTenancySides? ClientSide { get; set; }
 
     /// <summary>
     /// URL path prefix for this frontend (e.g., <c>"/admin"</c>, <c>"/patient"</c>).

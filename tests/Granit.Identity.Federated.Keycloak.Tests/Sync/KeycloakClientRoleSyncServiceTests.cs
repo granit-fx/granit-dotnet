@@ -79,7 +79,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
         await sut.SyncAsync(TestContext.Current.CancellationToken);
 
         await _store.Received(2).AddAsync(
-            Arg.Is<RoleMetadata>(r => r.ClientId == "app-a" && r.MultiTenancySide == MultiTenancySide.Host
+            Arg.Is<RoleMetadata>(r => r.ClientId == "app-a" && r.MultiTenancySides == MultiTenancySides.Host
                 && !r.IsSystem && r.TenantId == null),
             Arg.Any<CancellationToken>());
         await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
@@ -90,7 +90,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut("app-a");
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a", description: "Edit docs");
         _clientRoleManager.GetClientRolesAsync("app-a", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("r1", "editor", "Edit docs") { ClientId = "app-a" }]);
@@ -108,7 +108,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut("app-a");
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a", description: "OLD description");
         _clientRoleManager.GetClientRolesAsync("app-a", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("r1", "editor", "NEW description") { ClientId = "app-a" }]);
@@ -145,7 +145,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.KeepAndLog, "app-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a");
 
         _clientRoleManager.GetClientRolesAsync("app-a", Arg.Any<CancellationToken>())
@@ -166,7 +166,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "app-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a");
 
         _clientRoleManager.GetClientRolesAsync("app-a", Arg.Any<CancellationToken>())
@@ -188,7 +188,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "app-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a");
         orphan.MarkAsOrphaned(DateTimeOffset.UtcNow.AddDays(-3));
 
@@ -207,7 +207,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.HardDelete, "app-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a");
 
         _clientRoleManager.GetClientRolesAsync("app-a", Arg.Any<CancellationToken>())
@@ -225,7 +225,7 @@ public sealed class KeycloakClientRoleSyncServiceTests
     {
         KeycloakClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "app-a");
         var previouslyOrphaned = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "app-a", description: "Edit docs");
         previouslyOrphaned.MarkAsOrphaned(DateTimeOffset.UtcNow.AddHours(-1));
 

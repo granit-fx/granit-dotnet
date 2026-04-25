@@ -164,7 +164,7 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
                 "offline_access");
 
             // ──── Custom event handlers ────
-            // Enforces the MultiTenancySide policy declared on each OIDC application
+            // Enforces the MultiTenancySides policy declared on each OIDC application
             // at sign-in: host-only clients reject tenant users, tenant-only clients
             // reject host users. See ClientSideAuthorizationHandler for semantics.
             options.AddEventHandler(ClientSideAuthorizationHandler.Descriptor);

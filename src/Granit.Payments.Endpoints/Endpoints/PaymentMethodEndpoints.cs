@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
@@ -95,6 +96,7 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok(response);
     }
 
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/[FromQuery] parameters explicitly.")]
     private static async Task<Results<Ok<IReadOnlyList<PaymentAvailableMethodResponse>>, ProblemHttpResult>> GetAvailableAsync(
         [FromServices] IPaymentProviderResolver resolver,
         [FromServices] ICurrentTenant currentTenant,

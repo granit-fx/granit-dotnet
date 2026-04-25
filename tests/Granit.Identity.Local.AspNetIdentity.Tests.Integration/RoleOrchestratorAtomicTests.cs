@@ -41,7 +41,7 @@ public sealed class RoleOrchestratorAtomicTests
         RoleMetadata created = await orchestrator.CreateAsync(
             new CreateRoleCommand(
                 Name: "AtomicManager",
-                MultiTenancySide: MultiTenancySide.Both,
+                MultiTenancySides: MultiTenancySides.Both,
                 TenantId: null,
                 Description: "Verifies atomic commit."),
             TestContext.Current.CancellationToken);
@@ -69,7 +69,7 @@ public sealed class RoleOrchestratorAtomicTests
         await using (TestHostDbContext hostCtx = await hostFactory.CreateDbContextAsync(TestContext.Current.CancellationToken))
         {
             hostCtx.Set<RoleMetadata>().Add(RoleMetadata.Create(
-                Guid.NewGuid(), "Collide", MultiTenancySide.Both, tenantId: null));
+                Guid.NewGuid(), "Collide", MultiTenancySides.Both, tenantId: null));
             await hostCtx.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 
@@ -80,7 +80,7 @@ public sealed class RoleOrchestratorAtomicTests
 
         await Should.ThrowAsync<DbUpdateException>(async () =>
             await orchestrator.CreateAsync(
-                new CreateRoleCommand("Collide", MultiTenancySide.Both, TenantId: null),
+                new CreateRoleCommand("Collide", MultiTenancySides.Both, TenantId: null),
                 TestContext.Current.CancellationToken));
 
         // Atomic invariant: the Identity INSERT rolled back with the transaction.
@@ -98,7 +98,7 @@ public sealed class RoleOrchestratorAtomicTests
         IGranitRoleOrchestrator createOrchestrator = createScope.ServiceProvider
             .GetRequiredService<IGranitRoleOrchestrator>();
         RoleMetadata created = await createOrchestrator.CreateAsync(
-            new CreateRoleCommand("Alpha", MultiTenancySide.Both, TenantId: null),
+            new CreateRoleCommand("Alpha", MultiTenancySides.Both, TenantId: null),
             TestContext.Current.CancellationToken);
 
         // Rename in a fresh scope (mirrors production request-per-scope semantics).

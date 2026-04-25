@@ -57,14 +57,14 @@ public sealed class PermissionGrantEndpointsVisibilityTests
     // ─────────────────────────────────────────────────────────────────────
 
     [Theory]
-    [InlineData(MultiTenancySide.Host)]
-    [InlineData(MultiTenancySide.Both)]
-    [InlineData(MultiTenancySide.Tenant)]
-    public async Task HostContext_AnyRoleSide_ReturnsTrue(MultiTenancySide side)
+    [InlineData(MultiTenancySides.Host)]
+    [InlineData(MultiTenancySides.Both)]
+    [InlineData(MultiTenancySides.Tenant)]
+    public async Task HostContext_AnyRoleSide_ReturnsTrue(MultiTenancySides side)
     {
         _currentTenant.IsAvailable.Returns(false);
 
-        Guid? tenantIdForTenantSide = side == MultiTenancySide.Tenant ? Guid.NewGuid() : null;
+        Guid? tenantIdForTenantSide = side == MultiTenancySides.Tenant ? Guid.NewGuid() : null;
         var role = RoleMetadata.Create(
             Guid.NewGuid(), "X", side, tenantIdForTenantSide);
         _store.FindByNameAsync("X", (Guid?)null, null, Arg.Any<CancellationToken>())
@@ -87,7 +87,7 @@ public sealed class PermissionGrantEndpointsVisibilityTests
         _currentTenant.Id.Returns(Guid.NewGuid());
 
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "SuperAdmin", MultiTenancySide.Host, tenantId: null);
+            Guid.NewGuid(), "SuperAdmin", MultiTenancySides.Host, tenantId: null);
         // Tenant-scope lookup returns null (no tenant row), host-scope returns the host role.
         _store.FindByNameAsync("SuperAdmin", _currentTenant.Id, null, Arg.Any<CancellationToken>())
             .Returns((RoleMetadata?)null);
@@ -107,7 +107,7 @@ public sealed class PermissionGrantEndpointsVisibilityTests
         _currentTenant.Id.Returns(Guid.NewGuid());
 
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "User", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "User", MultiTenancySides.Both, tenantId: null);
         _store.FindByNameAsync("User", _currentTenant.Id, null, Arg.Any<CancellationToken>())
             .Returns((RoleMetadata?)null);
         _store.FindByNameAsync("User", (Guid?)null, null, Arg.Any<CancellationToken>())
@@ -127,7 +127,7 @@ public sealed class PermissionGrantEndpointsVisibilityTests
         _currentTenant.Id.Returns(tenantA);
 
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantId: tenantA);
+            Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantId: tenantA);
         _store.FindByNameAsync("Manager", tenantA, null, Arg.Any<CancellationToken>())
             .Returns(role);
 
@@ -158,7 +158,7 @@ public sealed class PermissionGrantEndpointsVisibilityTests
         _store.FindByNameAsync("TenantBRole", (Guid?)null, null, Arg.Any<CancellationToken>())
             .Returns((RoleMetadata?)null);
         // Only tenantB has the row.
-        _ = RoleMetadata.Create(Guid.NewGuid(), "TenantBRole", MultiTenancySide.Tenant, tenantId: tenantB);
+        _ = RoleMetadata.Create(Guid.NewGuid(), "TenantBRole", MultiTenancySides.Tenant, tenantId: tenantB);
 
         bool visible = await PermissionGrantEndpoints.IsRoleVisibleAsync(
             "TenantBRole", _store, _currentTenant, TestContext.Current.CancellationToken);
@@ -180,7 +180,7 @@ public sealed class PermissionGrantEndpointsVisibilityTests
         // practice because we query with tenantA, but the helper must still refuse
         // to leak the row.
         var row = RoleMetadata.Create(
-            Guid.NewGuid(), "X", MultiTenancySide.Tenant, tenantId: tenantB);
+            Guid.NewGuid(), "X", MultiTenancySides.Tenant, tenantId: tenantB);
         _store.FindByNameAsync("X", tenantA, null, Arg.Any<CancellationToken>())
             .Returns(row);
 

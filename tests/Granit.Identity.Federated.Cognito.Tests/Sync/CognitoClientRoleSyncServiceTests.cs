@@ -79,7 +79,7 @@ public sealed class CognitoClientRoleSyncServiceTests
 
         await _store.Received(2).AddAsync(
             Arg.Is<RoleMetadata>(r => r.ClientId == "client-a"
-                && r.MultiTenancySide == MultiTenancySide.Host
+                && r.MultiTenancySides == MultiTenancySides.Host
                 && !r.IsSystem && r.TenantId == null),
             Arg.Any<CancellationToken>());
         await _store.DidNotReceive().UpdateAsync(Arg.Any<RoleMetadata>(), Arg.Any<CancellationToken>());
@@ -90,7 +90,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut("client-a");
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a", description: "Edit docs");
         _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("client-a:editor", "editor", "Edit docs") { ClientId = "client-a" }]);
@@ -108,7 +108,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut("client-a");
         var existing = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a", description: "OLD description");
         _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>())
             .Returns([new IdentityRole("client-a:editor", "editor", "NEW description") { ClientId = "client-a" }]);
@@ -145,7 +145,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.KeepAndLog, "client-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a");
 
         _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
@@ -163,7 +163,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a");
 
         _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
@@ -182,7 +182,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a");
         orphan.MarkAsOrphaned(DateTimeOffset.UtcNow.AddDays(-3));
 
@@ -199,7 +199,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.HardDelete, "client-a");
         var orphan = RoleMetadata.Create(
-            Guid.NewGuid(), "gone", MultiTenancySide.Host,
+            Guid.NewGuid(), "gone", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a");
 
         _clientRoleManager.GetClientRolesAsync("client-a", Arg.Any<CancellationToken>()).Returns([]);
@@ -215,7 +215,7 @@ public sealed class CognitoClientRoleSyncServiceTests
     {
         CognitoClientRoleSyncService sut = BuildSut(OrphanedRolePolicy.SoftDelete, "client-a");
         var previouslyOrphaned = RoleMetadata.Create(
-            Guid.NewGuid(), "editor", MultiTenancySide.Host,
+            Guid.NewGuid(), "editor", MultiTenancySides.Host,
             tenantId: null, clientId: "client-a", description: "Edit docs");
         previouslyOrphaned.MarkAsOrphaned(DateTimeOffset.UtcNow.AddHours(-1));
 

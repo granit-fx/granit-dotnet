@@ -28,6 +28,6 @@ internal sealed class DataLookupPermissionDefinitionProvider : IPermissionDefini
             DataLookupPermissions.Lookups.Read,
             LocalizableString.Create<DataLookupEndpointsLocalizationResource>(
                 "Permission:DataLookup.Lookups.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

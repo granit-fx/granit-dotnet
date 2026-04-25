@@ -12,9 +12,9 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     private static readonly PaymentMethodCapability Wildcard = new(
         SupportedCountries: ImmutableHashSet<string>.Empty,
         SupportedCurrencies: ImmutableHashSet<string>.Empty,
-        SupportedSequenceTypes: PaymentMethodSequenceType.OneOff
-            | PaymentMethodSequenceType.First
-            | PaymentMethodSequenceType.Recurring,
+        SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff
+            | PaymentMethodSequenceTypes.First
+            | PaymentMethodSequenceTypes.Recurring,
         AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty);
 
     private readonly DefaultPaymentMethodAvailabilityFilter _filter = new();
@@ -27,7 +27,7 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     public void EmptyContext_IgnoresAllAxes() =>
         _filter.IsAvailable(
                 Wildcard,
-                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceType.None))
+                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceTypes.None))
             .ShouldBeTrue();
 
     [Fact]
@@ -65,11 +65,11 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     [Fact]
     public void SequenceType_RequestedRecurring_AgainstOneOffOnly_Rejected()
     {
-        PaymentMethodCapability oneOffOnly = Wildcard with { SupportedSequenceTypes = PaymentMethodSequenceType.OneOff };
+        PaymentMethodCapability oneOffOnly = Wildcard with { SupportedSequenceTypes = PaymentMethodSequenceTypes.OneOff };
 
         _filter.IsAvailable(
                 oneOffOnly,
-                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceType.Recurring))
+                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceTypes.Recurring))
             .ShouldBeFalse();
     }
 
@@ -78,12 +78,12 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     {
         PaymentMethodCapability sepa = Wildcard with
         {
-            SupportedSequenceTypes = PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring,
+            SupportedSequenceTypes = PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring,
         };
 
         _filter.IsAvailable(
                 sepa,
-                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceType.Recurring))
+                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceTypes.Recurring))
             .ShouldBeTrue();
     }
 
@@ -92,12 +92,12 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     {
         PaymentMethodCapability bancontact = Wildcard with
         {
-            SupportedSequenceTypes = PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First,
+            SupportedSequenceTypes = PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First,
         };
 
         _filter.IsAvailable(
                 bancontact,
-                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceType.First))
+                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceTypes.First))
             .ShouldBeTrue();
     }
 
@@ -106,12 +106,12 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
     {
         PaymentMethodCapability sepa = Wildcard with
         {
-            SupportedSequenceTypes = PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring,
+            SupportedSequenceTypes = PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring,
         };
 
         _filter.IsAvailable(
                 sepa,
-                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceType.None))
+                new PaymentAvailabilityContext(null, null, null, PaymentMethodSequenceTypes.None))
             .ShouldBeTrue();
     }
 
@@ -193,7 +193,7 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
         PaymentMethodCapability method = new(
             SupportedCountries: ImmutableHashSet.Create("BE", "NL"),
             SupportedCurrencies: ImmutableHashSet.Create("EUR"),
-            SupportedSequenceTypes: PaymentMethodSequenceType.OneOff,
+            SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff,
             AmountBounds: new Dictionary<string, PaymentMethodAmountBound>
             {
                 ["EUR"] = new("EUR", 1m, 500m),
@@ -214,7 +214,7 @@ public sealed class DefaultPaymentMethodAvailabilityFilterTests
         // Sequence fails
         _filter.IsAvailable(
                 method,
-                new PaymentAvailabilityContext("BE", "EUR", 50m, PaymentMethodSequenceType.Recurring))
+                new PaymentAvailabilityContext("BE", "EUR", 50m, PaymentMethodSequenceTypes.Recurring))
             .ShouldBeFalse();
     }
 }

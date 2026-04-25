@@ -12,7 +12,7 @@ public sealed class RoleMetadataExportDefinition : ExportDefinition<RoleMetadata
         builder
             .IncludeId()
             .Field(r => r.Name)
-            .Field(r => r.MultiTenancySide)
+            .Field(r => r.MultiTenancySides)
             .Field(r => r.TenantId)
             .Field(r => r.ClientId)
             .Field(r => r.Description)

@@ -264,7 +264,7 @@ internal sealed partial class AspNetPasskeyService(
                     AssertionResponse = assertionResponse,
                     OriginalOptions = originalOptions,
                     StoredPublicKey = storedPasskey.PublicKey,
-                    StoredSignatureCounter = (uint)storedPasskey.SignCount,
+                    StoredSignatureCounter = storedPasskey.SignCount,
                     IsUserHandleOwnerOfCredentialIdCallback =
                         static (_, _) => Task.FromResult(true),
                 },

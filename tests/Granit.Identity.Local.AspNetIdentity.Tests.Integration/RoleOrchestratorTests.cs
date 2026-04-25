@@ -44,7 +44,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
         RoleMetadata created = await orchestrator.CreateAsync(
             new CreateRoleCommand(
                 Name: "Manager",
-                MultiTenancySide: MultiTenancySide.Both,
+                MultiTenancySides: MultiTenancySides.Both,
                 TenantId: null,
                 Description: "Business manager."),
             TestContext.Current.CancellationToken);
@@ -58,7 +58,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
 
         RoleMetadata? metadata = await store.FindByIdAsync(created.Id, TestContext.Current.CancellationToken);
         metadata.ShouldNotBeNull();
-        metadata.MultiTenancySide.ShouldBe(MultiTenancySide.Both);
+        metadata.MultiTenancySides.ShouldBe(MultiTenancySides.Both);
         metadata.TenantId.ShouldBeNull();
         metadata.IsSystem.ShouldBeFalse();
     }
@@ -70,7 +70,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
         // No matching GranitRole exists, so the Identity CreateAsync step succeeds;
         // the metadata AddAsync then violates the (Name, TenantId, ClientId) unique
         // index and must trigger the compensating delete.
-        await SeedMetadataOnlyAsync("Manager", MultiTenancySide.Both, tenantId: null);
+        await SeedMetadataOnlyAsync("Manager", MultiTenancySides.Both, tenantId: null);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -80,7 +80,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
 
         await Should.ThrowAsync<DbUpdateException>(async () =>
             await orchestrator.CreateAsync(
-                new CreateRoleCommand("Manager", MultiTenancySide.Both, TenantId: null),
+                new CreateRoleCommand("Manager", MultiTenancySides.Both, TenantId: null),
                 TestContext.Current.CancellationToken));
 
         // Invariant: no orphan GranitRole remains with display name "Manager".
@@ -96,7 +96,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     public async Task RenameAsync_HappyPath_UpdatesBothRoleAndMetadata()
     {
         RoleMetadata created = await CreateRoleViaOrchestratorAsync(
-            "Alpha", MultiTenancySide.Both, tenantId: null);
+            "Alpha", MultiTenancySides.Both, tenantId: null);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -127,12 +127,12 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     {
         // Alpha has a matched GranitRole + RoleMetadata (via orchestrator).
         RoleMetadata alpha = await CreateRoleViaOrchestratorAsync(
-            "Alpha", MultiTenancySide.Both, tenantId: null);
+            "Alpha", MultiTenancySides.Both, tenantId: null);
 
         // Beta exists only in RoleMetadata. When we rename Alpha → "Beta", the
         // Identity update on Alpha succeeds (no "Beta" GranitRole yet) but the
         // metadata update hits the unique index → orchestrator compensates.
-        await SeedMetadataOnlyAsync("Beta", MultiTenancySide.Both, tenantId: null);
+        await SeedMetadataOnlyAsync("Beta", MultiTenancySides.Both, tenantId: null);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -159,7 +159,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
         // IsSystem=true is only settable via the factory — use the store directly so
         // we don't need an orchestrator code path for seeding system roles.
         RoleMetadata system = await SeedMetadataOnlyAsync(
-            "SuperAdmin", MultiTenancySide.Host, tenantId: null, isSystem: true);
+            "SuperAdmin", MultiTenancySides.Host, tenantId: null, isSystem: true);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -181,7 +181,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     public async Task DeleteAsync_HappyPath_RemovesBothRoleAndMetadata()
     {
         RoleMetadata created = await CreateRoleViaOrchestratorAsync(
-            "Disposable", MultiTenancySide.Both, tenantId: null);
+            "Disposable", MultiTenancySides.Both, tenantId: null);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -203,7 +203,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     public async Task DeleteAsync_SystemRole_Refused()
     {
         RoleMetadata system = await SeedMetadataOnlyAsync(
-            "TenantAdministrator", MultiTenancySide.Both, tenantId: null, isSystem: true);
+            "TenantAdministrator", MultiTenancySides.Both, tenantId: null, isSystem: true);
 
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -220,7 +220,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     // ─────────────────────────────────────────────────────────────────────
 
     private async Task<RoleMetadata> CreateRoleViaOrchestratorAsync(
-        string name, MultiTenancySide side, Guid? tenantId)
+        string name, MultiTenancySides side, Guid? tenantId)
     {
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IGranitRoleOrchestrator orchestrator = scope.ServiceProvider
@@ -231,7 +231,7 @@ public sealed class RoleOrchestratorTests : IClassFixture<RoleOrchestratorTestAp
     }
 
     private async Task<RoleMetadata> SeedMetadataOnlyAsync(
-        string name, MultiTenancySide side, Guid? tenantId, bool isSystem = false)
+        string name, MultiTenancySides side, Guid? tenantId, bool isSystem = false)
     {
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         TestHostDbContext hostCtx = scope.ServiceProvider.GetRequiredService<TestHostDbContext>();

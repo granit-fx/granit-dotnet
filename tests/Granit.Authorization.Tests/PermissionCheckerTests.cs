@@ -341,7 +341,7 @@ public sealed class PermissionCheckerTests
         IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
         manager.Exists(DefinedPermission).Returns(true);
         manager.Find(DefinedPermission)
-            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySide.Both));
+            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySides.Both));
 
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
         IFusionCache cache = Substitute.For<IFusionCache>();
@@ -433,7 +433,7 @@ public sealed class PermissionCheckerTests
         manager.Exists(DefinedPermission).Returns(true);
         manager.Exists(UndefinedPermission).Returns(false);
         manager.Find(DefinedPermission)
-            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySide.Both));
+            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySides.Both));
         manager.Find(UndefinedPermission).Returns((PermissionDefinition?)null);
 
         IPermissionGrantStore grantStore = store ?? Substitute.For<IPermissionGrantStore>();

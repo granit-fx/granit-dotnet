@@ -32,7 +32,7 @@ public sealed class PaymentMethodConfigurationSnapshotTests
         PaymentMethodCapability capability = new(
             SupportedCountries: ImmutableHashSet.Create("BE", "NL"),
             SupportedCurrencies: ImmutableHashSet.Create("EUR"),
-            SupportedSequenceTypes: PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First,
+            SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First,
             AmountBounds: new Dictionary<string, PaymentMethodAmountBound>
             {
                 ["EUR"] = new("EUR", 1m, 10_000m),
@@ -78,7 +78,7 @@ public sealed class PaymentMethodConfigurationSnapshotTests
         PaymentMethodCapability original = new(
             SupportedCountries: ImmutableHashSet.Create("BE", "NL", "FR"),
             SupportedCurrencies: ImmutableHashSet.Create("EUR", "GBP"),
-            SupportedSequenceTypes: PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring,
+            SupportedSequenceTypes: PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring,
             AmountBounds: new Dictionary<string, PaymentMethodAmountBound>
             {
                 ["EUR"] = new("EUR", 10m, 10_000m),

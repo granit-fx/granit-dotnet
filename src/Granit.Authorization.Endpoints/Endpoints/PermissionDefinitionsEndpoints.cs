@@ -51,7 +51,7 @@ internal static class PermissionDefinitionsEndpoints
                     .Select(p => new PermissionDefinitionResponse(
                         p.Name,
                         p.DisplayName?.Localize(localizerFactory),
-                        p.MultiTenancySide))
+                        p.MultiTenancySides))
                     .ToList()))
             .ToList();
 

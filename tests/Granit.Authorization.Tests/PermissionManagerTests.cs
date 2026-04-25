@@ -204,7 +204,7 @@ public sealed class PermissionManagerTests
         definitionManager.Exists(DefinedPermission).Returns(true);
         definitionManager.Exists(UndefinedPermission).Returns(false);
         definitionManager.Find(DefinedPermission)
-            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySide.Both));
+            .Returns(new PermissionDefinition(DefinedPermission, null, "TestGroup", MultiTenancySides.Both));
         definitionManager.Find(UndefinedPermission).Returns((PermissionDefinition?)null);
 
         ILogger<PermissionManager> logger = Substitute.For<ILogger<PermissionManager>>();

@@ -232,7 +232,7 @@ internal sealed partial class GranitRoleOrchestrator(
                     var metadata = RoleMetadata.Create(
                         roleId,
                         command.Name,
-                        command.MultiTenancySide,
+                        command.MultiTenancySides,
                         command.TenantId,
                         command.ClientId,
                         command.Description,
@@ -432,7 +432,7 @@ internal sealed partial class GranitRoleOrchestrator(
             var metadata = RoleMetadata.Create(
                 roleId,
                 command.Name,
-                command.MultiTenancySide,
+                command.MultiTenancySides,
                 command.TenantId,
                 command.ClientId,
                 command.Description,

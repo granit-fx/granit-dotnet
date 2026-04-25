@@ -60,12 +60,12 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     public async Task HostRole_DuplicateName_RejectedByUniqueIndex()
     {
         var first = RoleMetadata.Create(
-            Guid.NewGuid(), "SuperAdmin", MultiTenancySide.Host, tenantId: null);
+            Guid.NewGuid(), "SuperAdmin", MultiTenancySides.Host, tenantId: null);
         _context.Set<RoleMetadata>().Add(first);
         await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var duplicate = RoleMetadata.Create(
-            Guid.NewGuid(), "SuperAdmin", MultiTenancySide.Host, tenantId: null);
+            Guid.NewGuid(), "SuperAdmin", MultiTenancySides.Host, tenantId: null);
         _context.Set<RoleMetadata>().Add(duplicate);
 
         DbUpdateException ex = await Should.ThrowAsync<DbUpdateException>(async () =>
@@ -80,12 +80,12 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     {
         // Both rows have (Name, TenantId, ClientId) = (X, null, null) — must collide under NULLS NOT DISTINCT.
         var first = RoleMetadata.Create(
-            Guid.NewGuid(), "User", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "User", MultiTenancySides.Both, tenantId: null);
         _context.Set<RoleMetadata>().Add(first);
         await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var duplicate = RoleMetadata.Create(
-            Guid.NewGuid(), "User", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "User", MultiTenancySides.Both, tenantId: null);
         _context.Set<RoleMetadata>().Add(duplicate);
 
         DbUpdateException ex = await Should.ThrowAsync<DbUpdateException>(async () =>
@@ -102,9 +102,9 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
         var tenantB = Guid.NewGuid();
 
         _context.Set<RoleMetadata>().Add(
-            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantA));
+            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantA));
         _context.Set<RoleMetadata>().Add(
-            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantB));
+            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantB));
 
         await _context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -121,7 +121,7 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     public async Task CheckConstraint_RejectsHostRoleWithNonNullTenantId()
     {
         RoleMetadata invalid = BuildInvalidRoleMetadata(
-            name: "GhostHost", side: MultiTenancySide.Host, tenantId: Guid.NewGuid());
+            name: "GhostHost", side: MultiTenancySides.Host, tenantId: Guid.NewGuid());
         _context.Set<RoleMetadata>().Add(invalid);
 
         DbUpdateException ex = await Should.ThrowAsync<DbUpdateException>(async () =>
@@ -136,7 +136,7 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     public async Task CheckConstraint_RejectsTenantRoleWithNullTenantId()
     {
         RoleMetadata invalid = BuildInvalidRoleMetadata(
-            name: "GhostTenant", side: MultiTenancySide.Tenant, tenantId: null);
+            name: "GhostTenant", side: MultiTenancySides.Tenant, tenantId: null);
         _context.Set<RoleMetadata>().Add(invalid);
 
         DbUpdateException ex = await Should.ThrowAsync<DbUpdateException>(async () =>
@@ -154,13 +154,13 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     /// invariant, not to exercise the factory itself.
     /// </summary>
     private static RoleMetadata BuildInvalidRoleMetadata(
-        string name, MultiTenancySide side, Guid? tenantId)
+        string name, MultiTenancySides side, Guid? tenantId)
     {
         var instance = (RoleMetadata)Activator.CreateInstance(
             typeof(RoleMetadata), nonPublic: true)!;
         SetProperty(instance, nameof(RoleMetadata.Id), Guid.NewGuid());
         SetProperty(instance, nameof(RoleMetadata.Name), name);
-        SetProperty(instance, nameof(RoleMetadata.MultiTenancySide), side);
+        SetProperty(instance, nameof(RoleMetadata.MultiTenancySides), side);
         SetProperty(instance, nameof(RoleMetadata.TenantId), tenantId);
         SetProperty(instance, nameof(RoleMetadata.IsSystem), false);
         return instance;
@@ -183,7 +183,7 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     {
         EfCoreRoleMetadataStore<TestAuthorizationDbContext> store = new(_context);
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "TenantAdministrator", MultiTenancySide.Both, tenantId: null,
+            Guid.NewGuid(), "TenantAdministrator", MultiTenancySides.Both, tenantId: null,
             description: "Administrator within a tenant.");
 
         await store.AddAsync(role, TestContext.Current.CancellationToken);
@@ -194,7 +194,7 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
 
         found.ShouldNotBeNull();
         found.Id.ShouldBe(role.Id);
-        found.MultiTenancySide.ShouldBe(MultiTenancySide.Both);
+        found.MultiTenancySides.ShouldBe(MultiTenancySides.Both);
         found.Description.ShouldBe("Administrator within a tenant.");
     }
 
@@ -203,7 +203,7 @@ public sealed class RoleMetadataPostgresTests : IClassFixture<PostgresFixture>, 
     {
         EfCoreRoleMetadataStore<TestAuthorizationDbContext> store = new(_context);
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "DisposableRole", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "DisposableRole", MultiTenancySides.Both, tenantId: null);
         await store.AddAsync(role, TestContext.Current.CancellationToken);
 
         RoleMetadata? tracked = await _context.Set<RoleMetadata>()

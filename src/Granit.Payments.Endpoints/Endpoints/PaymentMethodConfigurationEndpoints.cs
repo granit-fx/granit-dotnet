@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization.Extensions;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
@@ -186,6 +187,7 @@ internal static class PaymentMethodConfigurationEndpoints
     // POST /{provider}/{method}/activate
     // -------------------------------------------------------------------------
 
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/route parameters explicitly; collaborators are orthogonal.")]
     private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ActivateAsync(
         string providerName,
         string methodType,
@@ -240,6 +242,7 @@ internal static class PaymentMethodConfigurationEndpoints
     // POST /{provider}/{method}/deactivate
     // -------------------------------------------------------------------------
 
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/route parameters explicitly; collaborators are orthogonal.")]
     private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> DeactivateAsync(
         string providerName,
         string methodType,
@@ -295,6 +298,7 @@ internal static class PaymentMethodConfigurationEndpoints
     // POST /{provider}/{method}/resync
     // -------------------------------------------------------------------------
 
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/route parameters explicitly; collaborators are orthogonal.")]
     private static async Task<Results<Ok<PaymentMethodConfigurationItem>, ProblemHttpResult>> ResyncAsync(
         string providerName,
         string methodType,

@@ -47,66 +47,7 @@ internal static class TokenRequestEncoder
             [OidcConstants.Parameters.ClientId] = request.ClientId,
         };
 
-        switch (request)
-        {
-            case AuthorizationCodeTokenRequest authCode:
-                parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.AuthorizationCode;
-                parameters[OidcConstants.Parameters.Code] = authCode.Code;
-                parameters[OidcConstants.Parameters.RedirectUri] = authCode.RedirectUri;
-                parameters[OidcConstants.Parameters.CodeVerifier] = authCode.CodeVerifier;
-                break;
-
-            case RefreshTokenRequest refresh:
-                parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.RefreshToken;
-                parameters[OidcConstants.Parameters.RefreshToken] = refresh.RefreshToken;
-                if (refresh.Scope is not null)
-                {
-                    parameters[OidcConstants.Parameters.Scope] = refresh.Scope;
-                }
-
-                break;
-
-            case ClientCredentialsTokenRequest clientCreds:
-                parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.ClientCredentials;
-                if (clientCreds.Scope is not null)
-                {
-                    parameters[OidcConstants.Parameters.Scope] = clientCreds.Scope;
-                }
-
-                break;
-
-            case TokenExchangeTokenRequest exchange:
-                parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.TokenExchange;
-                parameters[OidcConstants.Parameters.SubjectToken] = exchange.SubjectToken;
-                parameters[OidcConstants.Parameters.SubjectTokenType] = exchange.SubjectTokenType;
-                parameters[OidcConstants.Parameters.Audience] = exchange.Audience;
-                if (exchange.Scope is not null)
-                {
-                    parameters[OidcConstants.Parameters.Scope] = exchange.Scope;
-                }
-
-                if (exchange.Resource is not null)
-                {
-                    parameters[OidcConstants.Parameters.Resource] = exchange.Resource;
-                }
-
-                if (exchange.RequestedTokenType is not null)
-                {
-                    parameters[OidcConstants.Parameters.RequestedTokenType] = exchange.RequestedTokenType;
-                }
-
-                if (exchange.ActorToken is not null)
-                {
-                    parameters[OidcConstants.Parameters.ActorToken] = exchange.ActorToken;
-                }
-
-                if (exchange.ActorTokenType is not null)
-                {
-                    parameters[OidcConstants.Parameters.ActorTokenType] = exchange.ActorTokenType;
-                }
-
-                break;
-        }
+        AppendGrantParameters(parameters, request);
 
         foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
         {
@@ -114,6 +55,88 @@ internal static class TokenRequestEncoder
         }
 
         return parameters;
+    }
+
+    private static void AppendGrantParameters(Dictionary<string, string> parameters, TokenRequest request)
+    {
+        switch (request)
+        {
+            case AuthorizationCodeTokenRequest authCode:
+                AppendAuthorizationCode(parameters, authCode);
+                break;
+
+            case RefreshTokenRequest refresh:
+                AppendRefreshToken(parameters, refresh);
+                break;
+
+            case ClientCredentialsTokenRequest clientCreds:
+                AppendClientCredentials(parameters, clientCreds);
+                break;
+
+            case TokenExchangeTokenRequest exchange:
+                AppendTokenExchange(parameters, exchange);
+                break;
+        }
+    }
+
+    private static void AppendAuthorizationCode(Dictionary<string, string> parameters, AuthorizationCodeTokenRequest authCode)
+    {
+        parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.AuthorizationCode;
+        parameters[OidcConstants.Parameters.Code] = authCode.Code;
+        parameters[OidcConstants.Parameters.RedirectUri] = authCode.RedirectUri;
+        parameters[OidcConstants.Parameters.CodeVerifier] = authCode.CodeVerifier;
+    }
+
+    private static void AppendRefreshToken(Dictionary<string, string> parameters, RefreshTokenRequest refresh)
+    {
+        parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.RefreshToken;
+        parameters[OidcConstants.Parameters.RefreshToken] = refresh.RefreshToken;
+        if (refresh.Scope is not null)
+        {
+            parameters[OidcConstants.Parameters.Scope] = refresh.Scope;
+        }
+    }
+
+    private static void AppendClientCredentials(Dictionary<string, string> parameters, ClientCredentialsTokenRequest clientCreds)
+    {
+        parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.ClientCredentials;
+        if (clientCreds.Scope is not null)
+        {
+            parameters[OidcConstants.Parameters.Scope] = clientCreds.Scope;
+        }
+    }
+
+    private static void AppendTokenExchange(Dictionary<string, string> parameters, TokenExchangeTokenRequest exchange)
+    {
+        parameters[OidcConstants.Parameters.GrantType] = OidcConstants.GrantTypes.TokenExchange;
+        parameters[OidcConstants.Parameters.SubjectToken] = exchange.SubjectToken;
+        parameters[OidcConstants.Parameters.SubjectTokenType] = exchange.SubjectTokenType;
+        parameters[OidcConstants.Parameters.Audience] = exchange.Audience;
+
+        if (exchange.Scope is not null)
+        {
+            parameters[OidcConstants.Parameters.Scope] = exchange.Scope;
+        }
+
+        if (exchange.Resource is not null)
+        {
+            parameters[OidcConstants.Parameters.Resource] = exchange.Resource;
+        }
+
+        if (exchange.RequestedTokenType is not null)
+        {
+            parameters[OidcConstants.Parameters.RequestedTokenType] = exchange.RequestedTokenType;
+        }
+
+        if (exchange.ActorToken is not null)
+        {
+            parameters[OidcConstants.Parameters.ActorToken] = exchange.ActorToken;
+        }
+
+        if (exchange.ActorTokenType is not null)
+        {
+            parameters[OidcConstants.Parameters.ActorTokenType] = exchange.ActorTokenType;
+        }
     }
 
     /// <summary>

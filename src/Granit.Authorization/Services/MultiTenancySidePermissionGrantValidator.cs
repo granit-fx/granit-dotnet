@@ -5,25 +5,25 @@ namespace Granit.Authorization.Services;
 
 /// <summary>
 /// Rejects permission grants whose target scope contradicts either the permission's
-/// declared <see cref="MultiTenancySide"/> or — for role grants — the role's declared
-/// scope (<see cref="RoleMetadata.MultiTenancySide"/> / <see cref="RoleMetadata.TenantId"/>).
+/// declared <see cref="MultiTenancySides"/> or — for role grants — the role's declared
+/// scope (<see cref="RoleMetadata.MultiTenancySides"/> / <see cref="RoleMetadata.TenantId"/>).
 /// </summary>
 /// <remarks>
 /// <para>
 /// Permission checks (always applied):
 /// <list type="bullet">
-///   <item><see cref="MultiTenancySide.Host"/> permissions must be granted with <c>TenantId == null</c>.</item>
-///   <item><see cref="MultiTenancySide.Tenant"/> permissions must be granted with a non-null <c>TenantId</c>.</item>
-///   <item><see cref="MultiTenancySide.Both"/> permissions are accepted regardless.</item>
+///   <item><see cref="MultiTenancySides.Host"/> permissions must be granted with <c>TenantId == null</c>.</item>
+///   <item><see cref="MultiTenancySides.Tenant"/> permissions must be granted with a non-null <c>TenantId</c>.</item>
+///   <item><see cref="MultiTenancySides.Both"/> permissions are accepted regardless.</item>
 /// </list>
 /// </para>
 /// <para>
 /// Role-side checks (only when <see cref="PermissionGrantValidationContext.ProviderName"/>
 /// is <see cref="PermissionGrantProviderNames.Role"/>):
 /// <list type="bullet">
-///   <item>A <see cref="MultiTenancySide.Host"/> role cannot receive tenant-scoped grants.</item>
-///   <item>A <see cref="MultiTenancySide.Tenant"/> role cannot receive host-level grants, and its <see cref="RoleMetadata.TenantId"/> must match the grant's tenant scope.</item>
-///   <item>A <see cref="MultiTenancySide.Both"/> role is accepted in either context.</item>
+///   <item>A <see cref="MultiTenancySides.Host"/> role cannot receive tenant-scoped grants.</item>
+///   <item>A <see cref="MultiTenancySides.Tenant"/> role cannot receive host-level grants, and its <see cref="RoleMetadata.TenantId"/> must match the grant's tenant scope.</item>
+///   <item>A <see cref="MultiTenancySides.Both"/> role is accepted in either context.</item>
 /// </list>
 /// The role is located via <see cref="IRoleMetadataStore"/>, trying the grant's tenant
 /// scope first and falling back to the global namespace. When no matching role metadata
@@ -41,16 +41,16 @@ internal sealed class MultiTenancySidePermissionGrantValidator(
         PermissionGrantValidationContext context,
         CancellationToken cancellationToken = default)
     {
-        MultiTenancySide permissionSide = context.Definition.MultiTenancySide;
+        MultiTenancySides permissionSide = context.Definition.MultiTenancySides;
 
-        if (!permissionSide.HasFlag(MultiTenancySide.Host) && context.TenantId is null)
+        if (!permissionSide.HasFlag(MultiTenancySides.Host) && context.TenantId is null)
         {
             return PermissionGrantValidationResult.Reject(
                 "side_host_forbidden",
                 $"Permission '{context.PermissionName}' is Tenant-only; host-level grant (TenantId == null) refused.");
         }
 
-        if (!permissionSide.HasFlag(MultiTenancySide.Tenant) && context.TenantId is not null)
+        if (!permissionSide.HasFlag(MultiTenancySides.Tenant) && context.TenantId is not null)
         {
             return PermissionGrantValidationResult.Reject(
                 "side_tenant_forbidden",
@@ -82,14 +82,14 @@ internal sealed class MultiTenancySidePermissionGrantValidator(
             return PermissionGrantValidationResult.Success;
         }
 
-        if (role.MultiTenancySide == MultiTenancySide.Host && context.TenantId is not null)
+        if (role.MultiTenancySides == MultiTenancySides.Host && context.TenantId is not null)
         {
             return PermissionGrantValidationResult.Reject(
                 "role_side_forbidden",
                 $"Role '{context.ProviderKey}' is Host-only; tenant-scoped grant refused.");
         }
 
-        if (role.MultiTenancySide == MultiTenancySide.Tenant)
+        if (role.MultiTenancySides == MultiTenancySides.Tenant)
         {
             if (context.TenantId is null)
             {

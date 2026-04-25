@@ -5,7 +5,7 @@ using OpenIddict.Abstractions;
 namespace Granit.OpenIddict.Extensions;
 
 /// <summary>
-/// Read/write helpers for the <see cref="MultiTenancySide"/> policy persisted on an
+/// Read/write helpers for the <see cref="MultiTenancySides"/> policy persisted on an
 /// OpenIddict application via its <c>Properties</c> dictionary. Used by seeding and
 /// by the OIDC server pipeline to enforce host/tenant isolation at sign-in.
 /// </summary>
@@ -43,7 +43,7 @@ public static class OpenIddictApplicationClientSideExtensions
     /// </summary>
     public static void SetClientSide(
         this OpenIddictApplicationDescriptor descriptor,
-        MultiTenancySide? clientSide)
+        MultiTenancySides? clientSide)
     {
         ArgumentNullException.ThrowIfNull(descriptor);
 
@@ -61,9 +61,9 @@ public static class OpenIddictApplicationClientSideExtensions
     /// Reads the client-side policy from the descriptor's
     /// <see cref="OpenIddictApplicationDescriptor.Properties"/>, or
     /// <see langword="null"/> when the key is absent or its value is not a recognised
-    /// <see cref="MultiTenancySide"/> member.
+    /// <see cref="MultiTenancySides"/> member.
     /// </summary>
-    public static MultiTenancySide? GetClientSide(this OpenIddictApplicationDescriptor descriptor)
+    public static MultiTenancySides? GetClientSide(this OpenIddictApplicationDescriptor descriptor)
     {
         ArgumentNullException.ThrowIfNull(descriptor);
 
@@ -78,9 +78,9 @@ public static class OpenIddictApplicationClientSideExtensions
     /// <summary>
     /// Reads the client-side policy from an application record via the OpenIddict
     /// application manager. Returns <see langword="null"/> when the key is absent
-    /// or its value is not a recognised <see cref="MultiTenancySide"/> member.
+    /// or its value is not a recognised <see cref="MultiTenancySides"/> member.
     /// </summary>
-    public static async ValueTask<MultiTenancySide?> GetClientSideAsync(
+    public static async ValueTask<MultiTenancySides?> GetClientSideAsync(
         this IOpenIddictApplicationManager applicationManager,
         object application,
         CancellationToken cancellationToken = default)
@@ -97,7 +97,7 @@ public static class OpenIddictApplicationClientSideExtensions
             : null;
     }
 
-    private static MultiTenancySide? ParseClientSide(JsonElement element)
+    private static MultiTenancySides? ParseClientSide(JsonElement element)
     {
         if (element.ValueKind != JsonValueKind.String)
         {
@@ -105,7 +105,7 @@ public static class OpenIddictApplicationClientSideExtensions
         }
 
         string? raw = element.GetString();
-        return Enum.TryParse(raw, ignoreCase: false, out MultiTenancySide value)
+        return Enum.TryParse(raw, ignoreCase: false, out MultiTenancySides value)
             && Enum.IsDefined(value)
             ? value
             : null;

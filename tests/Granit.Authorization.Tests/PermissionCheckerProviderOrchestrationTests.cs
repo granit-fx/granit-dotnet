@@ -117,7 +117,7 @@ public sealed class PermissionCheckerProviderOrchestrationTests
     {
         // Host-only permission checked under an active tenant: should deny without hitting the store.
         IPermissionGrantStore store = Substitute.For<IPermissionGrantStore>();
-        PermissionDefinition definition = new(Permission, null, "TestGroup", MultiTenancySide.Host);
+        PermissionDefinition definition = new(Permission, null, "TestGroup", MultiTenancySides.Host);
 
         PermissionChecker checker = BuildChecker(
             userId: "alice", roles: ["editor"], clientId: "spa",
@@ -155,7 +155,7 @@ public sealed class PermissionCheckerProviderOrchestrationTests
         IPermissionDefinitionManager manager = Substitute.For<IPermissionDefinitionManager>();
         manager.Exists(Permission).Returns(true);
         manager.Find(Permission).Returns(definition
-            ?? new PermissionDefinition(Permission, null, "TestGroup", MultiTenancySide.Both));
+            ?? new PermissionDefinition(Permission, null, "TestGroup", MultiTenancySides.Both));
 
         IFusionCache cache = new FusionCache(new FusionCacheOptions());
 

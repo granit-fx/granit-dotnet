@@ -14,8 +14,8 @@ namespace Granit.Payments.Internal;
 /// <para>
 /// Sequence type matching uses a bitwise containment test:
 /// <c>(capability.SupportedSequenceTypes &amp; context.SequenceType) == context.SequenceType</c>.
-/// A caller requesting <see cref="PaymentMethodSequenceType.Recurring"/> against a method
-/// that supports only <see cref="PaymentMethodSequenceType.OneOff"/> is rejected; the filter
+/// A caller requesting <see cref="PaymentMethodSequenceTypes.Recurring"/> against a method
+/// that supports only <see cref="PaymentMethodSequenceTypes.OneOff"/> is rejected; the filter
 /// does not infer mandate-setup chains.
 /// </para>
 /// </remarks>
@@ -40,7 +40,7 @@ internal sealed class DefaultPaymentMethodAvailabilityFilter : IPaymentMethodAva
             return false;
         }
 
-        if (context.SequenceType != PaymentMethodSequenceType.None
+        if (context.SequenceType != PaymentMethodSequenceTypes.None
             && (capability.SupportedSequenceTypes & context.SequenceType) != context.SequenceType)
         {
             return false;

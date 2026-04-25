@@ -25,7 +25,7 @@ public sealed class RoleCacheInvalidationHandlerTests
             RoleId: Guid.NewGuid(),
             Name: "TeamLead",
             PreviousName: "Manager",
-            MultiTenancySide: MultiTenancySide.Tenant,
+            MultiTenancySides: MultiTenancySides.Tenant,
             TenantId: Guid.NewGuid(),
             ClientId: null);
 
@@ -46,7 +46,7 @@ public sealed class RoleCacheInvalidationHandlerTests
             RoleId: Guid.NewGuid(),
             Name: "Manager",
             PreviousName: null,
-            MultiTenancySide: MultiTenancySide.Tenant,
+            MultiTenancySides: MultiTenancySides.Tenant,
             TenantId: Guid.NewGuid(),
             ClientId: null);
 
@@ -66,7 +66,7 @@ public sealed class RoleCacheInvalidationHandlerTests
         var @event = new RoleDeletedEvent(
             RoleId: Guid.NewGuid(),
             Name: "Disposable",
-            MultiTenancySide: MultiTenancySide.Both,
+            MultiTenancySides: MultiTenancySides.Both,
             TenantId: null,
             ClientId: null);
 

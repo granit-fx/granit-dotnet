@@ -19,21 +19,21 @@ internal sealed class InvoicingPermissionDefinitionProvider : IPermissionDefinit
         // can tighten these to Tenant-only in their own permission provider.
         group.AddPermission(InvoicingPermissions.Invoices.Read,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(InvoicingPermissions.Invoices.Create,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Create"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(InvoicingPermissions.Invoices.Manage,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(InvoicingPermissions.Invoices.Download,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.Invoices.Download"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(InvoicingPermissions.CreditNotes.Read,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.CreditNotes.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(InvoicingPermissions.CreditNotes.Manage,
             LocalizableString.Create<InvoicingEndpointsLocalizationResource>("Permission:Invoicing.CreditNotes.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

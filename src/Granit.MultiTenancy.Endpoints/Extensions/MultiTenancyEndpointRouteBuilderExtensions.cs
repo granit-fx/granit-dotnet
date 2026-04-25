@@ -37,15 +37,9 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
 
         RouteGroupBuilder tenantsGroup = group.MapGranitGroup("tenants");
 
-        // Note: Tenant listing is handled by Granit.QueryEngine. Consumers should register
-        // a query endpoint at the same prefix as the CRUD endpoints above, e.g.:
-        //   api.MapGranitQuery<Tenant>(
-        //       sp => sp.GetRequiredService<IQueryableSource<Tenant>>().GetQueryable(),
-        //       "multi-tenancy/tenants",
-        //       opts => opts.AuthorizationPolicy = MultiTenancyPermissions.Tenants.Read);
-        //
-        // This keeps Granit.MultiTenancy.Endpoints decoupled from EF Core and the query engine,
-        // while letting consumers customize the queryable source, projections, and authorization.
+        // Tenant listing is intentionally not mapped here — consumers register a Granit.QueryEngine
+        // endpoint at the same prefix to keep Granit.MultiTenancy.Endpoints decoupled from EF Core
+        // and the query engine. See the multi-tenancy module reference docs for the recipe.
         MapGetByIdEndpoint(tenantsGroup);
         MapCreateEndpoint(tenantsGroup);
         MapUpdateEndpoint(tenantsGroup);
