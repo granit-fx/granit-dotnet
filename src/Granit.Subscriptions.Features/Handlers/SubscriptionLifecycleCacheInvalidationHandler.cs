@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Features.Cache;
 using Granit.Features.Definitions;
 using Granit.Subscriptions.Events;
@@ -15,6 +16,7 @@ namespace Granit.Subscriptions.Features.Handlers;
 /// stale entries must be evicted immediately. Discovered by Wolverine's handler
 /// scanning convention: non-static public class with public static HandleAsync methods.
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class SubscriptionLifecycleCacheInvalidationHandler
 {
     /// <summary>Invalidates the feature cache when a subscription is suspended.</summary>

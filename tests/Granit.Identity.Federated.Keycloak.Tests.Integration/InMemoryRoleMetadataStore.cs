@@ -40,12 +40,10 @@ internal sealed class InMemoryRoleMetadataStore : IRoleMetadataStore
         return Task.CompletedTask;
     }
 
-    public Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default)
-    {
-        // The role is already tracked by reference — the sync calls Rename() on the
-        // existing instance before UpdateAsync(). Nothing else to do in the in-memory store.
-        return Task.CompletedTask;
-    }
+    // The role is already tracked by reference — the sync calls Rename() on the
+    // existing instance before UpdateAsync(). Nothing else to do in the in-memory store.
+    public Task UpdateAsync(RoleMetadata role, CancellationToken cancellationToken = default) =>
+        Task.CompletedTask;
 
     public Task RemoveAsync(RoleMetadata role, CancellationToken cancellationToken = default)
     {

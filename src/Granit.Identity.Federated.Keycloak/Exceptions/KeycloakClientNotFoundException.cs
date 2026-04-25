@@ -9,7 +9,7 @@ namespace Granit.Identity.Federated.Keycloak.Exceptions;
 /// Warning before skipping the client — a missing tracked client is not fatal (realm
 /// configuration drift, typo in <c>TrackedClientIds</c>).
 /// </remarks>
-internal sealed class KeycloakClientNotFoundException : Exception
+public sealed class KeycloakClientNotFoundException : Exception
 {
     public KeycloakClientNotFoundException(string clientId)
         : base($"Keycloak client '{clientId}' not found in the configured realm.")

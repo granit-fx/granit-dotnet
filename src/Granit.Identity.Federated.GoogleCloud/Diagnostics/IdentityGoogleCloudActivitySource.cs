@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.GoogleCloud.Diagnostics;
 internal static class IdentityGoogleCloudActivitySource
 {
     /// <summary>Activity source name.</summary>
-    public const string Name = "Granit.Identity.GoogleCloud";
+    public const string Name = "Granit.Identity.Federated.GoogleCloud";
 
     /// <summary>Shared activity source instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

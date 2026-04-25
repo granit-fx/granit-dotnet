@@ -62,7 +62,7 @@ public sealed class BffTokenInjectionMiddlewareTests
             Frontends = [Frontend("host", "http://localhost:5173")],
         };
 
-        HttpContext context = CreateContext(new Dictionary<string, string>());
+        HttpContext context = CreateContext([]);
 
         (BffFrontendOptions? frontend, string? sessionId) =
             BffTokenInjectionMiddleware.ResolveFrontendFromCookies(context, options);
@@ -352,7 +352,7 @@ public sealed class BffTokenInjectionMiddlewareTests
     // HMAC secret (observed as the "403 on /account/login" symptom when logging
     // in on the second frontend after logging in on the first).
 
-    public static IEnumerable<object?[]> MatrixCases()
+    public static TheoryData<string, string, string?, string?> MatrixCases()
     {
         const string HostUrl = "http://localhost:5173";
         const string AppUrl = "http://localhost:5174";
@@ -361,20 +361,23 @@ public sealed class BffTokenInjectionMiddlewareTests
         const string AppSession = "session-app-bbb";
 
         // Setup, origin, expectedFrontendName (null = must reject), expectedSession
-        // HOST-ONLY cookie
-        yield return ["host-only", HostUrl, "host", HostSession];
-        yield return ["host-only", AppUrl, null, null];         // cross-side → drop
-        yield return ["host-only", UnknownUrl, null, null];     // stranger origin → drop
+        return new TheoryData<string, string, string?, string?>
+        {
+            // HOST-ONLY cookie
+            { "host-only", HostUrl, "host", HostSession },
+            { "host-only", AppUrl, null, null },        // cross-side → drop
+            { "host-only", UnknownUrl, null, null },    // stranger origin → drop
 
-        // APP-ONLY cookie
-        yield return ["app-only", HostUrl, null, null];         // cross-side → drop
-        yield return ["app-only", AppUrl, "app", AppSession];
-        yield return ["app-only", UnknownUrl, null, null];      // stranger origin → drop
+            // APP-ONLY cookie
+            { "app-only", HostUrl, null, null },        // cross-side → drop
+            { "app-only", AppUrl, "app", AppSession },
+            { "app-only", UnknownUrl, null, null },     // stranger origin → drop
 
-        // BOTH cookies (the bug scenario after user logs in on both sides)
-        yield return ["both", HostUrl, "host", HostSession];
-        yield return ["both", AppUrl, "app", AppSession];
-        yield return ["both", UnknownUrl, null, null];          // stranger origin → drop
+            // BOTH cookies (the bug scenario after user logs in on both sides)
+            { "both", HostUrl, "host", HostSession },
+            { "both", AppUrl, "app", AppSession },
+            { "both", UnknownUrl, null, null },         // stranger origin → drop
+        };
     }
 
     [Theory]

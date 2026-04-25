@@ -102,9 +102,7 @@ public sealed class QueryableLookupSourceTests : IDisposable
     {
         public DbSet<Tenant> Tenants => Set<Tenant>();
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.Entity<Tenant>().HasKey(t => t.Id);
-        }
     }
 }

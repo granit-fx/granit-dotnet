@@ -29,6 +29,11 @@ public sealed class SensitiveValueMaskerTests
     [InlineData("UI:PageSize")]
     [InlineData("Feature:DarkMode")]
     [InlineData("Logging:Level")]
+    // Word-boundary anchors prevent benign names that contain a sensitive
+    // substring from being over-masked (audit trail loses signal otherwise).
+    [InlineData("UI:KeyboardLayout")]
+    [InlineData("Feature:TokenColor")]
+    [InlineData("Limits:KeyCount")]
     public void MaskIfSensitive_WithNonSensitiveSettingName_ReturnsOriginalValue(string settingName)
     {
         string? result = SensitiveValueMasker.MaskIfSensitive(settingName, "light");

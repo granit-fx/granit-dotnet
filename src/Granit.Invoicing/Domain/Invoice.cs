@@ -1,5 +1,4 @@
 using Granit.Domain;
-using Granit.Invoicing.Abstractions.Events;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.Events;
 using Granit.Workflow.Domain;

@@ -377,13 +377,11 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
                 $"Phase '{phase.Id}' belongs to subscription '{phase.SubscriptionId}', not '{Id}'.");
         }
 
-        foreach (SubscriptionPhase existing in _phases)
+        SubscriptionPhase? overlapping = _phases.FirstOrDefault(existing => Overlaps(existing, phase));
+        if (overlapping is not null)
         {
-            if (Overlaps(existing, phase))
-            {
-                throw new InvalidOperationException(
-                    $"Phase [{phase.StartDate:O}, {phase.EndDate?.ToString("O") ?? "∞"}) overlaps existing phase '{existing.Id}'.");
-            }
+            throw new InvalidOperationException(
+                $"Phase [{phase.StartDate:O}, {phase.EndDate?.ToString("O") ?? "∞"}) overlaps existing phase '{overlapping.Id}'.");
         }
 
         _phases.Add(phase);

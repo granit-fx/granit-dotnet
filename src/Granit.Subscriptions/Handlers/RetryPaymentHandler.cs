@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Commands;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
@@ -11,6 +12,7 @@ namespace Granit.Subscriptions.Handlers;
 /// <see cref="InitiatePaymentCommand"/> from the retry payload and sends it via
 /// <see cref="ICommandSender"/>.
 /// </summary>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed partial class RetryPaymentHandler
 {
     public static async Task HandleAsync(

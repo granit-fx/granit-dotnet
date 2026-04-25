@@ -63,13 +63,20 @@ public sealed class GranitSecurityHeadersOptions
 
     /// <summary>
     /// Sets <c>Content-Security-Policy</c> header.
-    /// Default: <c>null</c> (not set — CSP is highly application-specific).
+    /// Default: API-grade strict CSP suitable for any JSON-only endpoint.
     /// </summary>
     /// <remarks>
-    /// CSP should be configured per application. The BFF module sets
-    /// <c>frame-ancestors 'none'</c> on login/callback routes independently.
+    /// <para>
+    /// <c>default-src 'none'; frame-ancestors 'none'; base-uri 'none'</c> is safe
+    /// for <c>application/json</c> responses: no scripts, no embeddable content,
+    /// no relative URL hijacking. BFF / SPA hosts that serve HTML must override
+    /// with a stricter CSP that includes <c>script-src</c> rules and a nonce
+    /// injection middleware.
+    /// </para>
+    /// <para>Set to <c>null</c> to omit the header entirely (not recommended).</para>
     /// </remarks>
-    public string? ContentSecurityPolicy { get; set; }
+    public string? ContentSecurityPolicy { get; set; } =
+        "default-src 'none'; frame-ancestors 'none'; base-uri 'none'";
 
     // -------------------------------------------------------------------------
     // HSTS (HTTP Strict Transport Security)

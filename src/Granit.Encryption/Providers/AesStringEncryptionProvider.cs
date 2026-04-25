@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Granit.Encryption;
 using Granit.Encryption.Options;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -49,6 +50,7 @@ public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvi
 
     public AesStringEncryptionProvider(
         IOptions<StringEncryptionOptions> options,
+        IHostEnvironment environment,
         ILogger<AesStringEncryptionProvider> logger)
     {
         StringEncryptionOptions opts = options.Value;
@@ -62,6 +64,16 @@ public sealed partial class AesStringEncryptionProvider : IStringEncryptionProvi
                     "Encryption:PassPhrase is required. " +
                     "Configure a stable passphrase via Vault for production use, " +
                     "or set Encryption:AllowEphemeralPassPhrase to true for development.");
+            }
+
+            // Ephemeral passphrases cause permanent data loss on restart — refuse outside Development.
+            if (!environment.IsDevelopment())
+            {
+                throw new InvalidOperationException(
+                    "Encryption:AllowEphemeralPassPhrase is forbidden outside the Development environment " +
+                    $"(current: '{environment.EnvironmentName}'). " +
+                    "An ephemeral passphrase is regenerated at every process start, which would render all " +
+                    "previously encrypted data unrecoverable. Configure Encryption:PassPhrase via Vault.");
             }
 
             passPhrase = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));

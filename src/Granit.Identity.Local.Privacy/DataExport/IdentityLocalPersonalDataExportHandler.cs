@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Privacy.BlobStorage;
 using Granit.Privacy.DataExport.Events;
 
@@ -12,6 +13,7 @@ namespace Granit.Identity.Local.Privacy.DataExport;
 /// needed. Must be a <c>public class</c> (non-static) with a <c>public static Handle*</c>
 /// method so Wolverine picks it up without a <c>[WolverineHandler]</c> attribute dependency.
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class IdentityLocalPersonalDataExportHandler
 {
     public static Task HandleAsync(

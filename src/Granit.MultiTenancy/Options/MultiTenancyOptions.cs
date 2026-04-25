@@ -6,17 +6,19 @@ namespace Granit.MultiTenancy.Options;
 public enum TenantHeaderTrustMode
 {
     /// <summary>
-    /// Header is accepted without cross-validation (default, backward-compatible).
-    /// Use behind a BFF or reverse proxy that sets the header from authenticated context.
-    /// </summary>
-    Unrestricted,
-
-    /// <summary>
     /// When the user is authenticated and has a <c>tenant_id</c> JWT claim,
     /// the resolved tenant must match the claim. Mismatches return 403 Forbidden.
-    /// Prevents spoofing via <c>X-Tenant-Id</c> header tampering.
+    /// Prevents spoofing via <c>X-Tenant-Id</c> header tampering. Default since
+    /// the framework's secure-by-default tenant-isolation hardening.
     /// </summary>
     CrossValidate,
+
+    /// <summary>
+    /// Header is accepted without cross-validation. Only safe behind a fully
+    /// trusted reverse proxy (BFF) that scrubs the header from external traffic
+    /// and re-emits it from the authenticated session.
+    /// </summary>
+    Unrestricted,
 }
 
 /// <summary>
@@ -47,11 +49,12 @@ public sealed class MultiTenancyOptions
 
     /// <summary>
     /// Controls how the tenant header is validated against JWT claims.
-    /// Default: <see cref="TenantHeaderTrustMode.Unrestricted"/> (backward-compatible).
-    /// Set to <see cref="TenantHeaderTrustMode.CrossValidate"/> for environments where
-    /// the header may be attacker-controlled (no trusted reverse proxy).
+    /// Default: <see cref="TenantHeaderTrustMode.CrossValidate"/> — secure-by-default.
+    /// Authenticated callers cannot pivot tenants via the <c>X-Tenant-Id</c> header.
+    /// Set to <see cref="TenantHeaderTrustMode.Unrestricted"/> only for deployments
+    /// that fully trust their reverse proxy to scrub and re-emit the header.
     /// </summary>
-    public TenantHeaderTrustMode HeaderTrustMode { get; set; } = TenantHeaderTrustMode.Unrestricted;
+    public TenantHeaderTrustMode HeaderTrustMode { get; set; } = TenantHeaderTrustMode.CrossValidate;
 
     /// <summary>
     /// Domain template for subdomain-based tenant resolution.

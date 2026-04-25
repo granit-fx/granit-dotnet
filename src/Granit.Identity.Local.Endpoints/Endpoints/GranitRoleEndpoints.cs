@@ -58,7 +58,6 @@ internal static class GranitRoleEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces<RoleResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(IdentityLocalPermissions.Roles.Manage);
 
         group.MapPut("/{id:guid}", RenameAsync)
@@ -69,7 +68,6 @@ internal static class GranitRoleEndpoints
             .Produces<RoleResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(IdentityLocalPermissions.Roles.Manage);
 
         group.MapDelete("/{id:guid}", DeleteAsync)
@@ -79,7 +77,6 @@ internal static class GranitRoleEndpoints
             .WithMetadata(new IdempotentAttribute { Required = false })
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status403Forbidden)
             .RequireAuthorization(IdentityLocalPermissions.Roles.Delete);
 
         return group;

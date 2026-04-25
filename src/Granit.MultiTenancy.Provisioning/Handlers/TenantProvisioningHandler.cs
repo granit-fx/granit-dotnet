@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.MultiTenancy.Events;
 using Granit.Persistence.EntityFrameworkCore.Hosting;
 
@@ -23,6 +24,7 @@ namespace Granit.MultiTenancy.Provisioning.Handlers;
 /// this message without side effects.
 /// </para>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class TenantProvisioningHandler
 {
     /// <summary>

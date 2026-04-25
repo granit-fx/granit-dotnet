@@ -7793,7 +7793,7 @@
       "kind": "record",
       "project": "Granit.Bff",
       "file": "src/Granit.Bff/BffTokenSet.cs",
-      "line": 8,
+      "line": 19,
       "members": []
     },
     {
@@ -11915,7 +11915,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Handlers/ExecuteExportCommandHandler.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
@@ -11931,7 +11931,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Handlers/ExecuteImportCommandHandler.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
@@ -14623,7 +14623,7 @@
       "kind": "class",
       "project": "Granit.Encryption",
       "file": "src/Granit.Encryption/Providers/AesStringEncryptionProvider.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "ProviderName",
@@ -17682,6 +17682,12 @@
           "returnType": "string?"
         },
         {
+          "name": "EnableHsts",
+          "kind": "property",
+          "signature": "bool EnableHsts",
+          "returnType": "bool"
+        },
+        {
           "name": "HstsMaxAgeSeconds",
           "kind": "property",
           "signature": "int HstsMaxAgeSeconds",
@@ -18174,7 +18180,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Cognito.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Jobs/CognitoClientRoleSyncHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -18421,7 +18427,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -18438,6 +18444,15 @@
       "project": "Granit.Identity.Federated.EntraId.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.EntraId.BackgroundJobs/Jobs/EntraIdClientRoleSyncJob.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "EntraIdClientNotFoundException",
+      "fqn": "Granit.Identity.Federated.EntraId.Exceptions.EntraIdClientNotFoundException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.EntraId",
+      "file": "src/Granit.Identity.Federated.EntraId/Exceptions/EntraIdClientNotFoundException.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -18761,7 +18776,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -18778,6 +18793,24 @@
       "project": "Granit.Identity.Federated.Keycloak.BackgroundJobs",
       "file": "src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Jobs/KeycloakClientRoleSyncJob.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "KeycloakClientNotFoundException",
+      "fqn": "Granit.Identity.Federated.Keycloak.Exceptions.KeycloakClientNotFoundException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Exceptions/KeycloakClientNotFoundException.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "KeycloakTokenExchangeRateLimitedException",
+      "fqn": "Granit.Identity.Federated.Keycloak.Exceptions.KeycloakTokenExchangeRateLimitedException",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Keycloak",
+      "file": "src/Granit.Identity.Federated.Keycloak/Exceptions/KeycloakTokenExchangeRateLimitedException.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -18952,7 +18985,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated.Privacy",
       "file": "src/Granit.Identity.Federated.Privacy/DataExport/IdentityFederatedPersonalDataExportHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -20867,7 +20900,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local.Privacy",
       "file": "src/Granit.Identity.Local.Privacy/DataExport/IdentityLocalPersonalDataExportHandler.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "HandleAsync",
@@ -21876,69 +21909,6 @@
       "members": []
     },
     {
-      "name": "CreditNoteIssuedEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.CreditNoteIssuedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceFinalizedEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceFinalizedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "InvoiceOverdueEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceOverdueEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoicePaidEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.InvoicePaidEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceUncollectibleEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceUncollectibleEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "InvoiceVoidedEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.InvoiceVoidedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "OverpaymentDetectedEto",
-      "fqn": "Granit.Invoicing.Abstractions.Events.OverpaymentDetectedEto",
-      "kind": "record",
-      "project": "Granit.Invoicing.Abstractions",
-      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
-      "line": 9,
-      "members": []
-    },
-    {
       "name": "GranitInvoicingBackgroundJobsModule",
       "fqn": "Granit.Invoicing.BackgroundJobs.GranitInvoicingBackgroundJobsModule",
       "kind": "class",
@@ -22108,7 +22078,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/Invoice.cs",
-      "line": 29,
+      "line": 28,
       "members": [
         {
           "name": "Create",
@@ -22534,12 +22504,75 @@
       "members": []
     },
     {
+      "name": "CreditNoteIssuedEto",
+      "fqn": "Granit.Invoicing.Events.CreditNoteIssuedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/CreditNoteIssuedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "InvoiceCreatedEvent",
       "fqn": "Granit.Invoicing.Events.InvoiceCreatedEvent",
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Events/InvoiceCreatedEvent.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceFinalizedEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceFinalizedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceFinalizedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "InvoiceOverdueEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceOverdueEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceOverdueEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoicePaidEto",
+      "fqn": "Granit.Invoicing.Events.InvoicePaidEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoicePaidEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceUncollectibleEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceUncollectibleEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceUncollectibleEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "InvoiceVoidedEto",
+      "fqn": "Granit.Invoicing.Events.InvoiceVoidedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/InvoiceVoidedEto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "OverpaymentDetectedEto",
+      "fqn": "Granit.Invoicing.Events.OverpaymentDetectedEto",
+      "kind": "record",
+      "project": "Granit.Invoicing.Abstractions",
+      "file": "src/Granit.Invoicing.Abstractions/Events/OverpaymentDetectedEto.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -25648,7 +25681,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -25746,7 +25779,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Options/MultiTenancyOptions.cs",
-      "line": 25,
+      "line": 27,
       "members": [
         {
           "name": "IsEnabled",
@@ -25848,7 +25881,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy.Provisioning",
       "file": "src/Granit.MultiTenancy.Provisioning/Handlers/TenantProvisioningHandler.cs",
-      "line": 26,
+      "line": 28,
       "members": [
         {
           "name": "HandleAsync",
@@ -27976,7 +28009,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Privacy",
       "file": "src/Granit.Notifications.Privacy/DataExport/NotificationsPersonalDataExportHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -30383,7 +30416,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Options/GranitOpenIddictOptions.cs",
-      "line": 109,
+      "line": 127,
       "members": [
         {
           "name": "WithFapi2Profile",
@@ -31792,7 +31825,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Handlers/InitiatePaymentCommandHandler.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "HandleAsync",
@@ -31824,7 +31857,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Handlers/RequestRefundCommandHandler.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "HandleAsync",
@@ -33860,7 +33893,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore.Migrations",
       "file": "src/Granit.Persistence.EntityFrameworkCore.Migrations/Handlers/RunMigrationBatchHandler.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "HandleAsync",
@@ -34682,6 +34715,15 @@
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
       "line": 34,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportSizeLimitExceededException",
+      "fqn": "Granit.Privacy.BlobStorage.DataExport.Internal.PrivacyExportSizeLimitExceededException",
+      "kind": "class",
+      "project": "Granit.Privacy.BlobStorage",
+      "file": "src/Granit.Privacy.BlobStorage/DataExport/Internal/CountingStream.cs",
+      "line": 100,
       "members": []
     },
     {
@@ -40879,7 +40921,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Features",
       "file": "src/Granit.Subscriptions.Features/Handlers/SubscriptionLifecycleCacheInvalidationHandler.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "HandleAsync",
@@ -40971,7 +41013,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Handlers/PaymentFailedHandler.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "HandleAsync",
@@ -40987,7 +41029,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Handlers/RetryPaymentHandler.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "HandleAsync",
@@ -45957,7 +45999,7 @@
       "kind": "record",
       "project": "Granit.Vault",
       "file": "src/Granit.Vault/SecretDescriptor.cs",
-      "line": 22,
+      "line": 32,
       "members": [
         {
           "name": "Name",

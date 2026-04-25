@@ -1,9 +1,20 @@
+using Granit.Caching;
+
 namespace Granit.Bff;
 
 /// <summary>
 /// Represents a set of OIDC tokens stored server-side for a BFF session.
 /// Tokens never leave the server — the browser only holds a session cookie.
 /// </summary>
+/// <remarks>
+/// SECURITY: <see cref="CacheEncryptedAttribute"/> forces AES-256-GCM encryption
+/// of the cached payload regardless of the global
+/// <see cref="Granit.Caching.Options.CachingOptions.EncryptValues"/> setting.
+/// This protects access tokens, refresh tokens, ID tokens, and the DPoP
+/// private key from any read-side breach of the L2 cache (Redis snapshot,
+/// AOF leak, ACL bypass).
+/// </remarks>
+[CacheEncrypted]
 #pragma warning disable GRSEC003 // Record contains token properties — stored server-side only
 public sealed record BffTokenSet(
     string AccessToken,

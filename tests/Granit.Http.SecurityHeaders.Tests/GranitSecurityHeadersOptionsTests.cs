@@ -38,8 +38,9 @@ public sealed class GranitSecurityHeadersOptionsTests
                        "accelerometer=(), gyroscope=(), magnetometer=(), usb=()");
 
     [Fact]
-    public void ContentSecurityPolicy_DefaultsToNull() =>
-        new GranitSecurityHeadersOptions().ContentSecurityPolicy.ShouldBeNull();
+    public void ContentSecurityPolicy_DefaultsToApiGradeStrictPolicy() =>
+        new GranitSecurityHeadersOptions().ContentSecurityPolicy
+            .ShouldBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
 
     [Fact]
     public void EnableHsts_DefaultsToTrue() =>

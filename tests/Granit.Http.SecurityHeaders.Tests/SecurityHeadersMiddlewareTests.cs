@@ -33,14 +33,27 @@ public sealed class SecurityHeadersMiddlewareTests
     }
 
     [Fact]
-    public async Task Middleware_OmitsContentSecurityPolicy_WhenNull()
+    public async Task Middleware_OmitsContentSecurityPolicy_WhenExplicitlyNull()
+    {
+        DefaultHttpContext context = new();
+        SecurityHeadersMiddleware middleware = CreateMiddleware(opts =>
+            opts.ContentSecurityPolicy = null);
+
+        await middleware.InvokeAsync(context);
+
+        context.Response.Headers.ContainsKey("Content-Security-Policy").ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task Middleware_AddsApiGradeContentSecurityPolicy_ByDefault()
     {
         DefaultHttpContext context = new();
         SecurityHeadersMiddleware middleware = CreateMiddleware();
 
         await middleware.InvokeAsync(context);
 
-        context.Response.Headers.ContainsKey("Content-Security-Policy").ShouldBeFalse();
+        context.Response.Headers.ContentSecurityPolicy.ToString()
+            .ShouldBe("default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
     }
 
     [Fact]

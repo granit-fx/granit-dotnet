@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Granit.Identity.Federated.Keycloak.Diagnostics;
 
 /// <summary>
-/// Central <see cref="ActivitySource"/> for Granit.Identity.Keycloak distributed tracing.
+/// Central <see cref="ActivitySource"/> for Granit.Identity.Federated.Keycloak distributed tracing.
 /// </summary>
 /// <remarks>
 /// Register this source in the OpenTelemetry tracer provider (via
@@ -15,8 +15,8 @@ namespace Granit.Identity.Federated.Keycloak.Diagnostics;
 /// </remarks>
 internal static class IdentityKeycloakActivitySource
 {
-    /// <summary>The name of the Granit.Identity.Keycloak <see cref="ActivitySource"/>.</summary>
-    internal const string Name = "Granit.Identity.Keycloak";
+    /// <summary>The name of the Granit.Identity.Federated.Keycloak <see cref="ActivitySource"/>.</summary>
+    internal const string Name = "Granit.Identity.Federated.Keycloak";
 
     /// <summary>The singleton <see cref="ActivitySource"/> instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

@@ -1,6 +1,6 @@
 using Granit.Events;
 
-namespace Granit.Invoicing.Abstractions.Events;
+namespace Granit.Invoicing.Events;
 
 /// <summary>Published when an invoice is fully paid.</summary>
 public sealed record InvoicePaidEto(

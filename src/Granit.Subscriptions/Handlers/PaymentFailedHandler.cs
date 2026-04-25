@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.MultiTenancy;
 using Granit.Payments.Events;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ namespace Granit.Subscriptions.Handlers;
 /// <summary>
 /// Dunning entry point. Delegates to <see cref="IDunningService"/> for payment failure processing.
 /// </summary>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public partial class PaymentFailedHandler
 {
     public static async Task HandleAsync(

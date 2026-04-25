@@ -41,8 +41,5 @@ public sealed class PermissionCheckerCacheTagTests
     }
 
     [Fact]
-    public void RoleTag_FormatStable()
-    {
-        PermissionChecker.RoleTag("X").ShouldBe("role:X");
-    }
+    public void RoleTag_FormatStable() => PermissionChecker.RoleTag("X").ShouldBe("role:X");
 }

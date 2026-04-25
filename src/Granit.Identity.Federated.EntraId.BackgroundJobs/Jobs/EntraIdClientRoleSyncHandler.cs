@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Identity.Federated.EntraId.Sync;
 
 namespace Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs;
@@ -7,6 +8,7 @@ namespace Granit.Identity.Federated.EntraId.BackgroundJobs.Jobs;
 /// <c>EntraIdClientRoleSyncService.SyncAsync</c> — the same code path invoked at
 /// host boot by <c>EntraIdClientRoleSyncContributor</c>.
 /// </summary>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public class EntraIdClientRoleSyncHandler
 {
     public static Task HandleAsync(

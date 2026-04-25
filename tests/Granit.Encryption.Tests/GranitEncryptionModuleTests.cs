@@ -24,12 +24,15 @@ public sealed class GranitEncryptionModuleTests : IDisposable
 
     public GranitEncryptionModuleTests()
     {
-        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(null);
+        HostApplicationBuilder builder = Host.CreateEmptyApplicationBuilder(
+            new HostApplicationBuilderSettings { EnvironmentName = Environments.Development });
         builder.Services.AddMetrics();
         builder.Services.AddLogging();
         builder.Services.AddSingleton(TimeProvider.System);
 
-        // Allow ephemeral passphrase so AES provider works without Vault
+        // Allow ephemeral passphrase so AES provider works without Vault.
+        // Combined with the Development environment above, this passes the
+        // production guard introduced in AesStringEncryptionProvider.
         builder.Services.Configure<StringEncryptionOptions>(opts =>
             opts.AllowEphemeralPassPhrase = true);
 

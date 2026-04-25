@@ -40,8 +40,13 @@ internal static partial class SensitiveValueMasker
         return value;
     }
 
+    // Negative lookahead `(?![a-z])` prevents over-masking on words that
+    // happen to start with a sensitive token (e.g. "KeyboardLayout" — `Key`
+    // followed by `b` rejects the match). PascalCase suffixes such as
+    // "ClientSecret" or "ApiKey" still match because the trailing lookahead
+    // is satisfied by end-of-string or by the next non-lowercase character.
     [GeneratedRegex(
-        @"(Password|Secret|Key|Token|Credential|ConnectionString|ApiKey|PrivateKey|SigningKey|HmacKey|EncryptionKey)",
+        @"(Password|Pwd|Secret|Token|Credential|ConnectionString|ConnString|ApiKey|PrivateKey|PublicKey|SigningKey|HmacKey|EncryptionKey|Bearer|Authorization|AccessKey|SharedAccessKey|SasToken|Key)(?![a-z])",
         RegexOptions.IgnoreCase,
         matchTimeoutMilliseconds: 100)]
     private static partial Regex SensitiveNamePattern();

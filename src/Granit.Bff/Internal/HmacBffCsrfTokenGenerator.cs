@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Granit.Bff.Options;
 using Granit.Timing;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -21,10 +22,15 @@ namespace Granit.Bff.Internal;
 internal sealed partial class HmacBffCsrfTokenGenerator(
     IClock clock,
     IOptions<GranitBffOptions> options,
+    IHostEnvironment environment,
     ILogger<HmacBffCsrfTokenGenerator> logger) : IBffCsrfTokenGenerator
 {
-    private static readonly TimeSpan ValidationWindow = TimeSpan.FromHours(24);
-    private readonly byte[] _key = ResolveKey(options.Value, logger);
+    // Validation window kept short (1h) to limit replay surface from leaked tokens
+    // (referer headers, browser caches, dev tools). Future timestamps are rejected
+    // outright with a small clock-skew tolerance.
+    private static readonly TimeSpan ValidationWindow = TimeSpan.FromHours(1);
+    private static readonly TimeSpan ClockSkew = TimeSpan.FromSeconds(60);
+    private readonly byte[] _key = ResolveKey(options.Value, environment, logger);
 
     public string Generate(string sessionId)
     {
@@ -56,9 +62,11 @@ internal sealed partial class HmacBffCsrfTokenGenerator(
             return false;
         }
 
-        // Check timestamp is within the validation window
+        // Reject expired tokens (older than ValidationWindow) and future-dated tokens
+        // beyond clock-skew tolerance — both indicate forgery or significant drift.
         long nowSeconds = clock.Now.ToUnixTimeSeconds();
-        if (Math.Abs(nowSeconds - timestamp) > (long)ValidationWindow.TotalSeconds)
+        long age = nowSeconds - timestamp;
+        if (age > (long)ValidationWindow.TotalSeconds || age < -(long)ClockSkew.TotalSeconds)
         {
             return false;
         }
@@ -78,11 +86,23 @@ internal sealed partial class HmacBffCsrfTokenGenerator(
         return Convert.ToHexStringLower(hash);
     }
 
-    private static byte[] ResolveKey(GranitBffOptions bffOptions, ILogger logger)
+    private static byte[] ResolveKey(GranitBffOptions bffOptions, IHostEnvironment environment, ILogger logger)
     {
         if (!string.IsNullOrEmpty(bffOptions.CsrfHmacKey))
         {
             return Convert.FromBase64String(bffOptions.CsrfHmacKey);
+        }
+
+        // Auto-generated keys are per-instance: tokens minted on instance A are
+        // rejected by instance B, breaking sessions silently in any multi-replica
+        // deployment. Refuse outside Development.
+        if (!environment.IsDevelopment())
+        {
+            throw new InvalidOperationException(
+                "Bff:CsrfHmacKey is required outside the Development environment "
+                + $"(current: '{environment.EnvironmentName}'). Without a shared key, multi-instance "
+                + "deployments cannot validate each other's CSRF tokens. Generate one with "
+                + "Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)) and store it in Vault.");
         }
 
         LogCsrfKeyGenerated(logger);

@@ -5,8 +5,10 @@
 using Granit.Encryption;
 using Granit.Encryption.Options;
 using Granit.Encryption.Providers;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -14,7 +16,16 @@ namespace Granit.Encryption.Tests;
 
 public sealed class AesStringEncryptionProviderTests
 {
-    private static AesStringEncryptionProvider CreateProvider(string passPhrase = "P@ssw0rdVaultSecret!ISO270012026")
+    private static IHostEnvironment DevEnvironment()
+    {
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns("Development");
+        return env;
+    }
+
+    private static AesStringEncryptionProvider CreateProvider(
+        string passPhrase = "P@ssw0rdVaultSecret!ISO270012026",
+        IHostEnvironment? environment = null)
     {
         IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
         {
@@ -23,7 +34,10 @@ public sealed class AesStringEncryptionProviderTests
             ProviderName = StringEncryptionOptions.AesProviderName
         });
 
-        return new AesStringEncryptionProvider(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        return new AesStringEncryptionProvider(
+            options,
+            environment ?? DevEnvironment(),
+            NullLogger<AesStringEncryptionProvider>.Instance);
     }
 
     [Fact]
@@ -141,7 +155,7 @@ public sealed class AesStringEncryptionProviderTests
             AllowEphemeralPassPhrase = true
         });
 
-        AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider = new(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         string cipherText = provider.Encrypt("ephemeral empty test");
         provider.Decrypt(cipherText).ShouldBe("ephemeral empty test");
@@ -168,7 +182,7 @@ public sealed class AesStringEncryptionProviderTests
             AllowEphemeralPassPhrase = true
         });
 
-        AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider = new(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         string cipherText = provider.Encrypt("ephemeral test");
         provider.Decrypt(cipherText).ShouldBe("ephemeral test");
@@ -240,7 +254,7 @@ public sealed class AesStringEncryptionProviderTests
             KeySize = 128,
             ProviderName = StringEncryptionOptions.AesProviderName
         });
-        AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider = new(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         string cipherText = provider.Encrypt("hello 128-bit");
         string? decrypted = provider.Decrypt(cipherText);
@@ -257,7 +271,7 @@ public sealed class AesStringEncryptionProviderTests
             KeySize = 192,
             ProviderName = StringEncryptionOptions.AesProviderName
         });
-        AesStringEncryptionProvider provider = new(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider = new(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         string cipherText = provider.Encrypt("hello 192-bit");
         string? decrypted = provider.Decrypt(cipherText);
@@ -279,8 +293,8 @@ public sealed class AesStringEncryptionProviderTests
             KeySize = 128
         });
 
-        AesStringEncryptionProvider provider256 = new(options256, NullLogger<AesStringEncryptionProvider>.Instance);
-        AesStringEncryptionProvider provider128 = new(options128, NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider256 = new(options256, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
+        AesStringEncryptionProvider provider128 = new(options128, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         string cipherText = provider256.Encrypt("cross-key test");
         string? result = provider128.Decrypt(cipherText);
@@ -299,9 +313,25 @@ public sealed class AesStringEncryptionProviderTests
             AllowEphemeralPassPhrase = false
         });
 
-        Action act = () => _ = new AesStringEncryptionProvider(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        Action act = () => _ = new AesStringEncryptionProvider(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         Should.Throw<InvalidOperationException>(act).Message.ShouldContain("PassPhrase");
+    }
+
+    [Fact]
+    public void Constructor_EphemeralPassPhrase_OutsideDevelopment_Throws_InvalidOperationException()
+    {
+        IOptions<StringEncryptionOptions> options = Microsoft.Extensions.Options.Options.Create(new StringEncryptionOptions
+        {
+            PassPhrase = string.Empty,
+            AllowEphemeralPassPhrase = true,
+        });
+        IHostEnvironment env = Substitute.For<IHostEnvironment>();
+        env.EnvironmentName.Returns("Production");
+
+        Action act = () => _ = new AesStringEncryptionProvider(options, env, NullLogger<AesStringEncryptionProvider>.Instance);
+
+        Should.Throw<InvalidOperationException>(act).Message.ShouldContain("Development");
     }
 
     [Theory]
@@ -317,7 +347,7 @@ public sealed class AesStringEncryptionProviderTests
             KeySize = keySize
         });
 
-        Action act = () => _ = new AesStringEncryptionProvider(options, NullLogger<AesStringEncryptionProvider>.Instance);
+        Action act = () => _ = new AesStringEncryptionProvider(options, DevEnvironment(), NullLogger<AesStringEncryptionProvider>.Instance);
 
         Should.Throw<ArgumentException>(act).Message.ShouldContain(keySize.ToString());
     }

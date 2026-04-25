@@ -21,30 +21,15 @@ internal sealed class SortedTagsDocumentTransformer : IOpenApiDocumentTransforme
             return Task.CompletedTask;
         }
 
-        HashSet<string> names = [];
-        foreach (OpenApiPathItem path in document.Paths.Values)
-        {
-            if (path.Operations is null)
-            {
-                continue;
-            }
-
-            foreach (OpenApiOperation operation in path.Operations.Values)
-            {
-                if (operation.Tags is null)
-                {
-                    continue;
-                }
-
-                foreach (OpenApiTagReference reference in operation.Tags)
-                {
-                    if (!string.IsNullOrEmpty(reference.Name))
-                    {
-                        names.Add(reference.Name);
-                    }
-                }
-            }
-        }
+        HashSet<string> names = new(
+            document.Paths.Values
+                .Where(path => path.Operations is not null)
+                .SelectMany(path => path.Operations!.Values)
+                .Where(operation => operation.Tags is not null)
+                .SelectMany(operation => operation.Tags!)
+                .Select(reference => reference.Name)
+                .Where(name => !string.IsNullOrEmpty(name))!,
+            StringComparer.Ordinal);
 
         if (names.Count == 0)
         {

@@ -1,6 +1,7 @@
 using Granit.Bff.Internal;
 using Granit.Bff.Options;
 using Granit.Timing;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using NSubstitute;
@@ -17,9 +18,12 @@ public sealed class HmacBffCsrfTokenGeneratorTests
     public HmacBffCsrfTokenGeneratorTests()
     {
         _clock.Now.Returns(DateTimeOffset.UtcNow);
+        IHostEnvironment environment = Substitute.For<IHostEnvironment>();
+        environment.EnvironmentName.Returns("Development");
         _generator = new HmacBffCsrfTokenGenerator(
             _clock,
             Microsoft.Extensions.Options.Options.Create(new GranitBffOptions()),
+            environment,
             NullLogger<HmacBffCsrfTokenGenerator>.Instance);
     }
 
@@ -77,11 +81,13 @@ public sealed class HmacBffCsrfTokenGeneratorTests
     [Fact]
     public void Validate_ReturnsFalse_ForExpiredToken()
     {
-        DateTimeOffset pastTime = DateTimeOffset.UtcNow.AddHours(-25);
-        _clock.Now.Returns(pastTime);
+        // Validation window is 1 hour. Generate the token 90 minutes in the past
+        // and re-validate "now" — must be rejected as expired.
+        var now = new DateTimeOffset(2026, 3, 22, 12, 0, 0, TimeSpan.Zero);
+        _clock.Now.Returns(now.AddMinutes(-90));
         string token = _generator.Generate("session-123");
 
-        _clock.Now.Returns(DateTimeOffset.UtcNow);
+        _clock.Now.Returns(now);
         bool result = _generator.Validate("session-123", token);
 
         result.ShouldBeFalse();
@@ -94,11 +100,26 @@ public sealed class HmacBffCsrfTokenGeneratorTests
         _clock.Now.Returns(now);
         string token = _generator.Generate("session-123");
 
-        // Move clock forward 23 hours (still within 24h window)
-        _clock.Now.Returns(now.AddHours(23));
+        // Move clock forward 50 minutes (still within the 1-hour window)
+        _clock.Now.Returns(now.AddMinutes(50));
         bool result = _generator.Validate("session-123", token);
 
         result.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void Validate_ReturnsFalse_ForFutureTokenBeyondClockSkew()
+    {
+        // Future-dated tokens beyond the 60s clock-skew tolerance must be rejected
+        // outright — significant skew is more likely forgery than time drift.
+        var now = new DateTimeOffset(2026, 3, 22, 12, 0, 0, TimeSpan.Zero);
+        _clock.Now.Returns(now.AddMinutes(5));
+        string token = _generator.Generate("session-123");
+
+        _clock.Now.Returns(now);
+        bool result = _generator.Validate("session-123", token);
+
+        result.ShouldBeFalse();
     }
 
     [Fact]

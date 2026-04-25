@@ -44,17 +44,7 @@ internal sealed class ValidationErrorsSanitizer(SensitivePropertyRegistry? regis
         // (common case for non-PII endpoints), and avoids the ordering bug
         // where a sensitive key found after non-sensitive keys would leave the
         // earlier ones out of the rebuilt dictionary.
-        bool hasSensitive = false;
-        foreach (string key in errors.Keys)
-        {
-            if (IsPathSensitive(key))
-            {
-                hasSensitive = true;
-                break;
-            }
-        }
-
-        if (!hasSensitive)
+        if (!errors.Keys.Any(IsPathSensitive))
         {
             return errors;
         }
@@ -89,21 +79,6 @@ internal sealed class ValidationErrorsSanitizer(SensitivePropertyRegistry? regis
         return false;
     }
 
-    private static bool IsPurelyNumeric(string segment)
-    {
-        if (segment.Length == 0)
-        {
-            return false;
-        }
-
-        foreach (char c in segment)
-        {
-            if (c is < '0' or > '9')
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static bool IsPurelyNumeric(string segment) =>
+        segment.Length > 0 && segment.All(c => c is >= '0' and <= '9');
 }

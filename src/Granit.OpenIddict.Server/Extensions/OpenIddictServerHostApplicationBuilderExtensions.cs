@@ -102,8 +102,20 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             }
 
             // ──── Signing & encryption ────
-            // Development keys — host application MUST replace with production keys
-            // via options.AddSigningCertificate() / options.AddEncryptionCertificate()
+            // Ephemeral keys: regenerated at every process start. Only allowed in
+            // Development OR when explicitly opted in via AllowEphemeralKeys = true
+            // (typically for unit tests). Production deployments MUST replace with
+            // options.AddSigningCertificate() / options.AddEncryptionCertificate()
+            // or load keys from Vault via Granit.Vault.HashiCorp.
+            bool ephemeralAllowed = builder.Environment.IsDevelopment()
+                || granitOptions.AllowEphemeralKeys;
+            if (!ephemeralAllowed)
+            {
+                throw new InvalidOperationException(
+                    "OpenIddict ephemeral signing/encryption keys are forbidden outside Development. " +
+                    "Configure persistent keys (AddSigningCertificate / AddEncryptionCertificate) " +
+                    "or set GranitOpenIddictOptions.AllowEphemeralKeys = true at your own risk.");
+            }
             options
                 .AddEphemeralEncryptionKey()
                 .AddEphemeralSigningKey();

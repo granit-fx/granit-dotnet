@@ -5,19 +5,19 @@
       "AWSSDK.KeyManagementService": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.12",
-        "contentHash": "x3KLGksdIgy0IJgohXpPda00gcZ/PORhR2A1RRLVRe+SBWu2AqffEAq7uQNF/KVCM/Vxd/916Z+3QrYmb0LeJQ==",
+        "resolved": "4.0.9.13",
+        "contentHash": "D8WKD7niFTrP4FLjxUB/fHaC0pEtQXqRN74ylkib+IDCOqe5MATONPpfXJ9wthXXX+ihOP3rpsBJRAi2NL4Cvw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.32, 5.0.0)"
+          "AWSSDK.Core": "[4.0.4, 5.0.0)"
         }
       },
       "AWSSDK.SecretsManager": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.4.18",
-        "contentHash": "dRjvsm2rTNufl+iJ3cUTEq6Pud9P5RzYcjTbl1lqf1JSf7rYHobI44ClbD15O2Hwl0V+Z55BkGMUq6HgiERTkg==",
+        "resolved": "4.0.4.19",
+        "contentHash": "9ZmQol813rd2mgGnFy3iixFHswLqgNSFq9IvaIavsElQPsE3B976XL8hu+R9xbjE83JT9farDhuyXSw3ArlL5Q==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.32, 5.0.0)"
+          "AWSSDK.Core": "[4.0.4, 5.0.0)"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -91,8 +91,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.32",
-        "contentHash": "Z+FDac2Sb5dRImj87wVcgsj5PbE34CXDPGFodk11AKTx5B30/NgsnYynZH2NYS/uPZylzcX23NEjGbcMSbqAwQ=="
+        "resolved": "4.0.4",
+        "contentHash": "RjBk1WDrOCpsSRGn6j2lYhgiyYnXEhMctwJevNnIPIIGpgj49ifbU6FmG1Dk+1M/VSuqeTQ1WVsssziTty7b2w=="
       },
       "Microsoft.Extensions.Configuration": {
         "type": "Transitive",
@@ -163,6 +163,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }

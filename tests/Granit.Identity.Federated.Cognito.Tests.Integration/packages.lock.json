@@ -5,10 +5,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.1",
-        "contentHash": "xIY+rbbrlsLAo4uX1oi23hUKv1FL70LAeDpZha/KL+1bsKfJzrPfGCIaNM6bNUGObwWyoVipgUro06CGrAwqrA==",
+        "resolved": "4.0.8.2",
+        "contentHash": "yMtPsLO/6+NzvnpztmUFXnLvNzo9GmeoTzQGGro8SUoAVqorFi5Hjo88b/e+Fr3BdRmxcLOhf52cpudVCSeuOg==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.32, 5.0.0)"
+          "AWSSDK.Core": "[4.0.4, 5.0.0)"
         }
       },
       "coverlet.collector": {
@@ -102,8 +102,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.32",
-        "contentHash": "Z+FDac2Sb5dRImj87wVcgsj5PbE34CXDPGFodk11AKTx5B30/NgsnYynZH2NYS/uPZylzcX23NEjGbcMSbqAwQ=="
+        "resolved": "4.0.4",
+        "contentHash": "RjBk1WDrOCpsSRGn6j2lYhgiyYnXEhMctwJevNnIPIIGpgj49ifbU6FmG1Dk+1M/VSuqeTQ1WVsssziTty7b2w=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -1339,6 +1339,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }

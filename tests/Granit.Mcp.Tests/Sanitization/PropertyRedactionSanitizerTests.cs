@@ -143,19 +143,33 @@ public sealed class PropertyRedactionSanitizerTests
     }
 
     [Fact]
-    public void MaskValue_ShortValue_ReturnsFourStars()
+    public void MaskValue_EmptyValue_ReturnsOpaqueMarker()
     {
-        PropertyRedactionSanitizer.MaskValue("ab").ShouldBe("****");
-        PropertyRedactionSanitizer.MaskValue("abcd").ShouldBe("****");
+        PropertyRedactionSanitizer.MaskValue(string.Empty).ShouldBe("***");
     }
 
     [Fact]
-    public void MaskValue_LongerValue_KeepsFirstAndLastTwoChars()
+    public void MaskValue_NeverDisclosesPlaintextCharacters()
     {
-        string masked = PropertyRedactionSanitizer.MaskValue("abcdef");
+        // SECURITY: redacted values must never echo any plaintext characters,
+        // since prefixes/suffixes alone identify secret types (Bearer ey…, gk_…,
+        // AKIA…) and shrink brute-force search space.
+        const string secret = "gk_live_sk_abcdefghijABCDEF";
+        string masked = PropertyRedactionSanitizer.MaskValue(secret);
 
-        masked.ShouldStartWith("ab");
-        masked.ShouldEndWith("ef");
-        masked.ShouldContain("**");
+        foreach (char c in secret.Distinct())
+        {
+            if (c is not '*' and not '[' and not ']' and not (>= '0' and <= '9'))
+            {
+                masked.ShouldNotContain(c.ToString());
+            }
+        }
+    }
+
+    [Fact]
+    public void MaskValue_PreservesLengthInformationOnly()
+    {
+        PropertyRedactionSanitizer.MaskValue("abcdef").ShouldBe("***[6]");
+        PropertyRedactionSanitizer.MaskValue("abcd").ShouldBe("***[4]");
     }
 }

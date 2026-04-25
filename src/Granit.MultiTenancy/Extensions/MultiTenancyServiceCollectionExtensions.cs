@@ -12,6 +12,7 @@ using Granit.MultiTenancy.Url;
 using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.MultiTenancy.Extensions;
 
@@ -31,6 +32,8 @@ public static class MultiTenancyServiceCollectionExtensions
             .BindConfiguration(MultiTenancyOptions.SectionName)
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.TryAddSingleton<IValidateOptions<MultiTenancyOptions>, MultiTenancyOptionsValidator>();
 
         // Replace the NullTenantContext registered by AddGranit<T>() with the real implementation.
         services.Replace(ServiceDescriptor.Singleton<ICurrentTenant, CurrentTenant>());

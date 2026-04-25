@@ -3,7 +3,7 @@ using System.Diagnostics;
 namespace Granit.Identity.Federated.EntraId.Diagnostics;
 
 /// <summary>
-/// Central <see cref="ActivitySource"/> for Granit.Identity.EntraId distributed tracing.
+/// Central <see cref="ActivitySource"/> for Granit.Identity.Federated.EntraId distributed tracing.
 /// </summary>
 /// <remarks>
 /// Register this source in the OpenTelemetry tracer provider (via
@@ -15,8 +15,8 @@ namespace Granit.Identity.Federated.EntraId.Diagnostics;
 /// </remarks>
 internal static class IdentityEntraIdActivitySource
 {
-    /// <summary>The name of the Granit.Identity.EntraId <see cref="ActivitySource"/>.</summary>
-    internal const string Name = "Granit.Identity.EntraId";
+    /// <summary>The name of the Granit.Identity.Federated.EntraId <see cref="ActivitySource"/>.</summary>
+    internal const string Name = "Granit.Identity.Federated.EntraId";
 
     /// <summary>The singleton <see cref="ActivitySource"/> instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

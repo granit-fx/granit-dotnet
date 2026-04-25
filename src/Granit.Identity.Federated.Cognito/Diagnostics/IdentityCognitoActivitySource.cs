@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.Cognito.Diagnostics;
 internal static class IdentityCognitoActivitySource
 {
     /// <summary>Activity source name.</summary>
-    public const string Name = "Granit.Identity.Cognito";
+    public const string Name = "Granit.Identity.Federated.Cognito";
 
     /// <summary>Shared activity source instance.</summary>
     internal static readonly ActivitySource Source = new(Name);

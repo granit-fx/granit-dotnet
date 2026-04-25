@@ -12,12 +12,10 @@ namespace Granit.OpenIddict.Server;
 [DependsOn(typeof(GranitOpenIddictModule))]
 public sealed class GranitOpenIddictServerModule : GranitModule
 {
+    // Scoped handlers must be registered in DI for OpenIddict to resolve them
+    // via UseScopedHandler<T>(). The descriptor itself is attached to the
+    // OpenIddict server options in AddGranitOpenIddictServer().
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context)
-    {
-        // Scoped handlers must be registered in DI for OpenIddict to resolve them
-        // via UseScopedHandler<T>(). The descriptor itself is attached to the
-        // OpenIddict server options in AddGranitOpenIddictServer().
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
         context.Services.TryAddScoped<ClientSideAuthorizationHandler>();
-    }
 }

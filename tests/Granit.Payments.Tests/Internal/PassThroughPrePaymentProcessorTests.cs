@@ -1,6 +1,6 @@
 using Granit.Invoicing;
-using Granit.Invoicing.Abstractions.Events;
 using Granit.Invoicing.Domain;
+using Granit.Invoicing.Events;
 using Granit.Payments.Internal;
 using Shouldly;
 using Xunit;

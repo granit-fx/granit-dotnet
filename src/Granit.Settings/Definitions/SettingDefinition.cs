@@ -88,13 +88,11 @@ public sealed class SettingDefinition
 
         if (AllowedValues is { Count: > 0 })
         {
-            foreach (string allowed in AllowedValues)
+            string? unparseable = AllowedValues.FirstOrDefault(v => !TryParseAs(v, ValueKind));
+            if (unparseable is not null)
             {
-                if (!TryParseAs(allowed, ValueKind))
-                {
-                    throw new InvalidOperationException(
-                        $"Setting '{Name}': AllowedValues entry '{allowed}' is not parseable as {ValueKind}.");
-                }
+                throw new InvalidOperationException(
+                    $"Setting '{Name}': AllowedValues entry '{unparseable}' is not parseable as {ValueKind}.");
             }
         }
     }

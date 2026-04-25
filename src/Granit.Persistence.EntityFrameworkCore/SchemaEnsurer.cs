@@ -49,9 +49,11 @@ public static partial class SchemaEnsurer
             }
 
             await using DbCommand cmd = connection.CreateCommand();
-            // Schema names cannot be parameterized in SQL; input is validated
+            // Schema names cannot be parameterized in SQL DDL; input is validated
             // above against a strict allowlist to prevent injection.
+#pragma warning disable S2077 // Formatting SQL queries: validated against SafeSchemaNameRegex allowlist above
             cmd.CommandText = $"CREATE SCHEMA IF NOT EXISTS \"{schema}\"";
+#pragma warning restore S2077
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
     }
@@ -109,7 +111,11 @@ public static partial class SchemaEnsurer
             }
 
             await using DbCommand cmd = connection.CreateCommand();
+            // Schema names cannot be parameterized in SQL DDL; input is validated
+            // above against a strict allowlist to prevent injection.
+#pragma warning disable S2077 // Formatting SQL queries: validated against SafeSchemaNameRegex allowlist above
             cmd.CommandText = $"CREATE SCHEMA IF NOT EXISTS \"{schema}\"";
+#pragma warning restore S2077
             await cmd.ExecuteNonQueryAsync(cancellationToken).ConfigureAwait(false);
         }
     }

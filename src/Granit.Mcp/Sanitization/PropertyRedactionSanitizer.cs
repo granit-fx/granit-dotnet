@@ -206,13 +206,16 @@ internal sealed class PropertyRedactionSanitizer(SensitivePropertyRegistry regis
         return $"sha256:{Convert.ToHexStringLower(hash)[..16]}";
     }
 
-    internal static string MaskValue(string value)
-    {
-        if (value.Length <= 4)
-        {
-            return "****";
-        }
-
-        return $"{value[..2]}{"".PadRight(value.Length - 4, '*')}{value[^2..]}";
-    }
+    /// <summary>
+    /// Returns an opaque, length-only marker for masked values.
+    /// </summary>
+    /// <remarks>
+    /// SECURITY: never echo any plaintext characters from a redacted secret. The
+    /// previous Stripe-style "first two + last two" mask leaked enough structure
+    /// to identify Granit key prefixes (gk_pr…), bearer-token kinds (ey…), AWS
+    /// access keys (AKIA…), and to materially shrink the brute-force search space
+    /// when correlated with leaked digests from other breaches.
+    /// </remarks>
+    internal static string MaskValue(string value) =>
+        value.Length == 0 ? "***" : $"***[{value.Length}]";
 }

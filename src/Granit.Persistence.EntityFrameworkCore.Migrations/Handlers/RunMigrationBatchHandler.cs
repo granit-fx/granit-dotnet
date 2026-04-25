@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Commands;
 using Granit.Persistence.EntityFrameworkCore.Migrations.Messages;
 
@@ -11,6 +12,7 @@ namespace Granit.Persistence.EntityFrameworkCore.Migrations.Handlers;
 /// The follow-up command is dispatched via <see cref="ICommandSender"/> (provider-agnostic).
 /// The cascade stops when the executor returns <c>null</c> (no more rows).
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed class RunMigrationBatchHandler
 {
     public static async Task HandleAsync(

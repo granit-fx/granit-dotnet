@@ -101,6 +101,24 @@ public sealed class GranitOpenIddictOptions
     /// <para>Default: <see langword="false"/>.</para>
     /// </remarks>
     public bool EnableFapi2Profile { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the OpenIddict server is allowed to start with
+    /// ephemeral signing and encryption keys (regenerated at every process start).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Ephemeral keys invalidate every issued token on restart and produce inconsistent
+    /// signing material across instances of a multi-replica deployment — symptoms range
+    /// from mass session loss to intermittent token validation failures.
+    /// </para>
+    /// <para>
+    /// Default: <see langword="false"/>. The framework refuses to start in non-Development
+    /// environments unless persistent signing/encryption material is configured.
+    /// Set to <see langword="true"/> only for tests or single-instance dev loops.
+    /// </para>
+    /// </remarks>
+    public bool AllowEphemeralKeys { get; set; }
 }
 
 /// <summary>

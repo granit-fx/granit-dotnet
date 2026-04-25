@@ -34,8 +34,6 @@ public sealed class EntraIdClientRoleSyncJobTests
     }
 
     [Fact]
-    public void Job_implements_IBackgroundJob()
-    {
+    public void Job_implements_IBackgroundJob() =>
         typeof(IBackgroundJob).IsAssignableFrom(typeof(EntraIdClientRoleSyncJob)).ShouldBeTrue();
-    }
 }

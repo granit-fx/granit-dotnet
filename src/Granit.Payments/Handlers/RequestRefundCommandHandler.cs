@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Payments.Commands;
@@ -15,8 +16,10 @@ namespace Granit.Payments.Handlers;
 /// calls the domain's <see cref="PaymentTransaction.RequestRefund"/> method,
 /// executes the refund via the payment provider, and persists the result.
 /// </summary>
+[SuppressMessage("Major Code Smell", "S1118:Utility classes should not have public constructors", Justification = "Wolverine message handler — public class with public static Handle method is required for discovery (CLAUDE.md).")]
 public sealed partial class RequestRefundCommandHandler
 {
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Wolverine handler injects DI services per-message; no natural domain wrapper for these orthogonal collaborators (reader, writer, providers, guid, clock, metrics, tenant, logger).")]
     public static async Task HandleAsync(
         RequestRefundCommand command,
         IPaymentTransactionReader transactionReader,

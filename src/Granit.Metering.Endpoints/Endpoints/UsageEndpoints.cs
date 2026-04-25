@@ -19,6 +19,8 @@ namespace Granit.Metering.Endpoints.Endpoints;
 
 internal static class UsageEndpoints
 {
+    private const string TenantContextRequiredMessage = "Tenant context required.";
+
     internal static RouteGroupBuilder MapUsageEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/usage", GetUsageForPeriodAsync)
@@ -112,7 +114,7 @@ internal static class UsageEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         UsageAggregate? aggregate = await usageReader
@@ -137,7 +139,7 @@ internal static class UsageEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         QuotaStatus status = await quotaChecker
@@ -157,7 +159,7 @@ internal static class UsageEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         var meterIds = request.Events.Select(e => e.MeterDefinitionId).Distinct().ToList();
@@ -208,7 +210,7 @@ internal static class UsageEndpoints
     {
         if (!currentTenant.IsAvailable)
         {
-            return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(TenantContextRequiredMessage, statusCode: StatusCodes.Status400BadRequest);
         }
 
         // Reject upfront if any referenced meter is missing or not Published. The

@@ -1,4 +1,5 @@
 using System.Text;
+using Granit.Caching;
 using Granit.DataProtection;
 
 namespace Granit.Vault;
@@ -18,7 +19,16 @@ namespace Granit.Vault;
 /// <see cref="ToString"/> override additionally redacts the payload for any serializer
 /// that bypasses the attribute.
 /// </para>
+/// <para>
+/// <b>Cache encryption:</b> <see cref="CacheEncryptedAttribute"/> forces AES-256-GCM
+/// encryption when this type is stored in <c>IFusionCache</c> via
+/// <see cref="Internal.CachedSecretStore"/>, regardless of the global
+/// <see cref="Granit.Caching.Options.CachingOptions.EncryptValues"/> flag. Without
+/// it, secrets cached in Redis would sit in plaintext if an operator forgets to
+/// set <c>EncryptValues=true</c>.
+/// </para>
 /// </remarks>
+[CacheEncrypted]
 public sealed record SecretDescriptor
 {
     /// <summary>Provider-addressable secret name (as requested).</summary>

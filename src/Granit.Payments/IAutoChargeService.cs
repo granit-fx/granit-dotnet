@@ -1,4 +1,4 @@
-using Granit.Invoicing.Abstractions.Events;
+using Granit.Invoicing.Events;
 
 namespace Granit.Payments;
 

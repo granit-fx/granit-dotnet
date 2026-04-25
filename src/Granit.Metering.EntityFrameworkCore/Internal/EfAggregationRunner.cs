@@ -174,14 +174,12 @@ internal sealed partial class EfAggregationRunner(
 
         HashSet<string> distinct = new(StringComparer.Ordinal);
 
-        foreach (MeterEvent ev in events)
+        IEnumerable<string?> values = events
+            .Select(ev => ev.Metadata)
+            .Where(metadata => !string.IsNullOrWhiteSpace(metadata))
+            .Select(metadata => TryExtractStringValue(metadata!, property));
+        foreach (string? value in values)
         {
-            if (string.IsNullOrWhiteSpace(ev.Metadata))
-            {
-                continue;
-            }
-
-            string? value = TryExtractStringValue(ev.Metadata, property);
             if (value is not null)
             {
                 distinct.Add(value);

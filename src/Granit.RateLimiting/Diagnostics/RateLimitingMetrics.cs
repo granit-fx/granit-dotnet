@@ -16,12 +16,14 @@ public sealed class RateLimitingMetrics
 
     public RateLimitingMetrics(IMeterFactory meterFactory)
     {
+        // Metric names follow the framework convention: granit.{module_snake_case}.{entity}.{action}
+        // RateLimiting → rate_limiting (multi-word modules use snake_case in the metric name space).
         Meter meter = meterFactory.Create(MeterName);
         _allowedCounter = meter.CreateCounter<long>(
-            "granit.ratelimiting.requests.allowed",
+            "granit.rate_limiting.requests.allowed",
             description: "Number of requests allowed by rate limiting.");
         _rejectedCounter = meter.CreateCounter<long>(
-            "granit.ratelimiting.requests.rejected",
+            "granit.rate_limiting.requests.rejected",
             description: "Number of requests rejected by rate limiting.");
     }
 

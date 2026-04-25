@@ -40,6 +40,7 @@ internal sealed partial class KeycloakIdentityProvider(
     ILogger<KeycloakIdentityProvider> logger) : IIdentityProvider, IIdentityClientRoleManager
 {
     private const string ProviderName = "keycloak";
+    private const string GetUserOperation = "get_user";
 
     /// <summary>
     /// Detects authorisation failures wrapped in <see cref="HttpRequestException"/>.
@@ -106,21 +107,21 @@ internal sealed partial class KeycloakIdentityProvider(
                 .GetFromJsonAsync<KeycloakUserRepresentation>(endpoint, cancellationToken)
                 .ConfigureAwait(false);
 
-            metrics.RecordOperationCompleted(null, "get_user", ProviderName, user is not null ? "found" : "not_found");
-            metrics.RecordOperationDuration(null, "get_user", ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
+            metrics.RecordOperationCompleted(null, GetUserOperation, ProviderName, user is not null ? "found" : "not_found");
+            metrics.RecordOperationDuration(null, GetUserOperation, ProviderName, Stopwatch.GetElapsedTime(startTimestamp));
 
             return user is not null ? ToIdentityUser(user) : null;
         }
         catch (HttpRequestException ex) when (IsAuthorizationFailure(ex))
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            metrics.RecordOperationError(null, "get_user", ProviderName);
-            throw new IdentityProviderUnauthorizedException(ProviderName, "get_user", ex);
+            metrics.RecordOperationError(null, GetUserOperation, ProviderName);
+            throw new IdentityProviderUnauthorizedException(ProviderName, GetUserOperation, ex);
         }
         catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
         {
             activity?.SetStatus(ActivityStatusCode.Error, ex.Message);
-            metrics.RecordOperationError(null, "get_user", ProviderName);
+            metrics.RecordOperationError(null, GetUserOperation, ProviderName);
             LogKeycloakGetUserFailed(ex, userId);
             return null;
         }

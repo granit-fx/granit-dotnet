@@ -66,16 +66,21 @@ internal sealed class DPoPProofValidator(
             return nonceResult;
         }
 
-        DPoPValidationResult? replayResult = await ValidateReplayProtectionAsync(payload, opts, cancellationToken).ConfigureAwait(false);
-        if (replayResult is not null)
-        {
-            return replayResult with { ServerNonce = serverNonce };
-        }
-
+        // SECURITY: signature MUST be verified before any side effect on cache state.
+        // If we recorded the jti before signature verification, an unauthenticated
+        // attacker could pollute the replay cache with attacker-chosen jti values
+        // (forged proofs are cheap to generate), denying legitimate clients whose
+        // proofs use the same jti.
         DPoPValidationResult? signatureResult = ValidateSignature(parts, jwk, algorithm, opts);
         if (signatureResult is not null)
         {
             return signatureResult with { ServerNonce = serverNonce };
+        }
+
+        DPoPValidationResult? replayResult = await ValidateReplayProtectionAsync(payload, opts, cancellationToken).ConfigureAwait(false);
+        if (replayResult is not null)
+        {
+            return replayResult with { ServerNonce = serverNonce };
         }
 
         string thumbprint = JwkThumbprintCalculator.ComputeThumbprint(jwk);
@@ -237,7 +242,7 @@ internal sealed class DPoPProofValidator(
         bool signatureValid = kty switch
         {
             "EC" => VerifyEcSignature(jwk, signingInput, signature, algorithm),
-            "RSA" => VerifyRsaSignature(jwk, signingInput, signature, opts.MinimumRsaKeySize),
+            "RSA" => VerifyRsaSignature(jwk, signingInput, signature, algorithm, opts.MinimumRsaKeySize),
             _ => false,
         };
 
@@ -288,7 +293,7 @@ internal sealed class DPoPProofValidator(
         }
     }
 
-    private static bool VerifyRsaSignature(JsonElement jwk, byte[] data, byte[] signature, int minimumKeySizeBits)
+    private static bool VerifyRsaSignature(JsonElement jwk, byte[] data, byte[] signature, string algorithm, int minimumKeySizeBits)
     {
         try
         {
@@ -302,8 +307,24 @@ internal sealed class DPoPProofValidator(
                 return false;
             }
 
+            (HashAlgorithmName hashAlg, RSASignaturePadding padding) = algorithm switch
+            {
+                "PS256" => (HashAlgorithmName.SHA256, RSASignaturePadding.Pss),
+                "PS384" => (HashAlgorithmName.SHA384, RSASignaturePadding.Pss),
+                "PS512" => (HashAlgorithmName.SHA512, RSASignaturePadding.Pss),
+                "RS256" => (HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1),
+                "RS384" => (HashAlgorithmName.SHA384, RSASignaturePadding.Pkcs1),
+                "RS512" => (HashAlgorithmName.SHA512, RSASignaturePadding.Pkcs1),
+                _ => (default, null!),
+            };
+
+            if (padding is null)
+            {
+                return false;
+            }
+
             using var rsa = RSA.Create(new RSAParameters { Modulus = n, Exponent = e });
-            return rsa.VerifyData(data, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pss);
+            return rsa.VerifyData(data, signature, hashAlg, padding);
         }
         catch
         {

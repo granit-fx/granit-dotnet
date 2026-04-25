@@ -97,7 +97,7 @@ internal sealed class CountingStream(Stream inner, long maxBytes) : Stream
 /// Caught by the archive assembler to transition the request to
 /// <see cref="Granit.Privacy.DataExport.ExportRequestState.SizeLimitExceeded"/>.
 /// </summary>
-internal sealed class PrivacyExportSizeLimitExceededException(long maxBytes, long observedBytes)
+public sealed class PrivacyExportSizeLimitExceededException(long maxBytes, long observedBytes)
     : Exception($"Export archive exceeded the configured size limit of {maxBytes} bytes (observed {observedBytes}).")
 {
     public long MaxBytes { get; } = maxBytes;

@@ -38,21 +38,14 @@ internal sealed class LookupRegistry : ILookupRegistry
         return _sources.TryGetValue(name, out ILookupSource? source) ? source : null;
     }
 
-    public IReadOnlyList<LookupManifestEntry> GetManifest()
-    {
-        List<LookupManifestEntry> entries = new(_sources.Count);
-        foreach (ILookupSource source in _sources.Values)
-        {
-            entries.Add(new LookupManifestEntry(
+    public IReadOnlyList<LookupManifestEntry> GetManifest() =>
+        [.. _sources.Values
+            .Select(source => new LookupManifestEntry(
                 source.Name,
                 InferKind(source),
                 source.RequiredPermission,
-                source.ScopeKeys));
-        }
-
-        entries.Sort(static (a, b) => string.CompareOrdinal(a.Name, b.Name));
-        return entries;
-    }
+                source.ScopeKeys))
+            .OrderBy(entry => entry.Name, StringComparer.Ordinal)];
 
     private static LookupKind InferKind(ILookupSource source) =>
         source is IKindProviderLookupSource provider ? provider.Kind : LookupKind.Simple;

@@ -134,15 +134,15 @@ internal sealed partial class ApiKeyAuthenticationHandler(
 
     private static ClaimsPrincipal BuildClaimsPrincipal(ApiKeyEntry apiKey)
     {
-        var claims = new List<Claim>
-        {
+        List<Claim> claims =
+        [
             new(ClaimTypes.NameIdentifier, apiKey.Id.ToString()),
             new(ClaimTypes.Name, apiKey.Name),
             new(ApiKeyClaimTypes.ActorKind, nameof(Users.ActorKind.ExternalSystem)),
             new(ApiKeyClaimTypes.ApiKeyId, apiKey.Id.ToString()),
             new(ApiKeyClaimTypes.ApiKeyType, apiKey.Type.ToString()),
             new(ApiKeyClaimTypes.Environment, apiKey.Environment),
-        };
+        ];
 
         foreach (string permission in apiKey.Permissions)
         {
