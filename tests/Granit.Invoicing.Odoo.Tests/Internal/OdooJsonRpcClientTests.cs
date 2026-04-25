@@ -108,7 +108,8 @@ public sealed class OdooJsonRpcClientTests : IDisposable
             TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        result.Value.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Array);
+        System.Text.Json.JsonElement value = result.Value;
+        value.ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Array);
     }
 
     [Fact]
