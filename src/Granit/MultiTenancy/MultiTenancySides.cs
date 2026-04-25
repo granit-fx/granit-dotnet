@@ -21,7 +21,7 @@ namespace Granit.MultiTenancy;
 /// </para>
 /// </remarks>
 [Flags]
-public enum MultiTenancySide
+public enum MultiTenancySides
 {
     /// <summary>Applicable only when no tenant context is active (host-level admin, cross-tenant operations).</summary>
     Host = 1 << 0,

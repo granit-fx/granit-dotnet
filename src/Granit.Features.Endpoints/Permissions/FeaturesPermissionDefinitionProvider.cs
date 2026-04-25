@@ -24,7 +24,7 @@ internal sealed class FeaturesPermissionDefinitionProvider : IPermissionDefiniti
             FeaturesPermissions.Flags.Read,
             LocalizableString.Create<FeaturesEndpointsLocalizationResource>(
                 "Permission:Features.Flags.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Defining/toggling feature flags is a platform concern — tenant-level overrides,
         // if needed, warrant a dedicated permission rather than reusing this one.
@@ -32,6 +32,6 @@ internal sealed class FeaturesPermissionDefinitionProvider : IPermissionDefiniti
             FeaturesPermissions.Flags.Manage,
             LocalizableString.Create<FeaturesEndpointsLocalizationResource>(
                 "Permission:Features.Flags.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

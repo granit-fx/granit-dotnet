@@ -24,25 +24,25 @@ internal sealed class SettingsPermissionDefinitionProvider : IPermissionDefiniti
             SettingsPermissions.Global.Read,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Global.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         group.AddPermission(
             SettingsPermissions.Global.Manage,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Global.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         // Tenant settings are only meaningful inside a tenant context.
         group.AddPermission(
             SettingsPermissions.Tenant.Read,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Tenant.Read"),
-            MultiTenancySide.Tenant);
+            MultiTenancySides.Tenant);
 
         group.AddPermission(
             SettingsPermissions.Tenant.Manage,
             LocalizableString.Create<SettingsEndpointsLocalizationResource>(
                 "Permission:Settings.Tenant.Manage"),
-            MultiTenancySide.Tenant);
+            MultiTenancySides.Tenant);
     }
 }

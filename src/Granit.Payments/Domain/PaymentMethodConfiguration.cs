@@ -67,7 +67,7 @@ public sealed class PaymentMethodConfiguration : AuditedEntity, IActive
     /// Snapshot of the sequence modes supported by the provider for this method.
     /// <see langword="null"/> when no snapshot has been captured yet.
     /// </summary>
-    public PaymentMethodSequenceType? SupportedSequenceTypes { get; private set; }
+    public PaymentMethodSequenceTypes? SupportedSequenceTypes { get; private set; }
 
     /// <summary>
     /// Snapshot of the per-currency amount bounds declared by the provider for this method.

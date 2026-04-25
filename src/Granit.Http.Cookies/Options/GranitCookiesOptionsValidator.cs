@@ -11,17 +11,17 @@ internal sealed class GranitCookiesOptionsValidator : IValidateOptions<GranitCoo
 {
     public ValidateOptionsResult Validate(string? name, GranitCookiesOptions options)
     {
-        List<string>? failures = null;
+        List<string> failures = [];
 
         if (options.DefaultRetentionDays <= 0)
         {
-            (failures ??= []).Add(
+            failures.Add(
                 $"{nameof(GranitCookiesOptions.DefaultRetentionDays)} must be > 0. " +
                 $"Got {options.DefaultRetentionDays}.");
         }
         else if (options.DefaultRetentionDays > GranitCookiesOptions.MaxRetentionDays)
         {
-            (failures ??= []).Add(
+            failures.Add(
                 $"{nameof(GranitCookiesOptions.DefaultRetentionDays)} must be <= " +
                 $"{GranitCookiesOptions.MaxRetentionDays} (CNIL 13-month hard cap — RGPD Art. 5(1)(e) " +
                 $"storage limitation). Got {options.DefaultRetentionDays}. For cookies that need a " +
@@ -29,7 +29,7 @@ internal sealed class GranitCookiesOptionsValidator : IValidateOptions<GranitCoo
                 "legal basis documented in your data-protection impact assessment.");
         }
 
-        return failures is null
+        return failures.Count == 0
             ? ValidateOptionsResult.Success
             : ValidateOptionsResult.Fail(failures);
     }

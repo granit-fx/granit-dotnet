@@ -23,24 +23,24 @@ internal sealed class MultiTenancyPermissionDefinitionProvider : IPermissionDefi
             MultiTenancyPermissions.Tenants.Read,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
                 "Permission:MultiTenancy.Tenants.Read"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Create,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
                 "Permission:MultiTenancy.Tenants.Create"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Update,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
                 "Permission:MultiTenancy.Tenants.Update"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
 
         group.AddPermission(
             MultiTenancyPermissions.Tenants.Manage,
             LocalizableString.Create<MultiTenancyEndpointsLocalizationResource>(
                 "Permission:MultiTenancy.Tenants.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

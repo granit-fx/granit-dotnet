@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using Granit.QueryEngine.AspNetCore.Dtos;
@@ -67,6 +68,7 @@ public static class QueryEndpointRouteBuilderExtensions
     ///   <item><c>POST /saved-views/{id}/set-default</c> — set default saved view</item>
     /// </list>
     /// </remarks>
+    [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Setup-time reflection over an internal helper to dispatch to a generic projection-typed overload; private accessor used precisely so consumers cannot bypass the public API.")]
     public static RouteGroupBuilder MapGranitQuery<TEntity>(
         this IEndpointRouteBuilder endpoints,
         Func<IServiceProvider, IQueryable<TEntity>> sourceProvider,

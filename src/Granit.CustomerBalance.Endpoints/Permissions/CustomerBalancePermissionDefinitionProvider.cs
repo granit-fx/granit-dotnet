@@ -20,14 +20,14 @@ internal sealed class CustomerBalancePermissionDefinitionProvider : IPermissionD
         group.AddPermission(CustomerBalancePermissions.Accounts.Read,
             LocalizableString.Create<CustomerBalanceEndpointsLocalizationResource>(
                 "Permission:CustomerBalance.Accounts.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(CustomerBalancePermissions.Transactions.Read,
             LocalizableString.Create<CustomerBalanceEndpointsLocalizationResource>(
                 "Permission:CustomerBalance.Transactions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(CustomerBalancePermissions.Credits.Manage,
             LocalizableString.Create<CustomerBalanceEndpointsLocalizationResource>(
                 "Permission:CustomerBalance.Credits.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

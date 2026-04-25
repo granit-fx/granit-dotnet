@@ -13,7 +13,7 @@ public sealed class RoleEndpointsOptions
 
     /// <summary>
     /// When <see langword="true"/> (default), tenant admins can create / rename / delete
-    /// <see cref="Granit.MultiTenancy.MultiTenancySide.Tenant"/>-scoped roles in their
+    /// <see cref="Granit.MultiTenancy.MultiTenancySides.Tenant"/>-scoped roles in their
     /// own tenant. Host and Both roles remain host-admin only regardless of this flag.
     /// </summary>
     /// <remarks>

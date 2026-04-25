@@ -16,7 +16,7 @@ namespace Granit.OpenIddict.Server.Tests.Handlers;
 
 /// <summary>
 /// Unit tests for <see cref="ClientSideAuthorizationHandler"/> — the OIDC server
-/// handler that enforces the <see cref="MultiTenancySide"/> policy declared on
+/// handler that enforces the <see cref="MultiTenancySides"/> policy declared on
 /// each application. Verifies the full policy matrix (Host/Tenant/Both/null ×
 /// host-user/tenant-user) and the carve-outs for service-to-service flows.
 /// </summary>
@@ -29,7 +29,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     public async Task HostOnly_HostUser_Allowed()
     {
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Host,
+            clientSide: MultiTenancySides.Host,
             userTenantId: null);
 
         context.IsRejected.ShouldBeFalse();
@@ -39,7 +39,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     public async Task HostOnly_TenantUser_Rejected()
     {
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Host,
+            clientSide: MultiTenancySides.Host,
             userTenantId: TenantId);
 
         context.IsRejected.ShouldBeTrue();
@@ -50,7 +50,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     public async Task TenantOnly_HostUser_Rejected()
     {
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Tenant,
+            clientSide: MultiTenancySides.Tenant,
             userTenantId: null);
 
         context.IsRejected.ShouldBeTrue();
@@ -61,7 +61,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     public async Task TenantOnly_TenantUser_Allowed()
     {
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Tenant,
+            clientSide: MultiTenancySides.Tenant,
             userTenantId: TenantId);
 
         context.IsRejected.ShouldBeFalse();
@@ -73,7 +73,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     public async Task Both_AnyUser_Allowed(string? userTenantId)
     {
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Both,
+            clientSide: MultiTenancySides.Both,
             userTenantId: userTenantId);
 
         context.IsRejected.ShouldBeFalse();
@@ -98,7 +98,7 @@ public sealed class ClientSideAuthorizationHandlerTests
         // policy would lock out any host-only API client that uses client_credentials —
         // the policy is about USERS, not clients.
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Host,
+            clientSide: MultiTenancySides.Host,
             userTenantId: TenantId,
             grantType: OpenIddictConstants.GrantTypes.ClientCredentials);
 
@@ -111,7 +111,7 @@ public sealed class ClientSideAuthorizationHandlerTests
         // Defensive: the built-in OpenIddict validation handlers reject missing
         // client_id long before we run, but we must never throw if we see a null.
         ProcessSignInContext context = await RunAsync(
-            clientSide: MultiTenancySide.Host,
+            clientSide: MultiTenancySides.Host,
             userTenantId: TenantId,
             clientId: null);
 
@@ -134,7 +134,7 @@ public sealed class ClientSideAuthorizationHandlerTests
     }
 
     private static async Task<ProcessSignInContext> RunAsync(
-        MultiTenancySide? clientSide,
+        MultiTenancySides? clientSide,
         string? userTenantId,
         string? grantType = null,
         string? clientId = ClientId)

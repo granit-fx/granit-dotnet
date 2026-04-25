@@ -12,9 +12,9 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <summary>
 /// Seeds the three platform-provided system roles and their <see cref="RoleMetadata"/> rows:
 /// <list type="bullet">
-///   <item><c>SuperAdmin</c> — <see cref="MultiTenancySide.Host"/>, platform administrator.</item>
-///   <item><c>TenantAdministrator</c> — <see cref="MultiTenancySide.Both"/>, defined globally, assignable per tenant.</item>
-///   <item><c>User</c> — <see cref="MultiTenancySide.Both"/>, default role for new users.</item>
+///   <item><c>SuperAdmin</c> — <see cref="MultiTenancySides.Host"/>, platform administrator.</item>
+///   <item><c>TenantAdministrator</c> — <see cref="MultiTenancySides.Both"/>, defined globally, assignable per tenant.</item>
+///   <item><c>User</c> — <see cref="MultiTenancySides.Both"/>, default role for new users.</item>
 /// </list>
 /// </summary>
 /// <remarks>
@@ -30,9 +30,9 @@ internal sealed partial class IdentityLocalRoleSeedContributor(
 {
     private static readonly SystemRoleDescriptor[] SystemRoles =
     [
-        new("SuperAdmin", MultiTenancySide.Host, "Platform administrator with cross-tenant access."),
-        new("TenantAdministrator", MultiTenancySide.Both, "Administrator within a tenant — can manage tenant users, roles, and settings."),
-        new("User", MultiTenancySide.Both, "Default role assigned to every authenticated user."),
+        new("SuperAdmin", MultiTenancySides.Host, "Platform administrator with cross-tenant access."),
+        new("TenantAdministrator", MultiTenancySides.Both, "Administrator within a tenant — can manage tenant users, roles, and settings."),
+        new("User", MultiTenancySides.Both, "Default role assigned to every authenticated user."),
     ];
 
     /// <inheritdoc />
@@ -70,7 +70,7 @@ internal sealed partial class IdentityLocalRoleSeedContributor(
         await orchestrator.CreateAsync(
             new CreateRoleCommand(
                 Name: descriptor.Name,
-                MultiTenancySide: descriptor.Side,
+                MultiTenancySides: descriptor.Side,
                 TenantId: null,
                 ClientId: null,
                 Description: descriptor.Description,
@@ -80,7 +80,7 @@ internal sealed partial class IdentityLocalRoleSeedContributor(
         LogRoleCreated(logger, descriptor.Name, descriptor.Side);
     }
 
-    private sealed record SystemRoleDescriptor(string Name, MultiTenancySide Side, string Description);
+    private sealed record SystemRoleDescriptor(string Name, MultiTenancySides Side, string Description);
 
     [LoggerMessage(Level = LogLevel.Information,
         Message = "Identity.Local system role seeding completed — {RoleCount} role(s) verified.")]
@@ -92,7 +92,7 @@ internal sealed partial class IdentityLocalRoleSeedContributor(
 
     [LoggerMessage(Level = LogLevel.Debug,
         Message = "Created system role '{RoleName}' with side {Side}.")]
-    private static partial void LogRoleCreated(ILogger logger, string roleName, MultiTenancySide side);
+    private static partial void LogRoleCreated(ILogger logger, string roleName, MultiTenancySides side);
 
     [LoggerMessage(Level = LogLevel.Warning,
         Message = "Orphan GranitRole '{RoleName}' without RoleMetadata removed before re-seed.")]

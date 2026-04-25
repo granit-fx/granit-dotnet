@@ -11,7 +11,7 @@ namespace Granit.Authorization;
 /// Target tenant scope. <see langword="null"/> means the grant is host-level (cross-tenant
 /// or infrastructure-level).
 /// </param>
-/// <param name="Definition">The resolved permission definition (includes <see cref="MultiTenancySide"/>).</param>
+/// <param name="Definition">The resolved permission definition (includes <see cref="MultiTenancySides"/>).</param>
 public sealed record PermissionGrantValidationContext(
     string PermissionName,
     string ProviderName,

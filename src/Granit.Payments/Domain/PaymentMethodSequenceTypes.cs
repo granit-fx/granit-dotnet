@@ -11,7 +11,7 @@ namespace Granit.Payments.Domain;
 /// subsequent charges) — the filter does not infer this sequencing.
 /// </remarks>
 [Flags]
-public enum PaymentMethodSequenceType
+public enum PaymentMethodSequenceTypes
 {
     /// <summary>No sequence declared. Invalid on a capability; used only as a sentinel.</summary>
     None = 0,

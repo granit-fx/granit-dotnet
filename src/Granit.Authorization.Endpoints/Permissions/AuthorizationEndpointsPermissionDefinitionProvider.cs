@@ -22,12 +22,12 @@ internal sealed class AuthorizationEndpointsPermissionDefinitionProvider : IPerm
             AuthorizationEndpointsPermissions.Definitions.Read,
             LocalizableString.Create<AuthorizationEndpointsLocalizationResource>(
                 "Permission:Authorization.Definitions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             AuthorizationEndpointsPermissions.Grants.Manage,
             LocalizableString.Create<AuthorizationEndpointsLocalizationResource>(
                 "Permission:Authorization.Grants.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

@@ -8,7 +8,7 @@ using static OpenIddict.Server.OpenIddictServerEvents;
 namespace Granit.OpenIddict.Server.Handlers;
 
 /// <summary>
-/// OpenIddict server handler that enforces the <see cref="MultiTenancySide"/> policy
+/// OpenIddict server handler that enforces the <see cref="MultiTenancySides"/> policy
 /// declared on an OIDC application. Rejects sign-in when the authenticated user's
 /// tenancy (host or tenant, as carried by the <c>tenant_id</c> claim) does not
 /// match the application's declared side.
@@ -23,11 +23,11 @@ namespace Granit.OpenIddict.Server.Handlers;
 /// Policy semantics:
 /// </para>
 /// <list type="bullet">
-/// <item><description><see cref="MultiTenancySide.Host"/> — only users with
+/// <item><description><see cref="MultiTenancySides.Host"/> — only users with
 /// <c>TenantId = null</c> (no <c>tenant_id</c> claim) may obtain tokens.</description></item>
-/// <item><description><see cref="MultiTenancySide.Tenant"/> — only users with a
+/// <item><description><see cref="MultiTenancySides.Tenant"/> — only users with a
 /// non-empty <c>tenant_id</c> claim may obtain tokens.</description></item>
-/// <item><description><see cref="MultiTenancySide.Both"/> or <see langword="null"/> —
+/// <item><description><see cref="MultiTenancySides.Both"/> or <see langword="null"/> —
 /// no restriction (backward-compatible default).</description></item>
 /// </list>
 /// <para>
@@ -86,18 +86,18 @@ public sealed partial class ClientSideAuthorizationHandler(
             return;
         }
 
-        MultiTenancySide? clientSide = await applicationManager
+        MultiTenancySides? clientSide = await applicationManager
             .GetClientSideAsync(application, context.CancellationToken)
             .ConfigureAwait(false);
 
-        if (clientSide is null || clientSide == MultiTenancySide.Both)
+        if (clientSide is null || clientSide == MultiTenancySides.Both)
         {
             return;
         }
 
         bool userIsTenant = HasTenantIdClaim(context);
 
-        bool policyViolated = clientSide == MultiTenancySide.Host
+        bool policyViolated = clientSide == MultiTenancySides.Host
             ? userIsTenant
             : !userIsTenant;
 

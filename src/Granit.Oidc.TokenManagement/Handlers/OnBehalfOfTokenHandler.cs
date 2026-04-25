@@ -48,6 +48,7 @@ namespace Granit.Oidc.TokenManagement.Handlers;
 ///   <item>Binds tokens to a per-process DPoP key by default.</item>
 /// </list>
 /// </remarks>
+[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "DelegatingHandler injects orthogonal collaborators (token endpoint, cache, DPoP, http context, tenant, user, options, clock, metrics, logger); no natural domain wrapper.")]
 internal sealed partial class OnBehalfOfTokenHandler(
     ITokenEndpointService tokenEndpointService,
     IConditionalCache tokenCache,

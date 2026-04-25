@@ -36,10 +36,10 @@ public sealed class GranitRoleEndpointsTests
     [Fact]
     public async Task List_AsHostAdmin_SeesAllRoles()
     {
-        await SeedMetadataAsync("SuperAdmin", MultiTenancySide.Host, tenantId: null);
-        await SeedMetadataAsync("User", MultiTenancySide.Both, tenantId: null);
-        await SeedMetadataAsync("Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
-        await SeedMetadataAsync("Manager", MultiTenancySide.Tenant, tenantId: _tenantB);
+        await SeedMetadataAsync("SuperAdmin", MultiTenancySides.Host, tenantId: null);
+        await SeedMetadataAsync("User", MultiTenancySides.Both, tenantId: null);
+        await SeedMetadataAsync("Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
+        await SeedMetadataAsync("Manager", MultiTenancySides.Tenant, tenantId: _tenantB);
 
         HttpResponseMessage response = await _app.HttpClient
             .GetAsync("/admin/roles", TestContext.Current.CancellationToken);
@@ -56,10 +56,10 @@ public sealed class GranitRoleEndpointsTests
     [Fact]
     public async Task List_AsTenantAdmin_SeesBothAndOwnTenantOnly()
     {
-        await SeedMetadataAsync("SuperAdmin", MultiTenancySide.Host, tenantId: null);
-        await SeedMetadataAsync("User", MultiTenancySide.Both, tenantId: null);
-        await SeedMetadataAsync("Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
-        await SeedMetadataAsync("Manager", MultiTenancySide.Tenant, tenantId: _tenantB);
+        await SeedMetadataAsync("SuperAdmin", MultiTenancySides.Host, tenantId: null);
+        await SeedMetadataAsync("User", MultiTenancySides.Both, tenantId: null);
+        await SeedMetadataAsync("Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
+        await SeedMetadataAsync("Manager", MultiTenancySides.Tenant, tenantId: _tenantB);
 
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -74,7 +74,7 @@ public sealed class GranitRoleEndpointsTests
         roles.ShouldNotBeNull();
         roles.Select(r => r.Name).OrderBy(n => n, StringComparer.Ordinal)
             .ShouldBe(["Manager", "User"]);
-        roles.ShouldNotContain(r => r.MultiTenancySide == MultiTenancySide.Host);
+        roles.ShouldNotContain(r => r.MultiTenancySides == MultiTenancySides.Host);
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ public sealed class GranitRoleEndpointsTests
     public async Task GetById_AsTenantAdmin_HostRole_Returns404()
     {
         RoleMetadata hostRole = await SeedMetadataAsync(
-            "SuperAdmin", MultiTenancySide.Host, tenantId: null);
+            "SuperAdmin", MultiTenancySides.Host, tenantId: null);
 
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -99,7 +99,7 @@ public sealed class GranitRoleEndpointsTests
     public async Task GetById_AsTenantAdmin_OtherTenantRole_Returns404()
     {
         RoleMetadata otherTenantRole = await SeedMetadataAsync(
-            "Manager", MultiTenancySide.Tenant, tenantId: _tenantB);
+            "Manager", MultiTenancySides.Tenant, tenantId: _tenantB);
 
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -123,7 +123,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Manager",
-                multiTenancySide = (int)MultiTenancySide.Tenant,
+                multiTenancySide = (int)MultiTenancySides.Tenant,
                 tenantId = _tenantA,
                 description = "Tenant-A managers.",
             },
@@ -136,7 +136,7 @@ public sealed class GranitRoleEndpointsTests
 
         created.ShouldNotBeNull();
         created.Name.ShouldBe("Manager");
-        created.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
+        created.MultiTenancySides.ShouldBe(MultiTenancySides.Tenant);
         created.TenantId.ShouldBe(_tenantA);
     }
 
@@ -150,7 +150,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Manager",
-                multiTenancySide = (int)MultiTenancySide.Tenant,
+                multiTenancySide = (int)MultiTenancySides.Tenant,
                 tenantId = _tenantB,
             },
             TestContext.Current.CancellationToken);
@@ -169,7 +169,7 @@ public sealed class GranitRoleEndpointsTests
                 new
                 {
                     name = "Manager",
-                    multiTenancySide = (int)MultiTenancySide.Tenant,
+                    multiTenancySide = (int)MultiTenancySides.Tenant,
                     tenantId = _tenantA,
                 },
                 TestContext.Current.CancellationToken);
@@ -201,7 +201,7 @@ public sealed class GranitRoleEndpointsTests
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
         Guid roleId = await CreateViaEndpointAsync(
-            "Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
+            "Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
 
         HttpResponseMessage response = await _app.HttpClient.PutAsJsonAsync(
             $"/admin/roles/{roleId:D}",
@@ -222,7 +222,7 @@ public sealed class GranitRoleEndpointsTests
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
         Guid roleId = await CreateViaEndpointAsync(
-            "Manager", MultiTenancySide.Tenant, tenantId: _tenantA);
+            "Manager", MultiTenancySides.Tenant, tenantId: _tenantA);
 
         HttpResponseMessage response = await _app.HttpClient.DeleteAsync(
             $"/admin/roles/{roleId:D}", TestContext.Current.CancellationToken);
@@ -242,7 +242,7 @@ public sealed class GranitRoleEndpointsTests
     public async Task Delete_SystemRole_Returns403()
     {
         RoleMetadata system = await SeedMetadataAsync(
-            "SuperAdmin", MultiTenancySide.Host, tenantId: null, isSystem: true);
+            "SuperAdmin", MultiTenancySides.Host, tenantId: null, isSystem: true);
 
         HttpResponseMessage response = await _app.HttpClient.DeleteAsync(
             $"/admin/roles/{system.Id:D}", TestContext.Current.CancellationToken);
@@ -254,7 +254,7 @@ public sealed class GranitRoleEndpointsTests
     public async Task Rename_SystemRole_Returns403()
     {
         RoleMetadata system = await SeedMetadataAsync(
-            "User", MultiTenancySide.Both, tenantId: null, isSystem: true);
+            "User", MultiTenancySides.Both, tenantId: null, isSystem: true);
 
         HttpResponseMessage response = await _app.HttpClient.PutAsJsonAsync(
             $"/admin/roles/{system.Id:D}",
@@ -272,7 +272,7 @@ public sealed class GranitRoleEndpointsTests
     public async Task Rename_AsTenantAdmin_OtherTenantRole_Returns404()
     {
         RoleMetadata otherTenantRole = await SeedMetadataAsync(
-            "Manager", MultiTenancySide.Tenant, tenantId: _tenantB);
+            "Manager", MultiTenancySides.Tenant, tenantId: _tenantB);
 
         using IDisposable _ = _app.CurrentTenant.Change(_tenantA);
 
@@ -296,7 +296,7 @@ public sealed class GranitRoleEndpointsTests
             new
             {
                 name = "Auditor",
-                multiTenancySide = (int)MultiTenancySide.Host,
+                multiTenancySide = (int)MultiTenancySides.Host,
                 tenantId = (Guid?)null,
                 description = "Read-only platform auditor.",
             },
@@ -309,7 +309,7 @@ public sealed class GranitRoleEndpointsTests
 
         created.ShouldNotBeNull();
         created.Name.ShouldBe("Auditor");
-        created.MultiTenancySide.ShouldBe(MultiTenancySide.Host);
+        created.MultiTenancySides.ShouldBe(MultiTenancySides.Host);
         created.IsSystem.ShouldBeFalse();
     }
 
@@ -318,7 +318,7 @@ public sealed class GranitRoleEndpointsTests
     // ─────────────────────────────────────────────────────────────────────
 
     private async Task<Guid> CreateViaEndpointAsync(
-        string name, MultiTenancySide side, Guid? tenantId)
+        string name, MultiTenancySides side, Guid? tenantId)
     {
         HttpResponseMessage response = await _app.HttpClient.PostAsJsonAsync(
             "/admin/roles",
@@ -337,7 +337,7 @@ public sealed class GranitRoleEndpointsTests
     }
 
     private async Task<RoleMetadata> SeedMetadataAsync(
-        string name, MultiTenancySide side, Guid? tenantId, bool isSystem = false)
+        string name, MultiTenancySides side, Guid? tenantId, bool isSystem = false)
     {
         await using AsyncServiceScope scope = _app.Services.CreateAsyncScope();
         IRoleMetadataStore store = scope.ServiceProvider.GetRequiredService<IRoleMetadataStore>();
@@ -358,7 +358,7 @@ public sealed class GranitRoleEndpointsTests
     private sealed record RoleResponseLite(
         Guid Id,
         string Name,
-        MultiTenancySide MultiTenancySide,
+        MultiTenancySides MultiTenancySides,
         Guid? TenantId,
         string? ClientId,
         string? Description,

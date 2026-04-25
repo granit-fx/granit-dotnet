@@ -11,16 +11,16 @@ namespace Granit.OpenIddict.Tests.Extensions;
 
 /// <summary>
 /// Tests for <see cref="OpenIddictApplicationClientSideExtensions"/> — the read/write
-/// helpers that persist a <see cref="MultiTenancySide"/> policy on an OIDC
+/// helpers that persist a <see cref="MultiTenancySides"/> policy on an OIDC
 /// application's <see cref="OpenIddictApplicationDescriptor.Properties"/> bag.
 /// </summary>
 public sealed class OpenIddictApplicationClientSideExtensionsTests
 {
     [Theory]
-    [InlineData(MultiTenancySide.Host)]
-    [InlineData(MultiTenancySide.Tenant)]
-    [InlineData(MultiTenancySide.Both)]
-    public void SetClientSide_Then_GetClientSide_Roundtrip(MultiTenancySide side)
+    [InlineData(MultiTenancySides.Host)]
+    [InlineData(MultiTenancySides.Tenant)]
+    [InlineData(MultiTenancySides.Both)]
+    public void SetClientSide_Then_GetClientSide_Roundtrip(MultiTenancySides side)
     {
         OpenIddictApplicationDescriptor descriptor = new();
 
@@ -34,7 +34,7 @@ public sealed class OpenIddictApplicationClientSideExtensionsTests
     {
         OpenIddictApplicationDescriptor descriptor = new();
 
-        descriptor.SetClientSide(MultiTenancySide.Tenant);
+        descriptor.SetClientSide(MultiTenancySides.Tenant);
 
         descriptor.Properties.ShouldContainKey(
             OpenIddictApplicationClientSideExtensions.ClientSidePropertyKey);
@@ -48,7 +48,7 @@ public sealed class OpenIddictApplicationClientSideExtensionsTests
     public void SetClientSide_Null_Removes_Property()
     {
         OpenIddictApplicationDescriptor descriptor = new();
-        descriptor.SetClientSide(MultiTenancySide.Host);
+        descriptor.SetClientSide(MultiTenancySides.Host);
 
         descriptor.SetClientSide(null);
 
@@ -104,10 +104,10 @@ public sealed class OpenIddictApplicationClientSideExtensionsTests
     }
 
     [Theory]
-    [InlineData(MultiTenancySide.Host)]
-    [InlineData(MultiTenancySide.Tenant)]
-    [InlineData(MultiTenancySide.Both)]
-    public async Task GetClientSideAsync_Reads_FromApplicationManager(MultiTenancySide side)
+    [InlineData(MultiTenancySides.Host)]
+    [InlineData(MultiTenancySides.Tenant)]
+    [InlineData(MultiTenancySides.Both)]
+    public async Task GetClientSideAsync_Reads_FromApplicationManager(MultiTenancySides side)
     {
         CancellationToken cancellationToken = TestContext.Current.CancellationToken;
         IOpenIddictApplicationManager manager = Substitute.For<IOpenIddictApplicationManager>();
@@ -121,7 +121,7 @@ public sealed class OpenIddictApplicationClientSideExtensionsTests
         manager.GetPropertiesAsync(application, Arg.Any<CancellationToken>())
             .Returns(properties);
 
-        MultiTenancySide? resolved = await manager.GetClientSideAsync(application, cancellationToken);
+        MultiTenancySides? resolved = await manager.GetClientSideAsync(application, cancellationToken);
 
         resolved.ShouldBe(side);
     }
@@ -136,7 +136,7 @@ public sealed class OpenIddictApplicationClientSideExtensionsTests
         manager.GetPropertiesAsync(application, Arg.Any<CancellationToken>())
             .Returns(ImmutableDictionary<string, JsonElement>.Empty);
 
-        MultiTenancySide? resolved = await manager.GetClientSideAsync(application, cancellationToken);
+        MultiTenancySides? resolved = await manager.GetClientSideAsync(application, cancellationToken);
 
         resolved.ShouldBeNull();
     }

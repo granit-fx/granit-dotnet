@@ -243,7 +243,7 @@ internal static class MeterDefinitionEndpoints
         // RFC 8594 deprecation signal — kept for one release as alias for /archive.
         httpContext.Response.Headers["Deprecation"] = "true";
         httpContext.Response.Headers["Sunset"] = "Wed, 31 Dec 2026 23:59:59 GMT";
-        httpContext.Response.Headers["Link"] = "</metering/meters/{id}/archive>; rel=\"successor-version\"";
+        httpContext.Response.Headers.Link = "</metering/meters/{id}/archive>; rel=\"successor-version\"";
 
         return await ArchiveMeterAsync(id, reader, writer, cancellationToken).ConfigureAwait(false);
     }

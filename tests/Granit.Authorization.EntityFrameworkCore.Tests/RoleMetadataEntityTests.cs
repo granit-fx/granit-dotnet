@@ -31,12 +31,12 @@ public sealed class RoleMetadataEntityTests
         var id = Guid.NewGuid();
 
         var role = RoleMetadata.Create(
-            id, "SuperAdmin", MultiTenancySide.Host, tenantId: null,
+            id, "SuperAdmin", MultiTenancySides.Host, tenantId: null,
             clientId: null, description: "Platform administrator", isSystem: true);
 
         role.Id.ShouldBe(id);
         role.Name.ShouldBe("SuperAdmin");
-        role.MultiTenancySide.ShouldBe(MultiTenancySide.Host);
+        role.MultiTenancySides.ShouldBe(MultiTenancySides.Host);
         role.TenantId.ShouldBeNull();
         role.ClientId.ShouldBeNull();
         role.Description.ShouldBe("Platform administrator");
@@ -49,20 +49,20 @@ public sealed class RoleMetadataEntityTests
         var tenantId = Guid.NewGuid();
 
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantId);
+            Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantId);
 
         role.TenantId.ShouldBe(tenantId);
-        role.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
+        role.MultiTenancySides.ShouldBe(MultiTenancySides.Tenant);
     }
 
     [Fact]
     public void Create_Both_LeavesTenantIdNull()
     {
         var role = RoleMetadata.Create(
-            Guid.NewGuid(), "User", MultiTenancySide.Both, tenantId: null);
+            Guid.NewGuid(), "User", MultiTenancySides.Both, tenantId: null);
 
         role.TenantId.ShouldBeNull();
-        role.MultiTenancySide.ShouldBe(MultiTenancySide.Both);
+        role.MultiTenancySides.ShouldBe(MultiTenancySides.Both);
     }
 
     [Fact]
@@ -72,13 +72,13 @@ public sealed class RoleMetadataEntityTests
         var tenantId = Guid.NewGuid();
 
         var role = RoleMetadata.Create(
-            id, "Manager", MultiTenancySide.Tenant, tenantId, clientId: "client-a");
+            id, "Manager", MultiTenancySides.Tenant, tenantId, clientId: "client-a");
 
         role.DomainEvents.Count.ShouldBe(1);
         RoleCreatedEvent evt = role.DomainEvents.Single().ShouldBeOfType<RoleCreatedEvent>();
         evt.RoleId.ShouldBe(id);
         evt.Name.ShouldBe("Manager");
-        evt.MultiTenancySide.ShouldBe(MultiTenancySide.Tenant);
+        evt.MultiTenancySides.ShouldBe(MultiTenancySides.Tenant);
         evt.TenantId.ShouldBe(tenantId);
         evt.ClientId.ShouldBe("client-a");
     }
@@ -90,7 +90,7 @@ public sealed class RoleMetadataEntityTests
     public void Create_RejectsNullOrWhitespaceName(string? name)
     {
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), name!, MultiTenancySide.Host, null));
+            RoleMetadata.Create(Guid.NewGuid(), name!, MultiTenancySides.Host, null));
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public sealed class RoleMetadataEntityTests
         string longName = new('x', 257);
 
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), longName, MultiTenancySide.Host, null));
+            RoleMetadata.Create(Guid.NewGuid(), longName, MultiTenancySides.Host, null));
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public sealed class RoleMetadataEntityTests
         string longClient = new('c', 257);
 
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySide.Host, null, clientId: longClient));
+            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySides.Host, null, clientId: longClient));
     }
 
     [Fact]
@@ -117,28 +117,28 @@ public sealed class RoleMetadataEntityTests
         string longDesc = new('d', 2049);
 
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySide.Host, null, description: longDesc));
+            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySides.Host, null, description: longDesc));
     }
 
     [Fact]
     public void Create_Host_WithTenantId_Throws()
     {
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), "SuperAdmin", MultiTenancySide.Host, Guid.NewGuid()));
+            RoleMetadata.Create(Guid.NewGuid(), "SuperAdmin", MultiTenancySides.Host, Guid.NewGuid()));
     }
 
     [Fact]
     public void Create_Both_WithTenantId_Throws()
     {
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), "User", MultiTenancySide.Both, Guid.NewGuid()));
+            RoleMetadata.Create(Guid.NewGuid(), "User", MultiTenancySides.Both, Guid.NewGuid()));
     }
 
     [Fact]
     public void Create_Tenant_WithoutTenantId_Throws()
     {
         Should.Throw<ArgumentException>(() =>
-            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySide.Tenant, tenantId: null));
+            RoleMetadata.Create(Guid.NewGuid(), "Manager", MultiTenancySides.Tenant, tenantId: null));
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public sealed class RoleMetadataEntityTests
         RoleMetadata.Create(
             Guid.NewGuid(),
             "SuperAdmin",
-            MultiTenancySide.Host,
+            MultiTenancySides.Host,
             tenantId: null,
             description: "Initial description");
 }

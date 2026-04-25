@@ -40,7 +40,7 @@ internal sealed partial class SepaTransferPaymentProvider(
                 Capability: new PaymentMethodCapability(
                     SupportedCountries: PaymentMethodCountries.SepaZone,
                     SupportedCurrencies: PaymentMethodCurrencies.EurOnly,
-                    SupportedSequenceTypes: PaymentMethodSequenceType.OneOff,
+                    SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff,
                     AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty)),
         ];
         return Task.FromResult(catalog);

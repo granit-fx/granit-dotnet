@@ -52,14 +52,14 @@ public interface IGranitRoleOrchestrator
 
 /// <summary>Input for <see cref="IGranitRoleOrchestrator.CreateAsync"/>.</summary>
 /// <param name="Name">Role display name, e.g. <c>"Manager"</c>.</param>
-/// <param name="MultiTenancySide">Declarative scope of the role.</param>
-/// <param name="TenantId">Tenant identifier — must be set iff <paramref name="MultiTenancySide"/> is <see cref="Granit.MultiTenancy.MultiTenancySide.Tenant"/>.</param>
+/// <param name="MultiTenancySides">Declarative scope of the role.</param>
+/// <param name="TenantId">Tenant identifier — must be set iff <paramref name="MultiTenancySides"/> is <see cref="Granit.MultiTenancy.MultiTenancySides.Tenant"/>.</param>
 /// <param name="ClientId">Optional OIDC client scope — reserved for future realm / client role distinction.</param>
 /// <param name="Description">Optional description.</param>
 /// <param name="IsSystem">Mark the role as platform-provisioned (prevents CRUD via endpoints).</param>
 public sealed record CreateRoleCommand(
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId = null,
     string? Description = null,

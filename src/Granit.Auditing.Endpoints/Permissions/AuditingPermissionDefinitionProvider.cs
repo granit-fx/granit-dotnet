@@ -25,7 +25,7 @@ internal sealed class AuditingPermissionDefinitionProvider : IPermissionDefiniti
             AuditingPermissions.AuditEntries.Read,
             LocalizableString.Create<AuditingEndpointsLocalizationResource>(
                 "Permission:Auditing.AuditEntries.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         // Managing (pruning, redacting) audit entries is an infrastructure concern and
         // should not be delegated to tenant admins — mis-use could break compliance trails.
@@ -33,6 +33,6 @@ internal sealed class AuditingPermissionDefinitionProvider : IPermissionDefiniti
             AuditingPermissions.AuditEntries.Manage,
             LocalizableString.Create<AuditingEndpointsLocalizationResource>(
                 "Permission:Auditing.AuditEntries.Manage"),
-            MultiTenancySide.Host);
+            MultiTenancySides.Host);
     }
 }

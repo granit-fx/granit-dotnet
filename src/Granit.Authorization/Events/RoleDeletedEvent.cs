@@ -12,12 +12,12 @@ namespace Granit.Authorization.Events;
 /// </remarks>
 /// <param name="RoleId">Aggregate identifier.</param>
 /// <param name="Name">Name at deletion time.</param>
-/// <param name="MultiTenancySide">Side applicability.</param>
+/// <param name="MultiTenancySides">Side applicability.</param>
 /// <param name="TenantId">Tenant scope.</param>
 /// <param name="ClientId">OIDC client scope.</param>
 public sealed record RoleDeletedEvent(
     Guid RoleId,
     string Name,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId) : IDomainEvent;

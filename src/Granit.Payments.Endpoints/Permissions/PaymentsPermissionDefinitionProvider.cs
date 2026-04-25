@@ -19,21 +19,21 @@ internal sealed class PaymentsPermissionDefinitionProvider : IPermissionDefiniti
         // merchant flow can tighten these to Tenant in their own provider.
         group.AddPermission(PaymentsPermissions.Transactions.Read,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Transactions.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(PaymentsPermissions.Charges.Execute,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Charges.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(PaymentsPermissions.Refunds.Execute,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Refunds.Execute"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(PaymentsPermissions.Methods.Read,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Methods.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(PaymentsPermissions.Methods.Manage,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Methods.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
         group.AddPermission(PaymentsPermissions.Configuration.Manage,
             LocalizableString.Create<PaymentsEndpointsLocalizationResource>("Permission:Payments.Configuration.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

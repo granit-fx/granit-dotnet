@@ -14,7 +14,7 @@ public interface IPermissionGrantDbContext
     DbSet<PermissionGrant> PermissionGrants { get; }
 
     /// <summary>
-    /// Role metadata table — declarative scope (<see cref="Granit.MultiTenancy.MultiTenancySide"/>,
+    /// Role metadata table — declarative scope (<see cref="Granit.MultiTenancy.MultiTenancySides"/>,
     /// optional tenant / OIDC client) for roles managed via <see cref="IRoleMetadataStore"/>.
     /// </summary>
     /// <remarks>

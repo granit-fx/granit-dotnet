@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Granit.Authorization;
@@ -111,7 +112,7 @@ public sealed partial class CognitoClientRoleSyncService(
                 var metadata = RoleMetadata.Create(
                     id: guidGenerator.Create(),
                     name: role.Name,
-                    multiTenancySide: MultiTenancySide.Host,
+                    multiTenancySide: MultiTenancySides.Host,
                     tenantId: null,
                     clientId: clientId,
                     description: role.Description,
@@ -221,6 +222,7 @@ public sealed partial class CognitoClientRoleSyncService(
         Message = "Cognito client-role sync for '{ClientId}' completed: " +
                   "{Added} added, {Updated} updated, {Unchanged} unchanged, {Restored} restored, " +
                   "{OrphanedKept} kept-orphaned, {OrphanedSoftDeleted} soft-deleted, {OrphanedHardDeleted} hard-deleted.")]
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Source-generated [LoggerMessage] partial — one parameter per template placeholder; collapsing into a wrapper would defeat structured logging.")]
     private static partial void LogClientSynced(
         ILogger logger, string clientId,
         int added, int updated, int unchanged, int restored,

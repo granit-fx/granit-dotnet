@@ -59,18 +59,18 @@ internal static partial class PaymentAvailabilityContextParser
             return null;
         }
 
-        PaymentMethodSequenceType sequence = PaymentMethodSequenceType.OneOff;
+        PaymentMethodSequenceTypes sequence = PaymentMethodSequenceTypes.OneOff;
         if (!string.IsNullOrWhiteSpace(sequenceType))
         {
             sequence = sequenceType.Trim().ToLowerInvariant() switch
             {
-                "oneoff" => PaymentMethodSequenceType.OneOff,
-                "first" => PaymentMethodSequenceType.First,
-                "recurring" => PaymentMethodSequenceType.Recurring,
-                _ => PaymentMethodSequenceType.None,
+                "oneoff" => PaymentMethodSequenceTypes.OneOff,
+                "first" => PaymentMethodSequenceTypes.First,
+                "recurring" => PaymentMethodSequenceTypes.Recurring,
+                _ => PaymentMethodSequenceTypes.None,
             };
 
-            if (sequence == PaymentMethodSequenceType.None)
+            if (sequence == PaymentMethodSequenceTypes.None)
             {
                 error = $"'{sequenceType}' is not a valid sequence type (expected: oneoff, first, recurring).";
                 return null;

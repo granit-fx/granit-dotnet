@@ -14,13 +14,13 @@ namespace Granit.Authorization.Events;
 /// when only the description changed (name was not renamed). Cache invalidation
 /// handlers use this to flush entries keyed on the stale name.
 /// </param>
-/// <param name="MultiTenancySide">Side applicability (unchanged since creation).</param>
+/// <param name="MultiTenancySides">Side applicability (unchanged since creation).</param>
 /// <param name="TenantId">Tenant scope (unchanged since creation).</param>
 /// <param name="ClientId">OIDC client scope (unchanged since creation).</param>
 public sealed record RoleUpdatedEvent(
     Guid RoleId,
     string Name,
     string? PreviousName,
-    MultiTenancySide MultiTenancySide,
+    MultiTenancySides MultiTenancySides,
     Guid? TenantId,
     string? ClientId) : IDomainEvent;

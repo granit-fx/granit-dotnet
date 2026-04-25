@@ -21,7 +21,7 @@ public sealed class PermissionGroup(string name, LocalizableString? displayName 
     public PermissionDefinition AddPermission(
         string name,
         LocalizableString? displayName = null,
-        MultiTenancySide multiTenancySide = MultiTenancySide.Both)
+        MultiTenancySides multiTenancySide = MultiTenancySides.Both)
     {
         PermissionDefinition definition = new(name, displayName, Name, multiTenancySide);
         _permissions.Add(definition);

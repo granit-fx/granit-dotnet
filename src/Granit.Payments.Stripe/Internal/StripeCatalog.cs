@@ -28,8 +28,8 @@ internal static class StripeCatalog
     private static readonly ImmutableHashSet<string> GlobalCurrencies = ImmutableHashSet<string>.Empty;
     private static readonly ImmutableHashSet<string> Global = ImmutableHashSet<string>.Empty;
 
-    private const PaymentMethodSequenceType AllSequences =
-        PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring;
+    private const PaymentMethodSequenceTypes AllSequences =
+        PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring;
 
     /// <summary>Ordered catalog covering Stripe's European surface.</summary>
     public static IReadOnlyList<PaymentMethodCatalogEntry> Entries { get; } =
@@ -39,41 +39,41 @@ internal static class StripeCatalog
 
         new(PaymentMethods.Bancontact, PaymentMethodCategory.BankRedirect, "Bancontact",
             new(Set("BE"), PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First, NoBounds)),
 
         new(PaymentMethods.Ideal, PaymentMethodCategory.BankRedirect, "iDEAL",
             new(Set("NL"), PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff | PaymentMethodSequenceType.First, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff | PaymentMethodSequenceTypes.First, NoBounds)),
 
         new(PaymentMethods.Eps, PaymentMethodCategory.BankRedirect, "EPS",
-            new(Set("AT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("AT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Giropay, PaymentMethodCategory.BankRedirect, "Giropay",
-            new(Set("DE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("DE"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Przelewy24, PaymentMethodCategory.BankRedirect, "Przelewy24",
-            new(Set("PL"), Set("PLN", "EUR"), PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("PL"), Set("PLN", "EUR"), PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Blik, PaymentMethodCategory.BankRedirect, "BLIK",
-            new(Set("PL"), Set("PLN"), PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("PL"), Set("PLN"), PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Twint, PaymentMethodCategory.BankRedirect, "TWINT",
-            new(Set("CH"), Set("CHF"), PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("CH"), Set("CHF"), PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Trustly, PaymentMethodCategory.BankRedirect, "Trustly",
             new(Set("SE", "FI", "EE", "LV", "LT", "DK", "NO", "GB"), GlobalCurrencies,
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.MyBank, PaymentMethodCategory.BankRedirect, "MyBank",
-            new(Set("IT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceType.OneOff, NoBounds)),
+            new(Set("IT"), PaymentMethodCurrencies.EurOnly, PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.BankTransfer, PaymentMethodCategory.BankTransfer, "Bank transfer",
             new(PaymentMethodCountries.SepaZone, PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.SepaDebit, PaymentMethodCategory.BankDebit, "SEPA Direct Debit",
             new(PaymentMethodCountries.SepaZone, PaymentMethodCurrencies.EurOnly,
-                PaymentMethodSequenceType.First | PaymentMethodSequenceType.Recurring, NoBounds)),
+                PaymentMethodSequenceTypes.First | PaymentMethodSequenceTypes.Recurring, NoBounds)),
 
         new(PaymentMethods.ApplePay, PaymentMethodCategory.Wallet, "Apple Pay",
             new(Global, GlobalCurrencies, AllSequences, NoBounds)),
@@ -86,17 +86,17 @@ internal static class StripeCatalog
 
         new(PaymentMethods.Alipay, PaymentMethodCategory.Wallet, "Alipay",
             new(Set("CN", "HK", "SG"), Set("CNY", "USD", "EUR", "GBP", "HKD", "SGD"),
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.WechatPay, PaymentMethodCategory.Wallet, "WeChat Pay",
             new(Set("CN", "HK"), Set("CNY", "USD", "EUR", "GBP", "HKD"),
-                PaymentMethodSequenceType.OneOff, NoBounds)),
+                PaymentMethodSequenceTypes.OneOff, NoBounds)),
 
         new(PaymentMethods.Klarna, PaymentMethodCategory.BuyNowPayLater, "Klarna",
             new(
                 Set("AT", "BE", "CH", "CZ", "DE", "DK", "ES", "FI", "FR", "GB", "IE", "IT", "NL", "NO", "PL", "PT", "SE", "US"),
                 Set("EUR", "GBP", "SEK", "DKK", "NOK", "CHF", "USD"),
-                PaymentMethodSequenceType.OneOff,
+                PaymentMethodSequenceTypes.OneOff,
                 Bounds(
                     ("EUR", 1m, 10_000m),
                     ("GBP", 1m, 10_000m),
@@ -110,7 +110,7 @@ internal static class StripeCatalog
             new(
                 Set("AT", "CH", "DE", "NL"),
                 Set("EUR", "CHF"),
-                PaymentMethodSequenceType.OneOff,
+                PaymentMethodSequenceTypes.OneOff,
                 Bounds(
                     ("EUR", 5m, 1_500m),
                     ("CHF", 5m, 1_500m)))),

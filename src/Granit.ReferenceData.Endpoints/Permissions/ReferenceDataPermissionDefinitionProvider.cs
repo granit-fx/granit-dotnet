@@ -27,12 +27,12 @@ internal sealed class ReferenceDataPermissionDefinitionProvider : IPermissionDef
             ReferenceDataPermissions.Entries.Read,
             LocalizableString.Create<ReferenceDataEndpointsLocalizationResource>(
                 "Permission:ReferenceData.Entries.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             ReferenceDataPermissions.Entries.Manage,
             LocalizableString.Create<ReferenceDataEndpointsLocalizationResource>(
                 "Permission:ReferenceData.Entries.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

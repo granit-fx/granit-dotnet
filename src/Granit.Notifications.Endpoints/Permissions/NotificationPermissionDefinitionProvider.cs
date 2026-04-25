@@ -41,12 +41,12 @@ internal sealed class NotificationPermissionDefinitionProvider : IPermissionDefi
             NotificationPermissions.UserNotifications.Read,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "Permission:Notifications.UserNotifications.Read"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
 
         group.AddPermission(
             NotificationPermissions.UserNotifications.Manage,
             LocalizableString.Create<NotificationsEndpointsLocalizationResource>(
                 "Permission:Notifications.UserNotifications.Manage"),
-            MultiTenancySide.Both);
+            MultiTenancySides.Both);
     }
 }

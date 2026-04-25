@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization;
 using Granit.DataLookup.Descriptors;
 using Granit.DataLookup.Diagnostics;
@@ -36,6 +37,7 @@ public static class LookupEndpointHandlers
     }
 
     /// <summary>GET /api/granit/lookups/{name} — paginated search.</summary>
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/[FromQuery] parameters explicitly; no natural domain wrapper for orthogonal request inputs and DI collaborators.")]
     public static async Task<Results<Ok<LookupResultResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>> SearchAsync(
         string name,
         [FromServices] ILookupRegistry registry,
