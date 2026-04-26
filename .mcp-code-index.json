@@ -479,6 +479,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Contacts",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
@@ -10331,6 +10340,522 @@
       "file": "src/Granit/Commands/ICommandSender.cs",
       "line": 45,
       "members": []
+    },
+    {
+      "name": "Address",
+      "fqn": "Granit.Contacts.Domain.Address",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/Address.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null)",
+          "returnType": "Address"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "AddressKind",
+      "fqn": "Granit.Contacts.Domain.AddressKind",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/AddressKind.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "Contact",
+      "fqn": "Granit.Contacts.Domain.Contact",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/Contact.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
+          "returnType": "Contact"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<ContactEmail> Emails => _emails."
+        },
+        {
+          "name": "PrimaryEmail",
+          "kind": "property",
+          "signature": "ContactEmail? PrimaryEmail",
+          "returnType": "ContactEmail?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<ContactPhone> Phones => _phones."
+        },
+        {
+          "name": "PrimaryPhone",
+          "kind": "property",
+          "signature": "ContactPhone? PrimaryPhone",
+          "returnType": "ContactPhone?"
+        },
+        {
+          "name": "Website",
+          "kind": "property",
+          "signature": "string? Website",
+          "returnType": "string?"
+        },
+        {
+          "name": "DefaultCurrency",
+          "kind": "property",
+          "signature": "string DefaultCurrency",
+          "returnType": "string"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "string? TaxId { get; private set; } public string? RegistrationNumber { get; private set; } public IReadOnlyList<ContactAddress> Addresses => _addresses."
+        },
+        {
+          "name": "DefaultBillingAddress",
+          "kind": "property",
+          "signature": "ContactAddress? DefaultBillingAddress",
+          "returnType": "ContactAddress?"
+        },
+        {
+          "name": "DefaultShippingAddress",
+          "kind": "property",
+          "signature": "ContactAddress? DefaultShippingAddress",
+          "returnType": "ContactAddress?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "Guid? AvatarBlobId { get; private set; } public ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "bool"
+        },
+        {
+          "name": "AddExternalMapping",
+          "kind": "method",
+          "signature": "AddExternalMapping(Guid mappingId, string providerName, string externalId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ContactAddress",
+      "fqn": "Granit.Contacts.Domain.ContactAddress",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactAddress.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, AddressKind kind, Address value, bool isDefault = false, string? label = null)",
+          "returnType": "ContactAddress"
+        },
+        {
+          "name": "MarkDefault",
+          "kind": "method",
+          "signature": "MarkDefault(bool isDefault)",
+          "returnType": "bool IsDefault { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "ContactEmail",
+      "fqn": "Granit.Contacts.Domain.ContactEmail",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactEmail.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string address, bool isPrimary = false, string? label = null)",
+          "returnType": "ContactEmail"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "ContactExternalMapping",
+      "fqn": "Granit.Contacts.Domain.ContactExternalMapping",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactExternalMapping.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "ContactExternalMapping"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "ContactExternalProviderNames",
+      "fqn": "Granit.Contacts.Domain.ContactExternalProviderNames",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactExternalProviderNames.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ContactKind",
+      "fqn": "Granit.Contacts.Domain.ContactKind",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ContactPhone",
+      "fqn": "Granit.Contacts.Domain.ContactPhone",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactPhone.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, PhoneKind kind, string number, bool isPrimary = false, string? label = null)",
+          "returnType": "ContactPhone"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "ContactRoles",
+      "fqn": "Granit.Contacts.Domain.ContactRoles",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactRoles.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ContactStatus",
+      "fqn": "Granit.Contacts.Domain.ContactStatus",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactStatus.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "PhoneKind",
+      "fqn": "Granit.Contacts.Domain.PhoneKind",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/PhoneKind.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactId",
+      "fqn": "Granit.Contacts.Domain.ValueObjects.ContactId",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ValueObjects/ContactId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public ContactId"
+        },
+        {
+          "name": "ContactId",
+          "kind": "method",
+          "signature": "ContactId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "ContactActivatedEto",
+      "fqn": "Granit.Contacts.Events.ContactActivatedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactActivatedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactActivatedEvent",
+      "fqn": "Granit.Contacts.Events.ContactActivatedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactActivatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactArchivedEto",
+      "fqn": "Granit.Contacts.Events.ContactArchivedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactArchivedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactArchivedEvent",
+      "fqn": "Granit.Contacts.Events.ContactArchivedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactArchivedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactAttachedToParentEvent",
+      "fqn": "Granit.Contacts.Events.ContactAttachedToParentEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactAttachedToParentEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactCreatedEto",
+      "fqn": "Granit.Contacts.Events.ContactCreatedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactCreatedEto.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ContactCreatedEvent",
+      "fqn": "Granit.Contacts.Events.ContactCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactCreatedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ContactDetachedFromParentEvent",
+      "fqn": "Granit.Contacts.Events.ContactDetachedFromParentEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactDetachedFromParentEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactExternalMappingAddedEto",
+      "fqn": "Granit.Contacts.Events.ContactExternalMappingAddedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactExternalMappingAddedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ContactExternalMappingAddedEvent",
+      "fqn": "Granit.Contacts.Events.ContactExternalMappingAddedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactExternalMappingAddedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactLinkedToUserEvent",
+      "fqn": "Granit.Contacts.Events.ContactLinkedToUserEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactLinkedToUserEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactRoleAddedEvent",
+      "fqn": "Granit.Contacts.Events.ContactRoleAddedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactRoleAddedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ContactRoleRemovedEvent",
+      "fqn": "Granit.Contacts.Events.ContactRoleRemovedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactRoleRemovedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ContactSuspendedEto",
+      "fqn": "Granit.Contacts.Events.ContactSuspendedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactSuspendedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactSuspendedEvent",
+      "fqn": "Granit.Contacts.Events.ContactSuspendedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactSuspendedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ContactUpdatedEto",
+      "fqn": "Granit.Contacts.Events.ContactUpdatedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactUpdatedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactUpdatedEvent",
+      "fqn": "Granit.Contacts.Events.ContactUpdatedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactUpdatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitContactsModule",
+      "fqn": "Granit.Contacts.GranitContactsModule",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/GranitContactsModule.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "IContactReader",
+      "fqn": "Granit.Contacts.IContactReader",
+      "kind": "interface",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/IContactReader.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(ContactId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Contact?>"
+        },
+        {
+          "name": "GetByExternalIdAsync",
+          "kind": "method",
+          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Contact?>"
+        },
+        {
+          "name": "GetByUserIdAsync",
+          "kind": "method",
+          "signature": "GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Contact?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Contact>>"
+        },
+        {
+          "name": "ListByRoleAsync",
+          "kind": "method",
+          "signature": "ListByRoleAsync(ContactRoles role, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Contact>>"
+        }
+      ]
+    },
+    {
+      "name": "IContactWriter",
+      "fqn": "Granit.Contacts.IContactWriter",
+      "kind": "interface",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/IContactWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Contact contact, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Contact contact, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "GranitCustomerBalanceBackgroundJobsModule",
