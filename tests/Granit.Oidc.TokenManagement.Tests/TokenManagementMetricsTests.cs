@@ -51,7 +51,8 @@ public sealed class TokenManagementMetricsTests : IDisposable
 
         collector.InstrumentPublished = (instrument, listener) =>
         {
-            if (instrument.Name == "granit.oidc.token_management.request.sent")
+            if (instrument.Name == "granit.oidc.token_management.request.sent"
+                && ReferenceEquals(instrument.Meter.Scope, _meterFactory))
             {
                 listener.EnableMeasurementEvents(instrument);
             }
@@ -79,6 +80,7 @@ public sealed class TokenManagementMetricsTests : IDisposable
 
         public Meter Create(MeterOptions options)
         {
+            options.Scope = this;
             Meter meter = new(options);
             _meters.Add(meter);
             return meter;
