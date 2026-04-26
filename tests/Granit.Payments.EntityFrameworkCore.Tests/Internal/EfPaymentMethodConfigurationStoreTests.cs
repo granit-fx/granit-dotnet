@@ -38,7 +38,7 @@ public sealed class EfPaymentMethodConfigurationStoreTests : IAsyncDisposable
         new(
             SupportedCountries: ImmutableHashSet.Create("BE", "FR"),
             SupportedCurrencies: ImmutableHashSet.Create("EUR"),
-            SupportedSequenceTypes: PaymentMethodSequenceType.OneOff,
+            SupportedSequenceTypes: PaymentMethodSequenceTypes.OneOff,
             AmountBounds: ImmutableDictionary<string, PaymentMethodAmountBound>.Empty);
 
     [Fact]
