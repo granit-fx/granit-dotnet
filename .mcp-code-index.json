@@ -482,8 +482,24 @@
       "name": "Granit.Contacts",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Contacts.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Contacts",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.Http.Abstractions",
+        "Granit.Http.ApiDocumentation",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -10643,6 +10659,213 @@
       ]
     },
     {
+      "name": "ContactAddressRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactAddressRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactAddressRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ContactAddressResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactAddressResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "ContactCreateRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactCreateRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactCreateRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "ContactEmailRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactEmailRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactEmailRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactEmailResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactEmailResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "ContactExternalMappingRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactExternalMappingRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactExternalMappingRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactExternalMappingResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactExternalMappingResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 56,
+      "members": []
+    },
+    {
+      "name": "ContactListItemResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactListItemResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 62,
+      "members": []
+    },
+    {
+      "name": "ContactPhoneRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactPhoneRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactPhoneRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ContactPhoneResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactPhoneResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 48,
+      "members": []
+    },
+    {
+      "name": "ContactResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ContactRoleRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactRoleRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactRoleRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ContactSuspendRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactSuspendRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactSuspendRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactTaxIdentityRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxIdentityRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactTaxIdentityRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactUpdateRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactUpdateRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Contacts.Endpoints.Extensions.ContactsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Extensions/ContactsEndpointRouteBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "MapGranitContacts",
+          "kind": "method",
+          "signature": "MapGranitContacts(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitContactsEndpointsModule",
+      "fqn": "Granit.Contacts.Endpoints.GranitContactsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/GranitContactsEndpointsModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ContactEndpointsOptions",
+      "fqn": "Granit.Contacts.Endpoints.Options.ContactEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Options/ContactEndpointsOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Contacts",
+      "fqn": "Granit.Contacts.Endpoints.Permissions.Contacts",
+      "kind": "class",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Permissions/ContactsPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ContactsPermissions",
+      "fqn": "Granit.Contacts.Endpoints.Permissions.ContactsPermissions",
+      "kind": "class",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Permissions/ContactsPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Contacts.EntityFrameworkCore.Extensions.ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -10853,6 +11076,22 @@
       "members": []
     },
     {
+      "name": "ContactExportDefinition",
+      "fqn": "Granit.Contacts.Exports.ContactExportDefinition",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Exports/ContactExportDefinition.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitContactsModule",
       "fqn": "Granit.Contacts.GranitContactsModule",
       "kind": "class",
@@ -10920,6 +11159,22 @@
           "kind": "method",
           "signature": "UpdateAsync(Contact contact, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ContactQueryDefinition",
+      "fqn": "Granit.Contacts.Queries.ContactQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Queries/ContactQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },

@@ -1,0 +1,5 @@
+{
+  "PermissionGroup:Contacts": "Contacts",
+  "Permission:Contacts.Contacts.Read": "Consulter les contacts",
+  "Permission:Contacts.Contacts.Manage": "Gérer les contacts (créer, modifier, cycle de vie, adresses, emails, téléphones, identifiants externes, rôles)"
+}
