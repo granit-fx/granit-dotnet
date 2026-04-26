@@ -57,6 +57,7 @@
       "src/Granit.Catalog.Endpoints/Granit.Catalog.Endpoints.csproj",
       "src/Granit.Catalog.EntityFrameworkCore/Granit.Catalog.EntityFrameworkCore.csproj",
       "src/Granit.Catalog/Granit.Catalog.csproj",
+      "src/Granit.Contacts.Abstractions/Granit.Contacts.Abstractions.csproj",
       "src/Granit.Contacts.Endpoints/Granit.Contacts.Endpoints.csproj",
       "src/Granit.Contacts.EntityFrameworkCore/Granit.Contacts.EntityFrameworkCore.csproj",
       "src/Granit.Contacts.Privacy/Granit.Contacts.Privacy.csproj",

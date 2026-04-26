@@ -482,10 +482,18 @@
       "name": "Granit.Contacts",
       "deps": [
         "Granit",
+        "Granit.Contacts.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Contacts.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -10379,8 +10387,8 @@
       "name": "Address",
       "fqn": "Granit.Contacts.Domain.Address",
       "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/Address.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/Address.cs",
       "line": 15,
       "members": [
         {
@@ -10413,8 +10421,8 @@
       "name": "AddressKind",
       "fqn": "Granit.Contacts.Domain.AddressKind",
       "kind": "enum",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/AddressKind.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/AddressKind.cs",
       "line": 13,
       "members": []
     },
@@ -10422,8 +10430,8 @@
       "name": "BillingAddress",
       "fqn": "Granit.Contacts.Domain.BillingAddress",
       "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/BillingAddress.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/BillingAddress.cs",
       "line": 18,
       "members": [
         {
@@ -10622,8 +10630,8 @@
       "name": "ContactExternalProviderNames",
       "fqn": "Granit.Contacts.Domain.ContactExternalProviderNames",
       "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactExternalProviderNames.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/ContactExternalProviderNames.cs",
       "line": 12,
       "members": []
     },
@@ -10631,8 +10639,8 @@
       "name": "ContactKind",
       "fqn": "Granit.Contacts.Domain.ContactKind",
       "kind": "enum",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactKind.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/ContactKind.cs",
       "line": 9,
       "members": []
     },
@@ -10662,8 +10670,8 @@
       "name": "ContactRoles",
       "fqn": "Granit.Contacts.Domain.ContactRoles",
       "kind": "enum",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactRoles.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/ContactRoles.cs",
       "line": 9,
       "members": []
     },
@@ -10671,8 +10679,8 @@
       "name": "ContactStatus",
       "fqn": "Granit.Contacts.Domain.ContactStatus",
       "kind": "enum",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactStatus.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/ContactStatus.cs",
       "line": 16,
       "members": []
     },
@@ -10680,8 +10688,8 @@
       "name": "PhoneKind",
       "fqn": "Granit.Contacts.Domain.PhoneKind",
       "kind": "enum",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/PhoneKind.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/PhoneKind.cs",
       "line": 4,
       "members": []
     },
@@ -10689,8 +10697,8 @@
       "name": "ContactId",
       "fqn": "Granit.Contacts.Domain.ValueObjects.ContactId",
       "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ValueObjects/ContactId.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/ValueObjects/ContactId.cs",
       "line": 6,
       "members": [
         {
@@ -10975,8 +10983,8 @@
       "name": "ContactActivatedEto",
       "fqn": "Granit.Contacts.Events.ContactActivatedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactActivatedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactActivatedEto.cs",
       "line": 7,
       "members": []
     },
@@ -10993,8 +11001,8 @@
       "name": "ContactArchivedEto",
       "fqn": "Granit.Contacts.Events.ContactArchivedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactArchivedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactArchivedEto.cs",
       "line": 7,
       "members": []
     },
@@ -11020,8 +11028,8 @@
       "name": "ContactCreatedEto",
       "fqn": "Granit.Contacts.Events.ContactCreatedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactCreatedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactCreatedEto.cs",
       "line": 12,
       "members": []
     },
@@ -11047,8 +11055,8 @@
       "name": "ContactExternalMappingAddedEto",
       "fqn": "Granit.Contacts.Events.ContactExternalMappingAddedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactExternalMappingAddedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactExternalMappingAddedEto.cs",
       "line": 11,
       "members": []
     },
@@ -11074,8 +11082,8 @@
       "name": "ContactPersonalDataPseudonymizedEto",
       "fqn": "Granit.Contacts.Events.ContactPersonalDataPseudonymizedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactPersonalDataPseudonymizedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactPersonalDataPseudonymizedEto.cs",
       "line": 7,
       "members": []
     },
@@ -11110,8 +11118,8 @@
       "name": "ContactSuspendedEto",
       "fqn": "Granit.Contacts.Events.ContactSuspendedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactSuspendedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactSuspendedEto.cs",
       "line": 7,
       "members": []
     },
@@ -11128,8 +11136,8 @@
       "name": "ContactUpdatedEto",
       "fqn": "Granit.Contacts.Events.ContactUpdatedEto",
       "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactUpdatedEto.cs",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Events/ContactUpdatedEto.cs",
       "line": 7,
       "members": []
     },
