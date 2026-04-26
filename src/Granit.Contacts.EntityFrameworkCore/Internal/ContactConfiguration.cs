@@ -25,6 +25,7 @@ internal sealed class ContactConfiguration : IEntityTypeConfiguration<Contact>
         builder.Property(c => c.Status).IsRequired();
         builder.Property(c => c.Roles).IsRequired();
         builder.Property(c => c.UserId);
+        builder.Property(c => c.AvatarBlobId);
 
         // ParentContactId is a SingleValueObject<Guid> — declare explicitly as a scalar.
         builder.Property(c => c.ParentContactId);
