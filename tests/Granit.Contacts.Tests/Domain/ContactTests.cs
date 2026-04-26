@@ -163,6 +163,69 @@ public sealed class ContactTests
         Should.Throw<InvalidOperationException>(() => c.Suspend());
     }
 
+    // ── PII pseudonymisation (GDPR Art. 17) ───────────────────────
+
+    [Fact]
+    public void PseudonymizePersonalData_ReplacesNameAndClearsCollections()
+    {
+        Contact c = NewIndividual();
+        c.AddEmail(Guid.NewGuid(), "x@y.com");
+        c.AddPhone(Guid.NewGuid(), PhoneKind.Mobile, "+33611223344");
+        c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+        c.LinkToUser(Guid.NewGuid());
+        c.UpdateContact("Jean", website: "https://jean.example.com");
+
+        bool changed = c.PseudonymizePersonalData();
+
+        changed.ShouldBeTrue();
+        c.Name.ShouldBe("[deleted]");
+        c.Emails.ShouldBeEmpty();
+        c.Phones.ShouldBeEmpty();
+        c.Addresses.ShouldBeEmpty();
+        c.Website.ShouldBeNull();
+        c.UserId.ShouldBeNull();
+        c.DomainEvents.OfType<ContactPersonalDataPseudonymizedEvent>().ShouldHaveSingleItem();
+        c.IntegrationEvents.OfType<ContactPersonalDataPseudonymizedEto>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void PseudonymizePersonalData_PreservesAccountingFields()
+    {
+        var c = Contact.Create(
+            Guid.NewGuid(), null, ContactKind.Company, "Acme", "EUR",
+            taxId: "BE0123456789", registrationNumber: "0123.456.789");
+        c.AddExternalMapping(Guid.NewGuid(), "stripe", "cus_1");
+
+        c.PseudonymizePersonalData();
+
+        c.TaxId.ShouldBe("BE0123456789");
+        c.RegistrationNumber.ShouldBe("0123.456.789");
+        c.ExternalMappings.ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void PseudonymizePersonalData_OnArchived_StillSucceeds()
+    {
+        Contact c = NewIndividual();
+        c.AddEmail(Guid.NewGuid(), "x@y.com");
+        c.Archive();
+
+        bool changed = c.PseudonymizePersonalData();
+
+        changed.ShouldBeTrue();
+        c.Emails.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void PseudonymizePersonalData_AlreadyPseudonymised_ReturnsFalse()
+    {
+        var c = Contact.Create(
+            Guid.NewGuid(), null, ContactKind.Company, "[deleted]", "EUR");
+
+        c.PseudonymizePersonalData().ShouldBeFalse();
+        c.DomainEvents.OfType<ContactPersonalDataPseudonymizedEvent>().ShouldBeEmpty();
+    }
+
     // ── Identity & address updates ────────────────────────────────
 
     [Fact]
