@@ -226,6 +226,73 @@ public sealed class ContactTests
         c.DomainEvents.OfType<ContactPersonalDataPseudonymizedEvent>().ShouldBeEmpty();
     }
 
+    // ── Billing address snapshot ──────────────────────────────────
+
+    [Fact]
+    public void GetBillingAddressSnapshot_NoBillingAddress_ReturnsNull() =>
+        NewCompany().GetBillingAddressSnapshot().ShouldBeNull();
+
+    [Fact]
+    public void GetBillingAddressSnapshot_WithDefaultBilling_BundlesAddressAndTaxId()
+    {
+        var c = Contact.Create(
+            Guid.NewGuid(), null, ContactKind.Company, "Acme", "EUR",
+            taxId: "BE0123456789");
+        c.AddAddress(
+            Guid.NewGuid(),
+            AddressKind.Billing,
+            Address.Create("rue 1", "Brussels", "1000", "BE", companyName: "Acme HQ"));
+
+        BillingAddress? snapshot = c.GetBillingAddressSnapshot();
+
+        snapshot.ShouldNotBeNull();
+        snapshot.Line1.ShouldBe("rue 1");
+        snapshot.City.ShouldBe("Brussels");
+        snapshot.PostalCode.ShouldBe("1000");
+        snapshot.Country.ShouldBe("BE");
+        snapshot.CompanyName.ShouldBe("Acme HQ");
+        snapshot.VatNumber.ShouldBe("BE0123456789");
+    }
+
+    [Fact]
+    public void GetBillingAddressSnapshot_AddressWithoutCompanyName_FallsBackToContactName()
+    {
+        var c = Contact.Create(
+            Guid.NewGuid(), null, ContactKind.Company, "Acme Corp", "EUR");
+        c.AddAddress(
+            Guid.NewGuid(),
+            AddressKind.Billing,
+            Address.Create("rue 1", "Brussels", "1000", "BE"));
+
+        BillingAddress? snapshot = c.GetBillingAddressSnapshot();
+
+        snapshot.ShouldNotBeNull();
+        snapshot.CompanyName.ShouldBe("Acme Corp");
+    }
+
+    [Fact]
+    public void GetBillingAddressSnapshot_PrefersDefaultBilling()
+    {
+        var c = Contact.Create(
+            Guid.NewGuid(), null, ContactKind.Company, "Acme", "EUR");
+        c.AddAddress(
+            Guid.NewGuid(),
+            AddressKind.Billing,
+            Address.Create("old", "Paris", "75000", "FR"));
+        var defaultId = Guid.NewGuid();
+        c.AddAddress(
+            defaultId,
+            AddressKind.Billing,
+            Address.Create("new", "Brussels", "1000", "BE"),
+            isDefault: true);
+
+        BillingAddress? snapshot = c.GetBillingAddressSnapshot();
+
+        snapshot.ShouldNotBeNull();
+        snapshot.Line1.ShouldBe("new");
+        snapshot.Country.ShouldBe("BE");
+    }
+
     // ── Identity & address updates ────────────────────────────────
 
     [Fact]

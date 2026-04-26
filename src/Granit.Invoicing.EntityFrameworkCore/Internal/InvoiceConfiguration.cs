@@ -32,7 +32,7 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(e => e.ParentInvoiceId);
         builder.Property(e => e.ContactId).IsRequired();
 
-        builder.OwnsOne(e => e.BillingAddress, ba =>
+        builder.OwnsOne(e => e.IssuedBillingAddressSnapshot, ba =>
         {
             ba.Property(a => a.CompanyName).HasMaxLength(200);
             ba.Property(a => a.Line1).HasMaxLength(200).IsRequired();

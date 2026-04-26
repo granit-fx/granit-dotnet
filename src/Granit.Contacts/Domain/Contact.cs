@@ -308,6 +308,34 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         RaiseUpdated();
     }
 
+    /// <summary>
+    /// Returns the canonical billing-address snapshot for this contact: combines the default
+    /// <see cref="AddressKind.Billing"/> entry from <see cref="Addresses"/> with the
+    /// contact-level <see cref="TaxId"/> (VAT) and falls back to <see cref="Name"/> as the
+    /// company name when the address has none. <c>null</c> when no default billing address
+    /// is registered. Used by <c>Granit.Invoicing.Domain.Invoice.Finalize</c> to capture the
+    /// legal address shown on the issued document.
+    /// </summary>
+    public BillingAddress? GetBillingAddressSnapshot()
+    {
+        ContactAddress? defaultBilling = DefaultBillingAddress;
+        if (defaultBilling is null)
+        {
+            return null;
+        }
+
+        Address address = defaultBilling.Value;
+        return BillingAddress.Create(
+            line1: address.Line1,
+            city: address.City,
+            postalCode: address.PostalCode,
+            country: address.Country,
+            companyName: address.CompanyName ?? Name,
+            line2: address.Line2,
+            state: address.State,
+            vatNumber: TaxId);
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // Emails (multi, with primary)
     // ─────────────────────────────────────────────────────────────────

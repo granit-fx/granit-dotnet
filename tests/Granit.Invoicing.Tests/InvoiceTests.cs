@@ -60,6 +60,43 @@ public sealed class InvoiceTests
     }
 
     [Fact]
+    public void IssuedBillingAddressSnapshot_NullBeforeFinalize()
+    {
+        Invoice invoice = CreateDraftInvoice();
+
+        invoice.IssuedBillingAddressSnapshot.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Finalize_WithBillingSnapshot_PersistsItOnAggregate()
+    {
+        Invoice invoice = CreateDraftInvoice();
+        var snapshot = Granit.Contacts.Domain.BillingAddress.Create(
+            line1: "rue 1",
+            city: "Brussels",
+            postalCode: "1000",
+            country: "BE",
+            companyName: "Acme",
+            vatNumber: "BE0123456789");
+
+        invoice.Finalize("INV-2026-0001", DateTimeOffset.UtcNow, dueAt: null, billingAddressSnapshot: snapshot);
+
+        invoice.IssuedBillingAddressSnapshot.ShouldNotBeNull();
+        invoice.IssuedBillingAddressSnapshot.Line1.ShouldBe("rue 1");
+        invoice.IssuedBillingAddressSnapshot.VatNumber.ShouldBe("BE0123456789");
+    }
+
+    [Fact]
+    public void Finalize_WithoutBillingSnapshot_LeavesSnapshotNull()
+    {
+        Invoice invoice = CreateDraftInvoice();
+
+        invoice.Finalize("INV-2026-0001", DateTimeOffset.UtcNow, dueAt: null);
+
+        invoice.IssuedBillingAddressSnapshot.ShouldBeNull();
+    }
+
+    [Fact]
     public void AddLineItem_AfterFinalize_ShouldThrow()
     {
         Invoice invoice = CreateDraftInvoice();

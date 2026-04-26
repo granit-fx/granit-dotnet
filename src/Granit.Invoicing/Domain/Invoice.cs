@@ -42,7 +42,6 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     /// <param name="currency">ISO 4217 currency code.</param>
     /// <param name="collectionMethod">How payment is collected (auto-charge or manual).</param>
     /// <param name="billingReason">Why this document was created.</param>
-    /// <param name="billingAddress">Customer billing address.</param>
     /// <param name="creditNoteInfo">Parent invoice reference and reason (required for credit notes).</param>
     /// <param name="period">Billing period covered by this invoice.</param>
     public static Invoice Create(
@@ -53,7 +52,6 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         string currency,
         CollectionMethod collectionMethod,
         BillingReason billingReason,
-        BillingAddress? billingAddress = null,
         CreditNoteInfo? creditNoteInfo = null,
         BillingPeriod? period = null)
     {
@@ -75,7 +73,6 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
             Currency = currency,
             CollectionMethod = collectionMethod,
             BillingReason = billingReason,
-            BillingAddress = billingAddress,
             ParentInvoiceId = creditNoteInfo?.ParentInvoiceId,
             CreditNoteReason = creditNoteInfo?.Reason,
             Status = InvoiceStatus.Draft,
@@ -129,8 +126,16 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     /// <summary>ISO 4217 currency code.</summary>
     public string Currency { get; private set; } = string.Empty;
 
-    /// <summary>Customer billing address.</summary>
-    public BillingAddress? BillingAddress { get; private set; }
+    /// <summary>
+    /// Immutable snapshot of the contact's billing address taken at <see cref="Finalize"/>
+    /// time. <c>null</c> while the invoice is still in <see cref="InvoiceStatus.Draft"/>;
+    /// callers in Draft state should read the live address from
+    /// <c>Granit.Contacts.Domain.Contact.BillingAddress</c> via <see cref="ContactId"/>.
+    /// Once an invoice is finalized this snapshot must remain stable forever — the address
+    /// shown on a legal invoice cannot change retroactively even if the contact later
+    /// updates their billing address.
+    /// </summary>
+    public Granit.Contacts.Domain.BillingAddress? IssuedBillingAddressSnapshot { get; private set; }
 
     /// <summary>Parent invoice ID (set for credit notes, null for invoices).</summary>
     public InvoiceId? ParentInvoiceId { get; private set; }
@@ -218,13 +223,6 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         RecalculateSubtotal();
     }
 
-    /// <summary>Sets the billing address. Only allowed in Draft status.</summary>
-    public void SetBillingAddress(BillingAddress address)
-    {
-        EnsureDraft();
-        BillingAddress = address;
-    }
-
     /// <summary>
     /// Sets the tax total from the <c>ITaxCalculator</c> result.
     /// Authoritative for rounding — may differ from sum of line item TaxAmount.
@@ -239,8 +237,24 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
 
     // ── Lifecycle transitions (idempotent) ─────────────────────────────
 
-    /// <summary>Finalizes the document (Draft → Open). Assigns document number.</summary>
-    public bool Finalize(string documentNumber, DateTimeOffset issuedAt, DateTimeOffset? dueAt)
+    /// <summary>
+    /// Finalizes the document (Draft → Open). Assigns the document number and snapshots
+    /// the contact's billing address into <see cref="IssuedBillingAddressSnapshot"/> so the
+    /// address shown on this legal document stays stable forever.
+    /// </summary>
+    /// <param name="documentNumber">Sequential document number assigned by the number generator.</param>
+    /// <param name="issuedAt">Timestamp at which the document is issued.</param>
+    /// <param name="dueAt">Payment due date (ignored for credit notes).</param>
+    /// <param name="billingAddressSnapshot">
+    /// Live <c>Contact.BillingAddress</c> at the moment of finalization. Optional only because
+    /// some test fixtures and fully tax-exempt cases legitimately have no address; production
+    /// callers should always pass a snapshot fetched from <c>IContactReader.GetByIdAsync</c>.
+    /// </param>
+    public bool Finalize(
+        string documentNumber,
+        DateTimeOffset issuedAt,
+        DateTimeOffset? dueAt,
+        Granit.Contacts.Domain.BillingAddress? billingAddressSnapshot = null)
     {
         if (Status == InvoiceStatus.Open)
         {
@@ -254,6 +268,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         InvoiceNumber = documentNumber;
         IssuedAt = issuedAt;
         DueAt = IsCreditNote ? null : dueAt;
+        IssuedBillingAddressSnapshot = billingAddressSnapshot;
 
         if (IsCreditNote)
         {

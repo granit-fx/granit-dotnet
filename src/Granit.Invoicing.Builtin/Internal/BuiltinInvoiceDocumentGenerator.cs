@@ -44,14 +44,14 @@ internal sealed partial class BuiltinInvoiceDocumentGenerator(
         AmountPaid: invoice.AmountPaid,
         AmountRemaining: invoice.AmountRemaining,
         CreditNoteReason: invoice.CreditNoteReason,
-        BillingAddress: invoice.BillingAddress is not null
+        BillingAddress: invoice.IssuedBillingAddressSnapshot is not null
             ? new InvoiceAddressData(
-                invoice.BillingAddress.CompanyName,
-                invoice.BillingAddress.Line1,
-                invoice.BillingAddress.City,
-                invoice.BillingAddress.PostalCode,
-                invoice.BillingAddress.Country,
-                invoice.BillingAddress.VatNumber)
+                invoice.IssuedBillingAddressSnapshot.CompanyName,
+                invoice.IssuedBillingAddressSnapshot.Line1,
+                invoice.IssuedBillingAddressSnapshot.City,
+                invoice.IssuedBillingAddressSnapshot.PostalCode,
+                invoice.IssuedBillingAddressSnapshot.Country,
+                invoice.IssuedBillingAddressSnapshot.VatNumber)
             : null,
         LineItems: invoice.LineItems.Select(li => new InvoiceLineItemData(
             li.Description,

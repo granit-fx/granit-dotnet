@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain;
 using Granit.Guids;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Dtos;
@@ -31,7 +32,7 @@ internal sealed partial class OdooInvoiceSyncProvider(
     {
         // 1. Ensure Odoo partner exists and is up-to-date
         int partnerId = await GetOrCreatePartnerAsync(
-            invoice.TenantId!.Value, invoice.BillingAddress, cancellationToken)
+            invoice.TenantId!.Value, invoice.IssuedBillingAddressSnapshot, cancellationToken)
             .ConfigureAwait(false);
 
         // 2. Map Granit Invoice → Odoo account.move

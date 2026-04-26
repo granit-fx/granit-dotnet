@@ -10419,6 +10419,46 @@
       "members": []
     },
     {
+      "name": "BillingAddress",
+      "fqn": "Granit.Contacts.Domain.BillingAddress",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/BillingAddress.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null, string? vatNumber = null)",
+          "returnType": "BillingAddress"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
+        }
+      ]
+    },
+    {
       "name": "Contact",
       "fqn": "Granit.Contacts.Domain.Contact",
       "kind": "class",
@@ -22996,52 +23036,6 @@
       "members": []
     },
     {
-      "name": "BillingAddress",
-      "fqn": "Granit.Invoicing.Domain.BillingAddress",
-      "kind": "class",
-      "project": "Granit.Invoicing",
-      "file": "src/Granit.Invoicing/Domain/BillingAddress.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(string? companyName, string line1, string? line2, string city, string postalCode, string? state, string country, string? vatNumber = null)",
-          "returnType": "BillingAddress"
-        },
-        {
-          "name": "CompanyName",
-          "kind": "property",
-          "signature": "string? CompanyName",
-          "returnType": "string?"
-        },
-        {
-          "name": "Line2",
-          "kind": "property",
-          "signature": "string? Line2",
-          "returnType": "string?"
-        },
-        {
-          "name": "PostalCode",
-          "kind": "property",
-          "signature": "string PostalCode",
-          "returnType": "string"
-        },
-        {
-          "name": "State",
-          "kind": "property",
-          "signature": "string? State",
-          "returnType": "string?"
-        },
-        {
-          "name": "GetEqualityComponents",
-          "kind": "method",
-          "signature": "GetEqualityComponents()",
-          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
-        }
-      ]
-    },
-    {
       "name": "BillingReason",
       "fqn": "Granit.Invoicing.Domain.BillingReason",
       "kind": "enum",
@@ -23070,7 +23064,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
+          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
           "returnType": "Invoice"
         },
         {
@@ -23089,7 +23083,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "BillingAddress? BillingAddress { get; private set; } public InvoiceId? ParentInvoiceId { get; private set; } public string? CreditNoteReason { get; private set; } public decimal Subtotal { get; private set; } public decimal TaxTotal { get; private set; } public decimal Total { get; private set; } public decimal AmountPaid { get; private set; } public decimal AmountCredited { get; private set; } public decimal AmountRemaining { get; private set; } public decimal Overpayment { get; private set; } public DateTimeOffset? IssuedAt { get; private set; } public DateTimeOffset? DueAt { get; private set; } public DateTimeOffset? PaidAt { get; private set; } public DateTimeOffset? PeriodStart { get; private set; } public DateTimeOffset? PeriodEnd { get; private set; } public IReadOnlyList<InvoiceLineItem> LineItems => _lineItems."
+          "returnType": "Granit.Contacts.Domain.BillingAddress? IssuedBillingAddressSnapshot { get; private set; } public InvoiceId? ParentInvoiceId { get; private set; } public string? CreditNoteReason { get; private set; } public decimal Subtotal { get; private set; } public decimal TaxTotal { get; private set; } public decimal Total { get; private set; } public decimal AmountPaid { get; private set; } public decimal AmountCredited { get; private set; } public decimal AmountRemaining { get; private set; } public decimal Overpayment { get; private set; } public DateTimeOffset? IssuedAt { get; private set; } public DateTimeOffset? DueAt { get; private set; } public DateTimeOffset? PaidAt { get; private set; } public DateTimeOffset? PeriodStart { get; private set; } public DateTimeOffset? PeriodEnd { get; private set; } public IReadOnlyList<InvoiceLineItem> LineItems => _lineItems."
         },
         {
           "name": "AsReadOnly",

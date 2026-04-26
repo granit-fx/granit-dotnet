@@ -1,6 +1,6 @@
 using System.Diagnostics.Metrics;
+using Granit.Contacts.Domain;
 using Granit.Invoicing;
-using Granit.Invoicing.Domain;
 using Granit.Invoicing.Dtos;
 using Granit.MultiTenancy;
 using Granit.Tax.Builtin.Internal;
@@ -39,7 +39,13 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
         new(_rateProvider, _taxIdValidator, MsOptions.Create(_taxOptions), _clock, _metrics, _currentTenant);
 
     private static BillingAddress CreateAddress(string country, string? vatNumber = null) =>
-        BillingAddress.Create("Test Corp", "Line 1", null, "City", "1000", null, country, vatNumber);
+        BillingAddress.Create(
+            line1: "Line 1",
+            city: "City",
+            postalCode: "1000",
+            country: country,
+            companyName: "Test Corp",
+            vatNumber: vatNumber);
 
     private static TaxRequest CreateRequest(BillingAddress buyer, params decimal[] amounts)
     {

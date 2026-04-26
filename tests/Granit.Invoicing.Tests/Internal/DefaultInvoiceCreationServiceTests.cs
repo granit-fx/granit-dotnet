@@ -1,4 +1,5 @@
 using Granit.Contacts;
+using Granit.Contacts.Domain;
 using Granit.Guids;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
@@ -19,6 +20,7 @@ public sealed class DefaultInvoiceCreationServiceTests
     // ======== Fixtures ========
 
     private readonly IInvoiceWriter _invoiceWriter = Substitute.For<IInvoiceWriter>();
+    private readonly IContactReader _contactReader = Substitute.For<IContactReader>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IDefaultContactResolver _defaultContactResolver = Substitute.For<IDefaultContactResolver>();
@@ -33,6 +35,14 @@ public sealed class DefaultInvoiceCreationServiceTests
     public DefaultInvoiceCreationServiceTests()
     {
         _clock.Now.Returns(Now);
+        // Default behaviour: an explicit ContactId resolves to a contact with no billing address.
+        // Individual tests override this when they need a contact with an address.
+        var bareContact = Contact.Create(
+            ContactId, null, ContactKind.Company, "Test Co", "EUR");
+        _contactReader.GetByIdAsync(
+            Arg.Any<Granit.Contacts.Domain.ValueObjects.ContactId>(),
+            Arg.Any<CancellationToken>())
+            .Returns(bareContact);
     }
 
     private DefaultInvoiceCreationService CreateSut(
@@ -40,6 +50,7 @@ public sealed class DefaultInvoiceCreationServiceTests
         IInvoiceNumberGenerator? numberGenerator = null) =>
         new(
             _invoiceWriter,
+            _contactReader,
             _guidGenerator,
             _clock,
             _defaultContactResolver,

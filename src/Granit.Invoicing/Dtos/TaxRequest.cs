@@ -1,4 +1,4 @@
-using Granit.Invoicing.Domain;
+using Granit.Contacts.Domain;
 
 namespace Granit.Invoicing.Dtos;
 
