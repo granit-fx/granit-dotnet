@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Scheduling;
 using Granit.Scheduling.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
@@ -40,6 +41,7 @@ public sealed class DefaultDunningServiceTests
         return Subscription.Create(
             Guid.NewGuid(),
             tenantId,
+            ContactId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));

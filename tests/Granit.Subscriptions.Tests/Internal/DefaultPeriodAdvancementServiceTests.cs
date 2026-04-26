@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
@@ -42,6 +43,7 @@ public sealed class DefaultPeriodAdvancementServiceTests
         return Subscription.Create(
             Guid.NewGuid(),
             tenantId,
+            ContactId.Create(Guid.NewGuid()),
             planId,
             currency: "EUR",
             new SubscriptionPeriod(periodStart, periodEnd, BillingCycleAnchor: periodStart));

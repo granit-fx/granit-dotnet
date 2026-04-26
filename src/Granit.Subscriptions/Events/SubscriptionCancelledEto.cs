@@ -7,4 +7,5 @@ public sealed record SubscriptionCancelledEto(
     Guid SubscriptionId,
     Guid PlanId,
     Guid TenantId,
+    Guid ContactId,
     string? Reason) : IIntegrationEvent;

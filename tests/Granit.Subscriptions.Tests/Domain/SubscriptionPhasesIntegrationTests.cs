@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Shouldly;
@@ -18,6 +19,7 @@ public sealed class SubscriptionPhasesIntegrationTests
     private static Subscription NewSubscription() => Subscription.Create(
         SubscriptionId.Create(Guid.NewGuid()),
         Guid.NewGuid(),
+        ContactId.Create(Guid.NewGuid()),
         PlanId.Create(Guid.NewGuid()),
         currency: "EUR",
         period: new SubscriptionPeriod(T0, T0.AddMonths(12), BillingCycleAnchor: T0));

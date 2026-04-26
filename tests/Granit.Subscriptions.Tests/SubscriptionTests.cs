@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Shouldly;
@@ -13,6 +14,7 @@ public sealed class SubscriptionTests
         return Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
@@ -25,6 +27,7 @@ public sealed class SubscriptionTests
         return Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));
@@ -188,6 +191,7 @@ public sealed class SubscriptionTests
         var sub = Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),
@@ -225,6 +229,7 @@ public sealed class SubscriptionTests
         var sub = Subscription.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now),

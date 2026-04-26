@@ -6,4 +6,5 @@ namespace Granit.Subscriptions.Events;
 public sealed record SubscriptionExpiredEto(
     Guid SubscriptionId,
     Guid PlanId,
-    Guid TenantId) : IIntegrationEvent;
+    Guid TenantId,
+    Guid ContactId) : IIntegrationEvent;

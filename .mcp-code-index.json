@@ -2029,6 +2029,7 @@
       "name": "Granit.Subscriptions",
       "deps": [
         "Granit",
+        "Granit.Contacts.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
@@ -41277,12 +41278,12 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Domain/Subscription.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, ContactId contactId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
           "returnType": "Subscription"
         },
         {
@@ -41310,10 +41311,10 @@
           "returnType": "IReadOnlyList<SubscriptionPhase>"
         },
         {
-          "name": "nameof",
-          "kind": "method",
-          "signature": "nameof(Status)",
-          "returnType": "Guid? TenantId { get; private set; } Guid? IMultiTenant.TenantId { get; set; } string IWorkflowStateful.StatusPropertyName =>"
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
         },
         {
           "name": "GetWorkflowEntityId",
@@ -41580,7 +41581,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -41589,7 +41590,7 @@
       "kind": "record",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/Dtos/SubscriptionCreateRequest.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {

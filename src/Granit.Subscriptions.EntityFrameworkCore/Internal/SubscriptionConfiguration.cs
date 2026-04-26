@@ -14,10 +14,11 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
 
         builder.HasKey(e => e.Id);
 
-        // PlanId is a SingleValueObject<Guid> — must be declared as a scalar property
-        // to prevent EF Core from discovering it as a navigation/entity type.
-        // The value converter is applied automatically by ApplyGranitConventions.
+        // PlanId and ContactId are SingleValueObject<Guid> — declared as scalar properties
+        // so EF Core does not discover them as navigations. The value converter is applied
+        // automatically by ApplyGranitConventions.
         builder.Property(e => e.PlanId).IsRequired();
+        builder.Property(e => e.ContactId).IsRequired();
 
         builder.Property(e => e.Status).IsRequired();
         builder.Property(e => e.CurrentPeriodStart).IsRequired();
@@ -44,6 +45,9 @@ internal sealed class SubscriptionConfiguration : IEntityTypeConfiguration<Subsc
 
         builder.HasIndex(e => new { e.TenantId, e.Status })
             .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_tenant_status");
+
+        builder.HasIndex(e => e.ContactId)
+            .HasDatabaseName($"ix_{GranitSubscriptionsDbProperties.DbTablePrefix}subscriptions_contact");
 
         builder.HasIndex(e => e.TrialEndsAt)
             .HasFilter($"\"Status\" = {(int)SubscriptionStatus.Trial}")

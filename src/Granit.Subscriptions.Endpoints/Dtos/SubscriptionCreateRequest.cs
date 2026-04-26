@@ -2,6 +2,7 @@ namespace Granit.Subscriptions.Endpoints.Dtos;
 
 /// <summary>Request to create a new subscription.</summary>
 public sealed record SubscriptionCreateRequest(
+    Guid ContactId,
     Guid PlanId,
     string Currency,
     DateTimeOffset? TrialEndsAt = null);

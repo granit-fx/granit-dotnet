@@ -7,4 +7,5 @@ public sealed record SubscriptionPlanChangedEto(
     Guid SubscriptionId,
     Guid OldPlanId,
     Guid NewPlanId,
-    Guid TenantId) : IIntegrationEvent;
+    Guid TenantId,
+    Guid ContactId) : IIntegrationEvent;

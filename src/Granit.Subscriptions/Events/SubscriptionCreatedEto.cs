@@ -7,4 +7,5 @@ public sealed record SubscriptionCreatedEto(
     Guid SubscriptionId,
     Guid PlanId,
     Guid TenantId,
+    Guid ContactId,
     bool HasTrial) : IIntegrationEvent;

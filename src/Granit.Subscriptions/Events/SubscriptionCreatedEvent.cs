@@ -7,4 +7,5 @@ namespace Granit.Subscriptions.Events;
 public sealed record SubscriptionCreatedEvent(
     Guid SubscriptionId,
     PlanId PlanId,
-    Guid TenantId) : IDomainEvent;
+    Guid TenantId,
+    Guid ContactId) : IDomainEvent;

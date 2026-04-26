@@ -1,4 +1,5 @@
 using Granit.Commands;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Subscriptions.Domain;
@@ -36,6 +37,7 @@ public sealed class DefaultUsageInvoiceOrchestratorTests
         return Subscription.Create(
             Guid.NewGuid(),
             tenantId,
+            ContactId.Create(Guid.NewGuid()),
             planId,
             currency: "EUR",
             new SubscriptionPeriod(PeriodStart, PeriodEnd, BillingCycleAnchor: PeriodStart),

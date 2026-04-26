@@ -5,6 +5,7 @@ namespace Granit.Subscriptions.Endpoints.Dtos;
 /// <summary>Subscription details.</summary>
 public sealed record SubscriptionResponse(
     Guid Id,
+    Guid ContactId,
     Guid PlanId,
     string Status,
     string Currency,
@@ -19,6 +20,7 @@ public sealed record SubscriptionResponse(
 {
     internal static SubscriptionResponse FromEntity(Subscription sub) => new(
         sub.Id,
+        sub.ContactId.Value,
         sub.PlanId,
         sub.Status.ToString(),
         sub.Currency,
