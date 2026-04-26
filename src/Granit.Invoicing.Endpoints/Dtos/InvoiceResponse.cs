@@ -5,6 +5,7 @@ namespace Granit.Invoicing.Endpoints.Dtos;
 /// <summary>Invoice or credit note details.</summary>
 public sealed record InvoiceResponse(
     Guid Id,
+    Guid ContactId,
     string DocumentType,
     string? InvoiceNumber,
     string Status,
@@ -28,6 +29,7 @@ public sealed record InvoiceResponse(
 {
     internal static InvoiceResponse FromEntity(Invoice invoice) => new(
         invoice.Id,
+        invoice.ContactId.Value,
         invoice.DocumentType.ToString(),
         invoice.InvoiceNumber,
         invoice.Status.ToString(),

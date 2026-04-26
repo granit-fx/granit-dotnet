@@ -15,6 +15,11 @@ internal sealed class InvoiceCreateRequestValidator : GranitValidator<InvoiceCre
 
     public InvoiceCreateRequestValidator()
     {
+        // ContactId is required — built-in NotEmpty rejects Guid.Empty and the
+        // GranitErrorCodeLanguageManager auto-localises the error.
+        RuleFor(x => x.ContactId)
+            .NotEmpty();
+
         RuleFor(x => x.DocumentType)
             .IsInEnum();
 

@@ -23397,7 +23397,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/Dtos/InvoiceResponse.cs",
-      "line": 54,
+      "line": 56,
       "members": []
     },
     {

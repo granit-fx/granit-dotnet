@@ -28,6 +28,7 @@ internal sealed class InvoicingSchemaExampleProvider : ISchemaExampleProvider
             [typeof(InvoiceResponse)] = new JsonObject
             {
                 ["id"] = "01960f3a-5c9e-7c3b-b4a2-abc123def456",
+                ["contactId"] = "01960f3a-5c9e-7c3b-b4a2-abc123def456",
                 ["documentType"] = "Invoice",
                 ["invoiceNumber"] = "INV-2026-00042",
                 ["status"] = "Open",
