@@ -54,6 +54,7 @@
         "tests/Granit.Contacts.Abstractions.Tests",
         "tests/Granit.Contacts.Endpoints.Tests",
         "tests/Granit.Contacts.EntityFrameworkCore.Tests",
+        "tests/Granit.Contacts.MultiTenancy.Tests",
         "tests/Granit.Contacts.Privacy.Tests",
         "tests/Granit.Contacts.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",

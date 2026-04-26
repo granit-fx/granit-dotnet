@@ -60,6 +60,7 @@
       "src/Granit.Contacts.Abstractions/Granit.Contacts.Abstractions.csproj",
       "src/Granit.Contacts.Endpoints/Granit.Contacts.Endpoints.csproj",
       "src/Granit.Contacts.EntityFrameworkCore/Granit.Contacts.EntityFrameworkCore.csproj",
+      "src/Granit.Contacts.MultiTenancy/Granit.Contacts.MultiTenancy.csproj",
       "src/Granit.Contacts.Privacy/Granit.Contacts.Privacy.csproj",
       "src/Granit.Contacts/Granit.Contacts.csproj",
       "src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj",

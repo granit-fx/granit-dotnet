@@ -1,0 +1,133 @@
+using Granit.Contacts.Domain;
+using Granit.Contacts.EntityFrameworkCore.Internal;
+using Granit.DataFiltering;
+using Granit.Domain;
+using Granit.Guids;
+using Granit.MultiTenancy;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using NSubstitute;
+using Shouldly;
+using Xunit;
+
+namespace Granit.Contacts.EntityFrameworkCore.Tests.Internal;
+
+[Collection(ContactsDbSerialGroup.Name)]
+public sealed class EfDefaultContactSeederTests : IAsyncDisposable
+{
+    private readonly DataFilter _filter = new();
+    private readonly string _databaseName = $"contacts-seeder-{Guid.NewGuid()}";
+    private readonly InMemoryDatabaseRoot _dbRoot = new();
+    private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
+
+    public EfDefaultContactSeederTests()
+    {
+        _guidGenerator.Create().Returns(_ => Guid.NewGuid());
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        StubCurrentTenant t = new();
+        await using ContactsDbContext db = new(BuildOptions(), t, _filter);
+        await db.Database.EnsureDeletedAsync();
+    }
+
+    private DbContextOptions<ContactsDbContext> BuildOptions() =>
+        new DbContextOptionsBuilder<ContactsDbContext>()
+            .UseInMemoryDatabase(_databaseName, _dbRoot)
+            .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
+            .EnableServiceProviderCaching(false)
+            .Options;
+
+    private (EfDefaultContactSeeder Seeder, EfDefaultContactResolver Resolver, ScopedFactory Factory)
+        Build(Guid? tenantId = null)
+    {
+        StubCurrentTenant tenant = new();
+        if (tenantId is { } id) { tenant.Set(id); }
+        ScopedFactory factory = new(BuildOptions(), tenant, _filter);
+        EfDefaultContactResolver resolver = new(factory, _filter);
+        EfDefaultContactSeeder seeder = new(resolver, factory, _guidGenerator, _filter);
+        return (seeder, resolver, factory);
+    }
+
+    [Fact]
+    public async Task SeedForTenantAsync_NoExisting_CreatesHostScopedContactWithTenantMapping()
+    {
+        var tenantId = Guid.NewGuid();
+        (EfDefaultContactSeeder seeder, _, _) = Build();
+
+        Contact result = await seeder.SeedForTenantAsync(
+            tenantId, "ACME Inc.", cancellationToken: TestContext.Current.CancellationToken);
+
+        result.TenantId.ShouldBeNull();
+        result.Name.ShouldBe("ACME Inc.");
+        result.Kind.ShouldBe(ContactKind.Company);
+        result.DefaultCurrency.ShouldBe("EUR");
+        result.FindExternalId(ContactExternalProviderNames.Tenant).ShouldBe(tenantId.ToString());
+    }
+
+    [Fact]
+    public async Task SeedForTenantAsync_AlreadySeeded_ReturnsExistingWithoutDuplicating()
+    {
+        var tenantId = Guid.NewGuid();
+        (EfDefaultContactSeeder seeder, _, _) = Build();
+
+        Contact first = await seeder.SeedForTenantAsync(
+            tenantId, "ACME Inc.", cancellationToken: TestContext.Current.CancellationToken);
+        Contact second = await seeder.SeedForTenantAsync(
+            tenantId, "Different Name", cancellationToken: TestContext.Current.CancellationToken);
+
+        second.Id.ShouldBe(first.Id);
+        second.Name.ShouldBe("ACME Inc.", "the existing contact must be preserved — second call must not rename");
+    }
+
+    [Fact]
+    public async Task SeedForTenantAsync_TenantContextActive_StillCreatesHostScoped()
+    {
+        // The seeder is typically invoked from a Wolverine handler running in the
+        // newly-created tenant's scope. The host-scoped row (TenantId == null) must
+        // still land correctly even though the active tenant filter would normally
+        // hide it from any subsequent read.
+        var tenantId = Guid.NewGuid();
+        (EfDefaultContactSeeder seeder, _, _) = Build(tenantId);
+
+        Contact result = await seeder.SeedForTenantAsync(
+            tenantId, "ACME Inc.", cancellationToken: TestContext.Current.CancellationToken);
+
+        result.TenantId.ShouldBeNull();
+        result.FindExternalId(ContactExternalProviderNames.Tenant).ShouldBe(tenantId.ToString());
+    }
+
+    [Fact]
+    public async Task SeedForTenantAsync_EmptyGuid_Throws()
+    {
+        (EfDefaultContactSeeder seeder, _, _) = Build();
+
+        await Should.ThrowAsync<ArgumentException>(() =>
+            seeder.SeedForTenantAsync(Guid.Empty, "ACME", cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public async Task SeedForTenantAsync_BlankName_Throws(string name)
+    {
+        (EfDefaultContactSeeder seeder, _, _) = Build();
+
+        await Should.ThrowAsync<ArgumentException>(() =>
+            seeder.SeedForTenantAsync(Guid.NewGuid(), name, cancellationToken: TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task SeedForTenantAsync_CustomCurrency_HonoursIt()
+    {
+        var tenantId = Guid.NewGuid();
+        (EfDefaultContactSeeder seeder, _, _) = Build();
+
+        Contact result = await seeder.SeedForTenantAsync(
+            tenantId, "Globex", defaultCurrency: "usd",
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.DefaultCurrency.ShouldBe("USD");
+    }
+}

@@ -521,6 +521,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Contacts.MultiTenancy",
+      "deps": [
+        "Granit.Contacts",
+        "Granit.MultiTenancy"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Contacts.Privacy",
       "deps": [
         "Granit.Contacts",
@@ -11250,6 +11258,47 @@
           "kind": "method",
           "signature": "GetDefaultForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Contact?>"
+        }
+      ]
+    },
+    {
+      "name": "IDefaultContactSeeder",
+      "fqn": "Granit.Contacts.IDefaultContactSeeder",
+      "kind": "interface",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/IDefaultContactSeeder.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "SeedForTenantAsync",
+          "kind": "method",
+          "signature": "SeedForTenantAsync(Guid tenantId, string tenantName, string defaultCurrency = \"EUR\", CancellationToken cancellationToken = default)",
+          "returnType": "Task<Contact>"
+        }
+      ]
+    },
+    {
+      "name": "GranitContactsMultiTenancyModule",
+      "fqn": "Granit.Contacts.MultiTenancy.GranitContactsMultiTenancyModule",
+      "kind": "class",
+      "project": "Granit.Contacts.MultiTenancy",
+      "file": "src/Granit.Contacts.MultiTenancy/GranitContactsMultiTenancyModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "SeedDefaultContactOnTenantCreatedHandler",
+      "fqn": "Granit.Contacts.MultiTenancy.Handlers.SeedDefaultContactOnTenantCreatedHandler",
+      "kind": "class",
+      "project": "Granit.Contacts.MultiTenancy",
+      "file": "src/Granit.Contacts.MultiTenancy/Handlers/SeedDefaultContactOnTenantCreatedHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TenantCreatedEvent @event, IDefaultContactSeeder seeder, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

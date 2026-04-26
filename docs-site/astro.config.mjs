@@ -162,6 +162,7 @@ export default defineConfig({
                         { label: "Configure Blob Storage", link: "/dotnet/guides/configure-blob-storage/" },
                         { label: "Implement Webhooks", link: "/dotnet/guides/implement-webhooks/" },
                         { label: "Auto-maintain Contact Roles", link: "/dotnet/guides/contacts-role-handler/" },
+                        { label: "Seed Contact on Tenant Created", link: "/dotnet/guides/contacts-tenant-seeding/" },
                       ],
                     },
                     {
