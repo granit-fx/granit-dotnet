@@ -1,39 +1,49 @@
+using System.Globalization;
+using Granit.Contacts;
 using Granit.Contacts.Domain;
+using Granit.Contacts.Domain.ValueObjects;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Guids;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Dtos;
-using Granit.Invoicing.Odoo.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Invoicing.Odoo.Internal;
 
 /// <summary>
-/// Odoo implementation of <see cref="IInvoiceSyncProvider"/>.
-/// Maps Granit invoices to Odoo <c>account.move</c> records via JSON-RPC.
+/// Odoo implementation of <see cref="IInvoiceSyncProvider"/>. Maps Granit invoices to Odoo
+/// <c>account.move</c> records via JSON-RPC and stores the Odoo <c>res.partner</c> id
+/// directly on the contact through <see cref="Contact.ExternalMappings"/> using the reserved
+/// provider name <see cref="ContactExternalProviderNames.Odoo"/>.
 /// </summary>
 /// <remarks>
-/// Partner management: on each sync, the tenant's <c>res.partner</c> is created
-/// (first time) or updated (subsequent) with the latest billing address.
-/// This ensures Odoo always reflects the current legal address.
+/// On each sync the contact's <c>res.partner</c> is created (first time) or updated (subsequent)
+/// with the latest billing address so Odoo always reflects the address shown on the issued
+/// document. Removing the dedicated <c>OdooPartnerMapping</c> aggregate and reusing the unified
+/// <c>Contact.ExternalMappings</c> closes Sonar TODO <c>audit/A3</c>.
 /// </remarks>
 internal sealed partial class OdooInvoiceSyncProvider(
     OdooJsonRpcClient rpcClient,
-    IOdooPartnerMappingStore partnerMappingStore,
+    IContactReader contactReader,
+    IContactWriter contactWriter,
+    IDataFilter dataFilter,
     IGuidGenerator guidGenerator,
     Microsoft.Extensions.Options.IOptions<Options.OdooOptions> options,
     ILogger<OdooInvoiceSyncProvider> logger) : IInvoiceSyncProvider
 {
     /// <inheritdoc/>
-    public string Name => "odoo";
+    public string Name => ContactExternalProviderNames.Odoo;
 
     /// <inheritdoc/>
     public async Task<(string ProviderName, string ExternalId)> SyncAsync(
         Invoice invoice, CancellationToken cancellationToken = default)
     {
-        // 1. Ensure Odoo partner exists and is up-to-date
+        // 1. Ensure Odoo partner exists and is up-to-date for the invoice's contact.
         int partnerId = await GetOrCreatePartnerAsync(
-            invoice.TenantId!.Value, invoice.IssuedBillingAddressSnapshot, cancellationToken)
-            .ConfigureAwait(false);
+            invoice.ContactId,
+            invoice.IssuedBillingAddressSnapshot,
+            cancellationToken).ConfigureAwait(false);
 
         // 2. Map Granit Invoice → Odoo account.move
         var lineValues = invoice.LineItems.Select(li => new Dictionary<string, object?>
@@ -51,8 +61,8 @@ internal sealed partial class OdooInvoiceSyncProvider(
             ["partner_id"] = partnerId,
             ["journal_id"] = options.Value.DefaultJournalId,
             ["ref"] = invoice.InvoiceNumber,
-            ["invoice_date"] = invoice.IssuedAt?.ToString("yyyy-MM-dd"),
-            ["invoice_date_due"] = invoice.DueAt?.ToString("yyyy-MM-dd"),
+            ["invoice_date"] = invoice.IssuedAt?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+            ["invoice_date_due"] = invoice.DueAt?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
             ["invoice_line_ids"] = lineValues.Select(lv =>
                 new object[] { 0, 0, lv }).ToList(),
         };
@@ -62,14 +72,14 @@ internal sealed partial class OdooInvoiceSyncProvider(
 
         Log.InvoiceSynced(logger, invoice.Id, odooId, partnerId);
 
-        return (Name, odooId.ToString());
+        return (Name, odooId.ToString(CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc/>
     public async Task<ExternalInvoiceStatus?> GetStatusAsync(
         InvoiceExternalReference reference, CancellationToken cancellationToken = default)
     {
-        if (!int.TryParse(reference.ExternalId, out int odooId))
+        if (!int.TryParse(reference.ExternalId, NumberStyles.Integer, CultureInfo.InvariantCulture, out int odooId))
         {
             return null;
         }
@@ -104,60 +114,71 @@ internal sealed partial class OdooInvoiceSyncProvider(
     }
 
     /// <summary>
-    /// Gets or creates the Odoo partner for a tenant. On HIT, updates the partner
+    /// Gets or creates the Odoo partner for a contact. On HIT, updates the partner
     /// with the latest billing address to keep Odoo in sync.
     /// </summary>
     private async Task<int> GetOrCreatePartnerAsync(
-        Guid tenantId, BillingAddress? address,
+        ContactId contactId,
+        BillingAddress? address,
         CancellationToken cancellationToken)
     {
-        Dictionary<string, object?> partnerValues = MapAddressToPartner(address);
+        Contact contact = await ResolveContactAsync(contactId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                $"Contact '{contactId.Value}' not found — cannot sync the invoice to Odoo without a contact to map to a res.partner.");
 
-        OdooPartnerMapping? mapping = await partnerMappingStore
-            .GetByTenantIdAsync(tenantId, cancellationToken)
-            .ConfigureAwait(false);
+        Dictionary<string, object?> partnerValues = MapAddressToPartner(contact, address);
 
-        if (mapping is not null)
+        string? existing = contact.FindExternalId(Name);
+        if (existing is not null
+            && int.TryParse(existing, NumberStyles.Integer, CultureInfo.InvariantCulture, out int existingPartnerId))
         {
-            // HIT: update partner with latest address
-            await rpcClient.UpdateAsync("res.partner", mapping.OdooPartnerId, partnerValues, cancellationToken)
+            // HIT: refresh the partner with the latest address
+            await rpcClient.UpdateAsync("res.partner", existingPartnerId, partnerValues, cancellationToken)
                 .ConfigureAwait(false);
-
-            Log.PartnerUpdated(logger, mapping.OdooPartnerId, tenantId);
-            return mapping.OdooPartnerId;
+            Log.PartnerUpdated(logger, existingPartnerId, contact.Id);
+            return existingPartnerId;
         }
 
-        // MISS: create partner in Odoo
+        // MISS: create the partner in Odoo and persist the reverse-link on the contact.
         int partnerId = await rpcClient.CreateAsync("res.partner", partnerValues, cancellationToken)
             .ConfigureAwait(false);
 
-        var newMapping = OdooPartnerMapping.Create(guidGenerator.Create(), tenantId, partnerId);
-        await partnerMappingStore.AddAsync(newMapping, cancellationToken).ConfigureAwait(false);
+        contact.AddExternalMapping(guidGenerator.Create(), Name, partnerId.ToString(CultureInfo.InvariantCulture));
+        await contactWriter.UpdateAsync(contact, cancellationToken).ConfigureAwait(false);
 
-        Log.PartnerCreated(logger, partnerId, tenantId);
+        Log.PartnerCreated(logger, partnerId, contact.Id);
         return partnerId;
     }
 
-    private static Dictionary<string, object?> MapAddressToPartner(BillingAddress? address) => new()
+    private async Task<Contact?> ResolveContactAsync(ContactId contactId, CancellationToken cancellationToken)
     {
-        ["name"] = address?.CompanyName ?? "Unknown",
-        ["street"] = address?.Line1,
-        ["city"] = address?.City,
-        ["zip"] = address?.PostalCode,
-        ["country_code"] = address?.Country,
-        ["vat"] = address?.VatNumber,
-        ["is_company"] = true,
-    };
+        // The contact may be host-scoped (representing a tenant) or tenant-scoped — disable
+        // the multi-tenant filter so the lookup succeeds regardless of the active scope.
+        using IDisposable bypass = dataFilter.Disable<IMultiTenant>();
+        return await contactReader.GetByIdAsync(contactId, cancellationToken).ConfigureAwait(false);
+    }
+
+    private static Dictionary<string, object?> MapAddressToPartner(
+        Contact contact, BillingAddress? address) => new()
+        {
+            ["name"] = address?.CompanyName ?? contact.Name,
+            ["street"] = address?.Line1,
+            ["city"] = address?.City,
+            ["zip"] = address?.PostalCode,
+            ["country_code"] = address?.Country,
+            ["vat"] = address?.VatNumber ?? contact.TaxId,
+            ["is_company"] = contact.Kind == ContactKind.Company,
+        };
 
     private static partial class Log
     {
         [LoggerMessage(Level = LogLevel.Information, Message = "Invoice {InvoiceId} synced to Odoo as account.move #{OdooId} (partner #{PartnerId})")]
         public static partial void InvoiceSynced(ILogger logger, Guid invoiceId, int odooId, int partnerId);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Odoo partner #{PartnerId} created for tenant {TenantId}")]
-        public static partial void PartnerCreated(ILogger logger, int partnerId, Guid tenantId);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Odoo partner #{PartnerId} created for contact {ContactId}")]
+        public static partial void PartnerCreated(ILogger logger, int partnerId, Guid contactId);
 
-        [LoggerMessage(Level = LogLevel.Debug, Message = "Odoo partner #{PartnerId} updated for tenant {TenantId}")]
-        public static partial void PartnerUpdated(ILogger logger, int partnerId, Guid tenantId);
+        [LoggerMessage(Level = LogLevel.Debug, Message = "Odoo partner #{PartnerId} updated for contact {ContactId}")]
+        public static partial void PartnerUpdated(ILogger logger, int partnerId, Guid contactId);
     }
 }

@@ -163,6 +163,7 @@ export default defineConfig({
                         { label: "Implement Webhooks", link: "/dotnet/guides/implement-webhooks/" },
                         { label: "Auto-maintain Contact Roles", link: "/dotnet/guides/contacts-role-handler/" },
                         { label: "Seed Contact on Tenant Created", link: "/dotnet/guides/contacts-tenant-seeding/" },
+                        { label: "External Mapping Contract", link: "/dotnet/guides/contacts-external-mappings/" },
                       ],
                     },
                     {

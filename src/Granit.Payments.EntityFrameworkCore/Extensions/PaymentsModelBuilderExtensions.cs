@@ -13,7 +13,6 @@ public static class PaymentsModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new RefundConfiguration());
         modelBuilder.ApplyConfiguration(new DisputeConfiguration());
         modelBuilder.ApplyConfiguration(new ProcessedWebhookEventConfiguration());
-        modelBuilder.ApplyConfiguration(new ProviderCustomerMappingConfiguration());
         modelBuilder.ApplyConfiguration(new PaymentMethodConfigurationEntityTypeConfiguration());
         return modelBuilder;
     }

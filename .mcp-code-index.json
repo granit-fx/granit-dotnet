@@ -1650,6 +1650,7 @@
       "name": "Granit.Payments.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Contacts",
         "Granit.Guids",
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
@@ -1728,6 +1729,7 @@
     {
       "name": "Granit.Payments.Stripe",
       "deps": [
+        "Granit.Contacts",
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Payments"
@@ -24051,22 +24053,6 @@
       ]
     },
     {
-      "name": "OdooPartnerMapping",
-      "fqn": "Granit.Invoicing.Odoo.Domain.OdooPartnerMapping",
-      "kind": "class",
-      "project": "Granit.Invoicing.Odoo",
-      "file": "src/Granit.Invoicing.Odoo/Domain/OdooPartnerMapping.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, int odooPartnerId)",
-          "returnType": "OdooPartnerMapping"
-        }
-      ]
-    },
-    {
       "name": "GranitInvoicingOdooModule",
       "fqn": "Granit.Invoicing.Odoo.GranitInvoicingOdooModule",
       "kind": "class",
@@ -24079,28 +24065,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IOdooPartnerMappingStore",
-      "fqn": "Granit.Invoicing.Odoo.IOdooPartnerMappingStore",
-      "kind": "interface",
-      "project": "Granit.Invoicing.Odoo",
-      "file": "src/Granit.Invoicing.Odoo/IOdooPartnerMappingStore.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "GetByTenantIdAsync",
-          "kind": "method",
-          "signature": "GetByTenantIdAsync(Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<OdooPartnerMapping?>"
-        },
-        {
-          "name": "AddAsync",
-          "kind": "method",
-          "signature": "AddAsync(OdooPartnerMapping mapping, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },
@@ -32282,34 +32246,6 @@
       "members": []
     },
     {
-      "name": "ProviderCustomerMapping",
-      "fqn": "Granit.Payments.Domain.ProviderCustomerMapping",
-      "kind": "class",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/Domain/ProviderCustomerMapping.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, string providerName, Guid tenantId, string providerCustomerId)",
-          "returnType": "ProviderCustomerMapping"
-        },
-        {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "Guid? TenantId",
-          "returnType": "Guid?"
-        },
-        {
-          "name": "ProviderCustomerId",
-          "kind": "property",
-          "signature": "string ProviderCustomerId",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "Refund",
       "fqn": "Granit.Payments.Domain.Refund",
       "kind": "class",
@@ -33073,7 +33009,7 @@
         {
           "name": "ListAsync",
           "kind": "method",
-          "signature": "ListAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "signature": "ListAsync(Guid contactId, CancellationToken cancellationToken = default)",
           "returnType": "string ProviderName { get; } Task<IReadOnlyList<PaymentProviderMethod>>"
         },
         {
@@ -33287,28 +33223,6 @@
           "kind": "method",
           "signature": "TryRecordAsync(string providerName, string providerEventId, string eventType, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
-        }
-      ]
-    },
-    {
-      "name": "IProviderCustomerMappingStore",
-      "fqn": "Granit.Payments.IProviderCustomerMappingStore",
-      "kind": "interface",
-      "project": "Granit.Payments",
-      "file": "src/Granit.Payments/IProviderCustomerMappingStore.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(string providerName, Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<ProviderCustomerMapping?>"
-        },
-        {
-          "name": "AddAsync",
-          "kind": "method",
-          "signature": "AddAsync(ProviderCustomerMapping mapping, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
         }
       ]
     },

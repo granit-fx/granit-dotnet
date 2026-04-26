@@ -1,0 +1,116 @@
+---
+title: "Wire a new external provider through Contact.ExternalMappings"
+description: Polyglot external-mapping contract — every billing / accounting provider stores its own customer ID directly on the Granit Contact via Contact.ExternalMappings. Use this guide when adding a new provider so it integrates without inventing its own mapping aggregate.
+sidebar:
+  order: 32
+  label: External mapping contract
+---
+
+Every billing- or accounting-side provider stores its own customer identifier
+directly on the Granit `Contact` aggregate, in `Contact.ExternalMappings`. There is
+**one** canonical place to read or write the link — no per-provider mapping
+aggregate, no parallel table, no bespoke EF context. This is the polyglot contract
+the framework expects every new provider to honour.
+
+## Why a single registry
+
+The first iteration of Granit had a `ProviderCustomerMapping` aggregate in
+`Granit.Payments` and an `OdooPartnerMapping` aggregate in
+`Granit.Invoicing.Odoo`. Both did the same thing — map a Granit identity to a
+provider's customer ID — at the cost of two storage schemas, two stores, two
+migration paths, and two ways for downstream code to reach the same fact. PR
+[#1224](https://github.com/granit-fx/granit-dotnet/issues/1224) collapsed both
+into `Contact.ExternalMappings`. Future providers stay on this rail.
+
+## The contract
+
+A `ContactExternalMapping` is a `(ProviderName, ExternalId)` pair attached to a
+`Contact`. Constraints:
+
+- **`ProviderName`** is the canonical key. Reuse the constants from
+  `Granit.Contacts.Domain.ContactExternalProviderNames` — never invent a new
+  string when one of the reserved values fits:
+
+  | Constant | Provider |
+  | -------- | -------- |
+  | `Stripe` | Stripe payments |
+  | `Mollie` | Mollie payments |
+  | `Odoo` | Odoo `res.partner` |
+  | `Sage` | Sage customer |
+  | `NetSuite` | NetSuite customer |
+  | `Tenant` | Reverse-link from a host-scoped contact to the Granit tenant |
+
+  If your provider is not on this list, add a constant in a follow-up PR rather
+  than coining a string ad hoc.
+
+- **`ExternalId`** is the **provider-natural string key** for the customer in
+  that provider — `cus_abc123` for Stripe, the integer `res.partner.id` rendered
+  as a string for Odoo, etc. It is opaque to Granit and never reused across
+  providers.
+
+- **Uniqueness** per `(ContactId, ProviderName)` is enforced by the aggregate —
+  `Contact.AddExternalMapping(...)` rejects duplicate provider names.
+
+## Reading
+
+```csharp
+Contact? contact = await contactReader.GetByIdAsync(contactId, ct);
+string? externalId = contact?.FindExternalId(ContactExternalProviderNames.Stripe);
+```
+
+The contact may be host-scoped or tenant-scoped. When you do not know the active
+scope (typical for a Wolverine handler running in some tenant context), wrap the
+read in `IDataFilter.Disable<IMultiTenant>()` — see
+`Granit.Payments.Stripe.Internal.StripePaymentMethodManager` for the canonical
+pattern.
+
+## Writing
+
+After creating the customer in the provider:
+
+```csharp
+contact.AddExternalMapping(guidGenerator.Create(), "stripe", customer.Id);
+await contactWriter.UpdateAsync(contact, ct);
+```
+
+Always go through `IGuidGenerator.Create()` (Granit framework rule) — never
+`Guid.NewGuid()`. The aggregate emits `ContactExternalMappingAddedEto` so
+downstream consumers (Privacy, audit, sync orchestrators) observe the link
+through the integration-event bus.
+
+## Where to put your provider implementation
+
+A provider integration that needs the mapping — `Granit.Payments.Stripe`,
+`Granit.Invoicing.Odoo`, a hypothetical `Granit.Invoicing.Sage` — references
+`Granit.Contacts` (full base, not just `.Abstractions`) because it needs both
+`IContactReader` and `IContactWriter`. It does **not** create its own EF
+configuration for the mapping — the Contacts module already maps
+`ContactExternalMapping` as a child entity of the `Contact` aggregate.
+
+A provider integration that only **publishes or consumes** Eto events — for
+example, a webhook handler reacting to `ContactExternalMappingAddedEto` — should
+reference only `Granit.Contacts.Abstractions` to keep its dependency surface
+minimal.
+
+## What you must not do
+
+- **Do not** create a new aggregate `*ProviderMapping` (Stripe / Sage / NetSuite
+  / …). Use `Contact.ExternalMappings`.
+- **Do not** add a `(ProviderName, TenantId)` row outside the contact aggregate.
+  Tenant ↔ contact already lives in `Contact.ExternalMappings` under the
+  reserved provider name `tenant` (seeded automatically by
+  `Granit.Contacts.MultiTenancy`).
+- **Do not** reuse an `ExternalId` across providers. Each provider lives in its
+  own mapping entry, even if the IDs happen to look the same.
+
+## Related references
+
+- [Granit.Contacts module reference](../business/contacts/) (TODO once the
+  reference page lands)
+- `Granit.Payments.Stripe.Internal.StripePaymentMethodManager` — production
+  reference for read-or-create-customer flow
+- `Granit.Invoicing.Odoo.Internal.OdooInvoiceSyncProvider` — same flow for an
+  accounting provider
+- `Granit.Contacts.MultiTenancy.Handlers.SeedDefaultContactOnTenantCreatedHandler`
+  — runtime seeder that registers the reserved `tenant` mapping at provisioning
+  time

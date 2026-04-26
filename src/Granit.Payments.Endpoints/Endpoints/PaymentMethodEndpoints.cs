@@ -1,5 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization.Extensions;
+using Granit.Contacts;
+using Granit.Contacts.Domain;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
@@ -133,11 +135,13 @@ internal static class PaymentMethodEndpoints
         return TypedResults.Ok<IReadOnlyList<PaymentAvailableMethodResponse>>(response);
     }
 
+    [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices] parameters explicitly.")]
     private static async Task<Results<Created<PaymentMethodResponse>, ProblemHttpResult>> AttachAsync(
         Dtos.PaymentAttachMethodRequest request,
         [FromServices] IEnumerable<IPaymentMethodManager> managers,
         [FromServices] IPaymentMethodWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IDefaultContactResolver contactResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -151,9 +155,24 @@ internal static class PaymentMethodEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
+        // Resolve the host-scoped contact representing this tenant. Future iterations may
+        // accept an explicit ContactId in the request DTO when a tenant has multiple contacts.
+        Contact? contact = tenantId == Guid.Empty
+            ? null
+            : await contactResolver
+                .GetDefaultForTenantAsync(tenantId, cancellationToken)
+                .ConfigureAwait(false);
+
+        if (contact is null)
+        {
+            return TypedResults.Problem(
+                detail: "No default contact resolved for the active tenant. Provision the host-scoped Contact representing this tenant before attaching a payment method (see Granit.Contacts.MultiTenancy).",
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
         PaymentProviderMethod providerMethod = await manager
             .AttachAsync(
-                new ContractAttachRequest(tenantId, request.Type, request.Token),
+                new ContractAttachRequest(contact.Id, request.Type, request.Token),
                 cancellationToken)
             .ConfigureAwait(false);
 

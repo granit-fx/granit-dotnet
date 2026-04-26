@@ -16,7 +16,6 @@ internal sealed class PaymentsDbContext(
     public DbSet<PaymentTransaction> Transactions { get; set; } = null!;
     public DbSet<PaymentMethod> PaymentMethods { get; set; } = null!;
     public DbSet<ProcessedWebhookEvent> ProcessedWebhookEvents { get; set; } = null!;
-    public DbSet<ProviderCustomerMapping> ProviderCustomerMappings { get; set; } = null!;
     public DbSet<PaymentMethodConfiguration> PaymentMethodConfigurations { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
