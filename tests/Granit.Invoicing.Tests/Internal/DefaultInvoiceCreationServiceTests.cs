@@ -1,3 +1,4 @@
+using Granit.Contacts;
 using Granit.Guids;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
@@ -20,12 +21,14 @@ public sealed class DefaultInvoiceCreationServiceTests
     private readonly IInvoiceWriter _invoiceWriter = Substitute.For<IInvoiceWriter>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
+    private readonly IDefaultContactResolver _defaultContactResolver = Substitute.For<IDefaultContactResolver>();
     private readonly ILogger<DefaultInvoiceCreationService> _logger = NullLoggerFactory.Instance.CreateLogger<DefaultInvoiceCreationService>();
     private readonly ITaxCalculator _taxCalculator = Substitute.For<ITaxCalculator>();
     private readonly IInvoiceNumberGenerator _numberGenerator = Substitute.For<IInvoiceNumberGenerator>();
 
     private static readonly DateTimeOffset Now = new(2026, 4, 5, 12, 0, 0, TimeSpan.Zero);
     private static readonly Guid TenantId = Guid.NewGuid();
+    private static readonly Guid ContactId = Guid.NewGuid();
 
     public DefaultInvoiceCreationServiceTests()
     {
@@ -39,6 +42,7 @@ public sealed class DefaultInvoiceCreationServiceTests
             _invoiceWriter,
             _guidGenerator,
             _clock,
+            _defaultContactResolver,
             _logger,
             taxCalculator,
             numberGenerator);
@@ -60,8 +64,9 @@ public sealed class DefaultInvoiceCreationServiceTests
                     InvoiceSourceType.Subscription,
                     Guid.NewGuid().ToString()))
                 .ToList(),
-            periodStart,
-            periodEnd);
+            ContactId: ContactId,
+            PeriodStart: periodStart,
+            PeriodEnd: periodEnd);
 
     // ======== Happy Path: Basic Creation ========
 

@@ -5,5 +5,5 @@ namespace Granit.Invoicing.Events;
 
 /// <summary>Published when an invoice is finalized. Triggers payment collection.</summary>
 public sealed record InvoiceFinalizedEto(
-    Guid InvoiceId, Guid TenantId, decimal Total,
+    Guid InvoiceId, Guid TenantId, Guid ContactId, decimal Total,
     string Currency, CollectionMethod CollectionMethod) : IIntegrationEvent;

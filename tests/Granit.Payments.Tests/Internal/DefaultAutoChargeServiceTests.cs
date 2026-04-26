@@ -28,6 +28,7 @@ public sealed class DefaultAutoChargeServiceTests
 
     private static readonly Guid TenantId = Guid.NewGuid();
     private static readonly Guid InvoiceId = Guid.NewGuid();
+    private static readonly Guid ContactId = Guid.NewGuid();
 
     public DefaultAutoChargeServiceTests()
     {
@@ -45,7 +46,7 @@ public sealed class DefaultAutoChargeServiceTests
     private static InvoiceFinalizedEto CreateEto(
         CollectionMethod collectionMethod = CollectionMethod.Auto,
         decimal total = 100m) =>
-        new(InvoiceId, TenantId, total, "EUR", collectionMethod);
+        new(InvoiceId, TenantId, ContactId, total, "EUR", collectionMethod);
 
     private static PaymentMethod CreateDefaultPaymentMethod() =>
         PaymentMethod.Create(Guid.NewGuid(), TenantId, "card", "stripe", "pm_123", "Visa **** 4242");

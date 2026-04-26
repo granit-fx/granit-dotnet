@@ -17,7 +17,7 @@ public sealed class PassThroughPrePaymentProcessorTests
     public async Task ProcessAsync_ShouldReturnFullInvoiceTotal()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        var eto = new InvoiceFinalizedEto(Guid.NewGuid(), Guid.NewGuid(), 250.75m, "EUR", CollectionMethod.Auto);
+        var eto = new InvoiceFinalizedEto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 250.75m, "EUR", CollectionMethod.Auto);
 
         PrePaymentResult result = await _sut.ProcessAsync(eto, ct);
 
@@ -28,7 +28,7 @@ public sealed class PassThroughPrePaymentProcessorTests
     public async Task ProcessAsync_ZeroTotal_ShouldReturnZero()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        var eto = new InvoiceFinalizedEto(Guid.NewGuid(), Guid.NewGuid(), 0m, "USD", CollectionMethod.Auto);
+        var eto = new InvoiceFinalizedEto(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 0m, "USD", CollectionMethod.Auto);
 
         PrePaymentResult result = await _sut.ProcessAsync(eto, ct);
 

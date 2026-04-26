@@ -6,11 +6,17 @@ namespace Granit.Invoicing.Commands;
 /// Command to create an invoice. Can be published by any module
 /// (Subscriptions, Commerce, admin) without creating a dependency on Invoicing.
 /// </summary>
-/// <param name="TenantId">The tenant for which to create the invoice.</param>
+/// <param name="TenantId">The tenant for which to create the invoice (multi-tenant isolation).</param>
 /// <param name="Currency">ISO 4217 currency code (e.g., "EUR").</param>
 /// <param name="CollectionMethod">How payment should be collected.</param>
 /// <param name="BillingReason">Why the invoice is being created.</param>
 /// <param name="LineItems">Line items to add to the invoice.</param>
+/// <param name="ContactId">
+///   Optional identifier of the <c>Granit.Contacts.Contact</c> that holds the billing identity for this invoice.
+///   When <c>null</c>, the invoicing service resolves the tenant's default host-scoped contact via
+///   <c>IDefaultContactResolver.GetDefaultForTenantAsync</c>. Pass an explicit value when the caller already
+///   knows the contact (admin endpoints, manually issued invoices, multi-contact tenants).
+/// </param>
 /// <param name="PeriodStart">Optional billing period start.</param>
 /// <param name="PeriodEnd">Optional billing period end.</param>
 /// <param name="IdempotencyKey">Optional key to prevent duplicate invoice creation.</param>
@@ -20,6 +26,7 @@ public sealed record CreateInvoiceCommand(
     CollectionMethod CollectionMethod,
     BillingReason BillingReason,
     IReadOnlyList<CreateInvoiceLineItem> LineItems,
+    Guid? ContactId = null,
     DateTimeOffset? PeriodStart = null,
     DateTimeOffset? PeriodEnd = null,
     string? IdempotencyKey = null);

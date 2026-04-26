@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.Events;
@@ -35,7 +36,8 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
 
     /// <summary>Creates a new invoice in Draft status.</summary>
     /// <param name="id">Unique invoice identifier.</param>
-    /// <param name="tenantId">Owning tenant identifier.</param>
+    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="contactId"/>).</param>
+    /// <param name="contactId">Identifier of the <c>Granit.Contacts.Contact</c> that holds the billing identity for this invoice. Required.</param>
     /// <param name="documentType">Whether this is an invoice or a credit note.</param>
     /// <param name="currency">ISO 4217 currency code.</param>
     /// <param name="collectionMethod">How payment is collected (auto-charge or manual).</param>
@@ -46,6 +48,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public static Invoice Create(
         Guid id,
         Guid tenantId,
+        ContactId contactId,
         InvoiceDocumentType documentType,
         string currency,
         CollectionMethod collectionMethod,
@@ -54,6 +57,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         CreditNoteInfo? creditNoteInfo = null,
         BillingPeriod? period = null)
     {
+        ArgumentNullException.ThrowIfNull(contactId);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
 
         if (documentType == InvoiceDocumentType.CreditNote && creditNoteInfo is null)
@@ -66,6 +70,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         {
             Id = id,
             TenantId = tenantId,
+            ContactId = contactId,
             DocumentType = documentType,
             Currency = currency,
             CollectionMethod = collectionMethod,
@@ -78,7 +83,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
             PeriodEnd = period?.End,
         };
 
-        invoice.AddDomainEvent(new InvoiceCreatedEvent(id, tenantId));
+        invoice.AddDomainEvent(new InvoiceCreatedEvent(id, tenantId, contactId.Value));
         return invoice;
     }
 
@@ -86,15 +91,25 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public static Invoice CreateCreditNote(
         Guid id,
         Guid tenantId,
+        ContactId contactId,
         InvoiceId parentInvoiceId,
         string currency,
         string reason) =>
         Create(
-            id, tenantId, InvoiceDocumentType.CreditNote, currency,
+            id, tenantId, contactId, InvoiceDocumentType.CreditNote, currency,
             CollectionMethod.Auto, BillingReason.Manual,
             creditNoteInfo: new CreditNoteInfo(parentInvoiceId, reason));
 
     // ── Properties ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Identifier of the <c>Granit.Contacts.Contact</c> aggregate that holds the billing
+    /// identity (legal name, addresses, external mappings) for this invoice. Required —
+    /// the invoice is meaningless without a billing party. Use
+    /// <c>IDefaultContactResolver.GetDefaultForTenantAsync</c> to obtain the host-scoped
+    /// contact representing a tenant when migrating from tenant-keyed billing.
+    /// </summary>
+    public ContactId ContactId { get; private set; } = null!;
 
     /// <summary>Whether this is an invoice or a credit note.</summary>
     public InvoiceDocumentType DocumentType { get; private set; }
@@ -243,12 +258,12 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         if (IsCreditNote)
         {
             AddDistributedEvent(new CreditNoteIssuedEto(
-                Id, ParentInvoiceId!, TenantId!.Value, Total));
+                Id, ParentInvoiceId!, TenantId!.Value, ContactId.Value, Total));
         }
         else
         {
             AddDistributedEvent(new InvoiceFinalizedEto(
-                Id, TenantId!.Value, Total, Currency, CollectionMethod));
+                Id, TenantId!.Value, ContactId.Value, Total, Currency, CollectionMethod));
         }
 
         return true;
@@ -294,7 +309,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         {
             PaidAt = paidAt;
             Status = InvoiceStatus.Paid;
-            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, paidAt));
+            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, ContactId.Value, paidAt));
 
             if (Overpayment > 0)
             {
@@ -335,7 +350,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         {
             PaidAt = creditNoteIssuedAt;
             Status = InvoiceStatus.Paid;
-            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, creditNoteIssuedAt));
+            AddDistributedEvent(new InvoicePaidEto(Id, TenantId!.Value, ContactId.Value, creditNoteIssuedAt));
             return true;
         }
 

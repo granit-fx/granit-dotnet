@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Shouldly;
@@ -12,6 +13,7 @@ public sealed class InvoiceTests
         var invoice = Invoice.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             InvoiceDocumentType.Invoice,
             "EUR",
             CollectionMethod.Auto,
@@ -154,6 +156,7 @@ public sealed class InvoiceTests
         var creditNote = Invoice.CreateCreditNote(
             Guid.NewGuid(),
             Guid.NewGuid(),
+            ContactId.Create(Guid.NewGuid()),
             InvoiceId.Create(Guid.NewGuid()),
             "EUR",
             "Refund for defective service");

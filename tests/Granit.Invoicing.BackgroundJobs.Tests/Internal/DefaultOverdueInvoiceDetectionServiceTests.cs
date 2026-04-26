@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Invoicing;
 using Granit.Invoicing.BackgroundJobs.Internal;
@@ -47,6 +48,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
         var invoice = Invoice.Create(
             Guid.NewGuid(),
             tid,
+            ContactId.Create(Guid.NewGuid()),
             InvoiceDocumentType.Invoice,
             "EUR",
             CollectionMethod.Auto,

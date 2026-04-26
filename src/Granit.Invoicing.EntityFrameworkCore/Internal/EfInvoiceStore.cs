@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.MultiTenancy;
@@ -21,6 +22,12 @@ internal sealed class EfInvoiceStore(
 
     public Task<IReadOnlyList<Invoice>> GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
         ListAsync(Spec.For<Invoice>().Where(i => i.TenantId == tenantId), cancellationToken);
+
+    public Task<IReadOnlyList<Invoice>> GetByContactAsync(
+        ContactId contactId, CancellationToken cancellationToken = default) =>
+        ListAsync(
+            Spec.For<Invoice>().Where(i => i.ContactId.Value == contactId.Value),
+            cancellationToken);
 
     public Task<IReadOnlyList<Invoice>> GetOverdueAsync(DateTimeOffset now, CancellationToken cancellationToken = default) =>
         ListAsync(

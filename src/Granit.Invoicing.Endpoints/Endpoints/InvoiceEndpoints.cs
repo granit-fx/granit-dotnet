@@ -1,4 +1,5 @@
 using Granit.Authorization.Extensions;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Invoicing.Domain;
@@ -106,6 +107,7 @@ internal static class InvoiceEndpoints
         var invoice = Invoice.Create(
             guidGenerator.Create(),
             currentTenant.Id!.Value,
+            ContactId.Create(request.ContactId),
             request.DocumentType,
             request.Currency,
             request.CollectionMethod,

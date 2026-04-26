@@ -1,3 +1,6 @@
+using Granit.Contacts;
+using Granit.Contacts.Domain;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
@@ -12,15 +15,19 @@ internal sealed partial class DefaultInvoiceCreationService(
     IInvoiceWriter invoiceWriter,
     IGuidGenerator guidGenerator,
     IClock clock,
+    IDefaultContactResolver defaultContactResolver,
     ILogger<DefaultInvoiceCreationService> logger,
     ITaxCalculator? taxCalculator = null,
     IInvoiceNumberGenerator? numberGenerator = null) : IInvoiceCreationService
 {
     public async Task CreateAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)
     {
+        ContactId contactId = await ResolveContactIdAsync(command, cancellationToken).ConfigureAwait(false);
+
         var invoice = Invoice.Create(
             guidGenerator.Create(),
             command.TenantId,
+            contactId,
             InvoiceDocumentType.Invoice,
             command.Currency,
             command.CollectionMethod,
@@ -71,6 +78,26 @@ internal sealed partial class DefaultInvoiceCreationService(
 
         await invoiceWriter.AddAsync(invoice, cancellationToken).ConfigureAwait(false);
         Log.InvoiceCreated(logger, invoice.Id, command.TenantId);
+    }
+
+    private async Task<ContactId> ResolveContactIdAsync(CreateInvoiceCommand command, CancellationToken cancellationToken)
+    {
+        if (command.ContactId is { } explicitId)
+        {
+            return ContactId.Create(explicitId);
+        }
+
+        Contact? defaultContact = await defaultContactResolver
+            .GetDefaultForTenantAsync(command.TenantId, cancellationToken)
+            .ConfigureAwait(false);
+
+        return defaultContact is not null
+            ? ContactId.Create(defaultContact.Id)
+            : throw new InvalidOperationException(
+                $"No default Contact resolved for tenant '{command.TenantId}'. Either pass " +
+                $"{nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.ContactId)} explicitly or " +
+                $"seed a host-scoped Contact with provider '{ContactExternalProviderNames.Tenant}' = " +
+                $"'{command.TenantId}' (typically done at tenant-provisioning time).");
     }
 
     private static partial class Log

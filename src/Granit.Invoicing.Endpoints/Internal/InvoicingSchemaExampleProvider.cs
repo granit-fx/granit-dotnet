@@ -15,6 +15,7 @@ internal sealed class InvoicingSchemaExampleProvider : ISchemaExampleProvider
         {
             [typeof(InvoiceCreateRequest)] = new JsonObject
             {
+                ["contactId"] = "01960f3a-5c9e-7c3b-b4a2-abc123def456",
                 ["documentType"] = "Invoice",
                 ["currency"] = "EUR",
                 ["collectionMethod"] = "ChargeAutomatically",

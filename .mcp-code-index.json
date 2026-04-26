@@ -1076,6 +1076,7 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
+        "Granit.Contacts",
         "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
         "Granit.Guids",
@@ -22957,7 +22958,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Abstractions",
       "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
-      "line": 17,
+      "line": 23,
       "members": []
     },
     {
@@ -22966,7 +22967,7 @@
       "kind": "record",
       "project": "Granit.Invoicing.Abstractions",
       "file": "src/Granit.Invoicing.Abstractions/Commands/CreateInvoiceCommand.cs",
-      "line": 44,
+      "line": 51,
       "members": []
     },
     {
@@ -23064,13 +23065,19 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Domain/Invoice.cs",
-      "line": 28,
+      "line": 29,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
+          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, BillingAddress? billingAddress = null, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
           "returnType": "Invoice"
+        },
+        {
+          "name": "ContactId",
+          "kind": "property",
+          "signature": "ContactId ContactId",
+          "returnType": "ContactId"
         },
         {
           "name": "DocumentType",
@@ -23599,7 +23606,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/GranitInvoicingModule.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -23711,7 +23718,7 @@
       "kind": "interface",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/IInvoiceReader.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "GetByIdAsync",
@@ -23735,6 +23742,12 @@
           "name": "GetOverdueAsync",
           "kind": "method",
           "signature": "GetOverdueAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Invoice>>"
+        },
+        {
+          "name": "GetByContactAsync",
+          "kind": "method",
+          "signature": "GetByContactAsync(ContactId contactId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Invoice>>"
         },
         {

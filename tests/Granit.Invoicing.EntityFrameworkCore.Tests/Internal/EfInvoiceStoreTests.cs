@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Invoicing.Domain;
@@ -35,9 +36,10 @@ public sealed class EfInvoiceStoreTests : IAsyncDisposable
         await db.Database.EnsureDeletedAsync();
     }
 
-    private static Invoice NewDraftInvoice(Guid? tenantId = null) =>
+    private static Invoice NewDraftInvoice(Guid? tenantId = null, Guid? contactId = null) =>
         Invoice.Create(
             Guid.NewGuid(), tenantId ?? Guid.NewGuid(),
+            ContactId.Create(contactId ?? Guid.NewGuid()),
             InvoiceDocumentType.Invoice, "EUR",
             CollectionMethod.Auto, BillingReason.SubscriptionCycle);
 
@@ -121,6 +123,7 @@ public sealed class EfInvoiceStoreTests : IAsyncDisposable
 
         var creditNote = Invoice.Create(
             Guid.NewGuid(), parent.TenantId!.Value,
+            parent.ContactId,
             InvoiceDocumentType.CreditNote, "EUR",
             CollectionMethod.Auto, BillingReason.Manual,
             creditNoteInfo: new CreditNoteInfo(InvoiceId.Create(parent.Id), "test refund"));
