@@ -15,6 +15,35 @@ by provider name (one mapping per provider).
 
 Part of the [granit](https://granit-fx.dev) framework.
 
+## Two usage modes
+
+The aggregate is `IMultiTenant`, but unlike most Granit modules it intentionally treats
+`TenantId == null` as a **first-class scope** — the SaaS host's own contacts — rather
+than as "missing data". The store's read path enforces the corresponding visibility
+rules without consumer code branches:
+
+| Active context | What the store returns |
+| -------------- | ---------------------- |
+| `ICurrentTenant.IsAvailable == true` (tenant `T`) | Only contacts where `TenantId == T` |
+| `ICurrentTenant.IsAvailable == false` (host) | Only contacts where `TenantId == null` |
+| Any context, after `IDataFilter.Disable<IMultiTenant>()` | All contacts cross-scope |
+
+Two example call sites:
+
+```csharp
+// Host SaaS — billing relationships with the platform's own tenants-as-customers.
+Contact platformCustomer = Contact.Create(
+    Guid.NewGuid(), tenantId: null, ContactKind.Company, "ACME Inc.", "EUR");
+
+// Tenant e-commerce app — that tenant's own end-customer base.
+Contact endCustomer = Contact.Create(
+    Guid.NewGuid(), tenantId: currentTenant.Id, ContactKind.Individual, "Jean Dupont", "EUR");
+```
+
+Cross-scope reads (e.g., a host admin browsing a tenant's contacts during a support
+incident) require an explicit `using IDataFilter.Disable<IMultiTenant>()` scope and
+should be reviewed for privacy implications.
+
 ## Installation
 
 ```bash

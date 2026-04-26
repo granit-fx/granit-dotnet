@@ -1,7 +1,6 @@
 using Granit.Contacts.Domain;
 using Granit.Contacts.Domain.ValueObjects;
 using Granit.MultiTenancy;
-using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -21,9 +20,19 @@ internal sealed class EfContactStore(
     : EfStoreBase<Contact, ContactsDbContext>(contextFactory, currentTenant),
       IContactReader, IContactWriter
 {
+    /// <summary>
+    /// Overrides <see cref="EfStoreBase{TEntity,TContext}.Query(TContext)"/> to keep the
+    /// multi-tenant query filter active in <i>both</i> tenant and host scope. The dual-use
+    /// design treats <c>TenantId == null</c> as the host's own scope (its tenants-as-customers,
+    /// vendors, internal staff) — leaking other tenants' contacts into a host browser would be
+    /// a privacy regression. The standard host-mode bypass remains available explicitly via
+    /// <c>IDataFilter.Disable&lt;IMultiTenant&gt;()</c>.
+    /// </summary>
+    private static DbSet<Contact> ContactQuery(ContactsDbContext db) => db.Contacts;
+
     public Task<Contact?> GetByIdAsync(ContactId id, CancellationToken cancellationToken = default) =>
         ReadAsync(
-            db => Query(db)
+            db => ContactQuery(db)
                 .Include(c => c.Addresses)
                 .Include(c => c.Emails)
                 .Include(c => c.Phones)
@@ -38,7 +47,7 @@ internal sealed class EfContactStore(
         ArgumentException.ThrowIfNullOrWhiteSpace(externalId);
 
         return ReadAsync(
-            db => Query(db)
+            db => ContactQuery(db)
                 .Include(c => c.Addresses)
                 .Include(c => c.Emails)
                 .Include(c => c.Phones)
@@ -58,7 +67,7 @@ internal sealed class EfContactStore(
         }
 
         return ReadAsync(
-            db => Query(db)
+            db => ContactQuery(db)
                 .Include(c => c.Addresses)
                 .Include(c => c.Emails)
                 .Include(c => c.Phones)
@@ -68,12 +77,16 @@ internal sealed class EfContactStore(
     }
 
     public Task<IReadOnlyList<Contact>> ListAsync(CancellationToken cancellationToken = default) =>
-        ListAsync(Spec.For<Contact>(), cancellationToken);
+        ReadAsync<IReadOnlyList<Contact>>(
+            async db => await ContactQuery(db).ToListAsync(cancellationToken).ConfigureAwait(false),
+            cancellationToken);
 
     public Task<IReadOnlyList<Contact>> ListByRoleAsync(
         ContactRoles role, CancellationToken cancellationToken = default) =>
-        ListAsync(
-            Spec.For<Contact>().Where(c => (c.Roles & role) == role),
+        ReadAsync<IReadOnlyList<Contact>>(
+            async db => await ContactQuery(db)
+                .Where(c => (c.Roles & role) == role)
+                .ToListAsync(cancellationToken).ConfigureAwait(false),
             cancellationToken);
 
     Task IContactWriter.AddAsync(Contact contact, CancellationToken cancellationToken) =>
