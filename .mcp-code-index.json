@@ -10673,7 +10673,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 27,
+      "line": 28,
       "members": []
     },
     {
@@ -10700,7 +10700,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 41,
+      "line": 42,
       "members": []
     },
     {
@@ -10718,7 +10718,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 56,
+      "line": 57,
       "members": []
     },
     {
@@ -10727,7 +10727,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 62,
+      "line": 63,
       "members": []
     },
     {
@@ -10745,7 +10745,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 48,
+      "line": 49,
       "members": []
     },
     {

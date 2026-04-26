@@ -18,6 +18,7 @@ internal static class ContactMapper
         c.RegistrationNumber,
         c.ParentContactId is { } pid ? pid.Value : null,
         c.UserId,
+        c.AvatarBlobId,
         c.Roles,
         c.Status,
         [.. c.Addresses.Select(ToAddressResponse)],

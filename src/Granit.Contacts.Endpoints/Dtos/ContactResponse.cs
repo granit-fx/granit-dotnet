@@ -16,6 +16,7 @@ public sealed record ContactResponse(
     string? RegistrationNumber,
     Guid? ParentContactId,
     Guid? UserId,
+    Guid? AvatarBlobId,
     ContactRoles Roles,
     ContactStatus Status,
     IReadOnlyList<ContactAddressResponse> Addresses,
