@@ -488,6 +488,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Contacts.EntityFrameworkCore",
+      "deps": [
+        "Granit.Contacts",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
@@ -10632,6 +10641,63 @@
           "returnType": "implicit operator"
         }
       ]
+    },
+    {
+      "name": "ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Contacts.EntityFrameworkCore.Extensions.ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Contacts.EntityFrameworkCore",
+      "file": "src/Granit.Contacts.EntityFrameworkCore/Extensions/ContactsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitContactsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitContactsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "ContactsModelBuilderExtensions",
+      "fqn": "Granit.Contacts.EntityFrameworkCore.Extensions.ContactsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Contacts.EntityFrameworkCore",
+      "file": "src/Granit.Contacts.EntityFrameworkCore/Extensions/ContactsModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureContactsModule",
+          "kind": "method",
+          "signature": "ConfigureContactsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitContactsDbProperties",
+      "fqn": "Granit.Contacts.EntityFrameworkCore.GranitContactsDbProperties",
+      "kind": "class",
+      "project": "Granit.Contacts.EntityFrameworkCore",
+      "file": "src/Granit.Contacts.EntityFrameworkCore/GranitContactsDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitContactsEntityFrameworkCoreModule",
+      "fqn": "Granit.Contacts.EntityFrameworkCore.GranitContactsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Contacts.EntityFrameworkCore",
+      "file": "src/Granit.Contacts.EntityFrameworkCore/GranitContactsEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "ContactActivatedEto",

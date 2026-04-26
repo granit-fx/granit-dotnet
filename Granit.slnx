@@ -280,6 +280,7 @@
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src/Granit.Contacts.EntityFrameworkCore/Granit.Contacts.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Contacts/Granit.Contacts.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
     <Project Path="src/Granit.MultiTenancy.Provisioning/Granit.MultiTenancy.Provisioning.csproj" />
@@ -598,6 +599,7 @@
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Granit.Contacts.EntityFrameworkCore.Tests/Granit.Contacts.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Contacts.Tests/Granit.Contacts.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj" />
