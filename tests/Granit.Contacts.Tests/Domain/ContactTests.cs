@@ -57,24 +57,20 @@ public sealed class ContactTests
         var c = Contact.Create(
             Guid.NewGuid(), null, ContactKind.Company, "Acme", "EUR",
             roles: ContactRoles.Customer | ContactRoles.Supplier,
-            email: "billing@acme.com",
-            phone: "+3221234567",
-            mobilePhone: "+32475123456",
             website: "https://acme.com",
             language: "fr-BE",
             timezone: "Europe/Brussels",
             taxId: "BE0123456789",
             registrationNumber: "0123.456.789");
 
-        c.Email.ShouldBe("billing@acme.com");
-        c.Phone.ShouldBe("+3221234567");
-        c.MobilePhone.ShouldBe("+32475123456");
         c.Website.ShouldBe("https://acme.com");
         c.Language.ShouldBe("fr-BE");
         c.Timezone.ShouldBe("Europe/Brussels");
         c.TaxId.ShouldBe("BE0123456789");
         c.RegistrationNumber.ShouldBe("0123.456.789");
         c.Addresses.ShouldBeEmpty();
+        c.Emails.ShouldBeEmpty();
+        c.Phones.ShouldBeEmpty();
         c.HasRole(ContactRoles.Customer).ShouldBeTrue();
         c.HasRole(ContactRoles.Supplier).ShouldBeTrue();
         c.HasRole(ContactRoles.Employee).ShouldBeFalse();
@@ -174,10 +170,9 @@ public sealed class ContactTests
     {
         Contact c = NewCompany();
 
-        c.UpdateContact("New Acme", email: "new@acme.com", website: "https://new.acme.com");
+        c.UpdateContact("New Acme", website: "https://new.acme.com");
 
         c.Name.ShouldBe("New Acme");
-        c.Email.ShouldBe("new@acme.com");
         c.Website.ShouldBe("https://new.acme.com");
         c.DomainEvents.OfType<ContactUpdatedEvent>().ShouldHaveSingleItem();
     }

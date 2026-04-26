@@ -10395,13 +10395,37 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? email = null, string? phone = null, string? mobilePhone = null, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
+          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
           "returnType": "Contact"
         },
         {
-          "name": "Email",
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<ContactEmail> Emails => _emails."
+        },
+        {
+          "name": "PrimaryEmail",
           "kind": "property",
-          "signature": "string? Email",
+          "signature": "ContactEmail? PrimaryEmail",
+          "returnType": "ContactEmail?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<ContactPhone> Phones => _phones."
+        },
+        {
+          "name": "PrimaryPhone",
+          "kind": "property",
+          "signature": "ContactPhone? PrimaryPhone",
+          "returnType": "ContactPhone?"
+        },
+        {
+          "name": "Website",
+          "kind": "property",
+          "signature": "string? Website",
           "returnType": "string?"
         },
         {
@@ -10477,6 +10501,28 @@
       ]
     },
     {
+      "name": "ContactEmail",
+      "fqn": "Granit.Contacts.Domain.ContactEmail",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactEmail.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string address, bool isPrimary = false, string? label = null)",
+          "returnType": "ContactEmail"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
       "name": "ContactExternalMapping",
       "fqn": "Granit.Contacts.Domain.ContactExternalMapping",
       "kind": "class",
@@ -10517,6 +10563,28 @@
       "members": []
     },
     {
+      "name": "ContactPhone",
+      "fqn": "Granit.Contacts.Domain.ContactPhone",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactPhone.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, PhoneKind kind, string number, bool isPrimary = false, string? label = null)",
+          "returnType": "ContactPhone"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
       "name": "ContactRoles",
       "fqn": "Granit.Contacts.Domain.ContactRoles",
       "kind": "enum",
@@ -10532,6 +10600,15 @@
       "project": "Granit.Contacts",
       "file": "src/Granit.Contacts/Domain/ContactStatus.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "PhoneKind",
+      "fqn": "Granit.Contacts.Domain.PhoneKind",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/PhoneKind.cs",
+      "line": 4,
       "members": []
     },
     {

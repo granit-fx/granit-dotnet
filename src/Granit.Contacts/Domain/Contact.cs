@@ -37,6 +37,8 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
 {
     private readonly List<ContactExternalMapping> _externalMappings = [];
     private readonly List<ContactAddress> _addresses = [];
+    private readonly List<ContactEmail> _emails = [];
+    private readonly List<ContactPhone> _phones = [];
 
     private Contact() { }
 
@@ -47,9 +49,6 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     /// <param name="name">Display / legal name (required, max 256 chars).</param>
     /// <param name="defaultCurrency">ISO 4217 alpha-3 currency code (required, exactly 3 chars).</param>
     /// <param name="roles">Initial role set (defaults to <see cref="ContactRoles.Customer"/>).</param>
-    /// <param name="email">Primary contact email (optional).</param>
-    /// <param name="phone">Optional landline / generic phone.</param>
-    /// <param name="mobilePhone">Optional mobile phone.</param>
     /// <param name="website">Optional website URL.</param>
     /// <param name="language">Optional ISO locale (e.g. <c>"fr-BE"</c>).</param>
     /// <param name="timezone">IANA timezone (defaults to <c>"UTC"</c>).</param>
@@ -62,9 +61,6 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         string name,
         string defaultCurrency,
         ContactRoles roles = ContactRoles.Customer,
-        string? email = null,
-        string? phone = null,
-        string? mobilePhone = null,
         string? website = null,
         string? language = null,
         string? timezone = null,
@@ -85,9 +81,6 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
             TenantId = tenantId,
             Kind = kind,
             Name = name,
-            Email = email,
-            Phone = phone,
-            MobilePhone = mobilePhone,
             Website = website,
             Language = language,
             Timezone = string.IsNullOrWhiteSpace(timezone) ? "UTC" : timezone,
@@ -115,17 +108,19 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     [SensitiveData(Level = Sensitivity.Internal)]
     public string Name { get; private set; } = string.Empty;
 
-    /// <summary>Primary contact email.</summary>
-    [SensitiveData(Level = Sensitivity.Confidential)]
-    public string? Email { get; private set; }
+    /// <summary>Email addresses attached to this contact (multi). Mutated via <see cref="AddEmail"/>, <see cref="RemoveEmail"/>, <see cref="UpdateEmail"/>, <see cref="SetPrimaryEmail"/>.</summary>
+    public IReadOnlyList<ContactEmail> Emails => _emails.AsReadOnly();
 
-    /// <summary>Landline / generic phone number.</summary>
-    [SensitiveData(Level = Sensitivity.Confidential)]
-    public string? Phone { get; private set; }
+    /// <summary>Primary email if any (the entry flagged <see cref="ContactEmail.IsPrimary"/>, falling back to the first).</summary>
+    public ContactEmail? PrimaryEmail =>
+        _emails.FirstOrDefault(e => e.IsPrimary) ?? _emails.FirstOrDefault();
 
-    /// <summary>Mobile phone number.</summary>
-    [SensitiveData(Level = Sensitivity.Confidential)]
-    public string? MobilePhone { get; private set; }
+    /// <summary>Phone numbers attached to this contact (multi, typed). Mutated via <see cref="AddPhone"/>, <see cref="RemovePhone"/>, <see cref="UpdatePhone"/>, <see cref="SetPrimaryPhone"/>.</summary>
+    public IReadOnlyList<ContactPhone> Phones => _phones.AsReadOnly();
+
+    /// <summary>Primary phone if any.</summary>
+    public ContactPhone? PrimaryPhone =>
+        _phones.FirstOrDefault(p => p.IsPrimary) ?? _phones.FirstOrDefault();
 
     /// <summary>Website URL.</summary>
     public string? Website { get; private set; }
@@ -248,12 +243,13 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     // Identity & address updates
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>Updates the contact's identity fields (name, email, phones, website, locale, timezone).</summary>
+    /// <summary>
+    /// Updates the contact's identity fields (name, website, locale, timezone). Emails
+    /// and phones live in their own collections — see <see cref="AddEmail"/>,
+    /// <see cref="UpdateEmail"/>, <see cref="AddPhone"/>, <see cref="UpdatePhone"/>.
+    /// </summary>
     public void UpdateContact(
         string name,
-        string? email = null,
-        string? phone = null,
-        string? mobilePhone = null,
         string? website = null,
         string? language = null,
         string? timezone = null)
@@ -262,14 +258,175 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         Name = name;
-        Email = email;
-        Phone = phone;
-        MobilePhone = mobilePhone;
         Website = website;
         Language = language;
         Timezone = string.IsNullOrWhiteSpace(timezone) ? Timezone : timezone;
 
         RaiseUpdated();
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Emails (multi, with primary)
+    // ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Adds a new email address. When <paramref name="isPrimary"/> is true, the previously
+    /// primary email (if any) is demoted. The first email added is auto-promoted to primary
+    /// regardless of caller intent.
+    /// </summary>
+    public void AddEmail(Guid emailId, string address, bool isPrimary = false, string? label = null)
+    {
+        EnsureMutable();
+        ArgumentException.ThrowIfNullOrWhiteSpace(address);
+
+        if (isPrimary)
+        {
+            ClearPrimaryEmail();
+        }
+
+        bool effectivePrimary = isPrimary || _emails.Count == 0;
+
+        _emails.Add(ContactEmail.Create(emailId, address, effectivePrimary, label));
+        RaiseUpdated();
+    }
+
+    /// <summary>Removes the email with the given id. Idempotent. Promotes another to primary if needed.</summary>
+    public bool RemoveEmail(Guid emailId)
+    {
+        EnsureMutable();
+        ContactEmail? existing = _emails.FirstOrDefault(e => e.Id == emailId);
+        if (existing is null) { return false; }
+
+        _emails.Remove(existing);
+
+        if (existing.IsPrimary)
+        {
+            _emails.FirstOrDefault()?.MarkPrimary(true);
+        }
+
+        RaiseUpdated();
+        return true;
+    }
+
+    /// <summary>Replaces the address (and optional label) of an existing email entry.</summary>
+    public void UpdateEmail(Guid emailId, string address, string? label = null)
+    {
+        EnsureMutable();
+        ArgumentException.ThrowIfNullOrWhiteSpace(address);
+
+        ContactEmail existing = _emails.FirstOrDefault(e => e.Id == emailId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no email with id '{emailId}'.");
+
+        existing.Replace(address, label);
+        RaiseUpdated();
+    }
+
+    /// <summary>Marks the given email as primary. Idempotent.</summary>
+    public void SetPrimaryEmail(Guid emailId)
+    {
+        EnsureMutable();
+        ContactEmail target = _emails.FirstOrDefault(e => e.Id == emailId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no email with id '{emailId}'.");
+
+        if (target.IsPrimary) { return; }
+
+        ClearPrimaryEmail();
+        target.MarkPrimary(true);
+        RaiseUpdated();
+    }
+
+    private void ClearPrimaryEmail()
+    {
+        foreach (ContactEmail email in _emails.Where(e => e.IsPrimary))
+        {
+            email.MarkPrimary(false);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Phones (multi, typed, with primary)
+    // ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Adds a new phone number. When <paramref name="isPrimary"/> is true, the previously
+    /// primary phone (if any) is demoted. The first phone added is auto-promoted to primary.
+    /// </summary>
+    public void AddPhone(
+        Guid phoneId,
+        PhoneKind kind,
+        string number,
+        bool isPrimary = false,
+        string? label = null)
+    {
+        EnsureMutable();
+        ArgumentException.ThrowIfNullOrWhiteSpace(number);
+
+        if (isPrimary)
+        {
+            ClearPrimaryPhone();
+        }
+
+        bool effectivePrimary = isPrimary || _phones.Count == 0;
+
+        _phones.Add(ContactPhone.Create(phoneId, kind, number, effectivePrimary, label));
+        RaiseUpdated();
+    }
+
+    /// <summary>Removes the phone with the given id. Idempotent.</summary>
+    public bool RemovePhone(Guid phoneId)
+    {
+        EnsureMutable();
+        ContactPhone? existing = _phones.FirstOrDefault(p => p.Id == phoneId);
+        if (existing is null) { return false; }
+
+        _phones.Remove(existing);
+
+        if (existing.IsPrimary)
+        {
+            _phones.FirstOrDefault()?.MarkPrimary(true);
+        }
+
+        RaiseUpdated();
+        return true;
+    }
+
+    /// <summary>Replaces the kind / number / label of an existing phone entry.</summary>
+    public void UpdatePhone(Guid phoneId, PhoneKind kind, string number, string? label = null)
+    {
+        EnsureMutable();
+        ArgumentException.ThrowIfNullOrWhiteSpace(number);
+
+        ContactPhone existing = _phones.FirstOrDefault(p => p.Id == phoneId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no phone with id '{phoneId}'.");
+
+        existing.Replace(kind, number, label);
+        RaiseUpdated();
+    }
+
+    /// <summary>Marks the given phone as primary. Idempotent.</summary>
+    public void SetPrimaryPhone(Guid phoneId)
+    {
+        EnsureMutable();
+        ContactPhone target = _phones.FirstOrDefault(p => p.Id == phoneId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no phone with id '{phoneId}'.");
+
+        if (target.IsPrimary) { return; }
+
+        ClearPrimaryPhone();
+        target.MarkPrimary(true);
+        RaiseUpdated();
+    }
+
+    private void ClearPrimaryPhone()
+    {
+        foreach (ContactPhone phone in _phones.Where(p => p.IsPrimary))
+        {
+            phone.MarkPrimary(false);
+        }
     }
 
     /// <summary>
