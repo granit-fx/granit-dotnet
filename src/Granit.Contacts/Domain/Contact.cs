@@ -248,6 +248,40 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         return true;
     }
 
+    /// <summary>
+    /// Pseudonymises every PII field on the contact while preserving the row for accounting
+    /// integrity (ISO 27001 / legal retention). Replaces <see cref="Name"/> with the supplied
+    /// placeholder, clears all <see cref="Emails"/>, <see cref="Phones"/>, <see cref="Addresses"/>,
+    /// and unlinks the user. Tax and registration identifiers and external mappings are kept
+    /// because downstream finance systems still reference them. Bypasses the standard mutability
+    /// guard — GDPR Article 17 erasure must succeed even on an Archived contact.
+    /// </summary>
+    /// <returns><c>true</c> if any PII was actually cleared; <c>false</c> when nothing remained
+    /// to pseudonymise (idempotent re-run).</returns>
+    public bool PseudonymizePersonalData(string placeholder = "[deleted]")
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(placeholder);
+
+        bool changed = false;
+        if (!string.Equals(Name, placeholder, StringComparison.Ordinal))
+        {
+            Name = placeholder;
+            changed = true;
+        }
+        if (_emails.Count > 0) { _emails.Clear(); changed = true; }
+        if (_phones.Count > 0) { _phones.Clear(); changed = true; }
+        if (_addresses.Count > 0) { _addresses.Clear(); changed = true; }
+        if (Website is not null) { Website = null; changed = true; }
+        if (UserId is not null) { UserId = null; changed = true; }
+
+        if (changed)
+        {
+            AddDomainEvent(new ContactPersonalDataPseudonymizedEvent(ContactId.Create(Id), TenantId));
+            AddDistributedEvent(new ContactPersonalDataPseudonymizedEto(ContactId.Create(Id), TenantId));
+        }
+        return changed;
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // Identity & address updates
     // ─────────────────────────────────────────────────────────────────

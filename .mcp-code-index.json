@@ -513,6 +513,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Contacts.Privacy",
+      "deps": [
+        "Granit.Contacts",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
@@ -11022,6 +11030,24 @@
       "members": []
     },
     {
+      "name": "ContactPersonalDataPseudonymizedEto",
+      "fqn": "Granit.Contacts.Events.ContactPersonalDataPseudonymizedEto",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactPersonalDataPseudonymizedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "ContactPersonalDataPseudonymizedEvent",
+      "fqn": "Granit.Contacts.Events.ContactPersonalDataPseudonymizedEvent",
+      "kind": "record",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Events/ContactPersonalDataPseudonymizedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "ContactRoleAddedEvent",
       "fqn": "Granit.Contacts.Events.ContactRoleAddedEvent",
       "kind": "record",
@@ -11159,6 +11185,104 @@
           "kind": "method",
           "signature": "UpdateAsync(Contact contact, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ContactsPersonalDataDeletionHandler",
+      "fqn": "Granit.Contacts.Privacy.DataDeletion.ContactsPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Contacts.Privacy",
+      "file": "src/Granit.Contacts.Privacy/DataDeletion/ContactsPersonalDataDeletionHandler.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto request, IContactReader contacts, IContactWriter writer, IDataFilter dataFilter, IDistributedEventBus bus, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ContactsPersonalDataExportHandler",
+      "fqn": "Granit.Contacts.Privacy.DataExport.ContactsPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Contacts.Privacy",
+      "file": "src/Granit.Contacts.Privacy/DataExport/ContactsPersonalDataExportHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, ContactsPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ContactsPrivacyDataProvider",
+      "fqn": "Granit.Contacts.Privacy.DataExport.ContactsPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Contacts.Privacy",
+      "file": "src/Granit.Contacts.Privacy/DataExport/ContactsPrivacyDataProvider.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderContactsExtensions",
+      "fqn": "Granit.Contacts.Privacy.Extensions.PrivacyBuilderContactsExtensions",
+      "kind": "class",
+      "project": "Granit.Contacts.Privacy",
+      "file": "src/Granit.Contacts.Privacy/Extensions/PrivacyBuilderContactsExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitContactsPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitContactsPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitContactsPrivacyModule",
+      "fqn": "Granit.Contacts.Privacy.GranitContactsPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Contacts.Privacy",
+      "file": "src/Granit.Contacts.Privacy/GranitContactsPrivacyModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

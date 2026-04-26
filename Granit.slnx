@@ -282,6 +282,7 @@
   <Folder Name="/src/">
     <Project Path="src/Granit.Contacts.Endpoints/Granit.Contacts.Endpoints.csproj" />
     <Project Path="src/Granit.Contacts.EntityFrameworkCore/Granit.Contacts.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Contacts.Privacy/Granit.Contacts.Privacy.csproj" />
     <Project Path="src/Granit.Contacts/Granit.Contacts.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
     <Project Path="src/Granit.MultiTenancy.Provisioning/Granit.MultiTenancy.Provisioning.csproj" />
@@ -602,6 +603,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/Granit.Contacts.Endpoints.Tests/Granit.Contacts.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Contacts.EntityFrameworkCore.Tests/Granit.Contacts.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Contacts.Privacy.Tests/Granit.Contacts.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Contacts.Tests/Granit.Contacts.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj" />

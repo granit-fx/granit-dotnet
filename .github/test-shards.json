@@ -53,6 +53,7 @@
       "projects": [
         "tests/Granit.Contacts.Endpoints.Tests",
         "tests/Granit.Contacts.EntityFrameworkCore.Tests",
+        "tests/Granit.Contacts.Privacy.Tests",
         "tests/Granit.Contacts.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
