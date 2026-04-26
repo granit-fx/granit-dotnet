@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Events;
@@ -90,7 +91,7 @@ public sealed class DefaultCreditExpirationServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         BalanceTransaction credit = CreateExpiredCredit();
-        var account = BalanceAccount.Create(credit.BalanceAccountId, Guid.NewGuid(), "EUR");
+        var account = BalanceAccount.Create(credit.BalanceAccountId, Guid.NewGuid(), ContactId.Create(Guid.NewGuid()), "EUR");
 
         _transactionReader.GetExpiredCreditsAsync(Now, Arg.Any<CancellationToken>())
             .Returns([credit]);
@@ -186,7 +187,7 @@ public sealed class DefaultCreditExpirationServiceTests : IDisposable
 
     private static BalanceAccount CreateAccountWithBalance(Guid accountId, Guid tenantId, decimal balance)
     {
-        var account = BalanceAccount.Create(accountId, tenantId, "EUR");
+        var account = BalanceAccount.Create(accountId, tenantId, ContactId.Create(Guid.NewGuid()), "EUR");
         account.Credit(balance, TransactionSource.Promotional, "Setup", Now.AddDays(-15), Guid.NewGuid());
         account.ClearIntegrationEvents();
         return account;

@@ -540,6 +540,7 @@
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
+        "Granit.Contacts.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
@@ -560,6 +561,7 @@
       "name": "Granit.CustomerBalance.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Contacts",
         "Granit.CustomerBalance",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -11468,12 +11470,12 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Domain/BalanceAccount.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, string currency)",
+          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, string currency)",
           "returnType": "BalanceAccount"
         },
         {
@@ -11487,6 +11489,12 @@
           "kind": "property",
           "signature": "Guid? TenantId",
           "returnType": "Guid?"
+        },
+        {
+          "name": "ContactId",
+          "kind": "property",
+          "signature": "ContactId ContactId",
+          "returnType": "ContactId"
         },
         {
           "name": "ConcurrencyStamp",
@@ -11588,7 +11596,7 @@
       "kind": "record",
       "project": "Granit.CustomerBalance.Endpoints",
       "file": "src/Granit.CustomerBalance.Endpoints/Dtos/AdminDebitRequest.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -11855,7 +11863,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Handlers/OverpaymentCreditHandler.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "HandleAsync",
@@ -11871,12 +11879,12 @@
       "kind": "interface",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/IAdminCreditService.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ApplyAsync",
           "kind": "method",
-          "signature": "ApplyAsync(Guid tenantId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
+          "signature": "ApplyAsync(Guid tenantId, ContactId contactId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11887,12 +11895,12 @@
       "kind": "interface",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/IAdminDebitService.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "DebitAsync",
           "kind": "method",
-          "signature": "DebitAsync(Guid tenantId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
+          "signature": "DebitAsync(Guid tenantId, ContactId contactId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11903,7 +11911,7 @@
       "kind": "interface",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/IBalanceAccountReader.cs",
-      "line": 7,
+      "line": 8,
       "members": [
         {
           "name": "GetByIdAsync",
@@ -11912,9 +11920,9 @@
           "returnType": "Task<BalanceAccount?>"
         },
         {
-          "name": "GetByTenantAndCurrencyAsync",
+          "name": "GetByContactAndCurrencyAsync",
           "kind": "method",
-          "signature": "GetByTenantAndCurrencyAsync(Guid tenantId, string currency, CancellationToken cancellationToken = default)",
+          "signature": "GetByContactAndCurrencyAsync(ContactId contactId, string currency, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount?>"
         },
         {
@@ -11991,12 +11999,12 @@
       "kind": "interface",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/IOverpaymentCreditService.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "CreditOverpaymentAsync",
           "kind": "method",
-          "signature": "CreditOverpaymentAsync(Guid tenantId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
+          "signature": "CreditOverpaymentAsync(Guid tenantId, ContactId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]

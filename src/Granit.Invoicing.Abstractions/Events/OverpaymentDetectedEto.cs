@@ -7,5 +7,5 @@ namespace Granit.Invoicing.Events;
 /// The Platform Operator should issue a refund or credit to the next invoice.
 /// </summary>
 public sealed record OverpaymentDetectedEto(
-    Guid InvoiceId, Guid TenantId,
+    Guid InvoiceId, Guid TenantId, Guid ContactId,
     decimal OverpaymentAmount, string Currency) : IIntegrationEvent;

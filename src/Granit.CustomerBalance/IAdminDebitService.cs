@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 
 namespace Granit.CustomerBalance;
@@ -21,7 +22,8 @@ public interface IAdminDebitService
     /// Debits the supplied amount from the tenant's <see cref="BalanceAccount"/>
     /// for the given currency.
     /// </summary>
-    /// <param name="tenantId">Tenant whose balance account is debited.</param>
+    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation).</param>
+    /// <param name="contactId">Contact whose balance account is debited.</param>
     /// <param name="amount">Amount to debit (must be positive).</param>
     /// <param name="currency">ISO 4217 currency code.</param>
     /// <param name="reason">Human-readable description (audit trail).</param>
@@ -29,10 +31,11 @@ public interface IAdminDebitService
     /// <param name="referenceType">Type of the referenced document (e.g. <c>"AdminAdjustment"</c>).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated <see cref="BalanceAccount"/>.</returns>
-    /// <exception cref="System.InvalidOperationException">Thrown when no account exists for the tenant/currency.</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown when no account exists for the contact/currency.</exception>
     /// <exception cref="Exceptions.InsufficientBalanceException">Thrown when the balance is insufficient.</exception>
     Task<BalanceAccount> DebitAsync(
         Guid tenantId,
+        ContactId contactId,
         decimal amount,
         string currency,
         string reason,

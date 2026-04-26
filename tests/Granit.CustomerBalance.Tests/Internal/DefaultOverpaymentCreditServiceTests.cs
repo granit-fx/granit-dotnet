@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Internal;
@@ -50,13 +51,15 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
+        var contactId = ContactId.Create(Guid.NewGuid());
         var invoiceId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
-        await _sut.CreditOverpaymentAsync(tenantId, "EUR", 42.50m, invoiceId, ct);
+        await _sut.CreditOverpaymentAsync(
+            tenantId, contactId, "EUR", 42.50m, invoiceId, ct);
 
         account.Balance.ShouldBe(42.50m);
         account.Transactions.Count.ShouldBe(1);
@@ -74,14 +77,16 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
+        var contactId = ContactId.Create(Guid.NewGuid());
         var invoiceId = Guid.NewGuid();
 
         // First call returns null (account does not exist), second call returns the newly created account.
-        var newAccount = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        var newAccount = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(null as BalanceAccount, newAccount);
 
-        await _sut.CreditOverpaymentAsync(tenantId, "EUR", 75m, invoiceId, ct);
+        await _sut.CreditOverpaymentAsync(
+            tenantId, contactId, "EUR", 75m, invoiceId, ct);
 
         await _accountWriter.Received(1).AddAsync(Arg.Any<BalanceAccount>(), Arg.Any<CancellationToken>());
         await _accountWriter.Received(1).UpdateAsync(newAccount, Arg.Any<CancellationToken>());
@@ -95,12 +100,14 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "USD");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "USD");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "USD", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "USD", Arg.Any<CancellationToken>())
             .Returns(account);
 
-        await _sut.CreditOverpaymentAsync(tenantId, "USD", 123.45m, Guid.NewGuid(), ct);
+        await _sut.CreditOverpaymentAsync(
+            tenantId, contactId, "USD", 123.45m, Guid.NewGuid(), ct);
 
         account.Balance.ShouldBe(123.45m);
         account.Transactions[0].Reason.ShouldBe("Overpayment on invoice");
@@ -113,13 +120,16 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
-        await _sut.CreditOverpaymentAsync(tenantId, "EUR", 10m, Guid.NewGuid(), ct);
-        await _sut.CreditOverpaymentAsync(tenantId, "EUR", 25m, Guid.NewGuid(), ct);
+        await _sut.CreditOverpaymentAsync(
+            tenantId, contactId, "EUR", 10m, Guid.NewGuid(), ct);
+        await _sut.CreditOverpaymentAsync(
+            tenantId, contactId, "EUR", 25m, Guid.NewGuid(), ct);
 
         account.Balance.ShouldBe(35m);
         account.Transactions.Count.ShouldBe(2);

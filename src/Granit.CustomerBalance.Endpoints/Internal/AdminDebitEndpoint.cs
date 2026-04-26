@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.CustomerBalance.Exceptions;
@@ -29,6 +30,7 @@ internal static class AdminDebitEndpoint
             BalanceAccount account = await debitService
                 .DebitAsync(
                     tenantId,
+                    ContactId.Create(request.ContactId),
                     request.Amount,
                     currency,
                     request.Reason,

@@ -329,7 +329,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
             if (Overpayment > 0)
             {
                 AddDistributedEvent(new OverpaymentDetectedEto(
-                    Id, TenantId!.Value, Overpayment, Currency));
+                    Id, TenantId!.Value, ContactId.Value, Overpayment, Currency));
             }
 
             return true;

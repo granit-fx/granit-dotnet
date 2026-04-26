@@ -1,4 +1,5 @@
 using System.Diagnostics.Metrics;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Internal;
@@ -50,13 +51,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         BalanceAccount result = await _sut.ApplyAsync(
-            tenantId, 100m, "EUR", TransactionSource.ManualAdjustment, "Test credit", null, ct);
+            tenantId, contactId, 100m, "EUR", TransactionSource.ManualAdjustment, "Test credit", null, ct);
 
         result.ShouldBe(account);
         result.Balance.ShouldBe(100m);
@@ -75,12 +77,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
 
-        var newAccount = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        var contactId = ContactId.Create(Guid.NewGuid());
+
+        var newAccount = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(null as BalanceAccount, newAccount);
 
         BalanceAccount result = await _sut.ApplyAsync(
-            tenantId, 50m, "EUR", TransactionSource.Promotional, "Welcome bonus", null, ct);
+            tenantId, contactId, 50m, "EUR", TransactionSource.Promotional, "Welcome bonus", null, ct);
 
         await _accountWriter.Received(1).AddAsync(Arg.Any<BalanceAccount>(), Arg.Any<CancellationToken>());
         await _accountWriter.Received(1).UpdateAsync(newAccount, Arg.Any<CancellationToken>());
@@ -94,13 +98,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "USD");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "USD");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "USD", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "USD", Arg.Any<CancellationToken>())
             .Returns(account);
 
         await _sut.ApplyAsync(
-            tenantId, 200m, "USD", TransactionSource.Promotional, "Promo credit", null, ct);
+            tenantId, contactId, 200m, "USD", TransactionSource.Promotional, "Promo credit", null, ct);
 
         account.Transactions[0].Source.ShouldBe(TransactionSource.Promotional);
     }
@@ -112,14 +117,15 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
         DateTimeOffset expiresAt = Now.AddDays(30);
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         await _sut.ApplyAsync(
-            tenantId, 75m, "EUR", TransactionSource.Promotional, "Limited promo", expiresAt, ct);
+            tenantId, contactId, 75m, "EUR", TransactionSource.Promotional, "Limited promo", expiresAt, ct);
 
         account.Transactions[0].ExpiresAt.ShouldBe(expiresAt);
     }
@@ -131,13 +137,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         await _sut.ApplyAsync(
-            tenantId, 50m, "EUR", TransactionSource.ManualAdjustment, "Permanent credit", null, ct);
+            tenantId, contactId, 50m, "EUR", TransactionSource.ManualAdjustment, "Permanent credit", null, ct);
 
         account.Transactions[0].ExpiresAt.ShouldBeNull();
     }
@@ -149,15 +156,16 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         await _sut.ApplyAsync(
-            tenantId, 100m, "EUR", TransactionSource.ManualAdjustment, "First", null, ct);
+            tenantId, contactId, 100m, "EUR", TransactionSource.ManualAdjustment, "First", null, ct);
         await _sut.ApplyAsync(
-            tenantId, 50m, "EUR", TransactionSource.Promotional, "Second", null, ct);
+            tenantId, contactId, 50m, "EUR", TransactionSource.Promotional, "Second", null, ct);
 
         account.Balance.ShouldBe(150m);
         account.Transactions.Count.ShouldBe(2);
@@ -170,13 +178,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         BalanceAccount result = await _sut.ApplyAsync(
-            tenantId, 42.50m, "EUR", TransactionSource.RefundCredit, "Refund", null, ct);
+            tenantId, contactId, 42.50m, "EUR", TransactionSource.RefundCredit, "Refund", null, ct);
 
         result.Balance.ShouldBe(42.50m);
         result.Currency.ShouldBe("EUR");
@@ -189,13 +198,14 @@ public sealed class DefaultAdminCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, "EUR");
+        var contactId = ContactId.Create(Guid.NewGuid());
+        var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
-        _accountReader.GetByTenantAndCurrencyAsync(tenantId, "EUR", Arg.Any<CancellationToken>())
+        _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns(account);
 
         await _sut.ApplyAsync(
-            tenantId, 10m, "EUR", TransactionSource.ManualAdjustment, "Custom reason text", null, ct);
+            tenantId, contactId, 10m, "EUR", TransactionSource.ManualAdjustment, "Custom reason text", null, ct);
 
         account.Transactions[0].Reason.ShouldBe("Custom reason text");
     }

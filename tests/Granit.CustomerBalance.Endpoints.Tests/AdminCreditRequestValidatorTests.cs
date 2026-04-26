@@ -12,7 +12,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Valid_Request_ShouldPass()
     {
-        var request = new AdminCreditRequest(100m, "EUR", "Promotional", "Welcome credit", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 100m, "EUR", "Promotional", "Welcome credit", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -22,7 +22,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Amount_Zero_ShouldFail()
     {
-        var request = new AdminCreditRequest(0m, "EUR", "Promotional", "Test", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 0m, "EUR", "Promotional", "Test", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -32,7 +32,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Amount_Negative_ShouldFail()
     {
-        var request = new AdminCreditRequest(-10m, "EUR", "Promotional", "Test", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), -10m, "EUR", "Promotional", "Test", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -42,7 +42,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Currency_Empty_ShouldFail()
     {
-        var request = new AdminCreditRequest(10m, "", "Promotional", "Test", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 10m, "", "Promotional", "Test", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -52,7 +52,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Currency_TooLong_ShouldFail()
     {
-        var request = new AdminCreditRequest(10m, "EURO", "Promotional", "Test", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 10m, "EURO", "Promotional", "Test", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -62,7 +62,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Source_Empty_ShouldFail()
     {
-        var request = new AdminCreditRequest(10m, "EUR", "", "Test", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 10m, "EUR", "", "Test", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 
@@ -72,7 +72,7 @@ public sealed class AdminCreditRequestValidatorTests
     [Fact]
     public void Reason_Empty_ShouldFail()
     {
-        var request = new AdminCreditRequest(10m, "EUR", "Promotional", "", null);
+        var request = new AdminCreditRequest(Guid.NewGuid(), 10m, "EUR", "Promotional", "", null);
 
         TestValidationResult<AdminCreditRequest> result = _validator.TestValidate(request);
 

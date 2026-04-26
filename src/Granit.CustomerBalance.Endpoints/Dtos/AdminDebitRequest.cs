@@ -1,9 +1,10 @@
 namespace Granit.CustomerBalance.Endpoints.Dtos;
 
 /// <summary>
-/// Request to debit a tenant's <c>BalanceAccount</c> manually — admin tooling
+/// Request to debit a contact's <c>BalanceAccount</c> manually — admin tooling
 /// for corrections, scheduled drawdowns, and non-invoice adjustments.
 /// </summary>
+/// <param name="ContactId">Contact whose balance account is debited.</param>
 /// <param name="Amount">Amount to debit (must be > 0).</param>
 /// <param name="Currency">ISO 4217 currency code identifying the target balance account.</param>
 /// <param name="Reason">Free-text justification (audit trail; ≤ 500 chars; no PII per GDPR).</param>
@@ -14,6 +15,7 @@ namespace Granit.CustomerBalance.Endpoints.Dtos;
 /// </param>
 /// <param name="ReferenceType">Type of the referenced document (e.g. <c>"AdminAdjustment"</c>).</param>
 public sealed record AdminDebitRequest(
+    Guid ContactId,
     decimal Amount,
     string Currency,
     string Reason,

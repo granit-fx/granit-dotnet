@@ -1,7 +1,8 @@
 namespace Granit.CustomerBalance.Endpoints.Dtos;
 
-/// <summary>Request to add a manual credit to a tenant's balance.</summary>
+/// <summary>Request to add a manual credit to a contact's balance.</summary>
 public sealed record AdminCreditRequest(
+    Guid ContactId,
     decimal Amount,
     string Currency,
     string Source,

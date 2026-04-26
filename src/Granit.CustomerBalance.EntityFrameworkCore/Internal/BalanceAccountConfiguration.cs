@@ -14,13 +14,22 @@ internal sealed class BalanceAccountConfiguration : IEntityTypeConfiguration<Bal
         builder.Property(e => e.Currency).HasMaxLength(3).IsRequired();
         builder.Property(e => e.Balance).HasPrecision(18, 4).IsRequired();
 
+        // ContactId is a SingleValueObject<Guid> — declared as a scalar property so EF Core
+        // does not discover it as a navigation. Value converter applied by ApplyGranitConventions.
+        builder.Property(e => e.ContactId).IsRequired();
+
         builder.HasMany(e => e.Transactions)
             .WithOne()
             .HasForeignKey(t => t.BalanceAccountId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(e => new { e.TenantId, e.Currency })
+        // Uniqueness is now per-(contact, currency) — a tenant can hold many balances,
+        // one per (contact, currency) pair, matching real e-commerce / multi-buyer flows.
+        builder.HasIndex(e => new { e.ContactId, e.Currency })
             .IsUnique()
-            .HasDatabaseName($"uq_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_tenant_currency");
+            .HasDatabaseName($"uq_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_contact_currency");
+
+        builder.HasIndex(e => e.TenantId)
+            .HasDatabaseName($"ix_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_tenant");
     }
 }

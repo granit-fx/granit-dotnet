@@ -6,6 +6,7 @@ namespace Granit.CustomerBalance.Events;
 public sealed record BalanceDebitedEto(
     Guid BalanceAccountId,
     Guid TenantId,
+    Guid ContactId,
     decimal Amount,
     string Currency,
     Guid? ReferenceId,

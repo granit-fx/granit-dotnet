@@ -1,11 +1,13 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
 
 namespace Granit.CustomerBalance.Handlers;
 
 /// <summary>
-/// Credits overpayment surplus to the tenant's balance account.
-/// Delegates to <see cref="IOverpaymentCreditService"/>.
+/// Credits overpayment surplus to the contact's balance account.
+/// Delegates to <see cref="IOverpaymentCreditService"/>. Idempotent — Wolverine's
+/// at-least-once delivery is therefore safe.
 /// </summary>
 public class OverpaymentCreditHandler
 {
@@ -19,6 +21,7 @@ public class OverpaymentCreditHandler
         {
             await overpaymentCreditService.CreditOverpaymentAsync(
                 eto.TenantId,
+                ContactId.Create(eto.ContactId),
                 eto.Currency,
                 eto.OverpaymentAmount,
                 eto.InvoiceId,

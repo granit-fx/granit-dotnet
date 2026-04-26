@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
@@ -18,6 +19,7 @@ internal sealed partial class DefaultAdminDebitService(
 {
     public async Task<BalanceAccount> DebitAsync(
         Guid tenantId,
+        ContactId contactId,
         decimal amount,
         string currency,
         string reason,
@@ -25,14 +27,16 @@ internal sealed partial class DefaultAdminDebitService(
         string? referenceType = null,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(contactId);
+
         using Activity? activity = CustomerBalanceActivitySource.Source
             .StartActivity(CustomerBalanceActivitySource.DebitBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByTenantAndCurrencyAsync(tenantId, currency, cancellationToken)
+            .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
             .ConfigureAwait(false)
             ?? throw new InvalidOperationException(
-                $"No balance account exists for tenant '{tenantId}' in currency '{currency}'.");
+                $"No balance account exists for contact '{contactId.Value}' in currency '{currency}'.");
 
         // Idempotency: if a previous ManualAdjustment debit with the same
         // referenceId already landed, return the account unchanged. Mirrors the
@@ -63,7 +67,7 @@ internal sealed partial class DefaultAdminDebitService(
             referenceType: referenceType);
 
         await accountWriter.UpdateAsync(account, cancellationToken).ConfigureAwait(false);
-        metrics.RecordDebited(tenantId.ToString(), currency, TransactionSource.ManualAdjustment.ToString());
+        metrics.RecordDebited(contactId.Value.ToString(), currency, TransactionSource.ManualAdjustment.ToString());
         Log.AdminDebited(logger, amount, account.Balance);
 
         return account;

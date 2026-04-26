@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Events;
 using Granit.CustomerBalance.Exceptions;
@@ -24,7 +25,7 @@ public sealed class BalanceAccountTests
     [Fact]
     public void Create_ShouldNormalizeCurrencyToUpperCase()
     {
-        var account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), "eur");
+        var account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), ContactId.Create(Guid.NewGuid()), "eur");
 
         account.Currency.ShouldBe("EUR");
     }
@@ -33,7 +34,7 @@ public sealed class BalanceAccountTests
     public void Create_WithEmptyCurrency_ShouldThrow()
     {
         Should.Throw<ArgumentException>(() =>
-            BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), ""));
+            BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), ContactId.Create(Guid.NewGuid()), ""));
     }
 
     [Fact]
@@ -182,7 +183,7 @@ public sealed class BalanceAccountTests
     }
 
     private static BalanceAccount CreateAccount() =>
-        BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), "EUR");
+        BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), ContactId.Create(Guid.NewGuid()), "EUR");
 
     private static BalanceAccount CreateAccountWithBalance(decimal balance)
     {

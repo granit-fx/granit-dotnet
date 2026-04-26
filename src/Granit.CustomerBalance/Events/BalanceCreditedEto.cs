@@ -7,6 +7,7 @@ namespace Granit.CustomerBalance.Events;
 public sealed record BalanceCreditedEto(
     Guid BalanceAccountId,
     Guid TenantId,
+    Guid ContactId,
     decimal Amount,
     string Currency,
     TransactionSource Source) : IIntegrationEvent;

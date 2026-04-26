@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Domain.ValueObjects;
 
@@ -9,9 +10,9 @@ public interface IBalanceAccountReader
     /// <summary>Returns a balance account by ID, including transactions.</summary>
     Task<BalanceAccount?> GetByIdAsync(BalanceAccountId id, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns the balance account for a tenant and currency.</summary>
-    Task<BalanceAccount?> GetByTenantAndCurrencyAsync(Guid tenantId, string currency, CancellationToken cancellationToken = default);
+    /// <summary>Returns the balance account for a contact and currency.</summary>
+    Task<BalanceAccount?> GetByContactAndCurrencyAsync(ContactId contactId, string currency, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns all balance accounts for a tenant.</summary>
+    /// <summary>Returns all balance accounts for a tenant (ledger management view).</summary>
     Task<IReadOnlyList<BalanceAccount>> GetByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);
 }

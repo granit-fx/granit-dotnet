@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
@@ -22,6 +23,7 @@ internal sealed partial class DefaultAdminCreditService(
 {
     public async Task<BalanceAccount> ApplyAsync(
         Guid tenantId,
+        ContactId contactId,
         decimal amount,
         string currency,
         TransactionSource source,
@@ -29,22 +31,24 @@ internal sealed partial class DefaultAdminCreditService(
         DateTimeOffset? expiresAt,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(contactId);
+
         using Activity? activity = CustomerBalanceActivitySource.Source
             .StartActivity(CustomerBalanceActivitySource.CreditBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByTenantAndCurrencyAsync(tenantId, currency, cancellationToken)
+            .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null)
         {
-            account = BalanceAccount.Create(guidGenerator.Create(), tenantId, currency);
+            account = BalanceAccount.Create(guidGenerator.Create(), tenantId, contactId, currency);
             await accountWriter.AddAsync(account, cancellationToken).ConfigureAwait(false);
-            Log.AccountCreated(logger, tenantId, currency);
+            Log.AccountCreated(logger, contactId.Value, currency);
 
             // Reload to get tracked entity with transactions collection.
             account = (await accountReader
-                .GetByTenantAndCurrencyAsync(tenantId, currency, cancellationToken)
+                .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
                 .ConfigureAwait(false))!;
         }
 
@@ -68,7 +72,7 @@ internal sealed partial class DefaultAdminCreditService(
         [LoggerMessage(Level = LogLevel.Information, Message = "Admin credit ({Source}) of {Amount} applied, new balance: {NewBalance}")]
         public static partial void AdminCredited(ILogger logger, TransactionSource source, decimal amount, decimal newBalance);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for tenant {TenantId} ({Currency})")]
-        public static partial void AccountCreated(ILogger logger, Guid tenantId, string currency);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {ContactId} ({Currency})")]
+        public static partial void AccountCreated(ILogger logger, Guid contactId, string currency);
     }
 }
