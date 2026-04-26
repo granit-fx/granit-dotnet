@@ -36,6 +36,7 @@ namespace Granit.Contacts.Domain;
 public sealed class Contact : AuditedAggregateRoot, IMultiTenant
 {
     private readonly List<ContactExternalMapping> _externalMappings = [];
+    private readonly List<ContactAddress> _addresses = [];
 
     private Contact() { }
 
@@ -54,7 +55,6 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     /// <param name="timezone">IANA timezone (defaults to <c>"UTC"</c>).</param>
     /// <param name="taxId">International VAT identifier (e.g. <c>"BE0123456789"</c>).</param>
     /// <param name="registrationNumber">Company registration number (BCE/KBO, SIRET, HRB, …).</param>
-    /// <param name="address">Optional postal address (owned).</param>
     public static Contact Create(
         Guid id,
         Guid? tenantId,
@@ -69,8 +69,7 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         string? language = null,
         string? timezone = null,
         string? taxId = null,
-        string? registrationNumber = null,
-        Address? address = null)
+        string? registrationNumber = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(defaultCurrency);
@@ -95,7 +94,6 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
             DefaultCurrency = defaultCurrency.ToUpperInvariant(),
             TaxId = taxId,
             RegistrationNumber = registrationNumber,
-            Address = address,
             Roles = roles,
             Status = ContactStatus.Active,
         };
@@ -149,10 +147,25 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     /// <summary>Company registration number (BCE/KBO, SIRET, HRB, Companies House, …).</summary>
     public string? RegistrationNumber { get; private set; }
 
-    // ── Address ───────────────────────────────────────────────────
+    // ── Addresses ─────────────────────────────────────────────────
 
-    /// <summary>Postal address (single owned VO; multiple addresses deferred to a future epic).</summary>
-    public Address? Address { get; private set; }
+    /// <summary>
+    /// All postal addresses attached to this contact. A contact may carry several
+    /// (billing, shipping, other) — at most one default per <see cref="AddressKind"/>.
+    /// Mutated via <see cref="AddAddress"/>, <see cref="RemoveAddress"/>,
+    /// <see cref="SetDefaultAddress"/>, <see cref="UpdateAddress"/>.
+    /// </summary>
+    public IReadOnlyList<ContactAddress> Addresses => _addresses.AsReadOnly();
+
+    /// <summary>The default billing address, if any. Convenience accessor for downstream modules.</summary>
+    public ContactAddress? DefaultBillingAddress =>
+        _addresses.FirstOrDefault(a => a.Kind == AddressKind.Billing && a.IsDefault)
+        ?? _addresses.FirstOrDefault(a => a.Kind == AddressKind.Billing);
+
+    /// <summary>The default shipping address, if any.</summary>
+    public ContactAddress? DefaultShippingAddress =>
+        _addresses.FirstOrDefault(a => a.Kind == AddressKind.Shipping && a.IsDefault)
+        ?? _addresses.FirstOrDefault(a => a.Kind == AddressKind.Shipping);
 
     // ── Hierarchy ─────────────────────────────────────────────────
 
@@ -259,12 +272,87 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         RaiseUpdated();
     }
 
-    /// <summary>Updates the postal address (or clears it).</summary>
-    public void UpdateAddress(Address? address)
+    /// <summary>
+    /// Adds a new typed address. When <paramref name="isDefault"/> is true, any other
+    /// address of the same kind is unmarked as default first.
+    /// </summary>
+    public void AddAddress(
+        Guid addressId,
+        AddressKind kind,
+        Address value,
+        bool isDefault = false,
+        string? label = null)
     {
         EnsureMutable();
-        Address = address;
+        ArgumentNullException.ThrowIfNull(value);
+
+        if (isDefault)
+        {
+            ClearDefault(kind);
+        }
+
+        // Promote the first-of-kind address to default if none exists, regardless of caller intent.
+        bool effectiveDefault = isDefault || !_addresses.Any(a => a.Kind == kind);
+
+        _addresses.Add(ContactAddress.Create(addressId, kind, value, effectiveDefault, label));
         RaiseUpdated();
+    }
+
+    /// <summary>Removes the address with the given id. Idempotent.</summary>
+    public bool RemoveAddress(Guid addressId)
+    {
+        EnsureMutable();
+        ContactAddress? existing = _addresses.FirstOrDefault(a => a.Id == addressId);
+        if (existing is null) { return false; }
+
+        _addresses.Remove(existing);
+
+        // Promote a remaining address of the same kind to default if we just removed the default.
+        if (existing.IsDefault)
+        {
+            ContactAddress? next = _addresses.FirstOrDefault(a => a.Kind == existing.Kind);
+            next?.MarkDefault(true);
+        }
+
+        RaiseUpdated();
+        return true;
+    }
+
+    /// <summary>Replaces the address payload (and optional label) of an existing entry.</summary>
+    public void UpdateAddress(Guid addressId, Address value, string? label = null)
+    {
+        EnsureMutable();
+        ArgumentNullException.ThrowIfNull(value);
+
+        ContactAddress existing = _addresses.FirstOrDefault(a => a.Id == addressId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no address with id '{addressId}'.");
+
+        existing.Replace(value, label);
+        RaiseUpdated();
+    }
+
+    /// <summary>Marks the given address as the default for its <see cref="AddressKind"/>.</summary>
+    public void SetDefaultAddress(Guid addressId)
+    {
+        EnsureMutable();
+        ContactAddress target = _addresses.FirstOrDefault(a => a.Id == addressId)
+            ?? throw new InvalidOperationException(
+                $"Contact '{Id}' has no address with id '{addressId}'.");
+
+        if (target.IsDefault) { return; }
+
+        ClearDefault(target.Kind);
+        target.MarkDefault(true);
+        RaiseUpdated();
+    }
+
+    private void ClearDefault(AddressKind kind)
+    {
+        foreach (ContactAddress addr in _addresses.Where(a => a.Kind == kind && a.IsDefault))
+        {
+            addr.MarkDefault(false);
+        }
     }
 
     /// <summary>Updates the tax / legal identity fields.</summary>

@@ -54,8 +54,6 @@ public sealed class ContactTests
     [Fact]
     public void Create_WithAllOptionalFields_StoresThem()
     {
-        var addr = Address.Create("rue de la Loi 16", "Brussels", "1000", "BE");
-
         var c = Contact.Create(
             Guid.NewGuid(), null, ContactKind.Company, "Acme", "EUR",
             roles: ContactRoles.Customer | ContactRoles.Supplier,
@@ -66,8 +64,7 @@ public sealed class ContactTests
             language: "fr-BE",
             timezone: "Europe/Brussels",
             taxId: "BE0123456789",
-            registrationNumber: "0123.456.789",
-            address: addr);
+            registrationNumber: "0123.456.789");
 
         c.Email.ShouldBe("billing@acme.com");
         c.Phone.ShouldBe("+3221234567");
@@ -77,7 +74,7 @@ public sealed class ContactTests
         c.Timezone.ShouldBe("Europe/Brussels");
         c.TaxId.ShouldBe("BE0123456789");
         c.RegistrationNumber.ShouldBe("0123.456.789");
-        c.Address.ShouldBe(addr);
+        c.Addresses.ShouldBeEmpty();
         c.HasRole(ContactRoles.Customer).ShouldBeTrue();
         c.HasRole(ContactRoles.Supplier).ShouldBeTrue();
         c.HasRole(ContactRoles.Employee).ShouldBeFalse();
@@ -193,27 +190,162 @@ public sealed class ContactTests
         Should.Throw<InvalidOperationException>(() => c.UpdateContact("X"));
     }
 
+    // ── Multi-address ─────────────────────────────────────────────
+
     [Fact]
-    public void UpdateAddress_AssignsAndRaises()
+    public void AddAddress_FirstOfKind_AutoMarksAsDefault()
     {
         Contact c = NewCompany();
-        var addr = Address.Create("L1", "C", "1000", "BE");
+        var addressId = Guid.NewGuid();
+        var addr = Address.Create("rue 1", "Brussels", "1000", "BE");
 
-        c.UpdateAddress(addr);
+        c.AddAddress(addressId, AddressKind.Billing, addr);
 
-        c.Address.ShouldBe(addr);
-        c.DomainEvents.OfType<ContactUpdatedEvent>().ShouldHaveSingleItem();
+        c.Addresses.ShouldHaveSingleItem();
+        c.Addresses[0].IsDefault.ShouldBeTrue();
+        c.Addresses[0].Kind.ShouldBe(AddressKind.Billing);
+        c.Addresses[0].Value.ShouldBe(addr);
+        c.DefaultBillingAddress.ShouldBe(c.Addresses[0]);
     }
 
     [Fact]
-    public void UpdateAddress_Null_ClearsExisting()
+    public void AddAddress_SecondOfSameKind_NotDefaultByDefault()
     {
         Contact c = NewCompany();
-        c.UpdateAddress(Address.Create("L1", "C", "1000", "BE"));
+        c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+        var secondId = Guid.NewGuid();
+        c.AddAddress(secondId, AddressKind.Billing, Address.Create("L2", "C", "2000", "BE"));
 
-        c.UpdateAddress(null);
+        c.Addresses.Count.ShouldBe(2);
+        c.Addresses.Single(a => a.Id == secondId).IsDefault.ShouldBeFalse();
+    }
 
-        c.Address.ShouldBeNull();
+    [Fact]
+    public void AddAddress_WithIsDefaultTrue_DemotesPreviousDefault()
+    {
+        Contact c = NewCompany();
+        var firstId = Guid.NewGuid();
+        c.AddAddress(firstId, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+        var secondId = Guid.NewGuid();
+        c.AddAddress(secondId, AddressKind.Billing, Address.Create("L2", "C", "2000", "BE"), isDefault: true);
+
+        c.Addresses.Single(a => a.Id == firstId).IsDefault.ShouldBeFalse();
+        c.Addresses.Single(a => a.Id == secondId).IsDefault.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void AddAddress_DifferentKind_BothCanBeDefault()
+    {
+        Contact c = NewCompany();
+        c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("B", "C", "1000", "BE"));
+        c.AddAddress(Guid.NewGuid(), AddressKind.Shipping, Address.Create("S", "C", "1000", "BE"));
+
+        c.Addresses.Count.ShouldBe(2);
+        c.DefaultBillingAddress.ShouldNotBeNull();
+        c.DefaultShippingAddress.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public void AddAddress_StoresLabel()
+    {
+        Contact c = NewCompany();
+        c.AddAddress(Guid.NewGuid(), AddressKind.Other,
+            Address.Create("L1", "C", "1000", "BE"), label: "HQ");
+
+        c.Addresses[0].Label.ShouldBe("HQ");
+    }
+
+    [Fact]
+    public void RemoveAddress_KnownId_PromotesAnotherOfSameKindToDefault()
+    {
+        Contact c = NewCompany();
+        var firstId = Guid.NewGuid();
+        var secondId = Guid.NewGuid();
+        c.AddAddress(firstId, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+        c.AddAddress(secondId, AddressKind.Billing, Address.Create("L2", "C", "2000", "BE"));
+
+        c.RemoveAddress(firstId).ShouldBeTrue();
+
+        c.Addresses.ShouldHaveSingleItem();
+        c.Addresses[0].Id.ShouldBe(secondId);
+        c.Addresses[0].IsDefault.ShouldBeTrue(); // promoted
+    }
+
+    [Fact]
+    public void RemoveAddress_OnlyDefaultOfKind_LeavesNoDefault()
+    {
+        Contact c = NewCompany();
+        var id = Guid.NewGuid();
+        c.AddAddress(id, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+
+        c.RemoveAddress(id).ShouldBeTrue();
+
+        c.Addresses.ShouldBeEmpty();
+        c.DefaultBillingAddress.ShouldBeNull();
+    }
+
+    [Fact]
+    public void RemoveAddress_UnknownId_ReturnsFalse() =>
+        NewCompany().RemoveAddress(Guid.NewGuid()).ShouldBeFalse();
+
+    [Fact]
+    public void UpdateAddress_KnownId_ReplacesValue()
+    {
+        Contact c = NewCompany();
+        var id = Guid.NewGuid();
+        c.AddAddress(id, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+
+        var newAddr = Address.Create("L2", "C", "2000", "BE");
+        c.UpdateAddress(id, newAddr, label: "Updated");
+
+        c.Addresses[0].Value.ShouldBe(newAddr);
+        c.Addresses[0].Label.ShouldBe("Updated");
+    }
+
+    [Fact]
+    public void UpdateAddress_UnknownId_Throws() =>
+        Should.Throw<InvalidOperationException>(() =>
+            NewCompany().UpdateAddress(Guid.NewGuid(), Address.Create("L", "C", "1000", "BE")));
+
+    [Fact]
+    public void SetDefaultAddress_ValidId_DemotesPreviousAndPromotesTarget()
+    {
+        Contact c = NewCompany();
+        var firstId = Guid.NewGuid();
+        var secondId = Guid.NewGuid();
+        c.AddAddress(firstId, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+        c.AddAddress(secondId, AddressKind.Billing, Address.Create("L2", "C", "2000", "BE"));
+
+        c.SetDefaultAddress(secondId);
+
+        c.Addresses.Single(a => a.Id == firstId).IsDefault.ShouldBeFalse();
+        c.Addresses.Single(a => a.Id == secondId).IsDefault.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetDefaultAddress_AlreadyDefault_NoOp()
+    {
+        Contact c = NewCompany();
+        var id = Guid.NewGuid();
+        c.AddAddress(id, AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
+
+        Should.NotThrow(() => c.SetDefaultAddress(id));
+        c.Addresses[0].IsDefault.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetDefaultAddress_UnknownId_Throws() =>
+        Should.Throw<InvalidOperationException>(() =>
+            NewCompany().SetDefaultAddress(Guid.NewGuid()));
+
+    [Fact]
+    public void AddAddress_OnArchived_Throws()
+    {
+        Contact c = NewCompany();
+        c.Archive();
+
+        Should.Throw<InvalidOperationException>(() =>
+            c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("L", "C", "1000", "BE")));
     }
 
     [Fact]

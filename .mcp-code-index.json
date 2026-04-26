@@ -10376,6 +10376,15 @@
       ]
     },
     {
+      "name": "AddressKind",
+      "fqn": "Granit.Contacts.Domain.AddressKind",
+      "kind": "enum",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/AddressKind.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "Contact",
       "fqn": "Granit.Contacts.Domain.Contact",
       "kind": "class",
@@ -10386,7 +10395,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? email = null, string? phone = null, string? mobilePhone = null, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null, Address? address = null)",
+          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? email = null, string? phone = null, string? mobilePhone = null, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
           "returnType": "Contact"
         },
         {
@@ -10405,7 +10414,25 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "string? TaxId { get; private set; } public string? RegistrationNumber { get; private set; } public Address? Address { get; private set; } public ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "string? TaxId { get; private set; } public string? RegistrationNumber { get; private set; } public IReadOnlyList<ContactAddress> Addresses => _addresses."
+        },
+        {
+          "name": "DefaultBillingAddress",
+          "kind": "property",
+          "signature": "ContactAddress? DefaultBillingAddress",
+          "returnType": "ContactAddress?"
+        },
+        {
+          "name": "DefaultShippingAddress",
+          "kind": "property",
+          "signature": "ContactAddress? DefaultShippingAddress",
+          "returnType": "ContactAddress?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "TenantId",
@@ -10424,6 +10451,28 @@
           "kind": "method",
           "signature": "AddExternalMapping(Guid mappingId, string providerName, string externalId)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ContactAddress",
+      "fqn": "Granit.Contacts.Domain.ContactAddress",
+      "kind": "class",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/Domain/ContactAddress.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, AddressKind kind, Address value, bool isDefault = false, string? label = null)",
+          "returnType": "ContactAddress"
+        },
+        {
+          "name": "MarkDefault",
+          "kind": "method",
+          "signature": "MarkDefault(bool isDefault)",
+          "returnType": "bool IsDefault { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
