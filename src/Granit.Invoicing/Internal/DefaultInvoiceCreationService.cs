@@ -59,7 +59,8 @@ internal sealed partial class DefaultInvoiceCreationService(
                     li.Quantity * li.UnitPrice,
                     TaxCode: null)).ToList(),
                 SellerAddress: billingSnapshot,
-                BuyerAddress: billingSnapshot);
+                BuyerAddress: billingSnapshot,
+                BuyerContactId: contact.Id);
 
             TaxResult taxResult = await taxCalculator
                 .CalculateAsync(taxRequest, cancellationToken)

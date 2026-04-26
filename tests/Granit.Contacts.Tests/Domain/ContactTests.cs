@@ -763,4 +763,65 @@ public sealed class ContactTests
 
         c.TenantId.ShouldBe(newTenant);
     }
+
+    // ── Tax status (customer-specific tax classification) ─────────
+
+    [Fact]
+    public void TaxStatus_Default_IsStandard() =>
+        NewCompany().TaxStatus.ShouldBe(TaxStatus.Standard);
+
+    [Fact]
+    public void TaxStatus_Default_DoesNotYieldZeroRate() =>
+        NewCompany().TaxStatus.YieldsZeroRate.ShouldBeFalse();
+
+    [Fact]
+    public void SetTaxStatus_FromStandardToExempt_StoresIt()
+    {
+        Contact c = NewCompany();
+        var exempt = TaxStatus.Create(isExempt: true);
+
+        bool changed = c.SetTaxStatus(exempt);
+
+        changed.ShouldBeTrue();
+        c.TaxStatus.IsExempt.ShouldBeTrue();
+        c.TaxStatus.YieldsZeroRate.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetTaxStatus_ReverseChargeRequiresVatin() =>
+        Should.Throw<ArgumentException>(() =>
+            TaxStatus.Create(reverseCharge: true, vatin: null));
+
+    [Fact]
+    public void SetTaxStatus_ReverseChargeWithVatin_StoresIt()
+    {
+        Contact c = NewCompany();
+        var rc = TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789");
+
+        c.SetTaxStatus(rc);
+
+        c.TaxStatus.ReverseCharge.ShouldBeTrue();
+        c.TaxStatus.Vatin.ShouldBe("BE0123456789");
+        c.TaxStatus.YieldsZeroRate.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetTaxStatus_SameValue_ReturnsFalse()
+    {
+        Contact c = NewCompany();
+        c.SetTaxStatus(TaxStatus.Create(isExempt: true));
+
+        c.SetTaxStatus(TaxStatus.Create(isExempt: true)).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void SetTaxStatus_Null_FallsBackToStandard()
+    {
+        Contact c = NewCompany();
+        c.SetTaxStatus(TaxStatus.Create(isExempt: true));
+
+        c.SetTaxStatus(null).ShouldBeTrue();
+        c.TaxStatus.ShouldBe(TaxStatus.Standard);
+        c.TaxStatus.YieldsZeroRate.ShouldBeFalse();
+    }
 }

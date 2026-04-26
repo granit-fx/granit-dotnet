@@ -1,3 +1,4 @@
+using Granit.Contacts.Domain.ValueObjects;
 using Granit.Tax.Builtin.Options;
 using Microsoft.Extensions.Options;
 
@@ -6,14 +7,22 @@ namespace Granit.Tax.Builtin.Internal;
 /// <summary>
 /// Config-based tax rate provider. Reads from <see cref="EuVatRateOptions"/>
 /// and falls back to <see cref="EuVatRateDefaults"/> for unconfigured countries.
+/// Customer-specific tax overrides (exempt, reverse-charge) are honoured by the
+/// upstream <c>EfTaxRateProvider</c> — this provider is the country-only fallback.
 /// </summary>
 internal sealed class ConfigTaxRateProvider(
     IOptions<EuVatRateOptions> options) : ITaxRateProvider
 {
     public Task<TaxRateEntry?> GetRateAsync(
-        string countryCode, DateTimeOffset asOf,
+        string countryCode,
+        DateTimeOffset asOf,
+        ContactId? contactId = null,
         CancellationToken cancellationToken = default)
     {
+        // ContactId is honoured by the upstream EfTaxRateProvider; this provider
+        // returns the country default only.
+        _ = contactId;
+
         string normalized = countryCode.ToUpperInvariant();
 
         // Check configured overrides first

@@ -142,6 +142,14 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
     /// <summary>Company registration number (BCE/KBO, SIRET, HRB, Companies House, …).</summary>
     public string? RegistrationNumber { get; private set; }
 
+    /// <summary>
+    /// Customer-specific tax classification (reverse-charge, exempt, VATIN). Defaults to
+    /// <see cref="TaxStatus.Standard"/>. Read by <c>Granit.Tax</c>'s <c>ITaxRateProvider</c>
+    /// when a contact is in scope so exempt / reverse-charge customers yield a 0% rate.
+    /// Admins opt-in via <see cref="SetTaxStatus"/>.
+    /// </summary>
+    public TaxStatus TaxStatus { get; private set; } = TaxStatus.Standard;
+
     // ── Addresses ─────────────────────────────────────────────────
 
     /// <summary>
@@ -334,6 +342,27 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
             line2: address.Line2,
             state: address.State,
             vatNumber: TaxId);
+    }
+
+    /// <summary>
+    /// Sets or replaces the customer-specific <see cref="TaxStatus"/>. Idempotent for equal
+    /// values. Pass <c>null</c> or <see cref="TaxStatus.Standard"/> to reset to the default
+    /// (no special status — country / standard rate applies).
+    /// </summary>
+    /// <returns><c>true</c> when the status changed; <c>false</c> when the value was already equal.</returns>
+    public bool SetTaxStatus(TaxStatus? taxStatus)
+    {
+        EnsureMutable();
+        TaxStatus next = taxStatus ?? TaxStatus.Standard;
+
+        if (Equals(TaxStatus, next))
+        {
+            return false;
+        }
+
+        TaxStatus = next;
+        RaiseUpdated();
+        return true;
     }
 
     // ─────────────────────────────────────────────────────────────────

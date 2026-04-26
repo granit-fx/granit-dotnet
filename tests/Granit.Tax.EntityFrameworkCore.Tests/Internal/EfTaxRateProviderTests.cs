@@ -1,3 +1,7 @@
+using Granit.Contacts;
+using Granit.Contacts.Domain;
+using Granit.Contacts.Domain.ValueObjects;
+using Granit.DataFiltering;
 using Granit.Tax;
 using Granit.Tax.Domain;
 using Granit.Tax.EntityFrameworkCore.Internal;
@@ -16,6 +20,8 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
 
     private readonly TestFactory _factory;
     private readonly ITaxRateProvider _fallback = Substitute.For<ITaxRateProvider>();
+    private readonly IContactReader _contactReader = Substitute.For<IContactReader>();
+    private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly EfTaxRateProvider _sut;
 
@@ -27,7 +33,13 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
             .Options;
         _factory = new TestFactory(options);
         _clock.Now.Returns(Now);
-        _sut = new EfTaxRateProvider(_factory, _fallback, _clock);
+        _dataFilter.Disable<Granit.Domain.IMultiTenant>().Returns(new NullDisposable());
+        _sut = new EfTaxRateProvider(_factory, _fallback, _contactReader, _dataFilter, _clock);
+    }
+
+    private sealed class NullDisposable : IDisposable
+    {
+        public void Dispose() { }
     }
 
     public async ValueTask DisposeAsync()
@@ -54,26 +66,23 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     {
         await SeedOverrideAsync("BE", 0.21m, reduced: 0.06m);
 
-        TaxRateEntry? result = await _sut.GetRateAsync(
-            "BE", Now, TestContext.Current.CancellationToken);
+        TaxRateEntry? result = await _sut.GetRateAsync("BE", Now, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.CountryCode.ShouldBe("BE");
         result.StandardRate.ShouldBe(0.21m);
         result.ReducedRate.ShouldBe(0.06m);
-        await _fallback.DidNotReceive().GetRateAsync(
-            Arg.Any<string>(), Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>());
+        await _fallback.DidNotReceive().GetRateAsync(Arg.Any<string>(), Arg.Any<DateTimeOffset>(), cancellationToken: Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task GetRateAsync_NoOverride_DelegatesToFallback()
     {
         TaxRateEntry fallbackEntry = new("FR", 0.20m, ReducedRate: 0.055m, EffectiveFrom: Now.AddYears(-1));
-        _fallback.GetRateAsync("FR", Now, Arg.Any<CancellationToken>())
+        _fallback.GetRateAsync("FR", Now, cancellationToken: Arg.Any<CancellationToken>())
             .Returns(fallbackEntry);
 
-        TaxRateEntry? result = await _sut.GetRateAsync(
-            "FR", Now, TestContext.Current.CancellationToken);
+        TaxRateEntry? result = await _sut.GetRateAsync("FR", Now, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBe(fallbackEntry);
     }
@@ -85,11 +94,10 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
             from: Now.AddDays(-365),
             to: Now.AddDays(-7)); // expired
 
-        _fallback.GetRateAsync("BE", Arg.Any<DateTimeOffset>(), Arg.Any<CancellationToken>())
+        _fallback.GetRateAsync("BE", Arg.Any<DateTimeOffset>(), cancellationToken: Arg.Any<CancellationToken>())
             .Returns(new TaxRateEntry("BE", 0.21m, EffectiveFrom: Now.AddYears(-2)));
 
-        TaxRateEntry? result = await _sut.GetRateAsync(
-            "BE", Now, TestContext.Current.CancellationToken);
+        TaxRateEntry? result = await _sut.GetRateAsync("BE", Now, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.StandardRate.ShouldBe(0.21m); // fallback
@@ -101,8 +109,7 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
         await SeedOverrideAsync("BE", 0.20m, from: Now.AddDays(-90));
         await SeedOverrideAsync("BE", 0.21m, from: Now.AddDays(-30));
 
-        TaxRateEntry? result = await _sut.GetRateAsync(
-            "BE", Now, TestContext.Current.CancellationToken);
+        TaxRateEntry? result = await _sut.GetRateAsync("BE", Now, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.StandardRate.ShouldBe(0.21m);
@@ -145,6 +152,85 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
 
         result.Count.ShouldBe(1);
         result[0].StandardRate.ShouldBe(0.99m);
+    }
+
+    // ── Customer-specific tax status (US #1244) ────────────────────────
+
+    [Fact]
+    public async Task GetRateAsync_ContactExempt_ReturnsZeroRate_BypassingDbAndFallback()
+    {
+        await SeedOverrideAsync("BE", 0.21m); // would normally apply
+        var contactId = ContactId.Create(Guid.NewGuid());
+        Contact contact = NewContactWithStatus(TaxStatus.Create(isExempt: true));
+        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
+            .Returns(contact);
+
+        TaxRateEntry? result = await _sut.GetRateAsync(
+            "BE", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.StandardRate.ShouldBe(0m);
+        result.ReducedRate.ShouldBe(0m);
+        await _fallback.DidNotReceive().GetRateAsync(
+            Arg.Any<string>(), Arg.Any<DateTimeOffset>(),
+            Arg.Any<ContactId?>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task GetRateAsync_ContactReverseCharge_ReturnsZeroRate()
+    {
+        var contactId = ContactId.Create(Guid.NewGuid());
+        Contact contact = NewContactWithStatus(TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789"));
+        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
+            .Returns(contact);
+
+        TaxRateEntry? result = await _sut.GetRateAsync(
+            "FR", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.StandardRate.ShouldBe(0m);
+        result.ReducedRate.ShouldBe(0m);
+    }
+
+    [Fact]
+    public async Task GetRateAsync_ContactStandard_DelegatesToFallback()
+    {
+        var contactId = ContactId.Create(Guid.NewGuid());
+        Contact contact = NewContactWithStatus(TaxStatus.Standard);
+        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
+            .Returns(contact);
+
+        TaxRateEntry fallbackEntry = new("FR", 0.20m, EffectiveFrom: Now.AddYears(-1));
+        _fallback.GetRateAsync(
+                "FR", Now, contactId, Arg.Any<CancellationToken>())
+            .Returns(fallbackEntry);
+
+        TaxRateEntry? result = await _sut.GetRateAsync(
+            "FR", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldBe(fallbackEntry);
+    }
+
+    [Fact]
+    public async Task GetRateAsync_ContactNotFound_FallsThroughToCountryRate()
+    {
+        var contactId = ContactId.Create(Guid.NewGuid());
+        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
+            .Returns((Contact?)null);
+        await SeedOverrideAsync("BE", 0.21m);
+
+        TaxRateEntry? result = await _sut.GetRateAsync(
+            "BE", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.StandardRate.ShouldBe(0.21m);
+    }
+
+    private static Contact NewContactWithStatus(TaxStatus status)
+    {
+        var c = Contact.Create(Guid.NewGuid(), tenantId: null, ContactKind.Company, "Test", "EUR");
+        c.SetTaxStatus(status);
+        return c;
     }
 
     private sealed class TestFactory(DbContextOptions<TaxDbContext> options)

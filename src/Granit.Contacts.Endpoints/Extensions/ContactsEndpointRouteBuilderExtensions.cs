@@ -177,6 +177,25 @@ public static class ContactsEndpointRouteBuilderExtensions
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
+        // ── Tax status (customer-specific tax classification) ─────────
+        group.MapPut("/{id:guid}/tax-status", ContactEndpoints.HandleSetTaxStatusAsync)
+            .RequireAuthorization(ContactsPermissions.Contacts.Manage)
+            .WithName("SetContactTaxStatus")
+            .WithSummary("Sets the contact's customer-specific tax status.")
+            .WithDescription("Applies VAT-exempt or B2B intra-EU reverse-charge classification to the contact. Read by Granit.Tax when computing rates: contacts with IsExempt=true or ReverseCharge=true yield 0% on every line. Reverse-charge requires a buyer-side VAT identification number. Returns 400 when the request violates a domain invariant (e.g., reverse-charge without VAT number).")
+            .Produces<ContactResponse>()
+            .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesValidationProblem();
+
+        group.MapDelete("/{id:guid}/tax-status", ContactEndpoints.HandleClearTaxStatusAsync)
+            .RequireAuthorization(ContactsPermissions.Contacts.Manage)
+            .WithName("ClearContactTaxStatus")
+            .WithSummary("Resets the contact's tax status to the default (no special classification).")
+            .WithDescription("Clears any customer-specific tax classification. Subsequent tax calculations fall back to the country / standard rate. Idempotent.")
+            .Produces<ContactResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         return group;
     }
 }

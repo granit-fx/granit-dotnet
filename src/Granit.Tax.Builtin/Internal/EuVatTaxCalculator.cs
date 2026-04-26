@@ -58,7 +58,11 @@ internal sealed class EuVatTaxCalculator(
         if (context.Exemption == TaxExemptionReason.None)
         {
             TaxRateEntry? rateEntry = await rateProvider
-                .GetRateAsync(context.RateCountryCode, clock.Now, cancellationToken)
+                .GetRateAsync(
+                    context.RateCountryCode,
+                    clock.Now,
+                    request.BuyerContactId,
+                    cancellationToken)
                 .ConfigureAwait(false);
 
             rate = rateEntry?.StandardRate ?? 0m;

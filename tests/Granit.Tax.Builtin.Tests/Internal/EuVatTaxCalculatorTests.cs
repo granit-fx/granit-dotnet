@@ -60,7 +60,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_DomesticSale_ShouldApplyStandardRate()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(CreateAddress("BE"), 100m);
@@ -118,7 +118,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
         _taxOptions.OssEnabled = true;
         _taxOptions.OssRegisteredCountries = ["DE", "FR"];
 
-        _rateProvider.GetRateAsync("DE", FixedNow, ct)
+        _rateProvider.GetRateAsync("DE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("DE", 0.19m));
 
         TaxRequest request = CreateRequest(CreateAddress("DE"), 100m);
@@ -136,7 +136,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_IntraEuB2CWithoutOss_ShouldApplySellerCountryRate()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(CreateAddress("FR"), 100m);
@@ -154,7 +154,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_MultipleLineItems_ShouldTaxEachIndependently()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(CreateAddress("BE"), 100m, 50m, 25m);
@@ -182,7 +182,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
                 RequestIdentifier: null, ValidatedAt: FixedNow,
                 Source: TaxIdValidationSource.Vies));
 
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(buyer, 100m);
@@ -204,7 +204,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
         CancellationToken ct = TestContext.Current.CancellationToken;
         BillingAddress buyer = CreateAddress("DE", vatNumber);
 
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(buyer, 100m);
@@ -222,7 +222,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_ShouldRoundHalfAwayFromZero()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         // 33.33 * 0.21 = 6.9993 -> rounds to 7.00
@@ -239,7 +239,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_RateNotFoundForCountry_ShouldApplyZeroRate()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns((TaxRateEntry?)null);
 
         TaxRequest request = CreateRequest(CreateAddress("BE"), 100m);
@@ -262,7 +262,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_ShouldRecordMetricsWithoutThrowing()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(CreateAddress("BE"), 100m);
@@ -296,7 +296,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_MidpointRoundingEdge_ShouldRoundUp()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         // 1.005 * 0.21 = 0.21105 -> rounds to 0.21 (not a midpoint case)
@@ -317,7 +317,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
         _taxOptions.OssEnabled = true;
         _taxOptions.OssRegisteredCountries = ["FR", "IT"];
 
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         TaxRequest request = CreateRequest(CreateAddress("DE"), 100m);
@@ -334,7 +334,7 @@ public sealed class EuVatTaxCalculatorTests : IDisposable
     public async Task CalculateAsync_WithTenantId_ShouldRecordMetricsWithTenant()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
-        _rateProvider.GetRateAsync("BE", FixedNow, ct)
+        _rateProvider.GetRateAsync("BE", FixedNow, cancellationToken: ct)
             .Returns(new TaxRateEntry("BE", 0.21m));
 
         var tenantId = Guid.NewGuid();

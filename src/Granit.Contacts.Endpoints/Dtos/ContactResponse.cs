@@ -22,7 +22,15 @@ public sealed record ContactResponse(
     IReadOnlyList<ContactAddressResponse> Addresses,
     IReadOnlyList<ContactEmailResponse> Emails,
     IReadOnlyList<ContactPhoneResponse> Phones,
-    IReadOnlyList<ContactExternalMappingResponse> ExternalMappings);
+    IReadOnlyList<ContactExternalMappingResponse> ExternalMappings,
+    ContactTaxStatusResponse TaxStatus);
+
+/// <summary>Customer-specific tax classification (exempt / reverse-charge / standard).</summary>
+public sealed record ContactTaxStatusResponse(
+    bool IsExempt,
+    bool ReverseCharge,
+    string? Vatin,
+    Guid? EvidenceBlobId);
 
 /// <summary>Address sub-DTO inside <see cref="ContactResponse"/>.</summary>
 public sealed record ContactAddressResponse(

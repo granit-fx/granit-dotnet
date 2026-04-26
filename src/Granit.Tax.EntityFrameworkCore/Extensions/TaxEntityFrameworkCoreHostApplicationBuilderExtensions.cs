@@ -1,3 +1,5 @@
+using Granit.Contacts;
+using Granit.DataFiltering;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Tax.EntityFrameworkCore.Internal;
 using Granit.Timing;
@@ -42,6 +44,8 @@ public static class TaxEntityFrameworkCoreHostApplicationBuilderExtensions
             return new EfTaxRateProvider(
                 sp.GetRequiredService<IDbContextFactory<TaxDbContext>>(),
                 fallback,
+                sp.GetRequiredService<IContactReader>(),
+                sp.GetRequiredService<IDataFilter>(),
                 sp.GetRequiredService<IClock>());
         }));
 

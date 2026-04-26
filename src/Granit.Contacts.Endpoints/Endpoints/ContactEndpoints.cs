@@ -257,6 +257,48 @@ internal static class ContactEndpoints
         return TypedResults.NoContent();
     }
 
+    public static async Task<Results<Ok<ContactResponse>, NotFound, ProblemHttpResult, ValidationProblem>> HandleSetTaxStatusAsync(
+        Guid id,
+        ContactTaxStatusRequest request,
+        [FromServices] IContactReader reader,
+        [FromServices] IContactWriter writer,
+        CancellationToken cancellationToken)
+    {
+        Contact? c = await reader.GetByIdAsync(ContactId.Create(id), cancellationToken).ConfigureAwait(false);
+        if (c is null) { return TypedResults.NotFound(); }
+
+        TaxStatus next;
+        try
+        {
+            next = TaxStatus.Create(
+                isExempt: request.IsExempt,
+                reverseCharge: request.ReverseCharge,
+                vatin: request.Vatin,
+                evidenceBlobId: request.EvidenceBlobId);
+        }
+        catch (ArgumentException ex)
+        {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+
+        c.SetTaxStatus(next);
+        await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(c.ToResponse());
+    }
+
+    public static async Task<Results<Ok<ContactResponse>, NotFound>> HandleClearTaxStatusAsync(
+        Guid id,
+        [FromServices] IContactReader reader,
+        [FromServices] IContactWriter writer,
+        CancellationToken cancellationToken)
+    {
+        Contact? c = await reader.GetByIdAsync(ContactId.Create(id), cancellationToken).ConfigureAwait(false);
+        if (c is null) { return TypedResults.NotFound(); }
+        c.SetTaxStatus(TaxStatus.Standard);
+        await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(c.ToResponse());
+    }
+
     private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> TransitionAsync(
         Guid id,
         Action<Contact> action,

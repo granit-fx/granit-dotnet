@@ -36,7 +36,7 @@ internal static class TaxRateEndpoints
         CancellationToken cancellationToken = default)
     {
         TaxRateEntry? rate = await rateProvider
-            .GetRateAsync(countryCode, clock.Now, cancellationToken)
+            .GetRateAsync(countryCode, clock.Now, contactId: null, cancellationToken)
             .ConfigureAwait(false);
 
         if (rate is null)

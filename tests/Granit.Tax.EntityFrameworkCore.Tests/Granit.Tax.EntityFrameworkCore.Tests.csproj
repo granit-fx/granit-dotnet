@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Tax.EntityFrameworkCore\Granit.Tax.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Contacts\Granit.Contacts.csproj" />
   </ItemGroup>
 
 </Project>

@@ -18,7 +18,7 @@ public sealed class ConfigTaxRateProviderTests
     {
         ConfigTaxRateProvider provider = CreateProvider();
 
-        TaxRateEntry? entry = await provider.GetRateAsync("BE", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        TaxRateEntry? entry = await provider.GetRateAsync("BE", DateTimeOffset.UtcNow, cancellationToken: TestContext.Current.CancellationToken);
 
         entry.ShouldNotBeNull();
         entry.CountryCode.ShouldBe("BE");
@@ -35,7 +35,7 @@ public sealed class ConfigTaxRateProviderTests
         };
         ConfigTaxRateProvider provider = CreateProvider(options);
 
-        TaxRateEntry? entry = await provider.GetRateAsync("BE", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        TaxRateEntry? entry = await provider.GetRateAsync("BE", DateTimeOffset.UtcNow, cancellationToken: TestContext.Current.CancellationToken);
 
         entry.ShouldNotBeNull();
         entry.StandardRate.ShouldBe(0.22m);
@@ -51,7 +51,7 @@ public sealed class ConfigTaxRateProviderTests
         };
         ConfigTaxRateProvider provider = CreateProvider(options);
 
-        TaxRateEntry? entry = await provider.GetRateAsync("FR", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        TaxRateEntry? entry = await provider.GetRateAsync("FR", DateTimeOffset.UtcNow, cancellationToken: TestContext.Current.CancellationToken);
 
         entry.ShouldNotBeNull();
         entry.StandardRate.ShouldBe(0.20m);
@@ -63,7 +63,7 @@ public sealed class ConfigTaxRateProviderTests
     {
         ConfigTaxRateProvider provider = CreateProvider();
 
-        TaxRateEntry? entry = await provider.GetRateAsync("ZZ", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        TaxRateEntry? entry = await provider.GetRateAsync("ZZ", DateTimeOffset.UtcNow, cancellationToken: TestContext.Current.CancellationToken);
 
         entry.ShouldBeNull();
     }
@@ -73,7 +73,7 @@ public sealed class ConfigTaxRateProviderTests
     {
         ConfigTaxRateProvider provider = CreateProvider();
 
-        TaxRateEntry? entry = await provider.GetRateAsync("de", DateTimeOffset.UtcNow, TestContext.Current.CancellationToken);
+        TaxRateEntry? entry = await provider.GetRateAsync("de", DateTimeOffset.UtcNow, cancellationToken: TestContext.Current.CancellationToken);
 
         entry.ShouldNotBeNull();
         entry.CountryCode.ShouldBe("DE");

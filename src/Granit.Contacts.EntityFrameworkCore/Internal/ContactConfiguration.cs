@@ -22,6 +22,16 @@ internal sealed class ContactConfiguration : IEntityTypeConfiguration<Contact>
         builder.Property(c => c.DefaultCurrency).HasMaxLength(3).IsRequired();
         builder.Property(c => c.TaxId).HasMaxLength(64);
         builder.Property(c => c.RegistrationNumber).HasMaxLength(64);
+
+        // Customer-specific tax classification — owned single-valued VO inlined into the
+        // contacts table. Defaults to TaxStatus.Standard (all flags false) on materialisation.
+        builder.OwnsOne(c => c.TaxStatus, ts =>
+        {
+            ts.Property(t => t.IsExempt).IsRequired().HasDefaultValue(false);
+            ts.Property(t => t.ReverseCharge).IsRequired().HasDefaultValue(false);
+            ts.Property(t => t.Vatin).HasMaxLength(30);
+            ts.Property(t => t.EvidenceBlobId);
+        });
         builder.Property(c => c.Status).IsRequired();
         builder.Property(c => c.Roles).IsRequired();
         builder.Property(c => c.UserId);

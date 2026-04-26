@@ -24,7 +24,11 @@ internal static class ContactMapper
         [.. c.Addresses.Select(ToAddressResponse)],
         [.. c.Emails.Select(ToEmailResponse)],
         [.. c.Phones.Select(ToPhoneResponse)],
-        [.. c.ExternalMappings.Select(ToExternalMappingResponse)]);
+        [.. c.ExternalMappings.Select(ToExternalMappingResponse)],
+        ToTaxStatusResponse(c.TaxStatus));
+
+    private static ContactTaxStatusResponse ToTaxStatusResponse(TaxStatus s) =>
+        new(s.IsExempt, s.ReverseCharge, s.Vatin, s.EvidenceBlobId);
 
     public static ContactListItemResponse ToListItem(this Contact c) => new(
         c.Id,

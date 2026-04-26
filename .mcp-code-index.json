@@ -2103,6 +2103,7 @@
       "name": "Granit.Tax",
       "deps": [
         "Granit",
+        "Granit.Contacts.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
@@ -2133,6 +2134,7 @@
     {
       "name": "Granit.Tax.EntityFrameworkCore",
       "deps": [
+        "Granit.Contacts",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
       ],
@@ -10530,10 +10532,16 @@
           "returnType": "string"
         },
         {
+          "name": "TaxId",
+          "kind": "property",
+          "signature": "string? TaxId",
+          "returnType": "string?"
+        },
+        {
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "string? TaxId { get; private set; } public string? RegistrationNumber { get; private set; } public IReadOnlyList<ContactAddress> Addresses => _addresses."
+          "returnType": "IReadOnlyList<ContactAddress> Addresses => _addresses."
         },
         {
           "name": "DefaultBillingAddress",
@@ -10707,6 +10715,28 @@
       "members": []
     },
     {
+      "name": "TaxStatus",
+      "fqn": "Granit.Contacts.Domain.TaxStatus",
+      "kind": "class",
+      "project": "Granit.Contacts.Abstractions",
+      "file": "src/Granit.Contacts.Abstractions/Domain/TaxStatus.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TaxStatus Standard { get; } ="
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(bool isExempt = false, bool reverseCharge = false, string? vatin = null, Guid? evidenceBlobId = null)",
+          "returnType": "TaxStatus"
+        }
+      ]
+    },
+    {
       "name": "ContactId",
       "fqn": "Granit.Contacts.Domain.ValueObjects.ContactId",
       "kind": "class",
@@ -10743,7 +10773,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 28,
+      "line": 36,
       "members": []
     },
     {
@@ -10770,7 +10800,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 42,
+      "line": 50,
       "members": []
     },
     {
@@ -10788,7 +10818,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 57,
+      "line": 65,
       "members": []
     },
     {
@@ -10797,7 +10827,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 63,
+      "line": 71,
       "members": []
     },
     {
@@ -10815,7 +10845,7 @@
       "kind": "record",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 49,
+      "line": 57,
       "members": []
     },
     {
@@ -10852,6 +10882,24 @@
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/Dtos/ContactTaxIdentityRequest.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "ContactTaxStatusRequest",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxStatusRequest",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactTaxStatusRequest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ContactTaxStatusResponse",
+      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxStatusResponse",
+      "kind": "record",
+      "project": "Granit.Contacts.Endpoints",
+      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
+      "line": 29,
       "members": []
     },
     {
@@ -23345,7 +23393,7 @@
       "kind": "enum",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 24,
+      "line": 34,
       "members": []
     },
     {
@@ -23354,7 +23402,7 @@
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 40,
+      "line": 50,
       "members": []
     },
     {
@@ -23363,7 +23411,7 @@
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 12,
+      "line": 22,
       "members": []
     },
     {
@@ -23372,7 +23420,7 @@
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 21,
+      "line": 31,
       "members": []
     },
     {
@@ -23381,7 +23429,7 @@
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 6,
+      "line": 15,
       "members": []
     },
     {
@@ -23390,7 +23438,7 @@
       "kind": "record",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Dtos/TaxRequest.cs",
-      "line": 15,
+      "line": 25,
       "members": []
     },
     {
@@ -42938,7 +42986,7 @@
       "kind": "class",
       "project": "Granit.Tax.EntityFrameworkCore",
       "file": "src/Granit.Tax.EntityFrameworkCore/Extensions/TaxEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitTaxEntityFrameworkCore",
@@ -43075,12 +43123,12 @@
       "kind": "interface",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/ITaxRateProvider.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "GetRateAsync",
           "kind": "method",
-          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, ContactId? contactId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<TaxRateEntry?>"
         },
         {
