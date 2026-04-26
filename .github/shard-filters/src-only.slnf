@@ -61,6 +61,7 @@
       "src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj",
       "src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
+      "src/Granit.Customers/Granit.Customers.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj",

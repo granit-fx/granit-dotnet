@@ -517,6 +517,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Customers",
+      "deps": [
+        "Granit",
+        "Granit.Guids",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -10943,6 +10952,321 @@
           "kind": "property",
           "signature": "string Name",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "BillingAddress",
+      "fqn": "Granit.Customers.Domain.BillingAddress",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/BillingAddress.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null, string? vatNumber = null)",
+          "returnType": "BillingAddress"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
+        }
+      ]
+    },
+    {
+      "name": "Customer",
+      "fqn": "Granit.Customers.Domain.Customer",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/Customer.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, string legalName, string defaultCurrency, string? email = null, BillingAddress? billingAddress = null, string? timezone = null)",
+          "returnType": "Customer"
+        },
+        {
+          "name": "Email",
+          "kind": "property",
+          "signature": "string? Email",
+          "returnType": "string?"
+        },
+        {
+          "name": "Timezone",
+          "kind": "property",
+          "signature": "string Timezone",
+          "returnType": "string"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "CustomerStatus Status { get; private set; } public IReadOnlyList<CustomerExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "CustomerExternalMapping",
+      "fqn": "Granit.Customers.Domain.CustomerExternalMapping",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/CustomerExternalMapping.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "CustomerExternalMapping"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "CustomerExternalProviderNames",
+      "fqn": "Granit.Customers.Domain.CustomerExternalProviderNames",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/CustomerExternalProviderNames.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CustomerStatus",
+      "fqn": "Granit.Customers.Domain.CustomerStatus",
+      "kind": "enum",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/CustomerStatus.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "CustomerId",
+      "fqn": "Granit.Customers.Domain.ValueObjects.CustomerId",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Domain/ValueObjects/CustomerId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public CustomerId"
+        },
+        {
+          "name": "CustomerId",
+          "kind": "method",
+          "signature": "CustomerId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "CustomerActivatedEto",
+      "fqn": "Granit.Customers.Events.CustomerActivatedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerActivatedEto.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CustomerActivatedEvent",
+      "fqn": "Granit.Customers.Events.CustomerActivatedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerActivatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "CustomerArchivedEto",
+      "fqn": "Granit.Customers.Events.CustomerArchivedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerArchivedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CustomerArchivedEvent",
+      "fqn": "Granit.Customers.Events.CustomerArchivedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerArchivedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "CustomerCreatedEto",
+      "fqn": "Granit.Customers.Events.CustomerCreatedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerCreatedEto.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "CustomerCreatedEvent",
+      "fqn": "Granit.Customers.Events.CustomerCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerCreatedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CustomerExternalMappingAddedEto",
+      "fqn": "Granit.Customers.Events.CustomerExternalMappingAddedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerExternalMappingAddedEto.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CustomerExternalMappingAddedEvent",
+      "fqn": "Granit.Customers.Events.CustomerExternalMappingAddedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerExternalMappingAddedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "CustomerSuspendedEto",
+      "fqn": "Granit.Customers.Events.CustomerSuspendedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerSuspendedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "CustomerSuspendedEvent",
+      "fqn": "Granit.Customers.Events.CustomerSuspendedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerSuspendedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CustomerUpdatedEto",
+      "fqn": "Granit.Customers.Events.CustomerUpdatedEto",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerUpdatedEto.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "CustomerUpdatedEvent",
+      "fqn": "Granit.Customers.Events.CustomerUpdatedEvent",
+      "kind": "record",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/Events/CustomerUpdatedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "GranitCustomersModule",
+      "fqn": "Granit.Customers.GranitCustomersModule",
+      "kind": "class",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/GranitCustomersModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ICustomerReader",
+      "fqn": "Granit.Customers.ICustomerReader",
+      "kind": "interface",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/ICustomerReader.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(CustomerId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Customer?>"
+        },
+        {
+          "name": "GetByExternalIdAsync",
+          "kind": "method",
+          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Customer?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Customer>>"
+        }
+      ]
+    },
+    {
+      "name": "ICustomerWriter",
+      "fqn": "Granit.Customers.ICustomerWriter",
+      "kind": "interface",
+      "project": "Granit.Customers",
+      "file": "src/Granit.Customers/ICustomerWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Customer customer, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Customer customer, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },

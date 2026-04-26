@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Customers</PackageId>
+    <Description>Customer aggregate as central billing identity for Granit. Domain model (Customer, BillingAddress, CustomerExternalMapping), reader/writer abstractions, and integration events. Dual-use: host-scoped customers (the SaaS's tenants) and tenant-scoped customers (e-commerce end-buyers). Polyglot external mappings replace per-provider mapping aggregates.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Customers.Tests" />
+    <InternalsVisibleTo Include="Granit.Customers.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Customers.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Customers.Privacy" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>
