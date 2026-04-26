@@ -161,6 +161,7 @@ export default defineConfig({
                         { label: "Add Background Jobs", link: "/dotnet/guides/add-background-jobs/" },
                         { label: "Configure Blob Storage", link: "/dotnet/guides/configure-blob-storage/" },
                         { label: "Implement Webhooks", link: "/dotnet/guides/implement-webhooks/" },
+                        { label: "Auto-maintain Contact Roles", link: "/dotnet/guides/contacts-role-handler/" },
                       ],
                     },
                     {
