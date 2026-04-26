@@ -10456,7 +10456,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "Guid? AvatarBlobId { get; private set; } public ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "TenantId",

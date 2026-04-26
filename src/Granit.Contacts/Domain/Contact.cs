@@ -162,6 +162,15 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         _addresses.FirstOrDefault(a => a.Kind == AddressKind.Shipping && a.IsDefault)
         ?? _addresses.FirstOrDefault(a => a.Kind == AddressKind.Shipping);
 
+    // ── Avatar ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Soft reference to a blob in <c>Granit.BlobStorage</c> holding the contact's
+    /// avatar — photo for an Individual, logo for a Company. <c>null</c> = no avatar.
+    /// Set/clear via <see cref="SetAvatar"/> / <see cref="ClearAvatar"/>.
+    /// </summary>
+    public Guid? AvatarBlobId { get; private set; }
+
     // ── Hierarchy ─────────────────────────────────────────────────
 
     /// <summary>Parent contact identifier (Person→Company, subsidiary→holding, …). Same-tenant only.</summary>
@@ -594,6 +603,36 @@ public sealed class Contact : AuditedAggregateRoot, IMultiTenant
         EnsureMutable();
         if (UserId is null) { return false; }
         UserId = null;
+        return true;
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // Avatar
+    // ─────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sets or replaces the avatar (photo for an Individual, logo for a Company).
+    /// The blob itself lives in <c>Granit.BlobStorage</c>; this method stores only
+    /// the soft reference.
+    /// </summary>
+    public void SetAvatar(Guid blobId)
+    {
+        EnsureMutable();
+        if (blobId == Guid.Empty)
+        {
+            throw new ArgumentException("Blob identifier must not be empty.", nameof(blobId));
+        }
+        AvatarBlobId = blobId;
+        RaiseUpdated();
+    }
+
+    /// <summary>Clears the avatar reference. Idempotent.</summary>
+    public bool ClearAvatar()
+    {
+        EnsureMutable();
+        if (AvatarBlobId is null) { return false; }
+        AvatarBlobId = null;
+        RaiseUpdated();
         return true;
     }
 

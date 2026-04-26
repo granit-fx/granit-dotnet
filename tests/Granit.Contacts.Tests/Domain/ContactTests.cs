@@ -462,6 +462,46 @@ public sealed class ContactTests
     public void UnlinkFromUser_WhenNotLinked_ReturnsFalse() =>
         NewIndividual().UnlinkFromUser().ShouldBeFalse();
 
+    // ── Avatar ────────────────────────────────────────────────────
+
+    [Fact]
+    public void SetAvatar_StoresBlobId_AndRaisesUpdated()
+    {
+        Contact c = NewCompany();
+        var blobId = Guid.NewGuid();
+
+        c.SetAvatar(blobId);
+
+        c.AvatarBlobId.ShouldBe(blobId);
+        c.DomainEvents.OfType<ContactUpdatedEvent>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void SetAvatar_EmptyGuid_Throws() =>
+        Should.Throw<ArgumentException>(() => NewCompany().SetAvatar(Guid.Empty));
+
+    [Fact]
+    public void SetAvatar_OnArchived_Throws()
+    {
+        Contact c = NewCompany();
+        c.Archive();
+        Should.Throw<InvalidOperationException>(() => c.SetAvatar(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void ClearAvatar_WhenSet_ReturnsTrue_AndClears()
+    {
+        Contact c = NewCompany();
+        c.SetAvatar(Guid.NewGuid());
+
+        c.ClearAvatar().ShouldBeTrue();
+        c.AvatarBlobId.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ClearAvatar_WhenNotSet_ReturnsFalse() =>
+        NewCompany().ClearAvatar().ShouldBeFalse();
+
     // ── Roles ─────────────────────────────────────────────────────
 
     [Fact]
