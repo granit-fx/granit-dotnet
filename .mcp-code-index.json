@@ -11189,6 +11189,22 @@
       ]
     },
     {
+      "name": "IDefaultContactResolver",
+      "fqn": "Granit.Contacts.IDefaultContactResolver",
+      "kind": "interface",
+      "project": "Granit.Contacts",
+      "file": "src/Granit.Contacts/IDefaultContactResolver.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "GetDefaultForTenantAsync",
+          "kind": "method",
+          "signature": "GetDefaultForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Contact?>"
+        }
+      ]
+    },
+    {
       "name": "ContactsPersonalDataDeletionHandler",
       "fqn": "Granit.Contacts.Privacy.DataDeletion.ContactsPersonalDataDeletionHandler",
       "kind": "class",

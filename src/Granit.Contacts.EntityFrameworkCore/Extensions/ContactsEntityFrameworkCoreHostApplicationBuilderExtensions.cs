@@ -21,6 +21,7 @@ public static class ContactsEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<EfContactStore>();
         builder.Services.TryAddScoped<IContactReader>(sp => sp.GetRequiredService<EfContactStore>());
         builder.Services.TryAddScoped<IContactWriter>(sp => sp.GetRequiredService<EfContactStore>());
+        builder.Services.TryAddScoped<IDefaultContactResolver, EfDefaultContactResolver>();
 
         builder.Services.AddScoped<IQueryableSource<Domain.Contact>, EfContactQueryableSource>();
 
