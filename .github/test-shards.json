@@ -220,6 +220,7 @@
         "tests/Granit.Auditing.ConfigurationChanges.Tests",
         "tests/Granit.Auditing.Endpoints.Tests",
         "tests/Granit.Auditing.EntityFrameworkCore.Tests",
+        "tests/Granit.Auditing.Notifications.Tests",
         "tests/Granit.Auditing.Tests",
         "tests/Granit.Auditing.Privacy.Tests",
         "tests/Granit.Authentication.ApiKeys.Endpoints.Tests",

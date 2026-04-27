@@ -16,6 +16,7 @@
       "src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj",
       "src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj",
       "src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj",
+      "src/Granit.Auditing.Notifications/Granit.Auditing.Notifications.csproj",
       "src/Granit.Auditing.Privacy/Granit.Auditing.Privacy.csproj",
       "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
