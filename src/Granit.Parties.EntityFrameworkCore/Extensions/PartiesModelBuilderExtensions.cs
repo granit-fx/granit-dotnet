@@ -14,6 +14,7 @@ public static class PartiesModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new PartyEmailConfiguration());
         modelBuilder.ApplyConfiguration(new PartyPhoneConfiguration());
         modelBuilder.ApplyConfiguration(new PartyExternalMappingConfiguration());
+        modelBuilder.ApplyConfiguration(new PartyDuplicateCandidateConfiguration());
         return modelBuilder;
     }
 }
