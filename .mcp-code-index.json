@@ -120,6 +120,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Auditing.Notifications",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing.Privacy",
       "deps": [
         "Granit.Auditing",
@@ -1241,6 +1250,15 @@
         "Granit.DataLookup.EntityFrameworkCore",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Metering"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Metering.Notifications",
+      "deps": [
+        "Granit.Metering",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -4845,6 +4863,91 @@
       "file": "src/Granit.Auditing/Messages/AuditingBatch.cs",
       "line": 18,
       "members": []
+    },
+    {
+      "name": "AuditingAnomalyDetectedNotificationData",
+      "fqn": "Granit.Auditing.Notifications.AuditingAnomalyDetectedNotificationData",
+      "kind": "record",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/AuditingAnomalyDetectedNotificationType.cs",
+      "line": 55,
+      "members": []
+    },
+    {
+      "name": "AuditingAnomalyDetectedNotificationType",
+      "fqn": "Granit.Auditing.Notifications.AuditingAnomalyDetectedNotificationType",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/AuditingAnomalyDetectedNotificationType.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AuditingAnomalyDetectedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuditingNotificationsModule",
+      "fqn": "Granit.Auditing.Notifications.GranitAuditingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/GranitAuditingNotificationsModule.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AnomalyDetectedHandler",
+      "fqn": "Granit.Auditing.Notifications.Handlers.AnomalyDetectedHandler",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/Handlers/AnomalyDetectedHandler.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AuditEntryPersistedEto evt, INotificationPublisher publisher, IOptions<AuditNotificationOptions> options, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AuditNotificationOptions",
+      "fqn": "Granit.Auditing.Notifications.Options.AuditNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/Options/AuditNotificationOptions.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "AlertableCategories",
+          "kind": "property",
+          "signature": "IReadOnlyList<AuditCategory> AlertableCategories",
+          "returnType": "IReadOnlyList<AuditCategory>"
+        }
+      ]
     },
     {
       "name": "AuditingOptions",
@@ -25378,6 +25481,128 @@
           "kind": "method",
           "signature": "GetAllForPeriodAsync(Guid tenantId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<UsageAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "GranitMeteringNotificationsModule",
+      "fqn": "Granit.Metering.Notifications.GranitMeteringNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/GranitMeteringNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "QuotaExceededNotificationHandler",
+      "fqn": "Granit.Metering.Notifications.Handlers.QuotaExceededNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/Handlers/QuotaExceededNotificationHandler.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(QuotaExceededEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "QuotaThresholdReachedNotificationHandler",
+      "fqn": "Granit.Metering.Notifications.Handlers.QuotaThresholdReachedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/Handlers/QuotaThresholdReachedNotificationHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(QuotaThresholdReachedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MeteringQuotaExceededNotificationData",
+      "fqn": "Granit.Metering.Notifications.MeteringQuotaExceededNotificationData",
+      "kind": "record",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/MeteringQuotaExceededNotificationType.cs",
+      "line": 45,
+      "members": []
+    },
+    {
+      "name": "MeteringQuotaExceededNotificationType",
+      "fqn": "Granit.Metering.Notifications.MeteringQuotaExceededNotificationType",
+      "kind": "class",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/MeteringQuotaExceededNotificationType.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "MeteringQuotaExceededNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "MeteringQuotaThresholdReachedNotificationData",
+      "fqn": "Granit.Metering.Notifications.MeteringQuotaThresholdReachedNotificationData",
+      "kind": "record",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/MeteringQuotaThresholdReachedNotificationType.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "MeteringQuotaThresholdReachedNotificationType",
+      "fqn": "Granit.Metering.Notifications.MeteringQuotaThresholdReachedNotificationType",
+      "kind": "class",
+      "project": "Granit.Metering.Notifications",
+      "file": "src/Granit.Metering.Notifications/MeteringQuotaThresholdReachedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "MeteringQuotaThresholdReachedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
