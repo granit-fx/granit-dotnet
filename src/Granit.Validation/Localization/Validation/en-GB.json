@@ -1,4 +1,5 @@
 {
+  "Granit:Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "en-GB",
   "texts": {
     "Granit:Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
