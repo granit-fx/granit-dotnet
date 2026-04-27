@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>O seu pedido de eliminação foi cancelado</title>
+<p>Olá,</p>
+<p>Confirmamos que o seu pedido de eliminação diferida foi cancelado em <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Os seus dados pessoais serão conservados como antes, e não é necessária qualquer ação adicional da sua parte.</p>
+<p>Pode submeter um novo pedido de eliminação a qualquer momento a partir do seu painel de privacidade.</p>
+<p>Referência: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dúvidas? Contacte o nosso Encarregado de Proteção de Dados em <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

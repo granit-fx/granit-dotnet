@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>{{ model.document_display_name }} è stato aggiornato — La invitiamo a consultarlo</title>
+<p>Buongiorno,</p>
+<p>Il nostro <strong>{{ model.document_display_name }}</strong> è stato aggiornato. Per continuare a utilizzare i nostri servizi, La invitiamo a consultare la nuova versione e a confermare la Sua accettazione.</p>
+<p>Versione da Lei accettata: <strong>{{ model.old_version }}</strong><br>
+Nuova versione: <strong>{{ model.new_version }}</strong></p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/agreements/{{ model.document_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Consulta e accetta</a>
+</p>
+<p>Finché non avrà confermato la Sua accettazione, alcune funzionalità potrebbero essere non disponibili.</p>
+{{ if privacy.controller_name }}
+<p>Questo messaggio è inviato da {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Domande su questo aggiornamento? Contatti il nostro Responsabile della Protezione dei Dati all'indirizzo <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

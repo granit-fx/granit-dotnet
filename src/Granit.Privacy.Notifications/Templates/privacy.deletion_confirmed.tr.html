@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Verileriniz silindi</title>
+<p>Merhaba,</p>
+<p>Kişisel verilerinizin <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> tarihinde kalıcı olarak silindiğini onaylarız. Bu silme işlemi geri alınamaz.</p>
+<p>Bu e-posta, uyumluluk makbuzunuz niteliğindedir. Lütfen silme hakkınızın yerine getirildiğine dair belge olarak saklayınız.</p>
+<p>Referans: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Bu mesaj {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} tarafından gönderilmektedir.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Veri korumayla ilgili sorularınız için Veri Koruma Görevlimize <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> adresinden ulaşabilirsiniz.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">İşlemin yürütülme şeklinden memnun değilseniz, denetim makamına şikayette bulunma hakkınız vardır: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

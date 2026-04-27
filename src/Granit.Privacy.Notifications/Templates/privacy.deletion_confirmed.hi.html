@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>आपका डेटा हटा दिया गया है</title>
+<p>नमस्ते,</p>
+<p>हम पुष्टि करते हैं कि आपका व्यक्तिगत डेटा <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> पर स्थायी रूप से हटा दिया गया है। यह विलोपन अपरिवर्तनीय है।</p>
+<p>यह ईमेल आपकी अनुपालन रसीद है। कृपया इसे इस बात के प्रमाण के रूप में सुरक्षित रखें कि आपके विलोपन के अधिकार का सम्मान किया गया है।</p>
+<p>संदर्भ: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>यह संदेश {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} द्वारा भेजा जा रहा है।</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">गोपनीयता संबंधी प्रश्नों के लिए, हमारे डेटा सुरक्षा अधिकारी से <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> पर संपर्क करें।</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">यदि आप निष्पादन से संतुष्ट नहीं हैं, तो आपको पर्यवेक्षी प्राधिकरण के पास शिकायत दर्ज करने का अधिकार है: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>।</p>
+{{ end }}

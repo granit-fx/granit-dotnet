@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Obdrželi jsme Vaši žádost o výmaz</title>
+<p>Dobrý den,</p>
+<p>Obdrželi jsme Vaši žádost o výmaz Vašich osobních údajů dne <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} podle nařízení <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Tento e-mail představuje potvrzení o přijetí. Vaši žádost vyřídíme v zákonné lhůtě platné pro Vaši jurisdikci (jeden měsíc podle čl. 12 odst. 3 GDPR, s možností prodloužení v případě složité žádosti). Další e-mail obdržíte, jakmile bude výmaz proveden, nebo pokud od Vás budeme potřebovat doplňující informace.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Tuto zprávu odesílá {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>V otázkách týkajících se ochrany osobních údajů se můžete obrátit na našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Pokud nejste spokojen/a s vyřízením Vaší žádosti, máte právo podat stížnost u příslušného dozorového úřadu: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

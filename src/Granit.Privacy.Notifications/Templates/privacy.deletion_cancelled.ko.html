@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>삭제 요청이 취소되었습니다</title>
+<p>안녕하십니까.</p>
+<p>고객님의 연기된 삭제 요청이 <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong> 에 취소되었음을 확인해 드립니다. 고객님의 개인정보는 이전과 같이 보관되며, 추가 조치는 필요하지 않습니다.</p>
+<p>개인정보 대시보드에서 언제든지 새 삭제 요청을 제출하실 수 있습니다.</p>
+<p>참조번호: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">문의 사항? 저희 개인정보 보호책임자에게 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 으로 연락해 주십시오.</p>
+{{ end }}

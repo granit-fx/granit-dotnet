@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Veri dışa aktarımınız kısmen mevcut</title>
+<p>Merhaba,</p>
+<p><strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} <code>{{ model.regulation }}</code> mevzuatı kapsamında{{ end }} talep ettiğiniz kişisel veri dışa aktarımı oluşturuldu, ancak bazı veri kaynakları zamanında yanıt vermedi. Arşiv, yasal süre içinde toplayabildiğimiz tüm verileri içermektedir.</p>
+{{ if model.missing_providers_display }}
+<p>Aşağıdaki veri kaynakları bu dışa aktarıma dahil edilmedi: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Şunları yapabilirsiniz:</p>
+<ul>
+  <li><strong>Kısmi arşivi indirin</strong> gizlilik panelinizden, veya</li>
+  <li><strong>Yeni bir talep gönderin</strong> eksik kaynakları yeniden denemek için.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Dışa aktarımımı görüntüle</a>
+</p>
+<p>Referans: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Sorularınız mı var? Veri Koruma Görevlimize <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> adresinden ulaşabilirsiniz.</p>
+{{ end }}

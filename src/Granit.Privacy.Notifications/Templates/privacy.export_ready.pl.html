@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Państwa eksport danych osobowych jest gotowy</title>
+<p>Dzień dobry,</p>
+<p>Państwa eksport danych osobowych, zlecony w dniu <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} na podstawie regulacji <code>{{ model.regulation }}</code>{{ end }}, jest już gotowy do pobrania.</p>
+<p>Mogą Państwo pobrać archiwum z panelu prywatności:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Pobierz moje archiwum</a>
+</p>
+<p>Link do pobrania ma ograniczoną ważność ze względów bezpieczeństwa. Jeśli wygaśnie, mogą Państwo wygenerować nowy z tej samej strony.</p>
+<p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Pytania o Państwa dane? Prosimy o kontakt z naszym Inspektorem Ochrony Danych pod adresem <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Påminnelse: dina uppgifter kommer snart att raderas</title>
+<p>Hej,</p>
+<p>Detta är en påminnelse om att den radering av personuppgifter du har begärt är schemalagd att verkställas den <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Om du inte längre vill radera dina uppgifter kan du avbryta din begäran från din integritetspanel:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Hantera min begäran</a>
+</p>
+<p>Om ingen åtgärd vidtas raderas dina uppgifter permanent det schemalagda datumet. Därefter är raderingen oåterkallelig.</p>
+<p>Referens: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Frågor? Kontakta vårt dataskyddsombud på <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

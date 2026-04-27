@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>La Sua richiesta di cancellazione è stata annullata</title>
+<p>Buongiorno,</p>
+<p>Le confermiamo che la Sua richiesta di cancellazione differita è stata annullata in data <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. I Suoi dati personali saranno conservati come in precedenza, e non è richiesta alcuna ulteriore azione da parte Sua.</p>
+<p>Può inviare una nuova richiesta di cancellazione in qualsiasi momento dal Suo pannello privacy.</p>
+<p>Riferimento: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Domande? Contatti il nostro Responsabile della Protezione dei Dati all'indirizzo <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

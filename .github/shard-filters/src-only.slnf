@@ -62,6 +62,7 @@
       "src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj",
       "src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj",
       "src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj",
+      "src/Granit.CustomerBalance.Notifications/Granit.CustomerBalance.Notifications.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",

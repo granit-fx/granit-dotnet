@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>A sua exportação de dados pessoais está pronta</title>
+<p>Olá,</p>
+<p>A sua exportação de dados pessoais, solicitada em <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} ao abrigo da regulamentação <code>{{ model.regulation }}</code>{{ end }}, está agora pronta para descarregar.</p>
+<p>Pode descarregar o seu arquivo a partir do seu painel de privacidade:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Descarregar o meu arquivo</a>
+</p>
+<p>A ligação de transferência tem validade limitada por motivos de segurança. Se expirar, pode pedir uma nova a partir da mesma página.</p>
+<p>Referência: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dúvidas sobre os seus dados? Contacte o nosso Encarregado de Proteção de Dados em <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

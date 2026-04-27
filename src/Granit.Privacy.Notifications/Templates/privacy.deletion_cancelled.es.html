@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Su solicitud de supresión ha sido cancelada</title>
+<p>Hola,</p>
+<p>Le confirmamos que su solicitud de supresión diferida ha sido cancelada el <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Sus datos personales se conservarán como antes, y no se requiere ninguna acción adicional por su parte.</p>
+<p>Puede enviar una nueva solicitud de supresión en cualquier momento desde su panel de privacidad.</p>
+<p>Referencia: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">¿Preguntas? Contacte con nuestro Delegado de Protección de Datos en <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

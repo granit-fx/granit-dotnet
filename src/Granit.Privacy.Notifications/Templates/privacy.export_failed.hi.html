@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>आपका डेटा निर्यात आंशिक रूप से उपलब्ध है</title>
+<p>नमस्ते,</p>
+<p>आपका व्यक्तिगत डेटा निर्यात, जिसका अनुरोध <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} विनियमन <code>{{ model.regulation }}</code> के अंतर्गत{{ end }} किया गया था, उत्पन्न कर दिया गया है, परंतु कुछ डेटा स्रोतों ने समय पर प्रतिक्रिया नहीं दी। संग्रह में वह सब कुछ शामिल है जो हम नियामक अवधि के भीतर एकत्र कर सके।</p>
+{{ if model.missing_providers_display }}
+<p>निम्नलिखित डेटा स्रोतों को इस निर्यात में शामिल नहीं किया गया है: <code>{{ model.missing_providers_display }}</code>।</p>
+{{ end }}
+<p>आप कर सकते हैं:</p>
+<ul>
+  <li><strong>आंशिक संग्रह डाउनलोड करें</strong> अपने गोपनीयता डैशबोर्ड से, या</li>
+  <li><strong>एक नया अनुरोध सबमिट करें</strong> अनुपलब्ध स्रोतों के लिए पुनः प्रयास करने हेतु।</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">मेरा निर्यात देखें</a>
+</p>
+<p>संदर्भ: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">प्रश्न? हमारे डेटा सुरक्षा अधिकारी से <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> पर संपर्क करें।</p>
+{{ end }}

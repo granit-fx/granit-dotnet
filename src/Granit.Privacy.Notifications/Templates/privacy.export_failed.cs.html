@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Váš export dat je částečně dostupný</title>
+<p>Dobrý den,</p>
+<p>Váš export osobních údajů, vyžádaný dne <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} podle nařízení <code>{{ model.regulation }}</code>{{ end }}, byl vygenerován, avšak některé zdroje dat neodpověděly včas. Archiv obsahuje vše, co jsme byli schopni v zákonné lhůtě shromáždit.</p>
+{{ if model.missing_providers_display }}
+<p>Následující zdroje dat nebyly do tohoto exportu zahrnuty: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Můžete:</p>
+<ul>
+  <li><strong>Stáhnout částečný archiv</strong> ze svého panelu ochrany soukromí, nebo</li>
+  <li><strong>Podat novou žádost</strong> a opětovně zkusit chybějící zdroje.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Zobrazit můj export</a>
+</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dotazy? Kontaktujte našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

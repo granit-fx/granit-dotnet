@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>{{ model.document_display_name }} is bijgewerkt — gelieve te raadplegen</title>
+<p>Hallo,</p>
+<p>Onze <strong>{{ model.document_display_name }}</strong> is bijgewerkt. Om onze diensten te kunnen blijven gebruiken, vragen wij u de nieuwe versie te raadplegen en uw aanvaarding te bevestigen.</p>
+<p>Versie die u heeft aanvaard: <strong>{{ model.old_version }}</strong><br>
+Nieuwe versie: <strong>{{ model.new_version }}</strong></p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/agreements/{{ model.document_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Raadplegen en aanvaarden</a>
+</p>
+<p>Zolang u uw aanvaarding niet heeft bevestigd, kunnen bepaalde functies onbeschikbaar zijn.</p>
+{{ if privacy.controller_name }}
+<p>Dit bericht wordt verzonden door {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Vragen over deze update? Neem contact op met onze functionaris voor gegevensbescherming via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Silme işleminiz planlandı</title>
+<p>Merhaba,</p>
+<p>Kişisel verilerinizin ertelenmiş silinmesini <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} <code>{{ model.regulation }}</code> mevzuatı kapsamında{{ end }} talep ettiniz. Silme işlemi şu anda <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong> tarihine planlanmıştır.</p>
+<p>Planlanan tarihten önce istediğiniz zaman fikrinizi değiştirebilir ve bu silme işlemini gizlilik panelinizden iptal edebilirsiniz:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Talebimi yönet</a>
+</p>
+<p>Planlanan tarihten birkaç gün önce size bir hatırlatma göndereceğiz. Herhangi bir işlem yapılmazsa verileriniz o tarihte kalıcı olarak silinecektir.</p>
+<p>Referans: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Sorularınız mı var? Veri Koruma Görevlimize <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> adresinden ulaşabilirsiniz.</p>
+{{ end }}

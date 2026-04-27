@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Vaše žádost o výmaz byla zrušena</title>
+<p>Dobrý den,</p>
+<p>Potvrzujeme, že Vaše odložená žádost o výmaz byla zrušena dne <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Vaše osobní údaje budou nadále uchovávány jako dříve a z Vaší strany není nutná žádná další akce.</p>
+<p>Novou žádost o výmaz můžete kdykoli podat ze svého panelu ochrany soukromí.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dotazy? Kontaktujte našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
