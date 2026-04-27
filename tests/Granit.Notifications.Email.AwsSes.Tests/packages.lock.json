@@ -66,8 +66,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.3.32",
-        "contentHash": "Z+FDac2Sb5dRImj87wVcgsj5PbE34CXDPGFodk11AKTx5B30/NgsnYynZH2NYS/uPZylzcX23NEjGbcMSbqAwQ=="
+        "resolved": "4.0.4",
+        "contentHash": "RjBk1WDrOCpsSRGn6j2lYhgiyYnXEhMctwJevNnIPIIGpgj49ifbU6FmG1Dk+1M/VSuqeTQ1WVsssziTty7b2w=="
       },
       "Castle.Core": {
         "type": "Transitive",
@@ -374,10 +374,10 @@
       "AWSSDK.SimpleEmailV2": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.12.11",
-        "contentHash": "BwmtWC3JM9P4zfzOUPyny9K4z50s4LmUdiwbhIoGaSoD3kWH7IdteR+yF98isjxIYVmvedbFnWoVqn5gW1sStw==",
+        "resolved": "4.0.12.12",
+        "contentHash": "yXOVniaZoAFSBQVo5b35D3wi7asxEKddm9xJHWiTXm0wg+b1TjOyONtU1drqNQ3cqbLaJlAQhjUzKLxA57WZFw==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.3.32, 5.0.0)"
+          "AWSSDK.Core": "[4.0.4, 5.0.0)"
         }
       },
       "Microsoft.Extensions.Configuration.Binder": {

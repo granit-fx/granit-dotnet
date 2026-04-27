@@ -5,10 +5,10 @@
       "Magick.NET-Q8-AnyCPU": {
         "type": "Direct",
         "requested": "[14.*, )",
-        "resolved": "14.12.0",
-        "contentHash": "YGEgNTZ6DaMhXgJYLClRrmEe6CMsEL5E8hy4c2iH/aEmj41ojFAtA/PIXYH1AOYINNEUX/83nLp/y5obt9P/vw==",
+        "resolved": "14.13.0",
+        "contentHash": "R0x7K0ayexUqqS9A9CGAHyGcVF/IYCmwUNM0KiSNEqpWJxBUa66Y/jqqBzOt3iWfGs/Z9IDda7OHATRewaDtkQ==",
         "dependencies": {
-          "Magick.NET.Core": "14.12.0"
+          "Magick.NET.Core": "14.13.0"
         }
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
@@ -19,8 +19,8 @@
       },
       "Magick.NET.Core": {
         "type": "Transitive",
-        "resolved": "14.12.0",
-        "contentHash": "QPyuk1Lxp1xgSTP8xomnoZjeOtUeTSoeSuEckhGaUAi6GdZ5d2PmZqzr0O4m/zPbC4So/yg5rr2QO4vYD6fB5g=="
+        "resolved": "14.13.0",
+        "contentHash": "6KwaHB2qzCtUih2w98LDaK/FN0GBcSp1UYC4e6lUdxHACWan2nHT5OZNAZJZJw4epsLDv04kroahbh5Py6KviQ=="
       },
       "granit": {
         "type": "Project"

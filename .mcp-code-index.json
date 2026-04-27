@@ -10878,15 +10878,6 @@
       "members": []
     },
     {
-      "name": "ContactTaxIdentityRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxIdentityRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactTaxIdentityRequest.cs",
-      "line": 4,
-      "members": []
-    },
-    {
       "name": "ContactTaxStatusRequest",
       "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxStatusRequest",
       "kind": "record",
@@ -10935,7 +10926,7 @@
       "kind": "class",
       "project": "Granit.Contacts.Endpoints",
       "file": "src/Granit.Contacts.Endpoints/GranitContactsEndpointsModule.cs",
-      "line": 13,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",

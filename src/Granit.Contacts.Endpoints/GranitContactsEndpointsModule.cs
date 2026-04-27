@@ -1,15 +1,20 @@
+using Granit.Authorization;
 using Granit.Contacts.Endpoints.Options;
 using Granit.Contacts.Exports;
 using Granit.Contacts.Queries;
 using Granit.DataExchange.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
+using Granit.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Contacts.Endpoints;
 
 /// <summary>Admin REST API for the Granit.Contacts module.</summary>
-[DependsOn(typeof(GranitContactsModule))]
+[DependsOn(
+    typeof(GranitAuthorizationModule),
+    typeof(GranitContactsModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitContactsEndpointsModule : GranitModule
 {
     /// <inheritdoc/>

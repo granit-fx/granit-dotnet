@@ -278,7 +278,7 @@ internal static class ContactEndpoints
         }
         catch (ArgumentException ex)
         {
-            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
         c.SetTaxStatus(next);
