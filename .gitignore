@@ -36,6 +36,7 @@ coverage-report/
 # Commit settings.json and skills (shared with all contributors), ignore local overrides
 .claude/settings.local.json
 .claude/worktrees/
+.claude/scheduled_tasks.lock
 
 # --- OS ---
 .DS_Store
