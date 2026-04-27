@@ -60,18 +60,29 @@ Each module follows a consistent layered split:
 
 ## Commands
 
-```bash
-# Full solution
-dotnet build
-dotnet test
-dotnet format --verify-no-changes
+> ⚠️ **NEVER `dotnet build` / `dotnet test` on the full solution.** The repo (128 packages,
+> 134 test projects) is too large — Roslyn OOMs and `dotnet format` chokes. **Always
+> target a `.slnf` shard filter or a single project.**
 
-# Single package
+```bash
+# Shard build/test (PREFERRED — these are the CI shards)
+dotnet build .github/shard-filters/core-ai.slnf
+dotnet build .github/shard-filters/business.slnf
+dotnet build .github/shard-filters/api-data.slnf
+dotnet build .github/shard-filters/infrastructure.slnf
+dotnet build .github/shard-filters/security.slnf
+dotnet build .github/shard-filters/architecture.slnf
+dotnet test  .github/shard-filters/<shard>.slnf --no-build
+
+# Single package (PREFERRED for tight feedback loops)
 dotnet build src/Granit.BlobStorage
-dotnet test tests/Granit.BlobStorage.Tests
+dotnet test tests/Granit.BlobStorage.Tests --no-build
 
 # Architecture tests
 dotnet test tests/Granit.ArchitectureTests
+
+# Format — also shard-scoped (full solution is too slow)
+dotnet format .github/shard-filters/<shard>.slnf --verify-no-changes
 
 # Pack for local feed
 dotnet pack -c Release -o ./nupkgs
@@ -79,6 +90,11 @@ dotnet pack -c Release -o ./nupkgs
 # Docs site
 cd docs-site && npx astro build   # must produce 0 errors
 ```
+
+**Picking the right shard:** match the directory you're touching against the
+[Shard mapping](#ci-test-sharding--mandatory-when-adding-test-projects) table below.
+When in doubt, the file you're editing belongs to the shard listed in
+[`.github/test-shards.json`](.github/test-shards.json).
 
 ## Code quality
 
