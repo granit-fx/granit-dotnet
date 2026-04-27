@@ -171,6 +171,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication.ApiKeys.Notifications",
+      "deps": [
+        "Granit.Authentication.ApiKeys",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.DPoP",
       "deps": [
         "Granit.Caching",
@@ -2064,6 +2073,15 @@
         "Granit.Scheduling",
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.Notifications",
+      "deps": [
+        "Granit.Notifications.Abstractions",
+        "Granit.Scheduling",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -5699,6 +5717,181 @@
           "name": "UpdateLastUsedAsync",
           "kind": "method",
           "signature": "UpdateLastUsedAsync(Guid id, DateTimeOffset usedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyIssuedNotificationData",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyIssuedNotificationData",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyIssuedNotificationType.cs",
+      "line": 47,
+      "members": []
+    },
+    {
+      "name": "ApiKeyIssuedNotificationType",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyIssuedNotificationType",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyIssuedNotificationType.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ApiKeyIssuedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyRevokedNotificationData",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyRevokedNotificationData",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyRevokedNotificationType.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "ApiKeyRevokedNotificationType",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyRevokedNotificationType",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyRevokedNotificationType.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ApiKeyRevokedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyRotatedNotificationData",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyRotatedNotificationData",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyRotatedNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "ApiKeyRotatedNotificationType",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyRotatedNotificationType",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyRotatedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ApiKeyRotatedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "GranitApiKeysNotificationsModule",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.GranitApiKeysNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitApiKeysNotificationsModule.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyIssuedNotificationHandler",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.Handlers.ApiKeyIssuedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/Handlers/ApiKeyIssuedNotificationHandler.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ApiKeyCreatedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyRevokedNotificationHandler",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.Handlers.ApiKeyRevokedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/Handlers/ApiKeyRevokedNotificationHandler.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ApiKeyRevokedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyRotatedNotificationHandler",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.Handlers.ApiKeyRotatedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/Handlers/ApiKeyRotatedNotificationHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ApiKeyRotatedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -41216,6 +41409,75 @@
           "kind": "method",
           "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingNotificationsModule",
+      "fqn": "Granit.Scheduling.Notifications.GranitSchedulingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/GranitSchedulingNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ActionFailedHandler",
+      "fqn": "Granit.Scheduling.Notifications.Handlers.ActionFailedHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/Handlers/ActionFailedHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ScheduledActionFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingActionFailedNotificationData",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "SchedulingActionFailedNotificationType",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SchedulingActionFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },

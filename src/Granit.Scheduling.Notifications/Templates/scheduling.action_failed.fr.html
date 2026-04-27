@@ -1,0 +1,15 @@
+<title>Action planifiée en échec : {{ model.payload_type }}</title>
+<p>Bonjour,</p>
+<p>L'action planifiée <strong><code>{{ model.payload_type }}</code></strong> a échoué le <strong>{{ model.failed_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</strong> après épuisement de sa politique de relance. Les traitements planifiés critiques pour l'activité (rapports, exports par lots, synchronisations périodiques) resteront bloqués tant que la cause n'aura pas été identifiée.</p>
+{{ if model.correlation_id }}
+<p>Corrélation : <code>{{ model.correlation_id }}</code></p>
+{{ end }}
+<p>Dernière erreur remontée par l'exécuteur :</p>
+<pre style="background-color: #f3f4f6; border-left: 4px solid #dc2626; padding: 12px 16px; font-family: ui-monospace, SFMono-Regular, monospace; font-size: 13px; white-space: pre-wrap; word-break: break-word; color: #111827;">{{ model.failure_reason | html.escape }}</pre>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/admin/scheduling/{{ model.action_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Examiner l'action planifiée</a>
+</p>
+<p>Référence : <code>{{ model.action_id }}</code></p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Besoin d'aide ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

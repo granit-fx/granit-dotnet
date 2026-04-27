@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.ApiKeys.Notifications</PackageId>
+    <Description>Notification bridge for Granit.Authentication.ApiKeys. Notifies tenant administrators on API key lifecycle events (creation, rotation, expiration approaching, revocation) so they can manage rotation cadence and avoid service disruption from silent expirations. Templates redact secret material; only the key prefix is rendered.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.ApiKeys.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+
+</Project>
