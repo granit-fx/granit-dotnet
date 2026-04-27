@@ -72,6 +72,8 @@ public static class WebhooksHostApplicationBuilderExtensions
         builder.Services.AddSingleton<InMemoryWebhookSubscriptionStore>();
         builder.Services.AddSingleton<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<InMemoryWebhookSubscriptionStore>());
         builder.Services.AddSingleton<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<InMemoryWebhookSubscriptionStore>());
+        builder.Services.AddSingleton<IWebhookSigningKeyReader>(sp => sp.GetRequiredService<InMemoryWebhookSubscriptionStore>());
+        builder.Services.AddSingleton<IWebhookSigningKeyWriter>(sp => sp.GetRequiredService<InMemoryWebhookSubscriptionStore>());
         builder.Services.AddScoped<IWebhookDeliveryWriter, NullWebhookDeliveryWriter>();
         builder.Services.AddScoped<IWebhookDeliveryReader, NullWebhookDeliveryReader>();
         // Default: pass-through protector suitable for dev/test.

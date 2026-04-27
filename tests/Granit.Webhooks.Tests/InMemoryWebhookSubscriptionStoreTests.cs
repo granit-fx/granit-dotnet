@@ -11,6 +11,8 @@ using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
 using Granit.Webhooks.Internal;
+using Granit.Webhooks.Options;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -35,7 +37,9 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
             .Returns(ci => new ValueTask<string>($"protected:{ci.ArgAt<string>(0)}"));
 #pragma warning restore CA2012
 
-        _store = new InMemoryWebhookSubscriptionStore(clock, guidGenerator, secretProtector);
+        IOptions<WebhooksOptions> options = Microsoft.Extensions.Options.Options.Create(new WebhooksOptions());
+
+        _store = new InMemoryWebhookSubscriptionStore(clock, guidGenerator, secretProtector, options);
     }
 
     [Fact]
@@ -293,6 +297,81 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         string newSecret = await _store.RotateSecretAsync(sub.Id, TestContext.Current.CancellationToken);
 
         newSecret.ShouldStartWith("whsec_");
+    }
+
+    // -------------------------------------------------------------------------
+    // RotateSigningKeyAsync — dual-key delivery model (FU-1a)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task RotateSigningKeyAsync_OnLegacySubscription_AddsActiveKeyAndClearsLegacyField()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        result.PlainSecret.ShouldStartWith("whsec_");
+        WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
+        updated.ShouldNotBeNull();
+        updated!.SigningKeys.Count.ShouldBe(1);
+        updated.SigningKeys[0].Status.ShouldBe(WebhookSigningKeyStatus.Active);
+#pragma warning disable CS0618 // Verifying back-compat behavior.
+        updated.SigningSecret.ShouldBeNull();
+#pragma warning restore CS0618
+    }
+
+    [Fact]
+    public async Task RotateSigningKeyAsync_TwoRotations_RetiresFirstKey()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        WebhookSigningKeyRotatedResult first = await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        WebhookSubscription? updated = await _store.FindByIdAsync(sub.Id, TestContext.Current.CancellationToken);
+        updated!.SigningKeys.Count.ShouldBe(2);
+        updated.SigningKeys.Count(k => k.Status == WebhookSigningKeyStatus.Active).ShouldBe(1);
+        WebhookSigningKey retired = updated.SigningKeys.Single(k => k.Id == first.KeyId);
+        retired.Status.ShouldBe(WebhookSigningKeyStatus.Retired);
+        retired.ExpiresAt.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task RevokeSigningKeyAsync_LastActive_Throws()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        Func<Task> act = () => ((IWebhookSigningKeyWriter)_store)
+            .RevokeSigningKeyAsync(sub.Id, result.KeyId, TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<InvalidOperationException>(act);
+    }
+
+    [Fact]
+    public async Task GetForSubscriptionAsync_ReturnsAllKeys()
+    {
+        WebhookSubscription sub = BuildSubscription("test.event", null, WebhookSubscriptionStatus.Active);
+        _store.Add(sub);
+
+        await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+        await ((IWebhookSigningKeyWriter)_store)
+            .RotateSigningKeyAsync(sub.Id, retiredKeyGracePeriod: null, TestContext.Current.CancellationToken);
+
+        IReadOnlyList<WebhookSigningKey> keys = await ((IWebhookSigningKeyReader)_store)
+            .GetForSubscriptionAsync(sub.Id, TestContext.Current.CancellationToken);
+
+        keys.Count.ShouldBe(2);
     }
 
     // -------------------------------------------------------------------------

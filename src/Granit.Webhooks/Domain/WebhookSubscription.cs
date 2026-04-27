@@ -22,6 +22,8 @@ namespace Granit.Webhooks.Domain;
 /// </remarks>
 public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
 {
+    private readonly List<WebhookSigningKey> _signingKeys = [];
+
     // Parameterless constructor required by EF Core materializer.
     private WebhookSubscription() { }
 
@@ -40,10 +42,45 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
             Id = id,
             TargetUrl = targetUrl,
             EventType = eventType,
+#pragma warning disable CS0618 // SigningSecret is obsolete but still populated when callers
             SigningSecret = signingSecret,
+#pragma warning restore CS0618 // hand in a legacy single-secret payload (back-compat).
             TenantId = tenantId,
             Status = WebhookSubscriptionStatus.Active,
         };
+
+        subscription.AddDomainEvent(new WebhookSubscriptionCreatedEvent(id, eventType, targetUrl.Value));
+        return subscription;
+    }
+
+    /// <summary>
+    /// Creates a new active <see cref="WebhookSubscription"/> with an initial
+    /// <see cref="WebhookSigningKey"/> rather than the legacy <see cref="SigningSecret"/> field.
+    /// Preferred constructor for callers using the dual-key delivery model.
+    /// </summary>
+    public static WebhookSubscription CreateWithSigningKey(
+        Guid id,
+        HttpsUrl targetUrl,
+        string eventType,
+        Guid signingKeyId,
+        string protectedSecret,
+        DateTimeOffset createdAt,
+        Guid? tenantId = null)
+    {
+        var subscription = new WebhookSubscription
+        {
+            Id = id,
+            TargetUrl = targetUrl,
+            EventType = eventType,
+            TenantId = tenantId,
+            Status = WebhookSubscriptionStatus.Active,
+        };
+
+        subscription._signingKeys.Add(WebhookSigningKey.Create(
+            signingKeyId,
+            id,
+            protectedSecret,
+            createdAt));
 
         subscription.AddDomainEvent(new WebhookSubscriptionCreatedEvent(id, eventType, targetUrl.Value));
         return subscription;
@@ -62,12 +99,25 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     public string EventType { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Protected signing secret used to compute the <c>x-granit-signature</c> HMAC.
-    /// The raw value is opaque — protected by <see cref="Abstractions.IWebhookSecretProtector"/>.
-    /// Never store or log the plaintext secret. Maximum length: 1000 characters.
+    /// Legacy protected signing secret. Retained for backward-compatibility with subscriptions
+    /// created before the <see cref="WebhookSigningKey"/> aggregate was introduced and never
+    /// rotated since. Set to <c>null</c> on the first call to <see cref="RotateSigningKey"/>.
     /// </summary>
+    /// <remarks>
+    /// New subscriptions ship with an entry in <see cref="SigningKeys"/> and a <c>null</c>
+    /// <see cref="SigningSecret"/>. Verification falls back to this field when no
+    /// <see cref="WebhookSigningKey"/> matches.
+    /// </remarks>
     [SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
-    public string SigningSecret { get; private set; } = string.Empty;
+    [Obsolete("Use SigningKeys collection. Retained for backward compatibility — set to null on first rotation.")]
+    public string? SigningSecret { get; private set; }
+
+    /// <summary>
+    /// Signing keys associated with this subscription, including
+    /// <see cref="WebhookSigningKeyStatus.Active"/>, <see cref="WebhookSigningKeyStatus.Retired"/>
+    /// (within grace period), and <see cref="WebhookSigningKeyStatus.Revoked"/> entries.
+    /// </summary>
+    public IReadOnlyList<WebhookSigningKey> SigningKeys => _signingKeys.AsReadOnly();
 
     /// <summary>
     /// Tenant this subscription belongs to.
@@ -200,8 +250,92 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
         TargetUrl = targetUrl;
 
     /// <summary>
-    /// Replaces the signing secret with a new protected value.
+    /// Replaces the legacy single signing secret with a new protected value.
     /// </summary>
+    /// <remarks>
+    /// Preserved for backward compatibility. New code should call
+    /// <see cref="RotateSigningKey"/>, which uses the <see cref="WebhookSigningKey"/>
+    /// aggregate and supports overlap rotation.
+    /// </remarks>
+    [Obsolete("Use RotateSigningKey for overlap-rotation semantics.")]
     internal void RotateSecret(string newProtectedSecret) =>
+#pragma warning disable CS0618 // Intentionally writes to legacy field for back-compat.
         SigningSecret = newProtectedSecret;
+#pragma warning restore CS0618
+
+    /// <summary>
+    /// Rotates the subscription's signing key using overlap-rotation semantics.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The currently <see cref="WebhookSigningKeyStatus.Active"/> key (if any) is moved to
+    /// <see cref="WebhookSigningKeyStatus.Retired"/> with an <see cref="WebhookSigningKey.ExpiresAt"/>
+    /// set to <paramref name="now"/> + <paramref name="retiredKeyGracePeriod"/>. A new
+    /// <see cref="WebhookSigningKeyStatus.Active"/> key is appended.
+    /// </para>
+    /// <para>
+    /// On the first rotation following the upgrade from the legacy single-secret model,
+    /// the legacy <see cref="SigningSecret"/> field is cleared. Note that legacy
+    /// pre-upgrade secret material is intentionally NOT migrated into a
+    /// <see cref="WebhookSigningKey"/> entity — the previous secret is dropped at
+    /// rotation time, matching the behaviour of the legacy
+    /// <see cref="RotateSecret(string)"/> method.
+    /// </para>
+    /// </remarks>
+    /// <param name="newKeyId">Identifier for the new signing key.</param>
+    /// <param name="newProtectedSecret">Opaque protected secret for the new key.</param>
+    /// <param name="now">Current timestamp (provided by an <see cref="Granit.Timing.IClock"/>).</param>
+    /// <param name="retiredKeyGracePeriod">Grace period during which the previously-active key remains accepted in verification.</param>
+    /// <returns>The newly-created active key.</returns>
+    internal WebhookSigningKey RotateSigningKey(
+        Guid newKeyId,
+        string newProtectedSecret,
+        DateTimeOffset now,
+        TimeSpan retiredKeyGracePeriod)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(newProtectedSecret);
+
+        WebhookSigningKey? currentActive = _signingKeys
+            .Find(k => k.Status == WebhookSigningKeyStatus.Active);
+
+        currentActive?.Retire(now, retiredKeyGracePeriod);
+
+        var newKey = WebhookSigningKey.Create(
+            newKeyId,
+            Id,
+            newProtectedSecret,
+            now);
+
+        _signingKeys.Add(newKey);
+
+#pragma warning disable CS0618 // Clears the legacy field — the new key is authoritative now.
+        SigningSecret = null;
+#pragma warning restore CS0618
+
+        return newKey;
+    }
+
+    /// <summary>
+    /// Revokes a specific signing key by id. The last <see cref="WebhookSigningKeyStatus.Active"/>
+    /// key cannot be revoked — rotate first to introduce a new active key, then revoke.
+    /// </summary>
+    /// <returns><c>true</c> if a key was revoked; <c>false</c> if no key with the given id exists.</returns>
+    internal bool RevokeSigningKey(Guid keyId, DateTimeOffset now)
+    {
+        WebhookSigningKey? key = _signingKeys.Find(k => k.Id == keyId);
+        if (key is null)
+        {
+            return false;
+        }
+
+        if (key.Status == WebhookSigningKeyStatus.Active &&
+            _signingKeys.Count(k => k.Status == WebhookSigningKeyStatus.Active) <= 1)
+        {
+            throw new InvalidOperationException(
+                "Cannot revoke the last active signing key. Rotate first to introduce a new active key.");
+        }
+
+        key.Revoke(now);
+        return true;
+    }
 }

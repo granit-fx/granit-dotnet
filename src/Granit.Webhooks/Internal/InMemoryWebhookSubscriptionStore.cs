@@ -6,22 +6,31 @@ using Granit.Guids;
 using Granit.Timing;
 using Granit.Webhooks.Abstractions;
 using Granit.Webhooks.Domain;
+using Granit.Webhooks.Options;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Webhooks.Internal;
 
 /// <summary>
-/// Thread-safe in-memory implementation of <see cref="IWebhookSubscriptionReader"/> and
-/// <see cref="IWebhookSubscriptionWriter"/>.
+/// Thread-safe in-memory implementation of <see cref="IWebhookSubscriptionReader"/>,
+/// <see cref="IWebhookSubscriptionWriter"/>, <see cref="IWebhookSigningKeyReader"/>, and
+/// <see cref="IWebhookSigningKeyWriter"/>.
 /// Suitable for development and unit tests. Does not persist across application restarts.
 /// </summary>
 internal sealed class InMemoryWebhookSubscriptionStore(
     IClock clock,
     IGuidGenerator guidGenerator,
-    IWebhookSecretProtector secretProtector) : IWebhookSubscriptionReader, IWebhookSubscriptionWriter
+    IWebhookSecretProtector secretProtector,
+    IOptions<WebhooksOptions> options)
+    : IWebhookSubscriptionReader,
+      IWebhookSubscriptionWriter,
+      IWebhookSigningKeyReader,
+      IWebhookSigningKeyWriter
 {
     private readonly IClock _clock = clock;
     private readonly IGuidGenerator _guidGenerator = guidGenerator;
     private readonly IWebhookSecretProtector _secretProtector = secretProtector;
+    private readonly IOptions<WebhooksOptions> _options = options;
     private readonly ConcurrentDictionary<Guid, WebhookSubscription> _subscriptions = new();
 
     public Task<IReadOnlyList<WebhookSubscription>> GetActiveSubscriptionsAsync(
@@ -61,11 +70,13 @@ internal sealed class InMemoryWebhookSubscriptionStore(
             .ProtectAsync(plainSecret, cancellationToken)
             .ConfigureAwait(false);
 
-        var subscription = WebhookSubscription.Create(
+        var subscription = WebhookSubscription.CreateWithSigningKey(
             _guidGenerator.Create(),
             targetUrl,
             eventType,
+            _guidGenerator.Create(),
             protectedSecret,
+            _clock.Now,
             tenantId);
 
         _subscriptions[subscription.Id] = subscription;
@@ -150,6 +161,18 @@ internal sealed class InMemoryWebhookSubscriptionStore(
 
     public async Task<string> RotateSecretAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
     {
+        WebhookSigningKeyRotatedResult result = await ((IWebhookSigningKeyWriter)this)
+            .RotateSigningKeyAsync(subscriptionId, retiredKeyGracePeriod: null, cancellationToken)
+            .ConfigureAwait(false);
+
+        return result.PlainSecret;
+    }
+
+    public async Task<WebhookSigningKeyRotatedResult> RotateSigningKeyAsync(
+        Guid subscriptionId,
+        TimeSpan? retiredKeyGracePeriod = null,
+        CancellationToken cancellationToken = default)
+    {
         if (!_subscriptions.TryGetValue(subscriptionId, out WebhookSubscription? subscription))
         {
             throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
@@ -160,8 +183,64 @@ internal sealed class InMemoryWebhookSubscriptionStore(
             .ProtectAsync(plainSecret, cancellationToken)
             .ConfigureAwait(false);
 
-        subscription.RotateSecret(protectedSecret);
-        return plainSecret;
+        TimeSpan grace = retiredKeyGracePeriod ?? _options.Value.RetiredKeyGracePeriod;
+        Guid newKeyId = _guidGenerator.Create();
+
+        WebhookSigningKey newKey = subscription.RotateSigningKey(
+            newKeyId,
+            protectedSecret,
+            _clock.Now,
+            grace);
+
+        return new WebhookSigningKeyRotatedResult(newKey.Id, plainSecret);
+    }
+
+    public Task RevokeSigningKeyAsync(
+        Guid subscriptionId,
+        Guid keyId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_subscriptions.TryGetValue(subscriptionId, out WebhookSubscription? subscription))
+        {
+            throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+        }
+
+        bool revoked = subscription.RevokeSigningKey(keyId, _clock.Now);
+        if (!revoked)
+        {
+            throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<WebhookSigningKey>> GetForSubscriptionAsync(
+        Guid subscriptionId,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_subscriptions.TryGetValue(subscriptionId, out WebhookSubscription? subscription))
+        {
+            return Task.FromResult<IReadOnlyList<WebhookSigningKey>>([]);
+        }
+
+        IReadOnlyList<WebhookSigningKey> keys = subscription.SigningKeys.ToList();
+        return Task.FromResult(keys);
+    }
+
+    Task<WebhookSigningKey?> IWebhookSigningKeyReader.FindByIdAsync(Guid keyId, CancellationToken cancellationToken)
+    {
+        foreach (WebhookSubscription sub in _subscriptions.Values)
+        {
+            foreach (WebhookSigningKey key in sub.SigningKeys)
+            {
+                if (key.Id == keyId)
+                {
+                    return Task.FromResult<WebhookSigningKey?>(key);
+                }
+            }
+        }
+
+        return Task.FromResult<WebhookSigningKey?>(null);
     }
 
     /// <summary>

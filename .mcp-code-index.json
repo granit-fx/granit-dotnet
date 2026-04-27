@@ -49035,6 +49035,50 @@
       ]
     },
     {
+      "name": "IWebhookSigningKeyReader",
+      "fqn": "Granit.Webhooks.Abstractions.IWebhookSigningKeyReader",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyReader.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetForSubscriptionAsync",
+          "kind": "method",
+          "signature": "GetForSubscriptionAsync(Guid subscriptionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<WebhookSigningKey>>"
+        },
+        {
+          "name": "FindByIdAsync",
+          "kind": "method",
+          "signature": "FindByIdAsync(Guid keyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<WebhookSigningKey?>"
+        }
+      ]
+    },
+    {
+      "name": "IWebhookSigningKeyWriter",
+      "fqn": "Granit.Webhooks.Abstractions.IWebhookSigningKeyWriter",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RotateSigningKeyAsync",
+          "kind": "method",
+          "signature": "RotateSigningKeyAsync(Guid subscriptionId, TimeSpan? retiredKeyGracePeriod = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<WebhookSigningKeyRotatedResult>"
+        },
+        {
+          "name": "RevokeSigningKeyAsync",
+          "kind": "method",
+          "signature": "RevokeSigningKeyAsync(Guid subscriptionId, Guid keyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IWebhookStatsReader",
       "fqn": "Granit.Webhooks.Abstractions.IWebhookStatsReader",
       "kind": "interface",
@@ -49145,6 +49189,15 @@
           "returnType": "Task<WebhookTestPingResult>"
         }
       ]
+    },
+    {
+      "name": "WebhookSigningKeyRotatedResult",
+      "fqn": "Granit.Webhooks.Abstractions.WebhookSigningKeyRotatedResult",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
+      "line": 55,
+      "members": []
     },
     {
       "name": "WebhookStats",
@@ -49333,6 +49386,43 @@
       ]
     },
     {
+      "name": "WebhookSigningKey",
+      "fqn": "Granit.Webhooks.Domain.WebhookSigningKey",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Domain/WebhookSigningKey.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid subscriptionId, string protectedSecret, DateTimeOffset createdAt, WebhookSigningKeyStatus status = WebhookSigningKeyStatus.Active, DateTimeOffset? expiresAt = null)",
+          "returnType": "WebhookSigningKey"
+        },
+        {
+          "name": "CreatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset CreatedAt",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "IsAcceptableAt",
+          "kind": "method",
+          "signature": "IsAcceptableAt(DateTimeOffset now)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSigningKeyStatus",
+      "fqn": "Granit.Webhooks.Domain.WebhookSigningKeyStatus",
+      "kind": "enum",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Domain/WebhookSigningKeyStatus.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "WebhookSubscription",
       "fqn": "Granit.Webhooks.Domain.WebhookSubscription",
       "kind": "class",
@@ -49353,10 +49443,10 @@
           "returnType": "string"
         },
         {
-          "name": "SigningSecret",
-          "kind": "property",
-          "signature": "string SigningSecret",
-          "returnType": "string"
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "string? SigningSecret { get; private set; } public IReadOnlyList<WebhookSigningKey> SigningKeys => _signingKeys."
         },
         {
           "name": "TenantId",
@@ -49403,6 +49493,24 @@
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookEventTypeResponse.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "WebhookSigningKeyCreatedResponse",
+      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookSigningKeyCreatedResponse",
+      "kind": "record",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSigningKeyResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "WebhookSigningKeyResponse",
+      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookSigningKeyResponse",
+      "kind": "record",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSigningKeyResponse.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -49955,6 +50063,12 @@
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
           "returnType": "int"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "bool StorePayload { get; set; } public TimeSpan RetiredKeyGracePeriod { get; set; } = TimeSpan."
         }
       ]
     },
