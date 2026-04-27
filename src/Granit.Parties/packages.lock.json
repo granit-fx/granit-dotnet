@@ -36,6 +36,13 @@
           "Microsoft.Extensions.Options": "[10.*, )"
         }
       },
+      "granit.mergeable": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
       "granit.parties.abstractions": {
         "type": "Project",
         "dependencies": {

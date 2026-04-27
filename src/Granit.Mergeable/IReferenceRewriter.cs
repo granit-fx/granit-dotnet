@@ -27,7 +27,7 @@ namespace Granit.Mergeable;
 /// </remarks>
 /// <typeparam name="TAggregate">The aggregate being merged (e.g. <c>Party</c>).</typeparam>
 public interface IReferenceRewriter<TAggregate>
-    where TAggregate : AggregateRoot
+    where TAggregate : Entity
 {
     /// <summary>
     /// Stable human-readable description of what this rewriter rewrites — surfaced in the

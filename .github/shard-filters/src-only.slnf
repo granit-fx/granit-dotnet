@@ -190,6 +190,7 @@
       "src/Granit.Parties.Abstractions/Granit.Parties.Abstractions.csproj",
       "src/Granit.Parties.Endpoints/Granit.Parties.Endpoints.csproj",
       "src/Granit.Parties.EntityFrameworkCore/Granit.Parties.EntityFrameworkCore.csproj",
+      "src/Granit.Parties.Mergeable/Granit.Parties.Mergeable.csproj",
       "src/Granit.Parties.MultiTenancy/Granit.Parties.MultiTenancy.csproj",
       "src/Granit.Parties.Privacy/Granit.Parties.Privacy.csproj",
       "src/Granit.Parties/Granit.Parties.csproj",

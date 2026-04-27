@@ -27,7 +27,7 @@ namespace Granit.Mergeable.Domain;
 /// </remarks>
 /// <typeparam name="TSelf">The aggregate root type implementing this interface.</typeparam>
 public interface IMergeable<TSelf> : IHasMergeTombstone
-    where TSelf : AggregateRoot, IMergeable<TSelf>
+    where TSelf : Entity, IMergeable<TSelf>
 {
     /// <summary>
     /// Returns the per-field conflicts between this (survivor) and <paramref name="loser"/>.

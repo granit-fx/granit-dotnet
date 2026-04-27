@@ -56,6 +56,7 @@
         "tests/Granit.Parties.Abstractions.Tests",
         "tests/Granit.Parties.Endpoints.Tests",
         "tests/Granit.Parties.EntityFrameworkCore.Tests",
+        "tests/Granit.Parties.Mergeable.Tests",
         "tests/Granit.Parties.MultiTenancy.Tests",
         "tests/Granit.Parties.Privacy.Tests",
         "tests/Granit.Parties.Tests",

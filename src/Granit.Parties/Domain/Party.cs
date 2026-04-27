@@ -1,6 +1,9 @@
 using System.Text.Json;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Mergeable;
+using Granit.Mergeable.Domain;
+using Granit.Mergeable.Exceptions;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.Events;
 
@@ -34,7 +37,7 @@ namespace Granit.Parties.Domain;
 /// <para><b>External mappings.</b> Polyglot — at most one mapping per provider, enforced
 /// defensively at the aggregate and by a unique index in the EF configuration.</para>
 /// </remarks>
-public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IHasMergeTombstone
+public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IMergeable<Party>
 {
     /// <summary>Per-aggregate cap on emails. Bounds reconciliation cost in <c>EfPartyStore.UpdateAsync</c>
     /// and prevents an authenticated <c>Parties.Manage</c> holder from exhausting storage / write throughput
@@ -249,6 +252,281 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IH
         }
 
         InternalNotes = string.IsNullOrWhiteSpace(notes) ? null : notes;
+    }
+
+    /// <summary>
+    /// Sets the merge tombstone on this aggregate — called by the merge orchestrator on the
+    /// loser at the end of a merge transaction. <see cref="MergedIntoId"/> records the
+    /// surviving party id ; <see cref="MergedAt"/> records the merge timestamp. The aggregate
+    /// stays in <see cref="PartyStatus.Active"/> so its data remains queryable for audit /
+    /// chain-collapse purposes ; the framework-level query filter
+    /// (<c>GranitFilterNames.MergeTombstone</c>) hides it from standard listings.
+    /// </summary>
+    /// <remarks>
+    /// Internal mutation point used by <c>PartyMergeableAggregateAdapter.ApplyTombstone</c>.
+    /// Skips <see cref="EnsureMutable"/> deliberately — tombstoning is the orchestrator's
+    /// final write on the loser even when its lifecycle would normally reject mutations.
+    /// </remarks>
+    internal void MarkAsMergedInto(Guid survivorId, DateTimeOffset mergedAt)
+    {
+        if (survivorId == Id)
+        {
+            throw new InvalidOperationException("A party cannot be merged into itself.");
+        }
+        MergedIntoId = survivorId;
+        MergedAt = mergedAt;
+    }
+
+    /// <summary>
+    /// Reverses <see cref="MarkAsMergedInto"/> — used by the un-merge endpoint (P3) to revive
+    /// a tombstoned loser. Cross-module reference rewriters are NOT replayed by this method ;
+    /// the un-merge contract documents that re-routing already-rewritten references is
+    /// out of scope (see [TECH DEBT] story #1296).
+    /// </summary>
+    internal void ClearMergeTombstone()
+    {
+        MergedIntoId = null;
+        MergedAt = null;
+    }
+
+    /// <summary>
+    /// Updates this aggregate's tombstone pointer — used by chain-collapse during a merge
+    /// (<c>A → B</c> followed by <c>B → C</c> rewrites <c>A.MergedIntoId</c> from <c>B</c>
+    /// to <c>C</c> so <c>ResolveCurrentAsync</c> needs only one hop).
+    /// </summary>
+    /// <remarks>
+    /// Bulk-applied via SQL <c>ExecuteUpdateAsync</c> by the orchestrator's
+    /// <c>CollapseChainTombstonesAsync</c> ; this method exists for in-memory tests + the
+    /// single-hop unit-test scenarios.
+    /// </remarks>
+    internal void RetargetMergeTombstone(Guid newSurvivorId)
+    {
+        if (MergedIntoId is null)
+        {
+            throw new InvalidOperationException(
+                "Cannot retarget a tombstone on a non-tombstoned party.");
+        }
+        if (newSurvivorId == Id)
+        {
+            throw new InvalidOperationException("A party cannot be merged into itself.");
+        }
+        MergedIntoId = newSurvivorId;
+    }
+
+    // ── Merge (IMergeable<Party>) ─────────────────────────────────
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// Compares <b>scalar fields only</b> ; child collections (Addresses / Emails / Phones /
+    /// ExternalMappings) are reconciled by the dedicated <c>PartyChildrenReferenceRewriter</c>
+    /// via SQL bulk-update on the shadow FK, never in-memory. See the design notes in the
+    /// <see cref="IMergeable{TSelf}"/> contract.
+    /// </remarks>
+    public IReadOnlyList<FieldConflict> GetConflicts(Party loser)
+    {
+        ArgumentNullException.ThrowIfNull(loser);
+
+        var conflicts = new List<FieldConflict>();
+
+        AddIfDifferent(conflicts, "Name", Name, loser.Name);
+        AddIfDifferent(conflicts, "Website", Website, loser.Website);
+        AddIfDifferent(conflicts, "Language", Language, loser.Language);
+        AddIfDifferent(conflicts, "Timezone", Timezone, loser.Timezone);
+        AddIfDifferent(conflicts, "TaxId", TaxId, loser.TaxId);
+        AddIfDifferent(conflicts, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
+        AddIfDifferent(conflicts, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
+
+        // ParentContactId — compare the unwrapped Guid? to keep the FieldConflict payload
+        // primitive and JSON-friendly (the audit cache stores it).
+        AddIfDifferent(conflicts, "ParentContactId",
+            ParentContactId?.Value, loser.ParentContactId?.Value);
+
+        // TaxStatus — recommend the non-Standard side when one is Standard ; otherwise
+        // SurvivorWins is the safe default and the admin can override at the endpoint.
+        if (!Equals(TaxStatus, loser.TaxStatus))
+        {
+            WinnerSide defaultSide = TaxStatus.Equals(TaxStatus.Standard)
+                                      && !loser.TaxStatus.Equals(TaxStatus.Standard)
+                ? WinnerSide.Loser
+                : WinnerSide.Survivor;
+            conflicts.Add(new FieldConflict("TaxStatus", TaxStatus, loser.TaxStatus, defaultSide));
+        }
+
+        // UserId — when survivor is null and loser has one, recommend transfer (Loser).
+        if (UserId != loser.UserId)
+        {
+            WinnerSide defaultSide = UserId is null && loser.UserId is not null
+                ? WinnerSide.Loser
+                : WinnerSide.Survivor;
+            conflicts.Add(new FieldConflict("UserId", UserId, loser.UserId, defaultSide));
+        }
+
+        // Roles — flags union ; surfaced for admin visibility but never overridable
+        // (union is always safe — losing a flag is destructive).
+        if (Roles != loser.Roles)
+        {
+            PartyRoles unionPreview = Roles | loser.Roles;
+            conflicts.Add(new FieldConflict("Roles", Roles, loser.Roles, WinnerSide.Survivor)
+            {
+                // The admin sees both sides ; the actual apply step always unions.
+            });
+            _ = unionPreview; // documented intent
+        }
+
+        return conflicts;
+    }
+
+    /// <inheritdoc />
+    public void MergeFrom(Party loser, MergeFieldChoices choices)
+    {
+        ArgumentNullException.ThrowIfNull(loser);
+        ArgumentNullException.ThrowIfNull(choices);
+
+        // Hard invariants — non-overridable.
+        if (loser.Id == Id)
+        {
+            throw new MergeException("A party cannot be merged with itself.");
+        }
+        if (TenantId != loser.TenantId)
+        {
+            throw new MergeException(
+                $"Tenant mismatch — survivor tenant '{TenantId}' vs loser tenant '{loser.TenantId}'.");
+        }
+        if (Kind != loser.Kind)
+        {
+            throw new MergeException(
+                $"Kind mismatch — survivor '{Kind}' vs loser '{loser.Kind}'.");
+        }
+        if (!string.Equals(DefaultCurrency, loser.DefaultCurrency, StringComparison.Ordinal))
+        {
+            throw new MergeException(
+                $"Currency mismatch — survivor '{DefaultCurrency}' vs loser '{loser.DefaultCurrency}'.");
+        }
+        if (Status != PartyStatus.Active)
+        {
+            throw new MergeException(
+                $"Survivor status must be Active — current is '{Status}'.");
+        }
+        if (loser.Status == PartyStatus.Archived)
+        {
+            throw new MergeException("Loser is Archived — archived parties cannot be merged out.");
+        }
+
+        EnsureMutable();
+
+        // Scalar fields — apply the chosen winner per field.
+        Name = ResolveScalar(choices, "Name", Name, loser.Name);
+        Website = ResolveScalar(choices, "Website", Website, loser.Website);
+        Language = ResolveScalar(choices, "Language", Language, loser.Language);
+        Timezone = ResolveScalar(choices, "Timezone", Timezone, loser.Timezone) ?? Timezone;
+        TaxId = ResolveScalar(choices, "TaxId", TaxId, loser.TaxId);
+        RegistrationNumber = ResolveScalar(choices, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
+        AvatarBlobId = ResolveScalar(choices, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
+
+        // ParentContactId — round-trip via PartyId.
+        ParentContactId = ResolveParentContactId(choices, ParentContactId, loser.ParentContactId);
+
+        // Roles — always union ; never overridable (losing a flag is destructive).
+        Roles |= loser.Roles;
+
+        // TaxStatus — non-trivial default + override.
+        WinnerSide taxStatusWinner = choices.ResolveOrDefault("TaxStatus",
+            TaxStatus.Equals(TaxStatus.Standard) && !loser.TaxStatus.Equals(TaxStatus.Standard)
+                ? WinnerSide.Loser
+                : WinnerSide.Survivor);
+        if (taxStatusWinner == WinnerSide.Loser)
+        {
+            TaxStatus = loser.TaxStatus;
+        }
+
+        // UserId — transfer the loser's link only if survivor has none and admin doesn't
+        // override (or admin explicitly picks Loser).
+        WinnerSide userIdWinner = choices.ResolveOrDefault("UserId",
+            UserId is null && loser.UserId is not null ? WinnerSide.Loser : WinnerSide.Survivor);
+        if (userIdWinner == WinnerSide.Loser)
+        {
+            UserId = loser.UserId;
+        }
+
+        // Metadata — merge dictionaries, survivor wins on key conflict by default ;
+        // override per key via choices "Metadata.<key>".
+        MergeMetadataInto(loser, choices);
+
+        // InternalNotes — default appends with a separator, override = full replace.
+        WinnerSide notesWinner = choices.ResolveOrDefault("InternalNotes", WinnerSide.Survivor);
+        InternalNotes = ApplyInternalNotesMerge(InternalNotes, loser.InternalNotes, loser.Id, notesWinner);
+
+        RaiseUpdated();
+    }
+
+    private static void AddIfDifferent<T>(
+        List<FieldConflict> conflicts,
+        string fieldPath,
+        T survivor,
+        T loser)
+    {
+        if (!EqualityComparer<T>.Default.Equals(survivor, loser))
+        {
+            conflicts.Add(new FieldConflict(fieldPath, survivor, loser, WinnerSide.Survivor));
+        }
+    }
+
+    private static T ResolveScalar<T>(MergeFieldChoices choices, string fieldPath, T survivor, T loser) =>
+        choices.ResolveOrDefault(fieldPath, WinnerSide.Survivor) == WinnerSide.Loser
+            ? loser
+            : survivor;
+
+    private static PartyId? ResolveParentContactId(
+        MergeFieldChoices choices, PartyId? survivor, PartyId? loser) =>
+        choices.ResolveOrDefault("ParentContactId", WinnerSide.Survivor) == WinnerSide.Loser
+            ? loser
+            : survivor;
+
+    private void MergeMetadataInto(Party loser, MergeFieldChoices choices)
+    {
+        IReadOnlyDictionary<string, string> survivorMeta = this.GetMetadata();
+        IReadOnlyDictionary<string, string> loserMeta = loser.GetMetadata();
+        if (survivorMeta.Count == 0 && loserMeta.Count == 0)
+        {
+            return;
+        }
+
+        var merged = new Dictionary<string, string>(survivorMeta, StringComparer.Ordinal);
+        foreach (KeyValuePair<string, string> kv in loserMeta)
+        {
+            string fieldPath = $"Metadata.{kv.Key}";
+            bool inSurvivor = merged.ContainsKey(kv.Key);
+            WinnerSide winner = choices.ResolveOrDefault(fieldPath,
+                inSurvivor ? WinnerSide.Survivor : WinnerSide.Loser);
+            if (!inSurvivor || winner == WinnerSide.Loser)
+            {
+                merged[kv.Key] = kv.Value;
+            }
+        }
+        this.ReplaceMetadata(merged);
+    }
+
+    private static string? ApplyInternalNotesMerge(
+        string? survivorNotes,
+        string? loserNotes,
+        Guid loserId,
+        WinnerSide winner)
+    {
+        if (string.IsNullOrWhiteSpace(loserNotes))
+        {
+            return survivorNotes;
+        }
+
+        if (winner == WinnerSide.Loser)
+        {
+            return loserNotes;
+        }
+
+        // Default append with a separator that mentions the loser id for traceability.
+        string separator = $"\n\n--- merged from {loserId:N} ---\n";
+        return string.IsNullOrWhiteSpace(survivorNotes)
+            ? loserNotes
+            : survivorNotes + separator + loserNotes;
     }
 
     // ── Addresses ─────────────────────────────────────────────────

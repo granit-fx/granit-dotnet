@@ -49,7 +49,7 @@ internal sealed class EfMergeService<TAggregate>(
     IDbContextFactory<MergeableDbContext> idempotencyContextFactory,
     IGuidGenerator guidGenerator,
     IClock clock) : IMergeService<TAggregate>
-    where TAggregate : AggregateRoot, IMergeable<TAggregate>
+    where TAggregate : Entity, IMergeable<TAggregate>
 {
     /// <inheritdoc />
     public async Task<MergeResult<TAggregate>> MergePreviewAsync(
