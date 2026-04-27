@@ -262,6 +262,20 @@ Cascade deletes automatically remove child `AuditEntityChange` and
 | `CacheEntryTtl` | `TimeSpan` | `30m` | Cache duration for individual audit entries |
 | `CacheEntityQueryTtl` | `TimeSpan` | `2m` | Cache duration for entity-scoped queries |
 
+## Notifications
+
+`Granit.Auditing.Notifications` ships notifications surfacing high-signal events
+that an SOC or compliance officer should know about — typically anomalies in the
+audit stream itself (e.g. spikes in access-denied events, configuration changes
+outside business hours).
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `auditing.anomaly_detected` | `AuditEntryPersistedEto` (filtered by anomaly heuristics) | Email, InApp | Warning |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## See also
 
 - [Persistence](/dotnet/data/persistence/) — `AuditedEntityInterceptor` and entity base classes

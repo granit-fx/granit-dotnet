@@ -405,6 +405,19 @@ layers** — neither replaces the other.
   correctly at the DB layer.
 - Never put PII in either key (audit logs and Redis store retain them).
 
+## Notifications
+
+`Granit.Metering.Notifications` ships notifications for quota lifecycle events.
+Tenants opt in via the notifications admin UI.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `metering.quota_threshold_reached` | `QuotaThresholdReachedEto` — emitted when usage crosses a configured warning threshold (e.g. 80 %) | Email, InApp | Warning |
+| `metering.quota_exceeded` | `QuotaExceededEto` — emitted when usage exceeds the hard quota | Email, InApp | Error |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## See also
 
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography

@@ -143,6 +143,22 @@ builder.AddModule<GranitCustomerBalanceWolverineModule>();
 builder.AddModule<GranitCustomerBalanceBackgroundJobsModule>();
 ```
 
+## Notifications
+
+`Granit.CustomerBalance.Notifications` ships notifications keeping the party
+(end user) informed about the lifecycle of their balance — what was credited,
+what is about to expire, and what was depleted.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `customer-balance.credit_granted` | `BalanceCreditedEto` — credit added (promotion, overpayment, manual adjustment) | Email, InApp | Info |
+| `customer-balance.credit_expiring` | `CreditExpiringEto` — credit approaching its expiration date (configurable lead time) | Email, InApp | Warning |
+| `customer-balance.credit_expired` | `CreditExpiredEto` — credit reached its expiration date and was reclaimed | Email, InApp | Warning |
+| `customer-balance.depleted` | `BalanceDepletedEto` — balance reached zero | Email, InApp | Info |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## See also
 
 - [SaaS Overview](/dotnet/saas/) — ecosystem architecture and choreography

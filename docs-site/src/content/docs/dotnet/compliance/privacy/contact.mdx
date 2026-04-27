@@ -142,6 +142,40 @@ Typical use cases inside the framework:
   so every transactional email (invoices, security alerts, password resets)
   carries a privacy contact line. Recommended for full Art. 13 transparency.
 
+### Regulation-aware deadlines (`{{ model.response_deadline_days }}`)
+
+Templates that quote a legal response window — most prominently
+`privacy.deletion_acknowledged` — must NOT hard-code the deadline. GDPR Art. 12 §3
+mandates one calendar month, but other regulations differ (CCPA: 45 days, LGPD: 15
+days, PIPEDA: 30 days). Hard-coding "one month" in an English template and copy-pasting
+it into the Spanish/Portuguese variants would silently misrepresent the deadline for
+LGPD subjects.
+
+The `Granit.Privacy.Notifications` package solves this by exposing the deadline as
+a model field rather than a literal in the template:
+
+```scriban
+<p>
+  We will process your request within
+  <strong>{{ model.response_deadline_days }} days</strong>{{ if model.regulation }}
+  (<code>{{ model.regulation }}</code>){{ end }}.
+</p>
+```
+
+The handler that publishes the notification resolves
+`PrivacyDeletionAcknowledgedNotificationData.ResponseDeadlineDays` by looking up
+the data subject's regulation profile via `IRegulationProfileRegistry`
+(`Granit.Privacy.Regulations`). Each profile (GDPR, CCPA, LGPD, PIPEDA, …)
+declares its own statutory window, so the template renders the correct number of
+days for the recipient's jurisdiction without code changes per locale.
+
+When you author a new privacy notification template that quotes a deadline,
+follow this pattern: add a `ResponseDeadlineDays` field to the notification data
+record, populate it from `IRegulationProfileRegistry` in the Wolverine handler,
+and reference it as `{{ model.response_deadline_days }}` in every culture
+template. Doing so keeps the framework regulation-neutral and lets future
+regulations be added without touching template wording.
+
 ### Performance
 
 The context resolves all six settings in a single batched

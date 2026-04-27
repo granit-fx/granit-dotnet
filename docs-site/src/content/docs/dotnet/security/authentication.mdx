@@ -371,6 +371,29 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 | DPoP | `IDPoPProofValidator`, `JwkThumbprintCalculator`, `DPoPValidationMiddleware` | `Granit.Authentication.DPoP` |
 | Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapGranitBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
 
+## API key notifications
+
+`Granit.Authentication.ApiKeys.Notifications` ships notifications for the
+lifecycle events of `Granit.Authentication.ApiKeys` — the service-account /
+machine-to-machine auth scheme. Tenants opt in via the notifications admin UI.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `apikeys.new_key_issued` | `ApiKeyCreatedEto` — a new API key was issued (audit trail; the plain secret is delivered via the issuance endpoint, not the email) | Email, InApp | Info |
+| `apikeys.expiring_soon` | `ApiKeyExpiringSoonEto` — a daily scanner emits this when an API key is within its configured lead time before `ExpiresAt` | Email, InApp | Warning |
+| `apikeys.rotation_completed` | `ApiKeyRotatedEto` — an API key was rotated (overlap rotation, mirroring the [webhook signing-key model](/dotnet/api/webhooks/signing-keys/)) | Email, InApp | Info |
+| `apikeys.revoked` | `ApiKeyRevokedEto` — an API key was explicitly revoked by an operator | Email, InApp | Info |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
+:::note[No dedicated API Keys reference page yet]
+This module currently has its lifecycle notifications documented here on the
+authentication page. A dedicated `Granit.Authentication.ApiKeys` reference page
+(setup, options, endpoints) is tracked separately and will cross-link this
+section once it lands.
+:::
+
 ## See also
 
 - [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/) -- IdP-agnostic DPoP proof validation
