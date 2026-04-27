@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Parties</PackageId>
-    <Description>Central party-management aggregate for Granit, modelled after Odoo's res.partner. A Party is a generic party (Individual / Company / Department) that can simultaneously play multiple roles (Customer, Supplier, Employee, Lead) via [Flags], support parent-child hierarchy (Person to Company, subsidiary to holding), and carry polyglot external mappings (Stripe / Mollie / Odoo / Sage / NetSuite). Powers Invoicing, Subscriptions, Payments, Tax, CustomerBalance today and Procurement / HR / CRM tomorrow.</Description>
+    <Description>Central party-management aggregate for Granit. A Party is a generic billing identity (Individual / Company / Department) that can simultaneously play multiple roles (Customer, Supplier, Employee, Lead) via [Flags], support parent-child hierarchy (Person to Company, subsidiary to holding), and carry polyglot external mappings (Stripe / Mollie / Odoo / Sage / NetSuite). Powers Invoicing, Subscriptions, Payments, Tax, CustomerBalance today and Procurement / HR / CRM tomorrow.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

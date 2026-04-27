@@ -30728,6 +30728,15 @@
       "members": []
     },
     {
+      "name": "PartiesMetrics",
+      "fqn": "Granit.Parties.Diagnostics.PartiesMetrics",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Diagnostics/PartiesMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "Address",
       "fqn": "Granit.Parties.Domain.Address",
       "kind": "class",
@@ -31548,13 +31557,36 @@
       ]
     },
     {
+      "name": "PartiesHostApplicationBuilderExtensions",
+      "fqn": "Granit.Parties.Extensions.PartiesHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Extensions/PartiesHostApplicationBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitParties",
+          "kind": "method",
+          "signature": "AddGranitParties(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
       "name": "GranitPartiesModule",
       "fqn": "Granit.Parties.GranitPartiesModule",
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/GranitPartiesModule.cs",
-      "line": 6,
-      "members": []
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IDefaultPartyResolver",
