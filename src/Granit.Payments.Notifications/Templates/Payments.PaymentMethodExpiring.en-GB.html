@@ -1,0 +1,7 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<p>Hi,</p>
+<p>Your payment method <strong>{{ model.display_label | html.escape }}</strong> will expire in <strong>{{ model.days_remaining }} day(s)</strong>, on {{ model.expires_at | to_user_time | date.to_string "%B %Y" }}.</p>
+<p>Please update your payment method to ensure uninterrupted service.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/billing/methods" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Update payment method</a>
+</p>
