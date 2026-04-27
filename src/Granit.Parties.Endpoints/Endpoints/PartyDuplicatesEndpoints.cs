@@ -26,32 +26,6 @@ internal static partial class PartyDuplicatesEndpoints
     private static partial void LogAuditWriteFailed(
         ILogger logger, Guid candidateRowId, Guid survivorId, Guid loserId, Exception exception);
 
-    /// <summary>
-    /// Handler for <c>GET /parties/duplicates?tier=&amp;minScore=&amp;page=&amp;pageSize=&amp;includeDismissed=</c>.
-    /// Paginated listing of pending duplicates in the current tenant scope.
-    /// </summary>
-    public static async Task<Ok<PartyDuplicateCandidatesPage>> HandleListAsync(
-        [FromQuery] string? tier,
-        [FromQuery] decimal? minScore,
-        [FromQuery] bool includeDismissed,
-        [FromQuery] int? page,
-        [FromQuery] int? pageSize,
-        [FromServices] IPartyDuplicateCandidateStore store,
-        CancellationToken cancellationToken)
-    {
-        DuplicateMatchTier? parsedTier = ParseTier(tier);
-
-        DuplicateCandidatePage result = await store.ListAsync(
-            tier: parsedTier,
-            minScore: minScore,
-            includeDismissed: includeDismissed,
-            page: page ?? 1,
-            pageSize: pageSize ?? 50,
-            cancellationToken).ConfigureAwait(false);
-
-        return TypedResults.Ok(MapPage(result));
-    }
-
     /// <summary>Handler for <c>GET /parties/{id}/duplicate-candidates</c>.</summary>
     public static async Task<Ok<IReadOnlyList<PartyDuplicateCandidateResponse>>> HandleListForPartyAsync(
         Guid id,
@@ -175,13 +149,6 @@ internal static partial class PartyDuplicatesEndpoints
         }
     }
 
-    private static PartyDuplicateCandidatesPage MapPage(DuplicateCandidatePage page) =>
-        new(
-            Items: [.. page.Items.Select(MapResponse)],
-            TotalCount: page.TotalCount,
-            Page: page.Page,
-            PageSize: page.PageSize);
-
     private static PartyDuplicateCandidateResponse MapResponse(PartyDuplicateCandidate row)
     {
         IReadOnlyList<DuplicateMatchSignalResponse> signals = ParseSignals(row.SignalsJson);
@@ -222,10 +189,6 @@ internal static partial class PartyDuplicatesEndpoints
         }
     }
 
-    private static DuplicateMatchTier? ParseTier(string? tier) =>
-        tier is null ? null
-        : Enum.TryParse(tier, ignoreCase: true, out DuplicateMatchTier parsed) ? parsed
-        : null;
 }
 
 /// <summary>

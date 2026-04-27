@@ -1686,9 +1686,11 @@
       "name": "Granit.Parties.Deduplication",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
         "Granit.Parties",
         "Granit.Parties.EntityFrameworkCore",
-        "Granit.Persistence.EntityFrameworkCore"
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1718,6 +1720,7 @@
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
         "Granit.QueryEngine.Abstractions",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -32589,12 +32592,28 @@
       "members": []
     },
     {
+      "name": "DuplicateCandidateExportDefinition",
+      "fqn": "Granit.Parties.Deduplication.Exports.DuplicateCandidateExportDefinition",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Exports/DuplicateCandidateExportDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "PartiesDeduplicationHostApplicationBuilderExtensions",
       "fqn": "Granit.Parties.Deduplication.Extensions.PartiesDeduplicationHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Extensions/PartiesDeduplicationHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitPartiesDeduplication",
@@ -32612,6 +32631,22 @@
       "file": "src/Granit.Parties.Deduplication/GranitPartiesDeduplicationModule.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "DuplicateCandidateQueryDefinition",
+      "fqn": "Granit.Parties.Deduplication.Queries.DuplicateCandidateQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Queries/DuplicateCandidateQueryDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "PartiesMetrics",
@@ -33066,21 +33101,12 @@
       "members": []
     },
     {
-      "name": "PartyDuplicateCandidatesPage",
-      "fqn": "Granit.Parties.Endpoints.Dtos.PartyDuplicateCandidatesPage",
-      "kind": "record",
-      "project": "Granit.Parties.Endpoints",
-      "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
-      "line": 33,
-      "members": []
-    },
-    {
       "name": "PartyDuplicateMergeRequest",
       "fqn": "Granit.Parties.Endpoints.Dtos.PartyDuplicateMergeRequest",
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
-      "line": 48,
+      "line": 41,
       "members": []
     },
     {
@@ -33233,7 +33259,7 @@
       "kind": "class",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Extensions/PartiesEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitParties",

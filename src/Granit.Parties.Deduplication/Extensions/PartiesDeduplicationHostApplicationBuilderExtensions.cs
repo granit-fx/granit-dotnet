@@ -1,5 +1,11 @@
+using Granit.DataExchange.Extensions;
 using Granit.Parties.Deduplication.Domain;
+using Granit.Parties.Deduplication.Exports;
 using Granit.Parties.Deduplication.Internal;
+using Granit.Parties.Deduplication.Queries;
+using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.QueryEngine;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -27,6 +33,14 @@ public static class PartiesDeduplicationHostApplicationBuilderExtensions
         builder.Services.AddScoped<Tier3WeightedScorer>();
         builder.Services.TryAddScoped<IPartyDuplicateDetector, DefaultPartyDuplicateDetector>();
         builder.Services.TryAddScoped<IPartyDuplicateCandidateStore, EfPartyDuplicateCandidateStore>();
+
+        // QueryEngine wiring for the admin grid (#1301): query / export definitions plus
+        // the IQueryableSource that powers MapGranitQuery<PartyDuplicateCandidate> in the
+        // Endpoints package. Provider-agnostic — the source bypasses no filters and the
+        // ambient IMultiTenant filter scopes every read to the current tenant.
+        builder.Services.AddQueryDefinition<PartyDuplicateCandidate, DuplicateCandidateQueryDefinition>();
+        builder.Services.AddExportDefinition<PartyDuplicateCandidate, DuplicateCandidateExportDefinition>();
+        builder.Services.AddScoped<IQueryableSource<PartyDuplicateCandidate>, EfPartyDuplicateCandidateQueryableSource>();
 
         return builder;
     }

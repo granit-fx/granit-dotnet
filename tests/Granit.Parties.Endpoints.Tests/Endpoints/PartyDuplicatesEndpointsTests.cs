@@ -45,36 +45,6 @@ public sealed class PartyDuplicatesEndpointsTests
     }
 
     [Fact]
-    public async Task HandleListAsync_returns_paginated_response_with_mapped_signals()
-    {
-        CancellationToken ct = TestContext.Current.CancellationToken;
-        var rowId = Guid.NewGuid();
-        var lower = new Guid("11111111-1111-1111-1111-111111111111");
-        var higher = new Guid("22222222-2222-2222-2222-222222222222");
-        var row = PartyDuplicateCandidate.Create(
-            id: rowId, tenantId: null, partyId: lower, candidateId: higher,
-            tier: (int)DuplicateMatchTier.Fuzzy, score: 0.92m,
-            signalsJson: """[{"Kind":"NameTokenSet","Score":0.4},{"Kind":"PhonePartial","Score":0.1}]""",
-            createdAt: DateTimeOffset.UtcNow);
-
-        _store.ListAsync(default, default, default, default, default, ct)
-            .ReturnsForAnyArgs(new DuplicateCandidatePage([row], TotalCount: 1, Page: 1, PageSize: 50));
-
-        Ok<PartyDuplicateCandidatesPage> response = await PartyDuplicatesEndpoints.HandleListAsync(
-            tier: "Fuzzy", minScore: 0.5m, includeDismissed: false, page: 1, pageSize: 50,
-            store: _store, cancellationToken: ct);
-
-        PartyDuplicateCandidatesPage page = response.Value!;
-        page.TotalCount.ShouldBe(1);
-        page.Items.Count.ShouldBe(1);
-        page.Items[0].Score.ShouldBe(0.92m);
-        page.Items[0].Tier.ShouldBe("Fuzzy");
-        page.Items[0].Signals.Count.ShouldBe(2);
-        // Signals are sorted by score descending.
-        page.Items[0].Signals[0].Kind.ShouldBe("NameTokenSet");
-    }
-
-    [Fact]
     public async Task HandleDismissAsync_returns_204_when_row_dismissed()
     {
         CancellationToken ct = TestContext.Current.CancellationToken;

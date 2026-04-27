@@ -29,13 +29,6 @@ public sealed record PartyDuplicateCandidateResponse(
 /// <summary>One per-signal contribution surfaced under <see cref="PartyDuplicateCandidateResponse.Signals"/>.</summary>
 public sealed record DuplicateMatchSignalResponse(string Kind, decimal Score);
 
-/// <summary>Paginated <c>GET /parties/duplicates</c> response.</summary>
-public sealed record PartyDuplicateCandidatesPage(
-    IReadOnlyList<PartyDuplicateCandidateResponse> Items,
-    int TotalCount,
-    int Page,
-    int PageSize);
-
 /// <summary>
 /// Body of <c>POST /parties/duplicates/{id}/merge</c> — shortcut that resolves the
 /// candidate row to its (survivor, loser) pair and forwards to the merge orchestrator.
