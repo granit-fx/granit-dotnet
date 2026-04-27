@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using Granit.Parties.Domain;
 
 namespace Granit.Parties.Diagnostics;
 
@@ -110,12 +111,22 @@ public sealed class PartiesMetrics
     }
 
     /// <summary>Records an external-mapping registration.</summary>
+    /// <remarks>
+    /// <paramref name="providerName"/> is folded to the reserved set declared in
+    /// <see cref="PartyExternalProviderNames"/> — unrecognised values are mapped to the
+    /// <c>"other"</c> bucket so an authenticated caller cannot inflate Prometheus
+    /// cardinality by registering mappings with random distinct provider names
+    /// (CWE-770).
+    /// </remarks>
     public void RecordExternalMappingAdded(string? tenantId, string providerName)
     {
+        string normalized = PartyExternalProviderNames.IsReserved(providerName)
+            ? providerName.ToLowerInvariant()
+            : "other";
         var tags = new TagList
         {
             { TenantIdTag, tenantId ?? GlobalTenant },
-            { "provider_name", providerName },
+            { "provider_name", normalized },
         };
         _externalMappingsAdded.Add(1, tags);
     }

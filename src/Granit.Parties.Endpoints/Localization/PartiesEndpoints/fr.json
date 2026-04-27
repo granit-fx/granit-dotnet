@@ -1,5 +1,8 @@
 {
-  "PermissionGroup:Parties": "Parties",
-  "Permission:Parties.Parties.Read": "Consulter les contacts",
-  "Permission:Parties.Parties.Manage": "Gérer les contacts (créer, modifier, cycle de vie, adresses, emails, téléphones, identifiants externes, rôles)"
+  "PermissionGroup:Parties": "Tiers",
+  "Permission:Parties.Parties.Read": "Consulter les tiers",
+  "Permission:Parties.Parties.Manage": "Gérer les tiers (identité, adresses, e-mails, téléphones, rôles)",
+  "Permission:Parties.Parties.Lifecycle": "Modifier le cycle de vie d'un tiers (suspendre, réactiver, archiver)",
+  "Permission:Parties.Parties.SetTaxStatus": "Définir le statut fiscal client-spécifique (exonération, autoliquidation)",
+  "Permission:Parties.Parties.ExternalMappings": "Associer des identifiants de fournisseurs externes (Stripe, Mollie, Odoo, ...)"
 }

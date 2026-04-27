@@ -30733,7 +30733,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Diagnostics/PartiesMetrics.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -30992,7 +30992,14 @@
       "project": "Granit.Parties.Abstractions",
       "file": "src/Granit.Parties.Abstractions/Domain/PartyExternalProviderNames.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "IsReserved",
+          "kind": "method",
+          "signature": "IsReserved(string? providerName)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "PartyKind",
