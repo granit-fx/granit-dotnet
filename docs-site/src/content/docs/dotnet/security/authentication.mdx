@@ -371,8 +371,22 @@ Enabling it while some clients still use plain Bearer tokens will lock those cli
 | DPoP | `IDPoPProofValidator`, `JwkThumbprintCalculator`, `DPoPValidationMiddleware` | `Granit.Authentication.DPoP` |
 | Extensions | `AddGranitJwtBearer()`, `AddGranitKeycloak()`, `AddGranitCognito()`, `MapGranitBackChannelLogout()`, `UseGranitDPoPValidation()` | — |
 
+## API keys (service-to-service)
+
+For long-lived, non-interactive callers — cron jobs, partner integrations,
+internal CLIs, lab equipment — JWT bearer is the wrong primitive. Use
+`Granit.Authentication.ApiKeys` instead: opaque secrets hashed at rest with
+typed prefixes, CIDR allow-listing, rotation, and a daily scanner that emails
+administrators ahead of expiry. See the
+[API Keys page](/dotnet/security/api-keys/) for the full lifecycle, endpoints,
+permissions, configuration, and the four lifecycle notifications
+(`apikeys.new_key_issued`, `apikeys.rotation_completed`, `apikeys.revoked`,
+`apikeys.expiring_soon`).
+
 ## See also
 
+- [API Keys](/dotnet/security/api-keys/) -- service-to-service authentication with
+  rotation, expiry scanner, and lifecycle notifications
 - [DPoP Resource Server Validation](/dotnet/security/openiddict/advanced/dpop-resource-server-validation/) -- IdP-agnostic DPoP proof validation
 - [DPoP — Proof-of-Possession](/dotnet/security/openiddict/advanced/proof-of-possession-dpop/) -- BFF-side key generation and proof creation
 - [Authorization](/dotnet/security/authorization/) -- RBAC permissions, dynamic policy provider
