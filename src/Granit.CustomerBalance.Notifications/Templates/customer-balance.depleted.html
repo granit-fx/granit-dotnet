@@ -1,0 +1,16 @@
+<title>Your balance is depleted</title>
+<p>Hi,</p>
+<p>Your <strong>{{ model.currency }}</strong> balance has just reached
+   <strong>0</strong>. You no longer have any credit available, so any upcoming charge
+   will go to your usual payment method without a discount.</p>
+<p>If you'd like to top up or simply review what was deducted, you can do so from your
+   balance page.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/balance/{{ model.balance_account_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">View my balance</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">Balance id: <code>{{ model.balance_account_id }}</code></p>
+<p style="font-size: 13px; color: #4b5563;">Depleted on:
+   {{ model.depleted_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Questions about your data? Contact our team via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

@@ -15,9 +15,13 @@ public sealed class EmbeddedTemplatesTests
         // Neutral (= EN) variant, one per notification type.
         "Templates.customer-balance.credit_granted.html",
         "Templates.customer-balance.credit_expired.html",
+        "Templates.customer-balance.credit_expiring.html",
+        "Templates.customer-balance.depleted.html",
         // French variants — the second culture we ship out of the box.
         "Templates.customer-balance.credit_granted.fr.html",
         "Templates.customer-balance.credit_expired.fr.html",
+        "Templates.customer-balance.credit_expiring.fr.html",
+        "Templates.customer-balance.depleted.fr.html",
     ];
 
     [Theory]

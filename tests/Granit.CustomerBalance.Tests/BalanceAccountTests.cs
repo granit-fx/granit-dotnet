@@ -25,7 +25,7 @@ public sealed class BalanceAccountTests
     [Fact]
     public void Create_ShouldNormalizeCurrencyToUpperCase()
     {
-        var account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), PartyId.Create(Guid.NewGuid()), "eur");
+        BalanceAccount account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), PartyId.Create(Guid.NewGuid()), "eur");
 
         account.Currency.ShouldBe("EUR");
     }
@@ -151,6 +151,47 @@ public sealed class BalanceAccountTests
         account.Debit(100m, TransactionSource.InvoiceDeduction, "Full deduction", Now, Guid.NewGuid());
 
         account.Balance.ShouldBe(0m);
+    }
+
+    [Fact]
+    public void Debit_TransitionFromPositiveToZero_ShouldRaiseBalanceDepletedEto()
+    {
+        BalanceAccount account = CreateAccountWithBalance(100m);
+
+        account.Debit(100m, TransactionSource.InvoiceDeduction, "Full deduction", Now, Guid.NewGuid());
+
+        account.IntegrationEvents.ShouldContain(e => e is BalanceDepletedEto);
+        BalanceDepletedEto eto = account.IntegrationEvents.OfType<BalanceDepletedEto>().Single();
+        eto.BalanceAccountId.ShouldBe(account.Id);
+        eto.PartyId.ShouldBe(account.PartyId.Value);
+        eto.Currency.ShouldBe("EUR");
+        eto.DepletedAt.ShouldBe(Now);
+    }
+
+    [Fact]
+    public void Debit_PartialFromPositive_ShouldNotRaiseBalanceDepletedEto()
+    {
+        BalanceAccount account = CreateAccountWithBalance(100m);
+
+        account.Debit(40m, TransactionSource.InvoiceDeduction, "Partial deduction", Now, Guid.NewGuid());
+
+        account.IntegrationEvents.ShouldNotContain(e => e is BalanceDepletedEto);
+    }
+
+    [Fact]
+    public void Debit_AlreadyAtZero_ShouldThrowAndNotRaiseBalanceDepletedEto()
+    {
+        // A no-op recompute that *attempts* to debit a zero balance is rejected by the
+        // invariant — the transition guard never fires, so no BalanceDepletedEto is
+        // emitted twice for the same balance.
+        BalanceAccount account = CreateAccountWithBalance(100m);
+        account.Debit(100m, TransactionSource.InvoiceDeduction, "Full deduction", Now, Guid.NewGuid());
+        account.ClearIntegrationEvents();
+
+        Should.Throw<Granit.CustomerBalance.Exceptions.InsufficientBalanceException>(() =>
+            account.Debit(0.01m, TransactionSource.InvoiceDeduction, "No-op recompute", Now, Guid.NewGuid()));
+
+        account.IntegrationEvents.ShouldNotContain(e => e is BalanceDepletedEto);
     }
 
     [Fact]

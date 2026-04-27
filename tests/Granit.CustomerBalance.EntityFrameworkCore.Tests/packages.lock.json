@@ -323,6 +323,8 @@
         "type": "Project",
         "dependencies": {
           "Granit.CustomerBalance": "[0.1.0-dev, )",
+          "Granit.Mergeable": "[0.1.0-dev, )",
+          "Granit.Parties": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
@@ -358,6 +360,25 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.mergeable": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
+        }
+      },
+      "granit.parties": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.Mergeable": "[0.1.0-dev, )",
+          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )"
         }
       },
       "granit.parties.abstractions": {

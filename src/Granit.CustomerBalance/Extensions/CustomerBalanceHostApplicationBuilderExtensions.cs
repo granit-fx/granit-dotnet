@@ -2,6 +2,7 @@ using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Exports;
 using Granit.CustomerBalance.Internal;
+using Granit.CustomerBalance.Options;
 using Granit.CustomerBalance.Queries;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
@@ -25,6 +26,15 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         this IHostApplicationBuilder builder)
     {
         builder.Services.TryAddSingleton<CustomerBalanceMetrics>();
+
+        // Bind and validate module options at startup.
+        builder.Services
+            .AddOptions<CustomerBalanceOptions>()
+            .BindConfiguration(CustomerBalanceOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        builder.Services.TryAddTransient<ICreditExpiringScanService, DefaultCreditExpiringScanService>();
         builder.Services.TryAddTransient<ICreditExpirationService, DefaultCreditExpirationService>();
         builder.Services.TryAddTransient<IAdminCreditService, DefaultAdminCreditService>();
         builder.Services.TryAddTransient<IAdminDebitService, DefaultAdminDebitService>();

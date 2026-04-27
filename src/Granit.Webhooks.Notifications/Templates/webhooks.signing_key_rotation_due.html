@@ -1,0 +1,16 @@
+<title>Webhook signing key expires in {{ model.days_until_expiry }} day(s)</title>
+<p>Hello,</p>
+<p>One of your webhook signing keys is approaching expiration. Rotate it before consumers stop being able to verify signatures.</p>
+<ul>
+  <li><strong>Subscription:</strong> <code>{{ model.subscription_id }}</code></li>
+  <li><strong>Key:</strong> <code>{{ model.key_id }}</code></li>
+  <li><strong>Expires at:</strong> {{ model.expires_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</li>
+  <li><strong>Days remaining:</strong> {{ model.days_until_expiry }}</li>
+</ul>
+<p>Once the key expires, signatures generated with it will be rejected by your endpoint and event delivery may fail. Rotation produces a new active key while the current one stays accepted during the configured grace period — no downtime required.</p>
+{{ if app.base_url }}
+<p><a href="{{ app.base_url }}/webhooks/{{ model.subscription_id }}/keys">Manage signing keys for this subscription</a></p>
+{{ end }}
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Need help? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

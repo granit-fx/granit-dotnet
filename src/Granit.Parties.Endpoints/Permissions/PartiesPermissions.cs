@@ -44,5 +44,14 @@ public static class PartiesPermissions
         /// account.
         /// </summary>
         public const string ExternalMappings = "Parties.Parties.ExternalMappings";
+
+        /// <summary>
+        /// Grants the right to merge two parties (survivor + loser → tombstoned loser
+        /// with all cross-module references rewritten onto the survivor). Distinct from
+        /// <see cref="Manage"/> because the operation is irreversible at scale — finalised
+        /// invoices, subscriptions, and customer-balance accounts are all redirected, and
+        /// the un-merge endpoint is best-effort only. Default rôle: Tenant.Admin.
+        /// </summary>
+        public const string Merge = "Parties.Parties.Merge";
     }
 }

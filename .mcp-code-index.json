@@ -549,6 +549,8 @@
       "name": "Granit.CustomerBalance.EntityFrameworkCore",
       "deps": [
         "Granit.CustomerBalance",
+        "Granit.Mergeable",
+        "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -1674,7 +1676,9 @@
     {
       "name": "Granit.Parties.Endpoints",
       "deps": [
+        "Granit.Auditing",
         "Granit.Authorization",
+        "Granit.Mergeable",
         "Granit.Parties",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
@@ -2481,6 +2485,14 @@
         "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Webhooks.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Webhooks"
       ],
       "framework": "net10.0"
     },
@@ -11034,6 +11046,31 @@
       "members": []
     },
     {
+      "name": "CreditExpiringScanHandler",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpiringScanHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpiringScanHandler.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiringScanJob _, ICreditExpiringScanService creditExpiringScanService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringScanJob",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpiringScanJob",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpiringScanJob.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "CustomerBalanceMetrics",
       "fqn": "Granit.CustomerBalance.Diagnostics.CustomerBalanceMetrics",
       "kind": "class",
@@ -11095,7 +11132,14 @@
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Domain/BalanceTransaction.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "MarkExpirationNotified",
+          "kind": "method",
+          "signature": "MarkExpirationNotified(DateTimeOffset notifiedAt)",
+          "returnType": "Guid? ReferenceId { get; private set; } public string? ReferenceType { get; private set; } public DateTimeOffset? ExpiresAt { get; private set; } public DateTimeOffset? LastExpirationNotifiedAt { get; private set; } public DateTimeOffset CreatedAt { get; private set; } internal void"
+        }
+      ]
     },
     {
       "name": "TransactionSource",
@@ -11284,7 +11328,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.EntityFrameworkCore",
       "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitCustomerBalanceEntityFrameworkCore",
@@ -11354,12 +11398,30 @@
       "members": []
     },
     {
+      "name": "BalanceDepletedEto",
+      "fqn": "Granit.CustomerBalance.Events.BalanceDepletedEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/BalanceDepletedEto.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "CreditExpiredEto",
       "fqn": "Granit.CustomerBalance.Events.CreditExpiredEto",
       "kind": "record",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Events/CreditExpiredEto.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "CreditExpiringEto",
+      "fqn": "Granit.CustomerBalance.Events.CreditExpiringEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/CreditExpiringEto.cs",
+      "line": 23,
       "members": []
     },
     {
@@ -11409,7 +11471,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -11552,6 +11614,28 @@
           "kind": "method",
           "signature": "GetExpiredCreditsAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        },
+        {
+          "name": "GetCreditsExpiringSoonAsync",
+          "kind": "method",
+          "signature": "GetCreditsExpiringSoonAsync(DateTimeOffset now, DateTimeOffset leadTimeWindowEnd, DateTimeOffset cooldownThreshold, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        }
+      ]
+    },
+    {
+      "name": "IBalanceTransactionWriter",
+      "fqn": "Granit.CustomerBalance.IBalanceTransactionWriter",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IBalanceTransactionWriter.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StampExpirationNotifiedAsync",
+          "kind": "method",
+          "signature": "StampExpirationNotifiedAsync(Guid creditTransactionId, DateTimeOffset notifiedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -11572,6 +11656,22 @@
       ]
     },
     {
+      "name": "ICreditExpiringScanService",
+      "fqn": "Granit.CustomerBalance.ICreditExpiringScanService",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/ICreditExpiringScanService.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ScanAsync",
+          "kind": "method",
+          "signature": "ScanAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "IOverpaymentCreditService",
       "fqn": "Granit.CustomerBalance.IOverpaymentCreditService",
       "kind": "interface",
@@ -11584,6 +11684,37 @@
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BalanceDepletedNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.BalanceDepletedNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/BalanceDepletedNotificationType.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "BalanceDepletedNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.BalanceDepletedNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/BalanceDepletedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "BalanceDepletedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -11609,6 +11740,43 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "CreditExpiredNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiringNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiringNotificationType.cs",
+      "line": 46,
+      "members": []
+    },
+    {
+      "name": "CreditExpiringNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiringNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiringNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditExpiringNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -11672,6 +11840,22 @@
       ]
     },
     {
+      "name": "BalanceDepletedNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.BalanceDepletedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/BalanceDepletedNotificationHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BalanceDepletedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CreditExpiredNotificationHandler",
       "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiredNotificationHandler",
       "kind": "class",
@@ -11683,6 +11867,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(CreditExpiredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiringNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditExpiringNotificationHandler.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiringEto evt, INotificationPublisher publisher, IClock clock, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -11700,6 +11900,28 @@
           "kind": "method",
           "signature": "HandleAsync(BalanceCreditedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CustomerBalanceOptions",
+      "fqn": "Granit.CustomerBalance.Options.CustomerBalanceOptions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Options/CustomerBalanceOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ExpirationLeadTimeDays",
+          "kind": "property",
+          "signature": "int ExpirationLeadTimeDays",
+          "returnType": "int"
+        },
+        {
+          "name": "ExpirationNotificationCooldownDays",
+          "kind": "property",
+          "signature": "int ExpirationNotificationCooldownDays",
+          "returnType": "int"
         }
       ]
     },
@@ -19416,6 +19638,15 @@
       "members": []
     },
     {
+      "name": "IdentityUserSyncFailedEto",
+      "fqn": "Granit.Identity.Federated.Events.IdentityUserSyncFailedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Events/IdentityUserSyncFailedEto.cs",
+      "line": 35,
+      "members": []
+    },
+    {
       "name": "IdentityUserUpdatedEto",
       "fqn": "Granit.Identity.Federated.Events.IdentityUserUpdatedEto",
       "kind": "record",
@@ -19750,6 +19981,22 @@
       ]
     },
     {
+      "name": "SyncFailedHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.SyncFailedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/SyncFailedHandler.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityUserSyncFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "TokenExchangeAuditHandler",
       "fqn": "Granit.Identity.Federated.Notifications.Handlers.TokenExchangeAuditHandler",
       "kind": "class",
@@ -19778,6 +20025,43 @@
           "kind": "method",
           "signature": "HandleAsync(IdentityUserDeletedEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentitySyncFailedNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentitySyncFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentitySyncFailedNotificationType.cs",
+      "line": 55,
+      "members": []
+    },
+    {
+      "name": "IdentitySyncFailedNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentitySyncFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentitySyncFailedNotificationType.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentitySyncFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -19852,6 +20136,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedNotificationOptions",
+      "fqn": "Granit.Identity.Federated.Options.IdentityFederatedNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Options/IdentityFederatedNotificationOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "SyncFailureCoolOffMinutes",
+          "kind": "property",
+          "signature": "int SyncFailureCoolOffMinutes",
+          "returnType": "int"
         }
       ]
     },
@@ -20012,6 +20312,31 @@
           "returnType": "Task<TokenExchangeRateLimitDecision>"
         }
       ]
+    },
+    {
+      "name": "IUserSyncFailureRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.IUserSyncFailureRateLimiter",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/IUserSyncFailureRateLimiter.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "TryAcquire",
+          "kind": "method",
+          "signature": "TryAcquire(string userId, string providerName)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "InMemoryUserSyncFailureRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.InMemoryUserSyncFailureRateLimiter",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/InMemoryUserSyncFailureRateLimiter.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "NullTokenExchangeRateLimiter",
@@ -32342,6 +32667,15 @@
       ]
     },
     {
+      "name": "FieldConflictResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.FieldConflictResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 55,
+      "members": []
+    },
+    {
       "name": "PartyAddressRequest",
       "fqn": "Granit.Parties.Endpoints.Dtos.PartyAddressRequest",
       "kind": "record",
@@ -32411,6 +32745,24 @@
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
       "line": 73,
+      "members": []
+    },
+    {
+      "name": "PartyMergeRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMergeRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "PartyMergeResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMergeResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 38,
       "members": []
     },
     {
@@ -32516,7 +32868,7 @@
       "kind": "class",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/GranitPartiesEndpointsModule.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -48852,6 +49204,62 @@
       ]
     },
     {
+      "name": "IWebhookSigningKeyReader",
+      "fqn": "Granit.Webhooks.Abstractions.IWebhookSigningKeyReader",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyReader.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetForSubscriptionAsync",
+          "kind": "method",
+          "signature": "GetForSubscriptionAsync(Guid subscriptionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<WebhookSigningKey>>"
+        },
+        {
+          "name": "FindByIdAsync",
+          "kind": "method",
+          "signature": "FindByIdAsync(Guid keyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<WebhookSigningKey?>"
+        },
+        {
+          "name": "GetExpiringSoonAsync",
+          "kind": "method",
+          "signature": "GetExpiringSoonAsync(DateTimeOffset now, DateTimeOffset cutoff, DateTimeOffset notificationDedupeBefore, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<WebhookSigningKey>>"
+        }
+      ]
+    },
+    {
+      "name": "IWebhookSigningKeyWriter",
+      "fqn": "Granit.Webhooks.Abstractions.IWebhookSigningKeyWriter",
+      "kind": "interface",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RotateSigningKeyAsync",
+          "kind": "method",
+          "signature": "RotateSigningKeyAsync(Guid subscriptionId, TimeSpan? retiredKeyGracePeriod = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<WebhookSigningKeyRotatedResult>"
+        },
+        {
+          "name": "RevokeSigningKeyAsync",
+          "kind": "method",
+          "signature": "RevokeSigningKeyAsync(Guid subscriptionId, Guid keyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StampRotationNotificationAsync",
+          "kind": "method",
+          "signature": "StampRotationNotificationAsync(Guid subscriptionId, Guid keyId, DateTimeOffset notifiedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IWebhookStatsReader",
       "fqn": "Granit.Webhooks.Abstractions.IWebhookStatsReader",
       "kind": "interface",
@@ -48964,6 +49372,15 @@
       ]
     },
     {
+      "name": "WebhookSigningKeyRotatedResult",
+      "fqn": "Granit.Webhooks.Abstractions.WebhookSigningKeyRotatedResult",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
+      "line": 73,
+      "members": []
+    },
+    {
       "name": "WebhookStats",
       "fqn": "Granit.Webhooks.Abstractions.WebhookStats",
       "kind": "record",
@@ -48989,6 +49406,63 @@
       "file": "src/Granit.Webhooks/Abstractions/WebhookTestPingResult.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "GranitWebhooksBackgroundJobsModule",
+      "fqn": "Granit.Webhooks.BackgroundJobs.GranitWebhooksBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/GranitWebhooksBackgroundJobsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyRotationScanHandler",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Jobs.SigningKeyRotationScanHandler",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Jobs/SigningKeyRotationScanHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SigningKeyRotationScanJob _, SigningKeyRotationScanService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyRotationScanJob",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Jobs.SigningKeyRotationScanJob",
+      "kind": "record",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Jobs/SigningKeyRotationScanJob.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "SigningKeyRotationScanService",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Services.SigningKeyRotationScanService",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Services/SigningKeyRotationScanService.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "IWebhookEventTypeDefinitionContext",
@@ -49150,6 +49624,43 @@
       ]
     },
     {
+      "name": "WebhookSigningKey",
+      "fqn": "Granit.Webhooks.Domain.WebhookSigningKey",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Domain/WebhookSigningKey.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid subscriptionId, string protectedSecret, DateTimeOffset createdAt, WebhookSigningKeyStatus status = WebhookSigningKeyStatus.Active, DateTimeOffset? expiresAt = null)",
+          "returnType": "WebhookSigningKey"
+        },
+        {
+          "name": "CreatedAt",
+          "kind": "property",
+          "signature": "DateTimeOffset CreatedAt",
+          "returnType": "DateTimeOffset"
+        },
+        {
+          "name": "IsAcceptableAt",
+          "kind": "method",
+          "signature": "IsAcceptableAt(DateTimeOffset now)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookSigningKeyStatus",
+      "fqn": "Granit.Webhooks.Domain.WebhookSigningKeyStatus",
+      "kind": "enum",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Domain/WebhookSigningKeyStatus.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "WebhookSubscription",
       "fqn": "Granit.Webhooks.Domain.WebhookSubscription",
       "kind": "class",
@@ -49170,10 +49681,10 @@
           "returnType": "string"
         },
         {
-          "name": "SigningSecret",
-          "kind": "property",
-          "signature": "string SigningSecret",
-          "returnType": "string"
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "string? SigningSecret { get; private set; } public IReadOnlyList<WebhookSigningKey> SigningKeys => _signingKeys."
         },
         {
           "name": "TenantId",
@@ -49220,6 +49731,24 @@
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookEventTypeResponse.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "WebhookSigningKeyCreatedResponse",
+      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookSigningKeyCreatedResponse",
+      "kind": "record",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSigningKeyResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "WebhookSigningKeyResponse",
+      "fqn": "Granit.Webhooks.Endpoints.Dtos.WebhookSigningKeyResponse",
+      "kind": "record",
+      "project": "Granit.Webhooks.Endpoints",
+      "file": "src/Granit.Webhooks.Endpoints/Dtos/WebhookSigningKeyResponse.cs",
+      "line": 10,
       "members": []
     },
     {
@@ -49476,6 +50005,15 @@
       "members": []
     },
     {
+      "name": "WebhookSigningKeyRotationDueEto",
+      "fqn": "Granit.Webhooks.Events.WebhookSigningKeyRotationDueEto",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Events/WebhookSigningKeyRotationDueEto.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "WebhookSubscriptionActivatedEvent",
       "fqn": "Granit.Webhooks.Events.WebhookSubscriptionActivatedEvent",
       "kind": "record",
@@ -49717,6 +50255,22 @@
       ]
     },
     {
+      "name": "SigningKeyRotationDueHandler",
+      "fqn": "Granit.Webhooks.Notifications.Handlers.SigningKeyRotationDueHandler",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/Handlers/SigningKeyRotationDueHandler.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(WebhookSigningKeyRotationDueEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "WebhooksDeliveryFailureThresholdNotificationData",
       "fqn": "Granit.Webhooks.Notifications.WebhooksDeliveryFailureThresholdNotificationData",
       "kind": "record",
@@ -49754,6 +50308,43 @@
       ]
     },
     {
+      "name": "WebhooksSigningKeyRotationDueNotificationData",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksSigningKeyRotationDueNotificationData",
+      "kind": "record",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksSigningKeyRotationDueNotificationType.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "WebhooksSigningKeyRotationDueNotificationType",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksSigningKeyRotationDueNotificationType",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksSigningKeyRotationDueNotificationType.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "WebhooksSigningKeyRotationDueNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "WebhooksOptions",
       "fqn": "Granit.Webhooks.Options.WebhooksOptions",
       "kind": "class",
@@ -49771,6 +50362,18 @@
           "name": "MaxParallelDeliveries",
           "kind": "property",
           "signature": "int MaxParallelDeliveries",
+          "returnType": "int"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "bool StorePayload { get; set; } public TimeSpan RetiredKeyGracePeriod { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RotationLeadTimeDays",
+          "kind": "property",
+          "signature": "int RotationLeadTimeDays",
           "returnType": "int"
         }
       ]

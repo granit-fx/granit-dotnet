@@ -20,6 +20,7 @@
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Shouldly" />
     <PackageReference Include="Bogus" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 

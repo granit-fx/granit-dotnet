@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Webhooks.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Webhooks. Daily signing-key rotation scanner that emits WebhookSigningKeyRotationDueEto for keys approaching expiration so administrators can rotate before downstream consumers stop accepting signatures.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Webhooks.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Webhooks\Granit.Webhooks.csproj" />
+  </ItemGroup>
+
+</Project>

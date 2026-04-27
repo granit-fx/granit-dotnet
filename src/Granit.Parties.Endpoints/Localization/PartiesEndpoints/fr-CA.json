@@ -4,5 +4,6 @@
   "Permission:Parties.Parties.Manage": "Manage parties (identity, addresses, emails, phones, roles)",
   "Permission:Parties.Parties.Lifecycle": "Change party lifecycle (suspend, activate, archive)",
   "Permission:Parties.Parties.SetTaxStatus": "Set customer-specific tax status (exempt, reverse-charge)",
-  "Permission:Parties.Parties.ExternalMappings": "Register external provider identifiers (Stripe, Mollie, Odoo, ...)"
+  "Permission:Parties.Parties.ExternalMappings": "Register external provider identifiers (Stripe, Mollie, Odoo, ...)",
+  "Permission:Parties.Parties.Merge": "Fusionner deux tiers (regrouper les doublons)"
 }

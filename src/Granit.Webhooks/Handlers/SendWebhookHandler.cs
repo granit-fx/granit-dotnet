@@ -79,7 +79,9 @@ public sealed partial class SendWebhookHandler(
             return; // Treat as non-retriable — subscription is gone.
         }
 
-        string plainSecret = await secretProtector.UnprotectAsync(subscription.SigningSecret, cancellationToken).ConfigureAwait(false);
+        string plainSecret = await WebhookSecretResolver
+            .ResolvePlainSecretAsync(subscription, secretProtector, cancellationToken)
+            .ConfigureAwait(false);
         string signature = WebhookSignatureService.Compute(plainSecret, sentAt, bodyJson);
 
         using StringContent content = new(bodyJson, Encoding.UTF8, "application/json");
