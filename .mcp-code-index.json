@@ -32813,7 +32813,7 @@
       "kind": "class",
       "project": "Granit.Parties.Mergeable",
       "file": "src/Granit.Parties.Mergeable/Extensions/PartiesMergeableHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitPartiesMergeable",

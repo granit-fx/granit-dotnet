@@ -88,6 +88,7 @@
       "tests/Granit.Parties.Abstractions.Tests/Granit.Parties.Abstractions.Tests.csproj",
       "tests/Granit.Parties.Endpoints.Tests/Granit.Parties.Endpoints.Tests.csproj",
       "tests/Granit.Parties.EntityFrameworkCore.Tests/Granit.Parties.EntityFrameworkCore.Tests.csproj",
+      "tests/Granit.Parties.Mergeable.Tests.Integration/Granit.Parties.Mergeable.Tests.Integration.csproj",
       "tests/Granit.Parties.Mergeable.Tests/Granit.Parties.Mergeable.Tests.csproj",
       "tests/Granit.Parties.MultiTenancy.Tests/Granit.Parties.MultiTenancy.Tests.csproj",
       "tests/Granit.Parties.Privacy.Tests/Granit.Parties.Privacy.Tests.csproj",
