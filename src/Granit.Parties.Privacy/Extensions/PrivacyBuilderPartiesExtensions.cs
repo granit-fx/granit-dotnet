@@ -16,7 +16,7 @@ public static class PrivacyBuilderPartiesExtensions
     /// The matching Wolverine handler is discovered automatically. Requires
     /// <see cref="GranitPartiesPrivacyModule"/> to be loaded.
     /// </remarks>
-    public static GranitPrivacyBuilder AddGranitContactsPrivacyProvider(
+    public static GranitPrivacyBuilder AddGranitPartiesPrivacyProvider(
         this GranitPrivacyBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);

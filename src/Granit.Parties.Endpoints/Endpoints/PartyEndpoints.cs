@@ -68,7 +68,7 @@ internal static class PartyEndpoints
         Party? c = await reader.GetByIdAsync(PartyId.Create(id), cancellationToken).ConfigureAwait(false);
         if (c is null) { return TypedResults.NotFound(); }
 
-        c.UpdateContact(request.Name, request.Website, request.Language, request.Timezone);
+        c.UpdateIdentity(request.Name, request.Website, request.Language, request.Timezone);
         await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(c.ToResponse());

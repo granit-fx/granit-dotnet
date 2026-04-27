@@ -1,6 +1,3 @@
-using Granit.DataFiltering;
-using Granit.Domain;
-using Granit.MultiTenancy;
 using Granit.Parties.Domain;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -9,19 +6,18 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 
 /// <summary>EF Core implementation of <see cref="IQueryableSource{TEntity}"/> for <see cref="Party"/>.</summary>
 /// <remarks>
-/// When no tenant context is active (host admin browsing host-scoped contacts), the
-/// multi-tenant query filter is disabled so all contacts are returned cross-tenant.
-/// Eager-loads addresses, emails, phones, and external mappings — admin grids show them.
+/// The standard <see cref="IMultiTenant"/> query filter is intentionally left active. When no
+/// tenant context is in scope (host admin), the filter naturally restricts the result set to
+/// host-scoped contacts (<c>TenantId == null</c>) — exactly the documented invariant in
+/// <see cref="EfPartyStore"/>. Disabling the filter in that branch would expose every tenant's
+/// contacts to a host-scoped browser, which is a privacy regression. Cross-tenant browsing
+/// must be opt-in via <c>IDataFilter.Disable&lt;IMultiTenant&gt;()</c> from a dedicated,
+/// permission-gated endpoint, not the default behaviour of this source.
 /// </remarks>
 internal sealed class EfPartyQueryableSource(
-    IDbContextFactory<PartiesDbContext> contextFactory,
-    ICurrentTenant currentTenant,
-    IDataFilter dataFilter) : IQueryableSource<Party>, IDisposable
+    IDbContextFactory<PartiesDbContext> contextFactory) : IQueryableSource<Party>, IDisposable
 {
     private readonly PartiesDbContext _context = contextFactory.CreateDbContext();
-    private readonly IDisposable? _tenantBypass = !currentTenant.IsAvailable
-        ? dataFilter.Disable<IMultiTenant>()
-        : null;
 
     public IQueryable<Party> GetQueryable() =>
         _context.Parties
@@ -31,9 +27,5 @@ internal sealed class EfPartyQueryableSource(
             .Include(c => c.Phones)
             .Include(c => c.ExternalMappings);
 
-    public void Dispose()
-    {
-        _tenantBypass?.Dispose();
-        _context.Dispose();
-    }
+    public void Dispose() => _context.Dispose();
 }

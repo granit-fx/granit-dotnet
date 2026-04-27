@@ -15,7 +15,7 @@ namespace Granit.Parties.Privacy;
 /// <remarks>
 /// Kept separate from <c>Granit.Parties</c> so apps that do not load the privacy stack
 /// do not inherit Privacy + BlobStorage dependencies. Apps opt in via
-/// <c>AddGranitPrivacy(p =&gt; p.AddGranitContactsPrivacyProvider())</c>.
+/// <c>AddGranitPrivacy(p =&gt; p.AddGranitPartiesPrivacyProvider())</c>.
 /// </remarks>
 [DependsOn(
     typeof(GranitPartiesModule),

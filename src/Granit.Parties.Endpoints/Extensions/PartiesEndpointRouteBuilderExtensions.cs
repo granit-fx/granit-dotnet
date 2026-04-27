@@ -51,7 +51,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .RequireAuthorization(PartiesPermissions.Parties.Manage);
 
         group.MapPatch("/{id:guid}", PartyEndpoints.HandleUpdateAsync)
-            .WithName("UpdateContact")
+            .WithName("UpdateIdentity")
             .WithSummary("Updates the contact's identity (name, website, locale, timezone).")
             .WithDescription("Updates the contact's display fields. Emails / phones / addresses live in their own child collections — see the dedicated /emails, /phones, /addresses endpoints. Currency is intentionally not editable here. Returns 404 if the contact does not exist; 400 on validation failure.")
             .Produces<PartyResponse>()

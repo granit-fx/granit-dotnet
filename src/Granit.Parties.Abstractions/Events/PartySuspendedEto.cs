@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Events;
 using Granit.Parties.Domain.ValueObjects;
 
@@ -7,4 +8,5 @@ namespace Granit.Parties.Events;
 public sealed record PartySuspendedEto(
     PartyId PartyId,
     Guid? TenantId,
-    string? Reason) : IIntegrationEvent;
+    [property: SensitiveData(Level = Sensitivity.Confidential)] string? Reason)
+    : IIntegrationEvent;

@@ -1,4 +1,6 @@
 using System.Text.Json;
+using Granit.DataFiltering;
+using Granit.Domain;
 using Granit.Parties.Domain;
 using Granit.Privacy.DataExport;
 
@@ -10,13 +12,17 @@ namespace Granit.Parties.Privacy.DataExport;
 /// JSON fragment.
 /// </summary>
 /// <remarks>
-/// The provider returns an empty buffer when no contact is linked to <c>userId</c> —
-/// the privacy saga then records an <c>empty:</c> sentinel for this provider and skips
-/// blob upload. Lookups go through <see cref="IPartyReader.GetByUserIdAsync"/> which
-/// honours the active tenant scope; for cross-tenant exports the caller is expected to
-/// have already disabled the multi-tenant filter.
+/// GDPR Article 15 requires the export to be complete regardless of the active tenant
+/// scope: a single user may be linked to a host-scoped or tenant-scoped contact and the
+/// privacy stack must locate either without leaking tenant context. The lookup therefore
+/// disables the <see cref="IMultiTenant"/> filter for the duration of the read, mirroring
+/// the deletion handler. Returns an empty buffer when no contact is linked to
+/// <c>userId</c> — the privacy saga then records an <c>empty:</c> sentinel for this
+/// provider and skips blob upload.
 /// </remarks>
-public sealed class PartiesPrivacyDataProvider(IPartyReader contacts) : IPrivacyDataProvider
+public sealed class PartiesPrivacyDataProvider(
+    IPartyReader contacts,
+    IDataFilter dataFilter) : IPrivacyDataProvider
 {
     /// <inheritdoc />
     public static string ProviderName => "parties";
@@ -30,7 +36,11 @@ public sealed class PartiesPrivacyDataProvider(IPartyReader contacts) : IPrivacy
     /// <inheritdoc />
     public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
     {
-        Party? contact = await contacts.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+        Party? contact;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            contact = await contacts.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+        }
         if (contact is null)
         {
             return ReadOnlyMemory<byte>.Empty;

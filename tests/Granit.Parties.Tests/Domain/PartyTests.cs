@@ -173,7 +173,7 @@ public sealed class PartyTests
         c.AddPhone(Guid.NewGuid(), PhoneKind.Mobile, "+33611223344");
         c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
         c.LinkToUser(Guid.NewGuid());
-        c.UpdateContact("Jean", website: "https://jean.example.com");
+        c.UpdateIdentity("Jean", website: "https://jean.example.com");
 
         bool changed = c.PseudonymizePersonalData();
 
@@ -300,7 +300,7 @@ public sealed class PartyTests
     {
         Party c = NewCompany();
 
-        c.UpdateContact("New Acme", website: "https://new.acme.com");
+        c.UpdateIdentity("New Acme", website: "https://new.acme.com");
 
         c.Name.ShouldBe("New Acme");
         c.Website.ShouldBe("https://new.acme.com");
@@ -312,7 +312,7 @@ public sealed class PartyTests
     {
         Party c = NewCompany();
         c.Archive();
-        Should.Throw<InvalidOperationException>(() => c.UpdateContact("X"));
+        Should.Throw<InvalidOperationException>(() => c.UpdateIdentity("X"));
     }
 
     // ── Multi-address ─────────────────────────────────────────────

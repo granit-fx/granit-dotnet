@@ -1,3 +1,4 @@
+using Granit.DataProtection;
 using Granit.Events;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
@@ -13,6 +14,6 @@ public sealed record PartyCreatedEto(
     PartyId PartyId,
     Guid? TenantId,
     PartyKind Kind,
-    string Name,
+    [property: SensitiveData(Level = Sensitivity.Internal)] string Name,
     PartyRoles Roles,
     string DefaultCurrency) : IIntegrationEvent;

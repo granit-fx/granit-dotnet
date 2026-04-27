@@ -137,9 +137,11 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     // ── Tax & legal identity (contact-level, not address-level) ───
 
     /// <summary>International VAT identifier (e.g. <c>"BE0123456789"</c>, <c>"FR12345678901"</c>).</summary>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string? TaxId { get; private set; }
 
     /// <summary>Company registration number (BCE/KBO, SIRET, HRB, Companies House, …).</summary>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string? RegistrationNumber { get; private set; }
 
     /// <summary>
@@ -299,7 +301,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     /// and phones live in their own collections — see <see cref="AddEmail"/>,
     /// <see cref="UpdateEmail"/>, <see cref="AddPhone"/>, <see cref="UpdatePhone"/>.
     /// </summary>
-    public void UpdateContact(
+    public void UpdateIdentity(
         string name,
         string? website = null,
         string? language = null,

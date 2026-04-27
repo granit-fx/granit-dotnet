@@ -31420,7 +31420,7 @@
       "kind": "record",
       "project": "Granit.Parties.Abstractions",
       "file": "src/Granit.Parties.Abstractions/Events/PartyCreatedEto.cs",
-      "line": 12,
+      "line": 13,
       "members": []
     },
     {
@@ -31510,7 +31510,7 @@
       "kind": "record",
       "project": "Granit.Parties.Abstractions",
       "file": "src/Granit.Parties.Abstractions/Events/PartySuspendedEto.cs",
-      "line": 7,
+      "line": 8,
       "members": []
     },
     {
@@ -31745,7 +31745,7 @@
       "kind": "class",
       "project": "Granit.Parties.Privacy",
       "file": "src/Granit.Parties.Privacy/DataExport/PartiesPrivacyDataProvider.cs",
-      "line": 19,
+      "line": 23,
       "members": [
         {
           "name": "ProviderName",
@@ -31782,9 +31782,9 @@
       "line": 9,
       "members": [
         {
-          "name": "AddGranitContactsPrivacyProvider",
+          "name": "AddGranitPartiesPrivacyProvider",
           "kind": "method",
-          "signature": "AddGranitContactsPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "signature": "AddGranitPartiesPrivacyProvider(this GranitPrivacyBuilder builder)",
           "returnType": "GranitPrivacyBuilder"
         }
       ]
