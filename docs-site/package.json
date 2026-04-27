@@ -14,7 +14,7 @@
     "@fontsource-variable/fira-code": "^5.2.7",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/vite": "^4.2.4",
     "astro": "^6.1.8",
     "astro-mermaid": "^2.0.1",
     "mermaid": "^11.14.0",
