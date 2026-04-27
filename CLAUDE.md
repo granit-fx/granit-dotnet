@@ -226,6 +226,254 @@ Single category with **mandatory suffix** — enforced by architecture tests:
 - **NEVER** create a separate `.Wolverine` package for jobs. Wolverine scheduling is
   handled by `Granit.BackgroundJobs.Wolverine`.
 
+### `*.Notifications` package — canonical checklist (STRICT)
+
+Every `Granit.{Module}.Notifications` package follows the same shape. Reference
+implementations: `Granit.Privacy.Notifications` (most recent, embedded templates +
+`{{ privacy }}` global context + manifest pinning test) and
+`Granit.Identity.Local.Notifications` (largest catalog: 9 notification types,
+145 templates).
+
+Public docs equivalent (audience: open-source consumers):
+[`docs-site/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx`](docs-site/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx).
+Keep the two in sync.
+
+#### 1. csproj structure
+
+```xml
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>Granit.{Module}.Notifications</PackageId>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.{Module}.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.{Module}\Granit.{Module}.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+</Project>
+```
+
+`WithCulture="false"` is **mandatory** — without it MSBuild treats files like
+`privacy.export_ready.fr.html` as satellite resources and breaks the manifest layout.
+
+#### 2. Module class — `Granit{Module}NotificationsModule.cs`
+
+```csharp
+[DependsOn(
+    typeof(GranitNotificationsAbstractionsModule),
+    typeof(Granit{Module}Module),
+    typeof(GranitTemplatingModule))]
+public sealed class Granit{Module}NotificationsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddEmbeddedTemplates(typeof(Granit{Module}NotificationsModule).Assembly);
+        context.Services.AddTemplateLayout("{module-prefix}.*", "Layout.Email");
+        // Optional — only if the module ships a global context (e.g. PrivacyContactGlobalContext).
+        // context.Services.AddTemplateGlobalContext<{Module}ContactGlobalContext>();
+        // Optional — only when the module needs to expose definitions to the admin UI.
+        // context.Services.AddSingleton<INotificationDefinitionProvider, {Module}NotificationDefinitionProvider>();
+    }
+}
+```
+
+Layout glob: `"{module-prefix}.*"` — covers all snake_case names. Add a second
+`"{Module}.*"` line if the package still ships legacy PascalCase template names
+(see `Granit.Privacy.Notifications` → `Privacy.LegalDocumentObsolete`).
+
+#### 3. Notification types — `*NotificationType.cs`
+
+```csharp
+public sealed class {Action}NotificationType : NotificationType<{Action}NotificationData>
+{
+    public static readonly {Action}NotificationType Instance = new();
+    public override string Name => "{module}.{event_name}";          // snake_case — preferred
+    public override NotificationSeverity DefaultSeverity => NotificationSeverity.Info;
+    public override IReadOnlyList<string> DefaultChannels { get; } =
+        [NotificationChannels.Email, NotificationChannels.InApp];
+}
+
+public sealed record {Action}NotificationData(/* fields */);
+```
+
+- **Naming**: `snake_case` is preferred (`privacy.deletion_acknowledged`,
+  `customer-balance.credit_expiring`). Legacy PascalCase (`Privacy.LegalDocumentObsolete`)
+  still works — never repeat that pattern in new types.
+- **`Name`** is the resource key for templates (`Templates/{Name}.html`) AND the
+  notification definition id surfaced in the admin UI.
+- **Singleton `Instance`** — Wolverine handlers reference it directly when calling
+  `INotificationPublisher.PublishAsync(...)`.
+- Data record stays in the same file (matches the rest of the codebase).
+
+#### 4. JSON-array gotcha — `*Display` companion field (MANDATORY when shipping `IReadOnlyList<T>`)
+
+The email channel serializes the data record to JSON and flattens it into a Scriban
+dictionary via `JsonElementToDictionary` (in
+`src/Granit.Notifications.Email/Internal/EmailNotificationChannel.cs`). **Arrays
+round-trip as their JSON string representation and are NOT iterable in Scriban.**
+
+Workaround: ship a `*Display` (string CSV) companion field alongside any list:
+
+```csharp
+public sealed record PrivacyExportFailedNotificationData(
+    Guid RequestId,
+    string ArchiveBlobReferenceId,
+    IReadOnlyList<string> MissingProviders,        // kept for audit/programmatic consumers
+    string MissingProvidersDisplay,                // template-friendly: string.Join(", ", MissingProviders)
+    DateTimeOffset RequestedAt,
+    string Regulation);
+```
+
+Reference: `Granit.Privacy.Notifications/PrivacyExportFailedNotificationType.cs`.
+Future US #1329 (architecture test D1) will warn when a list field has no `*Display` peer.
+
+#### 5. Wolverine handlers — `Handlers/{Trigger}Handler.cs`
+
+```csharp
+public class {Trigger}NotificationHandler           // public class — NEVER static, NEVER internal
+{
+    public static async Task HandleAsync(           // public static method
+        {Trigger}Eto evt,
+        INotificationPublisher publisher,
+        CancellationToken cancellationToken)
+    {
+        await publisher.PublishAsync(
+            {Action}NotificationType.Instance,
+            new {Action}NotificationData(/* ... */),
+            recipients: [evt.UserId.ToString()],
+            cancellationToken).ConfigureAwait(false);
+    }
+}
+```
+
+**Wolverine routing — local vs distributed (decide per story).** Wolverine discovers the
+handler the same way regardless of where the trigger comes from, but the *transport*
+differs:
+
+- **Local trigger** — emitted in the same process that hosts the `*.Notifications`
+  package (e.g. `WebhookDeliveryFailureThresholdExceededEto` originating in
+  `Granit.Webhooks` when both modules ship in the same API). Subscribe via the local
+  event bus (`ILocalEventBus`) — no network hop, no outbox. Use a domain `*Event`
+  rather than an `*Eto` if both producer and consumer live together.
+- **Distributed trigger** — emitted by another microservice and consumed via the bus
+  (e.g. `IdentityTokenExchangedEto` flowing from an identity service to a notifications
+  worker). Configure the queue/topic routing in Wolverine and keep `*Eto` semantics.
+
+Each Feature B / Feature C story under epic #1306 must explicitly state which mode it
+uses — defaulting silently to distributed for an in-process event wastes a round trip
+and breaks ordering guarantees.
+
+See [Wolverine handler visibility — CRITICAL](#wolverine-handler-visibility--critical)
+above. SonarQube S1118 on these handlers is a false positive — mark **Won't Fix**.
+
+#### 6. Templates — `Templates/{Name}.html` (+ per-culture variants)
+
+```html
+<title>Your data has been deleted</title>
+<p>Hi,</p>
+<p>We confirm that your personal data has been permanently deleted on
+   <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p>Contact our DPO at <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+```
+
+- **First line MUST be `<title>...</title>`** — the email channel extracts the subject
+  from this tag. Without it, the subject defaults to `notification_type.Replace('.', ' ')`
+  (ugly, e.g. `"privacy export_failed"`).
+- **Neutral file = English** — `Templates/{Name}.html` (no culture suffix). Per-culture
+  files: `Templates/{Name}.{culture}.html` (e.g. `.fr.html`, `.de.html`). Framework
+  baseline ships **EN + FR**; the rest are generated by `scripts/translate-templates.py`
+  (US #1311 / Feature A0) and carry a
+  `<!-- AUTO-TRANSLATED ({model}, {date}) — REVIEW BEFORE PRODUCTION -->` marker.
+- **Graceful degradation** — wrap optional fields in `{{ if ... }} ... {{ end }}` so
+  hosts that don't populate the global context (e.g. `{{ privacy.dpo_email }}`) still
+  render a usable email instead of `<empty href>` links.
+
+#### 7. Template variables available
+
+| Variable | Source | Notes |
+| -------- | ------ | ----- |
+| `{{ model.* }}` | The notification data record | Field names rendered `snake_case` via `StandardMemberRenamer` (`MissingProvidersDisplay` → `missing_providers_display`) |
+| `{{ privacy.* }}` | `PrivacyContactGlobalContext` (when `Granit.Privacy.Notifications` is loaded) | Controller name/email, DPO email, supervisory authority URL |
+| `{{ now.* }}` | Time provider | `now.utc_now`, `now.local_now` |
+| `{{ context.* }}` | Notification dispatch context | Recipient locale, channel name, tenant id |
+| `{{ app.* }}` | Host-provided global context | Branding (`app.name`, `app.support_email`, `app.logo_url`) — registered by the application, not the framework |
+
+Each module that ships its own global context registers it via
+`AddTemplateGlobalContext<TContext>()` in its `Granit{Module}NotificationsModule`.
+
+#### 8. Tests — `tests/Granit.{Module}.Notifications.Tests/`
+
+```text
+tests/Granit.{Module}.Notifications.Tests/
+  Handlers/
+    {Trigger}NotificationHandlerTests.cs   # one per Wolverine handler
+  Templates/
+    EmbeddedTemplatesTests.cs              # manifest pinning theory test
+```
+
+Manifest pinning theory test (skeleton — copy from
+`tests/Granit.Privacy.Notifications.Tests/Templates/EmbeddedTemplatesTests.cs`):
+
+```csharp
+public sealed class EmbeddedTemplatesTests
+{
+    public static TheoryData<string> ExpectedTemplates() =>
+    [
+        "Templates.{module}.{name1}.html",        // EN neutral
+        "Templates.{module}.{name1}.fr.html",     // FR baseline
+        // ... one row per (notification, culture) shipped
+    ];
+
+    [Theory, MemberData(nameof(ExpectedTemplates))]
+    public void EachExpectedTemplate_IsEmbeddedInTheAssembly(string suffix)
+    {
+        Assembly assembly = typeof(Granit{Module}NotificationsModule).Assembly;
+        string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
+        assembly.GetManifestResourceNames().ShouldContain(fullResourceName);
+    }
+}
+```
+
+#### 9. CI test sharding (MANDATORY)
+
+Add `tests/Granit.{Module}.Notifications.Tests` to the **`infrastructure`** shard of
+[`.github/test-shards.json`](.github/test-shards.json) (where the rest of
+`*.Notifications.*` lives). Then run `python3 scripts/generate-shard-filters.py` to
+regenerate the `.slnf` files. The pre-push hook does this automatically when
+`.csproj` or `test-shards.json` changes.
+
+Without registration, CI silently skips the project.
+
+#### 10. Translation strategy
+
+- Framework ships **EN + FR** out of the box for every `*.Notifications` package.
+- Additional cultures via `scripts/translate-templates.py` (US #1311 / Feature A0):
+  reproducible, idempotent, validates Scriban placeholder integrity post-translation.
+- Generated files carry `<!-- AUTO-TRANSLATED ({model}, {date}) — REVIEW BEFORE PRODUCTION -->`
+  on the first line.
+- Apps requiring legally-validated wording override embedded templates at runtime via
+  the `Granit.Templating` admin API (the DB-backed resolver runs at higher priority
+  than the embedded one).
+
+#### 11. Architecture enforcement (future)
+
+US #1329 (Feature D1) will assert, for every assembly matching `Granit.*.Notifications`:
+for every type that derives from `NotificationType<>` and whose `DefaultChannels`
+include a text-rendered channel (Email, SMS, WhatsApp, Web Push…), an `EmbeddedResource`
+named `Templates.{Name}.html` is present in the same assembly. Cross-link this section
+when the test lands.
+
 ### Declarative definitions (`*QueryDefinition`, `*ExportDefinition`) — placement (STRICT)
 
 Two declarative primitives describe how an entity is consulted (grid filter/sort) and
