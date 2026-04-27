@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Připomenutí: Vaše údaje budou brzy vymazány</title>
+<p>Dobrý den,</p>
+<p>Připomínáme, že Vámi požadovaný výmaz osobních údajů je naplánován na <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Pokud již své údaje nechcete vymazat, můžete svou žádost zrušit ze svého panelu ochrany soukromí:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Spravovat moji žádost</a>
+</p>
+<p>Pokud nepodniknete žádné kroky, budou Vaše údaje v plánovaném termínu trvale vymazány. Poté je výmaz nevratný.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dotazy? Kontaktujte našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

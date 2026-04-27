@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Państwa wniosek o usunięcie danych został anulowany</title>
+<p>Dzień dobry,</p>
+<p>Potwierdzamy, że Państwa odroczony wniosek o usunięcie danych został anulowany w dniu <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Państwa dane osobowe będą przechowywane jak dotychczas i nie jest wymagane żadne dalsze działanie z Państwa strony.</p>
+<p>W każdej chwili mogą Państwo złożyć nowy wniosek o usunięcie z poziomu panelu prywatności.</p>
+<p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Pytania? Prosimy o kontakt z naszym Inspektorem Ochrony Danych pod adresem <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

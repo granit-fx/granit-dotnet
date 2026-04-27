@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Váš export osobních údajů je připraven</title>
+<p>Dobrý den,</p>
+<p>Váš export osobních údajů, vyžádaný dne <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} podle nařízení <code>{{ model.regulation }}</code>{{ end }}, je nyní připraven ke stažení.</p>
+<p>Archiv můžete stáhnout ze svého panelu ochrany soukromí:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Stáhnout můj archiv</a>
+</p>
+<p>Odkaz pro stažení má z bezpečnostních důvodů omezenou platnost. Pokud vyprší, můžete si na téže stránce vyžádat nový.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dotazy k Vašim údajům? Kontaktujte našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

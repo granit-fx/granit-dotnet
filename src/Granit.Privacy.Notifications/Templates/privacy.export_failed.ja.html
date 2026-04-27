@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>データエクスポートが部分的にご利用いただけます</title>
+<p>こんにちは。</p>
+<p>お客様が <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }}、規制 <code>{{ model.regulation }}</code> に基づき{{ end }} ご請求された個人データのエクスポートは生成されましたが、一部のデータソースが規定時間内に応答しませんでした。アーカイブには法定期限内に収集できたすべての内容が含まれます。</p>
+{{ if model.missing_providers_display }}
+<p>以下のデータソースは本エクスポートに含まれていません: <code>{{ model.missing_providers_display }}</code>。</p>
+{{ end }}
+<p>以下のいずれかをご選択いただけます:</p>
+<ul>
+  <li><strong>部分アーカイブをダウンロード</strong> プライバシーダッシュボードから、または</li>
+  <li><strong>新しいリクエストを送信</strong> 不足分のソースを再試行するため。</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">エクスポートを表示</a>
+</p>
+<p>参照番号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">ご質問は、当社のデータ保護責任者までお問い合わせください: <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>。</p>
+{{ end }}

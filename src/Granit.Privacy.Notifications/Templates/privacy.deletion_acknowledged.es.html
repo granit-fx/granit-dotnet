@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Hemos recibido su solicitud de supresión</title>
+<p>Hola,</p>
+<p>Hemos recibido su solicitud de supresión de sus datos personales el <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} en virtud de la normativa <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Este correo electrónico constituye su acuse de recibo. Tramitaremos su solicitud dentro del plazo legal aplicable a su jurisdicción (un mes en virtud del artículo 12 §3 del RGPD, prorrogable si la solicitud resultara compleja). Recibirá un nuevo correo electrónico tan pronto como se ejecute la supresión, o si necesitamos información adicional por su parte.</p>
+<p>Referencia: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Este mensaje es enviado por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Para cualquier consulta relativa a la protección de sus datos puede contactar con nuestro Delegado de Protección de Datos en <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Si no está satisfecho con la tramitación de su solicitud, tiene derecho a presentar una reclamación ante la autoridad de control competente: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

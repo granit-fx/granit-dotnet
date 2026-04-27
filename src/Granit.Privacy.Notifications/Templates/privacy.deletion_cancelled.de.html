@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Ihr Löschantrag wurde storniert</title>
+<p>Guten Tag,</p>
+<p>Wir bestätigen, dass Ihr aufgeschobener Löschantrag am <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong> storniert wurde. Ihre personenbezogenen Daten werden wie zuvor aufbewahrt, und es ist keine weitere Handlung Ihrerseits erforderlich.</p>
+<p>Sie können jederzeit über Ihr Datenschutz-Dashboard einen neuen Löschantrag stellen.</p>
+<p>Referenz: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Fragen? Wenden Sie sich an unseren Datenschutzbeauftragten unter <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

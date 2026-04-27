@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>お客様のデータが削除されました</title>
+<p>こんにちは。</p>
+<p>お客様の個人データが <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> に永久に削除されたことを確認いたしました。本削除は取り消すことができません。</p>
+<p>本メールはお客様のコンプライアンス受領証となります。お客様の削除権が履行された証として保管をお願いいたします。</p>
+<p>参照番号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>本メッセージは {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} より送信されています。</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">データ保護に関するご質問は、当社のデータ保護責任者までお問い合わせください: <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>。</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">処理にご満足いただけない場合、監督機関へ苦情を申し立てる権利があります: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>。</p>
+{{ end }}

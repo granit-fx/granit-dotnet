@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Ihr Datenexport ist teilweise verfügbar</title>
+<p>Guten Tag,</p>
+<p>Ihr Export Ihrer personenbezogenen Daten, beantragt am <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} nach Maßgabe der Verordnung <code>{{ model.regulation }}</code>{{ end }}, wurde erstellt, jedoch haben einige Datenquellen nicht rechtzeitig geantwortet. Das Archiv enthält alles, was wir innerhalb der gesetzlichen Frist erfassen konnten.</p>
+{{ if model.missing_providers_display }}
+<p>Folgende Datenquellen sind in diesem Export nicht enthalten: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Sie können:</p>
+<ul>
+  <li><strong>Das Teilarchiv herunterladen</strong> über Ihr Datenschutz-Dashboard, oder</li>
+  <li><strong>Einen neuen Antrag stellen</strong>, um die fehlenden Quellen erneut abzurufen.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Meinen Export ansehen</a>
+</p>
+<p>Referenz: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Fragen? Wenden Sie sich an unseren Datenschutzbeauftragten unter <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

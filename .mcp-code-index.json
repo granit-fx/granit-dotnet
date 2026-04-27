@@ -2296,7 +2296,8 @@
       "name": "Granit.Timeline.Notifications",
       "deps": [
         "Granit.Timeline",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -2510,7 +2511,8 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.Workflow",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     }
@@ -45921,7 +45923,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Notifications",
       "file": "src/Granit.Timeline.Notifications/GranitTimelineNotificationsModule.cs",
-      "line": 15,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -49880,7 +49882,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/GranitWorkflowNotificationsModule.cs",
-      "line": 31,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",

@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Vi har tagit emot din begäran om radering</title>
+<p>Hej,</p>
+<p>Vi har tagit emot din begäran om radering av dina personuppgifter den <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} enligt regelverket <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Detta e-postmeddelande utgör din mottagningsbekräftelse. Vi kommer att behandla din begäran inom den lagstadgade tidsfrist som gäller för din jurisdiktion (en månad enligt artikel 12.3 i GDPR, med möjlig förlängning om begäran är komplex). Du kommer att få ett uppföljande e-postmeddelande så snart raderingen har genomförts, eller om vi behöver ytterligare uppgifter från dig.</p>
+<p>Referens: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Detta meddelande skickas av {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>För frågor om dataskydd kan du kontakta vårt dataskyddsombud på <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Om du inte är nöjd med hur vi hanterar din begäran har du rätt att lämna in ett klagomål till tillsynsmyndigheten: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

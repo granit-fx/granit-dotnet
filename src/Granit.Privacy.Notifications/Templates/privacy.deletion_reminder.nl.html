@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Herinnering: uw gegevens worden binnenkort verwijderd</title>
+<p>Hallo,</p>
+<p>Dit is een herinnering dat de door u aangevraagde verwijdering van uw persoonsgegevens gepland staat voor <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Wenst u uw gegevens niet langer te verwijderen, dan kunt u uw verzoek annuleren via uw privacydashboard:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Mijn verzoek beheren</a>
+</p>
+<p>Onderneemt u geen actie, dan worden uw gegevens op de geplande datum definitief verwijderd. Daarna is de verwijdering onomkeerbaar.</p>
+<p>Referentie: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Vragen? Neem contact op met onze functionaris voor gegevensbescherming via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

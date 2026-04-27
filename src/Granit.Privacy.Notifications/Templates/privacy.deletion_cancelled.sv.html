@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Din begäran om radering har avbrutits</title>
+<p>Hej,</p>
+<p>Vi bekräftar att din uppskjutna begäran om radering har avbrutits den <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Dina personuppgifter kommer att bevaras som tidigare, och ingen ytterligare åtgärd krävs av dig.</p>
+<p>Du kan när som helst skicka in en ny begäran om radering från din integritetspanel.</p>
+<p>Referens: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Frågor? Kontakta vårt dataskyddsombud på <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
