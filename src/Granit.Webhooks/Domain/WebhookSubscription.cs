@@ -316,6 +316,25 @@ public sealed class WebhookSubscription : AuditedAggregateRoot, IMultiTenant
     }
 
     /// <summary>
+    /// Stamps <see cref="WebhookSigningKey.LastRotationNotificationAt"/> on the matching key.
+    /// Used by the rotation scanner (FU-1b) to dedupe subsequent emissions.
+    /// </summary>
+    /// <param name="keyId">Identifier of the key to stamp.</param>
+    /// <param name="notifiedAt">Timestamp recorded on the key.</param>
+    /// <returns><c>true</c> if a key was stamped; <c>false</c> if no key with the given id exists.</returns>
+    internal bool StampRotationNotification(Guid keyId, DateTimeOffset notifiedAt)
+    {
+        WebhookSigningKey? key = _signingKeys.Find(k => k.Id == keyId);
+        if (key is null)
+        {
+            return false;
+        }
+
+        key.StampRotationNotification(notifiedAt);
+        return true;
+    }
+
+    /// <summary>
     /// Revokes a specific signing key by id. The last <see cref="WebhookSigningKeyStatus.Active"/>
     /// key cannot be revoked — rotate first to introduce a new active key, then revoke.
     /// </summary>

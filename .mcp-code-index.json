@@ -2481,6 +2481,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Webhooks.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Webhooks"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Webhooks.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -49053,6 +49061,12 @@
           "kind": "method",
           "signature": "FindByIdAsync(Guid keyId, CancellationToken cancellationToken = default)",
           "returnType": "Task<WebhookSigningKey?>"
+        },
+        {
+          "name": "GetExpiringSoonAsync",
+          "kind": "method",
+          "signature": "GetExpiringSoonAsync(DateTimeOffset now, DateTimeOffset cutoff, DateTimeOffset notificationDedupeBefore, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<WebhookSigningKey>>"
         }
       ]
     },
@@ -49074,6 +49088,12 @@
           "name": "RevokeSigningKeyAsync",
           "kind": "method",
           "signature": "RevokeSigningKeyAsync(Guid subscriptionId, Guid keyId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StampRotationNotificationAsync",
+          "kind": "method",
+          "signature": "StampRotationNotificationAsync(Guid subscriptionId, Guid keyId, DateTimeOffset notifiedAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -49196,7 +49216,7 @@
       "kind": "record",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Abstractions/IWebhookSigningKeyWriter.cs",
-      "line": 55,
+      "line": 73,
       "members": []
     },
     {
@@ -49225,6 +49245,63 @@
       "file": "src/Granit.Webhooks/Abstractions/WebhookTestPingResult.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "GranitWebhooksBackgroundJobsModule",
+      "fqn": "Granit.Webhooks.BackgroundJobs.GranitWebhooksBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/GranitWebhooksBackgroundJobsModule.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyRotationScanHandler",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Jobs.SigningKeyRotationScanHandler",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Jobs/SigningKeyRotationScanHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SigningKeyRotationScanJob _, SigningKeyRotationScanService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SigningKeyRotationScanJob",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Jobs.SigningKeyRotationScanJob",
+      "kind": "record",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Jobs/SigningKeyRotationScanJob.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "SigningKeyRotationScanService",
+      "fqn": "Granit.Webhooks.BackgroundJobs.Services.SigningKeyRotationScanService",
+      "kind": "class",
+      "project": "Granit.Webhooks.BackgroundJobs",
+      "file": "src/Granit.Webhooks.BackgroundJobs/Services/SigningKeyRotationScanService.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "IWebhookEventTypeDefinitionContext",
@@ -49767,6 +49844,15 @@
       "members": []
     },
     {
+      "name": "WebhookSigningKeyRotationDueEto",
+      "fqn": "Granit.Webhooks.Events.WebhookSigningKeyRotationDueEto",
+      "kind": "record",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Events/WebhookSigningKeyRotationDueEto.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "WebhookSubscriptionActivatedEvent",
       "fqn": "Granit.Webhooks.Events.WebhookSubscriptionActivatedEvent",
       "kind": "record",
@@ -50008,6 +50094,22 @@
       ]
     },
     {
+      "name": "SigningKeyRotationDueHandler",
+      "fqn": "Granit.Webhooks.Notifications.Handlers.SigningKeyRotationDueHandler",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/Handlers/SigningKeyRotationDueHandler.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(WebhookSigningKeyRotationDueEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "WebhooksDeliveryFailureThresholdNotificationData",
       "fqn": "Granit.Webhooks.Notifications.WebhooksDeliveryFailureThresholdNotificationData",
       "kind": "record",
@@ -50029,6 +50131,43 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "WebhooksDeliveryFailureThresholdNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "WebhooksSigningKeyRotationDueNotificationData",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksSigningKeyRotationDueNotificationData",
+      "kind": "record",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksSigningKeyRotationDueNotificationType.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "WebhooksSigningKeyRotationDueNotificationType",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksSigningKeyRotationDueNotificationType",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksSigningKeyRotationDueNotificationType.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "WebhooksSigningKeyRotationDueNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -50069,6 +50208,12 @@
           "kind": "method",
           "signature": "FromHours(24)",
           "returnType": "bool StorePayload { get; set; } public TimeSpan RetiredKeyGracePeriod { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RotationLeadTimeDays",
+          "kind": "property",
+          "signature": "int RotationLeadTimeDays",
+          "returnType": "int"
         }
       ]
     },

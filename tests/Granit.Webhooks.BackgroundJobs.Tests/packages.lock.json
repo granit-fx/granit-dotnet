@@ -20,6 +20,17 @@
         "resolved": "3.3.4",
         "contentHash": "0k2Jwpc8eq0hjOtX6TxRkHm9clkJ2PAQ3heEHgqIJZcsfdFosC/iyz18nsgTVDDWpID80rC7aiYK7ripx+Qndg=="
       },
+      "Microsoft.Extensions.Diagnostics.Testing": {
+        "type": "Direct",
+        "requested": "[10.*, )",
+        "resolved": "10.5.0",
+        "contentHash": "EiERK24AmaxMa7hkgV5UqdfIlrMxg3n+7XdkaV3FWLoyEzca6gvGiaRZofl6KzAtvMBJoZvb5a+EyYqq+M9CoQ==",
+        "dependencies": {
+          "Microsoft.Extensions.Logging": "10.0.6",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "10.0.6",
+          "Microsoft.Extensions.Telemetry.Abstractions": "10.5.0"
+        }
+      },
       "Microsoft.Extensions.TimeProvider.Testing": {
         "type": "Direct",
         "requested": "[10.*, )",
@@ -450,6 +461,20 @@
       "granit": {
         "type": "Project"
       },
+      "granit.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Cronos": "[0.12.*, )",
+          "Granit": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -516,25 +541,11 @@
           "SmartFormat": "[3.*, )"
         }
       },
-      "granit.notifications.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
-        }
-      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
-        }
-      },
-      "granit.templating": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
@@ -558,22 +569,18 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.webhooks.notifications": {
+      "granit.webhooks.backgroundjobs": {
         "type": "Project",
         "dependencies": {
-          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
-          "Granit.Templating": "[0.1.0-dev, )",
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.Webhooks": "[0.1.0-dev, )"
         }
       },
-      "granit.workflow": {
-        "type": "Project",
-        "dependencies": {
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
-        }
+      "Cronos": {
+        "type": "CentralTransitive",
+        "requested": "[0.12.*, )",
+        "resolved": "0.12.0",
+        "contentHash": "rOBW2cimLtkRoyLIZWZx1uM300cNI2wUKOUbLbGLnNQRly5R/YK3VdC1mk3Wvt24J4k9PY5j+9WL4smv0RIZvA=="
       },
       "Microsoft.Extensions.Caching.Abstractions": {
         "type": "CentralTransitive",

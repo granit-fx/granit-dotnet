@@ -1,0 +1,16 @@
+<title>Clé de signature webhook expire dans {{ model.days_until_expiry }} jour(s)</title>
+<p>Bonjour,</p>
+<p>Une de vos clés de signature webhook approche de sa date d'expiration. Effectuez une rotation avant que les consommateurs ne puissent plus vérifier les signatures.</p>
+<ul>
+  <li><strong>Souscription :</strong> <code>{{ model.subscription_id }}</code></li>
+  <li><strong>Clé :</strong> <code>{{ model.key_id }}</code></li>
+  <li><strong>Expire le :</strong> {{ model.expires_at | date.to_string '%d %B %Y à %H:%M UTC' }}</li>
+  <li><strong>Jours restants :</strong> {{ model.days_until_expiry }}</li>
+</ul>
+<p>Une fois la clé expirée, les signatures qu'elle a produites seront rejetées par votre endpoint et la livraison d'événements peut échouer. Une rotation introduit une nouvelle clé active tandis que la précédente reste acceptée pendant la période de grâce configurée — aucune interruption nécessaire.</p>
+{{ if app.base_url }}
+<p><a href="{{ app.base_url }}/webhooks/{{ model.subscription_id }}/keys">Gérer les clés de signature de cette souscription</a></p>
+{{ end }}
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Besoin d'aide ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

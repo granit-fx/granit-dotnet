@@ -48,6 +48,19 @@ public sealed class WebhooksOptions
     /// Must be greater than zero and not exceed 30 days.
     /// </remarks>
     public TimeSpan RetiredKeyGracePeriod { get; set; } = TimeSpan.FromHours(24);
+
+    /// <summary>
+    /// Number of days before a <see cref="Domain.WebhookSigningKey"/> expires at which the
+    /// rotation scanner emits a <see cref="Events.WebhookSigningKeyRotationDueEto"/>.
+    /// Default: 14 days. Must be between 1 and 90.
+    /// </summary>
+    /// <remarks>
+    /// Used by the daily <c>webhooks-key-rotation-scan</c> background job to surface
+    /// keys whose <see cref="Domain.WebhookSigningKey.ExpiresAt"/> falls within the next
+    /// <see cref="RotationLeadTimeDays"/> days, so administrators can rotate them before
+    /// downstream consumers stop being able to verify signatures.
+    /// </remarks>
+    public int RotationLeadTimeDays { get; set; } = 14;
 }
 
 /// <summary>
@@ -73,6 +86,12 @@ internal sealed class WebhooksOptionsValidator : IValidateOptions<WebhooksOption
         {
             errors.Add(
                 $"{nameof(WebhooksOptions.RetiredKeyGracePeriod)} must be positive and not exceed 30 days (got {options.RetiredKeyGracePeriod}).");
+        }
+
+        if (options.RotationLeadTimeDays < 1 || options.RotationLeadTimeDays > 90)
+        {
+            errors.Add(
+                $"{nameof(WebhooksOptions.RotationLeadTimeDays)} must be between 1 and 90 (got {options.RotationLeadTimeDays}).");
         }
 
         return errors.Count > 0

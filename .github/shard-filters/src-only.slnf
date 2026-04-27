@@ -281,6 +281,7 @@
       "src/Granit.Vault.GoogleCloud/Granit.Vault.GoogleCloud.csproj",
       "src/Granit.Vault.HashiCorp/Granit.Vault.HashiCorp.csproj",
       "src/Granit.Vault/Granit.Vault.csproj",
+      "src/Granit.Webhooks.BackgroundJobs/Granit.Webhooks.BackgroundJobs.csproj",
       "src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj",
       "src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj",
       "src/Granit.Webhooks.Notifications/Granit.Webhooks.Notifications.csproj",

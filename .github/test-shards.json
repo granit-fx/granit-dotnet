@@ -144,6 +144,7 @@
         "tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests",
         "tests/Granit.Persistence.EntityFrameworkCore.Tests",
         "tests/Granit.RateLimiting.Tests",
+        "tests/Granit.Webhooks.BackgroundJobs.Tests",
         "tests/Granit.Webhooks.Endpoints.Tests",
         "tests/Granit.Webhooks.EntityFrameworkCore.Tests",
         "tests/Granit.Webhooks.Notifications.Tests",
