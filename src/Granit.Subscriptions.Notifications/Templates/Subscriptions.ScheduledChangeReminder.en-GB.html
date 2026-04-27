@@ -1,0 +1,11 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<p>Hello,</p>
+<p>This is a reminder that your subscription plan will change on <strong>{{ model.scheduled_at | to_user_time | date.to_string "%d %B %Y at %H:%M" }}</strong>:</p>
+<ul>
+  <li><strong>Current plan:</strong> {{ model.current_plan_name | html.escape }}</li>
+  <li><strong>New plan:</strong> {{ model.new_plan_name | html.escape }}</li>
+</ul>
+<p>If you'd like to cancel or amend this change, you can do so before the scheduled date.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Manage subscription</a>
+</p>
