@@ -12,8 +12,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Granit.Timeline\Granit.Timeline.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
   </ItemGroup>
 
 </Project>

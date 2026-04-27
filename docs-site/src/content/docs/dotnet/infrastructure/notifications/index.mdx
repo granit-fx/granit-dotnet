@@ -189,3 +189,13 @@ context.Services.AddGranitNotificationsWhatsApp(opts => opts.Provider = "Brevo")
 
 </TabItem>
 </Tabs>
+
+## Building your own `*.Notifications` package
+
+Modules that emit user-facing events (export ready, payment succeeded, quota
+exceeded…) ship a sibling `Granit.{Module}.Notifications` package wiring the
+event to the fan-out engine and providing the email templates. The
+[notifications package conventions](./conventions/) page documents the
+canonical file layout, the Wolverine handler shape, the `<title>`-tag subject
+extraction, the JSON-array `*Display` companion gotcha, the manifest pinning
+test, and the embedded-vs-DB template override mechanics.

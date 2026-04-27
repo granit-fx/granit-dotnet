@@ -1,0 +1,12 @@
+<title>Approval requested: {{ model.entity_type | html.escape }}</title>
+<p>Hi,</p>
+<p>Your approval has been requested on a {{ model.entity_type | html.escape }} (<code>{{ model.entity_id | html.escape }}</code>).</p>
+<ul>
+  <li><strong>Requested by:</strong> {{ model.requested_by | html.escape }}</li>
+  <li><strong>Target state:</strong> {{ model.target_state | html.escape }}</li>
+  <li><strong>Required permission:</strong> <code>{{ model.required_permission | html.escape }}</code></li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/{{ model.entity_type | string.downcase }}/{{ model.entity_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Review and approve</a>
+</p>
+<p style="font-size: 13px; color: #6b7280;">You are receiving this email because you hold the permission required to approve this transition.</p>

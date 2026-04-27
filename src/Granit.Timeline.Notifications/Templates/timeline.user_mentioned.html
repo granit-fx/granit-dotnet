@@ -1,0 +1,10 @@
+<title>You were mentioned by {{ model.author_name | html.escape }}</title>
+<p>Hi,</p>
+<p><strong>{{ model.author_name | html.escape }}</strong> mentioned you in a comment on {{ model.entity_type | html.escape }} <code>{{ model.entity_id | html.escape }}</code>.</p>
+<blockquote style="border-left: 3px solid #d1d5db; margin: 16px 0; padding: 8px 16px; color: #374151;">
+  {{ model.body | string.truncate 280 | html.escape }}
+</blockquote>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/{{ model.entity_type | string.downcase }}/{{ model.entity_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Open the conversation</a>
+</p>
+<p style="font-size: 13px; color: #6b7280;">You are receiving this email because you were @mentioned. You can adjust your notification preferences in your account settings.</p>
