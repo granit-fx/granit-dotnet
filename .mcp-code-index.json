@@ -1669,6 +1669,7 @@
       "name": "Granit.Parties.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Mergeable",
         "Granit.Parties",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
@@ -32286,6 +32287,15 @@
       ]
     },
     {
+      "name": "FieldConflictResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.FieldConflictResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 55,
+      "members": []
+    },
+    {
       "name": "PartyAddressRequest",
       "fqn": "Granit.Parties.Endpoints.Dtos.PartyAddressRequest",
       "kind": "record",
@@ -32355,6 +32365,24 @@
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
       "line": 73,
+      "members": []
+    },
+    {
+      "name": "PartyMergeRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMergeRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "PartyMergeResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMergeResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMergeDtos.cs",
+      "line": 38,
       "members": []
     },
     {

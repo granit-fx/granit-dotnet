@@ -4,5 +4,6 @@
   "Permission:Parties.Parties.Manage": "Gérer les tiers (identité, adresses, e-mails, téléphones, rôles)",
   "Permission:Parties.Parties.Lifecycle": "Modifier le cycle de vie d'un tiers (suspendre, réactiver, archiver)",
   "Permission:Parties.Parties.SetTaxStatus": "Définir le statut fiscal client-spécifique (exonération, autoliquidation)",
-  "Permission:Parties.Parties.ExternalMappings": "Associer des identifiants de fournisseurs externes (Stripe, Mollie, Odoo, ...)"
+  "Permission:Parties.Parties.ExternalMappings": "Associer des identifiants de fournisseurs externes (Stripe, Mollie, Odoo, ...)",
+  "Permission:Parties.Parties.Merge": "Fusionner deux tiers (regrouper les doublons)"
 }

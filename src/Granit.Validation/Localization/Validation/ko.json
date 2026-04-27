@@ -1,4 +1,5 @@
 {
+  "Granit:Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "ko",
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}'에 대해 지정된 조건이 충족되지 않았습니다.",

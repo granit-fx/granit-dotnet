@@ -1,4 +1,5 @@
 {
+  "Granit:Validation:InvalidMergeChoice": "Each merge choice must be either 'Survivor' or 'Loser'.",
   "culture": "zh",
   "texts": {
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' 的指定条件未满足。",

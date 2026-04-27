@@ -206,6 +206,26 @@ public static class PartiesEndpointRouteBuilderExtensions
             .ProducesValidationProblem()
             .RequireAuthorization(PartiesPermissions.Parties.Manage);
 
+        // ── Merge (admin tool: survivor + loser → tombstoned loser) ───
+        group.MapGet("/{survivorId:guid}/merge/preview", PartyMergeEndpoints.HandlePreviewAsync)
+            .WithName("PreviewPartyMerge")
+            .WithSummary("Previews a party merge in dry-run mode.")
+            .WithDescription("Computes per-field conflicts (with the recommended winner pre-populated) and per-rewriter row counts (Invoice.PartyId, Subscription.PartyId, BalanceAccount.PartyId, ...) without committing anything. Powers the admin merge wizard's side-by-side view. Returns 422 when a hard invariant is violated (tenant / kind / currency mismatch, archived loser).")
+            .Produces<PartyMergeResponse>()
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .RequireAuthorization(PartiesPermissions.Parties.Merge);
+
+        group.MapPost("/{survivorId:guid}/merge", PartyMergeEndpoints.HandleMergeAsync)
+            .WithName("MergeParty")
+            .WithSummary("Merges a loser party into the survivor.")
+            .WithDescription("Survivor absorbs the loser: scalar fields resolved per the supplied choices (defaults applied to missing keys), child collections rewritten via SQL bulk-update, cross-module references (Invoice.PartyId, Subscription.PartyId, BalanceAccount.PartyId) redirected onto the survivor, loser tombstoned with MergedIntoId pointing at the survivor. Atomic — any failure rolls the whole transaction back. Stripe-style idempotency via the optional Idempotency-Key header (24h replay window). Returns 422 on invariant violation, 409 on concurrent merge or idempotency-key conflict, 404 when survivor or loser does not exist.")
+            .Produces<PartyMergeResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesValidationProblem()
+            .RequireAuthorization(PartiesPermissions.Parties.Merge);
+
         // ── vCard export (RFC 6350) ───────────────────────────────────
         group.MapGet("/{id:guid}/vcard", PartyEndpoints.HandleDownloadVCardAsync)
             .WithName("DownloadPartyVCard")

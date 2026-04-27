@@ -47,5 +47,11 @@ internal sealed class PartiesPermissionDefinitionProvider : IPermissionDefinitio
             LocalizableString.Create<PartiesEndpointsLocalizationResource>(
                 "Permission:Parties.Parties.ExternalMappings"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            PartiesPermissions.Parties.Merge,
+            LocalizableString.Create<PartiesEndpointsLocalizationResource>(
+                "Permission:Parties.Parties.Merge"),
+            MultiTenancySides.Both);
     }
 }
