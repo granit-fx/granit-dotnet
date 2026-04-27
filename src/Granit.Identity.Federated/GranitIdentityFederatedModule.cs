@@ -33,6 +33,16 @@ public sealed class GranitIdentityFederatedModule : GranitModule
         // implementation to enforce per-user quotas across pods.
         context.Services.TryAddSingleton<ITokenExchangeRateLimiter, NullTokenExchangeRateLimiter>();
 
+        // Throttles IdentityUserSyncFailedEto emissions per (UserId, ProviderName)
+        // to one per cool-off window (default 60 min) so a sync-loop incident does
+        // not flood the SIEM / notification channel. In-memory by default — multi-pod
+        // hosts should swap in a Granit.RateLimiting-backed implementation.
+        context.Services.AddOptions<IdentityFederatedNotificationOptions>()
+            .BindConfiguration(IdentityFederatedNotificationOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+        context.Services.TryAddSingleton<IUserSyncFailureRateLimiter, InMemoryUserSyncFailureRateLimiter>();
+
         // Lookup hasher for email-based admin search over encrypted PII.
         // Startup-validated via UserCacheHasherOptions.EmailLookupPepper.
         context.Services.AddOptions<UserCacheHasherOptions>()

@@ -1,0 +1,22 @@
+<title>Federated identity sync failed: {{ model.user_id | html.escape }} on {{ model.provider_name | html.escape }}</title>
+<p>Hello,</p>
+<p>The federated identity layer failed to synchronise a user between <strong>{{ model.provider_name | html.escape }}</strong> and the local user cache. ISO 27001 A.12.4 requires drift between the identity provider and our user table to surface to a human responder rather than only land in a log file — please review and acknowledge or escalate.</p>
+<ul>
+  <li><strong>User:</strong> <code>{{ model.user_id | html.escape }}</code></li>
+  <li><strong>Provider:</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Reason:</strong> {{ model.reason | html.escape | string.truncate 280 }}</li>
+  <li><strong>Occurred at:</strong> {{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M:%S UTC' }}</li>
+  {{ if model.tenant_id }}
+  <li><strong>Tenant:</strong> <code>{{ model.tenant_id }}</code></li>
+  {{ end }}
+</ul>
+{{ if app.base_url }}
+<p>Pivot into the user's cache record: <a href="{{ app.base_url }}/admin/identity/users/{{ model.user_id }}">{{ app.base_url }}/admin/identity/users/{{ model.user_id }}</a></p>
+{{ end }}
+<p>If the failure is transient (provider unreachable, network blip), the next sync cycle will recover automatically. If it persists for the same user, treat it as drift between the IdP and our cache: confirm the user still exists upstream, then either trigger a manual re-sync or hard-delete the orphaned cache entry per the runbook. Repeated failures for the same (user, provider) pair are rate-limited to one notification per cool-off window (default 60 min) so the channel does not get flooded — adjust <code>IdentityFederatedNotifications:SyncFailureCoolOffMinutes</code> if your operating tempo differs.</p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Data-protection contact: <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Need help triaging? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

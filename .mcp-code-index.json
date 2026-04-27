@@ -19252,6 +19252,15 @@
       "members": []
     },
     {
+      "name": "IdentityUserSyncFailedEto",
+      "fqn": "Granit.Identity.Federated.Events.IdentityUserSyncFailedEto",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Events/IdentityUserSyncFailedEto.cs",
+      "line": 35,
+      "members": []
+    },
+    {
       "name": "IdentityUserUpdatedEto",
       "fqn": "Granit.Identity.Federated.Events.IdentityUserUpdatedEto",
       "kind": "record",
@@ -19586,6 +19595,22 @@
       ]
     },
     {
+      "name": "SyncFailedHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.SyncFailedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/SyncFailedHandler.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityUserSyncFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "TokenExchangeAuditHandler",
       "fqn": "Granit.Identity.Federated.Notifications.Handlers.TokenExchangeAuditHandler",
       "kind": "class",
@@ -19614,6 +19639,43 @@
           "kind": "method",
           "signature": "HandleAsync(IdentityUserDeletedEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentitySyncFailedNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentitySyncFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentitySyncFailedNotificationType.cs",
+      "line": 55,
+      "members": []
+    },
+    {
+      "name": "IdentitySyncFailedNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentitySyncFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentitySyncFailedNotificationType.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentitySyncFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -19688,6 +19750,22 @@
           "kind": "property",
           "signature": "NotificationSeverity DefaultSeverity",
           "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "IdentityFederatedNotificationOptions",
+      "fqn": "Granit.Identity.Federated.Options.IdentityFederatedNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Options/IdentityFederatedNotificationOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "SyncFailureCoolOffMinutes",
+          "kind": "property",
+          "signature": "int SyncFailureCoolOffMinutes",
+          "returnType": "int"
         }
       ]
     },
@@ -19848,6 +19926,31 @@
           "returnType": "Task<TokenExchangeRateLimitDecision>"
         }
       ]
+    },
+    {
+      "name": "IUserSyncFailureRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.IUserSyncFailureRateLimiter",
+      "kind": "interface",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/IUserSyncFailureRateLimiter.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "TryAcquire",
+          "kind": "method",
+          "signature": "TryAcquire(string userId, string providerName)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "InMemoryUserSyncFailureRateLimiter",
+      "fqn": "Granit.Identity.Federated.RateLimiting.InMemoryUserSyncFailureRateLimiter",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/RateLimiting/InMemoryUserSyncFailureRateLimiter.cs",
+      "line": 23,
+      "members": []
     },
     {
       "name": "NullTokenExchangeRateLimiter",
