@@ -582,6 +582,7 @@
     <Project Path="tests/Granit.Invoicing.Builtin.Tests/Granit.Invoicing.Builtin.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Endpoints.Tests/Granit.Invoicing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.EntityFrameworkCore.Tests/Granit.Invoicing.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Invoicing.EntityFrameworkCore.Tests.Integration/Granit.Invoicing.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Invoicing.Notifications.Tests/Granit.Invoicing.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Odoo.Tests/Granit.Invoicing.Odoo.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Tests/Granit.Invoicing.Tests.csproj" />

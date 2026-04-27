@@ -2440,6 +2440,7 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Invoicing": "[0.1.0-dev, )",
+          "Granit.Mergeable": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
