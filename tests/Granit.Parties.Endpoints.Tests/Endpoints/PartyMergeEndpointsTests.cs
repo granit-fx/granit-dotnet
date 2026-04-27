@@ -1,10 +1,19 @@
+using Granit.Auditing;
+using Granit.Auditing.Domain;
+using Granit.Guids;
 using Granit.Mergeable;
 using Granit.Mergeable.Exceptions;
+using Granit.MultiTenancy;
 using Granit.Parties.Domain;
 using Granit.Parties.Endpoints.Dtos;
 using Granit.Parties.Endpoints.Endpoints;
+using Granit.Parties.Endpoints.Internal;
+using Granit.Timing;
+using Granit.Users;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Shouldly;
@@ -24,6 +33,27 @@ namespace Granit.Parties.Endpoints.Tests.Endpoints;
 public sealed class PartyMergeEndpointsTests
 {
     private readonly IMergeService<Party> _mergeService = Substitute.For<IMergeService<Party>>();
+    private readonly IAuditingWriter _auditingWriter = Substitute.For<IAuditingWriter>();
+    private readonly ILogger<PartyMergeRequest> _logger = NullLogger<PartyMergeRequest>.Instance;
+    private readonly PartyMergeAuditWriter _auditWriter;
+
+    public PartyMergeEndpointsTests()
+    {
+        ICurrentUserService user = Substitute.For<ICurrentUserService>();
+        user.UserId.Returns("admin-1");
+        user.UserName.Returns("Admin");
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(false);
+
+        IGuidGenerator guidGen = Substitute.For<IGuidGenerator>();
+        guidGen.Create().Returns(_ => Guid.NewGuid());
+
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(new DateTimeOffset(2026, 4, 27, 14, 0, 0, TimeSpan.Zero));
+
+        _auditWriter = new PartyMergeAuditWriter(_auditingWriter, user, tenant, guidGen, clock);
+    }
 
     // ── Preview ────────────────────────────────────────────────────────────
 
@@ -103,7 +133,7 @@ public sealed class PartyMergeEndpointsTests
             DryRun: false);
 
         Results<Ok<PartyMergeResponse>, ProblemHttpResult, ValidationProblem> result = await PartyMergeEndpoints.HandleMergeAsync(
-            survivor, request, idempotencyKey, _mergeService, TestContext.Current.CancellationToken);
+            survivor, request, idempotencyKey, _mergeService, _auditWriter, _logger, TestContext.Current.CancellationToken);
 
         result.Result.ShouldBeOfType<Ok<PartyMergeResponse>>();
 
@@ -130,6 +160,8 @@ public sealed class PartyMergeEndpointsTests
             new PartyMergeRequest(LoserId: Guid.NewGuid()),
             idempotencyKey: null,
             _mergeService,
+            _auditWriter,
+            _logger,
             TestContext.Current.CancellationToken);
 
         ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
@@ -147,6 +179,8 @@ public sealed class PartyMergeEndpointsTests
             new PartyMergeRequest(LoserId: Guid.NewGuid()),
             idempotencyKey: null,
             _mergeService,
+            _auditWriter,
+            _logger,
             TestContext.Current.CancellationToken);
 
         ProblemHttpResult problem = result.Result.ShouldBeOfType<ProblemHttpResult>();
@@ -168,10 +202,101 @@ public sealed class PartyMergeEndpointsTests
             new PartyMergeRequest(LoserId: Guid.NewGuid(), Choices: null),
             idempotencyKey: null,
             _mergeService,
+            _auditWriter,
+            _logger,
             TestContext.Current.CancellationToken);
 
         await _mergeService.Received(1).MergeAsync(
             Arg.Is<MergeRequest>(r => r.Choices.Choices.Count == 0),
             Arg.Any<CancellationToken>());
+    }
+
+    // ── Audit ──────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task Merge_WritesAuditEntry_AfterSuccessfulLiveMerge()
+    {
+        var survivor = Guid.NewGuid();
+        var loser = Guid.NewGuid();
+        _mergeService.MergeAsync(Arg.Any<MergeRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new MergeResult<Party>(
+                Merged: null,
+                Conflicts: [],
+                RewriteCounts: new Dictionary<string, int>(StringComparer.Ordinal)
+                {
+                    ["Invoice.PartyId"] = 12,
+                    ["Subscription.PartyId"] = 1,
+                },
+                DryRun: false));
+
+        await PartyMergeEndpoints.HandleMergeAsync(
+            survivor,
+            new PartyMergeRequest(
+                LoserId: loser,
+                Choices: new Dictionary<string, string>(StringComparer.Ordinal) { ["Name"] = "Survivor" },
+                Reason: "Doublon CRM"),
+            idempotencyKey: "k1",
+            _mergeService,
+            _auditWriter,
+            _logger,
+            TestContext.Current.CancellationToken);
+
+        await _auditingWriter.Received(1).WriteAsync(
+            Arg.Is<AuditEntry>(e =>
+                e.Category == AuditCategory.DataMutation &&
+                e.UserId == "admin-1" &&
+                e.EntityChanges.Count == 1 &&
+                e.EntityChanges.First().EntityType == "Party" &&
+                e.EntityChanges.First().EntityId == survivor.ToString() &&
+                e.EntityChanges.First().PropertyChanges.Count == 4),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Merge_DoesNotWriteAuditEntry_WhenDryRun()
+    {
+        _mergeService.MergeAsync(Arg.Any<MergeRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new MergeResult<Party>(
+                Merged: null,
+                Conflicts: [],
+                RewriteCounts: new Dictionary<string, int>(StringComparer.Ordinal),
+                DryRun: true));
+
+        await PartyMergeEndpoints.HandleMergeAsync(
+            Guid.NewGuid(),
+            new PartyMergeRequest(LoserId: Guid.NewGuid(), DryRun: true),
+            idempotencyKey: null,
+            _mergeService,
+            _auditWriter,
+            _logger,
+            TestContext.Current.CancellationToken);
+
+        await _auditingWriter.DidNotReceive().WriteAsync(Arg.Any<AuditEntry>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Merge_StillReturnsOk_WhenAuditWriteFails()
+    {
+        _mergeService.MergeAsync(Arg.Any<MergeRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new MergeResult<Party>(
+                Merged: null,
+                Conflicts: [],
+                RewriteCounts: new Dictionary<string, int>(StringComparer.Ordinal),
+                DryRun: false));
+
+        _auditingWriter.WriteAsync(Arg.Any<AuditEntry>(), Arg.Any<CancellationToken>())
+            .ThrowsAsync(new InvalidOperationException("Audit DB unreachable."));
+
+        Results<Ok<PartyMergeResponse>, ProblemHttpResult, ValidationProblem> result = await PartyMergeEndpoints.HandleMergeAsync(
+            Guid.NewGuid(),
+            new PartyMergeRequest(LoserId: Guid.NewGuid()),
+            idempotencyKey: null,
+            _mergeService,
+            _auditWriter,
+            _logger,
+            TestContext.Current.CancellationToken);
+
+        // Merge already committed; audit failure must not surface to the caller.
+        result.Result.ShouldBeOfType<Ok<PartyMergeResponse>>();
     }
 }

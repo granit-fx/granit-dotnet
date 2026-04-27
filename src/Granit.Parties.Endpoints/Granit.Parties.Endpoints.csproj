@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Auditing\Granit.Auditing.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Mergeable\Granit.Mergeable.csproj" />
     <ProjectReference Include="..\Granit.Parties\Granit.Parties.csproj" />

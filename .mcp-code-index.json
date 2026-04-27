@@ -1668,6 +1668,7 @@
     {
       "name": "Granit.Parties.Endpoints",
       "deps": [
+        "Granit.Auditing",
         "Granit.Authorization",
         "Granit.Mergeable",
         "Granit.Parties",
@@ -32698,7 +32699,7 @@
       "kind": "class",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/GranitPartiesEndpointsModule.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",

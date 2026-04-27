@@ -2,9 +2,11 @@ using Granit.Mergeable;
 using Granit.Mergeable.Exceptions;
 using Granit.Parties.Domain;
 using Granit.Parties.Endpoints.Dtos;
+using Granit.Parties.Endpoints.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Granit.Parties.Endpoints.Endpoints;
 
@@ -13,8 +15,13 @@ namespace Granit.Parties.Endpoints.Endpoints;
 /// generic merge orchestrator (<see cref="IMergeService{Party}"/>) and shapes the
 /// response into a wire-friendly DTO.
 /// </summary>
-internal static class PartyMergeEndpoints
+internal static partial class PartyMergeEndpoints
 {
+    [LoggerMessage(EventId = 1, Level = LogLevel.Error,
+        Message = "Failed to write audit entry for Party merge: survivor={SurvivorId}, loser={LoserId}.")]
+    private static partial void LogAuditWriteFailed(
+        ILogger logger, Guid survivorId, Guid loserId, Exception exception);
+
     /// <summary>
     /// Handler for <c>GET /parties/{survivorId}/merge/preview?loserId=&lt;guid&gt;</c>.
     /// Always a dry-run — computes per-field conflicts (with default <c>WinnerSide</c>
@@ -63,6 +70,8 @@ internal static class PartyMergeEndpoints
         PartyMergeRequest request,
         [FromHeader(Name = "Idempotency-Key")] string? idempotencyKey,
         [FromServices] IMergeService<Party> mergeService,
+        [FromServices] PartyMergeAuditWriter auditWriter,
+        [FromServices] ILogger<PartyMergeRequest> logger,
         CancellationToken cancellationToken)
     {
         var orchestratorRequest = new MergeRequest(
@@ -78,6 +87,29 @@ internal static class PartyMergeEndpoints
             MergeResult<Party> result = await mergeService
                 .MergeAsync(orchestratorRequest, cancellationToken)
                 .ConfigureAwait(false);
+
+            // Audit only live merges — dry-runs are exploratory and never commit.
+            if (!result.DryRun)
+            {
+                try
+                {
+                    await auditWriter.RecordAsync(
+                        survivorId: survivorId,
+                        loserId: request.LoserId,
+                        resolvedChoices: request.Choices,
+                        rewriteCounts: result.RewriteCounts,
+                        reason: request.Reason,
+                        cancellationToken: cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex) when (ex is not OperationCanceledException)
+                {
+                    // The merge already committed — losing the audit row is bad but losing
+                    // the merge would be worse. Surface the failure in logs and let
+                    // operators reconstruct the audit trail from the integration event
+                    // (PartyMergedEto via the Wolverine outbox) once that path lands.
+                    LogAuditWriteFailed(logger, survivorId, request.LoserId, ex);
+                }
+            }
 
             return TypedResults.Ok(MapResponse(survivorId, request.LoserId, result));
         }
