@@ -1,9 +1,24 @@
+using System.Diagnostics.Metrics;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
+using Granit.Parties.Diagnostics;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
+
+/// <summary>
+/// Minimal <see cref="IMeterFactory"/> stub for tests — returns a fresh <see cref="Meter"/>
+/// per request without DI plumbing. Used to construct a real <see cref="PartiesMetrics"/>
+/// in store / scope tests where metric assertions are not the focus.
+/// </summary>
+internal sealed class StubMeterFactory : IMeterFactory
+{
+    public Meter Create(MeterOptions options) => new(options);
+    public void Dispose() { }
+
+    public static PartiesMetrics CreatePartiesMetrics() => new(new StubMeterFactory());
+}
 
 /// <summary>Mutable <see cref="ICurrentTenant"/> stub for scoped reads inside one fixture.</summary>
 internal sealed class StubCurrentTenant : ICurrentTenant

@@ -12,5 +12,6 @@ internal sealed class PartyUpdateRequestValidator : GranitValidator<PartyUpdateR
         RuleFor(x => x.Website).MaximumLength(2048);
         RuleFor(x => x.Language).MaximumLength(16);
         RuleFor(x => x.Timezone).MaximumLength(64);
+        RuleFor(x => x.InternalNotes).MaximumLength(8_000);
     }
 }

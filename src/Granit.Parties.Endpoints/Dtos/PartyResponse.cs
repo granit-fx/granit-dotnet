@@ -23,7 +23,9 @@ public sealed record PartyResponse(
     IReadOnlyList<PartyEmailResponse> Emails,
     IReadOnlyList<PartyPhoneResponse> Phones,
     IReadOnlyList<PartyExternalMappingResponse> ExternalMappings,
-    PartyTaxStatusResponse TaxStatus);
+    PartyTaxStatusResponse TaxStatus,
+    IReadOnlyDictionary<string, string> Metadata,
+    string? InternalNotes);
 
 /// <summary>Customer-specific tax classification (exempt / reverse-charge / standard).</summary>
 public sealed record PartyTaxStatusResponse(

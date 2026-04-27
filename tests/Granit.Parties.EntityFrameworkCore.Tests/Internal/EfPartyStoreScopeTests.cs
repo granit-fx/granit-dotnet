@@ -70,7 +70,7 @@ public sealed class EfContactStoreScopeTests : IAsyncDisposable
         StubCurrentTenant tenant = new();
         if (tenantId is { } id) { tenant.Set(id); }
         ScopedFactory factory = new(BuildOptions(), tenant, _filter);
-        return (new EfPartyStore(factory, tenant), factory);
+        return (new EfPartyStore(factory, tenant, StubMeterFactory.CreatePartiesMetrics()), factory);
     }
 
     private async Task SeedAsync()

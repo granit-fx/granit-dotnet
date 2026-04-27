@@ -25,7 +25,7 @@ public sealed class PartyPhonesTests
 
     [Theory]
     [InlineData(PhoneKind.Mobile)]
-    [InlineData(PhoneKind.Office)]
+    [InlineData(PhoneKind.Work)]
     [InlineData(PhoneKind.Home)]
     [InlineData(PhoneKind.Other)]
     public void AddPhone_AnyKind_StoresIt(PhoneKind kind)
@@ -41,7 +41,7 @@ public sealed class PartyPhonesTests
         Party c = New();
         c.AddPhone(Guid.NewGuid(), PhoneKind.Mobile, "+1");
         var id = Guid.NewGuid();
-        c.AddPhone(id, PhoneKind.Office, "+2");
+        c.AddPhone(id, PhoneKind.Work, "+2");
 
         c.Phones.Single(p => p.Id == id).IsPrimary.ShouldBeFalse();
     }
@@ -51,7 +51,7 @@ public sealed class PartyPhonesTests
     {
         Party c = New();
         var firstId = Guid.NewGuid();
-        c.AddPhone(firstId, PhoneKind.Office, "+1");
+        c.AddPhone(firstId, PhoneKind.Work, "+1");
         var secondId = Guid.NewGuid();
         c.AddPhone(secondId, PhoneKind.Mobile, "+2", isPrimary: true);
 
@@ -72,7 +72,7 @@ public sealed class PartyPhonesTests
         Party c = New();
         var firstId = Guid.NewGuid();
         var secondId = Guid.NewGuid();
-        c.AddPhone(firstId, PhoneKind.Office, "+1");
+        c.AddPhone(firstId, PhoneKind.Work, "+1");
         c.AddPhone(secondId, PhoneKind.Mobile, "+2");
 
         c.RemovePhone(firstId).ShouldBeTrue();
@@ -103,7 +103,7 @@ public sealed class PartyPhonesTests
     {
         Party c = New();
         var id = Guid.NewGuid();
-        c.AddPhone(id, PhoneKind.Office, "+1", label: "old");
+        c.AddPhone(id, PhoneKind.Work, "+1", label: "old");
 
         c.UpdatePhone(id, PhoneKind.Mobile, "+2", label: "new");
 
@@ -123,7 +123,7 @@ public sealed class PartyPhonesTests
         Party c = New();
         var firstId = Guid.NewGuid();
         var secondId = Guid.NewGuid();
-        c.AddPhone(firstId, PhoneKind.Office, "+1");
+        c.AddPhone(firstId, PhoneKind.Work, "+1");
         c.AddPhone(secondId, PhoneKind.Mobile, "+2");
 
         c.SetPrimaryPhone(secondId);

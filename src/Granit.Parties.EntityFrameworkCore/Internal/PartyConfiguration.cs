@@ -37,6 +37,15 @@ internal sealed class PartyConfiguration : IEntityTypeConfiguration<Party>
         builder.Property(c => c.UserId);
         builder.Property(c => c.AvatarBlobId);
 
+        // Free-form metadata (Stripe-style customer.metadata) — JSON column.
+        // MetadataSyncInterceptor handles the IHasMetadata write side automatically.
+        // HasMaxLength(4000) matches Granit.Catalog.Product convention; portable across
+        // SQL Server (nvarchar) and PostgreSQL (varchar/text).
+        builder.Property(c => c.MetadataJson).HasMaxLength(4000);
+
+        // Internal notes — long free-form text bounded for DoS protection.
+        builder.Property(c => c.InternalNotes).HasMaxLength(Party.MaxInternalNotesLength);
+
         // ParentContactId is a SingleValueObject<Guid> — declare explicitly as a scalar.
         builder.Property(c => c.ParentContactId);
 

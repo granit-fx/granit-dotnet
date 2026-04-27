@@ -12,6 +12,7 @@ namespace Granit.Parties.Endpoints.Dtos;
 /// <param name="Timezone">Optional IANA timezone (defaults to <c>"UTC"</c>).</param>
 /// <param name="TaxId">Optional VAT identifier (e.g. <c>"BE0123456789"</c>).</param>
 /// <param name="RegistrationNumber">Optional company registration number.</param>
+/// <param name="InternalNotes">Optional admin-only free-form notes (max 8 000 chars). NEVER store PII.</param>
 public sealed record PartyCreateRequest(
     PartyKind Kind,
     string Name,
@@ -21,4 +22,5 @@ public sealed record PartyCreateRequest(
     string? Language = null,
     string? Timezone = null,
     string? TaxId = null,
-    string? RegistrationNumber = null);
+    string? RegistrationNumber = null,
+    string? InternalNotes = null);

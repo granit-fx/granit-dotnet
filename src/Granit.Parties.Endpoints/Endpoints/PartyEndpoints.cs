@@ -1,8 +1,11 @@
+using System.Text;
 using Granit.Guids;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.Endpoints.Dtos;
+using Granit.Parties.Endpoints.Internal;
 using Granit.Parties.Endpoints.Mapping;
+using Granit.Timing;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +54,8 @@ internal static class PartyEndpoints
             language: request.Language,
             timezone: request.Timezone,
             taxId: request.TaxId,
-            registrationNumber: request.RegistrationNumber);
+            registrationNumber: request.RegistrationNumber,
+            internalNotes: request.InternalNotes);
 
         await writer.AddAsync(c, cancellationToken).ConfigureAwait(false);
 
@@ -68,7 +72,12 @@ internal static class PartyEndpoints
         Party? c = await reader.GetByIdAsync(PartyId.Create(id), cancellationToken).ConfigureAwait(false);
         if (c is null) { return TypedResults.NotFound(); }
 
-        c.UpdateIdentity(request.Name, request.Website, request.Language, request.Timezone);
+        c.UpdateIdentity(
+            request.Name,
+            request.Website,
+            request.Language,
+            request.Timezone,
+            request.InternalNotes);
         await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
 
         return TypedResults.Ok(c.ToResponse());
@@ -297,6 +306,46 @@ internal static class PartyEndpoints
         c.SetTaxStatus(TaxStatus.Standard);
         await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
         return TypedResults.Ok(c.ToResponse());
+    }
+
+    public static async Task<Results<Ok<PartyResponse>, NotFound, ProblemHttpResult, ValidationProblem>> HandleReplaceMetadataAsync(
+        Guid id,
+        PartyMetadataRequest request,
+        [FromServices] IPartyReader reader,
+        [FromServices] IPartyWriter writer,
+        CancellationToken cancellationToken)
+    {
+        Party? c = await reader.GetByIdAsync(PartyId.Create(id), cancellationToken).ConfigureAwait(false);
+        if (c is null) { return TypedResults.NotFound(); }
+
+        try
+        {
+            c.ReplaceMetadata(request.Metadata);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+
+        await writer.UpdateAsync(c, cancellationToken).ConfigureAwait(false);
+        return TypedResults.Ok(c.ToResponse());
+    }
+
+    public static async Task<Results<FileContentHttpResult, NotFound>> HandleDownloadVCardAsync(
+        Guid id,
+        [FromServices] IPartyReader reader,
+        [FromServices] IClock clock,
+        CancellationToken cancellationToken)
+    {
+        Party? c = await reader.GetByIdAsync(PartyId.Create(id), cancellationToken).ConfigureAwait(false);
+        if (c is null) { return TypedResults.NotFound(); }
+
+        string vcard = VCardBuilder.Build(c, clock.Now);
+        byte[] bytes = Encoding.UTF8.GetBytes(vcard);
+        return TypedResults.File(
+            bytes,
+            contentType: "text/vcard; charset=utf-8",
+            fileDownloadName: VCardBuilder.SuggestedFileName(c));
     }
 
     private static async Task<Results<NoContent, NotFound, ProblemHttpResult>> TransitionAsync(

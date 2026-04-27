@@ -16,5 +16,6 @@ internal sealed class PartyCreateRequestValidator : GranitValidator<PartyCreateR
         RuleFor(x => x.Timezone).MaximumLength(64);
         RuleFor(x => x.TaxId).MaximumLength(64);
         RuleFor(x => x.RegistrationNumber).MaximumLength(64);
+        RuleFor(x => x.InternalNotes).MaximumLength(8_000);
     }
 }

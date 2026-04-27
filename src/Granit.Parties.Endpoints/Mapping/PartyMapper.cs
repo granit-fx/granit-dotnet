@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Parties.Domain;
 using Granit.Parties.Endpoints.Dtos;
 
@@ -25,7 +26,9 @@ internal static class PartyMapper
         [.. c.Emails.Select(ToEmailResponse)],
         [.. c.Phones.Select(ToPhoneResponse)],
         [.. c.ExternalMappings.Select(ToExternalMappingResponse)],
-        ToTaxStatusResponse(c.TaxStatus));
+        ToTaxStatusResponse(c.TaxStatus),
+        c.GetMetadata(),
+        c.InternalNotes);
 
     private static PartyTaxStatusResponse ToTaxStatusResponse(TaxStatus s) =>
         new(s.IsExempt, s.ReverseCharge, s.Vatin, s.EvidenceBlobId);

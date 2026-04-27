@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.Events;
@@ -823,5 +824,113 @@ public sealed class PartyTests
         c.SetTaxStatus(null).ShouldBeTrue();
         c.TaxStatus.ShouldBe(TaxStatus.Standard);
         c.TaxStatus.YieldsZeroRate.ShouldBeFalse();
+    }
+
+    // ── Metadata (Stripe-style customer.metadata) ─────────────────
+
+    [Fact]
+    public void Metadata_DefaultsToEmpty() =>
+        NewCompany().GetMetadata().ShouldBeEmpty();
+
+    [Fact]
+    public void ReplaceMetadata_StoresEntries()
+    {
+        Party c = NewCompany();
+        var entries = new Dictionary<string, string>
+        {
+            ["segment"] = "enterprise",
+            ["sales_rep_id"] = "alice",
+        };
+
+        c.ReplaceMetadata(entries);
+
+        c.GetMetadata().Count.ShouldBe(2);
+        c.GetMetadataValue("segment").ShouldBe("enterprise");
+        c.GetMetadataValue("sales_rep_id").ShouldBe("alice");
+    }
+
+    [Fact]
+    public void ReplaceMetadata_EmptyDictionary_ClearsMetadata()
+    {
+        Party c = NewCompany();
+        c.ReplaceMetadata(new Dictionary<string, string> { ["k"] = "v" });
+
+        c.ReplaceMetadata(new Dictionary<string, string>());
+
+        c.MetadataJson.ShouldBeNull();
+        c.GetMetadata().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void ReplaceMetadata_OnArchived_Throws()
+    {
+        Party c = NewCompany();
+        c.Archive();
+        Should.Throw<InvalidOperationException>(() =>
+            c.ReplaceMetadata(new Dictionary<string, string> { ["k"] = "v" }));
+    }
+
+    [Fact]
+    public void SetMetadataValue_AddsAndOverwrites()
+    {
+        Party c = NewCompany();
+        c.SetMetadataValue("segment", "smb");
+        c.SetMetadataValue("segment", "enterprise");
+        c.GetMetadataValue("segment").ShouldBe("enterprise");
+    }
+
+    // ── Internal notes ────────────────────────────────────────────
+
+    [Fact]
+    public void InternalNotes_DefaultsToNull() =>
+        NewCompany().InternalNotes.ShouldBeNull();
+
+    [Fact]
+    public void Create_WithInternalNotes_StoresThem()
+    {
+        var c = Party.Create(
+            Guid.NewGuid(), null, PartyKind.Company, "Acme", "EUR",
+            internalNotes: "VIP — escalate to alice@acme.com");
+
+        c.InternalNotes.ShouldBe("VIP — escalate to alice@acme.com");
+    }
+
+    [Fact]
+    public void Create_InternalNotesTooLong_Throws() =>
+        Should.Throw<ArgumentException>(() =>
+            Party.Create(Guid.NewGuid(), null, PartyKind.Company, "Acme", "EUR",
+                internalNotes: new string('x', 8_001)));
+
+    [Fact]
+    public void SetInternalNotes_StoresValue()
+    {
+        Party c = NewCompany();
+        c.SetInternalNotes("Account on hold pending compliance review.");
+        c.InternalNotes.ShouldBe("Account on hold pending compliance review.");
+    }
+
+    [Fact]
+    public void SetInternalNotes_EmptyOrWhitespace_ClearsValue()
+    {
+        Party c = NewCompany();
+        c.SetInternalNotes("note");
+
+        c.SetInternalNotes("   ");
+        c.InternalNotes.ShouldBeNull();
+    }
+
+    [Fact]
+    public void SetInternalNotes_TooLong_Throws() =>
+        Should.Throw<ArgumentException>(() =>
+            NewCompany().SetInternalNotes(new string('x', Party.MaxInternalNotesLength + 1)));
+
+    [Fact]
+    public void UpdateIdentity_UpdatesInternalNotesAlongsideOtherFields()
+    {
+        Party c = NewCompany();
+        c.UpdateIdentity("New Name", website: "https://x.com", internalNotes: "moved to enterprise plan");
+        c.Name.ShouldBe("New Name");
+        c.Website.ShouldBe("https://x.com");
+        c.InternalNotes.ShouldBe("moved to enterprise plan");
     }
 }

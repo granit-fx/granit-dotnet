@@ -1,6 +1,9 @@
+using Granit.Events;
 using Granit.MultiTenancy;
+using Granit.Parties.Diagnostics;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
+using Granit.Parties.Events;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -16,7 +19,8 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfPartyStore(
     IDbContextFactory<PartiesDbContext> contextFactory,
-    ICurrentTenant currentTenant)
+    ICurrentTenant currentTenant,
+    PartiesMetrics metrics)
     : EfStoreBase<Party, PartiesDbContext>(contextFactory, currentTenant),
       IPartyReader, IPartyWriter
 {
@@ -89,8 +93,11 @@ internal sealed class EfPartyStore(
                 .ToListAsync(cancellationToken).ConfigureAwait(false),
             cancellationToken);
 
-    Task IPartyWriter.AddAsync(Party contact, CancellationToken cancellationToken) =>
-        base.AddAsync(contact, cancellationToken);
+    async Task IPartyWriter.AddAsync(Party contact, CancellationToken cancellationToken)
+    {
+        await base.AddAsync(contact, cancellationToken).ConfigureAwait(false);
+        EmitMetrics(contact);
+    }
 
     /// <summary>
     /// Persists a contact aggregate. <c>DbSet.Update()</c> marks the entire disconnected
@@ -99,8 +106,9 @@ internal sealed class EfPartyStore(
     /// yet in the DB. We reconcile by reading existing child IDs and re-marking new ones
     /// as Added. Mirrors the workaround in <c>EfPlanWriter</c>.
     /// </summary>
-    Task IPartyWriter.UpdateAsync(Party contact, CancellationToken cancellationToken) =>
-        WriteAsync(async db =>
+    async Task IPartyWriter.UpdateAsync(Party contact, CancellationToken cancellationToken)
+    {
+        await WriteAsync(async db =>
         {
             HashSet<Guid> existingAddressIds = await CollectChildIdsAsync<PartyAddress>(db, contact.Id, cancellationToken).ConfigureAwait(false);
             HashSet<Guid> existingEmailIds = await CollectChildIdsAsync<PartyEmail>(db, contact.Id, cancellationToken).ConfigureAwait(false);
@@ -113,7 +121,36 @@ internal sealed class EfPartyStore(
             ReconcileNewChildren<PartyEmail>(db, existingEmailIds);
             ReconcileNewChildren<PartyPhone>(db, existingPhoneIds);
             ReconcileNewChildren<PartyExternalMapping>(db, existingMappingIds);
-        }, cancellationToken);
+        }, cancellationToken).ConfigureAwait(false);
+        EmitMetrics(contact);
+    }
+
+    /// <summary>
+    /// Emits one OpenTelemetry counter increment per significant domain event raised by the
+    /// aggregate during the current unit of work. Inspecting <see cref="AggregateRoot.DomainEvents"/>
+    /// before the framework's event-dispatch interceptor clears the collection lets every
+    /// security-relevant operation (suspend / archive / pseudonymise / external-mapping
+    /// registration / tax-status change) become observable without a separate handler chain.
+    /// </summary>
+    private void EmitMetrics(Party contact)
+    {
+        string? tenantId = contact.TenantId?.ToString();
+        foreach (IDomainEvent evt in contact.DomainEvents)
+        {
+            switch (evt)
+            {
+                case PartyCreatedEvent: metrics.RecordCreated(tenantId); break;
+                case PartyUpdatedEvent: metrics.RecordUpdated(tenantId); break;
+                case PartySuspendedEvent: metrics.RecordSuspended(tenantId); break;
+                case PartyActivatedEvent: metrics.RecordActivated(tenantId); break;
+                case PartyArchivedEvent: metrics.RecordArchived(tenantId); break;
+                case PartyPersonalDataPseudonymizedEvent: metrics.RecordPseudonymized(tenantId); break;
+                case PartyExternalMappingAddedEvent m: metrics.RecordExternalMappingAdded(tenantId, m.ProviderName); break;
+                case PartyRoleAddedEvent or PartyRoleRemovedEvent: metrics.RecordRoleChanged(tenantId); break;
+                case PartyTaxStatusChangedEvent: metrics.RecordTaxStatusChanged(tenantId); break;
+            }
+        }
+    }
 
     private static async Task<HashSet<Guid>> CollectChildIdsAsync<TChild>(
         PartiesDbContext db, Guid contactId, CancellationToken cancellationToken)

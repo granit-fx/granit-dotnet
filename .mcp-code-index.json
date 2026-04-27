@@ -30825,12 +30825,12 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/Party.cs",
-      "line": 36,
+      "line": 37,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid? tenantId, PartyKind kind, string name, string defaultCurrency, PartyRoles roles = PartyRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
+          "signature": "Create(Guid id, Guid? tenantId, PartyKind kind, string name, string defaultCurrency, PartyRoles roles = PartyRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null, string? internalNotes = null)",
           "returnType": "Party"
         },
         {
@@ -30876,10 +30876,16 @@
           "returnType": "string?"
         },
         {
-          "name": "AsReadOnly",
+          "name": "ReplaceMetadata",
           "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<PartyAddress> Addresses => _addresses."
+          "signature": "ReplaceMetadata(IReadOnlyDictionary<string, string> metadata)",
+          "returnType": "string? MetadataJson { get; set; } public void"
+        },
+        {
+          "name": "SetInternalNotes",
+          "kind": "method",
+          "signature": "SetInternalNotes(string? notes)",
+          "returnType": "string? InternalNotes { get; private set; } public void"
         },
         {
           "name": "DefaultBillingAddress",
@@ -31118,7 +31124,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 36,
+      "line": 38,
       "members": []
     },
     {
@@ -31127,7 +31133,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyCreateRequest.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -31145,7 +31151,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 50,
+      "line": 52,
       "members": []
     },
     {
@@ -31163,7 +31169,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 65,
+      "line": 67,
       "members": []
     },
     {
@@ -31172,7 +31178,16 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 71,
+      "line": 73,
+      "members": []
+    },
+    {
+      "name": "PartyMetadataRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMetadataRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMetadataRequest.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -31190,7 +31205,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 57,
+      "line": 59,
       "members": []
     },
     {
@@ -31235,7 +31250,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
-      "line": 29,
+      "line": 31,
       "members": []
     },
     {
@@ -31244,7 +31259,7 @@
       "kind": "record",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyUpdateRequest.cs",
-      "line": 4,
+      "line": 9,
       "members": []
     },
     {
@@ -31527,6 +31542,15 @@
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Events/PartySuspendedEvent.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "PartyTaxStatusChangedEvent",
+      "fqn": "Granit.Parties.Events.PartyTaxStatusChangedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyTaxStatusChangedEvent.cs",
+      "line": 13,
       "members": []
     },
     {

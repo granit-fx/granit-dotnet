@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Granit.DataProtection;
 using Granit.Domain;
 using Granit.Parties.Domain.ValueObjects;
@@ -6,7 +7,7 @@ using Granit.Parties.Events;
 namespace Granit.Parties.Domain;
 
 /// <summary>
-/// Generic party-management aggregate (Odoo <c>res.partner</c>-style). A contact represents
+/// Generic party-management aggregate (Party / Tiers / Business Partner). A party represents
 /// any natural person, legal entity, or organisational unit that the platform interacts
 /// with — customers, suppliers, employees, leads, and combinations thereof.
 /// </summary>
@@ -33,8 +34,24 @@ namespace Granit.Parties.Domain;
 /// <para><b>External mappings.</b> Polyglot — at most one mapping per provider, enforced
 /// defensively at the aggregate and by a unique index in the EF configuration.</para>
 /// </remarks>
-public sealed class Party : AuditedAggregateRoot, IMultiTenant
+public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata
 {
+    /// <summary>Per-aggregate cap on emails. Bounds reconciliation cost in <c>EfPartyStore.UpdateAsync</c>
+    /// and prevents an authenticated <c>Parties.Manage</c> holder from exhausting storage / write throughput
+    /// by flooding a single party with addresses (OWASP API4:2023).</summary>
+    public const int MaxEmails = 50;
+
+    /// <summary>Per-aggregate cap on phones (see <see cref="MaxEmails"/> rationale).</summary>
+    public const int MaxPhones = 50;
+
+    /// <summary>Per-aggregate cap on addresses (see <see cref="MaxEmails"/> rationale).</summary>
+    public const int MaxAddresses = 100;
+
+    /// <summary>Per-aggregate cap on external provider mappings. There are at most a few dozen
+    /// real-world providers (Stripe, Mollie, Odoo, Sage, NetSuite, …); a higher value indicates
+    /// abuse / metric-cardinality probing.</summary>
+    public const int MaxExternalMappings = 32;
+
     private readonly List<PartyExternalMapping> _externalMappings = [];
     private readonly List<PartyAddress> _addresses = [];
     private readonly List<PartyEmail> _emails = [];
@@ -54,6 +71,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     /// <param name="timezone">IANA timezone (defaults to <c>"UTC"</c>).</param>
     /// <param name="taxId">International VAT identifier (e.g. <c>"BE0123456789"</c>).</param>
     /// <param name="registrationNumber">Company registration number (BCE/KBO, SIRET, HRB, …).</param>
+    /// <param name="internalNotes">Optional free-form internal notes (admin-only, never exported via Privacy / vCard).</param>
     public static Party Create(
         Guid id,
         Guid? tenantId,
@@ -65,7 +83,8 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
         string? language = null,
         string? timezone = null,
         string? taxId = null,
-        string? registrationNumber = null)
+        string? registrationNumber = null,
+        string? internalNotes = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentException.ThrowIfNullOrWhiteSpace(defaultCurrency);
@@ -73,6 +92,12 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
         {
             throw new ArgumentException(
                 "DefaultCurrency must be a 3-letter ISO 4217 code.", nameof(defaultCurrency));
+        }
+        if (internalNotes is { Length: > MaxInternalNotesLength })
+        {
+            throw new ArgumentException(
+                $"Internal notes exceed the maximum length of {MaxInternalNotesLength} characters.",
+                nameof(internalNotes));
         }
 
         var contact = new Party
@@ -87,6 +112,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
             DefaultCurrency = defaultCurrency.ToUpperInvariant(),
             TaxId = taxId,
             RegistrationNumber = registrationNumber,
+            InternalNotes = string.IsNullOrWhiteSpace(internalNotes) ? null : internalNotes,
             Roles = roles,
             Status = PartyStatus.Active,
         };
@@ -151,6 +177,64 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     /// Admins opt-in via <see cref="SetTaxStatus"/>.
     /// </summary>
     public TaxStatus TaxStatus { get; private set; } = TaxStatus.Standard;
+
+    /// <summary>
+    /// Free-form key/value metadata (Stripe-style <c>customer.metadata</c>). Persisted as
+    /// a JSON string column. Use <see cref="MetadataExtensions.GetMetadata"/> +
+    /// <see cref="MetadataExtensions.SetMetadataValue"/> for typed read/write of individual
+    /// entries, or <see cref="ReplaceMetadata"/> for bulk replacement (admin endpoint).
+    /// </summary>
+    /// <remarks>
+    /// <b>NEVER store PII here.</b> Metadata is surfaced in audit logs, GDPR exports, and the SQL
+    /// column itself — keep it to integration sync attributes, segment / tier flags, sales-rep
+    /// IDs, and other non-personal categorisation. Personal data belongs on the dedicated
+    /// fields (<see cref="Name"/>, <see cref="Emails"/>, <see cref="Phones"/>, etc.) which are
+    /// covered by <c>SensitiveData</c> annotations and pseudonymisation.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Internal)]
+    public string? MetadataJson { get; set; }
+
+    /// <summary>Bulk-replaces the metadata dictionary. Pass an empty dictionary to clear.</summary>
+    public void ReplaceMetadata(IReadOnlyDictionary<string, string> metadata)
+    {
+        ArgumentNullException.ThrowIfNull(metadata);
+        EnsureMutable();
+        MetadataJson = metadata.Count > 0
+            ? JsonSerializer.Serialize(metadata)
+            : null;
+    }
+
+    /// <summary>Per-aggregate cap on internal-notes length (DoS protection).</summary>
+    public const int MaxInternalNotesLength = 8_000;
+
+    /// <summary>
+    /// Free-form internal notes (admin-only). Multi-line, max 8 000 characters. Mirrors
+    /// Stripe <c>customer.description</c> / Odoo <c>res.partner.comment</c>: a place to jot
+    /// down operational context (account history, escalation contacts, …) that doesn't fit
+    /// the structured fields.
+    /// </summary>
+    /// <remarks>
+    /// <b>NEVER store PII or sensitive data here.</b> Internal notes surface in audit logs
+    /// and GDPR exports. Use the dedicated PII fields (<see cref="Name"/>, <see cref="Emails"/>,
+    /// …) for personal data — they're covered by <c>SensitiveData</c> annotations and
+    /// pseudonymisation.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Internal)]
+    public string? InternalNotes { get; private set; }
+
+    /// <summary>Sets or clears the internal-notes free-form text. Pass <c>null</c> or empty to clear.</summary>
+    public void SetInternalNotes(string? notes)
+    {
+        EnsureMutable();
+        if (notes is { Length: > MaxInternalNotesLength })
+        {
+            throw new ArgumentException(
+                $"Internal notes exceed the maximum length of {MaxInternalNotesLength} characters.",
+                nameof(notes));
+        }
+
+        InternalNotes = string.IsNullOrWhiteSpace(notes) ? null : notes;
+    }
 
     // ── Addresses ─────────────────────────────────────────────────
 
@@ -305,15 +389,23 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
         string name,
         string? website = null,
         string? language = null,
-        string? timezone = null)
+        string? timezone = null,
+        string? internalNotes = null)
     {
         EnsureMutable();
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        if (internalNotes is { Length: > MaxInternalNotesLength })
+        {
+            throw new ArgumentException(
+                $"Internal notes exceed the maximum length of {MaxInternalNotesLength} characters.",
+                nameof(internalNotes));
+        }
 
         Name = name;
         Website = website;
         Language = language;
         Timezone = string.IsNullOrWhiteSpace(timezone) ? Timezone : timezone;
+        InternalNotes = string.IsNullOrWhiteSpace(internalNotes) ? null : internalNotes;
 
         RaiseUpdated();
     }
@@ -362,7 +454,10 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
             return false;
         }
 
+        TaxStatus previous = TaxStatus;
         TaxStatus = next;
+        AddDomainEvent(new PartyTaxStatusChangedEvent(
+            PartyId.Create(Id), TenantId, previous, next));
         RaiseUpdated();
         return true;
     }
@@ -380,6 +475,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     {
         EnsureMutable();
         ArgumentException.ThrowIfNullOrWhiteSpace(address);
+        EnsureCapacity(_emails.Count, MaxEmails, nameof(Emails));
 
         if (isPrimary)
         {
@@ -464,6 +560,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     {
         EnsureMutable();
         ArgumentException.ThrowIfNullOrWhiteSpace(number);
+        EnsureCapacity(_phones.Count, MaxPhones, nameof(Phones));
 
         if (isPrimary)
         {
@@ -544,6 +641,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
     {
         EnsureMutable();
         ArgumentNullException.ThrowIfNull(value);
+        EnsureCapacity(_addresses.Count, MaxAddresses, nameof(Addresses));
 
         if (isDefault)
         {
@@ -771,6 +869,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
         EnsureMutable();
         ArgumentException.ThrowIfNullOrWhiteSpace(providerName);
         ArgumentException.ThrowIfNullOrWhiteSpace(externalId);
+        EnsureCapacity(_externalMappings.Count, MaxExternalMappings, nameof(ExternalMappings));
 
         if (_externalMappings.Any(m =>
             string.Equals(m.ProviderName, providerName, StringComparison.OrdinalIgnoreCase)))
@@ -828,6 +927,16 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant
         {
             throw new InvalidOperationException(
                 $"Party '{Id}' is Archived. {operation}() is not allowed.");
+        }
+    }
+
+    private void EnsureCapacity(int currentCount, int max, string collectionName)
+    {
+        if (currentCount >= max)
+        {
+            throw new InvalidOperationException(
+                $"Party '{Id}' has reached the maximum number of {collectionName} ({max}). "
+                + "Remove an existing entry before adding a new one.");
         }
     }
 

@@ -29,5 +29,23 @@ internal sealed class PartiesPermissionDefinitionProvider : IPermissionDefinitio
             LocalizableString.Create<PartiesEndpointsLocalizationResource>(
                 "Permission:Parties.Parties.Manage"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            PartiesPermissions.Parties.Lifecycle,
+            LocalizableString.Create<PartiesEndpointsLocalizationResource>(
+                "Permission:Parties.Parties.Lifecycle"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PartiesPermissions.Parties.SetTaxStatus,
+            LocalizableString.Create<PartiesEndpointsLocalizationResource>(
+                "Permission:Parties.Parties.SetTaxStatus"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            PartiesPermissions.Parties.ExternalMappings,
+            LocalizableString.Create<PartiesEndpointsLocalizationResource>(
+                "Permission:Parties.Parties.ExternalMappings"),
+            MultiTenancySides.Both);
     }
 }

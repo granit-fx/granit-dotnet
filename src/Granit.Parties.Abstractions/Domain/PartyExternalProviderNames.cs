@@ -31,4 +31,19 @@ public static class PartyExternalProviderNames
 
     /// <summary>NetSuite customer identifier.</summary>
     public const string NetSuite = "netsuite";
+
+    private static readonly HashSet<string> Reserved = new(StringComparer.OrdinalIgnoreCase)
+    {
+        Tenant, Stripe, Mollie, Odoo, Sage, NetSuite,
+    };
+
+    /// <summary>
+    /// Returns <c>true</c> when <paramref name="providerName"/> is one of the reserved
+    /// provider names declared on this class. Used by the metrics layer to bound the
+    /// cardinality of the <c>provider_name</c> tag — unrecognised values are folded to
+    /// a single <c>"other"</c> bucket to prevent a metric-cardinality DoS via a stream
+    /// of distinct random provider names (CWE-770).
+    /// </summary>
+    public static bool IsReserved(string? providerName) =>
+        providerName is not null && Reserved.Contains(providerName);
 }

@@ -22,7 +22,7 @@ public sealed class EfContactStoreTests : IAsyncDisposable
             .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
             .Options;
         _factory = new TestFactory(options);
-        _store = new EfPartyStore(_factory, _factory.Tenant);
+        _store = new EfPartyStore(_factory, _factory.Tenant, StubMeterFactory.CreatePartiesMetrics());
     }
 
     public async ValueTask DisposeAsync()
@@ -59,7 +59,7 @@ public sealed class EfContactStoreTests : IAsyncDisposable
         Party c = NewContact();
         c.AddAddress(Guid.NewGuid(), AddressKind.Billing, Address.Create("L1", "C", "1000", "BE"));
         c.AddEmail(Guid.NewGuid(), "billing@acme.com", isPrimary: true, label: "billing");
-        c.AddPhone(Guid.NewGuid(), PhoneKind.Office, "+3221234567", isPrimary: true);
+        c.AddPhone(Guid.NewGuid(), PhoneKind.Work, "+3221234567", isPrimary: true);
         c.AddExternalMapping(Guid.NewGuid(), PartyExternalProviderNames.Stripe, "cus_1");
         await ((IPartyWriter)_store).AddAsync(c, TestContext.Current.CancellationToken);
 
@@ -73,7 +73,7 @@ public sealed class EfContactStoreTests : IAsyncDisposable
         loaded.ExternalMappings.ShouldHaveSingleItem();
         loaded.PrimaryEmail?.Address.ShouldBe("billing@acme.com");
         loaded.PrimaryPhone?.Number.ShouldBe("+3221234567");
-        loaded.PrimaryPhone?.Kind.ShouldBe(PhoneKind.Office);
+        loaded.PrimaryPhone?.Kind.ShouldBe(PhoneKind.Work);
         loaded.DefaultBillingAddress.ShouldNotBeNull();
         loaded.FindExternalId("stripe").ShouldBe("cus_1");
     }

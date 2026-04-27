@@ -67,7 +67,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.Lifecycle);
 
         group.MapPost("/{id:guid}/activate", PartyEndpoints.HandleActivateAsync)
             .WithName("ActivateContact")
@@ -76,7 +76,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.Lifecycle);
 
         group.MapPost("/{id:guid}/archive", PartyEndpoints.HandleArchiveAsync)
             .WithName("ArchiveContact")
@@ -84,7 +84,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .WithDescription("Sets the contact's status to Archived. Archived contacts are immutable and can no longer be edited. Idempotent.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.Lifecycle);
 
         // ── Addresses (multi-typed: Billing / Shipping / Other) ───────
         group.MapPost("/{id:guid}/addresses", PartyEndpoints.HandleAddAddressAsync)
@@ -149,7 +149,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.ExternalMappings);
 
         group.MapDelete("/{id:guid}/external-mappings/{providerName}", PartyEndpoints.HandleRemoveExternalMappingAsync)
             .WithName("RemoveContactExternalMapping")
@@ -157,7 +157,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .WithDescription("Removes the contact's external mapping for the given provider. Idempotent — returns 204 even if no mapping existed.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.ExternalMappings);
 
         // ── Roles ─────────────────────────────────────────────────────
         group.MapPost("/{id:guid}/roles", PartyEndpoints.HandleAddRoleAsync)
@@ -185,7 +185,7 @@ public static class PartiesEndpointRouteBuilderExtensions
             .Produces<PartyResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem()
-            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+            .RequireAuthorization(PartiesPermissions.Parties.SetTaxStatus);
 
         group.MapDelete("/{id:guid}/tax-status", PartyEndpoints.HandleClearTaxStatusAsync)
             .WithName("ClearContactTaxStatus")
@@ -193,7 +193,27 @@ public static class PartiesEndpointRouteBuilderExtensions
             .WithDescription("Clears any customer-specific tax classification. Subsequent tax calculations fall back to the country / standard rate. Idempotent.")
             .Produces<PartyResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(PartiesPermissions.Parties.SetTaxStatus);
+
+        // ── Metadata & internal notes (Stripe-style extensibility) ────
+        group.MapPut("/{id:guid}/metadata", PartyEndpoints.HandleReplaceMetadataAsync)
+            .WithName("ReplacePartyMetadata")
+            .WithSummary("Bulk-replaces the party's metadata dictionary.")
+            .WithDescription("Stripe-style customer.metadata: free-form key/value extensibility. Pass an empty object to clear. Capped at 50 entries (key ≤ 40 chars, value ≤ 500 chars). NEVER store PII here — metadata surfaces in audit logs and GDPR exports.")
+            .Produces<PartyResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem()
             .RequireAuthorization(PartiesPermissions.Parties.Manage);
+
+        // ── vCard export (RFC 6350) ───────────────────────────────────
+        group.MapGet("/{id:guid}/vcard", PartyEndpoints.HandleDownloadVCardAsync)
+            .WithName("DownloadPartyVCard")
+            .WithSummary("Downloads the party as a vCard 4.0 (text/vcard) file.")
+            .WithDescription("Returns the party's identity, addresses, emails, phones, website, language, and timezone in vCard 4.0 format (RFC 6350). Suitable for import into address-book apps (Outlook, Apple Contacts, Google Contacts, etc.). Filename is suggested as <party-name>.vcf.")
+            .Produces(StatusCodes.Status200OK, contentType: "text/vcard")
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(PartiesPermissions.Parties.Read);
 
         return group;
     }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.DataFiltering;
 using Granit.Parties;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
@@ -12,8 +13,23 @@ namespace Granit.Parties.Privacy.Tests.DataExport;
 public sealed class ContactsPrivacyDataProviderTests
 {
     private readonly IPartyReader _reader = Substitute.For<IPartyReader>();
+    private readonly NoopDataFilter _dataFilter = new();
 
-    private PartiesPrivacyDataProvider Sut() => new(_reader);
+    private PartiesPrivacyDataProvider Sut() => new(_reader, _dataFilter);
+
+    /// <summary>Always-on no-op <see cref="IDataFilter"/> — every <c>Disable&lt;T&gt;()</c> hands back a no-op
+    /// disposable. Keeps the test focused on the export payload, not the filter plumbing.</summary>
+    private sealed class NoopDataFilter : IDataFilter
+    {
+        public IDisposable Enable<TFilter>() where TFilter : class => Noop.Instance;
+        public IDisposable Disable<TFilter>() where TFilter : class => Noop.Instance;
+        public bool IsEnabled<TFilter>() where TFilter : class => true;
+        private sealed class Noop : IDisposable
+        {
+            public static readonly Noop Instance = new();
+            public void Dispose() { }
+        }
+    }
 
     [Fact]
     public void ProviderName_IsContacts() =>

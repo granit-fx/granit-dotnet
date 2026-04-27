@@ -6,8 +6,8 @@ public enum PhoneKind
     /// <summary>Mobile / cell phone.</summary>
     Mobile = 0,
 
-    /// <summary>Office / work landline.</summary>
-    Office = 1,
+    /// <summary>Work / business phone (office landline, freelancer mobile, …). Matches vCard <c>TYPE=work</c>.</summary>
+    Work = 1,
 
     /// <summary>Home landline.</summary>
     Home = 2,
