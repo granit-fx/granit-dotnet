@@ -285,6 +285,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.BackgroundJobs.Notifications",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.BackgroundJobs.Wolverine",
       "deps": [
         "Granit.BackgroundJobs",
@@ -1173,6 +1182,18 @@
       "name": "Granit.Mergeable",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Mergeable.EntityFrameworkCore",
+      "deps": [
+        "Granit",
+        "Granit.Mergeable",
+        "Granit.Persistence",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Guids",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -2275,8 +2296,7 @@
       "name": "Granit.Timeline.Notifications",
       "deps": [
         "Granit.Timeline",
-        "Granit.Notifications.Abstractions",
-        "Granit.Templating"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2490,8 +2510,7 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.Workflow",
-        "Granit.Notifications.Abstractions",
-        "Granit.Templating"
+        "Granit.Notifications.Abstractions"
       ],
       "framework": "net10.0"
     }
@@ -7734,6 +7753,75 @@
           "kind": "method",
           "signature": "TriggerNowAsync(string jobName, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitBackgroundJobsNotificationsModule",
+      "fqn": "Granit.BackgroundJobs.Notifications.GranitBackgroundJobsNotificationsModule",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/GranitBackgroundJobsNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "RecurringFailingHandler",
+      "fqn": "Granit.BackgroundJobs.Notifications.Handlers.RecurringFailingHandler",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/Handlers/RecurringFailingHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BackgroundJobFailureThresholdExceededEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "JobsRecurringFailingNotificationData",
+      "fqn": "Granit.BackgroundJobs.Notifications.JobsRecurringFailingNotificationData",
+      "kind": "record",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/JobsRecurringFailingNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "JobsRecurringFailingNotificationType",
+      "fqn": "Granit.BackgroundJobs.Notifications.JobsRecurringFailingNotificationType",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/JobsRecurringFailingNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "JobsRecurringFailingNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -24258,6 +24346,47 @@
       ]
     },
     {
+      "name": "MergeableEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.Extensions.MergeableEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Mergeable.EntityFrameworkCore",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitMergeableEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitMergeableEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MergeableModelBuilderExtensions",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.Extensions.MergeableModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Mergeable.EntityFrameworkCore",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableModelBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureMergeableModule",
+          "kind": "method",
+          "signature": "ConfigureMergeableModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitMergeableEntityFrameworkCoreModule",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.GranitMergeableEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Mergeable.EntityFrameworkCore",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableEntityFrameworkCoreModule.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "MergeException",
       "fqn": "Granit.Mergeable.Exceptions.MergeException",
       "kind": "class",
@@ -24312,6 +24441,40 @@
           "kind": "method",
           "signature": "MergeAsync(MergeRequest request, CancellationToken cancellationToken)",
           "returnType": "Task<MergeResult<TAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "IMergeableAggregateAdapter",
+      "fqn": "Granit.Mergeable.IMergeableAggregateAdapter",
+      "kind": "interface",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/IMergeableAggregateAdapter.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "LoadAsync",
+          "kind": "method",
+          "signature": "LoadAsync(Guid id, CancellationToken cancellationToken)",
+          "returnType": "Task<TAggregate?>"
+        },
+        {
+          "name": "PersistMergedPairAsync",
+          "kind": "method",
+          "signature": "PersistMergedPairAsync(TAggregate survivor, TAggregate loser, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ApplyTombstone",
+          "kind": "method",
+          "signature": "ApplyTombstone(TAggregate loser, Guid survivorId, DateTimeOffset mergedAt)",
+          "returnType": "void"
+        },
+        {
+          "name": "CollapseChainTombstonesAsync",
+          "kind": "method",
+          "signature": "CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -45758,7 +45921,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Notifications",
       "file": "src/Granit.Timeline.Notifications/GranitTimelineNotificationsModule.cs",
-      "line": 20,
+      "line": 15,
       "members": [
         {
           "name": "ConfigureServices",
@@ -49717,7 +49880,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/GranitWorkflowNotificationsModule.cs",
-      "line": 36,
+      "line": 31,
       "members": [
         {
           "name": "ConfigureServices",

@@ -28,6 +28,7 @@
         "tests/Granit.Guids.Tests",
         "tests/Granit.Imaging.AI.Tests",
         "tests/Granit.Localization.AI.Tests",
+        "tests/Granit.Mergeable.EntityFrameworkCore.Tests",
         "tests/Granit.Mergeable.Tests",
         "tests/Granit.Notifications.AI.Tests",
         "tests/Granit.Observability.AI.Tests",
@@ -154,6 +155,7 @@
       "projects": [
         "tests/Granit.BackgroundJobs.Endpoints.Tests",
         "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests",
+        "tests/Granit.BackgroundJobs.Notifications.Tests",
         "tests/Granit.BackgroundJobs.Tests",
         "tests/Granit.BackgroundJobs.Tests.Integration",
         "tests/Granit.BackgroundJobs.Wolverine.Tests",

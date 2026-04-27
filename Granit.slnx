@@ -23,6 +23,7 @@
     <Project Path="src/Granit.Mcp.Client/Granit.Mcp.Client.csproj" />
     <Project Path="src/Granit.Mcp.Server/Granit.Mcp.Server.csproj" />
     <Project Path="src/Granit.Mcp/Granit.Mcp.csproj" />
+    <Project Path="src/Granit.Mergeable.EntityFrameworkCore/Granit.Mergeable.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Mergeable/Granit.Mergeable.csproj" />
     <Project Path="src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj" />
     <Project Path="src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj" />
@@ -148,6 +149,7 @@
   <Folder Name="/src/Infrastructure/">
     <Project Path="src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj" />
     <Project Path="src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.BackgroundJobs.Notifications/Granit.BackgroundJobs.Notifications.csproj" />
     <Project Path="src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj" />
     <Project Path="src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj" />
     <Project Path="src/Granit.BlobStorage.AI/Granit.BlobStorage.AI.csproj" />
@@ -335,6 +337,7 @@
     <Project Path="tests/Granit.Mcp.Client.Tests/Granit.Mcp.Client.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Server.Tests/Granit.Mcp.Server.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Tests/Granit.Mcp.Tests.csproj" />
+    <Project Path="tests/Granit.Mergeable.EntityFrameworkCore.Tests/Granit.Mergeable.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Mergeable.Tests/Granit.Mergeable.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.EntityFrameworkCore.Tests/Granit.MultiTenancy.EntityFrameworkCore.Tests.csproj" />
@@ -465,6 +468,7 @@
   <Folder Name="/tests/Infrastructure/">
     <Project Path="tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.BackgroundJobs.Notifications.Tests/Granit.BackgroundJobs.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj" />

@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.BackgroundJobs.Notifications</PackageId>
+    <Description>Notification bridge for Granit.BackgroundJobs. Alerts platform / tenant admins when a recurring job fails N consecutive runs, so SLA-critical batches (compliance reports, billing rollups) don't fail silently for hours. Ships embedded HTML templates in English and French, overridable at runtime through the Granit.Templating admin API.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.BackgroundJobs.Notifications.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\**\*.html" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
+  </ItemGroup>
+
+</Project>
