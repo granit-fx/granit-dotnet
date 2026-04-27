@@ -1,0 +1,14 @@
+<title>Vos données ont été supprimées</title>
+<p>Bonjour,</p>
+<p>Nous vous confirmons que vos données personnelles ont été définitivement supprimées le <strong>{{ model.executed_at | date.to_string '%d %B %Y à %H:%M UTC' }}</strong>. Cette suppression est irréversible.</p>
+<p>Cet e-mail constitue votre preuve de conformité. Nous vous invitons à le conserver comme attestation de l'exercice de votre droit à l'effacement.</p>
+<p>Référence : <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Ce message est envoyé par {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Pour toute question relative à la protection de vos données, contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Si vous n'êtes pas satisfait du traitement de votre demande, vous avez le droit d'introduire une réclamation auprès de l'autorité de contrôle : <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

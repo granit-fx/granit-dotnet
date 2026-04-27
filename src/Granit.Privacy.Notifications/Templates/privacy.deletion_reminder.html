@@ -1,0 +1,12 @@
+<title>Reminder: your data will be deleted soon</title>
+<p>Hi,</p>
+<p>This is a reminder that the personal data deletion you requested is scheduled to be executed on <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>If you no longer wish to delete your data, you can cancel your request from your privacy dashboard:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Manage my deletion request</a>
+</p>
+<p>If you take no action, your data will be permanently deleted on the scheduled date. After that, the deletion is irreversible.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Questions? Contact our Data Protection Officer at <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

@@ -27,6 +27,7 @@ public class ExportCompletedNotificationHandler
                     evt.RequestId,
                     evt.ArchiveBlobReferenceId,
                     evt.MissingProviders,
+                    string.Join(", ", evt.MissingProviders),
                     evt.RequestedAt,
                     evt.Regulation),
                 [evt.UserId.ToString()],

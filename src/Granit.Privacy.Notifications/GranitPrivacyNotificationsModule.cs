@@ -20,6 +20,20 @@ namespace Granit.Privacy.Notifications;
 public sealed class GranitPrivacyNotificationsModule : GranitModule
 {
     /// <inheritdoc/>
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddTemplateGlobalContext<PrivacyContactGlobalContext>();
+
+        // Ship the embedded HTML templates for all 8 privacy notifications.
+        // Apps can override any of them at runtime through the Granit.Templating
+        // admin API (DB-backed resolver runs at higher priority than the embedded one).
+        context.Services.AddEmbeddedTemplates(typeof(GranitPrivacyNotificationsModule).Assembly);
+
+        // Layout glob — covers both the snake_case notification names and the legacy
+        // PascalCase one (Privacy.LegalDocumentObsolete). The host application registers
+        // the actual `Layout.Email` template; if absent, templates render without layout
+        // (warning logged, no crash).
+        context.Services.AddTemplateLayout("privacy.*", "Layout.Email");
+        context.Services.AddTemplateLayout("Privacy.*", "Layout.Email");
+    }
 }

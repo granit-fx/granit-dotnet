@@ -1,0 +1,8 @@
+<title>Votre demande de suppression a été annulée</title>
+<p>Bonjour,</p>
+<p>Nous vous confirmons que votre demande de suppression différée a été annulée le <strong>{{ model.cancelled_at | date.to_string '%d %B %Y' }}</strong>. Vos données personnelles seront conservées comme auparavant, et aucune action supplémentaire n'est requise de votre part.</p>
+<p>Vous pouvez soumettre une nouvelle demande de suppression à tout moment depuis votre espace de confidentialité.</p>
+<p>Référence : <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question ? Contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

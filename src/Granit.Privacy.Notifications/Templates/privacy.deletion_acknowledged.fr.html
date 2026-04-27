@@ -1,0 +1,14 @@
+<title>Nous avons bien reçu votre demande de suppression</title>
+<p>Bonjour,</p>
+<p>Nous avons bien reçu votre demande de suppression de vos données personnelles le <strong>{{ model.requested_at | date.to_string '%d %B %Y' }}</strong>{{ if model.regulation }} au titre de la réglementation <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Cet e-mail constitue votre accusé de réception. Nous traiterons votre demande dans le délai réglementaire applicable à votre juridiction (un mois au titre de l'article 12 §3 du RGPD, prolongeable si la demande est complexe). Vous recevrez un nouvel e-mail dès que la suppression sera exécutée, ou si nous avons besoin d'informations complémentaires.</p>
+<p>Référence : <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Ce message est envoyé par {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Pour toute question relative à la protection de vos données, vous pouvez contacter notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Si vous n'êtes pas satisfait du traitement de votre demande, vous avez le droit d'introduire une réclamation auprès de l'autorité de contrôle compétente : <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

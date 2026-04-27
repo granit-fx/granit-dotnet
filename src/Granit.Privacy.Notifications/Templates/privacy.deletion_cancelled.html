@@ -1,0 +1,8 @@
+<title>Your deletion request has been cancelled</title>
+<p>Hi,</p>
+<p>We confirm that your deferred deletion request has been cancelled on <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Your personal data will be retained as before, and no further action is required from you.</p>
+<p>You can submit a new deletion request at any time from your privacy dashboard.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Questions? Contact our Data Protection Officer at <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

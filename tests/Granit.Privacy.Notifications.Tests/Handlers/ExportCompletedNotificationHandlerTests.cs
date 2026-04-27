@@ -71,6 +71,7 @@ public sealed class ExportCompletedNotificationHandlerTests
                 d.RequestId == requestId &&
                 d.ArchiveBlobReferenceId == "personal-data-export/abc" &&
                 d.MissingProviders.SequenceEqual(missing) &&
+                d.MissingProvidersDisplay == "PatientModule, BlobStorageModule" &&
                 d.RequestedAt == requestedAt &&
                 d.Regulation == "EU_GDPR"),
             Arg.Is<IReadOnlyList<string>>(ids => ids.Count == 1 && ids[0] == userId.ToString()),

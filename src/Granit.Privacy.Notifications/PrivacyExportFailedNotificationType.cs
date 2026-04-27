@@ -36,8 +36,15 @@ public sealed class PrivacyExportFailedNotificationType
 /// <param name="RequestId">Correlation id of the originating export request.</param>
 /// <param name="ArchiveBlobReferenceId">Logical blob reference of the partial archive.</param>
 /// <param name="MissingProviders">
-/// Providers that did not produce a fragment within the saga timeout. The template
-/// can list these so the user knows which categories of data are missing.
+/// Providers that did not produce a fragment within the saga timeout. Preserved for
+/// programmatic consumers (audit log, retry orchestration) — see
+/// <paramref name="MissingProvidersDisplay"/> for the template-friendly form.
+/// </param>
+/// <param name="MissingProvidersDisplay">
+/// Comma-separated rendering of <paramref name="MissingProviders"/> for direct
+/// inclusion in templates. The notification email channel serializes the data record
+/// to JSON and flattens it into a Scriban dictionary; arrays would otherwise round-trip
+/// as their JSON string representation, which is not iterable in templates.
 /// </param>
 /// <param name="RequestedAt">When the data subject filed the request.</param>
 /// <param name="Regulation">Privacy regulation code the request was filed under.</param>
@@ -45,5 +52,6 @@ public sealed record PrivacyExportFailedNotificationData(
     Guid RequestId,
     string ArchiveBlobReferenceId,
     IReadOnlyList<string> MissingProviders,
+    string MissingProvidersDisplay,
     DateTimeOffset RequestedAt,
     string Regulation);

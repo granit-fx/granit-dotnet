@@ -1,0 +1,14 @@
+<title>We've received your data deletion request</title>
+<p>Hi,</p>
+<p>We've received your request to delete your personal data on <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} under regulation <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>This email is your acknowledgement of receipt. We will process your request within the regulatory deadline that applies to your jurisdiction (one month under GDPR Art. 12 §3, plus any extension we may invoke if the request is complex). You will receive a follow-up email once the deletion is executed, or if we need additional information from you.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>This message is sent by {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>For privacy-related questions, you can contact our Data Protection Officer at <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">If you are not satisfied with how we handle your request, you have the right to lodge a complaint with the supervisory authority: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

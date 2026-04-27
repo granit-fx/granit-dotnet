@@ -1,0 +1,18 @@
+<title>Votre export de données est partiellement disponible</title>
+<p>Bonjour,</p>
+<p>Votre export de données personnelles, demandé le <strong>{{ model.requested_at | date.to_string '%d %B %Y' }}</strong>{{ if model.regulation }} au titre de la réglementation <code>{{ model.regulation }}</code>{{ end }}, a été généré, mais certaines sources de données n'ont pas répondu dans le délai imparti. L'archive contient tout ce que nous avons pu collecter dans la fenêtre réglementaire.</p>
+{{ if model.missing_providers_display }}
+<p>Les sources suivantes n'ont pas été incluses dans cet export : <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Vous pouvez :</p>
+<ul>
+  <li><strong>Télécharger l'archive partielle</strong> depuis votre espace de confidentialité, ou</li>
+  <li><strong>Soumettre une nouvelle demande</strong> pour relancer les sources manquantes.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Consulter mon export</a>
+</p>
+<p>Référence : <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question ? Contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

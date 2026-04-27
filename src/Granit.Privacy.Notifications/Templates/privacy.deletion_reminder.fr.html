@@ -1,0 +1,12 @@
+<title>Rappel : vos données vont bientôt être supprimées</title>
+<p>Bonjour,</p>
+<p>Pour rappel, la suppression de vos données personnelles est planifiée pour le <strong>{{ model.scheduled_deletion_at | date.to_string '%d %B %Y' }}</strong>.</p>
+<p>Si vous ne souhaitez plus supprimer vos données, vous pouvez annuler votre demande depuis votre espace de confidentialité :</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Gérer ma demande</a>
+</p>
+<p>Sans action de votre part, vos données seront définitivement supprimées à la date prévue. La suppression est irréversible.</p>
+<p>Référence : <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question ? Contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

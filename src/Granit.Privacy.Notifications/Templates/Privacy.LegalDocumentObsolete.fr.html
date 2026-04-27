@@ -1,0 +1,15 @@
+<title>{{ model.document_display_name }} a été mis à jour — merci de relire</title>
+<p>Bonjour,</p>
+<p>Notre <strong>{{ model.document_display_name }}</strong> a été mis à jour. Pour continuer à utiliser nos services, nous vous invitons à consulter la nouvelle version et à confirmer votre acceptation.</p>
+<p>Version que vous avez acceptée : <strong>{{ model.old_version }}</strong><br>
+Nouvelle version : <strong>{{ model.new_version }}</strong></p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/agreements/{{ model.document_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Consulter et accepter</a>
+</p>
+<p>Tant que vous n'avez pas confirmé votre acceptation, certaines fonctionnalités peuvent être indisponibles.</p>
+{{ if privacy.controller_name }}
+<p>Ce message est envoyé par {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question sur cette mise à jour ? Contactez notre Délégué à la Protection des Données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

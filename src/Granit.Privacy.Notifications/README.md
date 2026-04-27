@@ -1,9 +1,12 @@
 # Granit.Privacy.Notifications
 
-Notification bridge for `Granit.Privacy`. Sends deletion reminder and confirmation
-emails via `Granit.Notifications` when using the GDPR Art. 17 cooling-off period,
-and exposes the data controller and DPO contact (GDPR Art. 13) as the
-`{{ privacy }}` template global context for any rendered template.
+Notification bridge for `Granit.Privacy`. Covers the full lifecycle of data-subject
+rights — request acknowledgement, deletion deferred / cancelled / executed reminders
+and confirmations, export ready / partial — via `Granit.Notifications`. Ships
+embedded HTML templates in **English and French** for all 8 notification types
+(overridable at runtime through the `Granit.Templating` admin API). Exposes the
+data controller and DPO contact (GDPR Art. 13) as the `{{ privacy }}` template
+global context.
 
 Part of the [granit](https://granit-fx.dev) framework.
 
