@@ -22,6 +22,10 @@ public static class ModelBuilderExtensions
         typeof(ModelBuilderExtensions)
             .GetMethod(nameof(ConfigureConcurrencyStamp), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
 
+    private static readonly MethodInfo ConfigureMergeTombstoneMethod =
+        typeof(ModelBuilderExtensions)
+            .GetMethod(nameof(ConfigureMergeTombstone), BindingFlags.Static | BindingFlags.NonPublic)!; // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+
     /// <summary>
     /// Applies Granit conventions to all entity types in the model:
     /// <list type="bullet">
@@ -30,9 +34,14 @@ public static class ModelBuilderExtensions
     ///     <see cref="IActive"/> (<see cref="GranitFilterNames.Active"/>),
     ///     <see cref="IProcessingRestrictable"/> (<see cref="GranitFilterNames.ProcessingRestrictable"/>),
     ///     <see cref="IMultiTenant"/> (<see cref="GranitFilterNames.MultiTenant"/>),
-    ///     <see cref="IPublishable"/> (<see cref="GranitFilterNames.Publishable"/>).
+    ///     <see cref="IPublishable"/> (<see cref="GranitFilterNames.Publishable"/>),
+    ///     <see cref="IHasMergeTombstone"/> (<see cref="GranitFilterNames.MergeTombstone"/>).
     ///     Each interface registers its own independent named filter — bypass one without affecting others:
     ///     <c>query.IgnoreQueryFilters([GranitFilterNames.SoftDelete])</c>.
+    ///   </item>
+    ///   <item><b>Merge tombstone column convention</b>:
+    ///     Implementors of <see cref="IHasMergeTombstone"/> get the <c>MergedIntoId</c> +
+    ///     <c>MergedAt</c> columns and an index on <c>MergedIntoId</c> auto-applied.
     ///   </item>
     ///   <item><b>Translation conventions</b>:
     ///     <see cref="ITranslation{TParent}"/> → FK, cascade delete, unique index (ParentId, Culture).
@@ -71,8 +80,9 @@ public static class ModelBuilderExtensions
             bool hasMultiTenant = typeof(IMultiTenant).IsAssignableFrom(clrType)
                 && currentTenant is not null;
             bool hasPublishable = typeof(IPublishable).IsAssignableFrom(clrType);
+            bool hasMergeTombstone = typeof(IHasMergeTombstone).IsAssignableFrom(clrType);
 
-            if (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasMultiTenant && !hasPublishable)
+            if (!hasSoftDelete && !hasActive && !hasProcessingRestriction && !hasMultiTenant && !hasPublishable && !hasMergeTombstone)
             {
                 continue;
             }
@@ -91,6 +101,21 @@ public static class ModelBuilderExtensions
             .Where(clrType => typeof(IConcurrencyAware).IsAssignableFrom(clrType)))
         {
             ConfigureConcurrencyStampMethod // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
+                .MakeGenericMethod(clrType)
+                .Invoke(null, [modelBuilder]);
+        }
+
+        // --- Merge tombstone column conventions ---
+        // Detects IHasMergeTombstone implementors and adds:
+        //   - MergedIntoId column (Guid?) + index (lookup "who merged into X" + tombstone listing)
+        //   - MergedAt column (DateTimeOffset?)
+        // The matching query filter (excludes tombstoned rows from standard queries) is
+        // registered earlier alongside SoftDelete / IMultiTenant / etc.
+        foreach (Type clrType in modelBuilder.Model.GetEntityTypes()
+            .Select(entityType => entityType.ClrType)
+            .Where(clrType => typeof(IHasMergeTombstone).IsAssignableFrom(clrType)))
+        {
+            ConfigureMergeTombstoneMethod // NOSONAR S3011 - intentional: generic EF Core property configuration requires reflection
                 .MakeGenericMethod(clrType)
                 .Invoke(null, [modelBuilder]);
         }
@@ -282,6 +307,21 @@ public static class ModelBuilderExtensions
             builder.HasQueryFilter(GranitFilterNames.Publishable,
                 Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, isPublished), param));
         }
+
+        if (typeof(IHasMergeTombstone).IsAssignableFrom(typeof(TEntity)))
+        {
+            // Standard listings exclude tombstoned aggregates (those that have been merged
+            // into another instance). Bypass via IDataFilter.Disable<IHasMergeTombstone>()
+            // to surface tombstones in admin / audit views, or per-query via
+            // IgnoreQueryFilters([GranitFilterNames.MergeTombstone]).
+            Expression bypass = Expression.Not(
+                Expression.Property(Expression.Constant(proxy), nameof(FilterProxy.MergeTombstoneEnabled)));
+            Expression notTombstoned = Expression.Equal(
+                Expression.Property(param, nameof(IHasMergeTombstone.MergedIntoId)),
+                Expression.Constant(null, typeof(Guid?)));
+            builder.HasQueryFilter(GranitFilterNames.MergeTombstone,
+                Expression.Lambda<Func<TEntity, bool>>(Expression.OrElse(bypass, notTombstoned), param));
+        }
     }
 
     // Configures the ConcurrencyStamp property as a concurrency token with VARCHAR(36).
@@ -292,6 +332,23 @@ public static class ModelBuilderExtensions
             .Property(e => e.ConcurrencyStamp)
             .HasMaxLength(36)
             .IsConcurrencyToken();
+    }
+
+    // Configures the MergedIntoId / MergedAt columns + index for IHasMergeTombstone implementors.
+    // The properties are declared as get-only on the interface; the implementing aggregate must
+    // expose them as { get; private set; } (or private setter via reflection) for EF to populate.
+    private static void ConfigureMergeTombstone<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class, IHasMergeTombstone
+    {
+        Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<TEntity> builder =
+            modelBuilder.Entity<TEntity>();
+
+        builder.Property(e => e.MergedIntoId);
+        builder.Property(e => e.MergedAt);
+
+        // Index on MergedIntoId : (1) speeds up "who merged into X" lookups during chain-collapse
+        // at merge time, (2) supports admin tombstone listings.
+        builder.HasIndex(e => e.MergedIntoId);
     }
 
     // Internal wrapper: EF Core evaluates simple property access on a ConstantExpression
@@ -307,5 +364,6 @@ public static class ModelBuilderExtensions
         public bool ProcessingRestrictableEnabled => _dataFilter?.IsEnabled<IProcessingRestrictable>() ?? true;
         public bool MultiTenantEnabled => _dataFilter?.IsEnabled<IMultiTenant>() ?? true;
         public bool PublishableEnabled => _dataFilter?.IsEnabled<IPublishable>() ?? true;
+        public bool MergeTombstoneEnabled => _dataFilter?.IsEnabled<IHasMergeTombstone>() ?? true;
     }
 }

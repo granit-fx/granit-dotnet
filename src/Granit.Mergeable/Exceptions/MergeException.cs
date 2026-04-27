@@ -1,4 +1,4 @@
-namespace Granit.Mergeable;
+namespace Granit.Mergeable.Exceptions;
 
 /// <summary>
 /// Thrown when a merge violates a hard invariant — tenant mismatch, kind mismatch, currency

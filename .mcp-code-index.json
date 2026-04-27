@@ -14107,6 +14107,15 @@
       ]
     },
     {
+      "name": "IHasMergeTombstone",
+      "fqn": "Granit.Domain.IHasMergeTombstone",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/Domain/IHasMergeTombstone.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "IHasMetadata",
       "fqn": "Granit.Domain.IHasMetadata",
       "kind": "interface",
@@ -24216,21 +24225,12 @@
       "members": []
     },
     {
-      "name": "IHasMergeTombstone",
-      "fqn": "Granit.Mergeable.Domain.IHasMergeTombstone",
-      "kind": "interface",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/Domain/IHasMergeTombstone.cs",
-      "line": 22,
-      "members": []
-    },
-    {
       "name": "IMergeable",
       "fqn": "Granit.Mergeable.Domain.IMergeable",
       "kind": "interface",
       "project": "Granit.Mergeable",
       "file": "src/Granit.Mergeable/Domain/IMergeable.cs",
-      "line": 25,
+      "line": 29,
       "members": [
         {
           "name": "GetConflicts",
@@ -24245,6 +24245,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "MergeException",
+      "fqn": "Granit.Mergeable.Exceptions.MergeException",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/Exceptions/MergeException.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "MergeableServiceCollectionExtensions",
@@ -24316,15 +24325,6 @@
           "returnType": "Task<int>"
         }
       ]
-    },
-    {
-      "name": "MergeException",
-      "fqn": "Granit.Mergeable.MergeException",
-      "kind": "class",
-      "project": "Granit.Mergeable",
-      "file": "src/Granit.Mergeable/MergeException.cs",
-      "line": 8,
-      "members": []
     },
     {
       "name": "MergeFieldChoices",

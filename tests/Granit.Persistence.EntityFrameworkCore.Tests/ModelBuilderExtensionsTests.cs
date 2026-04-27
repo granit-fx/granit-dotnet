@@ -581,6 +581,95 @@ public sealed class ModelBuilderExtensionsTests
     }
 
     // -------------------------------------------------------------------------
+    // IHasMergeTombstone — auto-column + index + named query filter
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public void ApplyGranitConventions_Mergeable_AddsMergedIntoIdProperty()
+    {
+        using TestDbContextWithMergeable context = CreateMergeableContext();
+
+        IEntityType? entityType = context.Model.FindEntityType(typeof(TestMergeableEntity));
+        entityType.ShouldNotBeNull();
+
+        Microsoft.EntityFrameworkCore.Metadata.IProperty? mergedIntoId =
+            entityType!.FindProperty(nameof(IHasMergeTombstone.MergedIntoId));
+        mergedIntoId.ShouldNotBeNull("MergedIntoId must be auto-mapped on IHasMergeTombstone implementors");
+        mergedIntoId!.ClrType.ShouldBe(typeof(Guid?));
+        mergedIntoId.IsNullable.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ApplyGranitConventions_Mergeable_AddsMergedAtProperty()
+    {
+        using TestDbContextWithMergeable context = CreateMergeableContext();
+
+        IEntityType? entityType = context.Model.FindEntityType(typeof(TestMergeableEntity));
+        Microsoft.EntityFrameworkCore.Metadata.IProperty? mergedAt =
+            entityType!.FindProperty(nameof(IHasMergeTombstone.MergedAt));
+        mergedAt.ShouldNotBeNull();
+        mergedAt!.ClrType.ShouldBe(typeof(DateTimeOffset?));
+        mergedAt.IsNullable.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ApplyGranitConventions_Mergeable_AddsIndexOnMergedIntoId()
+    {
+        using TestDbContextWithMergeable context = CreateMergeableContext();
+
+        IEntityType entityType = context.Model.FindEntityType(typeof(TestMergeableEntity))!;
+        bool hasIndex = entityType.GetIndexes()
+            .Any(idx => idx.Properties.Count == 1
+                        && idx.Properties[0].Name == nameof(IHasMergeTombstone.MergedIntoId));
+        hasIndex.ShouldBeTrue("an index on MergedIntoId is required for tombstone lookups");
+    }
+
+    [Fact]
+    public void ApplyGranitConventions_Mergeable_RegistersNamedQueryFilter()
+    {
+        using TestDbContextWithMergeable context = CreateMergeableContext();
+
+        IEntityType entityType = context.Model.FindEntityType(typeof(TestMergeableEntity))!;
+        bool hasFilter = entityType.GetDeclaredQueryFilters()
+            .Any(f => f.Key == GranitFilterNames.MergeTombstone);
+        hasFilter.ShouldBeTrue("a named MergeTombstone filter must be registered");
+    }
+
+    [Fact]
+    public async Task ApplyGranitConventions_Mergeable_FiltersTombstonedEntities()
+    {
+        using TestDbContextWithMergeable context = CreateMergeableContext();
+
+        var alive = new TestMergeableEntity { Name = "alive" };
+        var tombstoned = new TestMergeableEntity
+        {
+            Name = "tombstoned",
+            MergedIntoId = alive.Id,
+            MergedAt = DateTimeOffset.UtcNow,
+        };
+        context.Mergeables.AddRange(alive, tombstoned);
+        await context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        List<TestMergeableEntity> visible = await context.Mergeables
+            .ToListAsync(TestContext.Current.CancellationToken);
+        visible.ShouldHaveSingleItem().Name.ShouldBe("alive");
+
+        List<TestMergeableEntity> all = await context.Mergeables
+            .IgnoreQueryFilters([GranitFilterNames.MergeTombstone])
+            .ToListAsync(TestContext.Current.CancellationToken);
+        all.Count.ShouldBe(2);
+    }
+
+    private static TestDbContextWithMergeable CreateMergeableContext()
+    {
+        DbContextOptions<TestDbContextWithMergeable> options =
+            new DbContextOptionsBuilder<TestDbContextWithMergeable>()
+                .UseInMemoryDatabase(Guid.NewGuid().ToString())
+                .Options;
+        return new TestDbContextWithMergeable(options);
+    }
+
+    // -------------------------------------------------------------------------
     // Helpers
     // -------------------------------------------------------------------------
 
@@ -912,6 +1001,22 @@ internal sealed class TestConcurrencyAwareEntity : IConcurrencyAware
 internal sealed class TestDbContextWithConcurrencyAware(DbContextOptions<TestDbContextWithConcurrencyAware> options) : DbContext(options)
 {
     public DbSet<TestConcurrencyAwareEntity> ConcurrencyAwareEntities => Set<TestConcurrencyAwareEntity>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+        modelBuilder.ApplyGranitConventions();
+}
+
+internal sealed class TestMergeableEntity : IHasMergeTombstone
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public string Name { get; set; } = string.Empty;
+    public Guid? MergedIntoId { get; set; }
+    public DateTimeOffset? MergedAt { get; set; }
+}
+
+internal sealed class TestDbContextWithMergeable(DbContextOptions<TestDbContextWithMergeable> options) : DbContext(options)
+{
+    public DbSet<TestMergeableEntity> Mergeables => Set<TestMergeableEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyGranitConventions();

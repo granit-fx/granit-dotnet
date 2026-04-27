@@ -2,6 +2,10 @@ using Granit.Domain;
 
 namespace Granit.Mergeable.Domain;
 
+// IHasMergeTombstone lives in Granit.Domain (next to ISoftDeletable, IMultiTenant, etc.) so
+// Granit.Persistence.EntityFrameworkCore can auto-apply the EF column + index + query filter
+// without taking a dependency on Granit.Mergeable.
+
 /// <summary>
 /// Aggregate marker: this aggregate root knows how to absorb a <em>loser</em> instance into
 /// the current <em>survivor</em>, applying per-field admin choices to resolve scalar conflicts.

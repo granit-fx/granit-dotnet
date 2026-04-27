@@ -26,4 +26,7 @@ public static class GranitFilterNames
 
     /// <summary>Filter key for <see cref="Core.Domain.IPublishable"/> — excludes unpublished entities.</summary>
     public const string Publishable = "Publishable";
+
+    /// <summary>Filter key for <see cref="Core.Domain.IHasMergeTombstone"/> — excludes aggregates merged out into another instance.</summary>
+    public const string MergeTombstone = "MergeTombstone";
 }
