@@ -243,6 +243,46 @@ internal sealed class InMemoryWebhookSubscriptionStore(
         return Task.FromResult<WebhookSigningKey?>(null);
     }
 
+    public Task<IReadOnlyList<WebhookSigningKey>> GetExpiringSoonAsync(
+        DateTimeOffset now,
+        DateTimeOffset cutoff,
+        DateTimeOffset notificationDedupeBefore,
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyList<WebhookSigningKey> results = _subscriptions.Values
+            .SelectMany(s => s.SigningKeys)
+            .Where(k => k.Status is WebhookSigningKeyStatus.Active or WebhookSigningKeyStatus.Retired
+                     && k.RevokedAt is null
+                     && k.ExpiresAt is { } expiresAt
+                     && expiresAt > now
+                     && expiresAt <= cutoff
+                     && (k.LastRotationNotificationAt is null
+                         || k.LastRotationNotificationAt < notificationDedupeBefore))
+            .ToList();
+
+        return Task.FromResult(results);
+    }
+
+    public Task StampRotationNotificationAsync(
+        Guid subscriptionId,
+        Guid keyId,
+        DateTimeOffset notifiedAt,
+        CancellationToken cancellationToken = default)
+    {
+        if (!_subscriptions.TryGetValue(subscriptionId, out WebhookSubscription? subscription))
+        {
+            throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+        }
+
+        bool stamped = subscription.StampRotationNotification(keyId, notifiedAt);
+        if (!stamped)
+        {
+            throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
+        }
+
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     /// Adds or replaces a subscription. Used in tests and dev scenarios.
     /// </summary>

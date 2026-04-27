@@ -109,4 +109,43 @@ internal sealed class EfCoreApiKeyAdminStore(
             entry.UpdateAllowedCidrs(allowedCidrs);
             return true;
         }, cancellationToken);
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<ApiKeyEntry>> ListExpiringSoonAsync(
+        DateTimeOffset now,
+        DateTimeOffset leadTimeWindowEnd,
+        DateTimeOffset dedupeBefore,
+        CancellationToken cancellationToken = default) =>
+        ReadAsync<IReadOnlyList<ApiKeyEntry>>(async db =>
+        {
+            // Tracking enabled: callers will mutate (MarkExpirationNotified) and SaveChanges().
+            List<ApiKeyEntry> entries = await db.ApiKeys
+                .Where(k => k.RevokedAt == null)
+                .Where(k => k.ExpiresAt != null
+                            && k.ExpiresAt > now
+                            && k.ExpiresAt <= leadTimeWindowEnd)
+                .Where(k => k.LastExpirationNotifiedAt == null
+                            || k.LastExpirationNotifiedAt < dedupeBefore)
+                .OrderBy(k => k.ExpiresAt)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+            return entries;
+        }, cancellationToken);
+
+    /// <inheritdoc/>
+    public Task SaveAsync(ApiKeyEntry entry, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        return WriteAsync(async db =>
+        {
+            // Attach if detached (entries returned by ListExpiringSoonAsync are already
+            // tracked when the query executed in the same context, but the scanner uses
+            // a fresh context per emission — defensive attach handles both paths).
+            if (db.Entry(entry).State == EntityState.Detached)
+            {
+                db.ApiKeys.Update(entry);
+            }
+        }, cancellationToken);
+    }
 }

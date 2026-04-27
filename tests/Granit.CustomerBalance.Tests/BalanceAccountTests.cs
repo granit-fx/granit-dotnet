@@ -25,7 +25,7 @@ public sealed class BalanceAccountTests
     [Fact]
     public void Create_ShouldNormalizeCurrencyToUpperCase()
     {
-        var account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), PartyId.Create(Guid.NewGuid()), "eur");
+        BalanceAccount account = BalanceAccount.Create(Guid.NewGuid(), Guid.NewGuid(), PartyId.Create(Guid.NewGuid()), "eur");
 
         account.Currency.ShouldBe("EUR");
     }

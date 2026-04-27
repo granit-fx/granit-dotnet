@@ -16,10 +16,12 @@ public sealed class EmbeddedTemplatesTests
         "Templates.apikeys.new_key_issued.html",
         "Templates.apikeys.rotation_completed.html",
         "Templates.apikeys.revoked.html",
+        "Templates.apikeys.expiring_soon.html",
         // French variants — the second culture we ship out of the box.
         "Templates.apikeys.new_key_issued.fr.html",
         "Templates.apikeys.rotation_completed.fr.html",
         "Templates.apikeys.revoked.fr.html",
+        "Templates.apikeys.expiring_soon.fr.html",
     ];
 
     [Theory]

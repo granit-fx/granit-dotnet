@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Authentication.ApiKeys.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Authentication.ApiKeys. Daily scanner that emits ApiKeyExpiringSoonEto for keys approaching expiration so tenant administrators can rotate ahead of disruption (ISO 27001 A.9.4).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Authentication.ApiKeys.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authentication.ApiKeys\Granit.Authentication.ApiKeys.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+  </ItemGroup>
+
+</Project>

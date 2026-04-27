@@ -12,10 +12,12 @@ public sealed class EmbeddedTemplatesTests
 {
     public static TheoryData<string> ExpectedTemplates() =>
     [
-        // Neutral (= EN) variant, one per notification type.
+        // Neutral (= EN) variants, one per notification type.
         "Templates.webhooks.delivery_failure_threshold.html",
+        "Templates.webhooks.signing_key_rotation_due.html",
         // French variants — the second culture we ship out of the box.
         "Templates.webhooks.delivery_failure_threshold.fr.html",
+        "Templates.webhooks.signing_key_rotation_due.fr.html",
     ];
 
     [Theory]

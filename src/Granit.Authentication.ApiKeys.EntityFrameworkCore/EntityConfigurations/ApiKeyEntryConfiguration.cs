@@ -28,6 +28,13 @@ internal sealed class ApiKeyEntryConfiguration : IEntityTypeConfiguration<ApiKey
         builder.HasIndex(e => e.TenantId)
             .HasDatabaseName($"ix_{GranitApiKeysDbProperties.DbTablePrefix}api_keys_tenant_id");
 
+        // Composite index supporting the daily "expiring soon" scanner —
+        // covers the (RevokedAt IS NULL, ExpiresAt within window, LastExpirationNotifiedAt < dedupeBefore)
+        // predicate. Order: ExpiresAt first to enable range seek, then LastExpirationNotifiedAt
+        // for dedupe filtering, finally RevokedAt as the cheapest equality filter.
+        builder.HasIndex(e => new { e.ExpiresAt, e.LastExpirationNotifiedAt, e.RevokedAt })
+            .HasDatabaseName($"ix_{GranitApiKeysDbProperties.DbTablePrefix}api_keys_expiring_scan");
+
         builder.Property(e => e.Name).HasMaxLength(200).IsRequired();
         builder.Property(e => e.HashedKey).HasMaxLength(64).IsRequired(); // SHA-256 hex = 64 chars
         builder.Property(e => e.Prefix).HasMaxLength(20).IsRequired();

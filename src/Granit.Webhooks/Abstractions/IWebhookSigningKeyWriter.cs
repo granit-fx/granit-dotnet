@@ -45,6 +45,24 @@ public interface IWebhookSigningKeyWriter
         Guid subscriptionId,
         Guid keyId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Records that a rotation-due notification was emitted for the given key, by stamping
+    /// <see cref="Domain.WebhookSigningKey.LastRotationNotificationAt"/>.
+    /// </summary>
+    /// <remarks>
+    /// Used by the daily rotation scanner (FU-1b) to dedupe subsequent emissions to at most
+    /// once per (key, calendar week).
+    /// </remarks>
+    /// <param name="subscriptionId">Owning subscription identifier.</param>
+    /// <param name="keyId">Identifier of the key being notified.</param>
+    /// <param name="notifiedAt">Timestamp recorded on the key.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task StampRotationNotificationAsync(
+        Guid subscriptionId,
+        Guid keyId,
+        DateTimeOffset notifiedAt,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

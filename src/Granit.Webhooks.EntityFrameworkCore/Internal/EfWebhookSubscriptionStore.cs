@@ -242,6 +242,51 @@ internal sealed class EfWebhookSubscriptionStore(
             .FirstOrDefaultAsync(k => k.Id == keyId, cancellationToken).ConfigureAwait(false);
     }
 
+    /// <inheritdoc/>
+    public async Task<IReadOnlyList<WebhookSigningKey>> GetExpiringSoonAsync(
+        DateTimeOffset now,
+        DateTimeOffset cutoff,
+        DateTimeOffset notificationDedupeBefore,
+        CancellationToken cancellationToken = default)
+    {
+        await using WebhooksDbContext db = await _contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+
+        List<WebhookSigningKey> keys = await db.WebhookSigningKeys
+            .Where(k => (k.Status == WebhookSigningKeyStatus.Active
+                      || k.Status == WebhookSigningKeyStatus.Retired)
+                     && k.RevokedAt == null
+                     && k.ExpiresAt != null
+                     && k.ExpiresAt > now
+                     && k.ExpiresAt <= cutoff
+                     && (k.LastRotationNotificationAt == null
+                         || k.LastRotationNotificationAt < notificationDedupeBefore))
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+
+        return keys;
+    }
+
+    /// <inheritdoc/>
+    public Task StampRotationNotificationAsync(
+        Guid subscriptionId,
+        Guid keyId,
+        DateTimeOffset notifiedAt,
+        CancellationToken cancellationToken = default) =>
+        WriteAsync(async db =>
+        {
+            WebhookSubscription subscription = await db.WebhookSubscriptions
+                .Include(s => s.SigningKeys)
+                .FirstOrDefaultAsync(s => s.Id == subscriptionId, cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
+
+            bool stamped = subscription.StampRotationNotification(keyId, notifiedAt);
+            if (!stamped)
+            {
+                throw new EntityNotFoundException(typeof(WebhookSigningKey), keyId);
+            }
+        }, cancellationToken);
+
     private static async Task<WebhookSubscription> FindOrThrowAsync(
         WebhooksDbContext context,
         Guid subscriptionId,
