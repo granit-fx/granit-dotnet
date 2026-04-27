@@ -13,9 +13,11 @@ public sealed class EmbeddedTemplatesTests
     public static TheoryData<string> ExpectedTemplates() =>
     [
         // Neutral (= EN) variants, one per notification type.
+        "Templates.identity.sync_failed.html",
         "Templates.identity.token_exchange_audit.html",
         "Templates.identity.user_provisioning_removed.html",
         // French variants — the second culture we ship out of the box.
+        "Templates.identity.sync_failed.fr.html",
         "Templates.identity.token_exchange_audit.fr.html",
         "Templates.identity.user_provisioning_removed.fr.html",
     ];

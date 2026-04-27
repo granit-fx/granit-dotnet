@@ -3,6 +3,7 @@ using Granit.Identity.Events;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Events;
 using Granit.Identity.Federated.Internal;
+using Granit.Identity.Federated.RateLimiting;
 using Microsoft.Extensions.Logging;
 
 namespace Granit.Identity.Federated.Handlers;
@@ -12,9 +13,11 @@ namespace Granit.Identity.Federated.Handlers;
 /// </summary>
 internal sealed partial class IdentityUserEventHandler(
     IIdentityProvider identityProvider,
+    IIdentityProviderCapabilities providerCapabilities,
     IUserCacheStore store,
     ILocalEventBus localEventBus,
     IDistributedEventBus distributedEventBus,
+    IUserSyncFailureRateLimiter syncFailureRateLimiter,
     TimeProvider timeProvider,
     ILogger<IdentityUserEventHandler> logger)
 {
@@ -82,6 +85,10 @@ internal sealed partial class IdentityUserEventHandler(
         if (user is null)
         {
             LogUserNotFoundInProvider(userId);
+            await EmitSyncFailedAsync(
+                userId,
+                reason: "User not found in identity provider during cache sync.",
+                cancellationToken).ConfigureAwait(false);
             return;
         }
 
@@ -103,8 +110,32 @@ internal sealed partial class IdentityUserEventHandler(
             .ConfigureAwait(false);
     }
 
+    private async Task EmitSyncFailedAsync(string userId, string reason, CancellationToken cancellationToken)
+    {
+        string providerName = providerCapabilities.ProviderName;
+        if (!syncFailureRateLimiter.TryAcquire(userId, providerName))
+        {
+            // Same (user, provider) failure already emitted within the cool-off
+            // window — keep the log line above for short-term continuity, skip
+            // the integration event to avoid log-storm noise.
+            LogSyncFailureSuppressed(userId, providerName);
+            return;
+        }
+
+        await distributedEventBus.PublishAsync(
+            new IdentityUserSyncFailedEto(
+                userId,
+                providerName,
+                reason,
+                timeProvider.GetUtcNow()),
+            cancellationToken).ConfigureAwait(false);
+    }
+
     [LoggerMessage(Level = LogLevel.Warning, Message = "User {UserId} not found in identity provider during cache sync")]
     private partial void LogUserNotFoundInProvider(string userId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Suppressed IdentityUserSyncFailedEto emission for user {UserId} on provider {ProviderName} (cool-off window active)")]
+    private partial void LogSyncFailureSuppressed(string userId, string providerName);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "[AUDIT] User cache entry updated via {Source} for user {UserId}")]
     private partial void LogUserCacheUpdated(string userId, string source);

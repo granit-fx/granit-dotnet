@@ -1,0 +1,22 @@
+<title>Échec de synchronisation d'identité fédérée : {{ model.user_id | html.escape }} sur {{ model.provider_name | html.escape }}</title>
+<p>Bonjour,</p>
+<p>La couche d'identité fédérée n'a pas pu synchroniser un utilisateur entre <strong>{{ model.provider_name | html.escape }}</strong> et le cache utilisateur local. ISO 27001 A.12.4 exige que toute dérive entre le fournisseur d'identité et notre table utilisateur remonte à un responsable humain, et pas seulement dans un fichier de log — veuillez examiner et accuser réception ou escalader.</p>
+<ul>
+  <li><strong>Utilisateur :</strong> <code>{{ model.user_id | html.escape }}</code></li>
+  <li><strong>Fournisseur :</strong> {{ model.provider_name | html.escape }}</li>
+  <li><strong>Motif :</strong> {{ model.reason | html.escape | string.truncate 280 }}</li>
+  <li><strong>Survenue le :</strong> {{ model.occurred_at | date.to_string '%d %B %Y à %H:%M:%S UTC' }}</li>
+  {{ if model.tenant_id }}
+  <li><strong>Tenant :</strong> <code>{{ model.tenant_id }}</code></li>
+  {{ end }}
+</ul>
+{{ if app.base_url }}
+<p>Ouvrir la fiche cache de l'utilisateur : <a href="{{ app.base_url }}/admin/identity/users/{{ model.user_id }}">{{ app.base_url }}/admin/identity/users/{{ model.user_id }}</a></p>
+{{ end }}
+<p>Si la panne est transitoire (fournisseur injoignable, micro-coupure réseau), le prochain cycle de synchronisation se rétablira automatiquement. Si elle persiste pour le même utilisateur, traitez-la comme une dérive entre l'IdP et notre cache : vérifiez que l'utilisateur existe toujours en amont, puis déclenchez une resynchronisation manuelle ou supprimez l'entrée cache orpheline selon le runbook. Les échecs répétés pour le même couple (utilisateur, fournisseur) sont limités à une notification par fenêtre de temporisation (par défaut 60 min) afin de ne pas saturer le canal — ajustez <code>IdentityFederatedNotifications:SyncFailureCoolOffMinutes</code> si votre tempo opérationnel diffère.</p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Contact protection des données : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Besoin d'aide pour le triage ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}
