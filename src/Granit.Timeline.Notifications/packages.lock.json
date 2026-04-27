@@ -50,6 +50,13 @@
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.templating": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Workflow": "[0.1.0-dev, )"
+        }
+      },
       "granit.timeline": {
         "type": "Project",
         "dependencies": {
@@ -67,6 +74,15 @@
           "Granit": "[0.1.0-dev, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
+      "granit.workflow": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )"
         }
       },
       "Microsoft.Extensions.DependencyInjection.Abstractions": {
