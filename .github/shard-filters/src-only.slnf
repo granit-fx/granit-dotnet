@@ -19,6 +19,7 @@
       "src/Granit.Auditing.Notifications/Granit.Auditing.Notifications.csproj",
       "src/Granit.Auditing.Privacy/Granit.Auditing.Privacy.csproj",
       "src/Granit.Auditing/Granit.Auditing.csproj",
+      "src/Granit.Authentication.ApiKeys.BackgroundJobs/Granit.Authentication.ApiKeys.BackgroundJobs.csproj",
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
       "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj",
       "src/Granit.Authentication.ApiKeys.Notifications/Granit.Authentication.ApiKeys.Notifications.csproj",

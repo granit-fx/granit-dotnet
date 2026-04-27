@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.Notifications\Granit.Authentication.ApiKeys.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Authentication.ApiKeys.BackgroundJobs\Granit.Authentication.ApiKeys.BackgroundJobs.csproj" />
   </ItemGroup>
 
 </Project>

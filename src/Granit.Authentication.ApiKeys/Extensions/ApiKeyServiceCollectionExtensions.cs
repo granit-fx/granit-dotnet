@@ -26,6 +26,14 @@ public static class ApiKeyServiceCollectionExtensions
         services.TryAddSingleton<IApiKeyGenerator, ApiKeyGenerator>();
         services.TryAddSingleton<ApiKeysMetrics>();
 
+        // Module-level options (lead time for expiring-soon scanner, etc.).
+        // The scanner itself ships in Granit.Authentication.ApiKeys.BackgroundJobs;
+        // binding here keeps host configuration in one place.
+        services.AddOptions<ApiKeysOptions>()
+            .BindConfiguration(ApiKeysOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         // Add the authentication scheme
         services.AddAuthentication()
             .AddScheme<ApiKeyOptions, ApiKeyAuthenticationHandler>(

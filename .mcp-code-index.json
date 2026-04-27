@@ -150,6 +150,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication.ApiKeys.BackgroundJobs",
+      "deps": [
+        "Granit.Authentication.ApiKeys",
+        "Granit.BackgroundJobs"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.ApiKeys.Endpoints",
       "deps": [
         "Granit.Authentication.ApiKeys",
@@ -5234,6 +5242,63 @@
       "members": []
     },
     {
+      "name": "GranitApiKeysBackgroundJobsModule",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.GranitApiKeysBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitApiKeysBackgroundJobsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ExpiringApiKeyScannerHandler",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.Jobs.ExpiringApiKeyScannerHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/Jobs/ExpiringApiKeyScannerHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExpiringApiKeyScannerJob _, ExpiringApiKeyScannerService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ExpiringApiKeyScannerJob",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.Jobs.ExpiringApiKeyScannerJob",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/Jobs/ExpiringApiKeyScannerJob.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "ExpiringApiKeyScannerService",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.Services.ExpiringApiKeyScannerService",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/Services/ExpiringApiKeyScannerService.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CacheBehavior",
       "fqn": "Granit.Authentication.ApiKeys.CacheBehavior",
       "kind": "enum",
@@ -5340,6 +5405,12 @@
           "name": "SetExpiration",
           "kind": "method",
           "signature": "SetExpiration(DateTimeOffset? expiresAt)",
+          "returnType": "void"
+        },
+        {
+          "name": "MarkExpirationNotified",
+          "kind": "method",
+          "signature": "MarkExpirationNotified(DateTimeOffset notifiedAt)",
           "returnType": "void"
         },
         {
@@ -5558,6 +5629,15 @@
       "members": []
     },
     {
+      "name": "ApiKeyExpiringSoonEto",
+      "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyExpiringSoonEto",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Events/ApiKeyExpiringSoonEto.cs",
+      "line": 37,
+      "members": []
+    },
+    {
       "name": "ApiKeyRevokedEto",
       "fqn": "Granit.Authentication.ApiKeys.Events.ApiKeyRevokedEto",
       "kind": "record",
@@ -5662,6 +5742,18 @@
           "kind": "method",
           "signature": "UpdateScopesAsync(Guid id, List<string> permissions, List<string> allowedCidrs, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        },
+        {
+          "name": "ListExpiringSoonAsync",
+          "kind": "method",
+          "signature": "ListExpiringSoonAsync(DateTimeOffset now, DateTimeOffset leadTimeWindowEnd, DateTimeOffset dedupeBefore, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<ApiKeyEntry>>"
+        },
+        {
+          "name": "SaveAsync",
+          "kind": "method",
+          "signature": "SaveAsync(ApiKeyEntry entry, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -5722,6 +5814,43 @@
           "kind": "method",
           "signature": "UpdateLastUsedAsync(Guid id, DateTimeOffset usedAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeyExpiringSoonNotificationData",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyExpiringSoonNotificationData",
+      "kind": "record",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyExpiringSoonNotificationType.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "ApiKeyExpiringSoonNotificationType",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.ApiKeyExpiringSoonNotificationType",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/ApiKeyExpiringSoonNotificationType.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ApiKeyExpiringSoonNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
@@ -5853,6 +5982,22 @@
       ]
     },
     {
+      "name": "ApiKeyExpiringSoonNotificationHandler",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.Handlers.ApiKeyExpiringSoonNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys.Notifications",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/Handlers/ApiKeyExpiringSoonNotificationHandler.cs",
+      "line": 33,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ApiKeyExpiringSoonEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ApiKeyIssuedNotificationHandler",
       "fqn": "Granit.Authentication.ApiKeys.Notifications.Handlers.ApiKeyIssuedNotificationHandler",
       "kind": "class",
@@ -5919,6 +6064,22 @@
           "kind": "property",
           "signature": "bool TrackLastUsed",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ApiKeysOptions",
+      "fqn": "Granit.Authentication.ApiKeys.Options.ApiKeysOptions",
+      "kind": "class",
+      "project": "Granit.Authentication.ApiKeys",
+      "file": "src/Granit.Authentication.ApiKeys/Options/ApiKeysOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ExpirationLeadTimeDays",
+          "kind": "property",
+          "signature": "int ExpirationLeadTimeDays",
+          "returnType": "int"
         }
       ]
     },

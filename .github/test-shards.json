@@ -226,6 +226,7 @@
         "tests/Granit.Auditing.Notifications.Tests",
         "tests/Granit.Auditing.Tests",
         "tests/Granit.Auditing.Privacy.Tests",
+        "tests/Granit.Authentication.ApiKeys.BackgroundJobs.Tests",
         "tests/Granit.Authentication.ApiKeys.Endpoints.Tests",
         "tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests",
         "tests/Granit.Authentication.ApiKeys.Notifications.Tests",

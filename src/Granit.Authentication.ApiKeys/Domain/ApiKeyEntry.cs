@@ -76,6 +76,14 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     /// <summary>Timestamp when the key was revoked. <c>null</c> if still active.</summary>
     public DateTimeOffset? RevokedAt { get; private set; }
 
+    /// <summary>
+    /// Timestamp of the last "expiring soon" notification emitted for this key.
+    /// <c>null</c> when no proactive notification has been emitted yet. Used by the
+    /// daily scanner (<c>Granit.Authentication.ApiKeys.BackgroundJobs</c>) to dedupe
+    /// per-key alerts to at most one emission per week.
+    /// </summary>
+    public DateTimeOffset? LastExpirationNotifiedAt { get; private set; }
+
     /// <summary>Controls caching behavior for this key.</summary>
     public CacheBehavior CacheBehavior { get; private set; }
 
@@ -143,6 +151,18 @@ public sealed class ApiKeyEntry : FullAuditedAggregateRoot, IMultiTenant
     /// </summary>
     public void SetExpiration(DateTimeOffset? expiresAt) =>
         ExpiresAt = expiresAt;
+
+    /// <summary>
+    /// Records that an "expiring soon" notification has been emitted for this key
+    /// at the given timestamp. Called by the scanner job
+    /// (<c>Granit.Authentication.ApiKeys.BackgroundJobs</c>) after the
+    /// <see cref="Events.ApiKeyExpiringSoonEto"/> has been published — the scanner
+    /// dispatches the Eto directly via <c>IDistributedEventBus</c> so the event hits
+    /// the Wolverine outbox even when the entity has no other pending state changes.
+    /// </summary>
+    /// <param name="notifiedAt">Timestamp at which the notification was emitted.</param>
+    public void MarkExpirationNotified(DateTimeOffset notifiedAt) =>
+        LastExpirationNotifiedAt = notifiedAt;
 
     /// <summary>
     /// Sets the caching behavior.
