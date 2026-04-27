@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<p>Bonjour,</p>
+<p>Une note de crédit a été émise pour la facture <strong>{{ model.parent_invoice_number | html.escape }}</strong> :</p>
+<ul>
+  <li><strong>Note de crédit :</strong> {{ model.credit_note_number | html.escape }}</li>
+  <li><strong>Montant :</strong> {{ model.amount }} {{ model.currency }}</li>
+  <li><strong>Motif :</strong> {{ model.reason | html.escape }}</li>
+</ul>
+<p>Le crédit a été appliqué à votre compte.</p>
