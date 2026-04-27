@@ -34,7 +34,7 @@ namespace Granit.Parties.Domain;
 /// <para><b>External mappings.</b> Polyglot — at most one mapping per provider, enforced
 /// defensively at the aggregate and by a unique index in the EF configuration.</para>
 /// </remarks>
-public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata
+public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IHasMergeTombstone
 {
     /// <summary>Per-aggregate cap on emails. Bounds reconciliation cost in <c>EfPartyStore.UpdateAsync</c>
     /// and prevents an authenticated <c>Parties.Manage</c> holder from exhausting storage / write throughput
@@ -221,6 +221,21 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata
     /// </remarks>
     [SensitiveData(Level = Sensitivity.Internal)]
     public string? InternalNotes { get; private set; }
+
+    /// <summary>
+    /// Tombstone — survivor id when this party has been merged out, <c>null</c> when alive.
+    /// Set by the merge orchestrator (<c>EfMergeService&lt;Party&gt;</c>) inside the merge
+    /// transaction; never mutated by the aggregate's own domain methods.
+    /// </summary>
+    /// <remarks>
+    /// EF column + index + standard query filter are auto-applied by
+    /// <c>ApplyGranitConventions</c> via the <see cref="IHasMergeTombstone"/> contract —
+    /// no per-aggregate mapping required.
+    /// </remarks>
+    public Guid? MergedIntoId { get; private set; }
+
+    /// <summary>Merge timestamp — companion to <see cref="MergedIntoId"/>.</summary>
+    public DateTimeOffset? MergedAt { get; private set; }
 
     /// <summary>Sets or clears the internal-notes free-form text. Pass <c>null</c> or empty to clear.</summary>
     public void SetInternalNotes(string? notes)

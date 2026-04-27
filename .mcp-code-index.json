@@ -2275,7 +2275,8 @@
       "name": "Granit.Timeline.Notifications",
       "deps": [
         "Granit.Timeline",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -2480,7 +2481,8 @@
         "Granit.Authorization",
         "Granit.Identity",
         "Granit.Workflow",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     }
@@ -31074,7 +31076,7 @@
           "name": "SetInternalNotes",
           "kind": "method",
           "signature": "SetInternalNotes(string? notes)",
-          "returnType": "string? InternalNotes { get; private set; } public void"
+          "returnType": "string? InternalNotes { get; private set; } public Guid? MergedIntoId { get; private set; } public DateTimeOffset? MergedAt { get; private set; } public void"
         },
         {
           "name": "DefaultBillingAddress",
@@ -31193,6 +31195,22 @@
           "kind": "method",
           "signature": "IsReserved(string? providerName)",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PartyIdTombstoneExtensions",
+      "fqn": "Granit.Parties.Domain.PartyIdTombstoneExtensions",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyIdTombstoneExtensions.cs",
+      "line": 44,
+      "members": [
+        {
+          "name": "ResolveCurrentAsync",
+          "kind": "method",
+          "signature": "ResolveCurrentAsync(this PartyId partyId, IPartyReader reader, IDataFilter dataFilter, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<PartyId>"
         }
       ]
     },
@@ -45731,7 +45749,7 @@
       "kind": "class",
       "project": "Granit.Timeline.Notifications",
       "file": "src/Granit.Timeline.Notifications/GranitTimelineNotificationsModule.cs",
-      "line": 15,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -49621,7 +49639,7 @@
       "kind": "class",
       "project": "Granit.Workflow.Notifications",
       "file": "src/Granit.Workflow.Notifications/GranitWorkflowNotificationsModule.cs",
-      "line": 31,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
