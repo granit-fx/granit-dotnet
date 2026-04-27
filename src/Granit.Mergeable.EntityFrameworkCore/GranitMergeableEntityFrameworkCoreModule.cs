@@ -1,3 +1,4 @@
+using Granit.Encryption;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace Granit.Mergeable.EntityFrameworkCore;
 /// <c>builder.AddGranitMergeableEntityFrameworkCore(...)</c>.
 /// </summary>
 [DependsOn(
+    typeof(GranitEncryptionModule),
     typeof(GranitMergeableModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitMergeableEntityFrameworkCoreModule : GranitModule;

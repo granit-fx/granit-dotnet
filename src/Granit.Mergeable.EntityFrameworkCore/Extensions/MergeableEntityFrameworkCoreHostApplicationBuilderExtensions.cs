@@ -1,6 +1,7 @@
 using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,18 @@ public static class MergeableEntityFrameworkCoreHostApplicationBuilderExtensions
         // Isolated DbContext owning merge_idempotency. Uses the AddGranitDbContext convention
         // (interceptors + naming) so the table follows the framework standards.
         builder.Services.AddGranitDbContext<MergeableDbContext>(configure);
+
+        // Bind orchestrator options (timeout, idempotency retention) from the Mergeable
+        // section. Validates DataAnnotations + fail-fast on misconfiguration.
+        builder.Services.AddOptions<MergeableOptions>()
+            .BindConfiguration(MergeableOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        // MAC-key provider — derives a deployment-bound HMAC key from the configured
+        // IStringEncryptionService. Singleton: derivation is one-shot and the cached key is
+        // safe to share across requests.
+        builder.Services.TryAddSingleton<IMergeableSecretProvider, StringEncryptionMergeableSecretProvider>();
 
         // Open generic — resolved per TAggregate by the consuming module's DI registration.
         // EfMergeService<> is internal but typeof(...) crosses the assembly boundary fine

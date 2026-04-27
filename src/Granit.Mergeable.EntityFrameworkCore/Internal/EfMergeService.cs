@@ -1,12 +1,16 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Transactions;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.Guids;
 using Granit.Mergeable.Domain;
 using Granit.Mergeable.EntityFrameworkCore.Domain;
 using Granit.Mergeable.Exceptions;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 #pragma warning disable CA1812 // Justification: resolved by DI through the open-generic registration `IMergeService<>` → `EfMergeService<>` (no direct `new` call in the codebase).
 
@@ -14,43 +18,29 @@ namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// EF Core implementation of <see cref="IMergeService{TAggregate}"/>. Drives the full merge
-/// pipeline: Stripe-style idempotency cache, pre-lock validation, advisory lock + row-level
-/// <c>FOR UPDATE</c>, dry-run preview, scalar-field application via
-/// <see cref="IMergeable{TSelf}.MergeFrom"/>, scatter-gather across all registered
-/// <see cref="IReferenceRewriter{TAggregate}"/> participants, tombstone, chain-collapse, and
-/// outbox-friendly persistence inside a single <see cref="TransactionScope"/> with
-/// <see cref="IsolationLevel.Serializable"/>.
+/// pipeline: Stripe-style idempotency cache (encrypted-then-MAC), pre-lock validation,
+/// per-tenant advisory lock + row-level <c>FOR UPDATE</c>, dry-run preview, scalar-field
+/// application via <see cref="IMergeable{TSelf}.MergeFrom"/>, scatter-gather across all
+/// registered <see cref="IReferenceRewriter{TAggregate}"/> participants, tombstone,
+/// chain-collapse, merged-event emission, and outbox-friendly persistence inside a single
+/// <see cref="TransactionScope"/> with <see cref="IsolationLevel.Serializable"/> and a
+/// host-bound timeout.
 /// </summary>
-/// <remarks>
-/// <para>
-/// <b>Single-Postgres assumption</b>. Cross-module rewriters use their own
-/// <c>DbContextFactory</c> but share the connection string with the parent aggregate's
-/// <c>DbContext</c> in standard deployments. <see cref="TransactionScope"/> enrols every
-/// connection opened during the scope into the same Postgres transaction (Npgsql native
-/// support, no DTC). Failure of any rewriter triggers a rollback of every participant.
-/// Multi-Postgres deployments require a saga-based fallback (out of scope for v1).
-/// </para>
-/// <para>
-/// <b>Concurrency control</b>. Two layers:
-/// <list type="bullet">
-///   <item><c>pg_advisory_xact_lock</c> per-tenant via <c>MergeableConcurrencyLock</c>
-///   serialises concurrent merges of the same tenant — second admin blocks until the first
-///   completes.</item>
-///   <item><c>SELECT … FOR UPDATE</c> on survivor + loser rows guards against races on
-///   <see cref="IHasMergeTombstone.MergedIntoId"/> — re-validated after the lock to detect
-///   stale-RowVersion situations.</item>
-/// </list>
-/// </para>
-/// </remarks>
 /// <typeparam name="TAggregate">The aggregate root being merged.</typeparam>
 internal sealed class EfMergeService<TAggregate>(
     IMergeableAggregateAdapter<TAggregate> adapter,
     IEnumerable<IReferenceRewriter<TAggregate>> rewriters,
     IDbContextFactory<MergeableDbContext> idempotencyContextFactory,
     IGuidGenerator guidGenerator,
-    IClock clock) : IMergeService<TAggregate>
+    IClock clock,
+    IStringEncryptionService stringEncryption,
+    IMergeableSecretProvider secretProvider,
+    IOptions<MergeableOptions> options,
+    ICurrentTenant? currentTenant = null) : IMergeService<TAggregate>
     where TAggregate : Entity, IMergeable<TAggregate>
 {
+    private readonly MergeableOptions _options = options.Value;
+
     /// <inheritdoc />
     public async Task<MergeResult<TAggregate>> MergePreviewAsync(
         Guid survivorId,
@@ -69,11 +59,14 @@ internal sealed class EfMergeService<TAggregate>(
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        Guid? tenantId = currentTenant?.IsAvailable == true ? currentTenant.Id : null;
+        byte[] macKey = secretProvider.GetMacKey();
+
         // 1. Idempotency cache lookup (live merges only — dry-run never caches).
         if (!request.DryRun && !string.IsNullOrEmpty(request.IdempotencyKey))
         {
-            MergeResult<TAggregate>? cached = await TryReadIdempotencyCacheAsync(request, cancellationToken)
-                .ConfigureAwait(false);
+            MergeResult<TAggregate>? cached = await TryReadIdempotencyCacheAsync(
+                request, tenantId, macKey, cancellationToken).ConfigureAwait(false);
             if (cached is not null)
             {
                 // Rehydrate Merged from the live aggregate so callers always observe
@@ -89,10 +82,12 @@ internal sealed class EfMergeService<TAggregate>(
         // 2. Open a Serializable transaction wrapping all participating DbContexts.
         // Async-aware: TransactionScopeAsyncFlowOption.Enabled ensures the scope follows
         // ConfigureAwait jumps. Single-Postgres deployments enrol every connection
-        // opened inside via Npgsql; no DTC.
+        // opened inside via Npgsql; no DTC. Timeout is bounded by MergeableOptions —
+        // fail fast on stuck rewriters before they hold the per-tenant advisory lock
+        // indefinitely.
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
-            new TransactionOptions { IsolationLevel = IsolationLevel.Serializable, Timeout = TransactionManager.MaximumTimeout },
+            new TransactionOptions { IsolationLevel = IsolationLevel.Serializable, Timeout = _options.MergeTimeout },
             TransactionScopeAsyncFlowOption.Enabled);
 
         // 3. Acquire idempotency DbContext for the duration of the orchestration; the same
@@ -100,11 +95,16 @@ internal sealed class EfMergeService<TAggregate>(
         await using MergeableDbContext idempotencyDb =
             await idempotencyContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        await MergeableConcurrencyLock.AcquireAsync(idempotencyDb, tenantId: null, cancellationToken)
+        // Per-tenant advisory lock — concurrent merges across DIFFERENT tenants run in
+        // parallel; concurrent merges of the SAME tenant serialise. Tenants without a
+        // tenant context fall back to the "global" key (single-tenant deployments).
+        await MergeableConcurrencyLock.AcquireAsync(idempotencyDb, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         // 4. Load survivor + loser via the per-aggregate adapter (bypasses the tombstone
-        //    filter so the loser row stays observable).
+        //    filter so the loser row stays observable). The IMultiTenant filter remains
+        //    active inside LoadAsync — cross-tenant reads return null and ValidatePair
+        //    throws "not found".
         TAggregate? survivor = await adapter.LoadAsync(request.SurvivorId, cancellationToken)
             .ConfigureAwait(false);
         TAggregate? loser = await adapter.LoadAsync(request.LoserId, cancellationToken)
@@ -161,12 +161,18 @@ internal sealed class EfMergeService<TAggregate>(
         await adapter.CollapseChainTombstonesAsync(request.SurvivorId, request.LoserId, cancellationToken)
             .ConfigureAwait(false);
 
-        // 9. Persist both aggregates via the adapter (one round-trip in EF terms; the
-        //    adapter is responsible for the SaveChanges call inside the transaction).
+        // 9. Stamp the merged event(s) on the survivor. The DomainEventDispatcherInterceptor
+        //    flushes the domain event in the same transaction; the eto enrols into the
+        //    Wolverine outbox atomically with the parties writes. Adapters whose aggregate
+        //    has no merged-lifecycle event use the default no-op implementation.
+        adapter.RaiseMergedEvents(survivorAggregate, loserAggregate, request, rewriteCounts, now);
+
+        // 10. Persist both aggregates via the adapter (one round-trip in EF terms; the
+        //     adapter is responsible for the SaveChanges call inside the transaction).
         await adapter.PersistMergedPairAsync(survivorAggregate, loserAggregate, cancellationToken)
             .ConfigureAwait(false);
 
-        // 10. Build the result and write the idempotency cache entry (best-effort — failure
+        // 11. Build the result and write the idempotency cache entry (best-effort — failure
         //     to write the cache is not fatal; the next replay will simply re-execute).
         var result = new MergeResult<TAggregate>(
             Merged: survivorAggregate,
@@ -176,7 +182,7 @@ internal sealed class EfMergeService<TAggregate>(
 
         if (!string.IsNullOrEmpty(request.IdempotencyKey))
         {
-            await WriteIdempotencyCacheAsync(idempotencyDb, request, result, now, guidGenerator, cancellationToken)
+            await WriteIdempotencyCacheAsync(idempotencyDb, request, tenantId, macKey, result, now, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -198,54 +204,92 @@ internal sealed class EfMergeService<TAggregate>(
         {
             throw new MergeException("Survivor and loser ids must differ.");
         }
+        // Belt-and-braces tenant guard. The IMultiTenant query filter normally blocks
+        // cross-tenant loads (LoadAsync returns null), but a future change that opts out of
+        // the filter — or an aggregate type that never enrols IMultiTenant — would otherwise
+        // open a cross-tenant merge path. Validate explicitly when both aggregates carry a
+        // tenant id so the orchestrator never participates in a cross-tenant merge.
+        if (survivor is IMultiTenant survivorTenant && loser is IMultiTenant loserTenant
+            && survivorTenant.TenantId != loserTenant.TenantId)
+        {
+            throw new MergeException("Survivor and loser must belong to the same tenant scope.");
+        }
         if (survivor.MergedIntoId is not null)
         {
+            // Generic wording — never disclose the chain pointer to the caller. The internal
+            // pointer is logged via the orchestrator's diagnostic surface, never surfaced in
+            // the user-visible exception message (CWE-209).
             throw new MergeException(
-                $"Survivor '{request.SurvivorId}' is itself merged into '{survivor.MergedIntoId}' — pick the current survivor.");
+                $"Survivor '{request.SurvivorId}' has itself been merged — pick the current survivor.");
         }
         if (loser.MergedIntoId is not null)
         {
             throw new MergeException(
-                $"Loser '{request.LoserId}' has already been merged (into '{loser.MergedIntoId}').");
+                $"Loser '{request.LoserId}' has already been merged.");
         }
     }
 
     private async Task<MergeResult<TAggregate>?> TryReadIdempotencyCacheAsync(
         MergeRequest request,
+        Guid? tenantId,
+        byte[] macKey,
         CancellationToken cancellationToken)
     {
-        string hash = MergeRequestHasher.ComputeHash(request);
+        string hash = MergeRequestHasher.ComputeHash(request, tenantId, macKey);
 
         await using MergeableDbContext db =
             await idempotencyContextFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        // Same key + same hash → replay
+        // Same tenant + key + hash → replay
         MergeIdempotencyEntry? matchByHash = await db.MergeIdempotencyEntries
             .AsNoTracking()
             .FirstOrDefaultAsync(
-                e => e.Key == request.IdempotencyKey && e.RequestHash == hash,
+                e => e.TenantId == tenantId && e.Key == request.IdempotencyKey && e.RequestHash == hash,
                 cancellationToken)
             .ConfigureAwait(false);
 
         if (matchByHash is not null)
         {
-            // Cache stores only the read-side projection (conflicts + rewrite counts) — the
-            // Merged aggregate is rehydrated from the database by the caller (MergeAsync)
-            // after this method returns. Returning Merged: null here is a sentinel; the
-            // caller swaps it via `cached with { Merged = … }` so external callers always
-            // observe a populated Merged on a successful replay.
-            CachedMergeResult cached = JsonSerializer.Deserialize<CachedMergeResult>(matchByHash.ResultJson)!;
+            // Encrypt-then-MAC verification: decrypt the payload, recompute the MAC over the
+            // plaintext, reject mismatches. This blocks a write-only DB compromise that
+            // would otherwise inject a poisoned ResultJson while leaving the MAC untouched.
+            string? plaintext = stringEncryption.Decrypt(matchByHash.ResultJson);
+            if (plaintext is null)
+            {
+                // Decrypt failure (corrupted ciphertext, key rotation gone wrong) — refuse
+                // to replay but do NOT throw, so the caller can fall through to a fresh
+                // merge instead of a hard 500.
+                return null;
+            }
+
+            string expectedMac = MergeRequestHasher.ComputePayloadMac(plaintext, macKey);
+            if (!CryptographicOperations.FixedTimeEquals(
+                System.Text.Encoding.ASCII.GetBytes(expectedMac),
+                System.Text.Encoding.ASCII.GetBytes(matchByHash.ResultMac)))
+            {
+                // Tampered cache row — refuse to replay. Caller sees a fresh merge attempt.
+                return null;
+            }
+
+            CachedMergeResult cached = JsonSerializer.Deserialize<CachedMergeResult>(plaintext)!;
+            // Cache stores only the read-side projection (rewrite counts + conflict paths).
+            // Survivor/loser scalar values are NEVER persisted (PII minimization, GDPR Art. 5).
+            // The Merged aggregate is rehydrated by MergeAsync via adapter.LoadAsync.
             return new MergeResult<TAggregate>(
                 Merged: null,
-                Conflicts: cached.Conflicts,
+                Conflicts: cached.Conflicts.Select(p =>
+                    new FieldConflict(p.FieldPath, SurvivorValue: null, LoserValue: null, p.Default)).ToList(),
                 RewriteCounts: cached.RewriteCounts,
                 DryRun: false);
         }
 
-        // Same key + different hash → 409 (key reused for a different intent)
+        // Same tenant + key + different hash → 409 (key reused for a different intent
+        // within the same tenant). Cross-tenant key collisions are silently allowed because
+        // the lookup above is tenant-scoped — Tenant B reusing Tenant A's literal key never
+        // observes Tenant A's existence (closes the cross-tenant key oracle).
         bool keyClash = await db.MergeIdempotencyEntries
             .AsNoTracking()
-            .AnyAsync(e => e.Key == request.IdempotencyKey, cancellationToken)
+            .AnyAsync(e => e.TenantId == tenantId && e.Key == request.IdempotencyKey, cancellationToken)
             .ConfigureAwait(false);
         if (keyClash)
         {
@@ -257,30 +301,46 @@ internal sealed class EfMergeService<TAggregate>(
         return null;
     }
 
-    private static async Task WriteIdempotencyCacheAsync(
+    private async Task WriteIdempotencyCacheAsync(
         MergeableDbContext db,
         MergeRequest request,
+        Guid? tenantId,
+        byte[] macKey,
         MergeResult<TAggregate> result,
         DateTimeOffset now,
-        IGuidGenerator guidGenerator,
         CancellationToken cancellationToken)
     {
-        var cached = new CachedMergeResult(result.Conflicts, result.RewriteCounts);
+        // Persist only the read-side projection — paths + winner sides + rewrite counts. The
+        // survivor/loser scalar values that briefly populated FieldConflict during the live
+        // merge are intentionally dropped here so they NEVER reach the cache table (PII
+        // minimization, GDPR Art. 5(1)(c)).
+        var cached = new CachedMergeResult(
+            result.Conflicts.Select(c => new CachedFieldConflictPath(c.FieldPath, c.Default)).ToList(),
+            result.RewriteCounts);
+
+        string plaintextJson = JsonSerializer.Serialize(cached);
+        string ciphertext = stringEncryption.Encrypt(plaintextJson);
+        string mac = MergeRequestHasher.ComputePayloadMac(plaintextJson, macKey);
+
         var entry = new MergeIdempotencyEntry
         {
             Id = guidGenerator.Create(),
+            TenantId = tenantId,
             Key = request.IdempotencyKey!,
-            RequestHash = MergeRequestHasher.ComputeHash(request),
+            RequestHash = MergeRequestHasher.ComputeHash(request, tenantId, macKey),
             SurvivorId = request.SurvivorId,
             LoserId = request.LoserId,
-            ResultJson = JsonSerializer.Serialize(cached),
+            ResultJson = ciphertext,
+            ResultMac = mac,
             CreatedAt = now,
         };
         db.MergeIdempotencyEntries.Add(entry);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    private sealed record CachedFieldConflictPath(string FieldPath, WinnerSide Default);
+
     private sealed record CachedMergeResult(
-        IReadOnlyList<FieldConflict> Conflicts,
+        IReadOnlyList<CachedFieldConflictPath> Conflicts,
         IReadOnlyDictionary<string, int> RewriteCounts);
 }

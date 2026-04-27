@@ -46,4 +46,30 @@ public interface IMergeableAggregateAdapter<TAggregate>
     /// updated (typically 0 in a fresh merge, &gt; 0 when chain merges happen).
     /// </summary>
     Task<int> CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Stamps the <em>merged</em> domain event + integration event on the survivor in-memory
+    /// (e.g. <c>Party.RaiseMergedEvents</c>) so the framework's
+    /// <c>DomainEventDispatcherInterceptor</c> picks them up on the next <c>SaveChanges</c>
+    /// — same transaction for the domain event, Wolverine outbox enrolment for the eto.
+    /// Default no-op for adapters whose aggregate does not emit a merged-lifecycle event.
+    /// Implementations MUST NOT touch the database; this hook only mutates the aggregate's
+    /// pending event list.
+    /// </summary>
+    /// <param name="survivor">The survivor aggregate (already mutated by <c>MergeFrom</c>).</param>
+    /// <param name="loser">The loser aggregate (already tombstoned by <see cref="ApplyTombstone"/>).</param>
+    /// <param name="request">The original merge request — gives <c>Reason</c>, <c>Choices</c>, ids.</param>
+    /// <param name="rewriteCounts">Counts produced by every registered <c>IReferenceRewriter&lt;TAggregate&gt;</c>,
+    /// keyed by their <c>Description</c>. Adapters can extract aggregate-specific counts (e.g.
+    /// <c>Party.ParentContactId</c>) to populate richer event payloads.</param>
+    /// <param name="mergedAt">Merge timestamp (orchestrator-provided <c>IClock.Now</c>).</param>
+    void RaiseMergedEvents(
+        TAggregate survivor,
+        TAggregate loser,
+        MergeRequest request,
+        IReadOnlyDictionary<string, int> rewriteCounts,
+        DateTimeOffset mergedAt)
+    {
+        // Default implementation: no event. Adapters opt in by overriding.
+    }
 }

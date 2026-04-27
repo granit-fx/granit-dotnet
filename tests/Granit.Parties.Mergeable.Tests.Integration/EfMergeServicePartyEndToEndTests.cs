@@ -1,7 +1,9 @@
 using Granit.DataFiltering;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.Guids;
 using Granit.Mergeable;
+using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
@@ -10,6 +12,7 @@ using Granit.Parties.EntityFrameworkCore.Internal;
 using Granit.Parties.Mergeable.Internal;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -86,18 +89,20 @@ public sealed class EfMergeServicePartyEndToEndTests : IClassFixture<PostgresFix
                 CREATE SCHEMA IF NOT EXISTS granit;
                 CREATE TABLE IF NOT EXISTS granit.merge_idempotency (
                     "Id" uuid NOT NULL,
+                    "TenantId" uuid NULL,
                     "Key" character varying(128) NOT NULL,
                     "RequestHash" character varying(64) NOT NULL,
                     "SurvivorId" uuid NOT NULL,
                     "LoserId" uuid NOT NULL,
                     "ResultJson" text NOT NULL,
+                    "ResultMac" character varying(64) NOT NULL,
                     "CreatedAt" timestamp with time zone NOT NULL,
                     CONSTRAINT "PK_merge_idempotency" PRIMARY KEY ("Id")
                 );
-                CREATE UNIQUE INDEX IF NOT EXISTS "IX_merge_idempotency_Key_RequestHash"
-                    ON granit.merge_idempotency ("Key", "RequestHash");
-                CREATE INDEX IF NOT EXISTS "IX_merge_idempotency_SurvivorId_LoserId"
-                    ON granit.merge_idempotency ("SurvivorId", "LoserId");
+                CREATE UNIQUE INDEX IF NOT EXISTS "IX_merge_idempotency_TenantId_Key_RequestHash"
+                    ON granit.merge_idempotency ("TenantId", "Key", "RequestHash");
+                CREATE INDEX IF NOT EXISTS "IX_merge_idempotency_TenantId_SurvivorId_LoserId"
+                    ON granit.merge_idempotency ("TenantId", "SurvivorId", "LoserId");
                 CREATE INDEX IF NOT EXISTS "IX_merge_idempotency_CreatedAt"
                     ON granit.merge_idempotency ("CreatedAt");
                 """,
@@ -112,12 +117,43 @@ public sealed class EfMergeServicePartyEndToEndTests : IClassFixture<PostgresFix
         var childrenRewriter = new PartyChildrenReferenceRewriter(_partiesFactory, _dataFilter);
         IReferenceRewriter<Party>[] rewriters = [parentRewriter, childrenRewriter];
 
+        IStringEncryptionService encryption = new FakeStringEncryption();
+        IMergeableSecretProvider secretProvider = new FakeSecretProvider();
+        IOptions<MergeableOptions> options = Options.Create(new MergeableOptions());
+
         _sut = new EfMergeService<Party>(
             adapter,
             rewriters,
             _mergeableFactory,
             _guidGenerator,
-            _clock);
+            _clock,
+            encryption,
+            secretProvider,
+            options);
+    }
+
+    private sealed class FakeStringEncryption : IStringEncryptionService
+    {
+        public string Encrypt(string plainText) =>
+            Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(plainText));
+
+        public string? Decrypt(string cipherText)
+        {
+            try { return System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(cipherText)); }
+            catch { return null; }
+        }
+    }
+
+    private sealed class FakeSecretProvider : IMergeableSecretProvider
+    {
+        private readonly byte[] _key = new byte[32]
+        {
+            0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
+            0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
+            0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
+            0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89,
+        };
+        public byte[] GetMacKey() => _key;
     }
 
     public async ValueTask DisposeAsync()

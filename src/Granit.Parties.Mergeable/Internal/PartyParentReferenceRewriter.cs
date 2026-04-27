@@ -26,8 +26,14 @@ internal sealed class PartyParentReferenceRewriter(
     IDbContextFactory<PartiesDbContext> contextFactory,
     IDataFilter dataFilter) : IReferenceRewriter<Party>
 {
+    /// <summary>
+    /// Stable description string published as the rewrite-counts map key. Adapters route on
+    /// this constant to extract the reparented-children count for downstream events.
+    /// </summary>
+    internal const string RewriterDescription = "Party.ParentContactId";
+
     /// <inheritdoc />
-    public string Description => "Party.ParentContactId";
+    public string Description => RewriterDescription;
 
     /// <inheritdoc />
     public async Task<int> RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)

@@ -222,6 +222,7 @@
     <ProjectReference Include="..\..\src\Granit.Payments.SepaTransfer\Granit.Payments.SepaTransfer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.Stripe\Granit.Payments.Stripe.csproj" />
     <ProjectReference Include="..\..\src\Granit.Mergeable\Granit.Mergeable.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mergeable.BackgroundJobs\Granit.Mergeable.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Mergeable.EntityFrameworkCore\Granit.Mergeable.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties\Granit.Parties.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.Abstractions\Granit.Parties.Abstractions.csproj" />

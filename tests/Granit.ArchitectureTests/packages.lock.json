@@ -2527,10 +2527,18 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.mergeable.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.BackgroundJobs": "[0.1.0-dev, )",
+          "Granit.Mergeable.EntityFrameworkCore": "[0.1.0-dev, )"
+        }
+      },
       "granit.mergeable.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Mergeable": "[0.1.0-dev, )",
           "Granit.Persistence": "[0.1.0-dev, )",

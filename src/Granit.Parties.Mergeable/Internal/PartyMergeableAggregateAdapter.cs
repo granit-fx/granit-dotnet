@@ -2,6 +2,7 @@ using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Mergeable;
 using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -89,6 +90,35 @@ internal sealed class PartyMergeableAggregateAdapter(
     {
         ArgumentNullException.ThrowIfNull(loser);
         loser.MarkAsMergedInto(survivorId, mergedAt);
+    }
+
+    /// <inheritdoc />
+    public void RaiseMergedEvents(
+        Party survivor,
+        Party loser,
+        MergeRequest request,
+        IReadOnlyDictionary<string, int> rewriteCounts,
+        DateTimeOffset mergedAt)
+    {
+        ArgumentNullException.ThrowIfNull(survivor);
+        ArgumentNullException.ThrowIfNull(loser);
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentNullException.ThrowIfNull(rewriteCounts);
+
+        // Reparented children come from the dedicated parent rewriter — extract its count
+        // from the scatter-gather map and let Party.RaiseMergedEvents emit the optional
+        // PartyChildrenReparentedEvent only when the count is positive.
+        int reparentedChildrenCount = rewriteCounts.TryGetValue(
+            PartyParentReferenceRewriter.RewriterDescription, out int count)
+            ? count
+            : 0;
+
+        survivor.RaiseMergedEvents(
+            PartyId.Create(loser.Id),
+            mergedAt,
+            request.Choices.Choices,
+            rewriteCounts,
+            reparentedChildrenCount);
     }
 
     /// <inheritdoc />

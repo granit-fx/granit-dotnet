@@ -33192,6 +33192,28 @@
       ]
     },
     {
+      "name": "PartyDuplicateCandidate",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Deduplication.PartyDuplicateCandidate",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartyDuplicateCandidate.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid partyId, Guid candidateId, int tier, decimal score, string signalsJson, DateTimeOffset createdAt)",
+          "returnType": "PartyDuplicateCandidate"
+        },
+        {
+          "name": "Refresh",
+          "kind": "method",
+          "signature": "Refresh(int tier, decimal score, string signalsJson, DateTimeOffset updatedAt)",
+          "returnType": "DateTimeOffset? DismissedAt { get; private set; } public DateTimeOffset CreatedAt { get; private set; } public DateTimeOffset? UpdatedAt { get; private set; } public void"
+        }
+      ]
+    },
+    {
       "name": "PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Parties.EntityFrameworkCore.Extensions.PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
