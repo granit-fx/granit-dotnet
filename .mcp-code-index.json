@@ -32311,6 +32311,15 @@
       "members": []
     },
     {
+      "name": "PartyChildrenReparentedEvent",
+      "fqn": "Granit.Parties.Events.PartyChildrenReparentedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyChildrenReparentedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "PartyCreatedEto",
       "fqn": "Granit.Parties.Events.PartyCreatedEto",
       "kind": "record",
@@ -32362,6 +32371,24 @@
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Events/PartyLinkedToUserEvent.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyMergedEto",
+      "fqn": "Granit.Parties.Events.PartyMergedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyMergedEto.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "PartyMergedEvent",
+      "fqn": "Granit.Parties.Events.PartyMergedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyMergedEvent.cs",
+      "line": 22,
       "members": []
     },
     {

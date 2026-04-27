@@ -313,6 +313,69 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         MergedIntoId = newSurvivorId;
     }
 
+    /// <summary>
+    /// Emits the merge events on the survivor: <see cref="PartyMergedEvent"/> (in-process
+    /// audit / search-index / cache-invalidation consumers) and <see cref="PartyMergedEto"/>
+    /// (Wolverine outbox for cross-process consumers). When at least one child party was
+    /// re-parented during the merge, also emits <see cref="PartyChildrenReparentedEvent"/>.
+    /// </summary>
+    /// <remarks>
+    /// Internal mutation point used by the Party merge orchestrator (in
+    /// <c>Granit.Parties.Mergeable</c>) after <see cref="MergeFrom"/> + the SQL-bulk reference
+    /// rewriters have run. Called inside the same <c>TransactionScope</c> as the merge so
+    /// the Wolverine outbox enrols at-least-once delivery atomically.
+    /// </remarks>
+    /// <param name="loserId">Id of the tombstoned party.</param>
+    /// <param name="mergedAt">Timestamp persisted on the loser's tombstone.</param>
+    /// <param name="resolvedChoices">Per-field winners actually applied — same shape as
+    /// <c>MergeFieldChoices.Choices</c> but with defaults filled in.</param>
+    /// <param name="rewriteCounts">Counts reported by every <c>IReferenceRewriter&lt;Party&gt;</c>.</param>
+    /// <param name="reparentedChildrenCount">Number of child parties whose
+    /// <c>ParentContactId</c> was redirected to this survivor.</param>
+    internal void RaiseMergedEvents(
+        PartyId loserId,
+        DateTimeOffset mergedAt,
+        IReadOnlyDictionary<string, WinnerSide> resolvedChoices,
+        IReadOnlyDictionary<string, int> rewriteCounts,
+        int reparentedChildrenCount)
+    {
+        ArgumentNullException.ThrowIfNull(loserId);
+        ArgumentNullException.ThrowIfNull(resolvedChoices);
+        ArgumentNullException.ThrowIfNull(rewriteCounts);
+        ArgumentOutOfRangeException.ThrowIfNegative(reparentedChildrenCount);
+
+        var survivorId = PartyId.Create(Id);
+
+        AddDomainEvent(new PartyMergedEvent(
+            survivorId,
+            loserId,
+            TenantId,
+            resolvedChoices,
+            rewriteCounts));
+
+        var resolvedChoicesAsStrings = resolvedChoices.ToDictionary(
+            static kv => kv.Key,
+            static kv => kv.Value.ToString(),
+            StringComparer.Ordinal);
+
+        AddDistributedEvent(new PartyMergedEto(
+            survivorId,
+            loserId,
+            TenantId,
+            mergedAt,
+            resolvedChoicesAsStrings,
+            rewriteCounts));
+
+        if (reparentedChildrenCount > 0)
+        {
+            AddDomainEvent(new PartyChildrenReparentedEvent(
+                survivorId,
+                loserId,
+                TenantId,
+                reparentedChildrenCount));
+        }
+    }
+
     // ── Merge (IMergeable<Party>) ─────────────────────────────────
 
     /// <inheritdoc />
