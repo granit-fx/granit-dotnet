@@ -75,6 +75,7 @@
     <Project Path="src/Granit.Identity.Federated.GoogleCloud/Granit.Identity.Federated.GoogleCloud.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Granit.Identity.Federated.Keycloak.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj" />
+    <Project Path="src/Granit.Identity.Federated.Notifications/Granit.Identity.Federated.Notifications.csproj" />
     <Project Path="src/Granit.Identity.Federated.Privacy/Granit.Identity.Federated.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Federated/Granit.Identity.Federated.csproj" />
     <Project Path="src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj" />
@@ -395,6 +396,7 @@
     <Project Path="tests/Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests/Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests.Integration/Granit.Identity.Federated.Keycloak.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Notifications.Tests/Granit.Identity.Federated.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Privacy.Tests/Granit.Identity.Federated.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests/Granit.Identity.Local.AspNetIdentity.Tests.csproj" />
