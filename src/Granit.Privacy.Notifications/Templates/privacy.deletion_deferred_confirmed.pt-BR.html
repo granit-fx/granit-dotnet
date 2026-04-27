@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Sua exclusão está agendada</title>
+<p>Olá,</p>
+<p>Você solicitou uma exclusão diferida dos seus dados pessoais em <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} sob a regulamentação <code>{{ model.regulation }}</code>{{ end }}. A exclusão está agora agendada para <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Você pode mudar de ideia e cancelar esta exclusão a qualquer momento antes da data prevista, a partir do seu painel de privacidade:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Gerenciar minha solicitação</a>
+</p>
+<p>Enviaremos a você um lembrete alguns dias antes da data prevista. Sem ação da sua parte, seus dados serão excluídos definitivamente nessa data.</p>
+<p>Referência: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Tem dúvidas? Entre em contato com nosso Encarregado pelo Tratamento de Dados Pessoais em <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

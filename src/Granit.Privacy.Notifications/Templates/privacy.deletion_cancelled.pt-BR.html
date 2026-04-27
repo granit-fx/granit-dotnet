@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Sua solicitação de exclusão foi cancelada</title>
+<p>Olá,</p>
+<p>Confirmamos que sua solicitação de exclusão diferida foi cancelada em <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Seus dados pessoais serão mantidos como antes, e nenhuma ação adicional é necessária da sua parte.</p>
+<p>Você pode enviar uma nova solicitação de exclusão a qualquer momento a partir do seu painel de privacidade.</p>
+<p>Referência: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Tem dúvidas? Entre em contato com nosso Encarregado pelo Tratamento de Dados Pessoais em <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

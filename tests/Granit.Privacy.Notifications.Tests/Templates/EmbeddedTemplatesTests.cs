@@ -120,6 +120,15 @@ public sealed class EmbeddedTemplatesTests
         "Templates.privacy.deletion_reminder.pt.html",
         "Templates.privacy.export_failed.pt.html",
         "Templates.privacy.export_ready.pt.html",
+        // Portuguese — Brazil (pt-BR) — LGPD-specific variant, auto-translated, review before production.
+        "Templates.Privacy.LegalDocumentObsolete.pt-BR.html",
+        "Templates.privacy.deletion_acknowledged.pt-BR.html",
+        "Templates.privacy.deletion_cancelled.pt-BR.html",
+        "Templates.privacy.deletion_confirmed.pt-BR.html",
+        "Templates.privacy.deletion_deferred_confirmed.pt-BR.html",
+        "Templates.privacy.deletion_reminder.pt-BR.html",
+        "Templates.privacy.export_failed.pt-BR.html",
+        "Templates.privacy.export_ready.pt-BR.html",
         // Swedish (sv) — auto-translated, review before production.
         "Templates.Privacy.LegalDocumentObsolete.sv.html",
         "Templates.privacy.deletion_acknowledged.sv.html",

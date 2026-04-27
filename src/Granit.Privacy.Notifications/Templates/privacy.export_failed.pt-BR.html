@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Sua exportação de dados está parcialmente disponível</title>
+<p>Olá,</p>
+<p>Sua exportação de dados pessoais, solicitada em <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} sob a regulamentação <code>{{ model.regulation }}</code>{{ end }}, foi gerada, mas algumas fontes de dados não responderam dentro do prazo. O arquivo contém tudo o que conseguimos coletar dentro da janela legal.</p>
+{{ if model.missing_providers_display }}
+<p>As seguintes fontes de dados não foram incluídas nesta exportação: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Você pode:</p>
+<ul>
+  <li><strong>Baixar o arquivo parcial</strong> a partir do seu painel de privacidade, ou</li>
+  <li><strong>Enviar uma nova solicitação</strong> para reiniciar as fontes ausentes.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Ver minha exportação</a>
+</p>
+<p>Referência: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Tem dúvidas? Entre em contato com nosso Encarregado pelo Tratamento de Dados Pessoais em <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
