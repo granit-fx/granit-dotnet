@@ -26,6 +26,7 @@ public static class PartiesDeduplicationHostApplicationBuilderExtensions
         builder.Services.AddScoped<Tier2TrigramBlocker>();
         builder.Services.AddScoped<Tier3WeightedScorer>();
         builder.Services.TryAddScoped<IPartyDuplicateDetector, DefaultPartyDuplicateDetector>();
+        builder.Services.TryAddScoped<IPartyDuplicateCandidateStore, EfPartyDuplicateCandidateStore>();
 
         return builder;
     }

@@ -226,6 +226,40 @@ public static class PartiesEndpointRouteBuilderExtensions
             .ProducesValidationProblem()
             .RequireAuthorization(PartiesPermissions.Parties.Merge);
 
+        // ── Duplicate-candidates review (Epic 2: #1301) ───────────────
+        group.MapGet("/duplicates", PartyDuplicatesEndpoints.HandleListAsync)
+            .WithName("ListPartyDuplicateCandidates")
+            .WithSummary("Lists pending duplicate-candidate pairs in the current tenant.")
+            .WithDescription("Returns paginated rows from the parties_duplicate_candidates review table populated by the recurring scan job. Filterable by detection tier (Deterministic / Blocking / Fuzzy), minimum aggregated score, and (off by default) include-dismissed pairs. Sorted by score descending, then by most-recent evidence. Page size clamped to [1, 200].")
+            .Produces<PartyDuplicateCandidatesPage>()
+            .RequireAuthorization(PartiesPermissions.Parties.Read);
+
+        group.MapGet("/{id:guid}/duplicate-candidates", PartyDuplicatesEndpoints.HandleListForPartyAsync)
+            .WithName("ListPartyDuplicateCandidatesForParty")
+            .WithSummary("Lists pending duplicate candidates that involve the given party.")
+            .WithDescription("Returns every non-dismissed pair where the party is either end of the ordered (PartyId, CandidateId) tuple. Powers the per-Party detail-page warning and the create-time online detection (#1302).")
+            .Produces<IReadOnlyList<PartyDuplicateCandidateResponse>>()
+            .RequireAuthorization(PartiesPermissions.Parties.Read);
+
+        group.MapPost("/duplicates/{id:guid}/dismiss", PartyDuplicatesEndpoints.HandleDismissAsync)
+            .WithName("DismissPartyDuplicateCandidate")
+            .WithSummary("Marks a candidate pair as 'not a duplicate'.")
+            .WithDescription("Sets DismissedAt = now on the row. Idempotent — repeated dismisses are a no-op (still 204). Dismissed pairs are durably skipped on every subsequent scan, so the admin's decision sticks. Returns 404 only when the row truly does not exist in the current tenant.")
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .RequireAuthorization(PartiesPermissions.Parties.Manage);
+
+        group.MapPost("/duplicates/{id:guid}/merge", PartyDuplicatesEndpoints.HandleMergeShortcutAsync)
+            .WithName("MergePartyFromDuplicateCandidate")
+            .WithSummary("One-click merge from a candidate row.")
+            .WithDescription("Forwards to the generic merge orchestrator. Body specifies which end of the ordered candidate pair survives (the other becomes the loser); 422 when the supplied survivorId is not part of the pair. Same Idempotency-Key + audit-write semantics as POST /parties/{survivorId}/merge.")
+            .Produces<PartyMergeResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesValidationProblem()
+            .RequireAuthorization(PartiesPermissions.Parties.Merge);
+
         // ── vCard export (RFC 6350) ───────────────────────────────────
         group.MapGet("/{id:guid}/vcard", PartyEndpoints.HandleDownloadVCardAsync)
             .WithName("DownloadPartyVCard")

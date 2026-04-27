@@ -77,7 +77,7 @@ internal static partial class PartyMergeEndpoints
         var orchestratorRequest = new MergeRequest(
             SurvivorId: survivorId,
             LoserId: request.LoserId,
-            Choices: BuildChoices(request.Choices),
+            Choices: MergeFieldChoicesMapper.FromDictionary(request.Choices),
             DryRun: request.DryRun,
             Reason: request.Reason,
             IdempotencyKey: idempotencyKey);
@@ -124,24 +124,6 @@ internal static partial class PartyMergeEndpoints
             // races. All map cleanly to 409.
             return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
-    }
-
-    private static MergeFieldChoices BuildChoices(IReadOnlyDictionary<string, string>? wire)
-    {
-        if (wire is null || wire.Count == 0)
-        {
-            return MergeFieldChoices.Empty;
-        }
-
-        Dictionary<string, WinnerSide> mapped = new(StringComparer.Ordinal);
-        foreach (KeyValuePair<string, string> kv in wire)
-        {
-            // Validator already enforces "Survivor" / "Loser" — Enum.Parse here covers the
-            // happy path. An invalid value would have been rejected before reaching the
-            // handler, so a defensive fallback isn't necessary.
-            mapped[kv.Key] = Enum.Parse<WinnerSide>(kv.Value);
-        }
-        return new MergeFieldChoices(mapped);
     }
 
     private static PartyMergeResponse MapResponse(Guid survivorId, Guid loserId, MergeResult<Party> result) =>

@@ -1712,6 +1712,7 @@
         "Granit.Authorization",
         "Granit.Mergeable",
         "Granit.Parties",
+        "Granit.Parties.Deduplication",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Abstractions",
@@ -32480,6 +32481,15 @@
       "members": []
     },
     {
+      "name": "DuplicateCandidatePage",
+      "fqn": "Granit.Parties.Deduplication.Domain.DuplicateCandidatePage",
+      "kind": "record",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/IPartyDuplicateCandidateStore.cs",
+      "line": 57,
+      "members": []
+    },
+    {
       "name": "DuplicateMatchTier",
       "fqn": "Granit.Parties.Deduplication.Domain.DuplicateMatchTier",
       "kind": "enum",
@@ -32501,6 +32511,40 @@
           "kind": "method",
           "signature": "UpsertAsync(IReadOnlyList<DuplicateCandidate> candidates, Guid sourcePartyId, Guid? tenantId, CancellationToken cancellationToken)",
           "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "IPartyDuplicateCandidateStore",
+      "fqn": "Granit.Parties.Deduplication.Domain.IPartyDuplicateCandidateStore",
+      "kind": "interface",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/IPartyDuplicateCandidateStore.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(DuplicateMatchTier? tier, decimal? minScore, bool includeDismissed, int page, int pageSize, CancellationToken cancellationToken)",
+          "returnType": "Task<DuplicateCandidatePage>"
+        },
+        {
+          "name": "FindByIdAsync",
+          "kind": "method",
+          "signature": "FindByIdAsync(Guid id, CancellationToken cancellationToken)",
+          "returnType": "Task<PartyDuplicateCandidate?>"
+        },
+        {
+          "name": "ListForPartyAsync",
+          "kind": "method",
+          "signature": "ListForPartyAsync(Guid partyId, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<PartyDuplicateCandidate>>"
+        },
+        {
+          "name": "DismissAsync",
+          "kind": "method",
+          "signature": "DismissAsync(Guid id, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -32968,6 +33012,15 @@
       ]
     },
     {
+      "name": "DuplicateMatchSignalResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.DuplicateMatchSignalResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
+      "line": 30,
+      "members": []
+    },
+    {
       "name": "FieldConflictResponse",
       "fqn": "Granit.Parties.Endpoints.Dtos.FieldConflictResponse",
       "kind": "record",
@@ -33001,6 +33054,33 @@
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Dtos/PartyCreateRequest.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "PartyDuplicateCandidateResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyDuplicateCandidateResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "PartyDuplicateCandidatesPage",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyDuplicateCandidatesPage",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "PartyDuplicateMergeRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyDuplicateMergeRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyDuplicatesDtos.cs",
+      "line": 48,
       "members": []
     },
     {
