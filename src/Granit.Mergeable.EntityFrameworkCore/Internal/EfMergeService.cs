@@ -8,7 +8,7 @@ using Granit.Mergeable.Exceptions;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 
-#pragma warning disable CA1812 // Resolved by DI as the open-generic registration for IMergeService<>.
+#pragma warning disable CA1812 // Justification: resolved by DI through the open-generic registration `IMergeService<>` → `EfMergeService<>` (no direct `new` call in the codebase).
 
 namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 
@@ -76,7 +76,13 @@ internal sealed class EfMergeService<TAggregate>(
                 .ConfigureAwait(false);
             if (cached is not null)
             {
-                return cached;
+                // Rehydrate Merged from the live aggregate so callers always observe
+                // result.Merged != null on a successful replay (matches the contract of
+                // a fresh live merge). The aggregate is loaded outside the orchestrator's
+                // transaction — replays are read-only by definition.
+                TAggregate? mergedSnapshot = await adapter.LoadAsync(request.SurvivorId, cancellationToken)
+                    .ConfigureAwait(false);
+                return cached with { Merged = mergedSnapshot };
             }
         }
 
@@ -223,12 +229,11 @@ internal sealed class EfMergeService<TAggregate>(
 
         if (matchByHash is not null)
         {
-            // The cached MergeResult.Merged field cannot be reconstructed from the cache (it
-            // would require deserialising the full aggregate); rely on the hash equality
-            // guarantee that a fresh load + re-run of the read-side would produce the same
-            // shape. For the v1 idempotency contract we return the cached counts/conflicts
-            // and a null Merged pointer — callers that need the survivor reload from
-            // GetByIdAsync after the merge.
+            // Cache stores only the read-side projection (conflicts + rewrite counts) — the
+            // Merged aggregate is rehydrated from the database by the caller (MergeAsync)
+            // after this method returns. Returning Merged: null here is a sentinel; the
+            // caller swaps it via `cached with { Merged = … }` so external callers always
+            // observe a populated Merged on a successful replay.
             CachedMergeResult cached = JsonSerializer.Deserialize<CachedMergeResult>(matchByHash.ResultJson)!;
             return new MergeResult<TAggregate>(
                 Merged: null,

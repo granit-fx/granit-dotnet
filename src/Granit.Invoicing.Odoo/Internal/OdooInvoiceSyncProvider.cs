@@ -20,8 +20,7 @@ namespace Granit.Invoicing.Odoo.Internal;
 /// <remarks>
 /// On each sync the contact's <c>res.partner</c> is created (first time) or updated (subsequent)
 /// with the latest billing address so Odoo always reflects the address shown on the issued
-/// document. Removing the dedicated <c>OdooPartnerMapping</c> aggregate and reusing the unified
-/// <c>Party.ExternalMappings</c> closes Sonar TODO <c>audit/A3</c>.
+/// document.
 /// </remarks>
 internal sealed partial class OdooInvoiceSyncProvider(
     OdooJsonRpcClient rpcClient,

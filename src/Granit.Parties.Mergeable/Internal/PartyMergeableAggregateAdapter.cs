@@ -4,6 +4,7 @@ using Granit.Mergeable;
 using Granit.Parties.Domain;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Granit.Parties.Mergeable.Internal;
 
@@ -52,12 +53,35 @@ internal sealed class PartyMergeableAggregateAdapter(
 
         // Both sides are loaded with separate DbContexts via LoadAsync above; reattach so
         // their changes flush in this single SaveChangesAsync inside the orchestrator's
-        // ambient TransactionScope. Update() rather than Attach() because both have been
-        // mutated (survivor: scalar field merge applied; loser: tombstone applied).
-        db.Parties.Update(survivor);
-        db.Parties.Update(loser);
+        // ambient TransactionScope.
+        //
+        // NEVER call db.Parties.Update(party) here: Update cascades through the navigation
+        // graph that LoadAsync fetched via Include(...) and marks every child (Address /
+        // Email / Phone / ExternalMapping) as Modified, with the snapshot value of the
+        // shadow FK PartyId = the original loserId. SaveChanges would then issue
+        // `UPDATE … SET PartyId = loserId WHERE Id = childId` for every relocated child —
+        // undoing the bulk SQL FK rewrite already performed by PartyChildrenReferenceRewriter
+        // earlier in the same transaction. Children are owned exclusively by the bulk
+        // rewriter; the adapter only persists scalar mutations on the aggregate root itself.
+        AttachAsRootOnlyModified(db, survivor);
+        AttachAsRootOnlyModified(db, loser);
 
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    private static void AttachAsRootOnlyModified(PartiesDbContext db, Party party)
+    {
+        // Use ChangeTracker.TrackGraph to attach the in-memory graph: the root is forced
+        // Modified (so AuditedEntityInterceptor stamps ModifiedAt/By), every navigation
+        // child is forced Unchanged (no UPDATE issued) — the bulk rewriter is the sole
+        // writer for the children tables.
+        db.ChangeTracker.TrackGraph(party, node =>
+        {
+            EntityEntry entry = node.Entry;
+            entry.State = ReferenceEquals(entry.Entity, party)
+                ? EntityState.Modified
+                : EntityState.Unchanged;
+        });
     }
 
     /// <inheritdoc />
@@ -83,6 +107,17 @@ internal sealed class PartyMergeableAggregateAdapter(
             .CreateDbContextAsync(cancellationToken)
             .ConfigureAwait(false);
 
+        // ExecuteUpdateAsync bypasses ALL framework interceptors (audit, soft-delete,
+        // domain-event dispatcher). That is intentional here: chain-collapse only retargets
+        // an already-set tombstone pointer on rows that are themselves tombstoned and
+        // hidden by the IHasMergeTombstone query filter — they are no longer part of the
+        // user-visible audit timeline. ModifiedAt/By stay frozen at the original merge
+        // (the only event a Party.MergedIntoId pointer change reflects is the orchestrator
+        // walking the chain, never a domain mutation). Party does not implement
+        // IConcurrencyAware, so there is no stamp to regenerate. The tombstone change
+        // event is emitted by the orchestrator itself once per merge (not per hop), so
+        // skipping the interceptor pipeline here is the correct semantic.
+        //
         // The IHasMergeTombstone filter is already disabled by the IDataFilter scope above
         // — no need for a per-query IgnoreQueryFilters call.
         return await db.Parties

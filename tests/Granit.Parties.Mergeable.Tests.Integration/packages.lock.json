@@ -452,7 +452,8 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "libphonenumber-csharp": "[9.*, )"
         }
       },
       "granit.parties.mergeable": {
@@ -502,6 +503,12 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )"
         }
+      },
+      "libphonenumber-csharp": {
+        "type": "CentralTransitive",
+        "requested": "[9.*, )",
+        "resolved": "9.0.29",
+        "contentHash": "Z6FqHRx0gpHYr+EpW5heEadCSh9VnXJHUScPGEDCrpPLHxkB2mccUZfz+FDo+9yMF1Bxz7RBVMFL4MgV6eYoRA=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",

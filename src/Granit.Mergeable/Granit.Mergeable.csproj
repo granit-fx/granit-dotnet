@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Mergeable.Tests" />
-    <InternalsVisibleTo Include="Granit.Mergeable.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Mergeable.EntityFrameworkCore.Tests" />
   </ItemGroup>
 

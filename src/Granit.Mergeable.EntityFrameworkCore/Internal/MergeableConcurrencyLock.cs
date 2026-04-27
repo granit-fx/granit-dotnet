@@ -30,9 +30,9 @@ internal static class MergeableConcurrencyLock
     private const string SqlServerProvider = "Microsoft.EntityFrameworkCore.SqlServer";
 
     /// <summary>
-    /// Acquires the lock inside the active transaction. Caller MUST have an open transaction
-    /// (the orchestrator's <c>TransactionScope</c> + <c>BeginTransactionAsync</c>); released on
-    /// COMMIT/ROLLBACK.
+    /// Acquires the lock inside the active transaction. Caller MUST be inside the orchestrator's
+    /// ambient <see cref="System.Transactions.TransactionScope"/>; the underlying connection is
+    /// auto-enrolled when first opened by EF and the lock is released on COMMIT/ROLLBACK.
     /// </summary>
     public static async Task AcquireAsync(
         DbContext db,

@@ -15,12 +15,16 @@ namespace Granit.Parties.Mergeable.Internal;
 /// <list type="number">
 /// <item>Demote primaries / defaults that would clash with the survivor's, before any move.</item>
 /// <item>Delete the loser-side rows that are <em>structural duplicates</em> of an existing
-/// survivor row.</item>
+/// survivor row (and, for <c>PartyExternalMappings</c>, fail fast on
+/// <em>per-provider conflicts</em> — same <c>ProviderName</c> but different
+/// <c>ExternalId</c> on both sides).</item>
 /// <item>Re-point the remaining loser-side rows to the survivor by rewriting the shadow FK
 /// <c>PartyId</c>.</item>
 /// <item>Verify the per-aggregate caps (<see cref="Party.MaxAddresses"/>,
-/// <see cref="Party.MaxEmails"/>, <see cref="Party.MaxPhones"/>, plus the per-provider
-/// uniqueness constraint on external mappings).</item>
+/// <see cref="Party.MaxEmails"/>, <see cref="Party.MaxPhones"/>). External mappings have
+/// no count cap — the per-provider uniqueness constraint enforced in step 2 makes the
+/// post-merge cardinality bounded by the number of distinct providers integrated with
+/// the platform.</item>
 /// </list>
 /// </summary>
 /// <remarks>

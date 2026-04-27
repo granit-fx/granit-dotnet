@@ -146,7 +146,8 @@ public sealed class EfMergeServiceTests
         // Second call with same key + same body → cached replay, no second rewrite.
         MergeResult<FakeAggregate> replay = await sut.MergeAsync(request, TestContext.Current.CancellationToken);
         replay.DryRun.ShouldBeFalse();
-        replay.Merged.ShouldBeNull("cached replays don't reload the aggregate");
+        replay.Merged.ShouldNotBeNull("cached replays rehydrate the survivor so callers observe the same shape as a live merge");
+        replay.Merged.Id.ShouldBe(SurvivorId);
         replay.RewriteCounts["fake.RefId"].ShouldBe(7);
         rewriter.RewriteCalls.ShouldBe(1, "second call must hit the cache, not re-rewrite");
     }
