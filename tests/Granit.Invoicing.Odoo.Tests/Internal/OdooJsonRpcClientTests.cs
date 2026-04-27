@@ -137,7 +137,7 @@ public sealed class OdooJsonRpcClientTests : IDisposable
         OdooJsonRpcClient client = Build();
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(() =>
-            client.CreateAsync("x", new Dictionary<string, object?>(), TestContext.Current.CancellationToken));
+            client.CreateAsync("x", new(), TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("Permission denied");
     }
@@ -158,7 +158,7 @@ public sealed class OdooJsonRpcClientTests : IDisposable
         OdooJsonRpcClient client = Build();
 
         int id = await client.CreateAsync("res.partner",
-            new Dictionary<string, object?>(),
+            new(),
             TestContext.Current.CancellationToken);
 
         id.ShouldBe(11);

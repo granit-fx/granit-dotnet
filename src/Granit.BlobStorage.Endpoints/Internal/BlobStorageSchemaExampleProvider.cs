@@ -9,15 +9,19 @@ namespace Granit.BlobStorage.Endpoints.Internal;
 /// </summary>
 internal sealed class BlobStorageSchemaExampleProvider : ISchemaExampleProvider
 {
+    private const string ContainerNameProperty = "containerName";
+    private const string ExampleContainerName = "medical-images";
+    private const string PngContentType = "image/png";
+
     /// <inheritdoc/>
     public IReadOnlyDictionary<Type, JsonNode> GetExamples() =>
         new Dictionary<Type, JsonNode>
         {
             [typeof(BlobUploadInitiateRequest)] = new JsonObject
             {
-                ["containerName"] = "medical-images",
+                [ContainerNameProperty] = ExampleContainerName,
                 ["fileName"] = "xray-2026-04-20.png",
-                ["contentType"] = "image/png",
+                ["contentType"] = PngContentType,
                 ["sizeBytes"] = 2_458_112L,
             },
             [typeof(BlobUploadInitiateResponse)] = new JsonObject
@@ -29,30 +33,30 @@ internal sealed class BlobStorageSchemaExampleProvider : ISchemaExampleProvider
                 ["requiredHeaders"] = new JsonObject
                 {
                     ["x-ms-blob-type"] = "BlockBlob",
-                    ["content-type"] = "image/png",
+                    ["content-type"] = PngContentType,
                 },
             },
             [typeof(BlobConfirmUploadRequest)] = new JsonObject
             {
-                ["containerName"] = "medical-images",
+                [ContainerNameProperty] = ExampleContainerName,
             },
             [typeof(BlobDeleteRequest)] = new JsonObject
             {
-                ["containerName"] = "medical-images",
+                [ContainerNameProperty] = ExampleContainerName,
                 ["deletionReason"] = "GDPR Art. 17 erasure request",
             },
             [typeof(BlobDownloadUrlRequest)] = new JsonObject
             {
-                ["containerName"] = "medical-images",
+                [ContainerNameProperty] = ExampleContainerName,
                 ["fileName"] = "xray-2026-04-20.png",
             },
             [typeof(BlobDescriptorResponse)] = new JsonObject
             {
                 ["id"] = "01960f3a-5c9e-7c3b-b4a2-abc123def456",
-                ["containerName"] = "medical-images",
+                [ContainerNameProperty] = ExampleContainerName,
                 ["originalFileName"] = "xray-2026-04-20.png",
-                ["declaredContentType"] = "image/png",
-                ["verifiedContentType"] = "image/png",
+                ["declaredContentType"] = PngContentType,
+                ["verifiedContentType"] = PngContentType,
                 ["declaredSizeBytes"] = 2_458_112L,
                 ["actualSizeBytes"] = 2_458_112L,
                 ["status"] = "Validated",

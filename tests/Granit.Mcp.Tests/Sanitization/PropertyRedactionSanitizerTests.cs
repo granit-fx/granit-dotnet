@@ -143,10 +143,8 @@ public sealed class PropertyRedactionSanitizerTests
     }
 
     [Fact]
-    public void MaskValue_EmptyValue_ReturnsOpaqueMarker()
-    {
+    public void MaskValue_EmptyValue_ReturnsOpaqueMarker() =>
         PropertyRedactionSanitizer.MaskValue(string.Empty).ShouldBe("***");
-    }
 
     [Fact]
     public void MaskValue_NeverDisclosesPlaintextCharacters()

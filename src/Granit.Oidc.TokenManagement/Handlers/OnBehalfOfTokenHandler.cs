@@ -161,12 +161,9 @@ internal sealed partial class OnBehalfOfTokenHandler(
         }
 
         string host = request.RequestUri.Host;
-        foreach (string allowed in options.AllowedHosts)
+        if (options.AllowedHosts.Any(allowed => string.Equals(allowed, host, StringComparison.OrdinalIgnoreCase)))
         {
-            if (string.Equals(allowed, host, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
+            return true;
         }
 
         LogRejectedTarget(ClientName, $"host '{host}' not in AllowedHosts");

@@ -57,6 +57,71 @@ internal static class TokenRequestEncoder
         return parameters;
     }
 
+    /// <summary>
+    /// Converts a <see cref="RevocationRequest"/> to a mutable parameter dictionary.
+    /// </summary>
+    internal static Dictionary<string, string> ToParameters(RevocationRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        Dictionary<string, string> parameters = new()
+        {
+            [OidcConstants.Parameters.ClientId] = request.ClientId,
+            [OidcConstants.Parameters.Token] = request.Token,
+        };
+
+        if (request.TokenTypeHint is not null)
+        {
+            parameters[OidcConstants.Parameters.TokenTypeHint] = request.TokenTypeHint;
+        }
+
+        foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
+        {
+            parameters.TryAdd(kvp.Key, kvp.Value);
+        }
+
+        return parameters;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="PushedAuthorizationRequest"/> to a mutable parameter dictionary.
+    /// </summary>
+    internal static Dictionary<string, string> ToParameters(PushedAuthorizationRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        Dictionary<string, string> parameters = new()
+        {
+            [OidcConstants.Parameters.ClientId] = request.ClientId,
+            [OidcConstants.Parameters.RedirectUri] = request.RedirectUri,
+            [OidcConstants.Parameters.ResponseType] = request.ResponseType,
+            [OidcConstants.Parameters.Scope] = request.Scope,
+            [OidcConstants.Parameters.State] = request.State,
+        };
+
+        if (request.CodeChallenge is not null)
+        {
+            parameters[OidcConstants.Parameters.CodeChallenge] = request.CodeChallenge;
+        }
+
+        if (request.CodeChallengeMethod is not null)
+        {
+            parameters[OidcConstants.Parameters.CodeChallengeMethod] = request.CodeChallengeMethod;
+        }
+
+        if (request.Nonce is not null)
+        {
+            parameters[OidcConstants.Parameters.Nonce] = request.Nonce;
+        }
+
+        foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
+        {
+            parameters.TryAdd(kvp.Key, kvp.Value);
+        }
+
+        return parameters;
+    }
+
     private static void AppendGrantParameters(Dictionary<string, string> parameters, TokenRequest request)
     {
         switch (request)
@@ -137,70 +202,5 @@ internal static class TokenRequestEncoder
         {
             parameters[OidcConstants.Parameters.ActorTokenType] = exchange.ActorTokenType;
         }
-    }
-
-    /// <summary>
-    /// Converts a <see cref="RevocationRequest"/> to a mutable parameter dictionary.
-    /// </summary>
-    internal static Dictionary<string, string> ToParameters(RevocationRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        Dictionary<string, string> parameters = new()
-        {
-            [OidcConstants.Parameters.ClientId] = request.ClientId,
-            [OidcConstants.Parameters.Token] = request.Token,
-        };
-
-        if (request.TokenTypeHint is not null)
-        {
-            parameters[OidcConstants.Parameters.TokenTypeHint] = request.TokenTypeHint;
-        }
-
-        foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
-        {
-            parameters.TryAdd(kvp.Key, kvp.Value);
-        }
-
-        return parameters;
-    }
-
-    /// <summary>
-    /// Converts a <see cref="PushedAuthorizationRequest"/> to a mutable parameter dictionary.
-    /// </summary>
-    internal static Dictionary<string, string> ToParameters(PushedAuthorizationRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        Dictionary<string, string> parameters = new()
-        {
-            [OidcConstants.Parameters.ClientId] = request.ClientId,
-            [OidcConstants.Parameters.RedirectUri] = request.RedirectUri,
-            [OidcConstants.Parameters.ResponseType] = request.ResponseType,
-            [OidcConstants.Parameters.Scope] = request.Scope,
-            [OidcConstants.Parameters.State] = request.State,
-        };
-
-        if (request.CodeChallenge is not null)
-        {
-            parameters[OidcConstants.Parameters.CodeChallenge] = request.CodeChallenge;
-        }
-
-        if (request.CodeChallengeMethod is not null)
-        {
-            parameters[OidcConstants.Parameters.CodeChallengeMethod] = request.CodeChallengeMethod;
-        }
-
-        if (request.Nonce is not null)
-        {
-            parameters[OidcConstants.Parameters.Nonce] = request.Nonce;
-        }
-
-        foreach (KeyValuePair<string, string> kvp in request.AdditionalParameters)
-        {
-            parameters.TryAdd(kvp.Key, kvp.Value);
-        }
-
-        return parameters;
     }
 }
