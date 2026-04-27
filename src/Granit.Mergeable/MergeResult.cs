@@ -17,4 +17,4 @@ public sealed record MergeResult<TAggregate>(
     IReadOnlyList<FieldConflict> Conflicts,
     IReadOnlyDictionary<string, int> RewriteCounts,
     bool DryRun)
-    where TAggregate : AggregateRoot;
+    where TAggregate : Entity;

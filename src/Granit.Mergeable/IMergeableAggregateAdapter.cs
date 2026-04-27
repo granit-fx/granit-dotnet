@@ -11,7 +11,7 @@ namespace Granit.Mergeable;
 /// </summary>
 /// <typeparam name="TAggregate">The aggregate root being merged.</typeparam>
 public interface IMergeableAggregateAdapter<TAggregate>
-    where TAggregate : AggregateRoot, IMergeable<TAggregate>
+    where TAggregate : Entity, IMergeable<TAggregate>
 {
     /// <summary>
     /// Loads the aggregate, including tombstoned ones (the orchestrator must observe both

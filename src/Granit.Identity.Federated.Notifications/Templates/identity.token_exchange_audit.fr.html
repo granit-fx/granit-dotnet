@@ -1,0 +1,15 @@
+<title>Audit d'échange de jeton : un service a usurpé l'utilisateur {{ model.target_user_id }}</title>
+<p>Bonjour,</p>
+<p>Un échange de jeton fédéré (RFC 8693 — usurpation directe) vient d'être effectué sur la plateforme. Un service a obtenu un jeton d'accès utilisateur <strong>sans le consentement interactif de l'utilisateur</strong>. Examinez l'opération dès maintenant et accusez réception ou escaladez.</p>
+<ul>
+  <li><strong>Utilisateur cible :</strong> <code>{{ model.target_user_id }}</code></li>
+  <li><strong>Motif / opération :</strong> {{ model.reason }}</li>
+  <li><strong>Survenue le :</strong> {{ model.occurred_at | date.to_string '%d %B %Y à %H:%M:%S UTC' }}</li>
+</ul>
+{{ if app.base_url }}
+<p>Ouvrir la fiche cache de l'utilisateur : <a href="{{ app.base_url }}/admin/identity/users/{{ model.target_user_id }}">{{ app.base_url }}/admin/identity/users/{{ model.target_user_id }}</a></p>
+{{ end }}
+<p>Si cela correspond à un flux autorisé (synchronisation d'activité d'un appareil, session de support, tâche planifiée plateforme), accusez réception de l'alerte. Sinon, traitez-le comme un incident d'usurpation suspecté, gelez les credentials du service appelant et suivez le runbook d'incident — le trafic d'échange de jetons est précisément l'opération privilégiée que ISO 27001 A.12.4 attend que vous surveilliez en temps réel, pas lors d'une revue trimestrielle.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Besoin d'aide pour le triage ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

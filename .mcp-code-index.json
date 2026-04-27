@@ -983,6 +983,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.Federated.Notifications",
+      "deps": [
+        "Granit.Identity.Federated",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated.Privacy",
       "deps": [
         "Granit.Identity.Federated",
@@ -1637,6 +1646,7 @@
       "name": "Granit.Parties",
       "deps": [
         "Granit",
+        "Granit.Mergeable",
         "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
@@ -1672,6 +1682,17 @@
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Mergeable",
+      "deps": [
+        "Granit",
+        "Granit.Mergeable",
+        "Granit.Mergeable.EntityFrameworkCore",
+        "Granit.Parties",
+        "Granit.Parties.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -2052,6 +2073,15 @@
         "Granit.Scheduling",
         "Granit.Guids",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Scheduling.Notifications",
+      "deps": [
+        "Granit.Notifications.Abstractions",
+        "Granit.Scheduling",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -19539,6 +19569,128 @@
       ]
     },
     {
+      "name": "GranitIdentityFederatedNotificationsModule",
+      "fqn": "Granit.Identity.Federated.Notifications.GranitIdentityFederatedNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/GranitIdentityFederatedNotificationsModule.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TokenExchangeAuditHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.TokenExchangeAuditHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/TokenExchangeAuditHandler.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityTokenExchangedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserProvisioningRemovedHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.UserProvisioningRemovedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/UserProvisioningRemovedHandler.cs",
+      "line": 41,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityUserDeletedEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentityTokenExchangeAuditNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityTokenExchangeAuditNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityTokenExchangeAuditNotificationType.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "IdentityTokenExchangeAuditNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityTokenExchangeAuditNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityTokenExchangeAuditNotificationType.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentityTokenExchangeAuditNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "IdentityUserProvisioningRemovedNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityUserProvisioningRemovedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityUserProvisioningRemovedNotificationType.cs",
+      "line": 58,
+      "members": []
+    },
+    {
+      "name": "IdentityUserProvisioningRemovedNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityUserProvisioningRemovedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityUserProvisioningRemovedNotificationType.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentityUserProvisioningRemovedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "UserCacheHasherOptions",
       "fqn": "Granit.Identity.Federated.Options.UserCacheHasherOptions",
       "kind": "class",
@@ -31724,7 +31876,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/Party.cs",
-      "line": 37,
+      "line": 40,
       "members": [
         {
           "name": "Create",
@@ -32627,6 +32779,31 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "PartiesMergeableHostApplicationBuilderExtensions",
+      "fqn": "Granit.Parties.Mergeable.Extensions.PartiesMergeableHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.Mergeable",
+      "file": "src/Granit.Parties.Mergeable/Extensions/PartiesMergeableHostApplicationBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitPartiesMergeable",
+          "kind": "method",
+          "signature": "AddGranitPartiesMergeable(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesMergeableModule",
+      "fqn": "Granit.Parties.Mergeable.GranitPartiesMergeableModule",
+      "kind": "class",
+      "project": "Granit.Parties.Mergeable",
+      "file": "src/Granit.Parties.Mergeable/GranitPartiesMergeableModule.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "GranitPartiesMultiTenancyModule",
@@ -41205,6 +41382,75 @@
           "kind": "method",
           "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingNotificationsModule",
+      "fqn": "Granit.Scheduling.Notifications.GranitSchedulingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/GranitSchedulingNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ActionFailedHandler",
+      "fqn": "Granit.Scheduling.Notifications.Handlers.ActionFailedHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/Handlers/ActionFailedHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ScheduledActionFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingActionFailedNotificationData",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "SchedulingActionFailedNotificationType",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SchedulingActionFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },

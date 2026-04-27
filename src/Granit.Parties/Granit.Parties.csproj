@@ -11,11 +11,13 @@
     <InternalsVisibleTo Include="Granit.Parties.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Parties.Endpoints" />
     <InternalsVisibleTo Include="Granit.Parties.Privacy" />
+    <InternalsVisibleTo Include="Granit.Parties.Mergeable" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Mergeable\Granit.Mergeable.csproj" />
     <ProjectReference Include="..\Granit.Parties.Abstractions\Granit.Parties.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />

@@ -16,7 +16,7 @@ namespace Granit.Mergeable;
 /// </remarks>
 /// <typeparam name="TAggregate">The aggregate root being merged.</typeparam>
 public interface IMergeService<TAggregate>
-    where TAggregate : AggregateRoot, IMergeable<TAggregate>
+    where TAggregate : Entity, IMergeable<TAggregate>
 {
     /// <summary>
     /// Computes a dry-run preview: returns the field conflicts (with default winners) and
