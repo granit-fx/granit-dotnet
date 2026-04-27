@@ -23,6 +23,7 @@
     <Project Path="src/Granit.Mcp.Client/Granit.Mcp.Client.csproj" />
     <Project Path="src/Granit.Mcp.Server/Granit.Mcp.Server.csproj" />
     <Project Path="src/Granit.Mcp/Granit.Mcp.csproj" />
+    <Project Path="src/Granit.Mergeable/Granit.Mergeable.csproj" />
     <Project Path="src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj" />
     <Project Path="src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.MultiTenancy.Provisioning/Granit.MultiTenancy.Provisioning.csproj" />
@@ -333,6 +334,7 @@
     <Project Path="tests/Granit.Mcp.Client.Tests/Granit.Mcp.Client.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Server.Tests/Granit.Mcp.Server.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Tests/Granit.Mcp.Tests.csproj" />
+    <Project Path="tests/Granit.Mergeable.Tests/Granit.Mergeable.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.EntityFrameworkCore.Tests/Granit.MultiTenancy.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Tests/Granit.MultiTenancy.Tests.csproj" />

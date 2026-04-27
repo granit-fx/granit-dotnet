@@ -1170,6 +1170,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Mergeable",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Metering",
       "deps": [
         "Granit",
@@ -24206,6 +24213,188 @@
       "project": "Granit.Mcp.Server",
       "file": "src/Granit.Mcp.Server/Permissions/McpPermissions.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "IHasMergeTombstone",
+      "fqn": "Granit.Mergeable.Domain.IHasMergeTombstone",
+      "kind": "interface",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/Domain/IHasMergeTombstone.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "IMergeable",
+      "fqn": "Granit.Mergeable.Domain.IMergeable",
+      "kind": "interface",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/Domain/IMergeable.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "GetConflicts",
+          "kind": "method",
+          "signature": "GetConflicts(TSelf loser)",
+          "returnType": "IReadOnlyList<FieldConflict>"
+        },
+        {
+          "name": "MergeFrom",
+          "kind": "method",
+          "signature": "MergeFrom(TSelf loser, MergeFieldChoices choices)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MergeableServiceCollectionExtensions",
+      "fqn": "Granit.Mergeable.Extensions.MergeableServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/Extensions/MergeableServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "FieldConflict",
+      "fqn": "Granit.Mergeable.FieldConflict",
+      "kind": "record",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/FieldConflict.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "GranitMergeableModule",
+      "fqn": "Granit.Mergeable.GranitMergeableModule",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/GranitMergeableModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "IMergeService",
+      "fqn": "Granit.Mergeable.IMergeService",
+      "kind": "interface",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/IMergeService.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "MergePreviewAsync",
+          "kind": "method",
+          "signature": "MergePreviewAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "Task<MergeResult<TAggregate>>"
+        },
+        {
+          "name": "MergeAsync",
+          "kind": "method",
+          "signature": "MergeAsync(MergeRequest request, CancellationToken cancellationToken)",
+          "returnType": "Task<MergeResult<TAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "IReferenceRewriter",
+      "fqn": "Granit.Mergeable.IReferenceRewriter",
+      "kind": "interface",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/IReferenceRewriter.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "RewriteAsync",
+          "kind": "method",
+          "signature": "RewriteAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "string Description { get; } Task<int>"
+        },
+        {
+          "name": "CountAsync",
+          "kind": "method",
+          "signature": "CountAsync(Guid survivorId, Guid loserId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "MergeException",
+      "fqn": "Granit.Mergeable.MergeException",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/MergeException.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "MergeFieldChoices",
+      "fqn": "Granit.Mergeable.MergeFieldChoices",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/MergeFieldChoices.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Dictionary<string, WinnerSide>(StringComparer.Ordinal)",
+          "returnType": "MergeFieldChoices Empty { get; } ="
+        },
+        {
+          "name": "MergeFieldChoices",
+          "kind": "method",
+          "signature": "MergeFieldChoices(IReadOnlyDictionary<string, WinnerSide> choices)",
+          "returnType": "IReadOnlyDictionary<string, WinnerSide> Choices { get; } public"
+        },
+        {
+          "name": "NewBuilder",
+          "kind": "method",
+          "signature": "NewBuilder()",
+          "returnType": "MergeFieldChoicesBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MergeFieldChoicesBuilder",
+      "fqn": "Granit.Mergeable.MergeFieldChoicesBuilder",
+      "kind": "class",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/MergeFieldChoices.cs",
+      "line": 46,
+      "members": [
+        {
+          "name": "With",
+          "kind": "method",
+          "signature": "With(string fieldPath, WinnerSide side)",
+          "returnType": "MergeFieldChoicesBuilder"
+        }
+      ]
+    },
+    {
+      "name": "MergeRequest",
+      "fqn": "Granit.Mergeable.MergeRequest",
+      "kind": "record",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/MergeRequest.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MergeResult",
+      "fqn": "Granit.Mergeable.MergeResult",
+      "kind": "record",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/MergeResult.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "WinnerSide",
+      "fqn": "Granit.Mergeable.WinnerSide",
+      "kind": "enum",
+      "project": "Granit.Mergeable",
+      "file": "src/Granit.Mergeable/WinnerSide.cs",
+      "line": 4,
       "members": []
     },
     {
