@@ -75,6 +75,7 @@
     <Project Path="src/Granit.Identity.Federated.GoogleCloud/Granit.Identity.Federated.GoogleCloud.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak.BackgroundJobs/Granit.Identity.Federated.Keycloak.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Identity.Federated.Keycloak/Granit.Identity.Federated.Keycloak.csproj" />
+    <Project Path="src/Granit.Identity.Federated.Notifications/Granit.Identity.Federated.Notifications.csproj" />
     <Project Path="src/Granit.Identity.Federated.Privacy/Granit.Identity.Federated.Privacy.csproj" />
     <Project Path="src/Granit.Identity.Federated/Granit.Identity.Federated.csproj" />
     <Project Path="src/Granit.Identity.Local.AspNetIdentity/Granit.Identity.Local.AspNetIdentity.csproj" />
@@ -189,6 +190,7 @@
     <Project Path="src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj" />
     <Project Path="src/Granit.Auditing.Endpoints/Granit.Auditing.Endpoints.csproj" />
     <Project Path="src/Granit.Auditing.EntityFrameworkCore/Granit.Auditing.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Auditing.Notifications/Granit.Auditing.Notifications.csproj" />
     <Project Path="src/Granit.Auditing.Privacy/Granit.Auditing.Privacy.csproj" />
     <Project Path="src/Granit.Auditing/Granit.Auditing.csproj" />
     <Project Path="src/Granit.Http.Cookies.Endpoints/Granit.Http.Cookies.Endpoints.csproj" />
@@ -240,6 +242,7 @@
     <Project Path="src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj" />
     <Project Path="src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj" />
     <Project Path="src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.CustomerBalance.Notifications/Granit.CustomerBalance.Notifications.csproj" />
     <Project Path="src/Granit.CustomerBalance/Granit.CustomerBalance.csproj" />
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
     <Project Path="src/Granit.Invoicing.Abstractions/Granit.Invoicing.Abstractions.csproj" />
@@ -395,6 +398,7 @@
     <Project Path="tests/Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests/Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests.Integration/Granit.Identity.Federated.Keycloak.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Keycloak.Tests/Granit.Identity.Federated.Keycloak.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.Federated.Notifications.Tests/Granit.Identity.Federated.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Privacy.Tests/Granit.Identity.Federated.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Tests/Granit.Identity.Federated.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests/Granit.Identity.Local.AspNetIdentity.Tests.csproj" />
@@ -515,6 +519,7 @@
     <Project Path="tests/Granit.Auditing.ConfigurationChanges.Tests/Granit.Auditing.ConfigurationChanges.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Endpoints.Tests/Granit.Auditing.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.EntityFrameworkCore.Tests/Granit.Auditing.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Auditing.Notifications.Tests/Granit.Auditing.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Privacy.Tests/Granit.Auditing.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Auditing.Tests/Granit.Auditing.Tests.csproj" />
     <Project Path="tests/Granit.Http.Cookies.Endpoints.Tests/Granit.Http.Cookies.Endpoints.Tests.csproj" />
@@ -566,6 +571,7 @@
     <Project Path="tests/Granit.CustomerBalance.BackgroundJobs.Tests/Granit.CustomerBalance.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.CustomerBalance.Notifications.Tests/Granit.CustomerBalance.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Abstractions.Tests/Granit.Invoicing.Abstractions.Tests.csproj" />

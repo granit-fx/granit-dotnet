@@ -120,6 +120,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Auditing.Notifications",
+      "deps": [
+        "Granit.Auditing",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing.Privacy",
       "deps": [
         "Granit.Auditing",
@@ -524,6 +533,15 @@
       "deps": [
         "Granit.CustomerBalance",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.CustomerBalance.Notifications",
+      "deps": [
+        "Granit.CustomerBalance",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -952,6 +970,15 @@
       "deps": [
         "Granit.BackgroundJobs",
         "Granit.Identity.Federated.Keycloak"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Identity.Federated.Notifications",
+      "deps": [
+        "Granit.Identity.Federated",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -4866,6 +4893,91 @@
       "file": "src/Granit.Auditing/Messages/AuditingBatch.cs",
       "line": 18,
       "members": []
+    },
+    {
+      "name": "AuditingAnomalyDetectedNotificationData",
+      "fqn": "Granit.Auditing.Notifications.AuditingAnomalyDetectedNotificationData",
+      "kind": "record",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/AuditingAnomalyDetectedNotificationType.cs",
+      "line": 55,
+      "members": []
+    },
+    {
+      "name": "AuditingAnomalyDetectedNotificationType",
+      "fqn": "Granit.Auditing.Notifications.AuditingAnomalyDetectedNotificationType",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/AuditingAnomalyDetectedNotificationType.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "AuditingAnomalyDetectedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuditingNotificationsModule",
+      "fqn": "Granit.Auditing.Notifications.GranitAuditingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/GranitAuditingNotificationsModule.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AnomalyDetectedHandler",
+      "fqn": "Granit.Auditing.Notifications.Handlers.AnomalyDetectedHandler",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/Handlers/AnomalyDetectedHandler.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(AuditEntryPersistedEto evt, INotificationPublisher publisher, IOptions<AuditNotificationOptions> options, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "AuditNotificationOptions",
+      "fqn": "Granit.Auditing.Notifications.Options.AuditNotificationOptions",
+      "kind": "class",
+      "project": "Granit.Auditing.Notifications",
+      "file": "src/Granit.Auditing.Notifications/Options/AuditNotificationOptions.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "AlertableCategories",
+          "kind": "property",
+          "signature": "IReadOnlyList<AuditCategory> AlertableCategories",
+          "returnType": "IReadOnlyList<AuditCategory>"
+        }
+      ]
     },
     {
       "name": "AuditingOptions",
@@ -11113,6 +11225,122 @@
           "name": "CreditOverpaymentAsync",
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiredNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiredNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "CreditExpiredNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiredNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditExpiredNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "CreditGrantedNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditGrantedNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditGrantedNotificationType.cs",
+      "line": 40,
+      "members": []
+    },
+    {
+      "name": "CreditGrantedNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditGrantedNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditGrantedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditGrantedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceNotificationsModule",
+      "fqn": "Granit.CustomerBalance.Notifications.GranitCustomerBalanceNotificationsModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/GranitCustomerBalanceNotificationsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiredNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiredNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditExpiredNotificationHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditGrantedNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditGrantedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditGrantedNotificationHandler.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BalanceCreditedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -19144,6 +19372,128 @@
           "kind": "method",
           "signature": "SyncAsync(CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityFederatedNotificationsModule",
+      "fqn": "Granit.Identity.Federated.Notifications.GranitIdentityFederatedNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/GranitIdentityFederatedNotificationsModule.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TokenExchangeAuditHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.TokenExchangeAuditHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/TokenExchangeAuditHandler.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityTokenExchangedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "UserProvisioningRemovedHandler",
+      "fqn": "Granit.Identity.Federated.Notifications.Handlers.UserProvisioningRemovedHandler",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/Handlers/UserProvisioningRemovedHandler.cs",
+      "line": 41,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(IdentityUserDeletedEto evt, INotificationPublisher publisher, TimeProvider timeProvider, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IdentityTokenExchangeAuditNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityTokenExchangeAuditNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityTokenExchangeAuditNotificationType.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "IdentityTokenExchangeAuditNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityTokenExchangeAuditNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityTokenExchangeAuditNotificationType.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentityTokenExchangeAuditNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "IdentityUserProvisioningRemovedNotificationData",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityUserProvisioningRemovedNotificationData",
+      "kind": "record",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityUserProvisioningRemovedNotificationType.cs",
+      "line": 58,
+      "members": []
+    },
+    {
+      "name": "IdentityUserProvisioningRemovedNotificationType",
+      "fqn": "Granit.Identity.Federated.Notifications.IdentityUserProvisioningRemovedNotificationType",
+      "kind": "class",
+      "project": "Granit.Identity.Federated.Notifications",
+      "file": "src/Granit.Identity.Federated.Notifications/IdentityUserProvisioningRemovedNotificationType.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "IdentityUserProvisioningRemovedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },

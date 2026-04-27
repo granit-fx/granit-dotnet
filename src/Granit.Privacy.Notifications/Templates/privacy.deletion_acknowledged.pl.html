@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Otrzymaliśmy Państwa wniosek o usunięcie danych</title>
+<p>Dzień dobry,</p>
+<p>Otrzymaliśmy Państwa wniosek o usunięcie danych osobowych w dniu <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} na podstawie regulacji <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Niniejsza wiadomość stanowi potwierdzenie odbioru wniosku. Państwa wniosek rozpatrzymy w terminie ustawowym mającym zastosowanie w Państwa jurysdykcji (jeden miesiąc na podstawie art. 12 ust. 3 RODO, z możliwością przedłużenia w przypadku wniosków złożonych). Otrzymają Państwo kolejną wiadomość, gdy usunięcie zostanie wykonane lub gdy będziemy potrzebować dodatkowych informacji.</p>
+<p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Wiadomość ta jest wysyłana przez {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>W sprawach dotyczących ochrony danych osobowych mogą Państwo kontaktować się z naszym Inspektorem Ochrony Danych pod adresem <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Jeżeli nie są Państwo zadowoleni ze sposobu rozpatrzenia wniosku, mają Państwo prawo wniesienia skargi do organu nadzorczego: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

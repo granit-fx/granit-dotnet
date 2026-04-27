@@ -1,0 +1,18 @@
+<title>Audit anomaly: {{ model.category }} on entry {{ model.audit_entry_id }}</title>
+<p>Hello,</p>
+<p>An audit entry classified as <strong>{{ model.category }}</strong> has just been persisted and matches the alerting policy configured for this environment. Review it now and acknowledge or escalate before the on-call rotation rolls over.</p>
+<ul>
+  <li><strong>Audit entry:</strong> <code>{{ model.audit_entry_id }}</code></li>
+  <li><strong>Category:</strong> {{ model.category }}</li>
+  <li><strong>Occurred at:</strong> {{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M:%S UTC' }}</li>
+  <li><strong>Actor:</strong> <code>{{ model.actor_user_id }}</code></li>
+  <li><strong>Entity changes in batch:</strong> {{ model.entity_change_count }}</li>
+  {{ if model.tenant_id }}<li><strong>Tenant:</strong> <code>{{ model.tenant_id }}</code></li>{{ else }}<li><strong>Scope:</strong> Global / platform</li>{{ end }}
+</ul>
+{{ if app.base_url }}
+<p>Open the full record: <a href="{{ app.base_url }}/admin/audit/{{ model.audit_entry_id }}">{{ app.base_url }}/admin/audit/{{ model.audit_entry_id }}</a></p>
+{{ end }}
+<p>If this matches an authorised change (deployment, planned configuration update, support session), acknowledge the alert. Otherwise treat it as a suspected security incident, freeze the actor's session and follow the incident playbook — repeated denials and privileged configuration changes are the kind of signal ISO 27001 A.12.4 expects you to act on.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Need help triaging? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

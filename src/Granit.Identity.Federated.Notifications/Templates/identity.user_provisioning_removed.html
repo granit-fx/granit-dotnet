@@ -1,0 +1,13 @@
+<title>GDPR Art. 17 receipt: user {{ model.user_id }} removed from the platform</title>
+<p>Hello,</p>
+<p>This is a <strong>GDPR Art. 17 erasure receipt</strong>. The federated identity provider has confirmed the deletion of a user, and the corresponding cache entry has been hard-deleted from this application's local store accordingly.</p>
+<ul>
+  <li><strong>External user identifier:</strong> <code>{{ model.user_id }}</code></li>
+  <li><strong>Erased at:</strong> {{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M:%S UTC' }}</li>
+  {{ if model.tenant_id }}<li><strong>Tenant scope:</strong> <code>{{ model.tenant_id }}</code></li>{{ else }}<li><strong>Scope:</strong> Cross-tenant (host-level identity)</li>{{ end }}
+</ul>
+<p>No further action is required from your side — the deletion was authorised by the upstream IdP. Keep this receipt for your compliance file: it documents that the application has honoured the right-to-erasure obligation at the application layer (cache + downstream personal data), not just at the IdP.</p>
+<p>Be aware that downstream features that previously relied on the user cache (audit-log attribution, invoice display name, in-app notifications addressed by user id) may render this user as <em>"deleted user"</em> from now on. This is by design.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Question on the receipt? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

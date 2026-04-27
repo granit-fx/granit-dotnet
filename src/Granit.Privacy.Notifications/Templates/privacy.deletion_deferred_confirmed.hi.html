@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>आपका विलोपन निर्धारित किया गया है</title>
+<p>नमस्ते,</p>
+<p>आपने <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} विनियमन <code>{{ model.regulation }}</code> के अंतर्गत{{ end }} अपने व्यक्तिगत डेटा के स्थगित विलोपन का अनुरोध किया था। विलोपन अब <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong> के लिए निर्धारित है।</p>
+<p>आप निर्धारित तिथि से पहले किसी भी समय अपना विचार बदल सकते हैं और इस विलोपन को अपने गोपनीयता डैशबोर्ड के माध्यम से रद्द कर सकते हैं:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">मेरे अनुरोध का प्रबंधन करें</a>
+</p>
+<p>हम निर्धारित तिथि से कुछ दिन पहले आपको एक अनुस्मारक भेजेंगे। यदि कोई कार्रवाई नहीं की जाती है, तो उस तिथि पर आपका डेटा स्थायी रूप से हटा दिया जाएगा।</p>
+<p>संदर्भ: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">प्रश्न? हमारे डेटा सुरक्षा अधिकारी से <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> पर संपर्क करें।</p>
+{{ end }}

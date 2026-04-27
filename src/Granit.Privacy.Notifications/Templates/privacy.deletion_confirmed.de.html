@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Ihre Daten wurden gelöscht</title>
+<p>Guten Tag,</p>
+<p>Wir bestätigen, dass Ihre personenbezogenen Daten am <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> endgültig gelöscht wurden. Diese Löschung ist unwiderruflich.</p>
+<p>Diese E-Mail dient als Ihr Compliance-Nachweis. Bitte bewahren Sie sie als Beleg dafür auf, dass Ihrem Recht auf Löschung entsprochen wurde.</p>
+<p>Referenz: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Diese Nachricht wird gesendet von {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Bei Fragen zum Datenschutz wenden Sie sich an unseren Datenschutzbeauftragten unter <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Sollten Sie mit der Bearbeitung nicht einverstanden sein, haben Sie das Recht, bei der Aufsichtsbehörde Beschwerde einzulegen: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

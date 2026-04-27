@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Państwa eksport danych jest częściowo dostępny</title>
+<p>Dzień dobry,</p>
+<p>Państwa eksport danych osobowych, zlecony w dniu <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} na podstawie regulacji <code>{{ model.regulation }}</code>{{ end }}, został wygenerowany, jednak część źródeł danych nie odpowiedziała w wymaganym czasie. Archiwum zawiera wszystko, co udało się nam zebrać w terminie ustawowym.</p>
+{{ if model.missing_providers_display }}
+<p>Następujące źródła danych nie zostały uwzględnione w tym eksporcie: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>Mogą Państwo:</p>
+<ul>
+  <li><strong>Pobrać częściowe archiwum</strong> z panelu prywatności, lub</li>
+  <li><strong>Złożyć nowy wniosek</strong>, aby ponowić próbę dla brakujących źródeł.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Wyświetl mój eksport</a>
+</p>
+<p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Pytania? Prosimy o kontakt z naszym Inspektorem Ochrony Danych pod adresem <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

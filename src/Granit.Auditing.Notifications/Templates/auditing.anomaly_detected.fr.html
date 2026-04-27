@@ -1,0 +1,18 @@
+<title>Anomalie d'audit : {{ model.category }} sur l'entrée {{ model.audit_entry_id }}</title>
+<p>Bonjour,</p>
+<p>Une entrée d'audit classée <strong>{{ model.category }}</strong> vient d'être enregistrée et correspond à la politique d'alerte configurée pour cet environnement. Examinez-la dès maintenant et accusez réception ou escaladez avant la rotation de l'astreinte.</p>
+<ul>
+  <li><strong>Entrée d'audit :</strong> <code>{{ model.audit_entry_id }}</code></li>
+  <li><strong>Catégorie :</strong> {{ model.category }}</li>
+  <li><strong>Survenue le :</strong> {{ model.occurred_at | date.to_string '%d %B %Y à %H:%M:%S UTC' }}</li>
+  <li><strong>Acteur :</strong> <code>{{ model.actor_user_id }}</code></li>
+  <li><strong>Changements d'entités dans le lot :</strong> {{ model.entity_change_count }}</li>
+  {{ if model.tenant_id }}<li><strong>Tenant :</strong> <code>{{ model.tenant_id }}</code></li>{{ else }}<li><strong>Portée :</strong> Globale / plateforme</li>{{ end }}
+</ul>
+{{ if app.base_url }}
+<p>Ouvrir la fiche complète : <a href="{{ app.base_url }}/admin/audit/{{ model.audit_entry_id }}">{{ app.base_url }}/admin/audit/{{ model.audit_entry_id }}</a></p>
+{{ end }}
+<p>Si cela correspond à un changement autorisé (déploiement, modification planifiée de la configuration, session de support), accusez réception de l'alerte. Sinon, traitez-le comme un incident de sécurité suspecté, gelez la session de l'acteur et suivez le runbook d'incident — les refus répétés et les changements de configuration privilégiés sont précisément le type de signal sur lequel ISO 27001 A.12.4 attend une action.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Besoin d'aide pour le triage ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

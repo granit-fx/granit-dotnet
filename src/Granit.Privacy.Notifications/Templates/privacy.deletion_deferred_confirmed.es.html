@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Su supresión está programada</title>
+<p>Hola,</p>
+<p>Solicitó una supresión diferida de sus datos personales el <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} en virtud de la normativa <code>{{ model.regulation }}</code>{{ end }}. La supresión está ahora programada para el <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Puede cambiar de opinión y cancelar esta supresión en cualquier momento antes de la fecha prevista desde su panel de privacidad:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Gestionar mi solicitud</a>
+</p>
+<p>Le enviaremos un recordatorio unos días antes de la fecha prevista. Si no realiza ninguna acción, sus datos serán suprimidos definitivamente en esa fecha.</p>
+<p>Referencia: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">¿Preguntas? Contacte con nuestro Delegado de Protección de Datos en <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

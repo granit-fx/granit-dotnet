@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>您的数据导出已部分可用</title>
+<p>您好,</p>
+<p>您于 <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} 根据 <code>{{ model.regulation }}</code> 规定{{ end }} 申请的个人数据导出已生成,但部分数据源未在规定时限内响应。归档包含我们在法定期限内能够收集到的全部内容。</p>
+{{ if model.missing_providers_display }}
+<p>以下数据源未包含在本次导出中: <code>{{ model.missing_providers_display }}</code>。</p>
+{{ end }}
+<p>您可以:</p>
+<ul>
+  <li><strong>下载部分归档</strong>,从隐私面板获取,或</li>
+  <li><strong>提交新的请求</strong>,以重试缺失的数据源。</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">查看我的导出</a>
+</p>
+<p>参考编号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">有疑问?请通过 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 联系我们的数据保护官。</p>
+{{ end }}

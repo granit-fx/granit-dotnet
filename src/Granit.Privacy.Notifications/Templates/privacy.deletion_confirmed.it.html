@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>I Suoi dati sono stati cancellati</title>
+<p>Buongiorno,</p>
+<p>Le confermiamo che i Suoi dati personali sono stati definitivamente cancellati il <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. La cancellazione è irreversibile.</p>
+<p>Questa e-mail costituisce la Sua attestazione di conformità. La invitiamo a conservarla come prova dell'esercizio del Suo diritto alla cancellazione.</p>
+<p>Riferimento: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Questo messaggio è inviato da {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Per qualsiasi domanda in materia di protezione dei dati può contattare il nostro Responsabile della Protezione dei Dati all'indirizzo <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Se non è soddisfatto del trattamento, ha il diritto di proporre reclamo all'autorità di controllo competente: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

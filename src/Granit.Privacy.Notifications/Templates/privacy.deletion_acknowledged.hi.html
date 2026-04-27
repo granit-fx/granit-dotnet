@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>हमें आपका डेटा विलोपन अनुरोध प्राप्त हो गया है</title>
+<p>नमस्ते,</p>
+<p>हमें आपके व्यक्तिगत डेटा को हटाने का आपका अनुरोध <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} विनियमन <code>{{ model.regulation }}</code> के अंतर्गत{{ end }} प्राप्त हो गया है।</p>
+<p>यह ईमेल आपकी प्राप्ति की पावती है। हम आपके अनुरोध को आपके अधिकार-क्षेत्र पर लागू नियामक समय-सीमा के भीतर संसाधित करेंगे (GDPR अनुच्छेद 12 §3 के तहत एक माह, जटिल अनुरोध के मामले में विस्तार संभव)। विलोपन निष्पादित होते ही या यदि हमें आपसे अतिरिक्त जानकारी की आवश्यकता हो तो आपको एक अनुवर्ती ईमेल प्राप्त होगा।</p>
+<p>संदर्भ: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>यह संदेश {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} द्वारा भेजा जा रहा है।</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>गोपनीयता संबंधी प्रश्नों के लिए, आप हमारे डेटा सुरक्षा अधिकारी से <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> पर संपर्क कर सकते हैं।</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">यदि आप अपने अनुरोध के निष्पादन से संतुष्ट नहीं हैं, तो आपको पर्यवेक्षी प्राधिकरण के पास शिकायत दर्ज करने का अधिकार है: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>।</p>
+{{ end }}

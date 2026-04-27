@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>提醒: 您的数据即将被删除</title>
+<p>您好,</p>
+<p>谨此提醒,您所申请的个人数据删除已安排于 <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong> 执行。</p>
+<p>如您不再希望删除您的数据,可通过隐私面板取消请求:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">管理我的请求</a>
+</p>
+<p>如不采取任何操作,您的数据将于计划日期被永久删除。此后,删除不可撤销。</p>
+<p>参考编号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">有疑问?请通过 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 联系我们的数据保护官。</p>
+{{ end }}

@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Uw verwijdering is gepland</title>
+<p>Hallo,</p>
+<p>U heeft een uitgesteld verzoek tot verwijdering van uw persoonsgegevens ingediend op <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} op grond van regelgeving <code>{{ model.regulation }}</code>{{ end }}. De verwijdering is nu gepland voor <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>U kunt zich op elk moment vóór de geplande datum bedenken en deze verwijdering annuleren via uw privacydashboard:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Mijn verzoek beheren</a>
+</p>
+<p>Wij sturen u enkele dagen vóór de geplande datum een herinnering. Onderneemt u geen actie, dan worden uw gegevens op die datum definitief verwijderd.</p>
+<p>Referentie: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Vragen? Neem contact op met onze functionaris voor gegevensbescherming via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

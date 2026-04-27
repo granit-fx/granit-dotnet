@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Państwa dane zostały usunięte</title>
+<p>Dzień dobry,</p>
+<p>Potwierdzamy, że Państwa dane osobowe zostały trwale usunięte w dniu <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Usunięcie jest nieodwracalne.</p>
+<p>Niniejsza wiadomość stanowi Państwa dowód zgodności. Prosimy o jej zachowanie jako potwierdzenia realizacji prawa do usunięcia danych.</p>
+<p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Wiadomość ta jest wysyłana przez {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">W sprawach dotyczących ochrony danych prosimy o kontakt z naszym Inspektorem Ochrony Danych pod adresem <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Jeżeli nie są Państwo zadowoleni ze sposobu rozpatrzenia, mają Państwo prawo wniesienia skargi do organu nadzorczego: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

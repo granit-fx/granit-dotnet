@@ -221,6 +221,7 @@
         "tests/Granit.Auditing.ConfigurationChanges.Tests",
         "tests/Granit.Auditing.Endpoints.Tests",
         "tests/Granit.Auditing.EntityFrameworkCore.Tests",
+        "tests/Granit.Auditing.Notifications.Tests",
         "tests/Granit.Auditing.Tests",
         "tests/Granit.Auditing.Privacy.Tests",
         "tests/Granit.Authentication.ApiKeys.Endpoints.Tests",
@@ -256,6 +257,7 @@
         "tests/Granit.Identity.Federated.Keycloak.Tests",
         "tests/Granit.Identity.Federated.Keycloak.Tests.Integration",
         "tests/Granit.Identity.Federated.Keycloak.BackgroundJobs.Tests",
+        "tests/Granit.Identity.Federated.Notifications.Tests",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.Identity.Local.Endpoints.Tests",
@@ -333,6 +335,7 @@
         "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests",
         "tests/Granit.CustomerBalance.Endpoints.Tests",
         "tests/Granit.CustomerBalance.BackgroundJobs.Tests",
+        "tests/Granit.CustomerBalance.Notifications.Tests",
         "tests/Granit.Catalog.Tests",
         "tests/Granit.Catalog.Endpoints.Tests",
         "tests/Granit.Catalog.EntityFrameworkCore.Tests"
