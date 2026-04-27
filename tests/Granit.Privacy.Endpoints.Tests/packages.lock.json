@@ -771,6 +771,24 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.encryption": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )",
+          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.events": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
+        }
+      },
       "granit.guids": {
         "type": "Project",
         "dependencies": {
@@ -823,6 +841,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
@@ -850,6 +869,16 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.settings": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Events": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {
@@ -1062,8 +1091,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.4",
-        "contentHash": "PyuqLRi7JXyTJm/rh+IWCA4Fct1SlZuWrdYiui5hiaBuSY88+roc4eWKfYaE6zrupBIwnEP8pJLe4ifvU7HtZA=="
+        "resolved": "2.14.5",
+        "contentHash": "+wDlTk8GDZMosJ9wHIYHJI6yVvufkm6p2ky1hSjsNaUwnliTOEj6D5zqEUYG9VwAwjbF9yPpbc9zdvtZeW7WiQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",

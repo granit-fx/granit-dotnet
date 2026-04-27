@@ -72,6 +72,7 @@
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
       "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
+      "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating.AI/Granit.Templating.AI.csproj",
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",

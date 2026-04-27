@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Privacy.Notifications</PackageId>
-    <Description>Notification bridge for Granit.Privacy. Sends deletion reminder and confirmation emails via Granit.Notifications when using the GDPR Art. 17 cooling-off period.</Description>
+    <Description>Notification bridge for Granit.Privacy. Sends deletion reminder and confirmation emails via Granit.Notifications when using the GDPR Art. 17 cooling-off period. Exposes the data controller and DPO contact (GDPR Art. 13) as a {{ privacy }} template global context.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
   </ItemGroup>
 
 </Project>

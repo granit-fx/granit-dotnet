@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\Granit.Workflow\Granit.Workflow.csproj" />
   </ItemGroup>
 

@@ -1789,6 +1789,7 @@
       "name": "Granit.Privacy",
       "deps": [
         "Granit",
+        "Granit.Settings",
         "Granit.Workflow"
       ],
       "framework": "net10.0"
@@ -1843,7 +1844,8 @@
       "name": "Granit.Privacy.Notifications",
       "deps": [
         "Granit.Privacy",
-        "Granit.Notifications.Abstractions"
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -36665,7 +36667,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/GranitPrivacyModule.cs",
-      "line": 11,
+      "line": 13,
       "members": []
     },
     {
@@ -36948,8 +36950,15 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
-      "line": 13,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DeletionConfirmationHandler",
@@ -37735,6 +37744,15 @@
       "project": "Granit.Privacy.Regulations",
       "file": "src/Granit.Privacy.Regulations/ResponseDeadline/UpcomingDeadline.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "PrivacySettingNames",
+      "fqn": "Granit.Privacy.Settings.PrivacySettingNames",
+      "kind": "class",
+      "project": "Granit.Privacy",
+      "file": "src/Granit.Privacy/Settings/PrivacySettingNames.cs",
+      "line": 13,
       "members": []
     },
     {
