@@ -145,6 +145,7 @@
       "src/Granit.Metering.BackgroundJobs/Granit.Metering.BackgroundJobs.csproj",
       "src/Granit.Metering.Endpoints/Granit.Metering.Endpoints.csproj",
       "src/Granit.Metering.EntityFrameworkCore/Granit.Metering.EntityFrameworkCore.csproj",
+      "src/Granit.Metering.Notifications/Granit.Metering.Notifications.csproj",
       "src/Granit.Metering/Granit.Metering.csproj",
       "src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj",
       "src/Granit.MultiTenancy.EntityFrameworkCore/Granit.MultiTenancy.EntityFrameworkCore.csproj",

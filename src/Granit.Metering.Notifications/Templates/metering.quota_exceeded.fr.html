@@ -1,0 +1,20 @@
+<title>Quota dépassé : {{ model.meter_name }}</title>
+<p>Bonjour,</p>
+<p>L'utilisation du compteur <strong>{{ model.meter_name }}</strong> a atteint ou dépassé
+   la limite configurée pour la période de facturation en cours
+   ({{ model.current_usage | math.format '0.##' }} / {{ model.limit | math.format '0.##' }},
+   <strong>{{ model.percent_used | math.format '0.#' }} %</strong>).</p>
+<p>Les requêtes sur ce compteur peuvent désormais être limitées ou rejetées par les
+   contrôles en aval, jusqu'au passage à la période suivante ou à l'augmentation du quota.</p>
+<p>Pour rétablir le service :</p>
+<ul>
+  <li><strong>Mettre à niveau votre offre</strong> pour relever le quota immédiatement, ou</li>
+  <li><strong>Rééquilibrer l'usage</strong> entre les compteurs si le dépassement est concentré sur celui-ci.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/admin/quotas/{{ model.meter_name }}" style="display: inline-block; padding: 12px 28px; background-color: #b91c1c; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Résoudre maintenant</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">Identifiant du compteur : <code>{{ model.meter_definition_id }}</code> &middot; Identifiant du tenant : <code>{{ model.tenant_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question ? Contactez notre équipe : <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

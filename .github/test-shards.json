@@ -298,6 +298,7 @@
         "tests/Granit.Metering.BackgroundJobs.Tests",
         "tests/Granit.Metering.Endpoints.Tests",
         "tests/Granit.Metering.EntityFrameworkCore.Tests",
+        "tests/Granit.Metering.Notifications.Tests",
         "tests/Granit.Metering.Tests",
         "tests/Granit.Payments.Endpoints.Tests",
         "tests/Granit.Payments.EntityFrameworkCore.Tests",
