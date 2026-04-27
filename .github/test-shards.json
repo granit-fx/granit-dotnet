@@ -153,6 +153,7 @@
       "projects": [
         "tests/Granit.BackgroundJobs.Endpoints.Tests",
         "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests",
+        "tests/Granit.BackgroundJobs.Notifications.Tests",
         "tests/Granit.BackgroundJobs.Tests",
         "tests/Granit.BackgroundJobs.Tests.Integration",
         "tests/Granit.BackgroundJobs.Wolverine.Tests",

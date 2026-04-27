@@ -285,6 +285,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.BackgroundJobs.Notifications",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.BackgroundJobs.Wolverine",
       "deps": [
         "Granit.BackgroundJobs",
@@ -7725,6 +7734,75 @@
           "kind": "method",
           "signature": "TriggerNowAsync(string jobName, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitBackgroundJobsNotificationsModule",
+      "fqn": "Granit.BackgroundJobs.Notifications.GranitBackgroundJobsNotificationsModule",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/GranitBackgroundJobsNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "RecurringFailingHandler",
+      "fqn": "Granit.BackgroundJobs.Notifications.Handlers.RecurringFailingHandler",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/Handlers/RecurringFailingHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BackgroundJobFailureThresholdExceededEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "JobsRecurringFailingNotificationData",
+      "fqn": "Granit.BackgroundJobs.Notifications.JobsRecurringFailingNotificationData",
+      "kind": "record",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/JobsRecurringFailingNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "JobsRecurringFailingNotificationType",
+      "fqn": "Granit.BackgroundJobs.Notifications.JobsRecurringFailingNotificationType",
+      "kind": "class",
+      "project": "Granit.BackgroundJobs.Notifications",
+      "file": "src/Granit.BackgroundJobs.Notifications/JobsRecurringFailingNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "JobsRecurringFailingNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },

@@ -34,6 +34,7 @@
       "src/Granit.Authorization/Granit.Authorization.csproj",
       "src/Granit.BackgroundJobs.Endpoints/Granit.BackgroundJobs.Endpoints.csproj",
       "src/Granit.BackgroundJobs.EntityFrameworkCore/Granit.BackgroundJobs.EntityFrameworkCore.csproj",
+      "src/Granit.BackgroundJobs.Notifications/Granit.BackgroundJobs.Notifications.csproj",
       "src/Granit.BackgroundJobs.Wolverine/Granit.BackgroundJobs.Wolverine.csproj",
       "src/Granit.BackgroundJobs/Granit.BackgroundJobs.csproj",
       "src/Granit.Bff.BackgroundJobs/Granit.Bff.BackgroundJobs.csproj",
