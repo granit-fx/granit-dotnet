@@ -1132,6 +1132,7 @@
       "deps": [
         "Granit.Guids",
         "Granit.Invoicing",
+        "Granit.Mergeable",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -23168,7 +23169,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.EntityFrameworkCore",
       "file": "src/Granit.Invoicing.EntityFrameworkCore/Extensions/InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitInvoicingEntityFrameworkCore",

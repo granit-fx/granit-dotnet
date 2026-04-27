@@ -2,7 +2,7 @@
 <title>Seus dados foram excluídos</title>
 <p>Olá,</p>
 <p>Confirmamos que seus dados pessoais foram definitivamente excluídos em <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Esta exclusão é irreversível.</p>
-<p>Este e-mail constitui o seu comprovante de conformidade. Solicitamos que você o guarde como prova do exercício do seu direito de eliminação.</p>
+<p>Este e-mail constitui o seu comprovante de conformidade. Solicitamos que você o guarde como prova de que sua solicitação de exclusão foi atendida.</p>
 <p>Referência: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Esta mensagem é enviada por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

@@ -299,6 +299,7 @@
         "tests/Granit.Invoicing.BackgroundJobs.Tests",
         "tests/Granit.Invoicing.Endpoints.Tests",
         "tests/Granit.Invoicing.EntityFrameworkCore.Tests",
+        "tests/Granit.Invoicing.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Invoicing.Notifications.Tests",
         "tests/Granit.Invoicing.Tests",
         "tests/Granit.Metering.BackgroundJobs.Tests",

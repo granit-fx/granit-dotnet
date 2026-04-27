@@ -2,7 +2,7 @@
 <title>Uw gegevens zijn verwijderd</title>
 <p>Hallo,</p>
 <p>Wij bevestigen dat uw persoonsgegevens definitief zijn verwijderd op <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Deze verwijdering is onomkeerbaar.</p>
-<p>Deze e-mail geldt als uw bewijs van naleving. Bewaar dit als bevestiging dat uw recht op verwijdering is gehonoreerd.</p>
+<p>Deze e-mail geldt als uw bewijs van naleving. Bewaar dit als bevestiging dat uw verzoek tot verwijdering is gehonoreerd.</p>
 <p>Referentie: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Dit bericht wordt verzonden door {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

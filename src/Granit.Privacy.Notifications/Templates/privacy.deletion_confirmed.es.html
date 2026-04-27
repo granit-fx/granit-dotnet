@@ -2,7 +2,7 @@
 <title>Sus datos han sido suprimidos</title>
 <p>Hola,</p>
 <p>Le confirmamos que sus datos personales han sido suprimidos definitivamente el <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Esta supresión es irreversible.</p>
-<p>Este correo electrónico constituye su justificante de cumplimiento. Le rogamos que lo conserve como prueba del ejercicio de su derecho de supresión.</p>
+<p>Este correo electrónico constituye su justificante de cumplimiento. Le rogamos que lo conserve como prueba de que su solicitud de eliminación ha sido atendida.</p>
 <p>Referencia: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Este mensaje es enviado por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
