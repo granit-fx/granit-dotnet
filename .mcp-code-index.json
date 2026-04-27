@@ -1233,9 +1233,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Mergeable.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Mergeable.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Mergeable.EntityFrameworkCore",
       "deps": [
         "Granit",
+        "Granit.Encryption",
         "Granit.Mergeable",
         "Granit.Persistence",
         "Granit.Persistence.EntityFrameworkCore",
@@ -1670,6 +1679,16 @@
       "name": "Granit.Parties.Abstractions",
       "deps": [
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Deduplication",
+      "deps": [
+        "Granit",
+        "Granit.Parties",
+        "Granit.Parties.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -25380,6 +25399,63 @@
       "members": []
     },
     {
+      "name": "GranitMergeableBackgroundJobsModule",
+      "fqn": "Granit.Mergeable.BackgroundJobs.GranitMergeableBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Mergeable.BackgroundJobs",
+      "file": "src/Granit.Mergeable.BackgroundJobs/GranitMergeableBackgroundJobsModule.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MergeIdempotencyCleanupHandler",
+      "fqn": "Granit.Mergeable.BackgroundJobs.Jobs.MergeIdempotencyCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Mergeable.BackgroundJobs",
+      "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(MergeIdempotencyCleanupJob _, IMergeIdempotencySweeper sweeper, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MergeIdempotencyCleanupJob",
+      "fqn": "Granit.Mergeable.BackgroundJobs.Jobs.MergeIdempotencyCleanupJob",
+      "kind": "record",
+      "project": "Granit.Mergeable.BackgroundJobs",
+      "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupJob.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IMergeIdempotencySweeper",
+      "fqn": "Granit.Mergeable.BackgroundJobs.Services.IMergeIdempotencySweeper",
+      "kind": "interface",
+      "project": "Granit.Mergeable.BackgroundJobs",
+      "file": "src/Granit.Mergeable.BackgroundJobs/Services/IMergeIdempotencySweeper.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IMergeable",
       "fqn": "Granit.Mergeable.Domain.IMergeable",
       "kind": "interface",
@@ -25407,7 +25483,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitMergeableEntityFrameworkCore",
@@ -25439,8 +25515,30 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableEntityFrameworkCoreModule.cs",
-      "line": 13,
+      "line": 15,
       "members": []
+    },
+    {
+      "name": "MergeableOptions",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.MergeableOptions",
+      "kind": "class",
+      "project": "Granit.Mergeable.EntityFrameworkCore",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/MergeableOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan MergeTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(24)",
+          "returnType": "TimeSpan IdempotencyRetention { get; set; } = TimeSpan."
+        }
+      ]
     },
     {
       "name": "MergeException",
@@ -25531,6 +25629,12 @@
           "kind": "method",
           "signature": "CollapseChainTombstonesAsync(Guid newSurvivorId, Guid oldSurvivorId, CancellationToken cancellationToken)",
           "returnType": "Task<int>"
+        },
+        {
+          "name": "RaiseMergedEvents",
+          "kind": "method",
+          "signature": "RaiseMergedEvents(TAggregate survivor, TAggregate loser, MergeRequest request, IReadOnlyDictionary<string, int> rewriteCounts, DateTimeOffset mergedAt)",
+          "returnType": "void"
         }
       ]
     },
@@ -32266,6 +32370,89 @@
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
       "line": 29,
+      "members": []
+    },
+    {
+      "name": "DuplicateCandidate",
+      "fqn": "Granit.Parties.Deduplication.Domain.DuplicateCandidate",
+      "kind": "record",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/DuplicateCandidate.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "DuplicateMatchTier",
+      "fqn": "Granit.Parties.Deduplication.Domain.DuplicateMatchTier",
+      "kind": "enum",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/DuplicateMatchTier.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "IPartyDuplicateDetector",
+      "fqn": "Granit.Parties.Deduplication.Domain.IPartyDuplicateDetector",
+      "kind": "interface",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/IPartyDuplicateDetector.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "FindCandidatesAsync",
+          "kind": "method",
+          "signature": "FindCandidatesAsync(PartyDraft draft, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<DuplicateCandidate>>"
+        },
+        {
+          "name": "ScanTenantAsync",
+          "kind": "method",
+          "signature": "ScanTenantAsync(Guid tenantId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "MatchSignal",
+      "fqn": "Granit.Parties.Deduplication.Domain.MatchSignal",
+      "kind": "record",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/MatchSignal.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "PartyDraft",
+      "fqn": "Granit.Parties.Deduplication.Domain.PartyDraft",
+      "kind": "record",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/PartyDraft.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "PartiesDeduplicationHostApplicationBuilderExtensions",
+      "fqn": "Granit.Parties.Deduplication.Extensions.PartiesDeduplicationHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Extensions/PartiesDeduplicationHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitPartiesDeduplication",
+          "kind": "method",
+          "signature": "AddGranitPartiesDeduplication(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesDeduplicationModule",
+      "fqn": "Granit.Parties.Deduplication.GranitPartiesDeduplicationModule",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/GranitPartiesDeduplicationModule.cs",
+      "line": 11,
       "members": []
     },
     {

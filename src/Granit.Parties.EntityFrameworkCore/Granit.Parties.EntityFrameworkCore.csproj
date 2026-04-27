@@ -7,6 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Parties.Deduplication" />
+    <InternalsVisibleTo Include="Granit.Parties.Deduplication.Tests" />
     <InternalsVisibleTo Include="Granit.Parties.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Parties.Mergeable" />
     <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests" />

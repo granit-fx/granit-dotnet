@@ -263,6 +263,7 @@
     <Project Path="src/Granit.Metering.Notifications/Granit.Metering.Notifications.csproj" />
     <Project Path="src/Granit.Metering/Granit.Metering.csproj" />
     <Project Path="src/Granit.Parties.Abstractions/Granit.Parties.Abstractions.csproj" />
+    <Project Path="src/Granit.Parties.Deduplication/Granit.Parties.Deduplication.csproj" />
     <Project Path="src/Granit.Parties.Endpoints/Granit.Parties.Endpoints.csproj" />
     <Project Path="src/Granit.Parties.EntityFrameworkCore/Granit.Parties.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Parties.Mergeable/Granit.Parties.Mergeable.csproj" />
@@ -634,6 +635,7 @@
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Provisioning.Tests/Granit.MultiTenancy.Provisioning.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Abstractions.Tests/Granit.Parties.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Deduplication.Tests/Granit.Parties.Deduplication.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Endpoints.Tests/Granit.Parties.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Parties.EntityFrameworkCore.Tests/Granit.Parties.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Mergeable.Tests/Granit.Parties.Mergeable.Tests.csproj" />

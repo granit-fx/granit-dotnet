@@ -193,6 +193,7 @@
       "src/Granit.OpenIddict.Server/Granit.OpenIddict.Server.csproj",
       "src/Granit.OpenIddict/Granit.OpenIddict.csproj",
       "src/Granit.Parties.Abstractions/Granit.Parties.Abstractions.csproj",
+      "src/Granit.Parties.Deduplication/Granit.Parties.Deduplication.csproj",
       "src/Granit.Parties.Endpoints/Granit.Parties.Endpoints.csproj",
       "src/Granit.Parties.EntityFrameworkCore/Granit.Parties.EntityFrameworkCore.csproj",
       "src/Granit.Parties.Mergeable/Granit.Parties.Mergeable.csproj",
