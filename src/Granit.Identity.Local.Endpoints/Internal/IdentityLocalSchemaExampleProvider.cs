@@ -10,9 +10,6 @@ namespace Granit.Identity.Local.Endpoints.Internal;
 /// </summary>
 internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvider
 {
-    private const string PasswordField = "password";
-    private const string PasswordPlaceholder = "<your-password>";
-
     /// <inheritdoc/>
     public IReadOnlyDictionary<Type, JsonNode> GetExamples() =>
         new Dictionary<Type, JsonNode>
@@ -23,7 +20,7 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
             [typeof(AccountLoginRequest)] = new JsonObject
             {
                 ["login"] = "alice@acme.example",
-                [PasswordField] = PasswordPlaceholder,
+                ["password"] = "<your-password>",
                 ["rememberMe"] = true,
             },
             [typeof(AccountLoginResponse)] = new JsonObject
@@ -36,7 +33,7 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
             [typeof(AccountRegisterRequest)] = new JsonObject
             {
                 ["email"] = "alice@acme.example",
-                [PasswordField] = PasswordPlaceholder,
+                ["password"] = "<your-password>",
                 ["firstName"] = "Alice",
                 ["lastName"] = "Martin",
             },
@@ -54,7 +51,7 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
             },
             [typeof(AccountTwoFactorDisableRequest)] = new JsonObject
             {
-                [PasswordField] = PasswordPlaceholder,
+                ["password"] = "<your-password>",
             },
 
             // ──── Password management ────
@@ -94,7 +91,7 @@ internal sealed class IdentityLocalSchemaExampleProvider : ISchemaExampleProvide
             },
             [typeof(AccountDeleteRequest)] = new JsonObject
             {
-                [PasswordField] = PasswordPlaceholder,
+                ["password"] = "<your-password>",
             },
 
             // ──── Passkeys (WebAuthn) ────
