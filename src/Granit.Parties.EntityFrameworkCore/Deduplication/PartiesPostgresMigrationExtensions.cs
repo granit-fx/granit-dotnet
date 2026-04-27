@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Granit.Parties.EntityFrameworkCore.Deduplication;
@@ -41,8 +42,6 @@ namespace Granit.Parties.EntityFrameworkCore.Deduplication;
 /// </remarks>
 public static class PartiesPostgresMigrationExtensions
 {
-    private const string NpgsqlProviderName = "Npgsql.EntityFrameworkCore.PostgreSQL";
-
     /// <summary>
     /// Installs the <c>pg_trgm</c> extension + a GIST trigram index on <c>lower(name)</c>
     /// of the parties table. No-op on non-PostgreSQL providers.
@@ -112,6 +111,6 @@ public static class PartiesPostgresMigrationExtensions
     private static bool IsPostgres(MigrationBuilder migrationBuilder) =>
         string.Equals(
             migrationBuilder.ActiveProvider,
-            NpgsqlProviderName,
+            GranitDbProviders.Postgres,
             StringComparison.Ordinal);
 }

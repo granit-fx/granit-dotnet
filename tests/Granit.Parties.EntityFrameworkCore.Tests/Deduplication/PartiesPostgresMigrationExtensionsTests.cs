@@ -1,4 +1,5 @@
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Shouldly;
@@ -8,13 +9,10 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Deduplication;
 
 public sealed class PartiesPostgresMigrationExtensionsTests
 {
-    private const string NpgsqlProvider = "Npgsql.EntityFrameworkCore.PostgreSQL";
-    private const string SqlServerProvider = "Microsoft.EntityFrameworkCore.SqlServer";
-
     [Fact]
     public void Add_emits_CREATE_EXTENSION_and_CREATE_INDEX_on_Npgsql()
     {
-        MigrationBuilder builder = new(NpgsqlProvider);
+        MigrationBuilder builder = new(GranitDbProviders.Postgres);
 
         builder.AddPartyTrigramSimilarityIndexes(schema: "granit", tableName: "contacts_parties");
 
@@ -33,7 +31,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     [Fact]
     public void Add_is_a_noop_on_SqlServer()
     {
-        MigrationBuilder builder = new(SqlServerProvider);
+        MigrationBuilder builder = new(GranitDbProviders.SqlServer);
 
         builder.AddPartyTrigramSimilarityIndexes(schema: "dbo", tableName: "contacts_parties");
 
@@ -43,7 +41,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     [Fact]
     public void Add_falls_back_to_GranitPartiesDbProperties_defaults_when_called_without_args()
     {
-        MigrationBuilder builder = new(NpgsqlProvider);
+        MigrationBuilder builder = new(GranitDbProviders.Postgres);
 
         builder.AddPartyTrigramSimilarityIndexes();
 
@@ -56,7 +54,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     [Fact]
     public void Remove_emits_DROP_INDEX_only_on_Npgsql_and_does_NOT_drop_the_extension()
     {
-        MigrationBuilder builder = new(NpgsqlProvider);
+        MigrationBuilder builder = new(GranitDbProviders.Postgres);
 
         builder.RemovePartyTrigramSimilarityIndexes(schema: "granit", tableName: "contacts_parties");
 
@@ -72,7 +70,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     [Fact]
     public void Remove_is_a_noop_on_SqlServer()
     {
-        MigrationBuilder builder = new(SqlServerProvider);
+        MigrationBuilder builder = new(GranitDbProviders.SqlServer);
 
         builder.RemovePartyTrigramSimilarityIndexes(schema: "dbo", tableName: "contacts_parties");
 

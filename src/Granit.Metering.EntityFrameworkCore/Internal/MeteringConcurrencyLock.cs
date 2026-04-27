@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -25,9 +26,6 @@ namespace Granit.Metering.EntityFrameworkCore.Internal;
 /// </remarks>
 internal static class MeteringConcurrencyLock
 {
-    private const string PostgresProvider = "Npgsql.EntityFrameworkCore.PostgreSQL";
-    private const string SqlServerProvider = "Microsoft.EntityFrameworkCore.SqlServer";
-
     /// <summary>
     /// Acquires the lock inside the active transaction. Caller MUST have already opened
     /// a transaction (<c>db.Database.BeginTransactionAsync</c>); the lock is released
@@ -49,7 +47,7 @@ internal static class MeteringConcurrencyLock
 
         switch (providerName)
         {
-            case PostgresProvider:
+            case GranitDbProviders.Postgres:
                 // pg_advisory_xact_lock is blocking: waits until the lock is free,
                 // then auto-releases at transaction end.
                 await db.Database.ExecuteSqlRawAsync(
@@ -58,7 +56,7 @@ internal static class MeteringConcurrencyLock
                     cancellationToken).ConfigureAwait(false);
                 break;
 
-            case SqlServerProvider:
+            case GranitDbProviders.SqlServer:
                 // sp_getapplock with @LockOwner='Transaction' auto-releases on COMMIT/ROLLBACK.
                 // @LockTimeout = -1 → wait indefinitely (matches PostgreSQL semantics).
                 await db.Database.ExecuteSqlRawAsync(

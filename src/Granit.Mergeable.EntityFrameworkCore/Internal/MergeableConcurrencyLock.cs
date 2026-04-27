@@ -1,3 +1,4 @@
+using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Mergeable.EntityFrameworkCore.Internal;
@@ -26,9 +27,6 @@ namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 /// </remarks>
 internal static class MergeableConcurrencyLock
 {
-    private const string PostgresProvider = "Npgsql.EntityFrameworkCore.PostgreSQL";
-    private const string SqlServerProvider = "Microsoft.EntityFrameworkCore.SqlServer";
-
     /// <summary>
     /// Acquires the lock inside the active transaction. Caller MUST be inside the orchestrator's
     /// ambient <see cref="System.Transactions.TransactionScope"/>; the underlying connection is
@@ -44,14 +42,14 @@ internal static class MergeableConcurrencyLock
 
         switch (providerName)
         {
-            case PostgresProvider:
+            case GranitDbProviders.Postgres:
                 await db.Database.ExecuteSqlRawAsync(
                     "SELECT pg_advisory_xact_lock(hashtext({0}))",
                     [resource],
                     cancellationToken).ConfigureAwait(false);
                 break;
 
-            case SqlServerProvider:
+            case GranitDbProviders.SqlServer:
                 await db.Database.ExecuteSqlRawAsync(
                     """
                     DECLARE @result int;

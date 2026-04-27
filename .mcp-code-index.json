@@ -32972,7 +32972,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartiesPostgresMigrationExtensions.cs",
-      "line": 42,
+      "line": 43,
       "members": [
         {
           "name": "AddPartyTrigramSimilarityIndexes",
@@ -36242,6 +36242,15 @@
           "returnType": "string? DbSchema { get; set; } public string? HostDbSchema { get; set; } public void"
         }
       ]
+    },
+    {
+      "name": "GranitDbProviders",
+      "fqn": "Granit.Persistence.EntityFrameworkCore.GranitDbProviders",
+      "kind": "class",
+      "project": "Granit.Persistence.EntityFrameworkCore",
+      "file": "src/Granit.Persistence.EntityFrameworkCore/GranitDbProviders.cs",
+      "line": 27,
+      "members": []
     },
     {
       "name": "GranitFilterNames",
