@@ -263,6 +263,18 @@ Table prefix: `scheduling_` (configurable via `GranitSchedulingDbProperties.DbTa
 - `ix_scheduling_scheduled_actions_status_execute_at` — catch-up queries
 - `ix_scheduling_scheduled_actions_correlation_id` — domain entity lookup
 
+## Notifications
+
+`Granit.Scheduling.Notifications` ships notifications for scheduled-action
+lifecycle events. Tenants opt in via the notifications admin UI.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `scheduling.action_failed` | `ScheduledActionFailedEto` — a scheduled action transitioned to `Failed` status (handler threw or returned a failure) | Email, InApp | Warning |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## See also
 
 - [SaaS & Commerce](/dotnet/saas/) — ecosystem using Scheduling for plan changes and trials

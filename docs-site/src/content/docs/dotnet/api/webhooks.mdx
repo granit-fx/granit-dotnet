@@ -330,6 +330,25 @@ Endpoints use two permission levels:
 | Options | `WebhooksOptions` | `Granit.Webhooks` |
 | Extensions | `AddGranitWebhooks()`, `AddGranitWebhooksEntityFrameworkCore()` | — |
 
+## Notifications
+
+`Granit.Webhooks.Notifications` ships notifications for the lifecycle events of
+this module. Hosts that reference the package get them out-of-the-box; tenants
+opt in via the notifications admin UI.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `webhooks.delivery_failure_threshold` | `WebhookDeliveryFailureThresholdExceededEto` | Email, InApp | Warning |
+| `webhooks.signing_key_rotation_due` | `WebhookSigningKeyRotationDueEto` (emitted daily by the [rotation scanner](./signing-keys/)) | Email, InApp | Warning |
+
+The `signing_key_rotation_due` notification is the operator-facing arm of the
+[dual-key rotation flow](./signing-keys/) — it gives administrators a
+configurable lead time (`WebhooksOptions.RotationLeadTimeDays`, default 14 days)
+to rotate before a key's `ExpiresAt` passes.
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## When to use — and when not to
 
 Use Granit.Webhooks when:
@@ -363,6 +382,8 @@ event in production.
 ## See also
 
 - [Implement webhooks guide](/dotnet/guides/implement-webhooks/) — step-by-step setup walkthrough
+- [Signing keys (dual-key rotation)](./signing-keys/) — `WebhookSigningKey` aggregate, overlap rotation, verification fallback
+- [Webhook endpoints](./webhooks-endpoints/) — full Minimal API surface (subscriptions, deliveries, stats)
 - [API & Web module](./api-web/) — Exception handling, versioning, idempotency
 - [Persistence module](./persistence/) — EF Core interceptors, query filters
 - [Wolverine module](./wolverine/) — Messaging, transactional outbox

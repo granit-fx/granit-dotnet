@@ -553,6 +553,18 @@ window for key material exposure through memory dumps.
 Wolverine outbox before marking the request as executed, ensuring deletion is never silently
 skipped on partial failure.
 
+## Notifications
+
+`Granit.BackgroundJobs.Notifications` ships notifications for the lifecycle events
+of this module. Tenants opt in via the notifications admin UI.
+
+| Notification | Trigger | Channels | Severity |
+| ------------ | ------- | -------- | :------: |
+| `jobs.recurring_failing` | `BackgroundJobFailureThresholdExceededEto` — emitted when a recurring job exceeds its consecutive-failure threshold | Email, InApp | Warning |
+
+Email templates ship in EN + FR; additional cultures are produced via the
+[translation script](/dotnet/business/templating/) (US #1311).
+
 ## See also
 
 - [Add background jobs guide](/dotnet/guides/add-background-jobs/) — step-by-step setup walkthrough

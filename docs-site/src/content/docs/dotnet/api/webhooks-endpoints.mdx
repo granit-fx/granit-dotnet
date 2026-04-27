@@ -100,9 +100,12 @@ stateDiagram-v2
 
 | Method | Route | Description |
 | ------ | ----- | ----------- |
-| `POST` | `/subscriptions/{id}/rotate-secret` | Rotate the HMAC signing secret |
+| `POST` | `/subscriptions/{id}/rotate-secret` | Rotate the HMAC signing secret (legacy single-secret model) |
 | `POST` | `/subscriptions/{id}/test-ping` | Send a Stripe-style test ping to the target URL |
 | `GET` | `/stats` | Get aggregate delivery statistics (last 24h) |
+| `GET` | `/subscriptions/{id}/keys` | List signing keys (Active / Retired / Revoked). Read-permission. See [Signing keys](/dotnet/api/webhooks/signing-keys/) |
+| `POST` | `/subscriptions/{id}/keys` | Rotate via the [dual-key model](/dotnet/api/webhooks/signing-keys/) — overlap, grace period, audit history |
+| `DELETE` | `/subscriptions/{id}/keys/{keyId}` | Revoke a specific signing key |
 
 ### Redelivery — requires authentication
 
@@ -181,3 +184,4 @@ stores only the protected (HMAC) value.
 ## See also
 
 - [Webhooks](/dotnet/api/webhooks/) — core module documentation (publisher, delivery engine, retry)
+- [Signing keys (dual-key rotation)](/dotnet/api/webhooks/signing-keys/) — `GET / POST / DELETE /webhooks/subscriptions/{id}/keys`, status flow, grace period, verification fallback
