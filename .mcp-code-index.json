@@ -33083,6 +33083,24 @@
       "members": []
     },
     {
+      "name": "PartyCreateConflictResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyCreateConflictResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyCreateConflictResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "PartyCreateDuplicateCandidate",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyCreateDuplicateCandidate",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyCreateConflictResponse.cs",
+      "line": 38,
+      "members": []
+    },
+    {
       "name": "PartyCreateRequest",
       "fqn": "Granit.Parties.Endpoints.Dtos.PartyCreateRequest",
       "kind": "record",

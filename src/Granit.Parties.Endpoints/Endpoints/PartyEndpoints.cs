@@ -1,5 +1,6 @@
 using System.Text;
 using Granit.Guids;
+using Granit.Parties.Deduplication.Domain;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.Endpoints.Dtos;
@@ -37,12 +38,49 @@ internal static class PartyEndpoints
         return c is null ? TypedResults.NotFound() : TypedResults.Ok(c.ToResponse());
     }
 
-    public static async Task<Results<Created<PartyResponse>, ValidationProblem>> HandleCreateAsync(
+    public static async Task<Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>> HandleCreateAsync(
         PartyCreateRequest request,
+        [FromQuery] bool force,
+        [FromHeader(Name = "X-Skip-Duplicate-Check")] bool skipDuplicateCheck,
         [FromServices] IPartyWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IPartyDuplicateDetector detector,
         CancellationToken cancellationToken)
     {
+        // Online duplicate detection (story #1302). Skipped when:
+        //   ?force=true          — admin acknowledges the duplicate is intentional
+        //   X-Skip-Duplicate-Check — bulk migrations / data seeding (skip the round-trip)
+        if (!force && !skipDuplicateCheck)
+        {
+            // PartyDraft only carries fields available at create time. Emails / phones are
+            // added via the dedicated POST /parties/{id}/emails endpoints later, so the
+            // online check effectively covers the TaxId Tier-1 path; email / phone
+            // duplicates surface through the recurring scan + per-party detail endpoint.
+            PartyDraft draft = new(
+                TenantId: null, // tenant filled by interceptor; detector applies the same scope
+                Kind: request.Kind,
+                Name: request.Name,
+                TaxId: request.TaxId);
+
+            IReadOnlyList<DuplicateCandidate> hits =
+                await detector.FindCandidatesAsync(draft, cancellationToken).ConfigureAwait(false);
+
+            // Only Tier-1 (deterministic) blocks. Tier-2 / Tier-3 are surfaced through the
+            // recurring scan; blocking on a fuzzy match at create time would force admins
+            // to confirm common-name overlaps every time.
+            List<DuplicateCandidate> blocking = [.. hits.Where(h => h.Tier == DuplicateMatchTier.Deterministic)];
+            if (blocking.Count > 0)
+            {
+                return TypedResults.Conflict(new PartyCreateConflictResponse(
+                    Reason: "DuplicatesDetected",
+                    Candidates: [.. blocking.Select(h => new PartyCreateDuplicateCandidate(
+                        CandidateId: h.CandidateId.Value,
+                        Score: h.Score,
+                        Tier: h.Tier.ToString(),
+                        Signals: [.. h.Signals.Select(s => new DuplicateMatchSignalResponse(s.Kind, s.Score))]))]));
+            }
+        }
+
         var c = Party.Create(
             guidGenerator.Create(),
             tenantId: null, // tenant filled by interceptor when in tenant context

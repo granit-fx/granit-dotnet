@@ -47,8 +47,9 @@ public static class PartiesEndpointRouteBuilderExtensions
         group.MapPost("", PartyEndpoints.HandleCreateAsync)
             .WithName("CreateContact")
             .WithSummary("Creates a new contact in the active scope.")
-            .WithDescription("Creates an Active contact in the active scope (host or tenant context). The default role set is Customer. Identity, address, email, and phone collections are populated through dedicated child endpoints after creation.")
+            .WithDescription("Creates an Active contact in the active scope (host or tenant context). The default role set is Customer. Identity, address, email, and phone collections are populated through dedicated child endpoints after creation. Online duplicate detection (#1302) intercepts before INSERT — a Tier-1 deterministic match (TaxId at create time) returns 409 with the candidates list, letting the admin choose to merge or to confirm-create with ?force=true. Bulk migrations bypass the check via the X-Skip-Duplicate-Check: true header. Tier-2 / Tier-3 fuzzy matches do NOT block at create time — they surface via the recurring scan + the duplicate-candidates inbox.")
             .Produces<PartyResponse>(StatusCodes.Status201Created)
+            .Produces<PartyCreateConflictResponse>(StatusCodes.Status409Conflict)
             .ProducesValidationProblem()
             .RequireAuthorization(PartiesPermissions.Parties.Manage);
 
