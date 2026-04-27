@@ -2,7 +2,7 @@
 <title>데이터 삭제 요청을 접수하였습니다</title>
 <p>안녕하십니까.</p>
 <p>고객님의 개인정보 삭제 요청을 <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} 규정 <code>{{ model.regulation }}</code> 에 따라{{ end }} 접수하였습니다.</p>
-<p>본 이메일은 접수 확인 통지서입니다. 고객님의 관할권에 적용되는 법정 기한 내에 요청을 처리해 드릴 예정입니다 (GDPR 제 12 조 제 3 항에 따라 1 개월. 요청이 복잡한 경우 연장될 수 있습니다). 삭제가 실행되거나 추가 정보가 필요한 경우 후속 이메일을 보내드리겠습니다.</p>
+<p>본 이메일은 접수 확인 통지서입니다. 고객님의 관할권에 적용되는 개인정보 보호 법령{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}에 따라 요청을 <strong>{{ model.response_deadline_days }}일</strong> 이내에 처리해 드릴 예정이며, 요청이 복잡한 경우 연장될 수 있습니다. 삭제가 실행되거나 추가 정보가 필요한 경우 후속 이메일을 보내드리겠습니다.</p>
 <p>참조번호: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>본 메시지는 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 에서 발송하였습니다.</p>

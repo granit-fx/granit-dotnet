@@ -2,7 +2,7 @@
 <title>Otrzymaliśmy Państwa wniosek o usunięcie danych</title>
 <p>Dzień dobry,</p>
 <p>Otrzymaliśmy Państwa wniosek o usunięcie danych osobowych w dniu <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} na podstawie regulacji <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Niniejsza wiadomość stanowi potwierdzenie odbioru wniosku. Państwa wniosek rozpatrzymy w terminie ustawowym mającym zastosowanie w Państwa jurysdykcji (jeden miesiąc na podstawie art. 12 ust. 3 RODO, z możliwością przedłużenia w przypadku wniosków złożonych). Otrzymają Państwo kolejną wiadomość, gdy usunięcie zostanie wykonane lub gdy będziemy potrzebować dodatkowych informacji.</p>
+<p>Niniejsza wiadomość stanowi potwierdzenie odbioru wniosku. Zgodnie z przepisami o ochronie danych mającymi zastosowanie w Państwa jurysdykcji{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} Państwa wniosek rozpatrzymy w terminie <strong>{{ model.response_deadline_days }} dni</strong>, z możliwością przedłużenia w przypadku wniosków złożonych. Otrzymają Państwo kolejną wiadomość, gdy usunięcie zostanie wykonane lub gdy będziemy potrzebować dodatkowych informacji.</p>
 <p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Wiadomość ta jest wysyłana przez {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

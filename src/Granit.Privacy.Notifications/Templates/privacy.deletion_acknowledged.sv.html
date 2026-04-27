@@ -2,7 +2,7 @@
 <title>Vi har tagit emot din begäran om radering</title>
 <p>Hej,</p>
 <p>Vi har tagit emot din begäran om radering av dina personuppgifter den <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} enligt regelverket <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Detta e-postmeddelande utgör din mottagningsbekräftelse. Vi kommer att behandla din begäran inom den lagstadgade tidsfrist som gäller för din jurisdiktion (en månad enligt artikel 12.3 i GDPR, med möjlig förlängning om begäran är komplex). Du kommer att få ett uppföljande e-postmeddelande så snart raderingen har genomförts, eller om vi behöver ytterligare uppgifter från dig.</p>
+<p>Detta e-postmeddelande utgör din mottagningsbekräftelse. Enligt den dataskyddslagstiftning som gäller för din jurisdiktion{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} kommer vi att behandla din begäran inom <strong>{{ model.response_deadline_days }} dagar</strong>, med möjlig förlängning om begäran är komplex. Du kommer att få ett uppföljande e-postmeddelande så snart raderingen har genomförts, eller om vi behöver ytterligare uppgifter från dig.</p>
 <p>Referens: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Detta meddelande skickas av {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

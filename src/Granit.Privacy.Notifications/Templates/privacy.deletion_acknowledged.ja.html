@@ -2,7 +2,7 @@
 <title>データ削除のご請求を受領いたしました</title>
 <p>こんにちは。</p>
 <p>お客様の個人データの削除に関するご請求を <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }}、規制 <code>{{ model.regulation }}</code> に基づき{{ end }} 受領いたしました。</p>
-<p>本メールは受領確認となります。お客様の管轄区域に適用される法定期限内にご請求を処理いたします (GDPR 第 12 条第 3 項に基づき 1 か月。請求が複雑な場合は延長される可能性があります)。削除が実行された際、または追加情報が必要となった際には、改めてメールをお送りいたします。</p>
+<p>本メールは受領確認となります。お客様の管轄区域に適用されるデータ保護法令{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} に基づき、ご請求は <strong>{{ model.response_deadline_days }} 日</strong>以内に処理いたします。請求が複雑な場合は延長される可能性があります。削除が実行された際、または追加情報が必要となった際には、改めてメールをお送りいたします。</p>
 <p>参照番号: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>本メッセージは {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} より送信されています。</p>

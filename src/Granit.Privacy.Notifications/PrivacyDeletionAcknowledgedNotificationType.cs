@@ -33,7 +33,17 @@ public sealed class PrivacyDeletionAcknowledgedNotificationType
 /// <param name="RequestId">The deletion request identifier.</param>
 /// <param name="RequestedAt">When the data subject filed the request.</param>
 /// <param name="Regulation">Privacy regulation code (e.g. <c>EU_GDPR</c>).</param>
+/// <param name="ResponseDeadlineDays">
+/// Statutory deadline (in calendar days) within which the controller must respond
+/// to the deletion request, derived from the active <see cref="Regulation"/>'s
+/// <c>PrivacyRegulationProfile.DeletionRequestDays</c>. Falls back to 30 (GDPR
+/// Art. 12 §3) when the regulation is unknown or the profile is unspecified.
+/// Surfaced to templates as <c>{{ model.response_deadline_days }}</c> so the
+/// rendered email reflects the correct jurisdiction-specific timeline (15 days
+/// for LGPD, 45 for CCPA, etc.).
+/// </param>
 public sealed record PrivacyDeletionAcknowledgedNotificationData(
     Guid RequestId,
     DateTimeOffset RequestedAt,
-    string Regulation);
+    string Regulation,
+    int ResponseDeadlineDays);

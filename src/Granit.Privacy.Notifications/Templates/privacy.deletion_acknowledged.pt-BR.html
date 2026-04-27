@@ -2,7 +2,7 @@
 <title>Recebemos sua solicitação de exclusão</title>
 <p>Olá,</p>
 <p>Recebemos sua solicitação de exclusão dos seus dados pessoais em <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} sob a regulamentação <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Este e-mail constitui o seu comprovante de recebimento. Iremos tratar sua solicitação dentro do prazo legal aplicável à sua jurisdição (15 dias sob o art. 19 da LGPD; um mês sob o art. 12.º, n.º 3, do RGPD, prorrogável em casos complexos). Você receberá um novo e-mail assim que a exclusão for executada, ou caso precisemos de informações adicionais.</p>
+<p>Este e-mail constitui o seu comprovante de recebimento. Conforme a legislação de proteção de dados aplicável à sua jurisdição{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, iremos tratar sua solicitação no prazo de <strong>{{ model.response_deadline_days }} dias</strong>, prorrogável em casos complexos. Você receberá um novo e-mail assim que a exclusão for executada, ou caso precisemos de informações adicionais.</p>
 <p>Referência: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Esta mensagem é enviada por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

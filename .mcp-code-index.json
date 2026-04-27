@@ -1930,6 +1930,7 @@
       "name": "Granit.Privacy.Notifications",
       "deps": [
         "Granit.Privacy",
+        "Granit.Privacy.Regulations",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
       ],
@@ -38124,7 +38125,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/GranitPrivacyNotificationsModule.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38140,12 +38141,12 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/Handlers/DeletionAcknowledgedHandler.cs",
-      "line": 12,
+      "line": 21,
       "members": [
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(PersonalDataDeletionRequestedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto evt, INotificationPublisher publisher, IRegulationProfileRegistry profileRegistry, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -38252,7 +38253,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyDeletionAcknowledgedNotificationType.cs",
-      "line": 36,
+      "line": 45,
       "members": []
     },
     {

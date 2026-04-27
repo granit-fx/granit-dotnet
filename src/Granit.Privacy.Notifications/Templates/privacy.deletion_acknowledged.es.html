@@ -2,7 +2,7 @@
 <title>Hemos recibido su solicitud de supresión</title>
 <p>Hola,</p>
 <p>Hemos recibido su solicitud de supresión de sus datos personales el <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} en virtud de la normativa <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Este correo electrónico constituye su acuse de recibo. Tramitaremos su solicitud dentro del plazo legal aplicable a su jurisdicción (un mes en virtud del artículo 12 §3 del RGPD, prorrogable si la solicitud resultara compleja). Recibirá un nuevo correo electrónico tan pronto como se ejecute la supresión, o si necesitamos información adicional por su parte.</p>
+<p>Este correo electrónico constituye su acuse de recibo. Conforme a la legislación de protección de datos aplicable a su jurisdicción{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, tramitaremos su solicitud en un plazo de <strong>{{ model.response_deadline_days }} días</strong>, prorrogable si la solicitud resultara compleja. Recibirá un nuevo correo electrónico tan pronto como se ejecute la supresión, o si necesitamos información adicional por su parte.</p>
 <p>Referencia: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Este mensaje es enviado por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
