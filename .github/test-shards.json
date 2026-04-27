@@ -54,6 +54,7 @@
       "label": "Business Features",
       "projects": [
         "tests/Granit.Parties.Abstractions.Tests",
+        "tests/Granit.Parties.Deduplication.BackgroundJobs.Tests",
         "tests/Granit.Parties.Deduplication.Tests",
         "tests/Granit.Parties.Endpoints.Tests",
         "tests/Granit.Parties.EntityFrameworkCore.Tests",

@@ -1,4 +1,5 @@
 using Granit.Parties.Domain;
+using Granit.Parties.EntityFrameworkCore.Deduplication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -160,5 +161,37 @@ internal sealed class PartyExternalMappingConfiguration : IEntityTypeConfigurati
 
         // One mapping per (Party, ProviderName).
         builder.HasIndex("PartyId", nameof(PartyExternalMapping.ProviderName)).IsUnique();
+    }
+}
+
+internal sealed class PartyDuplicateCandidateConfiguration : IEntityTypeConfiguration<PartyDuplicateCandidate>
+{
+    public void Configure(EntityTypeBuilder<PartyDuplicateCandidate> builder)
+    {
+        builder.ToTable(
+            GranitPartiesDbProperties.DbTablePrefix + "duplicate_candidates",
+            GranitPartiesDbProperties.DbSchema);
+
+        builder.HasKey(c => c.Id);
+
+        builder.Property(c => c.TenantId);
+        builder.Property(c => c.PartyId).IsRequired();
+        builder.Property(c => c.CandidateId).IsRequired();
+        builder.Property(c => c.Tier).IsRequired();
+        builder.Property(c => c.Score).HasPrecision(5, 4).IsRequired();
+        builder.Property(c => c.SignalsJson).HasMaxLength(4000).IsRequired();
+        builder.Property(c => c.DismissedAt);
+        builder.Property(c => c.CreatedAt).IsRequired();
+        builder.Property(c => c.UpdatedAt);
+
+        // Pair uniqueness is enforced by storing the pair already ordered
+        // (PartyId < CandidateId — see PartyDuplicateCandidate.Create). The unique key
+        // covers tenant + ordered pair + tier so the same pair can be surfaced from
+        // multiple tiers (Tier-1 deterministic vs Tier-3 fuzzy) without colliding.
+        builder.HasIndex(c => new { c.TenantId, c.PartyId, c.CandidateId, c.Tier }).IsUnique();
+
+        // Admin "list pending duplicates" query: filters by tenant + non-dismissed,
+        // orders by score / updatedAt. The compound index serves the WHERE clause.
+        builder.HasIndex(c => new { c.TenantId, c.DismissedAt });
     }
 }

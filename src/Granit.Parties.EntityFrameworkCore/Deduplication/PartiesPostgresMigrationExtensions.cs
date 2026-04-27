@@ -113,4 +113,58 @@ public static class PartiesPostgresMigrationExtensions
             migrationBuilder.ActiveProvider,
             GranitDbProviders.Postgres,
             StringComparison.Ordinal);
+
+    /// <summary>
+    /// Backfill helper for the <c>parties_duplicate_candidates</c> table — adds a partial
+    /// index that powers the admin "list pending duplicates" query without scanning
+    /// dismissed rows. The base columns + UNIQUE / non-partial indexes are emitted by EF
+    /// from the <see cref="PartyDuplicateCandidate"/> configuration; the partial index
+    /// requires PostgreSQL syntax not supported by EF migrations natively. No-op on
+    /// non-PostgreSQL providers.
+    /// </summary>
+    public static MigrationBuilder AddPartyDuplicateCandidatesPendingPartialIndex(
+        this MigrationBuilder migrationBuilder,
+        string? schema = null,
+        string? tableName = null)
+    {
+        ArgumentNullException.ThrowIfNull(migrationBuilder);
+
+        if (!IsPostgres(migrationBuilder))
+        {
+            return migrationBuilder;
+        }
+
+        string resolvedSchema = schema ?? GranitPartiesDbProperties.DbSchema ?? "public";
+        string resolvedTable = tableName ?? GranitPartiesDbProperties.DbTablePrefix + "duplicate_candidates";
+        string indexName = $"IX_{resolvedTable}_pending";
+
+        migrationBuilder.Sql(
+            $"CREATE INDEX IF NOT EXISTS \"{indexName}\" "
+            + $"ON \"{resolvedSchema}\".\"{resolvedTable}\" (\"tenant_id\", \"score\" DESC) "
+            + "WHERE \"dismissed_at\" IS NULL;");
+
+        return migrationBuilder;
+    }
+
+    /// <summary>Drops the partial index installed by
+    /// <see cref="AddPartyDuplicateCandidatesPendingPartialIndex"/>. No-op on non-PostgreSQL providers.</summary>
+    public static MigrationBuilder RemovePartyDuplicateCandidatesPendingPartialIndex(
+        this MigrationBuilder migrationBuilder,
+        string? schema = null,
+        string? tableName = null)
+    {
+        ArgumentNullException.ThrowIfNull(migrationBuilder);
+
+        if (!IsPostgres(migrationBuilder))
+        {
+            return migrationBuilder;
+        }
+
+        string resolvedSchema = schema ?? GranitPartiesDbProperties.DbSchema ?? "public";
+        string resolvedTable = tableName ?? GranitPartiesDbProperties.DbTablePrefix + "duplicate_candidates";
+        string indexName = $"IX_{resolvedTable}_pending";
+
+        migrationBuilder.Sql($"DROP INDEX IF EXISTS \"{resolvedSchema}\".\"{indexName}\";");
+        return migrationBuilder;
+    }
 }

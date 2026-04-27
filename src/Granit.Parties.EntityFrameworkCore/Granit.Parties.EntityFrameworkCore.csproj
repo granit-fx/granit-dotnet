@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Parties.Deduplication" />
+    <InternalsVisibleTo Include="Granit.Parties.Deduplication.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.Parties.Deduplication.BackgroundJobs.Tests" />
     <InternalsVisibleTo Include="Granit.Parties.Deduplication.Tests" />
     <InternalsVisibleTo Include="Granit.Parties.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="Granit.Parties.Mergeable" />

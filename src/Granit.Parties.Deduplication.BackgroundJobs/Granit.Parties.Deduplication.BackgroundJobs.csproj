@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Parties.Deduplication.BackgroundJobs</PackageId>
+    <Description>Recurring background scan that materialises Party duplicate candidates into a review table. Iterates active tenants, runs the IPartyDuplicateDetector pipeline per party, and upserts the candidate pairs through IDuplicateCandidateSink so the admin endpoints (#1301) can surface them. Cron: 03:00 daily.</Description>
+    <IsPackable>true</IsPackable>
+    <!-- EF1001: false positive — the EF sink uses internal PartiesDbContext via InternalsVisibleTo. -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Parties.Deduplication.BackgroundJobs.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Parties\Granit.Parties.csproj" />
+    <ProjectReference Include="..\Granit.Parties.Deduplication\Granit.Parties.Deduplication.csproj" />
+    <ProjectReference Include="..\Granit.Parties.EntityFrameworkCore\Granit.Parties.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore.Migrations\Granit.Persistence.EntityFrameworkCore.Migrations.csproj" />
+  </ItemGroup>
+
+</Project>

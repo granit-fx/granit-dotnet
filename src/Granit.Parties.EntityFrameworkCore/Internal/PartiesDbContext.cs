@@ -1,6 +1,7 @@
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Parties.Domain;
+using Granit.Parties.EntityFrameworkCore.Deduplication;
 using Granit.Parties.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ internal sealed class PartiesDbContext(
     : DbContext(options)
 {
     public DbSet<Party> Parties { get; set; } = null!;
+    public DbSet<PartyDuplicateCandidate> DuplicateCandidates { get; set; } = null!;
 
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)

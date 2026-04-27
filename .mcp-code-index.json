@@ -1693,6 +1693,19 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Parties.Deduplication.BackgroundJobs",
+      "deps": [
+        "Granit",
+        "Granit.BackgroundJobs",
+        "Granit.Parties",
+        "Granit.Parties.Deduplication",
+        "Granit.Parties.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.Persistence.EntityFrameworkCore.Migrations"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Parties.Endpoints",
       "deps": [
         "Granit.Auditing",
@@ -32373,6 +32386,91 @@
       "members": []
     },
     {
+      "name": "PartiesDeduplicationMetrics",
+      "fqn": "Granit.Parties.Deduplication.BackgroundJobs.Diagnostics.PartiesDeduplicationMetrics",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication.BackgroundJobs",
+      "file": "src/Granit.Parties.Deduplication.BackgroundJobs/Diagnostics/PartiesDeduplicationMetrics.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RecordDismissedSkipped",
+          "kind": "method",
+          "signature": "RecordDismissedSkipped(Guid? tenantId, int count)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordScanDuration",
+          "kind": "method",
+          "signature": "RecordScanDuration(Guid? tenantId, TimeSpan duration)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesDeduplicationBackgroundJobsModule",
+      "fqn": "Granit.Parties.Deduplication.BackgroundJobs.GranitPartiesDeduplicationBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication.BackgroundJobs",
+      "file": "src/Granit.Parties.Deduplication.BackgroundJobs/GranitPartiesDeduplicationBackgroundJobsModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PartyDuplicateScanHandler",
+      "fqn": "Granit.Parties.Deduplication.BackgroundJobs.Jobs.PartyDuplicateScanHandler",
+      "kind": "class",
+      "project": "Granit.Parties.Deduplication.BackgroundJobs",
+      "file": "src/Granit.Parties.Deduplication.BackgroundJobs/Jobs/PartyDuplicateScanHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PartyDuplicateScanJob _, IPartyDuplicateScanService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PartyDuplicateScanJob",
+      "fqn": "Granit.Parties.Deduplication.BackgroundJobs.Jobs.PartyDuplicateScanJob",
+      "kind": "record",
+      "project": "Granit.Parties.Deduplication.BackgroundJobs",
+      "file": "src/Granit.Parties.Deduplication.BackgroundJobs/Jobs/PartyDuplicateScanJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IPartyDuplicateScanService",
+      "fqn": "Granit.Parties.Deduplication.BackgroundJobs.Services.IPartyDuplicateScanService",
+      "kind": "interface",
+      "project": "Granit.Parties.Deduplication.BackgroundJobs",
+      "file": "src/Granit.Parties.Deduplication.BackgroundJobs/Services/PartyDuplicateScanService.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "ScanTenantAsync",
+          "kind": "method",
+          "signature": "ScanTenantAsync(Guid? tenantId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "DuplicateCandidate",
       "fqn": "Granit.Parties.Deduplication.Domain.DuplicateCandidate",
       "kind": "record",
@@ -32389,6 +32487,22 @@
       "file": "src/Granit.Parties.Deduplication/Domain/DuplicateMatchTier.cs",
       "line": 7,
       "members": []
+    },
+    {
+      "name": "IDuplicateCandidateSink",
+      "fqn": "Granit.Parties.Deduplication.Domain.IDuplicateCandidateSink",
+      "kind": "interface",
+      "project": "Granit.Parties.Deduplication",
+      "file": "src/Granit.Parties.Deduplication/Domain/IDuplicateCandidateSink.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "UpsertAsync",
+          "kind": "method",
+          "signature": "UpsertAsync(IReadOnlyList<DuplicateCandidate> candidates, Guid sourcePartyId, Guid? tenantId, CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
     },
     {
       "name": "IPartyDuplicateDetector",
@@ -33166,6 +33280,12 @@
           "kind": "method",
           "signature": "AddPartyTrigramSimilarityIndexes(this MigrationBuilder migrationBuilder, string? schema = null, string? tableName = null)",
           "returnType": "MigrationBuilder"
+        },
+        {
+          "name": "AddPartyDuplicateCandidatesPendingPartialIndex",
+          "kind": "method",
+          "signature": "AddPartyDuplicateCandidatesPendingPartialIndex(this MigrationBuilder migrationBuilder, string? schema = null, string? tableName = null)",
+          "returnType": "MigrationBuilder"
         }
       ]
     },
@@ -33196,7 +33316,7 @@
       "fqn": "Granit.Parties.EntityFrameworkCore.Deduplication.PartyDuplicateCandidate",
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
-      "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartyDuplicateCandidate.cs",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Entities/PartyDuplicateCandidate.cs",
       "line": 12,
       "members": [
         {
