@@ -279,6 +279,7 @@
     <Project Path="src/Granit.Scheduling.BackgroundJobs/Granit.Scheduling.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Scheduling.Endpoints/Granit.Scheduling.Endpoints.csproj" />
     <Project Path="src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Scheduling.Notifications/Granit.Scheduling.Notifications.csproj" />
     <Project Path="src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj" />
     <Project Path="src/Granit.Scheduling/Granit.Scheduling.csproj" />
     <Project Path="src/Granit.Subscriptions.BackgroundJobs/Granit.Subscriptions.BackgroundJobs.csproj" />
@@ -600,6 +601,7 @@
     <Project Path="tests/Granit.Scheduling.BackgroundJobs.Tests/Granit.Scheduling.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.Endpoints.Tests/Granit.Scheduling.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.EntityFrameworkCore.Tests/Granit.Scheduling.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Scheduling.Notifications.Tests/Granit.Scheduling.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.Tests/Granit.Scheduling.Tests.csproj" />
     <Project Path="tests/Granit.Scheduling.Wolverine.Tests/Granit.Scheduling.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Subscriptions.BackgroundJobs.Tests/Granit.Subscriptions.BackgroundJobs.Tests.csproj" />

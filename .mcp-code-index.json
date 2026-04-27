@@ -2047,6 +2047,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Scheduling.Notifications",
+      "deps": [
+        "Granit.Notifications.Abstractions",
+        "Granit.Scheduling",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Scheduling.Wolverine",
       "deps": [
         "Granit.Scheduling",
@@ -41021,6 +41030,75 @@
           "kind": "method",
           "signature": "RescheduleAsync(ScheduledActionId id, DateTimeOffset newExecuteAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitSchedulingNotificationsModule",
+      "fqn": "Granit.Scheduling.Notifications.GranitSchedulingNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/GranitSchedulingNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ActionFailedHandler",
+      "fqn": "Granit.Scheduling.Notifications.Handlers.ActionFailedHandler",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/Handlers/ActionFailedHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ScheduledActionFailedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SchedulingActionFailedNotificationData",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "SchedulingActionFailedNotificationType",
+      "fqn": "Granit.Scheduling.Notifications.SchedulingActionFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Scheduling.Notifications",
+      "file": "src/Granit.Scheduling.Notifications/SchedulingActionFailedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "SchedulingActionFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },
