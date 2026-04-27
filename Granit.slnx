@@ -574,6 +574,7 @@
     <Project Path="tests/Granit.CustomerBalance.BackgroundJobs.Tests/Granit.CustomerBalance.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.Integration/Granit.CustomerBalance.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Notifications.Tests/Granit.CustomerBalance.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />

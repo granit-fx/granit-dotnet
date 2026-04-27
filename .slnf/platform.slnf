@@ -155,6 +155,7 @@
       "tests/Granit.Catalog.Tests/Granit.Catalog.Tests.csproj",
       "tests/Granit.CustomerBalance.BackgroundJobs.Tests/Granit.CustomerBalance.BackgroundJobs.Tests.csproj",
       "tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj",
+      "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.Integration/Granit.CustomerBalance.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.CustomerBalance.Notifications.Tests/Granit.CustomerBalance.Notifications.Tests.csproj",
       "tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj",
