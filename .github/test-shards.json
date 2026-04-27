@@ -143,6 +143,7 @@
         "tests/Granit.RateLimiting.Tests",
         "tests/Granit.Webhooks.Endpoints.Tests",
         "tests/Granit.Webhooks.EntityFrameworkCore.Tests",
+        "tests/Granit.Webhooks.Notifications.Tests",
         "tests/Granit.Webhooks.Tests",
         "tests/Granit.Webhooks.Wolverine.Tests"
       ]

@@ -1,0 +1,12 @@
+<title>Webhook endpoint failing — {{ model.target_url }}</title>
+<p>Hello,</p>
+<p>One of your webhook subscriptions has just crossed its consecutive delivery-failure threshold and may be disabled automatically if the situation does not recover.</p>
+<ul>
+  <li><strong>Subscription:</strong> <code>{{ model.subscription_id }}</code></li>
+  <li><strong>Target URL:</strong> <code>{{ model.target_url }}</code></li>
+  <li><strong>Consecutive failures:</strong> {{ model.consecutive_failure_count }}</li>
+</ul>
+<p>Please verify the destination is reachable, returns a 2xx response within the configured timeout, and accepts the current signing key. Webhook events that cannot be delivered are eventually dropped — investigating now prevents silent data loss.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">If you need help, contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

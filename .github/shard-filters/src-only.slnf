@@ -274,6 +274,7 @@
       "src/Granit.Vault/Granit.Vault.csproj",
       "src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj",
       "src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj",
+      "src/Granit.Webhooks.Notifications/Granit.Webhooks.Notifications.csproj",
       "src/Granit.Webhooks.Wolverine/Granit.Webhooks.Wolverine.csproj",
       "src/Granit.Webhooks/Granit.Webhooks.csproj",
       "src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj",

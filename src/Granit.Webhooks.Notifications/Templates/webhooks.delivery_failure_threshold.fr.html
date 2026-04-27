@@ -1,0 +1,12 @@
+<title>Endpoint webhook en échec — {{ model.target_url }}</title>
+<p>Bonjour,</p>
+<p>Une de vos souscriptions webhook vient de dépasser son seuil d'échecs consécutifs de livraison et risque d'être désactivée automatiquement si la situation ne se rétablit pas.</p>
+<ul>
+  <li><strong>Souscription :</strong> <code>{{ model.subscription_id }}</code></li>
+  <li><strong>URL cible :</strong> <code>{{ model.target_url }}</code></li>
+  <li><strong>Échecs consécutifs :</strong> {{ model.consecutive_failure_count }}</li>
+</ul>
+<p>Vérifiez que la destination est accessible, répond avec un code 2xx dans le délai configuré et accepte la clé de signature courante. Les événements webhook qui ne peuvent pas être livrés finissent par être rejetés — agir maintenant évite une perte silencieuse de données.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">En cas de besoin, contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

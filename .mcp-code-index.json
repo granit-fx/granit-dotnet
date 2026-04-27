@@ -2405,6 +2405,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Webhooks.Notifications",
+      "deps": [
+        "Granit.Webhooks",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Webhooks.Wolverine",
       "deps": [
         "Granit.Webhooks",
@@ -48535,6 +48544,75 @@
           "kind": "method",
           "signature": "NewGuid()",
           "returnType": "Guid EventId { get; init; } = Guid."
+        }
+      ]
+    },
+    {
+      "name": "GranitWebhooksNotificationsModule",
+      "fqn": "Granit.Webhooks.Notifications.GranitWebhooksNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/GranitWebhooksNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DeliveryFailureThresholdNotificationHandler",
+      "fqn": "Granit.Webhooks.Notifications.Handlers.DeliveryFailureThresholdNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/Handlers/DeliveryFailureThresholdNotificationHandler.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(WebhookDeliveryFailureThresholdExceededEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "WebhooksDeliveryFailureThresholdNotificationData",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksDeliveryFailureThresholdNotificationData",
+      "kind": "record",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksDeliveryFailureThresholdNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "WebhooksDeliveryFailureThresholdNotificationType",
+      "fqn": "Granit.Webhooks.Notifications.WebhooksDeliveryFailureThresholdNotificationType",
+      "kind": "class",
+      "project": "Granit.Webhooks.Notifications",
+      "file": "src/Granit.Webhooks.Notifications/WebhooksDeliveryFailureThresholdNotificationType.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "WebhooksDeliveryFailureThresholdNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
         }
       ]
     },

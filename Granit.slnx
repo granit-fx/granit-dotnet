@@ -176,6 +176,7 @@
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
     <Project Path="src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj" />
     <Project Path="src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Webhooks.Notifications/Granit.Webhooks.Notifications.csproj" />
     <Project Path="src/Granit.Webhooks.Wolverine/Granit.Webhooks.Wolverine.csproj" />
     <Project Path="src/Granit.Webhooks/Granit.Webhooks.csproj" />
     <Project Path="src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj" />
@@ -495,6 +496,7 @@
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Endpoints.Tests/Granit.Webhooks.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.EntityFrameworkCore.Tests/Granit.Webhooks.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Webhooks.Notifications.Tests/Granit.Webhooks.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Tests/Granit.Webhooks.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Wolverine.Tests/Granit.Webhooks.Wolverine.Tests.csproj" />
     <Project Path="tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj" />
