@@ -21,6 +21,7 @@
       "src/Granit.Auditing/Granit.Auditing.csproj",
       "src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj",
       "src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj",
+      "src/Granit.Authentication.ApiKeys.Notifications/Granit.Authentication.ApiKeys.Notifications.csproj",
       "src/Granit.Authentication.ApiKeys/Granit.Authentication.ApiKeys.csproj",
       "src/Granit.Authentication.DPoP/Granit.Authentication.DPoP.csproj",
       "src/Granit.Authentication.JwtBearer.Cognito/Granit.Authentication.JwtBearer.Cognito.csproj",

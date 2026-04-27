@@ -227,6 +227,7 @@
         "tests/Granit.Auditing.Privacy.Tests",
         "tests/Granit.Authentication.ApiKeys.Endpoints.Tests",
         "tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests",
+        "tests/Granit.Authentication.ApiKeys.Notifications.Tests",
         "tests/Granit.Authentication.ApiKeys.Tests",
         "tests/Granit.Authentication.JwtBearer.Cognito.Tests",
         "tests/Granit.Authentication.JwtBearer.EntraId.Tests",
