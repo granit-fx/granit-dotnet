@@ -221,6 +221,15 @@
     <ProjectReference Include="..\..\src\Granit.Payments.SepaDirectDebit.Twikey\Granit.Payments.SepaDirectDebit.Twikey.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.SepaTransfer\Granit.Payments.SepaTransfer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Payments.Stripe\Granit.Payments.Stripe.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mergeable\Granit.Mergeable.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Mergeable.EntityFrameworkCore\Granit.Mergeable.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties\Granit.Parties.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.Abstractions\Granit.Parties.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.Endpoints\Granit.Parties.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.EntityFrameworkCore\Granit.Parties.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.Mergeable\Granit.Parties.Mergeable.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.MultiTenancy\Granit.Parties.MultiTenancy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.Privacy\Granit.Parties.Privacy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence\Granit.Persistence.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore.Hosting\Granit.Persistence.EntityFrameworkCore.Hosting.csproj" />
