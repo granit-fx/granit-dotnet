@@ -31,7 +31,7 @@ public sealed class AISemanticMappingServiceTests
     [
         new("Email", "String", "Email Address", "The user's email", true),
         new("FullName", "String", "Full Name", "The user's full name", true),
-        new("PhoneNumber", "String", "Phone", "Contact phone number", false),
+        new("PhoneNumber", "String", "Phone", "Party phone number", false),
     ];
 
     private AISemanticMappingService CreateService() =>

@@ -1,8 +1,8 @@
 using Granit.Authorization.Extensions;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Endpoints.Dtos;
@@ -159,7 +159,7 @@ internal static class SubscriptionEndpoints
         var sub = Subscription.Create(
             guidGenerator.Create(),
             currentTenant.Id!.Value,
-            ContactId.Create(request.ContactId),
+            PartyId.Create(request.PartyId),
             PlanId.Create(request.PlanId),
             request.Currency,
             new SubscriptionPeriod(now, periodEnd, BillingCycleAnchor: now),

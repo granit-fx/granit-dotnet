@@ -1,10 +1,10 @@
 using System.Diagnostics.Metrics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Exceptions;
 using Granit.CustomerBalance.Internal;
 using Granit.Guids;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -45,7 +45,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
 
     public void Dispose() => _meter.Dispose();
 
-    private BalanceAccount AccountWithBalance(Guid tenantId, ContactId contactId, string currency, decimal balance)
+    private BalanceAccount AccountWithBalance(Guid tenantId, PartyId contactId, string currency, decimal balance)
     {
         var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, currency);
         if (balance > 0m)
@@ -65,7 +65,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         BalanceAccount account = AccountWithBalance(tenantId, contactId, "EUR", balance: 100m);
 
         BalanceAccount result = await _sut.DebitAsync(
@@ -84,7 +84,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())
             .Returns((BalanceAccount?)null);
 
@@ -99,7 +99,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         AccountWithBalance(tenantId, contactId, "EUR", balance: 20m);
 
         await Should.ThrowAsync<InsufficientBalanceException>(() =>
@@ -113,7 +113,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         var refId = Guid.NewGuid();
         BalanceAccount account = AccountWithBalance(tenantId, contactId, "EUR", balance: 100m);
 
@@ -135,7 +135,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         BalanceAccount account = AccountWithBalance(tenantId, contactId, "EUR", balance: 100m);
 
         await _sut.DebitAsync(tenantId, contactId, 20m, "EUR", "a", referenceId: Guid.NewGuid(), "x", ct);
@@ -150,7 +150,7 @@ public sealed class DefaultAdminDebitServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         BalanceAccount account = AccountWithBalance(tenantId, contactId, "EUR", balance: 100m);
 
         // No idempotency without referenceId — both debits land.

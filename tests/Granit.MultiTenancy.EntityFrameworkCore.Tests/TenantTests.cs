@@ -24,7 +24,7 @@ public sealed class TenantTests
         tenant.Id.ShouldBe(id);
         tenant.Name.ShouldBe("Acme Corp");
         tenant.Identifier.ShouldBe("acme-corp");
-        tenant.ContactEmail.ShouldBe("admin@acme.com");
+        tenant.PartyEmail.ShouldBe("admin@acme.com");
         tenant.Activated.ShouldBeTrue();
         tenant.Jurisdiction.ShouldBeNull();
     }
@@ -42,7 +42,7 @@ public sealed class TenantTests
     {
         var tenant = Tenant.Create(Guid.NewGuid(), "Acme Corp", "acme-corp");
 
-        tenant.ContactEmail.ShouldBeNull();
+        tenant.PartyEmail.ShouldBeNull();
     }
 
     [Fact]
@@ -80,7 +80,7 @@ public sealed class TenantTests
         tenant.UpdateDetails("New Name", "new@acme.com", null);
 
         tenant.Name.ShouldBe("New Name");
-        tenant.ContactEmail.ShouldBe("new@acme.com");
+        tenant.PartyEmail.ShouldBe("new@acme.com");
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public sealed class TenantTests
         IDomainEvent evt = tenant.DomainEvents.ShouldHaveSingleItem();
         TenantUpdatedEvent updated = evt.ShouldBeOfType<TenantUpdatedEvent>();
         updated.Name.ShouldBe("New Name");
-        updated.ContactEmail.ShouldBe("new@acme.com");
+        updated.PartyEmail.ShouldBe("new@acme.com");
     }
 
     [Fact]

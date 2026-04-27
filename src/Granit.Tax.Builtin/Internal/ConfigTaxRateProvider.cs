@@ -1,4 +1,4 @@
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Tax.Builtin.Options;
 using Microsoft.Extensions.Options;
 
@@ -16,10 +16,10 @@ internal sealed class ConfigTaxRateProvider(
     public Task<TaxRateEntry?> GetRateAsync(
         string countryCode,
         DateTimeOffset asOf,
-        ContactId? contactId = null,
+        PartyId? contactId = null,
         CancellationToken cancellationToken = default)
     {
-        // ContactId is honoured by the upstream EfTaxRateProvider; this provider
+        // PartyId is honoured by the upstream EfTaxRateProvider; this provider
         // returns the country default only.
         _ = contactId;
 

@@ -1,8 +1,8 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.CustomerBalance.Exceptions;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ internal static class AdminDebitEndpoint
             BalanceAccount account = await debitService
                 .DebitAsync(
                     tenantId,
-                    ContactId.Create(request.ContactId),
+                    PartyId.Create(request.PartyId),
                     request.Amount,
                     currency,
                     request.Reason,

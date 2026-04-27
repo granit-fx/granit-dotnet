@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Parties.Abstractions</PackageId>
+    <Description>Lightweight abstractions for Granit.Parties. Ships the value objects (PartyId, BillingAddress, Address), the enums (PartyKind, PartyRoles, PartyStatus, AddressKind, PhoneKind), the reserved external-provider names, and the integration events. Reference this package from a downstream module that only needs to publish/consume contact-related events or carry a PartyId on its own aggregates — without inheriting the full Party aggregate, EF Core, or persistence stack.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Parties" />
+    <InternalsVisibleTo Include="Granit.Parties.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

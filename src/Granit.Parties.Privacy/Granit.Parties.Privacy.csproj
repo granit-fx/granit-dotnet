@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Parties.Privacy</PackageId>
+    <Description>Privacy integration for Granit.Parties. Ships the PartiesPrivacyDataProvider that exports the user-linked contact (name, emails, phones, addresses, external mappings) for GDPR Article 15/20 requests, plus a Wolverine handler that pseudonymises the contact on Article 17 erasure while preserving the row for accounting integrity. Kept separate from the base module so apps that do not load Granit.Privacy do not inherit Privacy / BlobStorage dependencies.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Parties.Privacy.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Parties\Granit.Parties.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.BlobStorage\Granit.Privacy.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>

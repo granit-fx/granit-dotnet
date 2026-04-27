@@ -7,4 +7,4 @@ public sealed record SubscriptionSuspendedEto(
     Guid SubscriptionId,
     Guid PlanId,
     Guid TenantId,
-    Guid ContactId) : IIntegrationEvent;
+    Guid PartyId) : IIntegrationEvent;

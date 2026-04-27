@@ -1,11 +1,11 @@
-using Granit.Contacts;
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.Dtos;
+using Granit.Parties;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -13,18 +13,18 @@ namespace Granit.Invoicing.Internal;
 
 internal sealed partial class DefaultInvoiceCreationService(
     IInvoiceWriter invoiceWriter,
-    IContactReader contactReader,
+    IPartyReader contactReader,
     IGuidGenerator guidGenerator,
     IClock clock,
-    IDefaultContactResolver defaultContactResolver,
+    IDefaultPartyResolver defaultContactResolver,
     ILogger<DefaultInvoiceCreationService> logger,
     ITaxCalculator? taxCalculator = null,
     IInvoiceNumberGenerator? numberGenerator = null) : IInvoiceCreationService
 {
     public async Task CreateAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)
     {
-        Contact contact = await ResolveContactAsync(command, cancellationToken).ConfigureAwait(false);
-        var contactId = ContactId.Create(contact.Id);
+        Party contact = await ResolveContactAsync(command, cancellationToken).ConfigureAwait(false);
+        var contactId = PartyId.Create(contact.Id);
 
         var invoice = Invoice.Create(
             guidGenerator.Create(),
@@ -49,7 +49,7 @@ internal sealed partial class DefaultInvoiceCreationService(
                 productId: lineItem.ProductId));
         }
 
-        Granit.Contacts.Domain.BillingAddress? billingSnapshot = contact.GetBillingAddressSnapshot();
+        Granit.Parties.Domain.BillingAddress? billingSnapshot = contact.GetBillingAddressSnapshot();
 
         if (taxCalculator is not null && billingSnapshot is not null)
         {
@@ -85,25 +85,25 @@ internal sealed partial class DefaultInvoiceCreationService(
         Log.InvoiceCreated(logger, invoice.Id, command.TenantId);
     }
 
-    private async Task<Contact> ResolveContactAsync(CreateInvoiceCommand command, CancellationToken cancellationToken)
+    private async Task<Party> ResolveContactAsync(CreateInvoiceCommand command, CancellationToken cancellationToken)
     {
-        if (command.ContactId is { } explicitId)
+        if (command.PartyId is { } explicitId)
         {
-            Contact? explicitContact = await contactReader
-                .GetByIdAsync(ContactId.Create(explicitId), cancellationToken)
+            Party? explicitContact = await contactReader
+                .GetByIdAsync(PartyId.Create(explicitId), cancellationToken)
                 .ConfigureAwait(false);
             return explicitContact ?? throw new InvalidOperationException(
-                $"Contact '{explicitId}' referenced by {nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.ContactId)} was not found.");
+                $"Party '{explicitId}' referenced by {nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.PartyId)} was not found.");
         }
 
-        Contact? defaultContact = await defaultContactResolver
+        Party? defaultContact = await defaultContactResolver
             .GetDefaultForTenantAsync(command.TenantId, cancellationToken)
             .ConfigureAwait(false);
 
         return defaultContact ?? throw new InvalidOperationException(
-            $"No default Contact resolved for tenant '{command.TenantId}'. Either pass " +
-            $"{nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.ContactId)} explicitly or " +
-            $"seed a host-scoped Contact with provider '{ContactExternalProviderNames.Tenant}' = " +
+            $"No default Party resolved for tenant '{command.TenantId}'. Either pass " +
+            $"{nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.PartyId)} explicitly or " +
+            $"seed a host-scoped Party with provider '{PartyExternalProviderNames.Tenant}' = " +
             $"'{command.TenantId}' (typically done at tenant-provisioning time).");
     }
 

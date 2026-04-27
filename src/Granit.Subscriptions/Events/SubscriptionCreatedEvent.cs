@@ -8,4 +8,4 @@ public sealed record SubscriptionCreatedEvent(
     Guid SubscriptionId,
     PlanId PlanId,
     Guid TenantId,
-    Guid ContactId) : IDomainEvent;
+    Guid PartyId) : IDomainEvent;

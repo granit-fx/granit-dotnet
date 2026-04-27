@@ -11,10 +11,10 @@ namespace Granit.Invoicing.Commands;
 /// <param name="CollectionMethod">How payment should be collected.</param>
 /// <param name="BillingReason">Why the invoice is being created.</param>
 /// <param name="LineItems">Line items to add to the invoice.</param>
-/// <param name="ContactId">
-///   Optional identifier of the <c>Granit.Contacts.Contact</c> that holds the billing identity for this invoice.
+/// <param name="PartyId">
+///   Optional identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this invoice.
 ///   When <c>null</c>, the invoicing service resolves the tenant's default host-scoped contact via
-///   <c>IDefaultContactResolver.GetDefaultForTenantAsync</c>. Pass an explicit value when the caller already
+///   <c>IDefaultPartyResolver.GetDefaultForTenantAsync</c>. Pass an explicit value when the caller already
 ///   knows the contact (admin endpoints, manually issued invoices, multi-contact tenants).
 /// </param>
 /// <param name="PeriodStart">Optional billing period start.</param>
@@ -26,7 +26,7 @@ public sealed record CreateInvoiceCommand(
     CollectionMethod CollectionMethod,
     BillingReason BillingReason,
     IReadOnlyList<CreateInvoiceLineItem> LineItems,
-    Guid? ContactId = null,
+    Guid? PartyId = null,
     DateTimeOffset? PeriodStart = null,
     DateTimeOffset? PeriodEnd = null,
     string? IdempotencyKey = null);

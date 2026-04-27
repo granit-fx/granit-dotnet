@@ -461,7 +461,7 @@ Wolverine__RetryDelays__1=00:00:30
 | `MajorVersions` | `int[]` | `[1]` | API versions to generate OpenAPI docs for. |
 | `Title` | `string` | `"API"` | API title in Scalar UI. |
 | `Description` | `string?` | `null` | Markdown description in OpenAPI info. |
-| `ContactEmail` | `string?` | `null` | Contact email in OpenAPI info. |
+| `PartyEmail` | `string?` | `null` | Party email in OpenAPI info. |
 | `LogoUrl` | `string?` | `null` | Logo image URL for Scalar UI. |
 | `FaviconUrl` | `string?` | `null` | Favicon URL for Scalar page. |
 | `EnableInProduction` | `bool` | `false` | Expose docs in Production. |

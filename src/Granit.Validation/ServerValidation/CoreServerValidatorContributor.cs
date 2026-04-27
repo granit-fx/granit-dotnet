@@ -27,7 +27,7 @@ internal sealed class CoreServerValidatorContributor : IServerValidatorContribut
         yield return new DelegatingServerValidator("Granit:Validation:InvalidIso8601Duration", StandardValidatorExtensions.IsValidIso8601Duration);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidUuid", StandardValidatorExtensions.IsValidUuid);
 
-        // Contact identifiers (regex-based)
+        // Party identifiers (regex-based)
         yield return new DelegatingServerValidator("Granit:Validation:InvalidEmail", ContactValidatorExtensions.IsValidEmail);
         yield return new DelegatingServerValidator("Granit:Validation:InvalidE164Phone", ContactValidatorExtensions.IsValidE164Phone);
 

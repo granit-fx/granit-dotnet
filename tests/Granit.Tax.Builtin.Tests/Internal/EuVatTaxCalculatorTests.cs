@@ -1,8 +1,8 @@
 using System.Diagnostics.Metrics;
-using Granit.Contacts.Domain;
 using Granit.Invoicing;
 using Granit.Invoicing.Dtos;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain;
 using Granit.Tax.Builtin.Internal;
 using Granit.Tax.Diagnostics;
 using Granit.Tax.Options;

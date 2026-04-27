@@ -54,12 +54,6 @@
       "granit": {
         "type": "Project"
       },
-      "granit.contacts.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.dataexchange.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -81,6 +75,12 @@
         }
       },
       "granit.invoicing.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.parties.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

@@ -1,30 +1,30 @@
 ---
-title: "Contacts — Central Party-Management Aggregate"
+title: "Parties — Central Party-Management Aggregate"
 description: Odoo res.partner-style aggregate for any party the platform interacts with — customers, suppliers, employees, leads — with multi-role flags, parent-child hierarchy, polyglot external mappings, and customer-specific tax classification.
 sidebar:
-  label: Contacts
+  label: Parties
   order: 20
 ---
 
 import { Tabs, TabItem, FileTree } from "@astrojs/starlight/components";
 
-`Granit.Contacts` is the central party-management aggregate for the framework,
-modelled after Odoo's `res.partner`. A **Contact** represents any natural person,
+`Granit.Parties` is the central party-management aggregate for the framework,
+modelled after Odoo's `res.partner`. A **Party** represents any natural person,
 legal entity, or organisational unit the platform interacts with — customers,
 suppliers, employees, leads — and can carry several roles simultaneously via the
-`[Flags]` `ContactRoles` enum. It powers Invoicing, Subscriptions, Payments, Tax,
+`[Flags]` `PartyRoles` enum. It powers Invoicing, Subscriptions, Payments, Tax,
 and CustomerBalance today, and is designed to absorb future Procurement / HR /
 CRM modules without schema churn.
 
 ## Why this module exists
 
-Before `Granit.Contacts`, billing identity was duplicated across Invoicing,
+Before `Granit.Parties`, billing identity was duplicated across Invoicing,
 Subscriptions, Payments, and CustomerBalance. Each module carried its own subset
 of name / address / VAT number / external-provider identifiers, and downstream
-consumers had to reconcile them. `Granit.Contacts` consolidates the party
+consumers had to reconcile them. `Granit.Parties` consolidates the party
 abstraction in one aggregate so:
 
-- Tax / billing / payment data is captured once, referenced everywhere by `ContactId`.
+- Tax / billing / payment data is captured once, referenced everywhere by `PartyId`.
 - External provider identifiers (Stripe, Mollie, Odoo, Sage, NetSuite) live on the
   contact rather than scattered across module-specific mapping tables.
 - A single GDPR Article 17 erasure pseudonymises the contact and lets
@@ -33,37 +33,37 @@ abstraction in one aggregate so:
 ## Package structure
 
 <FileTree>
-- Granit.Contacts.Abstractions/ Value objects, enums, integration events (lightweight)
-- Granit.Contacts/ Aggregate root, domain events, query / export definitions
-  - Granit.Contacts.EntityFrameworkCore EF Core persistence — ContactsDbContext, EfContactStore
-  - Granit.Contacts.Endpoints Admin REST API — CRUD, lifecycle, addresses / emails / phones, tax status
-  - Granit.Contacts.MultiTenancy Wolverine handler that seeds a host-scoped Contact per tenant
-  - Granit.Contacts.Privacy GDPR Article 15/17 export + erasure (pseudonymisation)
+- Granit.Parties.Abstractions/ Value objects, enums, integration events (lightweight)
+- Granit.Parties/ Aggregate root, domain events, query / export definitions
+  - Granit.Parties.EntityFrameworkCore EF Core persistence — PartiesDbContext, EfPartyStore
+  - Granit.Parties.Endpoints Admin REST API — CRUD, lifecycle, addresses / emails / phones, tax status
+  - Granit.Parties.MultiTenancy Wolverine handler that seeds a host-scoped Party per tenant
+  - Granit.Parties.Privacy GDPR Article 15/17 export + erasure (pseudonymisation)
 </FileTree>
 
 | Package | Role | Depends on |
 |---------|------|------------|
-| `Granit.Contacts.Abstractions` | `ContactId`, `Address`, `BillingAddress`, enums, ETOs | `Granit` |
-| `Granit.Contacts` | `Contact` aggregate, `IContactReader`/`IContactWriter`, query + export definitions | `Granit.Contacts.Abstractions`, `Granit.QueryEngine.Abstractions`, `Granit.DataExchange.Abstractions` |
-| `Granit.Contacts.EntityFrameworkCore` | Isolated DbContext + child-graph reconciliation writer | `Granit.Contacts`, `Granit.Persistence.EntityFrameworkCore` |
-| `Granit.Contacts.Endpoints` | Admin API (host + tenant scope) | `Granit.Contacts`, `Granit.Authorization`, `Granit.Validation` |
-| `Granit.Contacts.MultiTenancy` | Tenant-creation seeder (creates host-scoped Contact per tenant) | `Granit.Contacts`, `Granit.MultiTenancy` |
-| `Granit.Contacts.Privacy` | Privacy export provider + Article 17 pseudonymisation handler | `Granit.Contacts`, `Granit.Privacy.BlobStorage` |
+| `Granit.Parties.Abstractions` | `PartyId`, `Address`, `BillingAddress`, enums, ETOs | `Granit` |
+| `Granit.Parties` | `Party` aggregate, `IPartyReader`/`IPartyWriter`, query + export definitions | `Granit.Parties.Abstractions`, `Granit.QueryEngine.Abstractions`, `Granit.DataExchange.Abstractions` |
+| `Granit.Parties.EntityFrameworkCore` | Isolated DbContext + child-graph reconciliation writer | `Granit.Parties`, `Granit.Persistence.EntityFrameworkCore` |
+| `Granit.Parties.Endpoints` | Admin API (host + tenant scope) | `Granit.Parties`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.Parties.MultiTenancy` | Tenant-creation seeder (creates host-scoped Party per tenant) | `Granit.Parties`, `Granit.MultiTenancy` |
+| `Granit.Parties.Privacy` | Privacy export provider + Article 17 pseudonymisation handler | `Granit.Parties`, `Granit.Privacy.BlobStorage` |
 
 ## Dependency graph
 
 ```mermaid
 graph TD
-    CA[Granit.Contacts.Abstractions] --> G[Granit]
-    C[Granit.Contacts] --> CA
-    CEF[Granit.Contacts.EntityFrameworkCore] --> C
+    CA[Granit.Parties.Abstractions] --> G[Granit]
+    C[Granit.Parties] --> CA
+    CEF[Granit.Parties.EntityFrameworkCore] --> C
     CEF --> P[Granit.Persistence.EntityFrameworkCore]
-    CE[Granit.Contacts.Endpoints] --> C
+    CE[Granit.Parties.Endpoints] --> C
     CE --> AUTH[Granit.Authorization]
     CE --> V[Granit.Validation]
-    CMT[Granit.Contacts.MultiTenancy] --> C
+    CMT[Granit.Parties.MultiTenancy] --> C
     CMT --> MT[Granit.MultiTenancy]
-    CP[Granit.Contacts.Privacy] --> C
+    CP[Granit.Parties.Privacy] --> C
     CP --> PV[Granit.Privacy.BlobStorage]
 ```
 
@@ -73,7 +73,7 @@ graph TD
 
 ### Dual-use scope
 
-`Contact` is `IMultiTenant`. The multi-tenant filter is **always** active, even in
+`Party` is `IMultiTenant`. The multi-tenant filter is **always** active, even in
 host scope:
 
 - `TenantId == null` → **host-scoped** contacts (the SaaS host's tenants-as-customers, vendors, internal staff).
@@ -85,11 +85,11 @@ admin browser would be a privacy regression.
 
 ### Multi-role flags
 
-A single contact may simultaneously hold any combination of `ContactRoles`:
+A single contact may simultaneously hold any combination of `PartyRoles`:
 
 ```csharp
 [Flags]
-public enum ContactRoles
+public enum PartyRoles
 {
     None     = 0,
     Customer = 1 << 0,  // Invoicing, Subscriptions, Payments, Tax, CustomerBalance
@@ -99,23 +99,23 @@ public enum ContactRoles
 }
 ```
 
-Roles are added/removed individually via `Contact.AddRole(...)` /
-`Contact.RemoveRole(...)`. Downstream modules typically push role flags via event
+Roles are added/removed individually via `Party.AddRole(...)` /
+`Party.RemoveRole(...)`. Downstream modules typically push role flags via event
 handlers (e.g., Invoicing adds `Customer` on first invoice).
 
 ### External mappings
 
 Polyglot identity — at most one mapping per provider, enforced by a unique
-`(ContactId, ProviderName)` index and defensively at the aggregate:
+`(PartyId, ProviderName)` index and defensively at the aggregate:
 
 ```csharp
-contact.AddExternalMapping(id, ContactExternalProviderNames.Stripe, "cus_NffrFeUfNV2Hib");
-contact.AddExternalMapping(id, ContactExternalProviderNames.Odoo,   "12345");
+contact.AddExternalMapping(id, PartyExternalProviderNames.Stripe, "cus_NffrFeUfNV2Hib");
+contact.AddExternalMapping(id, PartyExternalProviderNames.Odoo,   "12345");
 
-string? stripeId = contact.FindExternalId(ContactExternalProviderNames.Stripe);
+string? stripeId = contact.FindExternalId(PartyExternalProviderNames.Stripe);
 ```
 
-The reserved `"tenant"` provider name is used by `Granit.Contacts.MultiTenancy` to
+The reserved `"tenant"` provider name is used by `Granit.Parties.MultiTenancy` to
 link a host-scoped contact back to its tenant.
 
 ### Lifecycle
@@ -140,19 +140,19 @@ reverse-charge customers yield a 0% rate regardless of country defaults.
 
 ```csharp
 [DependsOn(
-    typeof(GranitContactsModule),
-    typeof(GranitContactsEndpointsModule),
-    typeof(GranitContactsMultiTenancyModule))]
+    typeof(GranitPartiesModule),
+    typeof(GranitPartiesEndpointsModule),
+    typeof(GranitPartiesMultiTenancyModule))]
 public class AppModule : GranitModule { }
 ```
 
 ```csharp
-builder.AddGranitContactsEntityFrameworkCore(o =>
+builder.AddGranitPartiesEntityFrameworkCore(o =>
     o.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
 ```
 
 ```csharp
-app.MapGranitContacts();
+app.MapGranitParties();
 ```
 
 </TabItem>
@@ -160,9 +160,9 @@ app.MapGranitContacts();
 
 ```csharp
 [DependsOn(
-    typeof(GranitContactsModule),
-    typeof(GranitContactsEndpointsModule),
-    typeof(GranitContactsPrivacyModule))]
+    typeof(GranitPartiesModule),
+    typeof(GranitPartiesEndpointsModule),
+    typeof(GranitPartiesPrivacyModule))]
 public class AppModule : GranitModule { }
 ```
 
@@ -177,46 +177,46 @@ builder.Services.AddGranitPrivacy(p => p.AddGranitContactsPrivacyProvider());
 
 ## API surface
 
-`MapGranitContacts()` exposes 19 endpoints under `/contacts` (configurable via
-`Contacts:Endpoints:RoutePrefix`). All endpoints require either
-`Contacts.Contacts.Read` or `Contacts.Contacts.Manage`.
+`MapGranitParties()` exposes 19 endpoints under `/contacts` (configurable via
+`Parties:Endpoints:RoutePrefix`). All endpoints require either
+`Parties.Parties.Read` or `Parties.Parties.Manage`.
 
 | Method | Path | Permission |
 |--------|------|-----------|
 | `GET` | `/contacts` | `Read` |
-| `GET` | `/contacts/{id}` | `Read` |
+| `GET` | `/parties/{id}` | `Read` |
 | `POST` | `/contacts` | `Manage` |
-| `PATCH` | `/contacts/{id}` | `Manage` |
-| `POST` | `/contacts/{id}/{suspend\|activate\|archive}` | `Manage` |
-| `POST` / `DELETE` | `/contacts/{id}/addresses[/{addressId}]` | `Manage` |
-| `POST` / `DELETE` | `/contacts/{id}/emails[/{emailId}]` | `Manage` |
-| `POST` / `DELETE` | `/contacts/{id}/phones[/{phoneId}]` | `Manage` |
-| `POST` / `DELETE` | `/contacts/{id}/external-mappings[/{provider}]` | `Manage` |
-| `POST` / `DELETE` | `/contacts/{id}/roles[/{role}]` | `Manage` |
-| `PUT` / `DELETE` | `/contacts/{id}/tax-status` | `Manage` |
+| `PATCH` | `/parties/{id}` | `Manage` |
+| `POST` | `/parties/{id}/{suspend\|activate\|archive}` | `Manage` |
+| `POST` / `DELETE` | `/parties/{id}/addresses[/{addressId}]` | `Manage` |
+| `POST` / `DELETE` | `/parties/{id}/emails[/{emailId}]` | `Manage` |
+| `POST` / `DELETE` | `/parties/{id}/phones[/{phoneId}]` | `Manage` |
+| `POST` / `DELETE` | `/parties/{id}/external-mappings[/{provider}]` | `Manage` |
+| `POST` / `DELETE` | `/parties/{id}/roles[/{role}]` | `Manage` |
+| `PUT` / `DELETE` | `/parties/{id}/tax-status` | `Manage` |
 
 ---
 
 ## Integration events
 
-Published via the Wolverine outbox to `Granit.Contacts.Abstractions`:
+Published via the Wolverine outbox to `Granit.Parties.Abstractions`:
 
 | Event | When |
 |-------|------|
-| `ContactCreatedEto` | Contact aggregate created |
-| `ContactUpdatedEto` | Identity / address / contact-info changed |
-| `ContactSuspendedEto` | Lifecycle → Suspended |
-| `ContactActivatedEto` | Lifecycle → Active |
-| `ContactArchivedEto` | Lifecycle → Archived (terminal) |
-| `ContactExternalMappingAddedEto` | External provider id registered |
-| `ContactPersonalDataPseudonymizedEto` | GDPR Article 17 erasure ran |
+| `PartyCreatedEto` | Party aggregate created |
+| `PartyUpdatedEto` | Identity / address / contact-info changed |
+| `PartySuspendedEto` | Lifecycle → Suspended |
+| `PartyActivatedEto` | Lifecycle → Active |
+| `PartyArchivedEto` | Lifecycle → Archived (terminal) |
+| `PartyExternalMappingAddedEto` | External provider id registered |
+| `PartyPersonalDataPseudonymizedEto` | GDPR Article 17 erasure ran |
 
 ---
 
 ## See also
 
-- [Contacts — external mappings guide](/dotnet/guides/contacts-external-mappings/)
-- [Contacts — tenant seeding guide](/dotnet/guides/contacts-tenant-seeding/)
-- [Contacts — role handler guide](/dotnet/guides/contacts-role-handler/)
+- [Parties — external mappings guide](/dotnet/guides/contacts-external-mappings/)
+- [Parties — tenant seeding guide](/dotnet/guides/contacts-tenant-seeding/)
+- [Parties — role handler guide](/dotnet/guides/contacts-role-handler/)
 - [Privacy — data export and erasure](/dotnet/compliance/privacy/)
 - [Multi-tenancy](/dotnet/concepts/multi-tenancy/)

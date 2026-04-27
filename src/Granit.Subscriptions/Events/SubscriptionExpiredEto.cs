@@ -7,4 +7,4 @@ public sealed record SubscriptionExpiredEto(
     Guid SubscriptionId,
     Guid PlanId,
     Guid TenantId,
-    Guid ContactId) : IIntegrationEvent;
+    Guid PartyId) : IIntegrationEvent;

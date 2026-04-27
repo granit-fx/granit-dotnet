@@ -1,5 +1,5 @@
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 
 namespace Granit.Invoicing.Dtos;
 
@@ -7,7 +7,7 @@ namespace Granit.Invoicing.Dtos;
 /// <remarks>
 /// <para>
 /// <paramref name="BuyerContactId"/> lets the calculator honour customer-level overrides
-/// (VAT exemption, intra-EU reverse charge) carried by <c>Contact.TaxStatus</c>. When
+/// (VAT exemption, intra-EU reverse charge) carried by <c>Party.TaxStatus</c>. When
 /// supplied and the contact's status yields a 0% rate, the calculator returns 0% on
 /// every line; otherwise the country / standard rate applies.
 /// </para>
@@ -16,7 +16,7 @@ public sealed record TaxRequest(
     IReadOnlyList<TaxLineItem> LineItems,
     BillingAddress SellerAddress,
     BillingAddress BuyerAddress,
-    ContactId? BuyerContactId = null);
+    PartyId? BuyerContactId = null);
 
 /// <summary>A line item for tax calculation.</summary>
 public sealed record TaxLineItem(string Description, decimal Amount, string? TaxCode);

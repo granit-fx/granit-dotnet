@@ -1,11 +1,11 @@
-using Granit.Contacts;
-using Granit.Contacts.Domain;
 using Granit.Guids;
 using Granit.Invoicing.Commands;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.Dtos;
 using Granit.Invoicing.Internal;
+using Granit.Parties;
+using Granit.Parties.Domain;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -20,27 +20,27 @@ public sealed class DefaultInvoiceCreationServiceTests
     // ======== Fixtures ========
 
     private readonly IInvoiceWriter _invoiceWriter = Substitute.For<IInvoiceWriter>();
-    private readonly IContactReader _contactReader = Substitute.For<IContactReader>();
+    private readonly IPartyReader _contactReader = Substitute.For<IPartyReader>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
-    private readonly IDefaultContactResolver _defaultContactResolver = Substitute.For<IDefaultContactResolver>();
+    private readonly IDefaultPartyResolver _defaultContactResolver = Substitute.For<IDefaultPartyResolver>();
     private readonly ILogger<DefaultInvoiceCreationService> _logger = NullLoggerFactory.Instance.CreateLogger<DefaultInvoiceCreationService>();
     private readonly ITaxCalculator _taxCalculator = Substitute.For<ITaxCalculator>();
     private readonly IInvoiceNumberGenerator _numberGenerator = Substitute.For<IInvoiceNumberGenerator>();
 
     private static readonly DateTimeOffset Now = new(2026, 4, 5, 12, 0, 0, TimeSpan.Zero);
     private static readonly Guid TenantId = Guid.NewGuid();
-    private static readonly Guid ContactId = Guid.NewGuid();
+    private static readonly Guid PartyId = Guid.NewGuid();
 
     public DefaultInvoiceCreationServiceTests()
     {
         _clock.Now.Returns(Now);
-        // Default behaviour: an explicit ContactId resolves to a contact with no billing address.
+        // Default behaviour: an explicit PartyId resolves to a contact with no billing address.
         // Individual tests override this when they need a contact with an address.
-        var bareContact = Contact.Create(
-            ContactId, null, ContactKind.Company, "Test Co", "EUR");
+        var bareContact = Party.Create(
+            PartyId, null, PartyKind.Company, "Test Co", "EUR");
         _contactReader.GetByIdAsync(
-            Arg.Any<Granit.Contacts.Domain.ValueObjects.ContactId>(),
+            Arg.Any<Granit.Parties.Domain.ValueObjects.PartyId>(),
             Arg.Any<CancellationToken>())
             .Returns(bareContact);
     }
@@ -75,7 +75,7 @@ public sealed class DefaultInvoiceCreationServiceTests
                     InvoiceSourceType.Subscription,
                     Guid.NewGuid().ToString()))
                 .ToList(),
-            ContactId: ContactId,
+            PartyId: PartyId,
             PeriodStart: periodStart,
             PeriodEnd: periodEnd);
 

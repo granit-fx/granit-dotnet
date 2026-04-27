@@ -479,68 +479,10 @@
       "framework": "net10.0"
     },
     {
-      "name": "Granit.Contacts",
-      "deps": [
-        "Granit",
-        "Granit.Contacts.Abstractions",
-        "Granit.DataExchange.Abstractions",
-        "Granit.Guids",
-        "Granit.QueryEngine.Abstractions",
-        "Granit.Timing"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Contacts.Abstractions",
-      "deps": [
-        "Granit"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Contacts.Endpoints",
-      "deps": [
-        "Granit.Authorization",
-        "Granit.Contacts",
-        "Granit.DataExchange.Abstractions",
-        "Granit.Guids",
-        "Granit.Http.Abstractions",
-        "Granit.Http.ApiDocumentation",
-        "Granit.QueryEngine.Abstractions",
-        "Granit.Validation"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Contacts.EntityFrameworkCore",
-      "deps": [
-        "Granit.Contacts",
-        "Granit.Persistence.EntityFrameworkCore",
-        "Granit.QueryEngine.Abstractions"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Contacts.MultiTenancy",
-      "deps": [
-        "Granit.Contacts",
-        "Granit.MultiTenancy"
-      ],
-      "framework": "net10.0"
-    },
-    {
-      "name": "Granit.Contacts.Privacy",
-      "deps": [
-        "Granit.Contacts",
-        "Granit.Privacy.BlobStorage"
-      ],
-      "framework": "net10.0"
-    },
-    {
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
-        "Granit.Contacts.Abstractions",
+        "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
@@ -561,7 +503,7 @@
       "name": "Granit.CustomerBalance.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Contacts",
+        "Granit.Parties",
         "Granit.CustomerBalance",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -1094,7 +1036,7 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
-        "Granit.Contacts",
+        "Granit.Parties",
         "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
         "Granit.Guids",
@@ -1628,6 +1570,64 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Parties",
+      "deps": [
+        "Granit",
+        "Granit.Parties.Abstractions",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Parties",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Guids",
+        "Granit.Http.Abstractions",
+        "Granit.Http.ApiDocumentation",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.EntityFrameworkCore",
+      "deps": [
+        "Granit.Parties",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.MultiTenancy",
+      "deps": [
+        "Granit.Parties",
+        "Granit.MultiTenancy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Privacy",
+      "deps": [
+        "Granit.Parties",
+        "Granit.Privacy.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Payments",
       "deps": [
         "Granit.Caching",
@@ -1652,7 +1652,7 @@
       "name": "Granit.Payments.Endpoints",
       "deps": [
         "Granit.Authorization",
-        "Granit.Contacts",
+        "Granit.Parties",
         "Granit.Guids",
         "Granit.Http.Abstractions",
         "Granit.Http.ApiDocumentation",
@@ -1731,7 +1731,7 @@
     {
       "name": "Granit.Payments.Stripe",
       "deps": [
-        "Granit.Contacts",
+        "Granit.Parties",
         "Granit.Guids",
         "Granit.Http.Resilience",
         "Granit.Payments"
@@ -2035,7 +2035,7 @@
       "name": "Granit.Subscriptions",
       "deps": [
         "Granit",
-        "Granit.Contacts.Abstractions",
+        "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
@@ -2105,7 +2105,7 @@
       "name": "Granit.Tax",
       "deps": [
         "Granit",
-        "Granit.Contacts.Abstractions",
+        "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
@@ -2136,7 +2136,7 @@
     {
       "name": "Granit.Tax.EntityFrameworkCore",
       "deps": [
-        "Granit.Contacts",
+        "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
       ],
@@ -10401,1068 +10401,6 @@
       "members": []
     },
     {
-      "name": "Address",
-      "fqn": "Granit.Contacts.Domain.Address",
-      "kind": "class",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/Address.cs",
-      "line": 15,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null)",
-          "returnType": "Address"
-        },
-        {
-          "name": "Line2",
-          "kind": "property",
-          "signature": "string? Line2",
-          "returnType": "string?"
-        },
-        {
-          "name": "PostalCode",
-          "kind": "property",
-          "signature": "string PostalCode",
-          "returnType": "string"
-        },
-        {
-          "name": "State",
-          "kind": "property",
-          "signature": "string? State",
-          "returnType": "string?"
-        }
-      ]
-    },
-    {
-      "name": "AddressKind",
-      "fqn": "Granit.Contacts.Domain.AddressKind",
-      "kind": "enum",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/AddressKind.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "BillingAddress",
-      "fqn": "Granit.Contacts.Domain.BillingAddress",
-      "kind": "class",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/BillingAddress.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null, string? vatNumber = null)",
-          "returnType": "BillingAddress"
-        },
-        {
-          "name": "Line2",
-          "kind": "property",
-          "signature": "string? Line2",
-          "returnType": "string?"
-        },
-        {
-          "name": "PostalCode",
-          "kind": "property",
-          "signature": "string PostalCode",
-          "returnType": "string"
-        },
-        {
-          "name": "State",
-          "kind": "property",
-          "signature": "string? State",
-          "returnType": "string?"
-        },
-        {
-          "name": "GetEqualityComponents",
-          "kind": "method",
-          "signature": "GetEqualityComponents()",
-          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
-        }
-      ]
-    },
-    {
-      "name": "Contact",
-      "fqn": "Granit.Contacts.Domain.Contact",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/Contact.cs",
-      "line": 36,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, Guid? tenantId, ContactKind kind, string name, string defaultCurrency, ContactRoles roles = ContactRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null)",
-          "returnType": "Contact"
-        },
-        {
-          "name": "AsReadOnly",
-          "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<ContactEmail> Emails => _emails."
-        },
-        {
-          "name": "PrimaryEmail",
-          "kind": "property",
-          "signature": "ContactEmail? PrimaryEmail",
-          "returnType": "ContactEmail?"
-        },
-        {
-          "name": "AsReadOnly",
-          "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<ContactPhone> Phones => _phones."
-        },
-        {
-          "name": "PrimaryPhone",
-          "kind": "property",
-          "signature": "ContactPhone? PrimaryPhone",
-          "returnType": "ContactPhone?"
-        },
-        {
-          "name": "Website",
-          "kind": "property",
-          "signature": "string? Website",
-          "returnType": "string?"
-        },
-        {
-          "name": "DefaultCurrency",
-          "kind": "property",
-          "signature": "string DefaultCurrency",
-          "returnType": "string"
-        },
-        {
-          "name": "TaxId",
-          "kind": "property",
-          "signature": "string? TaxId",
-          "returnType": "string?"
-        },
-        {
-          "name": "AsReadOnly",
-          "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "IReadOnlyList<ContactAddress> Addresses => _addresses."
-        },
-        {
-          "name": "DefaultBillingAddress",
-          "kind": "property",
-          "signature": "ContactAddress? DefaultBillingAddress",
-          "returnType": "ContactAddress?"
-        },
-        {
-          "name": "DefaultShippingAddress",
-          "kind": "property",
-          "signature": "ContactAddress? DefaultShippingAddress",
-          "returnType": "ContactAddress?"
-        },
-        {
-          "name": "AsReadOnly",
-          "kind": "method",
-          "signature": "AsReadOnly()",
-          "returnType": "Guid? AvatarBlobId { get; private set; } public ContactId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public ContactRoles Roles { get; private set; } public ContactStatus Status { get; private set; } public IReadOnlyList<ContactExternalMapping> ExternalMappings => _externalMappings."
-        },
-        {
-          "name": "TenantId",
-          "kind": "property",
-          "signature": "Guid? TenantId",
-          "returnType": "Guid?"
-        },
-        {
-          "name": "Activate",
-          "kind": "method",
-          "signature": "Activate()",
-          "returnType": "bool"
-        },
-        {
-          "name": "AddExternalMapping",
-          "kind": "method",
-          "signature": "AddExternalMapping(Guid mappingId, string providerName, string externalId)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ContactAddress",
-      "fqn": "Granit.Contacts.Domain.ContactAddress",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactAddress.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, AddressKind kind, Address value, bool isDefault = false, string? label = null)",
-          "returnType": "ContactAddress"
-        },
-        {
-          "name": "MarkDefault",
-          "kind": "method",
-          "signature": "MarkDefault(bool isDefault)",
-          "returnType": "bool IsDefault { get; private set; } public string? Label { get; private set; } internal void"
-        }
-      ]
-    },
-    {
-      "name": "ContactEmail",
-      "fqn": "Granit.Contacts.Domain.ContactEmail",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactEmail.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, string address, bool isPrimary = false, string? label = null)",
-          "returnType": "ContactEmail"
-        },
-        {
-          "name": "MarkPrimary",
-          "kind": "method",
-          "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
-        }
-      ]
-    },
-    {
-      "name": "ContactExternalMapping",
-      "fqn": "Granit.Contacts.Domain.ContactExternalMapping",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactExternalMapping.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, string providerName, string externalId)",
-          "returnType": "ContactExternalMapping"
-        },
-        {
-          "name": "ExternalId",
-          "kind": "property",
-          "signature": "string ExternalId",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "ContactExternalProviderNames",
-      "fqn": "Granit.Contacts.Domain.ContactExternalProviderNames",
-      "kind": "class",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/ContactExternalProviderNames.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "ContactKind",
-      "fqn": "Granit.Contacts.Domain.ContactKind",
-      "kind": "enum",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/ContactKind.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "ContactPhone",
-      "fqn": "Granit.Contacts.Domain.ContactPhone",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Domain/ContactPhone.cs",
-      "line": 11,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid id, PhoneKind kind, string number, bool isPrimary = false, string? label = null)",
-          "returnType": "ContactPhone"
-        },
-        {
-          "name": "MarkPrimary",
-          "kind": "method",
-          "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
-        }
-      ]
-    },
-    {
-      "name": "ContactRoles",
-      "fqn": "Granit.Contacts.Domain.ContactRoles",
-      "kind": "enum",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/ContactRoles.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "ContactStatus",
-      "fqn": "Granit.Contacts.Domain.ContactStatus",
-      "kind": "enum",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/ContactStatus.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "PhoneKind",
-      "fqn": "Granit.Contacts.Domain.PhoneKind",
-      "kind": "enum",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/PhoneKind.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "TaxStatus",
-      "fqn": "Granit.Contacts.Domain.TaxStatus",
-      "kind": "class",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/TaxStatus.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new()",
-          "returnType": "TaxStatus Standard { get; } ="
-        },
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(bool isExempt = false, bool reverseCharge = false, string? vatin = null, Guid? evidenceBlobId = null)",
-          "returnType": "TaxStatus"
-        }
-      ]
-    },
-    {
-      "name": "ContactId",
-      "fqn": "Granit.Contacts.Domain.ValueObjects.ContactId",
-      "kind": "class",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Domain/ValueObjects/ContactId.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Create",
-          "kind": "method",
-          "signature": "Create(Guid value)",
-          "returnType": "required Guid Value { get; init; } public ContactId"
-        },
-        {
-          "name": "ContactId",
-          "kind": "method",
-          "signature": "ContactId(Guid value)",
-          "returnType": "implicit operator"
-        }
-      ]
-    },
-    {
-      "name": "ContactAddressRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactAddressRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactAddressRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "ContactAddressResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactAddressResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 36,
-      "members": []
-    },
-    {
-      "name": "ContactCreateRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactCreateRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactCreateRequest.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "ContactEmailRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactEmailRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactEmailRequest.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "ContactEmailResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactEmailResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 50,
-      "members": []
-    },
-    {
-      "name": "ContactExternalMappingRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactExternalMappingRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactExternalMappingRequest.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "ContactExternalMappingResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactExternalMappingResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 65,
-      "members": []
-    },
-    {
-      "name": "ContactListItemResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactListItemResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 71,
-      "members": []
-    },
-    {
-      "name": "ContactPhoneRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactPhoneRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactPhoneRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "ContactPhoneResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactPhoneResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 57,
-      "members": []
-    },
-    {
-      "name": "ContactResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "ContactRoleRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactRoleRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactRoleRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "ContactSuspendRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactSuspendRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactSuspendRequest.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "ContactTaxStatusRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxStatusRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactTaxStatusRequest.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "ContactTaxStatusResponse",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactTaxStatusResponse",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactResponse.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "ContactUpdateRequest",
-      "fqn": "Granit.Contacts.Endpoints.Dtos.ContactUpdateRequest",
-      "kind": "record",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Dtos/ContactUpdateRequest.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "ContactsEndpointRouteBuilderExtensions",
-      "fqn": "Granit.Contacts.Endpoints.Extensions.ContactsEndpointRouteBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Extensions/ContactsEndpointRouteBuilderExtensions.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "MapGranitContacts",
-          "kind": "method",
-          "signature": "MapGranitContacts(this IEndpointRouteBuilder endpoints)",
-          "returnType": "RouteGroupBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsEndpointsModule",
-      "fqn": "Granit.Contacts.Endpoints.GranitContactsEndpointsModule",
-      "kind": "class",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/GranitContactsEndpointsModule.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ContactEndpointsOptions",
-      "fqn": "Granit.Contacts.Endpoints.Options.ContactEndpointsOptions",
-      "kind": "class",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Options/ContactEndpointsOptions.cs",
-      "line": 4,
-      "members": [
-        {
-          "name": "RoutePrefix",
-          "kind": "property",
-          "signature": "string RoutePrefix",
-          "returnType": "string"
-        },
-        {
-          "name": "TagName",
-          "kind": "property",
-          "signature": "string TagName",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "Contacts",
-      "fqn": "Granit.Contacts.Endpoints.Permissions.Contacts",
-      "kind": "class",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Permissions/ContactsPermissions.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ContactsPermissions",
-      "fqn": "Granit.Contacts.Endpoints.Permissions.ContactsPermissions",
-      "kind": "class",
-      "project": "Granit.Contacts.Endpoints",
-      "file": "src/Granit.Contacts.Endpoints/Permissions/ContactsPermissions.cs",
-      "line": 4,
-      "members": []
-    },
-    {
-      "name": "ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.Contacts.EntityFrameworkCore.Extensions.ContactsEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Contacts.EntityFrameworkCore",
-      "file": "src/Granit.Contacts.EntityFrameworkCore/Extensions/ContactsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "AddGranitContactsEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitContactsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "ContactsModelBuilderExtensions",
-      "fqn": "Granit.Contacts.EntityFrameworkCore.Extensions.ContactsModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.Contacts.EntityFrameworkCore",
-      "file": "src/Granit.Contacts.EntityFrameworkCore/Extensions/ContactsModelBuilderExtensions.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "ConfigureContactsModule",
-          "kind": "method",
-          "signature": "ConfigureContactsModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsDbProperties",
-      "fqn": "Granit.Contacts.EntityFrameworkCore.GranitContactsDbProperties",
-      "kind": "class",
-      "project": "Granit.Contacts.EntityFrameworkCore",
-      "file": "src/Granit.Contacts.EntityFrameworkCore/GranitContactsDbProperties.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsEntityFrameworkCoreModule",
-      "fqn": "Granit.Contacts.EntityFrameworkCore.GranitContactsEntityFrameworkCoreModule",
-      "kind": "class",
-      "project": "Granit.Contacts.EntityFrameworkCore",
-      "file": "src/Granit.Contacts.EntityFrameworkCore/GranitContactsEntityFrameworkCoreModule.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ContactActivatedEto",
-      "fqn": "Granit.Contacts.Events.ContactActivatedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactActivatedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactActivatedEvent",
-      "fqn": "Granit.Contacts.Events.ContactActivatedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactActivatedEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactArchivedEto",
-      "fqn": "Granit.Contacts.Events.ContactArchivedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactArchivedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactArchivedEvent",
-      "fqn": "Granit.Contacts.Events.ContactArchivedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactArchivedEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactAttachedToParentEvent",
-      "fqn": "Granit.Contacts.Events.ContactAttachedToParentEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactAttachedToParentEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactCreatedEto",
-      "fqn": "Granit.Contacts.Events.ContactCreatedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactCreatedEto.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "ContactCreatedEvent",
-      "fqn": "Granit.Contacts.Events.ContactCreatedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactCreatedEvent.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "ContactDetachedFromParentEvent",
-      "fqn": "Granit.Contacts.Events.ContactDetachedFromParentEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactDetachedFromParentEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactExternalMappingAddedEto",
-      "fqn": "Granit.Contacts.Events.ContactExternalMappingAddedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactExternalMappingAddedEto.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "ContactExternalMappingAddedEvent",
-      "fqn": "Granit.Contacts.Events.ContactExternalMappingAddedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactExternalMappingAddedEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactLinkedToUserEvent",
-      "fqn": "Granit.Contacts.Events.ContactLinkedToUserEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactLinkedToUserEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactPersonalDataPseudonymizedEto",
-      "fqn": "Granit.Contacts.Events.ContactPersonalDataPseudonymizedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactPersonalDataPseudonymizedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactPersonalDataPseudonymizedEvent",
-      "fqn": "Granit.Contacts.Events.ContactPersonalDataPseudonymizedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactPersonalDataPseudonymizedEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactRoleAddedEvent",
-      "fqn": "Granit.Contacts.Events.ContactRoleAddedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactRoleAddedEvent.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "ContactRoleRemovedEvent",
-      "fqn": "Granit.Contacts.Events.ContactRoleRemovedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactRoleRemovedEvent.cs",
-      "line": 8,
-      "members": []
-    },
-    {
-      "name": "ContactSuspendedEto",
-      "fqn": "Granit.Contacts.Events.ContactSuspendedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactSuspendedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactSuspendedEvent",
-      "fqn": "Granit.Contacts.Events.ContactSuspendedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactSuspendedEvent.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ContactUpdatedEto",
-      "fqn": "Granit.Contacts.Events.ContactUpdatedEto",
-      "kind": "record",
-      "project": "Granit.Contacts.Abstractions",
-      "file": "src/Granit.Contacts.Abstractions/Events/ContactUpdatedEto.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactUpdatedEvent",
-      "fqn": "Granit.Contacts.Events.ContactUpdatedEvent",
-      "kind": "record",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Events/ContactUpdatedEvent.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ContactExportDefinition",
-      "fqn": "Granit.Contacts.Exports.ContactExportDefinition",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Exports/ContactExportDefinition.cs",
-      "line": 7,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsModule",
-      "fqn": "Granit.Contacts.GranitContactsModule",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/GranitContactsModule.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "IContactReader",
-      "fqn": "Granit.Contacts.IContactReader",
-      "kind": "interface",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/IContactReader.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "GetByIdAsync",
-          "kind": "method",
-          "signature": "GetByIdAsync(ContactId id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Contact?>"
-        },
-        {
-          "name": "GetByExternalIdAsync",
-          "kind": "method",
-          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Contact?>"
-        },
-        {
-          "name": "GetByUserIdAsync",
-          "kind": "method",
-          "signature": "GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Contact?>"
-        },
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Contact>>"
-        },
-        {
-          "name": "ListByRoleAsync",
-          "kind": "method",
-          "signature": "ListByRoleAsync(ContactRoles role, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Contact>>"
-        }
-      ]
-    },
-    {
-      "name": "IContactWriter",
-      "fqn": "Granit.Contacts.IContactWriter",
-      "kind": "interface",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/IContactWriter.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "AddAsync",
-          "kind": "method",
-          "signature": "AddAsync(Contact contact, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "UpdateAsync",
-          "kind": "method",
-          "signature": "UpdateAsync(Contact contact, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IDefaultContactResolver",
-      "fqn": "Granit.Contacts.IDefaultContactResolver",
-      "kind": "interface",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/IDefaultContactResolver.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "GetDefaultForTenantAsync",
-          "kind": "method",
-          "signature": "GetDefaultForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Contact?>"
-        }
-      ]
-    },
-    {
-      "name": "IDefaultContactSeeder",
-      "fqn": "Granit.Contacts.IDefaultContactSeeder",
-      "kind": "interface",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/IDefaultContactSeeder.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "SeedForTenantAsync",
-          "kind": "method",
-          "signature": "SeedForTenantAsync(Guid tenantId, string tenantName, string defaultCurrency = \"EUR\", CancellationToken cancellationToken = default)",
-          "returnType": "Task<Contact>"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsMultiTenancyModule",
-      "fqn": "Granit.Contacts.MultiTenancy.GranitContactsMultiTenancyModule",
-      "kind": "class",
-      "project": "Granit.Contacts.MultiTenancy",
-      "file": "src/Granit.Contacts.MultiTenancy/GranitContactsMultiTenancyModule.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "SeedDefaultContactOnTenantCreatedHandler",
-      "fqn": "Granit.Contacts.MultiTenancy.Handlers.SeedDefaultContactOnTenantCreatedHandler",
-      "kind": "class",
-      "project": "Granit.Contacts.MultiTenancy",
-      "file": "src/Granit.Contacts.MultiTenancy/Handlers/SeedDefaultContactOnTenantCreatedHandler.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(TenantCreatedEvent @event, IDefaultContactSeeder seeder, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ContactsPersonalDataDeletionHandler",
-      "fqn": "Granit.Contacts.Privacy.DataDeletion.ContactsPersonalDataDeletionHandler",
-      "kind": "class",
-      "project": "Granit.Contacts.Privacy",
-      "file": "src/Granit.Contacts.Privacy/DataDeletion/ContactsPersonalDataDeletionHandler.cs",
-      "line": 32,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(PersonalDataDeletionRequestedEto request, IContactReader contacts, IContactWriter writer, IDataFilter dataFilter, IDistributedEventBus bus, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ContactsPersonalDataExportHandler",
-      "fqn": "Granit.Contacts.Privacy.DataExport.ContactsPersonalDataExportHandler",
-      "kind": "class",
-      "project": "Granit.Contacts.Privacy",
-      "file": "src/Granit.Contacts.Privacy/DataExport/ContactsPersonalDataExportHandler.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "HandleAsync",
-          "kind": "method",
-          "signature": "HandleAsync(PersonalDataRequestedEto request, ContactsPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "ContactsPrivacyDataProvider",
-      "fqn": "Granit.Contacts.Privacy.DataExport.ContactsPrivacyDataProvider",
-      "kind": "class",
-      "project": "Granit.Contacts.Privacy",
-      "file": "src/Granit.Contacts.Privacy/DataExport/ContactsPrivacyDataProvider.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "ProviderName",
-          "kind": "property",
-          "signature": "string ProviderName",
-          "returnType": "string"
-        },
-        {
-          "name": "ContentType",
-          "kind": "property",
-          "signature": "string ContentType",
-          "returnType": "string"
-        },
-        {
-          "name": "FileName",
-          "kind": "method",
-          "signature": "FileName(Guid requestId)",
-          "returnType": "string"
-        },
-        {
-          "name": "ExportAsync",
-          "kind": "method",
-          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
-          "returnType": "Task<ReadOnlyMemory<byte>>"
-        }
-      ]
-    },
-    {
-      "name": "PrivacyBuilderContactsExtensions",
-      "fqn": "Granit.Contacts.Privacy.Extensions.PrivacyBuilderContactsExtensions",
-      "kind": "class",
-      "project": "Granit.Contacts.Privacy",
-      "file": "src/Granit.Contacts.Privacy/Extensions/PrivacyBuilderContactsExtensions.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "AddGranitContactsPrivacyProvider",
-          "kind": "method",
-          "signature": "AddGranitContactsPrivacyProvider(this GranitPrivacyBuilder builder)",
-          "returnType": "GranitPrivacyBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitContactsPrivacyModule",
-      "fqn": "Granit.Contacts.Privacy.GranitContactsPrivacyModule",
-      "kind": "class",
-      "project": "Granit.Contacts.Privacy",
-      "file": "src/Granit.Contacts.Privacy/GranitContactsPrivacyModule.cs",
-      "line": 23,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ContactQueryDefinition",
-      "fqn": "Granit.Contacts.Queries.ContactQueryDefinition",
-      "kind": "class",
-      "project": "Granit.Contacts",
-      "file": "src/Granit.Contacts/Queries/ContactQueryDefinition.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "GranitCustomerBalanceBackgroundJobsModule",
       "fqn": "Granit.CustomerBalance.BackgroundJobs.GranitCustomerBalanceBackgroundJobsModule",
       "kind": "class",
@@ -11516,7 +10454,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, string currency)",
+          "signature": "Create(Guid id, Guid tenantId, PartyId contactId, string currency)",
           "returnType": "BalanceAccount"
         },
         {
@@ -11532,10 +10470,10 @@
           "returnType": "Guid?"
         },
         {
-          "name": "ContactId",
+          "name": "PartyId",
           "kind": "property",
-          "signature": "ContactId ContactId",
-          "returnType": "ContactId"
+          "signature": "PartyId PartyId",
+          "returnType": "PartyId"
         },
         {
           "name": "ConcurrencyStamp",
@@ -11925,7 +10863,7 @@
         {
           "name": "ApplyAsync",
           "kind": "method",
-          "signature": "ApplyAsync(Guid tenantId, ContactId contactId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
+          "signature": "ApplyAsync(Guid tenantId, PartyId contactId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11941,7 +10879,7 @@
         {
           "name": "DebitAsync",
           "kind": "method",
-          "signature": "DebitAsync(Guid tenantId, ContactId contactId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
+          "signature": "DebitAsync(Guid tenantId, PartyId contactId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11963,7 +10901,7 @@
         {
           "name": "GetByContactAndCurrencyAsync",
           "kind": "method",
-          "signature": "GetByContactAndCurrencyAsync(ContactId contactId, string currency, CancellationToken cancellationToken = default)",
+          "signature": "GetByContactAndCurrencyAsync(PartyId contactId, string currency, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount?>"
         },
         {
@@ -12045,7 +10983,7 @@
         {
           "name": "CreditOverpaymentAsync",
           "kind": "method",
-          "signature": "CreditOverpaymentAsync(Guid tenantId, ContactId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
+          "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -23173,14 +22111,14 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, ContactId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
+          "signature": "Create(Guid id, Guid tenantId, PartyId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
           "returnType": "Invoice"
         },
         {
-          "name": "ContactId",
+          "name": "PartyId",
           "kind": "property",
-          "signature": "ContactId ContactId",
-          "returnType": "ContactId"
+          "signature": "PartyId PartyId",
+          "returnType": "PartyId"
         },
         {
           "name": "DocumentType",
@@ -23192,7 +22130,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "Granit.Contacts.Domain.BillingAddress? IssuedBillingAddressSnapshot { get; private set; } public InvoiceId? ParentInvoiceId { get; private set; } public string? CreditNoteReason { get; private set; } public decimal Subtotal { get; private set; } public decimal TaxTotal { get; private set; } public decimal Total { get; private set; } public decimal AmountPaid { get; private set; } public decimal AmountCredited { get; private set; } public decimal AmountRemaining { get; private set; } public decimal Overpayment { get; private set; } public DateTimeOffset? IssuedAt { get; private set; } public DateTimeOffset? DueAt { get; private set; } public DateTimeOffset? PaidAt { get; private set; } public DateTimeOffset? PeriodStart { get; private set; } public DateTimeOffset? PeriodEnd { get; private set; } public IReadOnlyList<InvoiceLineItem> LineItems => _lineItems."
+          "returnType": "Granit.Parties.Domain.BillingAddress? IssuedBillingAddressSnapshot { get; private set; } public InvoiceId? ParentInvoiceId { get; private set; } public string? CreditNoteReason { get; private set; } public decimal Subtotal { get; private set; } public decimal TaxTotal { get; private set; } public decimal Total { get; private set; } public decimal AmountPaid { get; private set; } public decimal AmountCredited { get; private set; } public decimal AmountRemaining { get; private set; } public decimal Overpayment { get; private set; } public DateTimeOffset? IssuedAt { get; private set; } public DateTimeOffset? DueAt { get; private set; } public DateTimeOffset? PaidAt { get; private set; } public DateTimeOffset? PeriodStart { get; private set; } public DateTimeOffset? PeriodEnd { get; private set; } public IReadOnlyList<InvoiceLineItem> LineItems => _lineItems."
         },
         {
           "name": "AsReadOnly",
@@ -23850,7 +22788,7 @@
         {
           "name": "GetByContactAsync",
           "kind": "method",
-          "signature": "GetByContactAsync(ContactId contactId, CancellationToken cancellationToken = default)",
+          "signature": "GetByContactAsync(PartyId contactId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Invoice>>"
         },
         {
@@ -26494,9 +25432,9 @@
           "returnType": "string"
         },
         {
-          "name": "ContactEmail",
+          "name": "PartyEmail",
           "kind": "property",
-          "signature": "string? ContactEmail",
+          "signature": "string? PartyEmail",
           "returnType": "string?"
         },
         {
@@ -31788,6 +30726,1131 @@
       "file": "src/Granit.OpenIddict/Services/IKeyRotationService.cs",
       "line": 29,
       "members": []
+    },
+    {
+      "name": "PartiesMetrics",
+      "fqn": "Granit.Parties.Diagnostics.PartiesMetrics",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Diagnostics/PartiesMetrics.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "Address",
+      "fqn": "Granit.Parties.Domain.Address",
+      "kind": "class",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/Address.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null)",
+          "returnType": "Address"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "AddressKind",
+      "fqn": "Granit.Parties.Domain.AddressKind",
+      "kind": "enum",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/AddressKind.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "BillingAddress",
+      "fqn": "Granit.Parties.Domain.BillingAddress",
+      "kind": "class",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/BillingAddress.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string line1, string city, string postalCode, string country, string? companyName = null, string? line2 = null, string? state = null, string? vatNumber = null)",
+          "returnType": "BillingAddress"
+        },
+        {
+          "name": "Line2",
+          "kind": "property",
+          "signature": "string? Line2",
+          "returnType": "string?"
+        },
+        {
+          "name": "PostalCode",
+          "kind": "property",
+          "signature": "string PostalCode",
+          "returnType": "string"
+        },
+        {
+          "name": "State",
+          "kind": "property",
+          "signature": "string? State",
+          "returnType": "string?"
+        },
+        {
+          "name": "GetEqualityComponents",
+          "kind": "method",
+          "signature": "GetEqualityComponents()",
+          "returnType": "string? VatNumber { get; private set; } protected IEnumerable<object?>"
+        }
+      ]
+    },
+    {
+      "name": "Party",
+      "fqn": "Granit.Parties.Domain.Party",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/Party.cs",
+      "line": 37,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, PartyKind kind, string name, string defaultCurrency, PartyRoles roles = PartyRoles.Customer, string? website = null, string? language = null, string? timezone = null, string? taxId = null, string? registrationNumber = null, string? internalNotes = null)",
+          "returnType": "Party"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<PartyEmail> Emails => _emails."
+        },
+        {
+          "name": "PrimaryEmail",
+          "kind": "property",
+          "signature": "PartyEmail? PrimaryEmail",
+          "returnType": "PartyEmail?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "IReadOnlyList<PartyPhone> Phones => _phones."
+        },
+        {
+          "name": "PrimaryPhone",
+          "kind": "property",
+          "signature": "PartyPhone? PrimaryPhone",
+          "returnType": "PartyPhone?"
+        },
+        {
+          "name": "Website",
+          "kind": "property",
+          "signature": "string? Website",
+          "returnType": "string?"
+        },
+        {
+          "name": "DefaultCurrency",
+          "kind": "property",
+          "signature": "string DefaultCurrency",
+          "returnType": "string"
+        },
+        {
+          "name": "TaxId",
+          "kind": "property",
+          "signature": "string? TaxId",
+          "returnType": "string?"
+        },
+        {
+          "name": "ReplaceMetadata",
+          "kind": "method",
+          "signature": "ReplaceMetadata(IReadOnlyDictionary<string, string> metadata)",
+          "returnType": "string? MetadataJson { get; set; } public void"
+        },
+        {
+          "name": "SetInternalNotes",
+          "kind": "method",
+          "signature": "SetInternalNotes(string? notes)",
+          "returnType": "string? InternalNotes { get; private set; } public void"
+        },
+        {
+          "name": "DefaultBillingAddress",
+          "kind": "property",
+          "signature": "PartyAddress? DefaultBillingAddress",
+          "returnType": "PartyAddress?"
+        },
+        {
+          "name": "DefaultShippingAddress",
+          "kind": "property",
+          "signature": "PartyAddress? DefaultShippingAddress",
+          "returnType": "PartyAddress?"
+        },
+        {
+          "name": "AsReadOnly",
+          "kind": "method",
+          "signature": "AsReadOnly()",
+          "returnType": "Guid? AvatarBlobId { get; private set; } public PartyId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public PartyRoles Roles { get; private set; } public PartyStatus Status { get; private set; } public IReadOnlyList<PartyExternalMapping> ExternalMappings => _externalMappings."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Activate",
+          "kind": "method",
+          "signature": "Activate()",
+          "returnType": "bool"
+        },
+        {
+          "name": "AddExternalMapping",
+          "kind": "method",
+          "signature": "AddExternalMapping(Guid mappingId, string providerName, string externalId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PartyAddress",
+      "fqn": "Granit.Parties.Domain.PartyAddress",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyAddress.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, AddressKind kind, Address value, bool isDefault = false, string? label = null)",
+          "returnType": "PartyAddress"
+        },
+        {
+          "name": "MarkDefault",
+          "kind": "method",
+          "signature": "MarkDefault(bool isDefault)",
+          "returnType": "bool IsDefault { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "PartyEmail",
+      "fqn": "Granit.Parties.Domain.PartyEmail",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyEmail.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string address, bool isPrimary = false, string? label = null)",
+          "returnType": "PartyEmail"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "PartyExternalMapping",
+      "fqn": "Granit.Parties.Domain.PartyExternalMapping",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyExternalMapping.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string providerName, string externalId)",
+          "returnType": "PartyExternalMapping"
+        },
+        {
+          "name": "ExternalId",
+          "kind": "property",
+          "signature": "string ExternalId",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PartyExternalProviderNames",
+      "fqn": "Granit.Parties.Domain.PartyExternalProviderNames",
+      "kind": "class",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/PartyExternalProviderNames.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "IsReserved",
+          "kind": "method",
+          "signature": "IsReserved(string? providerName)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PartyKind",
+      "fqn": "Granit.Parties.Domain.PartyKind",
+      "kind": "enum",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/PartyKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "PartyPhone",
+      "fqn": "Granit.Parties.Domain.PartyPhone",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyPhone.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, PhoneKind kind, string number, bool isPrimary = false, string? label = null)",
+          "returnType": "PartyPhone"
+        },
+        {
+          "name": "MarkPrimary",
+          "kind": "method",
+          "signature": "MarkPrimary(bool isPrimary)",
+          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+        }
+      ]
+    },
+    {
+      "name": "PartyRoles",
+      "fqn": "Granit.Parties.Domain.PartyRoles",
+      "kind": "enum",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/PartyRoles.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "PartyStatus",
+      "fqn": "Granit.Parties.Domain.PartyStatus",
+      "kind": "enum",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/PartyStatus.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "PhoneKind",
+      "fqn": "Granit.Parties.Domain.PhoneKind",
+      "kind": "enum",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/PhoneKind.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxStatus",
+      "fqn": "Granit.Parties.Domain.TaxStatus",
+      "kind": "class",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/TaxStatus.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "TaxStatus Standard { get; } ="
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(bool isExempt = false, bool reverseCharge = false, string? vatin = null, Guid? evidenceBlobId = null)",
+          "returnType": "TaxStatus"
+        }
+      ]
+    },
+    {
+      "name": "PartyId",
+      "fqn": "Granit.Parties.Domain.ValueObjects.PartyId",
+      "kind": "class",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Domain/ValueObjects/PartyId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public PartyId"
+        },
+        {
+          "name": "PartyId",
+          "kind": "method",
+          "signature": "PartyId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "PartyAddressRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyAddressRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyAddressRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PartyAddressResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyAddressResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "PartyCreateRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyCreateRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyCreateRequest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "PartyEmailRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyEmailRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyEmailRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PartyEmailResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyEmailResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 52,
+      "members": []
+    },
+    {
+      "name": "PartyExternalMappingRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyExternalMappingRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyExternalMappingRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PartyExternalMappingResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyExternalMappingResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 67,
+      "members": []
+    },
+    {
+      "name": "PartyListItemResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyListItemResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 73,
+      "members": []
+    },
+    {
+      "name": "PartyMetadataRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyMetadataRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyMetadataRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PartyPhoneRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyPhoneRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyPhoneRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PartyPhoneResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyPhoneResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 59,
+      "members": []
+    },
+    {
+      "name": "PartyResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PartyRoleRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyRoleRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyRoleRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "PartySuspendRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartySuspendRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartySuspendRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PartyTaxStatusRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyTaxStatusRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyTaxStatusRequest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "PartyTaxStatusResponse",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyTaxStatusResponse",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyResponse.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "PartyUpdateRequest",
+      "fqn": "Granit.Parties.Endpoints.Dtos.PartyUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Dtos/PartyUpdateRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "PartiesEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Parties.Endpoints.Extensions.PartiesEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Extensions/PartiesEndpointRouteBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "MapGranitParties",
+          "kind": "method",
+          "signature": "MapGranitParties(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesEndpointsModule",
+      "fqn": "Granit.Parties.Endpoints.GranitPartiesEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/GranitPartiesEndpointsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PartyEndpointsOptions",
+      "fqn": "Granit.Parties.Endpoints.Options.PartyEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Options/PartyEndpointsOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Parties",
+      "fqn": "Granit.Parties.Endpoints.Permissions.Parties",
+      "kind": "class",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Permissions/PartiesPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PartiesPermissions",
+      "fqn": "Granit.Parties.Endpoints.Permissions.PartiesPermissions",
+      "kind": "class",
+      "project": "Granit.Parties.Endpoints",
+      "file": "src/Granit.Parties.Endpoints/Permissions/PartiesPermissions.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Extensions.PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitPartiesEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitPartiesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "PartiesModelBuilderExtensions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Extensions.PartiesModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesModelBuilderExtensions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureContactsModule",
+          "kind": "method",
+          "signature": "ConfigureContactsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesDbProperties",
+      "fqn": "Granit.Parties.EntityFrameworkCore.GranitPartiesDbProperties",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesDbProperties.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesEntityFrameworkCoreModule",
+      "fqn": "Granit.Parties.EntityFrameworkCore.GranitPartiesEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesEntityFrameworkCoreModule.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PartyActivatedEto",
+      "fqn": "Granit.Parties.Events.PartyActivatedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyActivatedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyActivatedEvent",
+      "fqn": "Granit.Parties.Events.PartyActivatedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyActivatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyArchivedEto",
+      "fqn": "Granit.Parties.Events.PartyArchivedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyArchivedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyArchivedEvent",
+      "fqn": "Granit.Parties.Events.PartyArchivedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyArchivedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyAttachedToParentEvent",
+      "fqn": "Granit.Parties.Events.PartyAttachedToParentEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyAttachedToParentEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyCreatedEto",
+      "fqn": "Granit.Parties.Events.PartyCreatedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyCreatedEto.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PartyCreatedEvent",
+      "fqn": "Granit.Parties.Events.PartyCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyCreatedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PartyDetachedFromParentEvent",
+      "fqn": "Granit.Parties.Events.PartyDetachedFromParentEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyDetachedFromParentEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyExternalMappingAddedEto",
+      "fqn": "Granit.Parties.Events.PartyExternalMappingAddedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyExternalMappingAddedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "PartyExternalMappingAddedEvent",
+      "fqn": "Granit.Parties.Events.PartyExternalMappingAddedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyExternalMappingAddedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyLinkedToUserEvent",
+      "fqn": "Granit.Parties.Events.PartyLinkedToUserEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyLinkedToUserEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyPersonalDataPseudonymizedEto",
+      "fqn": "Granit.Parties.Events.PartyPersonalDataPseudonymizedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyPersonalDataPseudonymizedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyPersonalDataPseudonymizedEvent",
+      "fqn": "Granit.Parties.Events.PartyPersonalDataPseudonymizedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyPersonalDataPseudonymizedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyRoleAddedEvent",
+      "fqn": "Granit.Parties.Events.PartyRoleAddedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyRoleAddedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PartyRoleRemovedEvent",
+      "fqn": "Granit.Parties.Events.PartyRoleRemovedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyRoleRemovedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PartySuspendedEto",
+      "fqn": "Granit.Parties.Events.PartySuspendedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartySuspendedEto.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "PartySuspendedEvent",
+      "fqn": "Granit.Parties.Events.PartySuspendedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartySuspendedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "PartyTaxStatusChangedEvent",
+      "fqn": "Granit.Parties.Events.PartyTaxStatusChangedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyTaxStatusChangedEvent.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "PartyUpdatedEto",
+      "fqn": "Granit.Parties.Events.PartyUpdatedEto",
+      "kind": "record",
+      "project": "Granit.Parties.Abstractions",
+      "file": "src/Granit.Parties.Abstractions/Events/PartyUpdatedEto.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyUpdatedEvent",
+      "fqn": "Granit.Parties.Events.PartyUpdatedEvent",
+      "kind": "record",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Events/PartyUpdatedEvent.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "PartyExportDefinition",
+      "fqn": "Granit.Parties.Exports.PartyExportDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Exports/PartyExportDefinition.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PartiesHostApplicationBuilderExtensions",
+      "fqn": "Granit.Parties.Extensions.PartiesHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Extensions/PartiesHostApplicationBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitParties",
+          "kind": "method",
+          "signature": "AddGranitParties(this IHostApplicationBuilder builder)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesModule",
+      "fqn": "Granit.Parties.GranitPartiesModule",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/GranitPartiesModule.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDefaultPartyResolver",
+      "fqn": "Granit.Parties.IDefaultPartyResolver",
+      "kind": "interface",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/IDefaultPartyResolver.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "GetDefaultForTenantAsync",
+          "kind": "method",
+          "signature": "GetDefaultForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Party?>"
+        }
+      ]
+    },
+    {
+      "name": "IDefaultPartySeeder",
+      "fqn": "Granit.Parties.IDefaultPartySeeder",
+      "kind": "interface",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/IDefaultPartySeeder.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "SeedForTenantAsync",
+          "kind": "method",
+          "signature": "SeedForTenantAsync(Guid tenantId, string tenantName, string defaultCurrency = \"EUR\", CancellationToken cancellationToken = default)",
+          "returnType": "Task<Party>"
+        }
+      ]
+    },
+    {
+      "name": "IPartyReader",
+      "fqn": "Granit.Parties.IPartyReader",
+      "kind": "interface",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/IPartyReader.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(PartyId id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Party?>"
+        },
+        {
+          "name": "GetByExternalIdAsync",
+          "kind": "method",
+          "signature": "GetByExternalIdAsync(string providerName, string externalId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Party?>"
+        },
+        {
+          "name": "GetByUserIdAsync",
+          "kind": "method",
+          "signature": "GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Party?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Party>>"
+        },
+        {
+          "name": "ListByRoleAsync",
+          "kind": "method",
+          "signature": "ListByRoleAsync(PartyRoles role, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Party>>"
+        }
+      ]
+    },
+    {
+      "name": "IPartyWriter",
+      "fqn": "Granit.Parties.IPartyWriter",
+      "kind": "interface",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/IPartyWriter.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Party contact, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Party contact, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesMultiTenancyModule",
+      "fqn": "Granit.Parties.MultiTenancy.GranitPartiesMultiTenancyModule",
+      "kind": "class",
+      "project": "Granit.Parties.MultiTenancy",
+      "file": "src/Granit.Parties.MultiTenancy/GranitPartiesMultiTenancyModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "SeedDefaultPartyOnTenantCreatedHandler",
+      "fqn": "Granit.Parties.MultiTenancy.Handlers.SeedDefaultPartyOnTenantCreatedHandler",
+      "kind": "class",
+      "project": "Granit.Parties.MultiTenancy",
+      "file": "src/Granit.Parties.MultiTenancy/Handlers/SeedDefaultPartyOnTenantCreatedHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(TenantCreatedEvent @event, IDefaultPartySeeder seeder, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PartiesPersonalDataDeletionHandler",
+      "fqn": "Granit.Parties.Privacy.DataDeletion.PartiesPersonalDataDeletionHandler",
+      "kind": "class",
+      "project": "Granit.Parties.Privacy",
+      "file": "src/Granit.Parties.Privacy/DataDeletion/PartiesPersonalDataDeletionHandler.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto request, IPartyReader contacts, IPartyWriter writer, IDataFilter dataFilter, IDistributedEventBus bus, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PartiesPersonalDataExportHandler",
+      "fqn": "Granit.Parties.Privacy.DataExport.PartiesPersonalDataExportHandler",
+      "kind": "class",
+      "project": "Granit.Parties.Privacy",
+      "file": "src/Granit.Parties.Privacy/DataExport/PartiesPersonalDataExportHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataRequestedEto request, PartiesPrivacyDataProvider provider, PrivacyFragmentUploader uploader, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PartiesPrivacyDataProvider",
+      "fqn": "Granit.Parties.Privacy.DataExport.PartiesPrivacyDataProvider",
+      "kind": "class",
+      "project": "Granit.Parties.Privacy",
+      "file": "src/Granit.Parties.Privacy/DataExport/PartiesPrivacyDataProvider.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ProviderName",
+          "kind": "property",
+          "signature": "string ProviderName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContentType",
+          "kind": "property",
+          "signature": "string ContentType",
+          "returnType": "string"
+        },
+        {
+          "name": "FileName",
+          "kind": "method",
+          "signature": "FileName(Guid requestId)",
+          "returnType": "string"
+        },
+        {
+          "name": "ExportAsync",
+          "kind": "method",
+          "signature": "ExportAsync(Guid userId, CancellationToken cancellationToken)",
+          "returnType": "Task<ReadOnlyMemory<byte>>"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyBuilderPartiesExtensions",
+      "fqn": "Granit.Parties.Privacy.Extensions.PrivacyBuilderPartiesExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.Privacy",
+      "file": "src/Granit.Parties.Privacy/Extensions/PrivacyBuilderPartiesExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitPartiesPrivacyProvider",
+          "kind": "method",
+          "signature": "AddGranitPartiesPrivacyProvider(this GranitPrivacyBuilder builder)",
+          "returnType": "GranitPrivacyBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesPrivacyModule",
+      "fqn": "Granit.Parties.Privacy.GranitPartiesPrivacyModule",
+      "kind": "class",
+      "project": "Granit.Parties.Privacy",
+      "file": "src/Granit.Parties.Privacy/GranitPartiesPrivacyModule.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PartyQueryDefinition",
+      "fqn": "Granit.Parties.Queries.PartyQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Queries/PartyQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "InitiatePaymentCommand",
@@ -41493,7 +41556,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, ContactId contactId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PartyId contactId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
           "returnType": "Subscription"
         },
         {
@@ -43368,7 +43431,7 @@
         {
           "name": "GetRateAsync",
           "kind": "method",
-          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, ContactId? contactId = null, CancellationToken cancellationToken = default)",
+          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, PartyId? contactId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<TaxRateEntry?>"
         },
         {

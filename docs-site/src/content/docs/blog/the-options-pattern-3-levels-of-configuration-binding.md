@@ -276,7 +276,7 @@ public sealed class ApiDocumentationOptions
     public string? Description { get; set; }
 
     [EmailAddress]
-    public string? ContactEmail { get; set; }
+    public string? PartyEmail { get; set; }
 }
 ```
 

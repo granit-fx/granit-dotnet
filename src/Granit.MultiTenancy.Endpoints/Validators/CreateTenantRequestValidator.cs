@@ -26,10 +26,10 @@ internal sealed class CreateTenantRequestValidator : GranitValidator<CreateTenan
             .MaximumLength(MaxIdentifierLength)
             .Matches(IdentifierPattern);
 
-        RuleFor(x => x.ContactEmail)
+        RuleFor(x => x.PartyEmail)
             .MaximumLength(MaxEmailLength)
             .EmailAddress()
-            .When(x => x.ContactEmail is not null);
+            .When(x => x.PartyEmail is not null);
 
         RuleFor(x => x.Jurisdiction)
             .MaximumLength(MaxJurisdictionLength)

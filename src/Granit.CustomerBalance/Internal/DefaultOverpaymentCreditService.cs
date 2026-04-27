@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +23,7 @@ internal sealed partial class DefaultOverpaymentCreditService(
 {
     public async Task CreditOverpaymentAsync(
         Guid tenantId,
-        ContactId contactId,
+        PartyId contactId,
         string currency,
         decimal amount,
         Guid invoiceId,
@@ -69,7 +69,7 @@ internal sealed partial class DefaultOverpaymentCreditService(
         [LoggerMessage(Level = LogLevel.Information, Message = "Overpayment of {Amount} credited for invoice {InvoiceId}, new balance: {NewBalance}")]
         public static partial void OverpaymentCredited(ILogger logger, Guid invoiceId, decimal amount, decimal newBalance);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {ContactId} ({Currency})")]
-        public static partial void AccountCreated(ILogger logger, Guid contactId, string currency);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {PartyId} ({Currency})")]
+        public static partial void AccountCreated(ILogger logger, Guid partyId, string currency);
     }
 }

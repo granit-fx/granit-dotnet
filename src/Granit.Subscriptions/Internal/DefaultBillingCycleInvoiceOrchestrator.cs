@@ -129,7 +129,7 @@ internal sealed partial class DefaultBillingCycleInvoiceOrchestrator(
             CollectionMethod: CollectionMethod.Auto,
             BillingReason: BillingReason.SubscriptionCycle,
             LineItems: lineItems,
-            ContactId: subscription.ContactId.Value,
+            PartyId: subscription.PartyId.Value,
             PeriodStart: periodStart,
             PeriodEnd: periodEnd);
 

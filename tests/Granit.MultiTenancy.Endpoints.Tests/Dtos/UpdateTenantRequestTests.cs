@@ -12,7 +12,7 @@ public sealed class UpdateTenantRequestTests
         UpdateTenantRequest request = new("Updated Name", "updated@acme.com", "FR");
 
         request.Name.ShouldBe("Updated Name");
-        request.ContactEmail.ShouldBe("updated@acme.com");
+        request.PartyEmail.ShouldBe("updated@acme.com");
         request.Jurisdiction.ShouldBe("FR");
     }
 
@@ -21,6 +21,6 @@ public sealed class UpdateTenantRequestTests
     {
         UpdateTenantRequest request = new("Acme", null, null);
 
-        request.ContactEmail.ShouldBeNull();
+        request.PartyEmail.ShouldBeNull();
     }
 }

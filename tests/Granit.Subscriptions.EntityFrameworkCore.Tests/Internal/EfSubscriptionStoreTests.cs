@@ -1,6 +1,6 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.EntityFrameworkCore.Internal;
@@ -55,7 +55,7 @@ public sealed class EfSubscriptionStoreTests : IAsyncDisposable
         var sub = Subscription.Create(
             Guid.NewGuid(),
             tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             PlanId.Create(planId ?? Guid.NewGuid()),
             "EUR",
             period,

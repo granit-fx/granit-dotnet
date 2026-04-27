@@ -26,11 +26,11 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(e => e.AmountRemaining).HasPrecision(18, 4).IsRequired();
         builder.Property(e => e.Overpayment).HasPrecision(18, 4).IsRequired();
 
-        // ParentInvoiceId and ContactId are SingleValueObject<Guid> — declared as scalar
+        // ParentInvoiceId and PartyId are SingleValueObject<Guid> — declared as scalar
         // properties to prevent EF Core from discovering them as navigations. The value
         // converter is applied automatically by ApplyGranitConventions.
         builder.Property(e => e.ParentInvoiceId);
-        builder.Property(e => e.ContactId).IsRequired();
+        builder.Property(e => e.PartyId).IsRequired();
 
         builder.OwnsOne(e => e.IssuedBillingAddressSnapshot, ba =>
         {
@@ -55,7 +55,7 @@ internal sealed class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.HasIndex(e => new { e.TenantId, e.Status })
             .HasDatabaseName($"ix_{GranitInvoicingDbProperties.DbTablePrefix}invoices_tenant_status");
 
-        builder.HasIndex(e => e.ContactId)
+        builder.HasIndex(e => e.PartyId)
             .HasDatabaseName($"ix_{GranitInvoicingDbProperties.DbTablePrefix}invoices_contact");
 
         builder.HasIndex(e => e.DueAt)

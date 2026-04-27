@@ -1,9 +1,9 @@
-using Granit.Contacts;
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.MultiTenancy;
+using Granit.Parties;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -18,7 +18,7 @@ internal static class ListTransactionsEndpoint
         int pageSize,
         [FromServices] IBalanceAccountReader accountReader,
         [FromServices] IBalanceTransactionReader transactionReader,
-        [FromServices] IDefaultContactResolver contactResolver,
+        [FromServices] IDefaultPartyResolver contactResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -30,7 +30,7 @@ internal static class ListTransactionsEndpoint
             return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
-        Contact? contact = await contactResolver
+        Party? contact = await contactResolver
             .GetDefaultForTenantAsync(currentTenant.Id!.Value, cancellationToken)
             .ConfigureAwait(false);
 
@@ -40,7 +40,7 @@ internal static class ListTransactionsEndpoint
         }
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(ContactId.Create(contact.Id), currency, cancellationToken)
+            .GetByContactAndCurrencyAsync(PartyId.Create(contact.Id), currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null)

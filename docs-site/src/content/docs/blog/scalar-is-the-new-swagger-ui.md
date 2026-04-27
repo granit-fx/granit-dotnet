@@ -156,7 +156,7 @@ production environment.
   "ApiDocumentation": {
     "Title": "Guava API",
     "Description": "Internal REST API for the Guava platform.",
-    "ContactEmail": "api-support@example.com",
+    "PartyEmail": "api-support@example.com",
     "LogoUrl": "/logo.svg",
     "FaviconUrl": "/favicon.svg",
     "MajorVersions": [1, 2],

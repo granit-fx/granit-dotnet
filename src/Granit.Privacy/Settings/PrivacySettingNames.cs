@@ -19,7 +19,7 @@ public static class PrivacySettingNames
     public const string ControllerName = "Granit.Privacy.Controller.Name";
 
     /// <summary>
-    /// Contact email of the data controller. GDPR Art. 13 §1(a) — mandatory.
+    /// Party email of the data controller. GDPR Art. 13 §1(a) — mandatory.
     /// </summary>
     public const string ControllerEmail = "Granit.Privacy.Controller.Email";
 
@@ -35,7 +35,7 @@ public static class PrivacySettingNames
     public const string DpoName = "Granit.Privacy.Dpo.Name";
 
     /// <summary>
-    /// Contact email of the Data Protection Officer (DPO). Required when <see cref="DpoName"/>
+    /// Party email of the Data Protection Officer (DPO). Required when <see cref="DpoName"/>
     /// is set — Art. 13 §1(b) mandates the DPO contact be communicated to data subjects.
     /// </summary>
     public const string DpoEmail = "Granit.Privacy.Dpo.Email";

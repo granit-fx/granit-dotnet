@@ -127,7 +127,7 @@ internal sealed class AspNetExternalLoginService(
         if (!clientOptions.Value.AutoRegisterExternalUsers)
         {
             throw new InvalidOperationException(
-                "Account not found. Contact your administrator.");
+                "Account not found. Party your administrator.");
         }
 
         GranitUser newUser = new()

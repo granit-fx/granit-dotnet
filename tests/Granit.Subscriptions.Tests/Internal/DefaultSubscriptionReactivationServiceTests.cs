@@ -1,4 +1,4 @@
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Internal;
@@ -29,7 +29,7 @@ public sealed class DefaultSubscriptionReactivationServiceTests
         var sub = Subscription.Create(
             Guid.NewGuid(),
             tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));
@@ -61,7 +61,7 @@ public sealed class DefaultSubscriptionReactivationServiceTests
         var sub = Subscription.Create(
             Guid.NewGuid(),
             tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));

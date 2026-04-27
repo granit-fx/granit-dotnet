@@ -17,7 +17,7 @@ public sealed class TenantResponseTests
         response.Id.ShouldBe(id);
         response.Name.ShouldBe("Acme Corp");
         response.Identifier.ShouldBe("acme-corp");
-        response.ContactEmail.ShouldBe("admin@acme.com");
+        response.PartyEmail.ShouldBe("admin@acme.com");
         response.Activated.ShouldBeTrue();
         response.Jurisdiction.ShouldBe("BE");
         response.CreatedAt.ShouldBe(createdAt);
@@ -28,6 +28,6 @@ public sealed class TenantResponseTests
     {
         TenantResponse response = new(Guid.NewGuid(), "Acme", "acme", null, true, null, DateTimeOffset.UtcNow);
 
-        response.ContactEmail.ShouldBeNull();
+        response.PartyEmail.ShouldBeNull();
     }
 }
