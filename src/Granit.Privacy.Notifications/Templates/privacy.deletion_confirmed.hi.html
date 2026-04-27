@@ -2,7 +2,7 @@
 <title>आपका डेटा हटा दिया गया है</title>
 <p>नमस्ते,</p>
 <p>हम पुष्टि करते हैं कि आपका व्यक्तिगत डेटा <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> पर स्थायी रूप से हटा दिया गया है। यह विलोपन अपरिवर्तनीय है।</p>
-<p>यह ईमेल आपकी अनुपालन रसीद है। कृपया इसे इस बात के प्रमाण के रूप में सुरक्षित रखें कि आपके विलोपन के अधिकार का सम्मान किया गया है।</p>
+<p>यह ईमेल आपकी अनुपालन रसीद है। कृपया इसे इस बात के प्रमाण के रूप में सुरक्षित रखें कि आपके विलोपन अनुरोध को पूरा किया गया है।</p>
 <p>संदर्भ: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>यह संदेश {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} द्वारा भेजा जा रहा है।</p>

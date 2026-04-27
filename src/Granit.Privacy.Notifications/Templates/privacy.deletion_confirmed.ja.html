@@ -2,7 +2,7 @@
 <title>お客様のデータが削除されました</title>
 <p>こんにちは。</p>
 <p>お客様の個人データが <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> に永久に削除されたことを確認いたしました。本削除は取り消すことができません。</p>
-<p>本メールはお客様のコンプライアンス受領証となります。お客様の削除権が履行された証として保管をお願いいたします。</p>
+<p>本メールはお客様のコンプライアンス受領証となります。お客様の削除のご依頼が履行された証として保管をお願いいたします。</p>
 <p>参照番号: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>本メッセージは {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} より送信されています。</p>

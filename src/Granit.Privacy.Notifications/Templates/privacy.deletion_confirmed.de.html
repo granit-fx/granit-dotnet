@@ -2,7 +2,7 @@
 <title>Ihre Daten wurden gelöscht</title>
 <p>Guten Tag,</p>
 <p>Wir bestätigen, dass Ihre personenbezogenen Daten am <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> endgültig gelöscht wurden. Diese Löschung ist unwiderruflich.</p>
-<p>Diese E-Mail dient als Ihr Compliance-Nachweis. Bitte bewahren Sie sie als Beleg dafür auf, dass Ihrem Recht auf Löschung entsprochen wurde.</p>
+<p>Diese E-Mail dient als Ihr Compliance-Nachweis. Bitte bewahren Sie sie als Beleg dafür auf, dass Ihrer Löschungsanforderung entsprochen wurde.</p>
 <p>Referenz: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Diese Nachricht wird gesendet von {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

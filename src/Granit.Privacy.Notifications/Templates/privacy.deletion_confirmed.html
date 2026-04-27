@@ -1,7 +1,7 @@
 <title>Your data has been deleted</title>
 <p>Hi,</p>
 <p>We confirm that your personal data has been permanently deleted on <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. This deletion is irreversible.</p>
-<p>This email is your compliance receipt. Please retain it as proof that your right to erasure has been honoured.</p>
+<p>This email is your compliance receipt. Please retain it as proof that your deletion request has been honoured.</p>
 <p>Reference: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>This message is sent by {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
