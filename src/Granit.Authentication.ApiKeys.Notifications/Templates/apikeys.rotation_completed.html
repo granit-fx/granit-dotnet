@@ -1,0 +1,14 @@
+<title>API key rotated</title>
+<p>Hi,</p>
+<p>An API key has been rotated. The previous key will remain accepted during the configured grace period — make sure every consumer has migrated to the new key before that window closes.</p>
+<table cellpadding="6" cellspacing="0" style="margin: 16px 0; font-size: 14px; border-collapse: collapse;">
+  <tr><td style="color: #4b5563;">Previous key</td><td><code>{{ model.old_key_id }}</code></td></tr>
+  <tr><td style="color: #4b5563;">New key</td><td><code>{{ model.new_key_id }}</code></td></tr>
+</table>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/admin/api-keys/{{ model.new_key_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Open the new key</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">For your security, the key value itself is never sent by email — it was shown once at creation time inside the admin panel.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Did not expect this rotation? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}
