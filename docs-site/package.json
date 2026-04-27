@@ -14,8 +14,8 @@
     "@fontsource-variable/fira-code": "^5.2.7",
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
-    "@tailwindcss/vite": "^4.2.2",
-    "astro": "^6.1.8",
+    "@tailwindcss/vite": "^4.2.4",
+    "astro": "^6.1.9",
     "astro-mermaid": "^2.0.1",
     "mermaid": "^11.14.0",
     "rehype-external-links": "^3.0.0",
@@ -25,7 +25,7 @@
     "starlight-llms-txt": "^0.8.1",
     "starlight-scroll-to-top": "^1.0.1",
     "starlight-sidebar-topics": "^0.7.1",
-    "tailwindcss": "^4.2.2"
+    "tailwindcss": "^4.2.4"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.22.0",

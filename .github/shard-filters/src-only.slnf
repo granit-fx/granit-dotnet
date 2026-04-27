@@ -138,6 +138,7 @@
       "src/Granit.Mcp.Client/Granit.Mcp.Client.csproj",
       "src/Granit.Mcp.Server/Granit.Mcp.Server.csproj",
       "src/Granit.Mcp/Granit.Mcp.csproj",
+      "src/Granit.Mergeable/Granit.Mergeable.csproj",
       "src/Granit.Metering.Abstractions/Granit.Metering.Abstractions.csproj",
       "src/Granit.Metering.BackgroundJobs/Granit.Metering.BackgroundJobs.csproj",
       "src/Granit.Metering.Endpoints/Granit.Metering.Endpoints.csproj",
