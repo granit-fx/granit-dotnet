@@ -158,7 +158,7 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         // Assert
         doc.Info.Title.ShouldBe("My API");
         doc.Info.Description.ShouldBe("My description");
-        doc.Info.Contact.ShouldBeNull("PartyEmail is null → no contact block");
+        doc.Info.Contact.ShouldBeNull("ContactEmail is null → no contact block");
     }
 
     [Fact]
@@ -169,7 +169,7 @@ public sealed class ApiDocumentationServiceCollectionExtensionsTests
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             ["ApiDocumentation:Title"] = "Test API",
-            ["ApiDocumentation:PartyEmail"] = "api@example.com",
+            ["ApiDocumentation:ContactEmail"] = "api@example.com",
             ["ApiDocumentation:MajorVersions:0"] = "2",
         });
 
