@@ -28,6 +28,7 @@
         "tests/Granit.Guids.Tests",
         "tests/Granit.Imaging.AI.Tests",
         "tests/Granit.Localization.AI.Tests",
+        "tests/Granit.Mergeable.EntityFrameworkCore.Tests",
         "tests/Granit.Mergeable.Tests",
         "tests/Granit.Notifications.AI.Tests",
         "tests/Granit.Observability.AI.Tests",
