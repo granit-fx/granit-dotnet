@@ -1,4 +1,5 @@
 using Granit.Mergeable;
+using Granit.Mergeable.Extensions;
 using Granit.Parties.Domain;
 using Granit.Parties.Mergeable.Internal;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +17,15 @@ namespace Granit.Parties.Mergeable.Extensions;
 public static class PartiesMergeableHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Registers the per-aggregate adapter for parties. Cross-module reference rewriters
-    /// (Invoice.PartyId, Subscription.PartyId, etc.) are NOT registered here — each module
-    /// that holds a <c>PartyId</c> ships its own <c>*.Mergeable</c> package and registers
-    /// its rewriter via <c>services.AddReferenceRewriter&lt;Party, ...&gt;()</c>.
+    /// Registers the per-aggregate adapter for parties plus the two Parties-internal
+    /// reference rewriters: <see cref="PartyParentReferenceRewriter"/> (re-parents Party
+    /// children of the loser) and <see cref="PartyChildrenReferenceRewriter"/> (rewrites
+    /// the four child collections — addresses, emails, phones, external mappings — via
+    /// SQL bulk-update, with structural dedup, primary/default demotion and cap
+    /// enforcement). Cross-module rewriters (Invoice.PartyId, Subscription.PartyId, etc.)
+    /// are NOT registered here — each module that holds a <c>PartyId</c> ships its own
+    /// <c>*.Mergeable</c> package and registers its rewriter via
+    /// <c>services.AddReferenceRewriter&lt;Party, ...&gt;()</c>.
     /// </summary>
     public static IHostApplicationBuilder AddGranitPartiesMergeable(
         this IHostApplicationBuilder builder)
@@ -27,6 +33,8 @@ public static class PartiesMergeableHostApplicationBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
 
         builder.Services.TryAddScoped<IMergeableAggregateAdapter<Party>, PartyMergeableAggregateAdapter>();
+        builder.Services.AddReferenceRewriter<Party, PartyParentReferenceRewriter>();
+        builder.Services.AddReferenceRewriter<Party, PartyChildrenReferenceRewriter>();
 
         return builder;
     }

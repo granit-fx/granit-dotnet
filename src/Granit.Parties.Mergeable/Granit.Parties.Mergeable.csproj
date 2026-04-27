@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests" />
+    <InternalsVisibleTo Include="Granit.Parties.Mergeable.Tests.Integration" />
   </ItemGroup>
 
   <ItemGroup>

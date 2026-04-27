@@ -630,6 +630,7 @@
     <Project Path="tests/Granit.Parties.Endpoints.Tests/Granit.Parties.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Parties.EntityFrameworkCore.Tests/Granit.Parties.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Mergeable.Tests/Granit.Parties.Mergeable.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Mergeable.Tests.Integration/Granit.Parties.Mergeable.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Parties.MultiTenancy.Tests/Granit.Parties.MultiTenancy.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Privacy.Tests/Granit.Parties.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Tests/Granit.Parties.Tests.csproj" />
