@@ -315,6 +315,7 @@
         "tests/Granit.Subscriptions.BackgroundJobs.Tests",
         "tests/Granit.Subscriptions.Endpoints.Tests",
         "tests/Granit.Subscriptions.EntityFrameworkCore.Tests",
+        "tests/Granit.Subscriptions.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Subscriptions.Features.Tests",
         "tests/Granit.Subscriptions.Builtin.Tests",
         "tests/Granit.Subscriptions.Notifications.Tests",

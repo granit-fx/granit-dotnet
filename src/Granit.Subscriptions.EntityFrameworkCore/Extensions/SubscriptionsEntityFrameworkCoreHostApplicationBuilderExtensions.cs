@@ -1,3 +1,5 @@
+using Granit.Mergeable.Extensions;
+using Granit.Parties.Domain;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Granit.Subscriptions.Domain;
@@ -33,6 +35,11 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         builder.Services.TryAddScoped<IPricingResolver, EfPricingResolver>();
 
         builder.Services.AddScoped<IQueryableSource<Subscription>, EfSubscriptionQueryableSource>();
+
+        // Plugs Subscriptions into the Party merge orchestrator. Unconditional registration:
+        // when no IMergeService<Party> is wired up by the host (e.g. an app without merging),
+        // the rewriter just sits idle in DI at zero runtime cost.
+        builder.Services.AddReferenceRewriter<Party, SubscriptionPartyReferenceRewriter>();
 
         return builder;
     }

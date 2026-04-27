@@ -2174,6 +2174,8 @@
       "name": "Granit.Subscriptions.EntityFrameworkCore",
       "deps": [
         "Granit.Guids",
+        "Granit.Mergeable",
+        "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Subscriptions"
       ],
@@ -43189,7 +43191,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.EntityFrameworkCore",
       "file": "src/Granit.Subscriptions.EntityFrameworkCore/Extensions/SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitSubscriptionsEntityFrameworkCore",
