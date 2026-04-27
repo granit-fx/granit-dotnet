@@ -1,8 +1,10 @@
+using Granit.Parties.EntityFrameworkCore.Deduplication;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +36,14 @@ public static class PartiesEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<PartyCanonicalisationInterceptor>();
         builder.Services.AddScoped<IGranitAutoInterceptor>(sp =>
             sp.GetRequiredService<PartyCanonicalisationInterceptor>());
+
+        // Tier-2 / Tier-3 thresholds — bound from the "Granit:Parties:Deduplication"
+        // configuration section so apps can tune per-environment without recompiling.
+        // Defaults baked into the options class (NameSimilarity 0.7, CompanySimilarity 0.6)
+        // apply when the section is absent. Consumed by the Tier-2 pg_trgm scan and the
+        // Tier-3 fuzzy scorer (#1299).
+        builder.Services.AddOptions<PartyDeduplicationOptions>()
+            .Bind(builder.Configuration.GetSection(PartyDeduplicationOptions.SectionName));
 
         return builder;
     }

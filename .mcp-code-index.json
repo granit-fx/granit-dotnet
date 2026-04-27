@@ -32967,12 +32967,50 @@
       ]
     },
     {
+      "name": "PartiesPostgresMigrationExtensions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Deduplication.PartiesPostgresMigrationExtensions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartiesPostgresMigrationExtensions.cs",
+      "line": 42,
+      "members": [
+        {
+          "name": "AddPartyTrigramSimilarityIndexes",
+          "kind": "method",
+          "signature": "AddPartyTrigramSimilarityIndexes(this MigrationBuilder migrationBuilder, string? schema = null, string? tableName = null)",
+          "returnType": "MigrationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "PartyDeduplicationOptions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Deduplication.PartyDeduplicationOptions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartyDeduplicationOptions.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "NameSimilarityThreshold",
+          "kind": "property",
+          "signature": "double NameSimilarityThreshold",
+          "returnType": "double"
+        },
+        {
+          "name": "CompanySimilarityThreshold",
+          "kind": "property",
+          "signature": "double CompanySimilarityThreshold",
+          "returnType": "double"
+        }
+      ]
+    },
+    {
       "name": "PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Parties.EntityFrameworkCore.Extensions.PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitPartiesEntityFrameworkCore",
