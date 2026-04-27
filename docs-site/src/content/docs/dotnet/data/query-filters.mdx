@@ -17,6 +17,13 @@ without affecting the others.
 | `IProcessingRestrictable` | `ProcessingRestrictable` | `!e.IsProcessingRestricted` | Enabled |
 | `IMultiTenant` | `MultiTenant` | `e.TenantId == currentTenant.Id` | Enabled |
 | `IPublishable` | `Publishable` | `e.IsPublished` | Enabled |
+| `IHasMergeTombstone` | `MergeTombstone` | `e.MergedIntoId == null` | Enabled |
+
+For `IHasMergeTombstone`, `ApplyGranitConventions` also auto-applies the
+`MergedIntoId` (`Guid?`) and `MergedAt` (`DateTimeOffset?`) columns plus an index on
+`MergedIntoId` — no per-module mapping code. See
+[ADR-037](/dotnet/architecture/adr/037-party-merge-framework/) for the full merge
+framework.
 
 Filters are re-evaluated per query via `DataFilter`'s `AsyncLocal` state — EF Core
 extracts `FilterProxy` boolean properties as parameterized expressions.

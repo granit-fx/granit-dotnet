@@ -47,3 +47,18 @@ Justification, and Consequences.
 | [020](020-declarative-definitions-placement/) | Declarative Definitions Placement (Query & Export) | Accepted | 2026-04-18 | Granit.QueryEngine, Granit.DataExchange, all modules |
 | [021](021-privacy-data-export-defaults/) | Privacy Data Export — Framework Defaults | Accepted | 2026-04-19 | Granit.Privacy, Granit.Privacy.BlobStorage, Granit.Privacy.EntityFrameworkCore |
 | [022](022-command-sender-and-module-naming/) | ICommandSender + Module Naming — No Technology Suffix on Domain Modules | Accepted | 2026-04-20 | All business modules, Granit.Commands, Granit.Wolverine |
+| [023](023-tenant-aware-role-lookup/) | Tenant-aware role lookup | Accepted | 2026-04-22 | Granit.Identity.Local, Granit.Identity.Local.AspNetIdentity |
+| [024](024-role-orchestrator-shared-connection-transaction/) | Shared-connection EF Core transaction for role orchestration | Accepted | 2026-04-22 | Granit.Identity.Local.AspNetIdentity, Granit.Authorization.EntityFrameworkCore, Granit.OpenIddict.EntityFrameworkCore, Granit.Persistence.EntityFrameworkCore |
+| [025](025-keycloak-client-role-sync/) | Keycloak client-role distinction and boot-time sync | Accepted | 2026-04-22 | Granit.Identity, Granit.Identity.Federated.Keycloak |
+| [026](026-entraid-app-role-sync/) | Entra ID App Role distinction and boot-time sync | Accepted | 2026-04-22 | Granit.Identity.Federated.EntraId |
+| [027](027-cognito-app-client-group-sync/) | Cognito app-client group sync via naming-prefix convention | Accepted | 2026-04-23 | Granit.Identity.Federated.Cognito |
+| [028](028-unified-data-lookup/) | Unified Data Lookup for QueryEngine Filters and Form Dropdowns | Accepted | 2026-04-23 | Granit.DataLookup.\*, Granit.QueryEngine.\*, Granit.ReferenceData.\*, @granit/data-lookup, @granit/react-data-lookup |
+| [029](029-client-role-orphan-cleanup-policy/) | Client-role sync — opt-in orphan cleanup policy | Accepted | 2026-04-23 | Granit.Authorization.\*, Granit.Identity.Federated.\* |
+| [030](030-client-role-scheduled-resync/) | Client-role sync — scheduled re-sync via Granit.BackgroundJobs | Accepted | 2026-04-23 | Granit.Identity.Federated.\*.BackgroundJobs |
+| [031](031-client-role-write-operations/) | Client-role write operations on IIdentityClientRoleManager | Accepted | 2026-04-23 | Granit.Identity, Granit.Identity.Federated.\* |
+| [032](032-catalog-product-shared-billing-aggregate/) | Granit.Catalog with Product as the shared billing aggregate | Accepted | 2026-04-24 | Granit.Catalog.\*, Granit.Metering, Granit.Subscriptions, Granit.Invoicing |
+| [033](033-metering-hybrid-lifecycle-and-recompute/) | Metering hybrid — lifecycle, CountDistinct, recompute, backfill, deprecate | Accepted | 2026-04-25 | Granit.Metering.\* |
+| [034](034-subscriptions-phases-and-tiered-pricing/) | Subscriptions — pricing tiers, phases, discounts, price overrides | Accepted | 2026-04-25 | Granit.Subscriptions, Granit.Subscriptions.EntityFrameworkCore, Granit.Subscriptions.Endpoints |
+| [035](035-customer-balance-orb-credits-mapping/) | Granit.CustomerBalance ↔ ORB Credits term-by-term mapping | Accepted | 2026-04-25 | Granit.CustomerBalance.\* |
+| [036](036-invoicing-line-source-convention/) | Invoicing line item source + product convention | Accepted | 2026-04-25 | Granit.Invoicing.\*, Granit.Subscriptions, Granit.Metering |
+| [037](037-party-merge-framework/) | Party Merge Framework — Mergeable primitive + cross-module rewriters | Accepted | 2026-04-27 | Granit.Mergeable, Granit.Mergeable.EntityFrameworkCore, Granit.Parties, Granit.Parties.Mergeable, Granit.Parties.Endpoints |
