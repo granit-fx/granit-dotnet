@@ -1,6 +1,7 @@
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.LegalAgreements;
 using Granit.Privacy.LegalAgreements.Domain;
@@ -15,30 +16,14 @@ internal sealed class EfLegalDocumentStore(
     : EfStoreBase<LegalDocument, PrivacyDbContext>(contextFactory, currentTenant),
       ILegalDocumentReader, ILegalDocumentWriter
 {
-    private readonly IDbContextFactory<PrivacyDbContext> _contextFactory = contextFactory;
-
-    public async Task<LegalDocument?> FindPublishedAsync(
-        string documentId, CancellationToken cancellationToken = default)
-    {
+    public Task<LegalDocument?> FindPublishedAsync(
+        string documentId, CancellationToken cancellationToken = default) =>
         // IPublishable filter is active by default → only returns Published.
-        await using PrivacyDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        FirstOrDefaultAsync(d => d.DocumentId == documentId, cancellationToken);
 
-        return await db.LegalDocuments
-            .FirstOrDefaultAsync(d => d.DocumentId == documentId, cancellationToken)
-            .ConfigureAwait(false);
-    }
-
-    public async Task<IReadOnlyList<LegalDocument>> GetAllPublishedAsync(
-        CancellationToken cancellationToken = default)
-    {
-        await using PrivacyDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await db.LegalDocuments
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-    }
+    public Task<IReadOnlyList<LegalDocument>> GetAllPublishedAsync(
+        CancellationToken cancellationToken = default) =>
+        ListAsync(Spec.For<LegalDocument>(), cancellationToken);
 
     public async Task<LegalDocument?> GetByIdAsync(
         Guid id, CancellationToken cancellationToken = default)
@@ -54,14 +39,11 @@ internal sealed class EfLegalDocumentStore(
     {
         using IDisposable? _ = dataFilter?.Disable<IPublishable>();
 
-        await using PrivacyDbContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-
-        return await db.LegalDocuments
-            .Where(d => d.DocumentId == documentId)
-            .OrderByDescending(d => d.Version)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
+        return await ListAsync(
+            Spec.For<LegalDocument>()
+                .Where(d => d.DocumentId == documentId)
+                .OrderByDescending(d => d.Version),
+            cancellationToken).ConfigureAwait(false);
     }
 
     Task ILegalDocumentWriter.InsertAsync(

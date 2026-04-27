@@ -1,6 +1,7 @@
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +18,9 @@ internal sealed class EfCoreNotificationPreferenceStore(
 {
     /// <inheritdoc/>
     public Task<IReadOnlyList<NotificationPreference>> GetListAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        ReadAsync(async db =>
-            (IReadOnlyList<NotificationPreference>)await db.Preferences
-                .Where(p => p.UserId == userId && p.TenantId == tenantId)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false),
+        ListAsync(
+            Spec.For<NotificationPreference>()
+                .Where(p => p.UserId == userId && p.TenantId == tenantId),
             cancellationToken);
 
     /// <inheritdoc/>

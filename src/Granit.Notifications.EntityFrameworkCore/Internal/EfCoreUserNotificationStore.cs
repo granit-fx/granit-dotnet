@@ -3,7 +3,6 @@ using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
-using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,17 +26,17 @@ internal sealed class EfCoreUserNotificationStore(
         FindByIdAsync(id, cancellationToken);
 
     /// <inheritdoc/>
-    public async Task<PagedResult<UserNotification>> GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
+    public Task<PagedResult<UserNotification>> GetListAsync(string recipientUserId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
-        return await ReadAsync(async db =>
-            await db.UserNotifications
+        return PagedAsync(
+            Spec.For<UserNotification>()
                 .Where(n => n.RecipientUserId == recipientUserId && n.TenantId == tenantId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToPagedResultAsync(clampedPage, clampedPageSize, cancellationToken)
-                .ConfigureAwait(false),
-            cancellationToken).ConfigureAwait(false);
+                .OrderByDescending(n => n.CreatedAt),
+            clampedPage,
+            clampedPageSize,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
@@ -80,16 +79,16 @@ internal sealed class EfCoreUserNotificationStore(
     }
 
     /// <inheritdoc/>
-    public async Task<PagedResult<UserNotification>> GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
+    public Task<PagedResult<UserNotification>> GetByEntityAsync(string entityType, string entityId, Guid? tenantId, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
         (int clampedPage, int clampedPageSize) = QueryEngineDefaults.ClampPagination(page, pageSize);
 
-        return await ReadAsync(async db =>
-            await db.UserNotifications
+        return PagedAsync(
+            Spec.For<UserNotification>()
                 .Where(n => n.RelatedEntityType == entityType && n.RelatedEntityId == entityId && n.TenantId == tenantId)
-                .OrderByDescending(n => n.CreatedAt)
-                .ToPagedResultAsync(clampedPage, clampedPageSize, cancellationToken)
-                .ConfigureAwait(false),
-            cancellationToken).ConfigureAwait(false);
+                .OrderByDescending(n => n.CreatedAt),
+            clampedPage,
+            clampedPageSize,
+            cancellationToken);
     }
 }

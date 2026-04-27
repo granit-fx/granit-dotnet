@@ -1,4 +1,5 @@
 using Granit.MultiTenancy;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.EntityFrameworkCore.Entities;
@@ -32,31 +33,25 @@ internal sealed class EfDeletionRequestTracker<TContext>(
     public async Task<IReadOnlyList<DeletionRequestStatus>> GetByUserAsync(
         Guid userId, CancellationToken cancellationToken = default)
     {
-        await using TContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<DeletionRequestEntity> rows = await ListAsync(
+            Spec.For<DeletionRequestEntity>()
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.RequestedAt),
+            cancellationToken).ConfigureAwait(false);
 
-        List<DeletionRequestEntity> rows = await Query(db)
-            .Where(e => e.UserId == userId)
-            .OrderByDescending(e => e.RequestedAt)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return rows.ConvertAll(Project);
+        return [.. rows.Select(Project)];
     }
 
     public async Task<IReadOnlyList<DeletionRequestStatus>> GetExpiredDeferredAsync(
         DateTimeOffset now, CancellationToken cancellationToken = default)
     {
-        await using TContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<DeletionRequestEntity> rows = await ListAsync(
+            Spec.For<DeletionRequestEntity>()
+                .Where(e => e.State == DeletionRequestState.Deferred && e.ScheduledDeletionAt <= now)
+                .OrderBy(e => e.ScheduledDeletionAt),
+            cancellationToken).ConfigureAwait(false);
 
-        List<DeletionRequestEntity> rows = await Query(db)
-            .Where(e => e.State == DeletionRequestState.Deferred && e.ScheduledDeletionAt <= now)
-            .OrderBy(e => e.ScheduledDeletionAt)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return rows.ConvertAll(Project);
+        return [.. rows.Select(Project)];
     }
 
     public Task RecordDeferredAsync(

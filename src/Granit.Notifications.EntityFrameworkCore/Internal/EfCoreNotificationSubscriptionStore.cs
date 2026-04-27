@@ -2,6 +2,7 @@ using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.Domain;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -60,12 +61,10 @@ internal sealed class EfCoreNotificationSubscriptionStore(
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<NotificationSubscription>> GetUserSubscriptionsAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        ReadAsync(async db =>
-            (IReadOnlyList<NotificationSubscription>)await db.Subscriptions
-                .AsNoTracking()
+        ListAsync(
+            Spec.For<NotificationSubscription>()
                 .Where(s => s.UserId == userId && s.TenantId == tenantId)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false),
+                .AsReadOnly(),
             cancellationToken);
 
     /// <inheritdoc/>
@@ -113,12 +112,10 @@ internal sealed class EfCoreNotificationSubscriptionStore(
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<NotificationSubscription>> GetEntityFollowersAsync(string entityType, string entityId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        ReadAsync(async db =>
-            (IReadOnlyList<NotificationSubscription>)await db.Subscriptions
-                .AsNoTracking()
+        ListAsync(
+            Spec.For<NotificationSubscription>()
                 .Where(s => s.EntityType == entityType && s.EntityId == entityId && s.TenantId == tenantId)
-                .ToListAsync(cancellationToken)
-                .ConfigureAwait(false),
+                .AsReadOnly(),
             cancellationToken);
 
     /// <inheritdoc/>

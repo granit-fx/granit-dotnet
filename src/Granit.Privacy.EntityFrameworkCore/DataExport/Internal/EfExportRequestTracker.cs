@@ -1,4 +1,5 @@
 using Granit.MultiTenancy;
+using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.EntityFrameworkCore.Entities;
@@ -34,16 +35,13 @@ internal sealed class EfExportRequestTracker<TContext>(
     public async Task<IReadOnlyList<ExportRequestStatus>> GetByUserAsync(
         Guid userId, CancellationToken cancellationToken = default)
     {
-        await using TContext db = await _contextFactory
-            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        IReadOnlyList<ExportRequestEntity> rows = await ListAsync(
+            Spec.For<ExportRequestEntity>()
+                .Where(e => e.UserId == userId)
+                .OrderByDescending(e => e.RequestedAt),
+            cancellationToken).ConfigureAwait(false);
 
-        List<ExportRequestEntity> rows = await Query(db)
-            .Where(e => e.UserId == userId)
-            .OrderByDescending(e => e.RequestedAt)
-            .ToListAsync(cancellationToken)
-            .ConfigureAwait(false);
-
-        return rows.ConvertAll(Project);
+        return [.. rows.Select(Project)];
     }
 
     public Task RecordRequestAsync(
