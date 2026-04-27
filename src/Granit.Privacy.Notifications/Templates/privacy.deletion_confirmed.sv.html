@@ -2,7 +2,7 @@
 <title>Dina uppgifter har raderats</title>
 <p>Hej,</p>
 <p>Vi bekräftar att dina personuppgifter har raderats permanent den <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Denna radering är oåterkallelig.</p>
-<p>Detta e-postmeddelande utgör ditt bevis på efterlevnad. Vänligen behåll det som intyg på att din rätt till radering har tillgodosetts.</p>
+<p>Detta e-postmeddelande utgör ditt bevis på efterlevnad. Vänligen behåll det som intyg på att din raderingsbegäran har tillgodosetts.</p>
 <p>Referens: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Detta meddelande skickas av {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

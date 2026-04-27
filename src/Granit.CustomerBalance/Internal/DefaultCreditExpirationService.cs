@@ -70,7 +70,7 @@ internal sealed partial class DefaultCreditExpirationService(
             await accountWriter.UpdateAsync(account, cancellationToken).ConfigureAwait(false);
 
             await eventBus.PublishAsync(
-                new CreditExpiredEto(account.Id, account.TenantId!.Value, amountToExpire, account.Currency),
+                new CreditExpiredEto(account.Id, account.TenantId!.Value, account.PartyId.Value, amountToExpire, account.Currency),
                 cancellationToken).ConfigureAwait(false);
 
             metrics.RecordExpired(account.TenantId.Value.ToString(), account.Currency);

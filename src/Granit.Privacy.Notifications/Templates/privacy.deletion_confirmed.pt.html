@@ -2,7 +2,7 @@
 <title>Os seus dados foram eliminados</title>
 <p>Olá,</p>
 <p>Confirmamos que os seus dados pessoais foram definitivamente eliminados em <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Esta eliminação é irreversível.</p>
-<p>Este e-mail constitui o seu comprovativo de conformidade. Solicitamos que o conserve como prova do exercício do seu direito ao apagamento.</p>
+<p>Este e-mail constitui o seu comprovativo de conformidade. Solicitamos que o conserve como prova de que o seu pedido de eliminação foi atendido.</p>
 <p>Referência: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Esta mensagem é enviada por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

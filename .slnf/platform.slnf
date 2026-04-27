@@ -181,6 +181,7 @@
       "tests/Granit.Invoicing.BackgroundJobs.Tests/Granit.Invoicing.BackgroundJobs.Tests.csproj",
       "tests/Granit.Invoicing.Builtin.Tests/Granit.Invoicing.Builtin.Tests.csproj",
       "tests/Granit.Invoicing.Endpoints.Tests/Granit.Invoicing.Endpoints.Tests.csproj",
+      "tests/Granit.Invoicing.EntityFrameworkCore.Tests.Integration/Granit.Invoicing.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Invoicing.EntityFrameworkCore.Tests/Granit.Invoicing.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Invoicing.Notifications.Tests/Granit.Invoicing.Notifications.Tests.csproj",
       "tests/Granit.Invoicing.Odoo.Tests/Granit.Invoicing.Odoo.Tests.csproj",

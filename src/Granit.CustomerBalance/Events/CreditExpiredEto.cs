@@ -6,5 +6,6 @@ namespace Granit.CustomerBalance.Events;
 public sealed record CreditExpiredEto(
     Guid BalanceAccountId,
     Guid TenantId,
+    Guid PartyId,
     decimal Amount,
     string Currency) : IIntegrationEvent;

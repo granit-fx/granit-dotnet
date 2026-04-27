@@ -2,7 +2,7 @@
 <title>Vaše údaje byly vymazány</title>
 <p>Dobrý den,</p>
 <p>Potvrzujeme, že Vaše osobní údaje byly trvale vymazány dne <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Tento výmaz je nevratný.</p>
-<p>Tento e-mail představuje Váš doklad o souladu s předpisy. Žádáme Vás, abyste si jej uschoval/a jako důkaz o uplatnění Vašeho práva na výmaz.</p>
+<p>Tento e-mail představuje Váš doklad o souladu s předpisy. Žádáme Vás, abyste si jej uschoval/a jako důkaz o tom, že Vaší žádosti o výmaz bylo vyhověno.</p>
 <p>Reference: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Tuto zprávu odesílá {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
