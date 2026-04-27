@@ -3083,6 +3083,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Settings": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )"
         }
@@ -4417,8 +4418,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.4",
-        "contentHash": "PyuqLRi7JXyTJm/rh+IWCA4Fct1SlZuWrdYiui5hiaBuSY88+roc4eWKfYaE6zrupBIwnEP8pJLe4ifvU7HtZA=="
+        "resolved": "2.14.5",
+        "contentHash": "+wDlTk8GDZMosJ9wHIYHJI6yVvufkm6p2ky1hSjsNaUwnliTOEj6D5zqEUYG9VwAwjbF9yPpbc9zdvtZeW7WiQ=="
       },
       "Scriban": {
         "type": "CentralTransitive",

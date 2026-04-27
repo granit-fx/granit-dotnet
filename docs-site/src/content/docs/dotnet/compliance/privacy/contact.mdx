@@ -1,0 +1,158 @@
+---
+title: "Privacy Contact (Controller & DPO)"
+description: Configure the data controller and Data Protection Officer (DPO) contact via Granit.Settings, and inject them into any template via the {{ privacy }} global context — GDPR Art. 13 compliance for transparency notices and notification emails.
+sidebar:
+  order: 8
+  label: Contact (Controller & DPO)
+---
+
+import { Aside, Badge } from "@astrojs/starlight/components";
+
+## Why this exists
+
+GDPR Art. 13 §1 obliges every data controller to communicate to data subjects:
+
+- The **identity and contact details of the controller** (Art. 13 §1(a)) — mandatory.
+- The **contact details of the Data Protection Officer**, when one is designated (Art. 13 §1(b)).
+- The contact details of the **competent supervisory authority** (Art. 13 §2(d), Art. 77).
+
+Hard-coding these in `appsettings.json` works but pushes a redeploy whenever the
+DPO changes role, the email rotates, or a new tenant onboarded with its own
+controller. Granit exposes them as runtime-editable **settings** so the values can
+be overridden globally and per tenant via the `Granit.Settings` admin API, and
+read by any template (notification emails, privacy policy page, document
+generation) through a `{{ privacy }}` global context.
+
+## Settings
+
+Six settings are auto-registered by `GranitPrivacyModule` (no manual provider
+needed). All are visible to clients (`IsVisibleToClients = true`) and support
+the cascade Global → Tenant.
+
+| Setting name | GDPR | Required |
+| ------------ | ---- | :------: |
+| `Granit.Privacy.Controller.Name` | Art. 13 §1(a) | <Badge text="yes" variant="caution" /> |
+| `Granit.Privacy.Controller.Email` | Art. 13 §1(a) | <Badge text="yes" variant="caution" /> |
+| `Granit.Privacy.Controller.PostalAddress` | Art. 13 §1(a) | <Badge text="recommended" variant="note" /> |
+| `Granit.Privacy.Dpo.Name` | Art. 13 §1(b), Art. 37 | <Badge text="if DPO designated" variant="tip" /> |
+| `Granit.Privacy.Dpo.Email` | Art. 13 §1(b), Art. 38 §4 | <Badge text="if DPO designated" variant="tip" /> |
+| `Granit.Privacy.SupervisoryAuthority.Url` | Art. 13 §2(d), Art. 77 | <Badge text="recommended" variant="note" /> |
+
+The constants live in `Granit.Privacy.Settings.PrivacySettingNames` — reference
+them rather than duplicating the strings.
+
+<Aside type="tip" title="When is a DPO required?">
+GDPR Art. 37 §1 mandates a DPO for: public authorities; processing operations
+that require regular and systematic monitoring on a large scale; and large-scale
+processing of special categories of data (Art. 9) or criminal data (Art. 10).
+Outside of these cases, designating a DPO is optional — but recommended for
+many B2B SaaS operating in the EU.
+</Aside>
+
+## Configuration
+
+### Static defaults via `appsettings.json`
+
+The configuration provider (`C` priority, between Default and Global) reads
+settings under the `Settings` section:
+
+```json
+{
+  "Settings": {
+    "Granit.Privacy.Controller.Name": "Acme Corp SA",
+    "Granit.Privacy.Controller.Email": "privacy@acme.test",
+    "Granit.Privacy.Controller.PostalAddress": "1 rue de la Loi, 1000 Bruxelles, Belgium",
+    "Granit.Privacy.Dpo.Name": "Jane Doe",
+    "Granit.Privacy.Dpo.Email": "dpo@acme.test",
+    "Granit.Privacy.SupervisoryAuthority.Url": "https://www.autoriteprotectiondonnees.be"
+  }
+}
+```
+
+### Per-tenant override at runtime
+
+Tenant administrators can override any of the values through the `Granit.Settings`
+admin API without a redeploy:
+
+```http
+PUT /api/granit/settings/Granit.Privacy.Dpo.Email
+Content-Type: application/json
+
+{
+  "value": "dpo-eu@acme.test",
+  "providerName": "T",
+  "providerKey": "<tenant-id>"
+}
+```
+
+The cascade resolves Tenant → Global → Configuration → Default, so a missing
+tenant value falls back to the host-wide default automatically.
+
+## Templating: the `{{ privacy }}` global context
+
+`Granit.Privacy.Notifications` registers a `PrivacyContactGlobalContext` that
+exposes the six settings as a `{{ privacy }}` namespace, available in **every**
+template the app renders — notification emails, document generation, user-defined
+templates served by `Granit.Templating`.
+
+Available variables:
+
+| Template variable | Source setting |
+| ----------------- | -------------- |
+| `{{ privacy.controller_name }}` | `Granit.Privacy.Controller.Name` |
+| `{{ privacy.controller_email }}` | `Granit.Privacy.Controller.Email` |
+| `{{ privacy.controller_postal_address }}` | `Granit.Privacy.Controller.PostalAddress` |
+| `{{ privacy.dpo_name }}` | `Granit.Privacy.Dpo.Name` |
+| `{{ privacy.dpo_email }}` | `Granit.Privacy.Dpo.Email` |
+| `{{ privacy.supervisory_authority_url }}` | `Granit.Privacy.SupervisoryAuthority.Url` |
+
+Missing settings render as empty strings — use Scriban's truthiness checks to
+conditionally render the DPO block:
+
+```scriban
+<p>
+  This message is sent by {{ privacy.controller_name }}
+  ({{ privacy.controller_email }}).
+</p>
+
+{{ if privacy.dpo_email }}
+<p>
+  For privacy-related questions, contact our Data Protection Officer:
+  <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.
+</p>
+{{ end }}
+
+{{ if privacy.supervisory_authority_url }}
+<p>
+  You may lodge a complaint with the supervisory authority:
+  <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.
+</p>
+{{ end }}
+```
+
+Typical use cases inside the framework:
+
+- **Deletion confirmation** (`privacy.deletion_confirmed`) — append a footer
+  with controller + DPO contact so the user knows where to follow up.
+- **Deletion reminder** (`privacy.deletion_reminder`) — same footer, plus
+  the supervisory authority link in case the user disputes the deletion.
+- **Legal document obsolete** (`Privacy.LegalDocumentObsolete`) — re-consent
+  request signed by the controller.
+- **Application-wide email layout** — embed the contact in the standard footer
+  so every transactional email (invoices, security alerts, password resets)
+  carries a privacy contact line. Recommended for full Art. 13 transparency.
+
+### Performance
+
+The context resolves all six settings in a single batched
+`ISettingProvider.GetAllAsync(...)` call per render. Values are cached by the
+settings layer (per-tenant), so cold reads cost one DB roundtrip per tenant and
+subsequent renders hit the cache.
+
+## See also
+
+- [Application Settings](/dotnet/infrastructure/application-settings/) — Cascading settings (Default → Configuration → Global → Tenant → User)
+- [Templating](/dotnet/business/templating/) — Scriban engine, layouts, global contexts
+- [Notifications](/dotnet/infrastructure/notifications/) — Notification types, channels, layouts
+- [Legal Agreements](/dotnet/compliance/privacy/legal-agreements/) — Consent versioning
+- [Data Deletion](/dotnet/compliance/privacy/data-deletion/) — Deletion with cooling-off

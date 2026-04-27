@@ -111,6 +111,7 @@
       "src/Granit.Scheduling.EntityFrameworkCore/Granit.Scheduling.EntityFrameworkCore.csproj",
       "src/Granit.Scheduling.Wolverine/Granit.Scheduling.Wolverine.csproj",
       "src/Granit.Scheduling/Granit.Scheduling.csproj",
+      "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Subscriptions.BackgroundJobs/Granit.Subscriptions.BackgroundJobs.csproj",
       "src/Granit.Subscriptions.Builtin/Granit.Subscriptions.Builtin.csproj",
       "src/Granit.Subscriptions.Endpoints/Granit.Subscriptions.Endpoints.csproj",
