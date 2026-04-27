@@ -67,6 +67,22 @@ public sealed class BalanceTransaction : Entity
     /// <summary>Expiration date for promotional credits. <c>null</c> if non-expiring.</summary>
     public DateTimeOffset? ExpiresAt { get; private set; }
 
+    /// <summary>
+    /// Timestamp of the last "expiration approaching" notification emitted for this credit
+    /// — populated only when this transaction is a promotional credit. Used by the
+    /// expiration scanner job to dedupe <c>CreditExpiringEto</c> emissions per credit.
+    /// </summary>
+    public DateTimeOffset? LastExpirationNotifiedAt { get; private set; }
+
     /// <summary>When this transaction was recorded.</summary>
     public DateTimeOffset CreatedAt { get; private set; }
+
+    /// <summary>
+    /// Records that a "credit expiring soon" notification was emitted for this credit at
+    /// the given timestamp. Called by the expiration scanner once an
+    /// <c>CreditExpiringEto</c> has been published.
+    /// </summary>
+    /// <param name="notifiedAt">Timestamp of the notification.</param>
+    internal void MarkExpirationNotified(DateTimeOffset notifiedAt) =>
+        LastExpirationNotifiedAt = notifiedAt;
 }

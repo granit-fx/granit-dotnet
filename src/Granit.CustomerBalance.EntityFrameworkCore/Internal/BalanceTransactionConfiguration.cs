@@ -24,5 +24,10 @@ internal sealed class BalanceTransactionConfiguration : IEntityTypeConfiguration
         builder.HasIndex(e => e.ExpiresAt)
             .HasFilter($"\"Source\" = {(int)TransactionSource.Promotional} AND \"Type\" = {(int)TransactionType.Credit}")
             .HasDatabaseName($"ix_{GranitCustomerBalanceDbProperties.DbTablePrefix}transactions_expires_at");
+
+        // Dedupe stamp written by the daily expiration scanner once a CreditExpiringEto
+        // has been emitted. Nullable — only populated for promotional credits that have
+        // been alerted at least once.
+        builder.Property(e => e.LastExpirationNotifiedAt);
     }
 }

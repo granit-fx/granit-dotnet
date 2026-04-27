@@ -21,7 +21,9 @@ public static class CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExte
         builder.Services.TryAddScoped<IBalanceAccountReader>(sp => sp.GetRequiredService<EfBalanceAccountStore>());
         builder.Services.TryAddScoped<IBalanceAccountWriter>(sp => sp.GetRequiredService<EfBalanceAccountStore>());
 
-        builder.Services.TryAddScoped<IBalanceTransactionReader, EfBalanceTransactionReader>();
+        builder.Services.AddScoped<EfBalanceTransactionReader>();
+        builder.Services.TryAddScoped<IBalanceTransactionReader>(sp => sp.GetRequiredService<EfBalanceTransactionReader>());
+        builder.Services.TryAddScoped<IBalanceTransactionWriter>(sp => sp.GetRequiredService<EfBalanceTransactionReader>());
 
         return builder;
     }

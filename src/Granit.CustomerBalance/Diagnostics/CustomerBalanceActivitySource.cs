@@ -14,4 +14,5 @@ internal static class CustomerBalanceActivitySource
     internal const string CreditBalance = "customer_balance.credit";
     internal const string DebitBalance = "customer_balance.debit";
     internal const string ExpireCredit = "customer_balance.expire_credit";
+    internal const string ScanExpiringCredits = "customer_balance.scan_expiring_credits";
 }
