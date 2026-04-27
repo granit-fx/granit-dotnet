@@ -1,0 +1,13 @@
+<title>Reçu RGPD Art. 17 : utilisateur {{ model.user_id }} supprimé de la plateforme</title>
+<p>Bonjour,</p>
+<p>Ceci est un <strong>reçu d'effacement RGPD Art. 17</strong>. Le fournisseur d'identité fédéré a confirmé la suppression d'un utilisateur, et l'entrée de cache correspondante a été supprimée définitivement du stockage local de cette application en conséquence.</p>
+<ul>
+  <li><strong>Identifiant utilisateur externe :</strong> <code>{{ model.user_id }}</code></li>
+  <li><strong>Effacé le :</strong> {{ model.occurred_at | date.to_string '%d %B %Y à %H:%M:%S UTC' }}</li>
+  {{ if model.tenant_id }}<li><strong>Portée tenant :</strong> <code>{{ model.tenant_id }}</code></li>{{ else }}<li><strong>Portée :</strong> Inter-tenant (identité au niveau de l'hôte)</li>{{ end }}
+</ul>
+<p>Aucune action supplémentaire n'est requise de votre part — la suppression a été autorisée par le fournisseur d'identité amont. Conservez ce reçu dans votre dossier de conformité : il documente le fait que l'application a honoré l'obligation de droit à l'effacement au niveau applicatif (cache + données personnelles dérivées), et pas uniquement au niveau du fournisseur d'identité.</p>
+<p>Notez que les fonctionnalités en aval qui s'appuyaient sur le cache utilisateur (attribution dans le journal d'audit, libellé sur les factures, notifications in-app adressées par identifiant utilisateur) afficheront désormais cet utilisateur comme <em>« utilisateur supprimé »</em>. C'est le comportement attendu.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Question sur ce reçu ? Contactez <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

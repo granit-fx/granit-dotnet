@@ -37,6 +37,7 @@
       "src/Granit.Invoicing.Odoo/Granit.Invoicing.Odoo.csproj",
       "src/Granit.Invoicing/Granit.Invoicing.csproj",
       "src/Granit.Localization/Granit.Localization.csproj",
+      "src/Granit.Mergeable/Granit.Mergeable.csproj",
       "src/Granit.Metering.Abstractions/Granit.Metering.Abstractions.csproj",
       "src/Granit.Metering.BackgroundJobs/Granit.Metering.BackgroundJobs.csproj",
       "src/Granit.Metering.Endpoints/Granit.Metering.Endpoints.csproj",

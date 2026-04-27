@@ -1,0 +1,15 @@
+<title>Token exchange audit: service impersonated user {{ model.target_user_id }}</title>
+<p>Hello,</p>
+<p>A federated token exchange (RFC 8693 — direct naked impersonation) has just been performed against the platform. A service has obtained a user-scoped access token <strong>without the user's interactive consent</strong>. Review the operation now and acknowledge or escalate.</p>
+<ul>
+  <li><strong>Target user:</strong> <code>{{ model.target_user_id }}</code></li>
+  <li><strong>Reason / operation:</strong> {{ model.reason }}</li>
+  <li><strong>Occurred at:</strong> {{ model.occurred_at | date.to_string '%B %d, %Y at %H:%M:%S UTC' }}</li>
+</ul>
+{{ if app.base_url }}
+<p>Pivot into the user's cache record: <a href="{{ app.base_url }}/admin/identity/users/{{ model.target_user_id }}">{{ app.base_url }}/admin/identity/users/{{ model.target_user_id }}</a></p>
+{{ end }}
+<p>If this matches an authorised flow (device-activity sync, support session, scheduled platform job), acknowledge the alert. Otherwise treat it as a suspected impersonation incident, freeze the calling service's credentials and follow the incident playbook — token-exchange traffic is precisely the privileged operation ISO 27001 A.12.4 expects you to monitor in real time, not at quarterly review.</p>
+{{ if app.support_email }}
+<p style="font-size: 13px; color: #4b5563;">Need help triaging? Contact <a href="mailto:{{ app.support_email }}">{{ app.support_email }}</a>.</p>
+{{ end }}

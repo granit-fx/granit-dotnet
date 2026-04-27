@@ -19,7 +19,7 @@ public static class MergeableServiceCollectionExtensions
     /// <typeparam name="TRewriter">Concrete rewriter implementation.</typeparam>
     public static IServiceCollection AddReferenceRewriter<TAggregate, TRewriter>(
         this IServiceCollection services)
-        where TAggregate : AggregateRoot
+        where TAggregate : Entity
         where TRewriter : class, IReferenceRewriter<TAggregate>
     {
         ArgumentNullException.ThrowIfNull(services);
