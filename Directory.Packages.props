@@ -119,6 +119,11 @@
     <PackageVersion Include="Mollie.Api" Version="4.*" />
     <PackageVersion Include="Stripe.net" Version="51.*" />
   </ItemGroup>
+  <ItemGroup Label="Parties Deduplication">
+    <PackageVersion Include="FuzzySharp" Version="2.*" />
+    <PackageVersion Include="libphonenumber-csharp" Version="9.*" />
+    <PackageVersion Include="SoftWx.Match" Version="2.*" />
+  </ItemGroup>
   <ItemGroup Label="Notifications">
     <PackageVersion Include="AWSSDK.SimpleEmailV2" Version="4.*" />
     <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.*" />

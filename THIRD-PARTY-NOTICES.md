@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-27
+Dernière mise à jour : 2026-04-28
 
 ---
 
@@ -12,8 +12,8 @@ Dernière mise à jour : 2026-04-27
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 87                 |
-| Apache-2.0   | 35                 |
+| MIT          | 89                 |
+| Apache-2.0   | 36                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 1                  |
@@ -38,6 +38,7 @@ Dernière mise à jour : 2026-04-27
 | Azure.Storage.Blobs | 12.27.0 | (c) Microsoft Corporation |
 | ClosedXML | 0.105.0 | ClosedXML Contributors |
 | Cronos | 0.12.0 | Copyright (c) 2016-2025 Hangfire OU |
+| FuzzySharp | 2.0.2 | Copyright (c) Jacob Bayer |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mjml.Net | 4.11.0 | Copyright (c) Sebastian Stehle |
@@ -78,6 +79,7 @@ Dernière mise à jour : 2026-04-27
 | Scalar.AspNetCore | 2.14.5 | Scalar Contributors |
 | Sep | 0.13.0 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
+| SoftWx.Match | 2.0.3 | Copyright © 2015-2018 SoftWx, Inc. |
 | StackExchange.Redis | 2.12.14 | Copyright 2014-2026 Stack Exchange, Inc. |
 | Stripe.net | 51.1.0 | Copyright (c) Stripe, Inc. |
 | Sylvan.Data.Excel | 0.5.5 | Copyright (c) Mark Pflug |
@@ -115,6 +117,7 @@ Dernière mise à jour : 2026-04-27
 | Google.Cloud.Kms.V1 | 3.24.0 | Copyright (c) Google LLC |
 | Google.Cloud.SecretManager.V1 | 2.7.0 | Copyright (c) Google LLC |
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
+| libphonenumber-csharp | 9.0.29 | Copyright (c) Patrick Mézard, Thomas Clegg, Google, libphonenumber contributors |
 | Magick.NET-Q8-AnyCPU | 14.13.0 | Copyright 2013-2026 Dirk Lemstra |
 | ModelContextProtocol | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
