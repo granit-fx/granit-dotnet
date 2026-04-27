@@ -31076,7 +31076,7 @@
           "name": "SetInternalNotes",
           "kind": "method",
           "signature": "SetInternalNotes(string? notes)",
-          "returnType": "string? InternalNotes { get; private set; } public void"
+          "returnType": "string? InternalNotes { get; private set; } public Guid? MergedIntoId { get; private set; } public DateTimeOffset? MergedAt { get; private set; } public void"
         },
         {
           "name": "DefaultBillingAddress",
@@ -31195,6 +31195,22 @@
           "kind": "method",
           "signature": "IsReserved(string? providerName)",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PartyIdTombstoneExtensions",
+      "fqn": "Granit.Parties.Domain.PartyIdTombstoneExtensions",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Domain/PartyIdTombstoneExtensions.cs",
+      "line": 44,
+      "members": [
+        {
+          "name": "ResolveCurrentAsync",
+          "kind": "method",
+          "signature": "ResolveCurrentAsync(this PartyId partyId, IPartyReader reader, IDataFilter dataFilter, CancellationToken cancellationToken = default)",
+          "returnType": "ValueTask<PartyId>"
         }
       ]
     },
