@@ -1132,6 +1132,7 @@
       "deps": [
         "Granit.Guids",
         "Granit.Invoicing",
+        "Granit.Mergeable",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -2174,6 +2175,8 @@
       "name": "Granit.Subscriptions.EntityFrameworkCore",
       "deps": [
         "Granit.Guids",
+        "Granit.Mergeable",
+        "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Subscriptions"
       ],
@@ -11429,7 +11432,7 @@
       "kind": "record",
       "project": "Granit.CustomerBalance.Notifications",
       "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
-      "line": 38,
+      "line": 40,
       "members": []
     },
     {
@@ -11438,7 +11441,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Notifications",
       "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "new",
@@ -11513,7 +11516,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Notifications",
       "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditExpiredNotificationHandler.cs",
-      "line": 27,
+      "line": 15,
       "members": [
         {
           "name": "HandleAsync",
@@ -23271,7 +23274,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.EntityFrameworkCore",
       "file": "src/Granit.Invoicing.EntityFrameworkCore/Extensions/InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitInvoicingEntityFrameworkCore",
@@ -43292,7 +43295,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions.EntityFrameworkCore",
       "file": "src/Granit.Subscriptions.EntityFrameworkCore/Extensions/SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitSubscriptionsEntityFrameworkCore",

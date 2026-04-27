@@ -4,25 +4,13 @@ using Granit.Notifications.Abstractions;
 namespace Granit.CustomerBalance.Notifications.Handlers;
 
 /// <summary>
-/// Handles <see cref="CreditExpiredEto"/> by fanning out a
-/// <see cref="CreditExpiredNotificationType"/> to every tenant administrator subscribed
-/// to that notification type.
+/// Handles <see cref="CreditExpiredEto"/> by sending a
+/// <see cref="CreditExpiredNotificationType"/> directly to the party (end user) who
+/// owned the balance, so they are informed that value was lost from their account.
 /// </summary>
 /// <remarks>
-/// <para>
-/// Recipient strategy: <see cref="INotificationPublisher.PublishToSubscribersAsync{TData}"/>.
-/// Unlike <c>BalanceCreditedEto</c>, the <c>CreditExpiredEto</c> payload does not carry
-/// a <c>PartyId</c> (only <c>BalanceAccountId</c>), so we cannot directly address the
-/// owning end user. Admins opt in through the notifications admin UI and are
-/// tenant-scoped by the subscription engine — they can then follow up with the affected
-/// user or adjust the expiration policy.
-/// </para>
-/// <para>
-/// If <c>CreditExpiredEto</c> later grows a <c>PartyId</c> field, this handler should
-/// switch to <c>INotificationPublisher.PublishAsync</c> with
-/// <c>[evt.PartyId.ToString()]</c> as recipients, mirroring
-/// <see cref="CreditGrantedNotificationHandler"/>.
-/// </para>
+/// Recipient strategy: directly addressed to the owning <c>PartyId</c> — credit
+/// expiration is a per-user signal, mirroring <see cref="CreditGrantedNotificationHandler"/>.
 /// </remarks>
 public class CreditExpiredNotificationHandler
 {
@@ -31,13 +19,15 @@ public class CreditExpiredNotificationHandler
         INotificationPublisher publisher,
         CancellationToken cancellationToken)
     {
-        await publisher.PublishToSubscribersAsync(
+        await publisher.PublishAsync(
             CreditExpiredNotificationType.Instance,
             new CreditExpiredNotificationData(
                 evt.BalanceAccountId,
                 evt.TenantId,
+                evt.PartyId,
                 evt.Amount,
                 evt.Currency),
+            [evt.PartyId.ToString()],
             cancellationToken).ConfigureAwait(false);
     }
 }

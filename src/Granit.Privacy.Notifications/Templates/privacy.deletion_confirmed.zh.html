@@ -2,7 +2,7 @@
 <title>您的数据已被删除</title>
 <p>您好,</p>
 <p>我们确认您的个人数据已于 <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> 被永久删除。本次删除不可撤销。</p>
-<p>本邮件即您的合规凭证。请妥善保留,作为您的删除权已得到落实的证明。</p>
+<p>本邮件即您的合规凭证。请妥善保留,作为您的删除请求已得到处理的证明。</p>
 <p>参考编号: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>本邮件由 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 发送。</p>

@@ -2,7 +2,7 @@
 <title>고객님의 데이터가 삭제되었습니다</title>
 <p>안녕하십니까.</p>
 <p>고객님의 개인정보가 <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> 에 영구히 삭제되었음을 확인해 드립니다. 본 삭제는 되돌릴 수 없습니다.</p>
-<p>본 이메일은 고객님의 컴플라이언스 영수증입니다. 삭제권이 이행되었음을 증명하는 자료로 보관하여 주시기 바랍니다.</p>
+<p>본 이메일은 고객님의 컴플라이언스 영수증입니다. 삭제 요청이 이행되었음을 증명하는 자료로 보관하여 주시기 바랍니다.</p>
 <p>참조번호: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>본 메시지는 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 에서 발송하였습니다.</p>

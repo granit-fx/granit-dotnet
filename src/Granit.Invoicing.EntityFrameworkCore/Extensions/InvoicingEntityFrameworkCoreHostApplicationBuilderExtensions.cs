@@ -1,5 +1,7 @@
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.EntityFrameworkCore.Internal;
+using Granit.Mergeable.Extensions;
+using Granit.Parties.Domain;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +26,11 @@ public static class InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IInvoiceWriter>(sp => sp.GetRequiredService<EfInvoiceStore>());
 
         builder.Services.AddScoped<IQueryableSource<Invoice>, EfInvoiceQueryableSource>();
+
+        // Plugs Invoicing into the Party merge orchestrator. The registration is unconditional —
+        // when no IMergeService<Party> is wired up by the host (e.g. an app that doesn't enable
+        // merging), the rewriter just sits idle in the DI container at zero runtime cost.
+        builder.Services.AddReferenceRewriter<Party, InvoicePartyReferenceRewriter>();
 
         return builder;
     }

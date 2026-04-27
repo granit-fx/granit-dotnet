@@ -2,7 +2,7 @@
 <title>Państwa dane zostały usunięte</title>
 <p>Dzień dobry,</p>
 <p>Potwierdzamy, że Państwa dane osobowe zostały trwale usunięte w dniu <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Usunięcie jest nieodwracalne.</p>
-<p>Niniejsza wiadomość stanowi Państwa dowód zgodności. Prosimy o jej zachowanie jako potwierdzenia realizacji prawa do usunięcia danych.</p>
+<p>Niniejsza wiadomość stanowi Państwa dowód zgodności. Prosimy o jej zachowanie jako potwierdzenia, że Państwa żądanie usunięcia danych zostało zrealizowane.</p>
 <p>Numer referencyjny: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Wiadomość ta jest wysyłana przez {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

@@ -2,7 +2,7 @@
 <title>I Suoi dati sono stati cancellati</title>
 <p>Buongiorno,</p>
 <p>Le confermiamo che i Suoi dati personali sono stati definitivamente cancellati il <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. La cancellazione è irreversibile.</p>
-<p>Questa e-mail costituisce la Sua attestazione di conformità. La invitiamo a conservarla come prova dell'esercizio del Suo diritto alla cancellazione.</p>
+<p>Questa e-mail costituisce la Sua attestazione di conformità. La invitiamo a conservarla come prova che la Sua richiesta di cancellazione è stata onorata.</p>
 <p>Riferimento: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Questo messaggio è inviato da {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
