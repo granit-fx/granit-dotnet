@@ -1,0 +1,11 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<p>Hello,</p>
+<p>Your subscription to the <strong>{{ model.plan_name | html.escape }}</strong> plan has been cancelled.</p>
+{{- if model.cancellation_reason != "" }}
+<p><strong>Reason:</strong> {{ model.cancellation_reason | html.escape }}</p>
+{{- end }}
+<p>You will continue to have access until the end of your current billing period.</p>
+<p>If you change your mind, you can resubscribe at any time.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/subscriptions" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Resubscribe</a>
+</p>
