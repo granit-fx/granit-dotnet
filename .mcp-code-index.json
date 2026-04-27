@@ -36952,6 +36952,38 @@
       ]
     },
     {
+      "name": "DeletionAcknowledgedHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.DeletionAcknowledgedHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/DeletionAcknowledgedHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DeletionCancelledHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.DeletionCancelledHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/DeletionCancelledHandler.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DeletionCancelledEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DeletionConfirmationHandler",
       "fqn": "Granit.Privacy.Notifications.Handlers.DeletionConfirmationHandler",
       "kind": "class",
@@ -36963,6 +36995,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(DeletionExecutedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DeletionDeferredConfirmedHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.DeletionDeferredConfirmedHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/DeletionDeferredConfirmedHandler.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DeletionDeferredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -36984,6 +37032,22 @@
       ]
     },
     {
+      "name": "ExportCompletedNotificationHandler",
+      "fqn": "Granit.Privacy.Notifications.Handlers.ExportCompletedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/Handlers/ExportCompletedNotificationHandler.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ExportCompletedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "LegalDocumentObsoleteHandler",
       "fqn": "Granit.Privacy.Notifications.Handlers.LegalDocumentObsoleteHandler",
       "kind": "class",
@@ -36996,6 +37060,68 @@
           "kind": "method",
           "signature": "HandleAsync(LegalAgreementObsoleteEto evt, ILegalAgreementStoreReader storeReader, ILegalDocumentRegistry documentRegistry, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyDeletionAcknowledgedNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionAcknowledgedNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionAcknowledgedNotificationType.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionAcknowledgedNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionAcknowledgedNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionAcknowledgedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyDeletionAcknowledgedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyDeletionCancelledNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionCancelledNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionCancelledNotificationType.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionCancelledNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionCancelledNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionCancelledNotificationType.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyDeletionCancelledNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -37031,6 +37157,37 @@
       ]
     },
     {
+      "name": "PrivacyDeletionDeferredConfirmedNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionDeferredConfirmedNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionDeferredConfirmedNotificationType.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "PrivacyDeletionDeferredConfirmedNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyDeletionDeferredConfirmedNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyDeletionDeferredConfirmedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyDeletionDeferredConfirmedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "PrivacyDeletionReminderNotificationData",
       "fqn": "Granit.Privacy.Notifications.PrivacyDeletionReminderNotificationData",
       "kind": "record",
@@ -37052,6 +37209,80 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "PrivacyDeletionReminderNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyExportFailedNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyExportFailedNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyExportFailedNotificationType.cs",
+      "line": 44,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportFailedNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyExportFailedNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyExportFailedNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyExportFailedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "PrivacyExportReadyNotificationData",
+      "fqn": "Granit.Privacy.Notifications.PrivacyExportReadyNotificationData",
+      "kind": "record",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyExportReadyNotificationType.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "PrivacyExportReadyNotificationType",
+      "fqn": "Granit.Privacy.Notifications.PrivacyExportReadyNotificationType",
+      "kind": "class",
+      "project": "Granit.Privacy.Notifications",
+      "file": "src/Granit.Privacy.Notifications/PrivacyExportReadyNotificationType.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "PrivacyExportReadyNotificationType Instance ="
         },
         {
           "name": "Name",

@@ -205,3 +205,20 @@ stateDiagram-v2
     PartiallyCompleted --> [*]
     SizeLimitExceeded --> [*]
 ```
+
+## Notifications
+
+`Granit.Privacy.Notifications` ships two transactional notification types tied
+to the export saga. Application templates resolve `ArchiveBlobReferenceId` to a
+pre-signed download URL via the BlobStorage download endpoint, and can lean on
+the `{{ privacy }}` template global context for the controller and DPO contact.
+
+| Notification name | Trigger | Channels | Severity | Carried payload |
+| ----------------- | ------- | -------- | -------- | --------------- |
+| `privacy.export_ready` | `ExportCompletedEto` with `IsPartial = false` | Email | `Success` | `RequestId`, `ArchiveBlobReferenceId`, `RequestedAt`, `Regulation` |
+| `privacy.export_failed` | `ExportCompletedEto` with `IsPartial = true` (saga timeout) | Email + InApp | `Warning` | `RequestId`, `ArchiveBlobReferenceId`, `MissingProviders`, `RequestedAt`, `Regulation` |
+
+Both branches are routed by `ExportCompletedNotificationHandler` so that exactly
+one outcome notification is sent per request — never both. The `MissingProviders`
+list lets templates explain to the user which categories of data did not make it
+into the partial archive (so they can decide whether to retry or accept).
