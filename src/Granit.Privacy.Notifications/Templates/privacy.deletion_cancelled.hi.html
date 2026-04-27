@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>आपका विलोपन अनुरोध रद्द कर दिया गया है</title>
+<p>नमस्ते,</p>
+<p>हम पुष्टि करते हैं कि आपका स्थगित विलोपन अनुरोध <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong> को रद्द कर दिया गया है। आपका व्यक्तिगत डेटा पहले की तरह संरक्षित रखा जाएगा, और आपकी ओर से किसी अतिरिक्त कार्रवाई की आवश्यकता नहीं है।</p>
+<p>आप अपने गोपनीयता डैशबोर्ड से किसी भी समय एक नया विलोपन अनुरोध सबमिट कर सकते हैं।</p>
+<p>संदर्भ: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">प्रश्न? हमारे डेटा सुरक्षा अधिकारी से <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> पर संपर्क करें।</p>
+{{ end }}

@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Wir haben Ihren Löschantrag erhalten</title>
+<p>Guten Tag,</p>
+<p>Wir haben Ihren Antrag auf Löschung Ihrer personenbezogenen Daten am <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} nach Maßgabe der Verordnung <code>{{ model.regulation }}</code>{{ end }} erhalten.</p>
+<p>Diese E-Mail dient als Eingangsbestätigung. Wir bearbeiten Ihren Antrag innerhalb der für Ihre Rechtsordnung geltenden gesetzlichen Frist (ein Monat gemäß Art. 12 Abs. 3 DSGVO, mit möglicher Verlängerung bei komplexen Anträgen). Sie erhalten eine weitere E-Mail, sobald die Löschung ausgeführt wurde, oder falls wir zusätzliche Informationen von Ihnen benötigen.</p>
+<p>Referenz: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Diese Nachricht wird gesendet von {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Bei Fragen zum Datenschutz wenden Sie sich bitte an unseren Datenschutzbeauftragten unter <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Sollten Sie mit der Bearbeitung Ihres Antrags nicht einverstanden sein, haben Sie das Recht, bei der Aufsichtsbehörde Beschwerde einzulegen: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

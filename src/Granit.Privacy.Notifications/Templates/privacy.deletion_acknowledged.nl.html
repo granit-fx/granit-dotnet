@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Wij hebben uw verzoek tot verwijdering ontvangen</title>
+<p>Hallo,</p>
+<p>Wij hebben uw verzoek tot verwijdering van uw persoonsgegevens ontvangen op <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} op grond van regelgeving <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Deze e-mail geldt als ontvangstbevestiging. Wij behandelen uw verzoek binnen de wettelijke termijn die op uw rechtsgebied van toepassing is (één maand op grond van artikel 12 §3 AVG, met eventuele verlenging indien het verzoek complex is). U ontvangt een vervolg-e-mail zodra de verwijdering is uitgevoerd, of als wij aanvullende informatie van u nodig hebben.</p>
+<p>Referentie: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Dit bericht wordt verzonden door {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Voor vragen over de bescherming van uw gegevens kunt u contact opnemen met onze functionaris voor gegevensbescherming via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Bent u niet tevreden over de afhandeling van uw verzoek, dan heeft u het recht een klacht in te dienen bij de toezichthoudende autoriteit: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Veri silme talebinizi aldık</title>
+<p>Merhaba,</p>
+<p>Kişisel verilerinizin silinmesine ilişkin talebinizi <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} <code>{{ model.regulation }}</code> mevzuatı kapsamında{{ end }} aldık.</p>
+<p>Bu e-posta, alındı bildiriminiz niteliğindedir. Talebinizi, yargı yetkinize uygulanabilir yasal süre içinde işleme alacağız (GDPR Madde 12 §3 uyarınca bir ay; talebin karmaşık olması halinde uzatma uygulanabilir). Silme işlemi tamamlandığında veya sizden ek bilgiye ihtiyaç duyduğumuzda yeni bir e-posta alacaksınız.</p>
+<p>Referans: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Bu mesaj {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} tarafından gönderilmektedir.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Veri korumayla ilgili sorularınız için Veri Koruma Görevlimize <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> adresinden ulaşabilirsiniz.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Talebinizin işlenme şeklinden memnun değilseniz, denetim makamına şikayette bulunma hakkınız vardır: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

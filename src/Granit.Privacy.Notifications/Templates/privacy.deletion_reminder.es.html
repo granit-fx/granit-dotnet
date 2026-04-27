@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Recordatorio: sus datos serán suprimidos próximamente</title>
+<p>Hola,</p>
+<p>Le recordamos que la supresión de sus datos personales que solicitó está programada para el <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong>.</p>
+<p>Si ya no desea suprimir sus datos, puede cancelar su solicitud desde su panel de privacidad:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Gestionar mi solicitud</a>
+</p>
+<p>Si no realiza ninguna acción, sus datos serán suprimidos definitivamente en la fecha prevista. Después de eso, la supresión es irreversible.</p>
+<p>Referencia: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">¿Preguntas? Contacte con nuestro Delegado de Protección de Datos en <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

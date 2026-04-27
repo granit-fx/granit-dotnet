@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Vaše údaje byly vymazány</title>
+<p>Dobrý den,</p>
+<p>Potvrzujeme, že Vaše osobní údaje byly trvale vymazány dne <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Tento výmaz je nevratný.</p>
+<p>Tento e-mail představuje Váš doklad o souladu s předpisy. Žádáme Vás, abyste si jej uschoval/a jako důkaz o uplatnění Vašeho práva na výmaz.</p>
+<p>Reference: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Tuto zprávu odesílá {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">V otázkách týkajících se ochrany osobních údajů se obraťte na našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Pokud nejste spokojen/a s vyřízením, máte právo podat stížnost u příslušného dozorového úřadu: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

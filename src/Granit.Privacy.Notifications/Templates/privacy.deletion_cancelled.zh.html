@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>您的删除请求已被取消</title>
+<p>您好,</p>
+<p>我们确认您的延期删除请求已于 <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong> 取消。您的个人数据将照旧保留,无需您再采取任何行动。</p>
+<p>您可以随时通过隐私面板提交新的删除请求。</p>
+<p>参考编号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">有疑问?请通过 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 联系我们的数据保护官。</p>
+{{ end }}

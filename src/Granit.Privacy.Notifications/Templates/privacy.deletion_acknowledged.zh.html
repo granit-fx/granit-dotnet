@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>我们已收到您的数据删除请求</title>
+<p>您好,</p>
+<p>我们已于 <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} 根据 <code>{{ model.regulation }}</code> 规定{{ end }} 收到您的个人数据删除请求。</p>
+<p>本邮件即您的接收回执。我们将在适用于您所在司法管辖区的法定期限内处理您的请求(根据 GDPR 第 12 条第 3 款,期限为一个月;若请求复杂可申请延期)。删除执行完成后,或当我们需要您提供更多信息时,您将收到后续邮件。</p>
+<p>参考编号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>本邮件由 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 发送。</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>有关数据保护的任何问题,您可通过 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 联系我们的数据保护官。</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">如果您对我们处理您请求的方式不满意,您有权向监管机构提出投诉: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>。</p>
+{{ end }}

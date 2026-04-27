@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Sus datos han sido suprimidos</title>
+<p>Hola,</p>
+<p>Le confirmamos que sus datos personales han sido suprimidos definitivamente el <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>. Esta supresión es irreversible.</p>
+<p>Este correo electrónico constituye su justificante de cumplimiento. Le rogamos que lo conserve como prueba del ejercicio de su derecho de supresión.</p>
+<p>Referencia: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Este mensaje es enviado por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Para cualquier consulta relativa a la protección de sus datos contacte con nuestro Delegado de Protección de Datos en <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Si no está satisfecho con la tramitación, tiene derecho a presentar una reclamación ante la autoridad de control competente: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

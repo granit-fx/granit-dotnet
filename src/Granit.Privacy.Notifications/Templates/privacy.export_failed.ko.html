@@ -1,0 +1,19 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>데이터 내보내기를 부분적으로 이용하실 수 있습니다</title>
+<p>안녕하십니까.</p>
+<p>고객님께서 <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} 규정 <code>{{ model.regulation }}</code> 에 따라{{ end }} 요청하신 개인정보 내보내기가 생성되었으나, 일부 데이터 소스가 제한 시간 내에 응답하지 않았습니다. 아카이브에는 법정 기한 내에 수집할 수 있었던 모든 내용이 포함되어 있습니다.</p>
+{{ if model.missing_providers_display }}
+<p>다음 데이터 소스는 본 내보내기에 포함되지 않았습니다: <code>{{ model.missing_providers_display }}</code>.</p>
+{{ end }}
+<p>다음 중 선택하실 수 있습니다:</p>
+<ul>
+  <li><strong>부분 아카이브 다운로드</strong> 개인정보 대시보드에서, 또는</li>
+  <li><strong>새 요청 제출</strong> 누락된 소스를 재시도하기 위해.</li>
+</ul>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/exports/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">내보내기 보기</a>
+</p>
+<p>참조번호: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">문의 사항? 저희 개인정보 보호책임자에게 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 으로 연락해 주십시오.</p>
+{{ end }}

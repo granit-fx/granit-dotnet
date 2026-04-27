@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>您的数据已被删除</title>
+<p>您好,</p>
+<p>我们确认您的个人数据已于 <strong>{{ model.executed_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong> 被永久删除。本次删除不可撤销。</p>
+<p>本邮件即您的合规凭证。请妥善保留,作为您的删除权已得到落实的证明。</p>
+<p>参考编号: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>本邮件由 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 发送。</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">有关数据保护的任何问题,请通过 <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> 联系我们的数据保护官。</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">如果您对处理结果不满意,您有权向监管机构提出投诉: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>。</p>
+{{ end }}

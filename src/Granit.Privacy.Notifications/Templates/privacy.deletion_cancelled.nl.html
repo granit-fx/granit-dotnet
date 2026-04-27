@@ -1,0 +1,9 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Uw verzoek tot verwijdering is geannuleerd</title>
+<p>Hallo,</p>
+<p>Wij bevestigen dat uw uitgesteld verzoek tot verwijdering is geannuleerd op <strong>{{ model.cancelled_at | date.to_string '%B %d, %Y' }}</strong>. Uw persoonsgegevens worden bewaard zoals voorheen, en er is geen verdere actie van u vereist.</p>
+<p>U kunt op elk moment een nieuw verzoek tot verwijdering indienen via uw privacydashboard.</p>
+<p>Referentie: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Vragen? Neem contact op met onze functionaris voor gegevensbescherming via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

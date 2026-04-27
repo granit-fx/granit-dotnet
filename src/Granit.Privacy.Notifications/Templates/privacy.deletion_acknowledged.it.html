@@ -1,0 +1,15 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Abbiamo ricevuto la Sua richiesta di cancellazione</title>
+<p>Buongiorno,</p>
+<p>Abbiamo ricevuto la Sua richiesta di cancellazione dei Suoi dati personali in data <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} ai sensi della normativa <code>{{ model.regulation }}</code>{{ end }}.</p>
+<p>Questa e-mail costituisce la conferma di ricezione. Tratteremo la Sua richiesta entro il termine di legge applicabile alla Sua giurisdizione (un mese ai sensi dell'art. 12 §3 GDPR, prorogabile in caso di richiesta complessa). Riceverà una nuova e-mail non appena la cancellazione sarà eseguita, oppure se ci occorressero informazioni aggiuntive da parte Sua.</p>
+<p>Riferimento: <code>{{ model.request_id }}</code></p>
+{{ if privacy.controller_name }}
+<p>Questo messaggio è inviato da {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p>Per qualsiasi domanda in materia di protezione dei dati può contattare il nostro Responsabile della Protezione dei Dati all'indirizzo <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
+{{ if privacy.supervisory_authority_url }}
+<p style="font-size: 13px; color: #4b5563;">Se non è soddisfatto del trattamento della Sua richiesta, ha il diritto di proporre reclamo all'autorità di controllo competente: <a href="{{ privacy.supervisory_authority_url }}">{{ privacy.supervisory_authority_url }}</a>.</p>
+{{ end }}

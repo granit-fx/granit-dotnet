@@ -1,0 +1,13 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>Hatırlatma: verileriniz yakında silinecek</title>
+<p>Merhaba,</p>
+<p>Talep ettiğiniz kişisel veri silme işleminin <strong>{{ model.scheduled_deletion_at | date.to_string '%B %d, %Y' }}</strong> tarihinde gerçekleştirileceğini hatırlatırız.</p>
+<p>Verilerinizi artık silmek istemiyorsanız, talebinizi gizlilik panelinizden iptal edebilirsiniz:</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/deletion/{{ model.request_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Talebimi yönet</a>
+</p>
+<p>Herhangi bir işlem yapılmazsa, verileriniz planlanan tarihte kalıcı olarak silinecektir. Bundan sonra silme işlemi geri alınamaz.</p>
+<p>Referans: <code>{{ model.request_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Sorularınız mı var? Veri Koruma Görevlimize <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a> adresinden ulaşabilirsiniz.</p>
+{{ end }}

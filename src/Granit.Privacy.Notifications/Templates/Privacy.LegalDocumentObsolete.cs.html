@@ -1,0 +1,16 @@
+<!-- AUTO-TRANSLATED (claude-opus-4-7, 2026-04-27) — REVIEW BEFORE PRODUCTION -->
+<title>{{ model.document_display_name }} byl aktualizován — prosíme o kontrolu</title>
+<p>Dobrý den,</p>
+<p>Náš dokument <strong>{{ model.document_display_name }}</strong> byl aktualizován. Abyste mohli nadále využívat naše služby, žádáme Vás o seznámení se s novou verzí a potvrzení Vašeho souhlasu.</p>
+<p>Verze, kterou jste přijal/a: <strong>{{ model.old_version }}</strong><br>
+Nová verze: <strong>{{ model.new_version }}</strong></p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/privacy/agreements/{{ model.document_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Zobrazit a přijmout</a>
+</p>
+<p>Dokud nepotvrdíte svůj souhlas, některé funkce mohou být nedostupné.</p>
+{{ if privacy.controller_name }}
+<p>Tuto zprávu odesílá {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>
+{{ end }}
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Dotazy k této aktualizaci? Kontaktujte našeho pověřence pro ochranu osobních údajů na adrese <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}
