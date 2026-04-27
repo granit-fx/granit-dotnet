@@ -42,6 +42,10 @@ public static class WebhooksEntityFrameworkCoreHostApplicationBuilderExtensions
             ServiceDescriptor.Scoped<IWebhookSubscriptionReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IWebhookSubscriptionWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        builder.Services.Replace(
+            ServiceDescriptor.Scoped<IWebhookSigningKeyReader>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
+        builder.Services.Replace(
+            ServiceDescriptor.Scoped<IWebhookSigningKeyWriter>(sp => sp.GetRequiredService<EfWebhookSubscriptionStore>()));
 
         builder.Services.Replace(
             ServiceDescriptor.Scoped<IWebhookDeliveryWriter, EfWebhookDeliveryStore>());

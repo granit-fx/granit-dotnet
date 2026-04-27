@@ -39,8 +39,8 @@ internal sealed class WebhookTestPingService(
             throw new Granit.Exceptions.EntityNotFoundException(typeof(WebhookSubscription), subscriptionId);
         }
 
-        string plainSecret = await _secretProtector
-            .UnprotectAsync(subscription.SigningSecret, cancellationToken)
+        string plainSecret = await WebhookSecretResolver
+            .ResolvePlainSecretAsync(subscription, _secretProtector, cancellationToken)
             .ConfigureAwait(false);
 
         DateTimeOffset now = _clock.Now;

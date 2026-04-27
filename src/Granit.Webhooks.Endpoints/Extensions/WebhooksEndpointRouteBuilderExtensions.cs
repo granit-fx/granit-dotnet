@@ -52,12 +52,17 @@ public static class WebhooksEndpointRouteBuilderExtensions
         group.MapEventTypeEndpoints();
         group.MapReadEndpoints();
 
+        // Signing key list — Read permission inherited from the parent group.
+        group.MapSigningKeyReadEndpoints();
+
         // Mutating operations require Manage permission (ISO 27001 A.5.15 — least privilege).
         group.MapWriteEndpoints()
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
         group.MapLifecycleEndpoints()
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
         group.MapOperationEndpoints()
+            .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
+        group.MapSigningKeyWriteEndpoints()
             .RequireAuthorization(WebhooksPermissions.Subscriptions.Manage);
 
         // Query endpoints for subscription list and delivery attempts.

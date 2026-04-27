@@ -17,6 +17,7 @@ public static class WebhooksModelBuilderExtensions
     public static ModelBuilder ConfigureWebhooksModule(this ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new WebhookSubscriptionConfiguration());
+        modelBuilder.ApplyConfiguration(new WebhookSigningKeyConfiguration());
         modelBuilder.ApplyConfiguration(new WebhookDeliveryAttemptConfiguration());
         return modelBuilder;
     }
