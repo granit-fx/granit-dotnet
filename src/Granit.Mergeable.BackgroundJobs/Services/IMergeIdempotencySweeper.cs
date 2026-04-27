@@ -1,3 +1,5 @@
+using Granit.Mergeable.EntityFrameworkCore.Options;
+
 namespace Granit.Mergeable.BackgroundJobs.Services;
 
 /// <summary>

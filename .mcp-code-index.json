@@ -25421,7 +25421,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/GranitMergeableBackgroundJobsModule.cs",
-      "line": 24,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25453,7 +25453,7 @@
       "kind": "record",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/Jobs/MergeIdempotencyCleanupJob.cs",
-      "line": 13,
+      "line": 15,
       "members": []
     },
     {
@@ -25462,7 +25462,7 @@
       "kind": "interface",
       "project": "Granit.Mergeable.BackgroundJobs",
       "file": "src/Granit.Mergeable.BackgroundJobs/Services/IMergeIdempotencySweeper.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -25500,7 +25500,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/Extensions/MergeableEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitMergeableEntityFrameworkCore",
@@ -25537,10 +25537,10 @@
     },
     {
       "name": "MergeableOptions",
-      "fqn": "Granit.Mergeable.EntityFrameworkCore.MergeableOptions",
+      "fqn": "Granit.Mergeable.EntityFrameworkCore.Options.MergeableOptions",
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
-      "file": "src/Granit.Mergeable.EntityFrameworkCore/MergeableOptions.cs",
+      "file": "src/Granit.Mergeable.EntityFrameworkCore/Options/MergeableOptions.cs",
       "line": 10,
       "members": [
         {
@@ -32613,7 +32613,7 @@
       "kind": "class",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Extensions/PartiesDeduplicationHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitPartiesDeduplication",

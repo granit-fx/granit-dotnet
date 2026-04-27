@@ -50,7 +50,7 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
                     [new MatchSignal("TaxIdExact", 1.0m)])
             });
 
-        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>
+        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
                 _request, force: false, skipDuplicateCheck: false,
                 _writer, _guidGenerator, _detector, ct);
@@ -77,7 +77,7 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
                     [new MatchSignal("NameTokenSet", 0.4m)])
             });
 
-        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>
+        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
                 _request, force: false, skipDuplicateCheck: false,
                 _writer, _guidGenerator, _detector, ct);
@@ -98,7 +98,7 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
                 new(PartyId.Create(Guid.NewGuid()), 1.0m, DuplicateMatchTier.Deterministic, [])
             });
 
-        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>
+        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
                 _request, force: true, skipDuplicateCheck: false,
                 _writer, _guidGenerator, _detector, ct);
@@ -118,7 +118,7 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
                 new(PartyId.Create(Guid.NewGuid()), 1.0m, DuplicateMatchTier.Deterministic, [])
             });
 
-        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>
+        Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
                 _request, force: false, skipDuplicateCheck: true,
                 _writer, _guidGenerator, _detector, ct);

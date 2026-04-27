@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 
 #pragma warning disable CA1812 // Justification: resolved by DI through the open-generic registration `IMergeService<>` → `EfMergeService<>` (no direct `new` call in the codebase).
 
+using Granit.Mergeable.EntityFrameworkCore.Options;
+
 namespace Granit.Mergeable.EntityFrameworkCore.Internal;
 
 /// <summary>

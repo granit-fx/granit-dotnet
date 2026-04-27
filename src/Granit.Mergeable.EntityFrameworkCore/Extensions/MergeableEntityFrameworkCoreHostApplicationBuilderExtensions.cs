@@ -1,4 +1,5 @@
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

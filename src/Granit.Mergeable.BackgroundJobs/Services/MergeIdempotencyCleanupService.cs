@@ -1,5 +1,6 @@
 using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

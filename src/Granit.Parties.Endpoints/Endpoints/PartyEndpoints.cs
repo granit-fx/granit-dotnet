@@ -38,7 +38,7 @@ internal static class PartyEndpoints
         return c is null ? TypedResults.NotFound() : TypedResults.Ok(c.ToResponse());
     }
 
-    public static async Task<Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ValidationProblem>> HandleCreateAsync(
+    public static async Task<Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>> HandleCreateAsync(
         PartyCreateRequest request,
         [FromQuery] bool force,
         [FromHeader(Name = "X-Skip-Duplicate-Check")] bool skipDuplicateCheck,

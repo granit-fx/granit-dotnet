@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Granit.Mergeable.EntityFrameworkCore;
+namespace Granit.Mergeable.EntityFrameworkCore.Options;
 
 /// <summary>
 /// Host-tunable knobs for the merge orchestrator. Bound from the <c>Mergeable</c> section in

@@ -1,6 +1,7 @@
 using Granit.BackgroundJobs;
 using Granit.Mergeable.BackgroundJobs.Services;
 using Granit.Mergeable.EntityFrameworkCore;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

@@ -7,7 +7,7 @@ using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Parties.Deduplication.Internal;
+namespace Granit.Parties.Deduplication.EntityFrameworkCore;
 
 /// <summary>
 /// EF-backed implementation of <see cref="IPartyDuplicateCandidateStore"/>: reads + dismisses
@@ -37,7 +37,10 @@ internal sealed class EfPartyDuplicateCandidateStore(
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        IQueryable<PartyDuplicateCandidate> query = ScopedToTenant(db);
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        IQueryable<PartyDuplicateCandidate> query = db.DuplicateCandidates
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(c => c.TenantId == tenantId);
 
         if (tier is { } t)
         {
@@ -74,7 +77,10 @@ internal sealed class EfPartyDuplicateCandidateStore(
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await ScopedToTenant(db)
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        return await db.DuplicateCandidates
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(c => c.TenantId == tenantId)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
             .ConfigureAwait(false);
     }
@@ -86,8 +92,11 @@ internal sealed class EfPartyDuplicateCandidateStore(
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        return await ScopedToTenant(db)
-            .Where(c => c.DismissedAt == null
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        return await db.DuplicateCandidates
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(c => c.TenantId == tenantId
+                && c.DismissedAt == null
                 && (c.PartyId == partyId || c.CandidateId == partyId))
             .OrderByDescending(c => c.Score)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
@@ -98,7 +107,10 @@ internal sealed class EfPartyDuplicateCandidateStore(
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        PartyDuplicateCandidate? row = await ScopedToTenant(db)
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
+        PartyDuplicateCandidate? row = await db.DuplicateCandidates
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(c => c.TenantId == tenantId)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
@@ -110,15 +122,5 @@ internal sealed class EfPartyDuplicateCandidateStore(
         row.Dismiss(clock.Now);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return true;
-    }
-
-    /// <summary>Applies the explicit tenant filter and bypasses the ambient
-    /// <c>IMultiTenant</c> query filter — robust regardless of caller context.</summary>
-    private IQueryable<PartyDuplicateCandidate> ScopedToTenant(PartiesDbContext db)
-    {
-        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        return db.DuplicateCandidates
-            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
-            .Where(c => c.TenantId == tenantId);
     }
 }

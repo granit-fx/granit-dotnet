@@ -1,5 +1,6 @@
 using Granit.DataExchange.Extensions;
 using Granit.Parties.Deduplication.Domain;
+using Granit.Parties.Deduplication.EntityFrameworkCore;
 using Granit.Parties.Deduplication.Exports;
 using Granit.Parties.Deduplication.Internal;
 using Granit.Parties.Deduplication.Queries;
