@@ -123,7 +123,10 @@ public sealed class DefaultCreditExpirationServiceTests : IDisposable
         result.ShouldBe(1);
         await _accountWriter.Received(1).UpdateAsync(account, Arg.Any<CancellationToken>());
         await _eventBus.Received(1).PublishAsync(
-            Arg.Is<CreditExpiredEto>(e => e.Amount == 50m && e.Currency == "EUR"),
+            Arg.Is<CreditExpiredEto>(e =>
+                e.Amount == 50m
+                && e.Currency == "EUR"
+                && e.PartyId == account.PartyId.Value),
             Arg.Any<CancellationToken>());
     }
 
