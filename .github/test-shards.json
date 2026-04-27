@@ -338,6 +338,7 @@
         "tests/Granit.Payments.SepaTransfer.Tests",
         "tests/Granit.CustomerBalance.Tests",
         "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests",
+        "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.CustomerBalance.Endpoints.Tests",
         "tests/Granit.CustomerBalance.BackgroundJobs.Tests",
         "tests/Granit.CustomerBalance.Notifications.Tests",

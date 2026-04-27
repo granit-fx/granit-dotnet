@@ -541,6 +541,8 @@
       "name": "Granit.CustomerBalance.EntityFrameworkCore",
       "deps": [
         "Granit.CustomerBalance",
+        "Granit.Mergeable",
+        "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -11123,7 +11125,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.EntityFrameworkCore",
       "file": "src/Granit.CustomerBalance.EntityFrameworkCore/Extensions/CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitCustomerBalanceEntityFrameworkCore",
