@@ -2,7 +2,7 @@
 <title>Abbiamo ricevuto la Sua richiesta di cancellazione</title>
 <p>Buongiorno,</p>
 <p>Abbiamo ricevuto la Sua richiesta di cancellazione dei Suoi dati personali in data <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} ai sensi della normativa <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Questa e-mail costituisce la conferma di ricezione. Tratteremo la Sua richiesta entro il termine di legge applicabile alla Sua giurisdizione (un mese ai sensi dell'art. 12 §3 GDPR, prorogabile in caso di richiesta complessa). Riceverà una nuova e-mail non appena la cancellazione sarà eseguita, oppure se ci occorressero informazioni aggiuntive da parte Sua.</p>
+<p>Questa e-mail costituisce la conferma di ricezione. Ai sensi della normativa sulla protezione dei dati applicabile alla Sua giurisdizione{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, tratteremo la Sua richiesta entro <strong>{{ model.response_deadline_days }} giorni</strong>, prorogabili in caso di richiesta complessa. Riceverà una nuova e-mail non appena la cancellazione sarà eseguita, oppure se ci occorressero informazioni aggiuntive da parte Sua.</p>
 <p>Riferimento: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Questo messaggio è inviato da {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

@@ -2,7 +2,7 @@
 <title>Veri silme talebinizi aldık</title>
 <p>Merhaba,</p>
 <p>Kişisel verilerinizin silinmesine ilişkin talebinizi <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} <code>{{ model.regulation }}</code> mevzuatı kapsamında{{ end }} aldık.</p>
-<p>Bu e-posta, alındı bildiriminiz niteliğindedir. Talebinizi, yargı yetkinize uygulanabilir yasal süre içinde işleme alacağız (GDPR Madde 12 §3 uyarınca bir ay; talebin karmaşık olması halinde uzatma uygulanabilir). Silme işlemi tamamlandığında veya sizden ek bilgiye ihtiyaç duyduğumuzda yeni bir e-posta alacaksınız.</p>
+<p>Bu e-posta, alındı bildiriminiz niteliğindedir. Yargı yetkinize uygulanan veri koruma mevzuatı uyarınca{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, talebinizi <strong>{{ model.response_deadline_days }} gün</strong> içinde işleme alacağız; talebin karmaşık olması halinde uzatma uygulanabilir. Silme işlemi tamamlandığında veya sizden ek bilgiye ihtiyaç duyduğumuzda yeni bir e-posta alacaksınız.</p>
 <p>Referans: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Bu mesaj {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} tarafından gönderilmektedir.</p>

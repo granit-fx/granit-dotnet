@@ -2,7 +2,7 @@
 <title>我们已收到您的数据删除请求</title>
 <p>您好,</p>
 <p>我们已于 <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} 根据 <code>{{ model.regulation }}</code> 规定{{ end }} 收到您的个人数据删除请求。</p>
-<p>本邮件即您的接收回执。我们将在适用于您所在司法管辖区的法定期限内处理您的请求(根据 GDPR 第 12 条第 3 款,期限为一个月;若请求复杂可申请延期)。删除执行完成后,或当我们需要您提供更多信息时,您将收到后续邮件。</p>
+<p>本邮件即您的接收回执。根据适用于您所在司法管辖区的数据保护法律{{ if model.regulation }}(<code>{{ model.regulation }}</code>){{ end }},我们将在 <strong>{{ model.response_deadline_days }} 天</strong>内处理您的请求;若请求复杂可申请延期。删除执行完成后,或当我们需要您提供更多信息时,您将收到后续邮件。</p>
 <p>参考编号: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>本邮件由 {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }} 发送。</p>

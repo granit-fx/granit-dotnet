@@ -1,7 +1,7 @@
 <title>We've received your data deletion request</title>
 <p>Hi,</p>
 <p>We've received your request to delete your personal data on <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} under regulation <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>This email is your acknowledgement of receipt. We will process your request within the regulatory deadline that applies to your jurisdiction (one month under GDPR Art. 12 §3, plus any extension we may invoke if the request is complex). You will receive a follow-up email once the deletion is executed, or if we need additional information from you.</p>
+<p>This email is your acknowledgement of receipt. As required by the data protection law applicable in your jurisdiction{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, we will process your request within <strong>{{ model.response_deadline_days }} days</strong>, plus any extension we may invoke if the request is complex. You will receive a follow-up email once the deletion is executed, or if we need additional information from you.</p>
 <p>Reference: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>This message is sent by {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

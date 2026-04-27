@@ -2,7 +2,7 @@
 <title>Wir haben Ihren Löschantrag erhalten</title>
 <p>Guten Tag,</p>
 <p>Wir haben Ihren Antrag auf Löschung Ihrer personenbezogenen Daten am <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} nach Maßgabe der Verordnung <code>{{ model.regulation }}</code>{{ end }} erhalten.</p>
-<p>Diese E-Mail dient als Eingangsbestätigung. Wir bearbeiten Ihren Antrag innerhalb der für Ihre Rechtsordnung geltenden gesetzlichen Frist (ein Monat gemäß Art. 12 Abs. 3 DSGVO, mit möglicher Verlängerung bei komplexen Anträgen). Sie erhalten eine weitere E-Mail, sobald die Löschung ausgeführt wurde, oder falls wir zusätzliche Informationen von Ihnen benötigen.</p>
+<p>Diese E-Mail dient als Eingangsbestätigung. Nach dem für Ihre Rechtsordnung geltenden Datenschutzrecht{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} bearbeiten wir Ihren Antrag innerhalb von <strong>{{ model.response_deadline_days }} Tagen</strong>, mit möglicher Verlängerung bei komplexen Anträgen. Sie erhalten eine weitere E-Mail, sobald die Löschung ausgeführt wurde, oder falls wir zusätzliche Informationen von Ihnen benötigen.</p>
 <p>Referenz: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Diese Nachricht wird gesendet von {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

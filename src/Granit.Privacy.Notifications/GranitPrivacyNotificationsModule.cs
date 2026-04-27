@@ -1,6 +1,7 @@
 using Granit.Modularity;
 using Granit.Notifications;
 using Granit.Privacy.Notifications.GlobalContexts;
+using Granit.Privacy.Regulations;
 using Granit.Templating;
 using Granit.Templating.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,7 @@ namespace Granit.Privacy.Notifications;
 [DependsOn(
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitPrivacyModule),
+    typeof(GranitPrivacyRegulationsModule),
     typeof(GranitTemplatingModule))]
 public sealed class GranitPrivacyNotificationsModule : GranitModule
 {

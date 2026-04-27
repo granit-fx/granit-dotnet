@@ -2,7 +2,7 @@
 <title>Recebemos o seu pedido de eliminação</title>
 <p>Olá,</p>
 <p>Recebemos o seu pedido de eliminação dos seus dados pessoais em <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} ao abrigo da regulamentação <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Este e-mail constitui o seu aviso de receção. Iremos tratar o seu pedido dentro do prazo legal aplicável à sua jurisdição (um mês ao abrigo do artigo 12.º, n.º 3, do RGPD, prorrogável caso o pedido seja complexo). Receberá um novo e-mail assim que a eliminação for executada, ou caso necessitemos de informação adicional da sua parte.</p>
+<p>Este e-mail constitui o seu aviso de receção. Ao abrigo da legislação de proteção de dados aplicável à sua jurisdição{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }}, iremos tratar o seu pedido no prazo de <strong>{{ model.response_deadline_days }} dias</strong>, prorrogável caso o pedido seja complexo. Receberá um novo e-mail assim que a eliminação for executada, ou caso necessitemos de informação adicional da sua parte.</p>
 <p>Referência: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Esta mensagem é enviada por {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

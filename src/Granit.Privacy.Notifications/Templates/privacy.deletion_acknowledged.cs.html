@@ -2,7 +2,7 @@
 <title>Obdrželi jsme Vaši žádost o výmaz</title>
 <p>Dobrý den,</p>
 <p>Obdrželi jsme Vaši žádost o výmaz Vašich osobních údajů dne <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} podle nařízení <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Tento e-mail představuje potvrzení o přijetí. Vaši žádost vyřídíme v zákonné lhůtě platné pro Vaši jurisdikci (jeden měsíc podle čl. 12 odst. 3 GDPR, s možností prodloužení v případě složité žádosti). Další e-mail obdržíte, jakmile bude výmaz proveden, nebo pokud od Vás budeme potřebovat doplňující informace.</p>
+<p>Tento e-mail představuje potvrzení o přijetí. V souladu s právními předpisy o ochraně osobních údajů platnými pro Vaši jurisdikci{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} vyřídíme Vaši žádost ve lhůtě <strong>{{ model.response_deadline_days }} dnů</strong>, s možností prodloužení v případě složité žádosti. Další e-mail obdržíte, jakmile bude výmaz proveden, nebo pokud od Vás budeme potřebovat doplňující informace.</p>
 <p>Reference: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Tuto zprávu odesílá {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

@@ -533,6 +533,12 @@
           "WolverineFx": "[5.*, )"
         }
       },
+      "granit.privacy.regulations": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.queryengine.abstractions": {
         "type": "Project",
         "dependencies": {

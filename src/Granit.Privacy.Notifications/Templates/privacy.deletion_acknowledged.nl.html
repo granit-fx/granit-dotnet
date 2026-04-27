@@ -2,7 +2,7 @@
 <title>Wij hebben uw verzoek tot verwijdering ontvangen</title>
 <p>Hallo,</p>
 <p>Wij hebben uw verzoek tot verwijdering van uw persoonsgegevens ontvangen op <strong>{{ model.requested_at | date.to_string '%B %d, %Y' }}</strong>{{ if model.regulation }} op grond van regelgeving <code>{{ model.regulation }}</code>{{ end }}.</p>
-<p>Deze e-mail geldt als ontvangstbevestiging. Wij behandelen uw verzoek binnen de wettelijke termijn die op uw rechtsgebied van toepassing is (één maand op grond van artikel 12 §3 AVG, met eventuele verlenging indien het verzoek complex is). U ontvangt een vervolg-e-mail zodra de verwijdering is uitgevoerd, of als wij aanvullende informatie van u nodig hebben.</p>
+<p>Deze e-mail geldt als ontvangstbevestiging. Overeenkomstig de op uw rechtsgebied toepasselijke gegevensbeschermingswetgeving{{ if model.regulation }} (<code>{{ model.regulation }}</code>){{ end }} behandelen wij uw verzoek binnen <strong>{{ model.response_deadline_days }} dagen</strong>, met eventuele verlenging indien het verzoek complex is. U ontvangt een vervolg-e-mail zodra de verwijdering is uitgevoerd, of als wij aanvullende informatie van u nodig hebben.</p>
 <p>Referentie: <code>{{ model.request_id }}</code></p>
 {{ if privacy.controller_name }}
 <p>Dit bericht wordt verzonden door {{ privacy.controller_name }}{{ if privacy.controller_email }} (<a href="mailto:{{ privacy.controller_email }}">{{ privacy.controller_email }}</a>){{ end }}.</p>

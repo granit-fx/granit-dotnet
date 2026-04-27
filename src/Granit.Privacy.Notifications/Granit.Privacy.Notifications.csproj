@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
+    <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
     <ProjectReference Include="..\Granit.Notifications.Abstractions\Granit.Notifications.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Templating\Granit.Templating.csproj" />
   </ItemGroup>
