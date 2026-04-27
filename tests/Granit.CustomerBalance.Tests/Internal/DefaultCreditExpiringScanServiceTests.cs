@@ -143,7 +143,7 @@ public sealed class DefaultCreditExpiringScanServiceTests : IDisposable
 
     private static BalanceAccount CreateAccountWithBalance(Guid accountId, Guid tenantId, decimal balance)
     {
-        BalanceAccount account = BalanceAccount.Create(accountId, tenantId, PartyId.Create(Guid.NewGuid()), "EUR");
+        var account = BalanceAccount.Create(accountId, tenantId, PartyId.Create(Guid.NewGuid()), "EUR");
         account.Credit(balance, TransactionSource.Promotional, "Setup", Now.AddDays(-15), Guid.NewGuid());
         account.ClearIntegrationEvents();
         return account;

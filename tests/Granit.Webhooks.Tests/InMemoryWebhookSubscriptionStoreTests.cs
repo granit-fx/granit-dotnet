@@ -399,7 +399,7 @@ public sealed class InMemoryWebhookSubscriptionStoreTests
         Guid? tenantId,
         WebhookSubscriptionStatus status)
     {
-        WebhookSubscription sub = WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", eventType, "protected-secret", tenantId);
+        var sub = WebhookSubscription.Create(Guid.NewGuid(), "https://example.com/webhook", eventType, "protected-secret", tenantId);
 
         switch (status)
         {
