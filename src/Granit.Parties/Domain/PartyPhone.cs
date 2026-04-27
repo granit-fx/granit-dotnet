@@ -34,9 +34,18 @@ public sealed class PartyPhone : Entity
     /// <summary>The kind of phone (Mobile / Office / Home / Other).</summary>
     public PhoneKind Kind { get; private set; }
 
-    /// <summary>The phone number (recommend E.164 format, e.g. <c>"+3221234567"</c>).</summary>
+    /// <summary>The phone number as the user supplied it — preserved verbatim for display,
+    /// outbound calls / SMS, audit. The dedup-friendly form lives in
+    /// <see cref="CanonicalNumber"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
     public string Number { get; private set; } = string.Empty;
+
+    /// <summary>The canonical (dedup-friendly) E.164 form of <see cref="Number"/>. Computed by
+    /// the EF canonicalisation interceptor on save via libphonenumber. Null when parsing fails
+    /// or the input is missing a country code prefix. Indexed for Tier-1 deterministic
+    /// duplicate detection (Epic #1280).</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
+    public string? CanonicalNumber { get; private set; }
 
     /// <summary>Whether this is the contact's primary phone.</summary>
     public bool IsPrimary { get; private set; }
@@ -53,4 +62,11 @@ public sealed class PartyPhone : Entity
         Number = number;
         Label = label;
     }
+
+    /// <summary>
+    /// Sets the canonical E.164 form. Called exclusively by the EF canonicalisation interceptor
+    /// at save time — never by aggregate logic, since the canonical form is a derived value
+    /// recomputable from <see cref="Number"/>.
+    /// </summary>
+    internal void SetCanonicalNumber(string? canonicalNumber) => CanonicalNumber = canonicalNumber;
 }

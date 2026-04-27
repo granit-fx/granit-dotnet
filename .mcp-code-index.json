@@ -25439,7 +25439,7 @@
       "kind": "class",
       "project": "Granit.Mergeable.EntityFrameworkCore",
       "file": "src/Granit.Mergeable.EntityFrameworkCore/GranitMergeableEntityFrameworkCoreModule.cs",
-      "line": 11,
+      "line": 13,
       "members": []
     },
     {
@@ -32506,7 +32506,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalEmail { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -32591,7 +32591,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalNumber { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -32919,12 +32919,60 @@
       "members": []
     },
     {
+      "name": "EmailCanonicaliser",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Canonicalisation.EmailCanonicaliser",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Canonicalisation/EmailCanonicaliser.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Canonicalise",
+          "kind": "method",
+          "signature": "Canonicalise(string? email)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "PhoneCanonicaliser",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Canonicalisation.PhoneCanonicaliser",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Canonicalisation/PhoneCanonicaliser.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Canonicalise",
+          "kind": "method",
+          "signature": "Canonicalise(string? phone)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "TaxIdCanonicaliser",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Canonicalisation.TaxIdCanonicaliser",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Canonicalisation/TaxIdCanonicaliser.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Canonicalise",
+          "kind": "method",
+          "signature": "Canonicalise(string? taxId)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Parties.EntityFrameworkCore.Extensions.PartiesEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitPartiesEntityFrameworkCore",
@@ -33346,7 +33394,7 @@
       "kind": "class",
       "project": "Granit.Parties.Mergeable",
       "file": "src/Granit.Parties.Mergeable/GranitPartiesMergeableModule.cs",
-      "line": 12,
+      "line": 19,
       "members": []
     },
     {

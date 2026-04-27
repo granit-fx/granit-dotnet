@@ -1,5 +1,6 @@
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,14 @@ public static class PartiesEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.TryAddScoped<IDefaultPartySeeder, EfDefaultPartySeeder>();
 
         builder.Services.AddScoped<IQueryableSource<Domain.Party>, EfPartyQueryableSource>();
+
+        // Tier-1 deterministic duplicate detection — populate canonical projections on save.
+        // Registered as both concrete + IGranitAutoInterceptor (pattern from
+        // AuditingChangeTrackingInterceptor): the concrete registration lets unit tests
+        // resolve it; IGranitAutoInterceptor wires it onto every Granit DbContext.
+        builder.Services.AddScoped<PartyCanonicalisationInterceptor>();
+        builder.Services.AddScoped<IGranitAutoInterceptor>(sp =>
+            sp.GetRequiredService<PartyCanonicalisationInterceptor>());
 
         return builder;
     }

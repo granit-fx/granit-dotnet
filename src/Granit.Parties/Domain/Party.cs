@@ -278,6 +278,19 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     }
 
     /// <summary>
+    /// Overwrites <see cref="TaxId"/> with its canonical (separator-stripped, upper-case) form.
+    /// Called exclusively by the EF canonicalisation interceptor on save. Single-column design:
+    /// the canonical form IS the legal one (KBO/BCE, HMRC, IRS all accept it without
+    /// separators) so there is no UX cost to displaying it back canonical, and the indexed
+    /// column doubles as the Tier-1 dedup key for Epic #1280.
+    /// </summary>
+    internal void OverwriteTaxIdCanonical(string canonical)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(canonical);
+        TaxId = canonical;
+    }
+
+    /// <summary>
     /// Reverses <see cref="MarkAsMergedInto"/> — used by the un-merge endpoint (P3) to revive
     /// a tombstoned loser. Cross-module reference rewriters are NOT replayed by this method ;
     /// the un-merge contract documents that re-routing already-rewritten references is

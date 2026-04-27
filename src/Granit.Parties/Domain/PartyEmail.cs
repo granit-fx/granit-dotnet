@@ -29,9 +29,18 @@ public sealed class PartyEmail : Entity
         };
     }
 
-    /// <summary>The email address.</summary>
+    /// <summary>The email address as the user supplied it — preserved verbatim for display,
+    /// outbound mail, audit, and GDPR rectification. The dedup-friendly form lives in
+    /// <see cref="CanonicalEmail"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
     public string Address { get; private set; } = string.Empty;
+
+    /// <summary>The canonical (dedup-friendly) form of <see cref="Address"/>. Computed by
+    /// the EF canonicalisation interceptor on save (Gmail dot/plus-tag stripping, lower-case,
+    /// trim). Null when canonicalisation produces no usable key. Indexed for Tier-1
+    /// deterministic duplicate detection (Epic #1280).</summary>
+    [SensitiveData(Level = Sensitivity.Confidential)]
+    public string? CanonicalEmail { get; private set; }
 
     /// <summary>Whether this is the contact's primary email.</summary>
     public bool IsPrimary { get; private set; }
@@ -47,4 +56,11 @@ public sealed class PartyEmail : Entity
         Address = address;
         Label = label;
     }
+
+    /// <summary>
+    /// Sets the canonical form. Called exclusively by the EF canonicalisation interceptor
+    /// at save time — never by aggregate logic, since the canonical form is a derived value
+    /// recomputable from <see cref="Address"/>.
+    /// </summary>
+    internal void SetCanonicalEmail(string? canonicalEmail) => CanonicalEmail = canonicalEmail;
 }

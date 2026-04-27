@@ -61,6 +61,12 @@ internal sealed class PartyConfiguration : IEntityTypeConfiguration<Party>
         builder.HasIndex(c => c.Status);
         builder.HasIndex(c => c.Roles);
         builder.HasIndex(c => c.UserId);
+
+        // Tier-1 deterministic duplicate detection (Epic #1280): TaxId is overwritten in
+        // place with its canonical (separator-stripped, upper-case) form by the
+        // PartyCanonicalisationInterceptor. Non-unique because two distinct parties may
+        // legitimately share a VAT (sole proprietor + their company, group subsidiaries).
+        builder.HasIndex(c => c.TaxId);
     }
 }
 
@@ -102,10 +108,16 @@ internal sealed class PartyEmailConfiguration : IEntityTypeConfiguration<PartyEm
         builder.HasKey(e => e.Id);
 
         builder.Property(e => e.Address).HasMaxLength(320).IsRequired();
+        builder.Property(e => e.CanonicalEmail).HasMaxLength(320);
         builder.Property(e => e.IsPrimary).IsRequired();
         builder.Property(e => e.Label).HasMaxLength(64);
 
         builder.HasIndex("PartyId", nameof(PartyEmail.IsPrimary));
+
+        // Tier-1 deterministic duplicate detection (Epic #1280): non-unique because two
+        // legitimately distinct parties may share an email (household, family). Tenant
+        // filtering happens via JOIN on the parent Party in the dedup engine.
+        builder.HasIndex(e => e.CanonicalEmail);
     }
 }
 
@@ -121,10 +133,15 @@ internal sealed class PartyPhoneConfiguration : IEntityTypeConfiguration<PartyPh
 
         builder.Property(p => p.Kind).IsRequired();
         builder.Property(p => p.Number).HasMaxLength(64).IsRequired();
+        builder.Property(p => p.CanonicalNumber).HasMaxLength(20);
         builder.Property(p => p.IsPrimary).IsRequired();
         builder.Property(p => p.Label).HasMaxLength(64);
 
         builder.HasIndex("PartyId", nameof(PartyPhone.IsPrimary));
+
+        // Tier-1 deterministic duplicate detection (Epic #1280): non-unique because two
+        // legitimately distinct parties may share a phone (family, shared landline).
+        builder.HasIndex(p => p.CanonicalNumber);
     }
 }
 
