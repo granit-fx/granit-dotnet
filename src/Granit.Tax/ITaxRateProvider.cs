@@ -1,4 +1,4 @@
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 
 namespace Granit.Tax;
 
@@ -14,12 +14,12 @@ public interface ITaxRateProvider
     /// document footer (e.g. "VAT reverse-charge per Art. 196").
     /// When <paramref name="contactId"/> is omitted (<c>null</c>), the legacy
     /// country-default behaviour applies — preserves binary compatibility with consumers
-    /// that have not migrated to ContactId yet.
+    /// that have not migrated to PartyId yet.
     /// </summary>
     Task<TaxRateEntry?> GetRateAsync(
         string countryCode,
         DateTimeOffset asOf,
-        ContactId? contactId = null,
+        PartyId? contactId = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>Returns all currently effective tax rates.</summary>

@@ -1,7 +1,7 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Internal;
@@ -40,7 +40,7 @@ public sealed class DefaultCancelAtPeriodEndServiceTests
         var sub = Subscription.Create(
             Guid.NewGuid(),
             tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             new SubscriptionPeriod(now.AddMonths(-1), now, BillingCycleAnchor: now.AddMonths(-1)));

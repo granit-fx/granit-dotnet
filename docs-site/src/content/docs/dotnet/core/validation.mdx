@@ -211,8 +211,8 @@ Extension methods on `IRuleBuilder<T, string?>` for common international formats
 
 | Category | Validator | Format | Error code |
 | -------- | --------- | ------ | ---------- |
-| Contact | `.Email()` | RFC 5321 practical subset | `InvalidEmail` |
-| Contact | `.E164Phone()` | `+` followed by 7-15 digits | `InvalidE164Phone` |
+| Party | `.Email()` | RFC 5321 practical subset | `InvalidEmail` |
+| Party | `.E164Phone()` | `+` followed by 7-15 digits | `InvalidE164Phone` |
 | Payment | `.Iban()` | ISO 13616 (MOD-97 check) | `InvalidIban` |
 | Payment | `.BicSwift()` | ISO 9362 (8 or 11 chars) | `InvalidBicSwift` |
 | Payment | `.SepaCreditorIdentifier()` | EPC262-08 (MOD 97-10) | `InvalidSepaCreditorIdentifier` |

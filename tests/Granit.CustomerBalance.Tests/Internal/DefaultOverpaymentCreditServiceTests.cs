@@ -1,9 +1,9 @@
 using System.Diagnostics.Metrics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Internal;
 using Granit.Guids;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -51,7 +51,7 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         var invoiceId = Guid.NewGuid();
         var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
@@ -77,7 +77,7 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         var invoiceId = Guid.NewGuid();
 
         // First call returns null (account does not exist), second call returns the newly created account.
@@ -100,7 +100,7 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "USD");
 
         _accountReader.GetByContactAndCurrencyAsync(contactId, "USD", Arg.Any<CancellationToken>())
@@ -120,7 +120,7 @@ public sealed class DefaultOverpaymentCreditServiceTests : IDisposable
     {
         CancellationToken ct = TestContext.Current.CancellationToken;
         var tenantId = Guid.NewGuid();
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         var account = BalanceAccount.Create(Guid.NewGuid(), tenantId, contactId, "EUR");
 
         _accountReader.GetByContactAndCurrencyAsync(contactId, "EUR", Arg.Any<CancellationToken>())

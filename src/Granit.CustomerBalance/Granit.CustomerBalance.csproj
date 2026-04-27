@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
-    <ProjectReference Include="..\Granit.Contacts.Abstractions\Granit.Contacts.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Parties.Abstractions\Granit.Parties.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.Invoicing.Abstractions\Granit.Invoicing.Abstractions.csproj" />

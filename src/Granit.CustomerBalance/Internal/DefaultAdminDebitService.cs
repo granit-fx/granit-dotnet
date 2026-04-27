@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +19,7 @@ internal sealed partial class DefaultAdminDebitService(
 {
     public async Task<BalanceAccount> DebitAsync(
         Guid tenantId,
-        ContactId contactId,
+        PartyId contactId,
         decimal amount,
         string currency,
         string reason,

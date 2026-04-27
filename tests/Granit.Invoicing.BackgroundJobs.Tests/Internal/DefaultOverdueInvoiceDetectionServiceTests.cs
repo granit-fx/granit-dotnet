@@ -1,10 +1,10 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Invoicing;
 using Granit.Invoicing.BackgroundJobs.Internal;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -48,7 +48,7 @@ public sealed class DefaultOverdueInvoiceDetectionServiceTests
         var invoice = Invoice.Create(
             Guid.NewGuid(),
             tid,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             InvoiceDocumentType.Invoice,
             "EUR",
             CollectionMethod.Auto,

@@ -1,7 +1,7 @@
 namespace Granit.Notifications;
 
 /// <summary>
-/// Contact information for a notification recipient, resolved by <see cref="Abstractions.IRecipientResolver"/>.
+/// Party information for a notification recipient, resolved by <see cref="Abstractions.IRecipientResolver"/>.
 /// </summary>
 public sealed record RecipientInfo
 {

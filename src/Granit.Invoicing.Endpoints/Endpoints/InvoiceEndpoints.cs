@@ -1,5 +1,4 @@
 using Granit.Authorization.Extensions;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.Invoicing.Domain;
@@ -8,6 +7,7 @@ using Granit.Invoicing.Dtos;
 using Granit.Invoicing.Endpoints.Dtos;
 using Granit.Invoicing.Endpoints.Permissions;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -107,7 +107,7 @@ internal static class InvoiceEndpoints
         var invoice = Invoice.Create(
             guidGenerator.Create(),
             currentTenant.Id!.Value,
-            ContactId.Create(request.ContactId),
+            PartyId.Create(request.PartyId),
             request.DocumentType,
             request.Currency,
             request.CollectionMethod,

@@ -1,0 +1,5 @@
+{
+  "PermissionGroup:Parties": "Parties",
+  "Permission:Parties.Parties.Read": "Read contacts",
+  "Permission:Parties.Parties.Manage": "Manage contacts (create, update, lifecycle, addresses, emails, phones, external mappings, roles)"
+}

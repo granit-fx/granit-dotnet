@@ -15,9 +15,9 @@ internal sealed class InvoiceCreateRequestValidator : GranitValidator<InvoiceCre
 
     public InvoiceCreateRequestValidator()
     {
-        // ContactId is required — built-in NotEmpty rejects Guid.Empty and the
+        // PartyId is required — built-in NotEmpty rejects Guid.Empty and the
         // GranitErrorCodeLanguageManager auto-localises the error.
-        RuleFor(x => x.ContactId)
+        RuleFor(x => x.PartyId)
             .NotEmpty();
 
         RuleFor(x => x.DocumentType)

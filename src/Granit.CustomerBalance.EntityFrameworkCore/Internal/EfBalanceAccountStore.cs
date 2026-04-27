@@ -1,7 +1,7 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Domain.ValueObjects;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ internal sealed class EfBalanceAccountStore(
         FindByIdAsync(id.Value, cancellationToken);
 
     public async Task<BalanceAccount?> GetByContactAndCurrencyAsync(
-        ContactId contactId, string currency, CancellationToken cancellationToken = default)
+        PartyId contactId, string currency, CancellationToken cancellationToken = default)
     {
         string normalizedCurrency = currency.ToUpperInvariant();
         await using CustomerBalanceDbContext context = await _contextFactory
@@ -28,7 +28,7 @@ internal sealed class EfBalanceAccountStore(
         return await context.Accounts
             .Include(a => a.Transactions)
             .FirstOrDefaultAsync(
-                a => a.ContactId.Value == contactId.Value && a.Currency == normalizedCurrency,
+                a => a.PartyId.Value == contactId.Value && a.Currency == normalizedCurrency,
                 cancellationToken)
             .ConfigureAwait(false);
     }

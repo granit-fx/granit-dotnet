@@ -1,21 +1,21 @@
 ---
 title: "Seed the default contact at tenant provisioning"
-description: Wire Granit.Contacts.MultiTenancy so each new tenant automatically gets the host-scoped Contact that downstream Invoicing / Subscriptions / Payments / Tax / CustomerBalance modules use as the canonical billing identity.
+description: Wire Granit.Parties.MultiTenancy so each new tenant automatically gets the host-scoped Party that downstream Invoicing / Subscriptions / Payments / Tax / CustomerBalance modules use as the canonical billing identity.
 sidebar:
   order: 31
   label: Seed contact on tenant created
 ---
 
 Downstream modules (Invoicing, Subscriptions, Payments, Tax, CustomerBalance)
-resolve the billing identity for a tenant via `IDefaultContactResolver`, which
-looks up the host-scoped `Contact` carrying the reserved
-`ContactExternalProviderNames.Tenant` external mapping. That contact has to
+resolve the billing identity for a tenant via `IDefaultPartyResolver`, which
+looks up the host-scoped `Party` carrying the reserved
+`PartyExternalProviderNames.Tenant` external mapping. That contact has to
 exist before any of them can issue an invoice, charge a card, or run a tax
 calculation against the tenant.
 
-`Granit.Contacts.MultiTenancy` automates the creation: it ships a
+`Granit.Parties.MultiTenancy` automates the creation: it ships a
 Wolverine-discovered handler subscribing to `TenantCreatedEvent` that calls
-`IDefaultContactSeeder.SeedForTenantAsync`. The seeder is **idempotent** —
+`IDefaultPartySeeder.SeedForTenantAsync`. The seeder is **idempotent** —
 Wolverine's at-least-once delivery is safe.
 
 ## Opt in
@@ -23,30 +23,30 @@ Wolverine's at-least-once delivery is safe.
 Add the module package to your bundle:
 
 ```bash
-dotnet add package Granit.Contacts.MultiTenancy
+dotnet add package Granit.Parties.MultiTenancy
 ```
 
-The base `Granit.Contacts` package stays free of any `Granit.MultiTenancy`
+The base `Granit.Parties` package stays free of any `Granit.MultiTenancy`
 dependency — apps that do not run a multi-tenant stack do not pay for it. The
-seeder itself is registered by `Granit.Contacts.EntityFrameworkCore` regardless.
+seeder itself is registered by `Granit.Parties.EntityFrameworkCore` regardless.
 
 ## What it does
 
 When `Granit.MultiTenancy` raises `TenantCreatedEvent(tenantId, name, identifier)`:
 
-1. The handler resolves `IDefaultContactSeeder` from DI.
-2. The seeder asks `IDefaultContactResolver` whether a contact already exists
+1. The handler resolves `IDefaultPartySeeder` from DI.
+2. The seeder asks `IDefaultPartyResolver` whether a contact already exists
    for `tenantId` (via the reserved `tenant` external mapping). If yes, it
    returns the existing one — replays of the same event are no-ops.
 3. Otherwise it creates a host-scoped (`TenantId == null`) `Company` contact
    named after the tenant, attaches the
-   `ContactExternalProviderNames.Tenant = tenantId.ToString()` external mapping,
+   `PartyExternalProviderNames.Tenant = tenantId.ToString()` external mapping,
    and persists it with the multi-tenant query filter disabled (the handler
    typically runs in the freshly-created tenant's scope).
 
 ## Backfill for pre-existing tenants
 
-Apps that already have tenants when adopting `Granit.Contacts` should call the
+Apps that already have tenants when adopting `Granit.Parties` should call the
 seeder once per existing tenant during their own migration script. The framework
 does **not** ship a SQL backfill — that work belongs in the consuming app's
 migration runner alongside the rest of its data setup. Pseudo-code:
@@ -54,7 +54,7 @@ migration runner alongside the rest of its data setup. Pseudo-code:
 ```csharp
 public async Task BackfillAsync(IServiceProvider sp, CancellationToken ct)
 {
-    var seeder = sp.GetRequiredService<IDefaultContactSeeder>();
+    var seeder = sp.GetRequiredService<IDefaultPartySeeder>();
     var tenants = sp.GetRequiredService<ITenantReader>();
     foreach (var t in await tenants.ListAsync(ct))
     {
@@ -67,7 +67,7 @@ public async Task BackfillAsync(IServiceProvider sp, CancellationToken ct)
 
 Apps that need to seed extra fields (taxId, billing address, language…) should
 register their own subscriber for `TenantCreatedEvent` after the framework
-handler — read the just-created contact via `IContactReader.GetByIdAsync`,
+handler — read the just-created contact via `IPartyReader.GetByIdAsync`,
 mutate it through the aggregate's methods (`UpdateContact`, `AddAddress`, …),
-and persist with `IContactWriter.UpdateAsync`. The seeder only ships the
+and persist with `IPartyWriter.UpdateAsync`. The seeder only ships the
 identity-level baseline so it stays composable.

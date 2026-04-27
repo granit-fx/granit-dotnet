@@ -518,7 +518,7 @@ What the endpoint MUST still declare:
 - [ ] Host calls `app.UseGranitApiDocumentation()` in `Program.cs` (not manual
   `MapOpenApi()` + custom UI wiring)
 - [ ] `ApiDocumentationOptions` bound from `ApiDocumentation` section in
-  `appsettings.json` (`MajorVersions`, `Title`, `Description`, `ContactEmail`,
+  `appsettings.json` (`MajorVersions`, `Title`, `Description`, `PartyEmail`,
   `LogoUrl`, `FaviconUrl`, `EnableInProduction`, `EnableTenantHeader`,
   `AuthorizationPolicy`, `OAuth2`)
 - [ ] `EnableInProduction = false` unless explicitly required (ISO 27001 —

@@ -1,10 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using Granit.Authorization.Extensions;
-using Granit.Contacts;
-using Granit.Contacts.Domain;
 using Granit.Guids;
 using Granit.Http.Idempotency.Attributes;
 using Granit.MultiTenancy;
+using Granit.Parties;
+using Granit.Parties.Domain;
 using Granit.Payments.Contracts;
 using Granit.Payments.Domain;
 using Granit.Payments.Endpoints.Dtos;
@@ -141,7 +141,7 @@ internal static class PaymentMethodEndpoints
         [FromServices] IEnumerable<IPaymentMethodManager> managers,
         [FromServices] IPaymentMethodWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IDefaultContactResolver contactResolver,
+        [FromServices] IDefaultPartyResolver contactResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -156,8 +156,8 @@ internal static class PaymentMethodEndpoints
         }
 
         // Resolve the host-scoped contact representing this tenant. Future iterations may
-        // accept an explicit ContactId in the request DTO when a tenant has multiple contacts.
-        Contact? contact = tenantId == Guid.Empty
+        // accept an explicit PartyId in the request DTO when a tenant has multiple contacts.
+        Party? contact = tenantId == Guid.Empty
             ? null
             : await contactResolver
                 .GetDefaultForTenantAsync(tenantId, cancellationToken)
@@ -166,7 +166,7 @@ internal static class PaymentMethodEndpoints
         if (contact is null)
         {
             return TypedResults.Problem(
-                detail: "No default contact resolved for the active tenant. Provision the host-scoped Contact representing this tenant before attaching a payment method (see Granit.Contacts.MultiTenancy).",
+                detail: "No default contact resolved for the active tenant. Provision the host-scoped Party representing this tenant before attaching a payment method (see Granit.Parties.MultiTenancy).",
                 statusCode: StatusCodes.Status409Conflict);
         }
 

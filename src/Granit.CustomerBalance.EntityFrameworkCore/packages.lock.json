@@ -99,20 +99,14 @@
       "granit": {
         "type": "Project"
       },
-      "granit.contacts.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.customerbalance": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.Contacts.Abstractions": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Invoicing.Abstractions": "[0.1.0-dev, )",
+          "Granit.Parties.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
@@ -145,6 +139,12 @@
         }
       },
       "granit.invoicing.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.parties.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"

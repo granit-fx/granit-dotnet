@@ -1,6 +1,6 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Endpoints.Dtos;
+using Granit.Parties.Domain.ValueObjects;
 using Shouldly;
 using Xunit;
 
@@ -15,7 +15,7 @@ public sealed class InvoiceResponseTests
         var invoice = Invoice.Create(
             id: Guid.NewGuid(),
             tenantId: Guid.NewGuid(),
-            contactId: ContactId.Create(contactId),
+            contactId: PartyId.Create(contactId),
             documentType: InvoiceDocumentType.Invoice,
             currency: "EUR",
             collectionMethod: CollectionMethod.Auto,
@@ -24,7 +24,7 @@ public sealed class InvoiceResponseTests
         var response = InvoiceResponse.FromEntity(invoice);
 
         response.Id.ShouldBe(invoice.Id);
-        response.ContactId.ShouldBe(contactId);
+        response.PartyId.ShouldBe(contactId);
         response.Currency.ShouldBe("EUR");
         response.Status.ShouldBe(InvoiceStatus.Draft.ToString());
     }

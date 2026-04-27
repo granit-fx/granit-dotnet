@@ -1,6 +1,6 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Events;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 
 namespace Granit.CustomerBalance.Handlers;
 
@@ -21,7 +21,7 @@ public class OverpaymentCreditHandler
         {
             await overpaymentCreditService.CreditOverpaymentAsync(
                 eto.TenantId,
-                ContactId.Create(eto.ContactId),
+                PartyId.Create(eto.PartyId),
                 eto.Currency,
                 eto.OverpaymentAmount,
                 eto.InvoiceId,

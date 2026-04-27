@@ -1,5 +1,5 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Events;
 using Granit.Workflow.Domain;
@@ -32,7 +32,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// <summary>Creates a new subscription in Trial or Active status.</summary>
     /// <param name="id">Unique subscription identifier.</param>
     /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="contactId"/>).</param>
-    /// <param name="contactId">Identifier of the <c>Granit.Contacts.Contact</c> that holds the billing identity for this subscription. Required.</param>
+    /// <param name="contactId">Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this subscription. Required.</param>
     /// <param name="planId">Plan the subscription is for.</param>
     /// <param name="currency">ISO 4217 currency code (e.g., "EUR").</param>
     /// <param name="period">Initial billing period boundaries.</param>
@@ -41,7 +41,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     public static Subscription Create(
         SubscriptionId id,
         Guid tenantId,
-        ContactId contactId,
+        PartyId contactId,
         PlanId planId,
         string currency,
         SubscriptionPeriod period,
@@ -60,7 +60,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         {
             Id = id,
             TenantId = tenantId,
-            ContactId = contactId,
+            PartyId = contactId,
             PlanId = planId,
             Currency = currency.ToUpperInvariant(),
             Status = initialStatus,
@@ -141,12 +141,12 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     Guid? IMultiTenant.TenantId { get; set; }
 
     /// <summary>
-    /// Identifier of the <c>Granit.Contacts.Contact</c> that holds the billing identity
+    /// Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity
     /// (legal name, addresses, payment methods) for this subscription. Required — pinned
     /// at creation. Switching contact mid-life-cycle is not supported (would invalidate
     /// the running invoice cycle); cancel + re-create instead.
     /// </summary>
-    public ContactId ContactId { get; private set; } = null!;
+    public PartyId PartyId { get; private set; } = null!;
 
     // ── IWorkflowStateful ──────────────────────────────────────────────
 
@@ -169,7 +169,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         EnsureTransitionAllowed(SubscriptionStatus.Active);
         Status = SubscriptionStatus.Active;
-        AddDistributedEvent(new SubscriptionActivatedEto(Id, PlanId, TenantId!.Value, ContactId.Value));
+        AddDistributedEvent(new SubscriptionActivatedEto(Id, PlanId, TenantId!.Value, PartyId.Value));
         return true;
     }
 
@@ -196,7 +196,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         EnsureTransitionAllowed(SubscriptionStatus.Suspended);
         Status = SubscriptionStatus.Suspended;
-        AddDistributedEvent(new SubscriptionSuspendedEto(Id, PlanId, TenantId!.Value, ContactId.Value));
+        AddDistributedEvent(new SubscriptionSuspendedEto(Id, PlanId, TenantId!.Value, PartyId.Value));
         return true;
     }
 
@@ -218,7 +218,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         CancelledAt = cancelledAt;
         CancellationReason = reason;
         CancelAtPeriodEnd = false;
-        AddDistributedEvent(new SubscriptionCancelledEto(Id, PlanId, TenantId!.Value, ContactId.Value, reason));
+        AddDistributedEvent(new SubscriptionCancelledEto(Id, PlanId, TenantId!.Value, PartyId.Value, reason));
         return true;
     }
 
@@ -232,7 +232,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         EnsureTransitionAllowed(SubscriptionStatus.Expired);
         Status = SubscriptionStatus.Expired;
-        AddDistributedEvent(new SubscriptionExpiredEto(Id, PlanId, TenantId!.Value, ContactId.Value));
+        AddDistributedEvent(new SubscriptionExpiredEto(Id, PlanId, TenantId!.Value, PartyId.Value));
         return true;
     }
 
@@ -271,7 +271,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
         PlanId oldPlanId = PlanId;
         PlanId = newPlanId;
-        AddDistributedEvent(new SubscriptionPlanChangedEto(Id, oldPlanId, newPlanId, TenantId!.Value, ContactId.Value));
+        AddDistributedEvent(new SubscriptionPlanChangedEto(Id, oldPlanId, newPlanId, TenantId!.Value, PartyId.Value));
     }
 
     /// <summary>Advances to the next billing period.</summary>

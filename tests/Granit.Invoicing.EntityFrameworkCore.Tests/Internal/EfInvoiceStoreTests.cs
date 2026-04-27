@@ -1,10 +1,10 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.EntityFrameworkCore.Internal;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;
 using Shouldly;
@@ -39,7 +39,7 @@ public sealed class EfInvoiceStoreTests : IAsyncDisposable
     private static Invoice NewDraftInvoice(Guid? tenantId = null, Guid? contactId = null) =>
         Invoice.Create(
             Guid.NewGuid(), tenantId ?? Guid.NewGuid(),
-            ContactId.Create(contactId ?? Guid.NewGuid()),
+            PartyId.Create(contactId ?? Guid.NewGuid()),
             InvoiceDocumentType.Invoice, "EUR",
             CollectionMethod.Auto, BillingReason.SubscriptionCycle);
 
@@ -123,7 +123,7 @@ public sealed class EfInvoiceStoreTests : IAsyncDisposable
 
         var creditNote = Invoice.Create(
             Guid.NewGuid(), parent.TenantId!.Value,
-            parent.ContactId,
+            parent.PartyId,
             InvoiceDocumentType.CreditNote, "EUR",
             CollectionMethod.Auto, BillingReason.Manual,
             creditNoteInfo: new CreditNoteInfo(InvoiceId.Create(parent.Id), "test refund"));

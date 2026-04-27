@@ -1,6 +1,6 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 using Shouldly;
 using Xunit;
 
@@ -13,7 +13,7 @@ public sealed class InvoiceTests
         var invoice = Invoice.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             InvoiceDocumentType.Invoice,
             "EUR",
             CollectionMethod.Auto,
@@ -71,7 +71,7 @@ public sealed class InvoiceTests
     public void Finalize_WithBillingSnapshot_PersistsItOnAggregate()
     {
         Invoice invoice = CreateDraftInvoice();
-        var snapshot = Granit.Contacts.Domain.BillingAddress.Create(
+        var snapshot = Granit.Parties.Domain.BillingAddress.Create(
             line1: "rue 1",
             city: "Brussels",
             postalCode: "1000",
@@ -193,7 +193,7 @@ public sealed class InvoiceTests
         var creditNote = Invoice.CreateCreditNote(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             InvoiceId.Create(Guid.NewGuid()),
             "EUR",
             "Refund for defective service");

@@ -1,8 +1,8 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Events;
 using Granit.CustomerBalance.Exceptions;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 
 namespace Granit.CustomerBalance.Domain;
 
@@ -29,9 +29,9 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
     /// <summary>Creates a new balance account for the given contact, tenant and currency.</summary>
     /// <param name="id">Unique account identifier.</param>
     /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation).</param>
-    /// <param name="contactId">Identifier of the <c>Granit.Contacts.Contact</c> that owns this balance — required.</param>
+    /// <param name="contactId">Identifier of the <c>Granit.Parties.Party</c> that owns this balance — required.</param>
     /// <param name="currency">ISO 4217 currency code (e.g., "EUR").</param>
-    public static BalanceAccount Create(Guid id, Guid tenantId, ContactId contactId, string currency)
+    public static BalanceAccount Create(Guid id, Guid tenantId, PartyId contactId, string currency)
     {
         ArgumentNullException.ThrowIfNull(contactId);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
@@ -40,7 +40,7 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
         {
             Id = id,
             TenantId = tenantId,
-            ContactId = contactId,
+            PartyId = contactId,
             Currency = currency.ToUpperInvariant(),
             Balance = 0m,
             ConcurrencyStamp = string.Empty,
@@ -63,11 +63,11 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
     Guid? IMultiTenant.TenantId { get => TenantId; set => TenantId = value; }
 
     /// <summary>
-    /// Identifier of the <c>Granit.Contacts.Contact</c> that owns this balance. The
+    /// Identifier of the <c>Granit.Parties.Party</c> that owns this balance. The
     /// module's name finally matches its domain — a tenant can hold many balance accounts,
     /// one per (contact, currency) tuple, so e-commerce tenants run per-buyer balances.
     /// </summary>
-    public ContactId ContactId { get; private set; } = null!;
+    public PartyId PartyId { get; private set; } = null!;
 
     /// <inheritdoc/>
     public string ConcurrencyStamp { get; set; } = string.Empty;
@@ -109,7 +109,7 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
         Balance += amount;
 
         AddDistributedEvent(new BalanceCreditedEto(
-            Id, TenantId!.Value, ContactId.Value, amount, Currency, source));
+            Id, TenantId!.Value, PartyId.Value, amount, Currency, source));
     }
 
     /// <summary>
@@ -152,6 +152,6 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
         Balance -= amount;
 
         AddDistributedEvent(new BalanceDebitedEto(
-            Id, TenantId!.Value, ContactId.Value, amount, Currency, referenceId, referenceType));
+            Id, TenantId!.Value, PartyId.Value, amount, Currency, referenceId, referenceType));
     }
 }

@@ -1,8 +1,8 @@
 using System.Collections.Frozen;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Endpoints.Dtos;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +38,7 @@ internal static class AdminCreditEndpoint
 
         BalanceAccount account = await creditService.ApplyAsync(
             tenantId,
-            ContactId.Create(request.ContactId),
+            PartyId.Create(request.PartyId),
             request.Amount,
             currency,
             source,

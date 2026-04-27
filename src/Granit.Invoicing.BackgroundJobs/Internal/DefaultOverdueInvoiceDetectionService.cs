@@ -26,7 +26,7 @@ internal sealed partial class DefaultOverdueInvoiceDetectionService(
             using (currentTenant.Change(invoice.TenantId))
             {
                 await distributedEventBus.PublishAsync(
-                    new InvoiceOverdueEto(invoice.Id, invoice.TenantId!.Value, invoice.ContactId.Value, invoice.DueAt!.Value),
+                    new InvoiceOverdueEto(invoice.Id, invoice.TenantId!.Value, invoice.PartyId.Value, invoice.DueAt!.Value),
                     cancellationToken)
                     .ConfigureAwait(false);
 

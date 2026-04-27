@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -23,7 +23,7 @@ internal sealed partial class DefaultAdminCreditService(
 {
     public async Task<BalanceAccount> ApplyAsync(
         Guid tenantId,
-        ContactId contactId,
+        PartyId contactId,
         decimal amount,
         string currency,
         TransactionSource source,
@@ -72,7 +72,7 @@ internal sealed partial class DefaultAdminCreditService(
         [LoggerMessage(Level = LogLevel.Information, Message = "Admin credit ({Source}) of {Amount} applied, new balance: {NewBalance}")]
         public static partial void AdminCredited(ILogger logger, TransactionSource source, decimal amount, decimal newBalance);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {ContactId} ({Currency})")]
-        public static partial void AccountCreated(ILogger logger, Guid contactId, string currency);
+        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {PartyId} ({Currency})")]
+        public static partial void AccountCreated(ILogger logger, Guid partyId, string currency);
     }
 }

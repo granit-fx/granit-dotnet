@@ -1,10 +1,10 @@
 using System.Diagnostics;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.Guids;
 using Granit.Invoicing;
 using Granit.Invoicing.Events;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -31,7 +31,7 @@ internal sealed partial class CustomerBalancePrePaymentProcessor(
             .StartActivity(CustomerBalanceActivitySource.DebitBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(ContactId.Create(eto.ContactId), eto.Currency, cancellationToken)
+            .GetByContactAndCurrencyAsync(PartyId.Create(eto.PartyId), eto.Currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null || account.Balance <= 0)

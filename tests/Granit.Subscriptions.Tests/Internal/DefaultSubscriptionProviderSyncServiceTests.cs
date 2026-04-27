@@ -1,4 +1,4 @@
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.Internal;
@@ -30,7 +30,7 @@ public sealed class DefaultSubscriptionProviderSyncServiceTests
         return Subscription.Create(
             Guid.NewGuid(),
             tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             planId,
             currency: "EUR",
             new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));

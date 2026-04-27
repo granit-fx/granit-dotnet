@@ -11,7 +11,7 @@ public sealed class InvoiceCreateRequestValidatorTests
     private readonly InvoiceCreateRequestValidator _sut = new();
 
     private static InvoiceCreateRequest ValidRequest(Guid? contactId = null) => new(
-        ContactId: contactId ?? Guid.NewGuid(),
+        PartyId: contactId ?? Guid.NewGuid(),
         DocumentType: InvoiceDocumentType.Invoice,
         Currency: "EUR",
         CollectionMethod: CollectionMethod.Auto,
@@ -22,9 +22,9 @@ public sealed class InvoiceCreateRequestValidatorTests
         _sut.TestValidate(ValidRequest()).ShouldNotHaveAnyValidationErrors();
 
     [Fact]
-    public void ContactId_Empty_Fails() =>
+    public void PartyId_Empty_Fails() =>
         _sut.TestValidate(ValidRequest(Guid.Empty))
-            .ShouldHaveValidationErrorFor(r => r.ContactId);
+            .ShouldHaveValidationErrorFor(r => r.PartyId);
 
     [Fact]
     public void Currency_Empty_Fails() =>

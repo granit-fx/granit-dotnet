@@ -1,7 +1,7 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.MultiTenancy;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Subscriptions.Domain;
 using Granit.Subscriptions.Domain.ValueObjects;
 using Granit.Subscriptions.EntityFrameworkCore.Internal;
@@ -38,7 +38,7 @@ public sealed class EfSubscriptionQueryableSourceTests : IDisposable
         var period = new SubscriptionPeriod(Now.AddMonths(-1), Now.AddMonths(1), BillingCycleAnchor: Now.AddMonths(-1));
         return Subscription.Create(
             Guid.NewGuid(), tenantId,
-            ContactId.Create(Guid.NewGuid()),
+            PartyId.Create(Guid.NewGuid()),
             PlanId.Create(Guid.NewGuid()), "EUR", period);
     }
 

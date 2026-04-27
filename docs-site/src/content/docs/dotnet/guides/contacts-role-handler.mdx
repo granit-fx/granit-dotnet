@@ -1,34 +1,34 @@
 ---
-title: "Auto-maintain Contact.Roles via integration events"
-description: Standard handler pattern for downstream modules (Invoicing, Procurement, CRM, HR…) that toggle ContactRoles flags without inverting the dependency direction.
+title: "Auto-maintain Party.Roles via integration events"
+description: Standard handler pattern for downstream modules (Invoicing, Procurement, CRM, HR…) that toggle PartyRoles flags without inverting the dependency direction.
 sidebar:
   order: 30
-  label: Contact roles handler
+  label: Party roles handler
 ---
 
-`Contact.Roles` is a cheap `[Flags] int` column that reflects the actual activity of
+`Party.Roles` is a cheap `[Flags] int` column that reflects the actual activity of
 a contact across the platform — `Customer` if they have invoices, `Supplier` if a
 purchase order has been issued to them, `Employee` if HR has onboarded them, etc.
 
 Granit deliberately does NOT compute these flags via cross-module joins (Odoo tried
 that in v8/v9 and rolled back to counter columns for the same reasons it would hurt
 us): query cost, broken module isolation, reversed dependency direction. Instead,
-each downstream module pushes role flags into the central `Contact` aggregate via
+each downstream module pushes role flags into the central `Party` aggregate via
 its own integration-event handlers.
 
 ## When to add a handler
 
 Add one when your module emits an event that proves a contact is acting in a given
 role. The handler converts that "first time we observed activity" signal into an
-idempotent `Contact.AddRole(role)` call.
+idempotent `Party.AddRole(role)` call.
 
 | Source event (your module) | Role to add | Why |
 | --------------------------- | ----------- | --- |
-| `InvoiceCreatedEto` / `InvoiceFinalizedEto` | `ContactRoles.Customer` | Contact has an invoice → they are a customer. |
-| `SubscriptionCreatedEto` | `ContactRoles.Customer` | Recurring billing relationship. |
-| `PurchaseOrderCreatedEto` | `ContactRoles.Supplier` | We bought from this contact. |
-| `LeadCreatedEto` | `ContactRoles.Lead` | CRM has registered a sales lead. |
-| `EmployeeOnboardedEto` | `ContactRoles.Employee` | HR onboarded this contact as staff. |
+| `InvoiceCreatedEto` / `InvoiceFinalizedEto` | `PartyRoles.Customer` | Party has an invoice → they are a customer. |
+| `SubscriptionCreatedEto` | `PartyRoles.Customer` | Recurring billing relationship. |
+| `PurchaseOrderCreatedEto` | `PartyRoles.Supplier` | We bought from this contact. |
+| `LeadCreatedEto` | `PartyRoles.Lead` | CRM has registered a sales lead. |
+| `EmployeeOnboardedEto` | `PartyRoles.Employee` | HR onboarded this contact as staff. |
 
 ## Handler pattern
 
@@ -37,9 +37,9 @@ package (or wherever your other event handlers live), with a `public static
 HandleAsync` method matching the [Granit handler discovery rules](../infrastructure/wolverine-messaging.md).
 
 ```csharp
-using Granit.Contacts;
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
+using Granit.Parties;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
 using Granit.Invoicing.Events;
@@ -50,25 +50,25 @@ public class InvoiceCustomerRoleHandler
 {
     public static async Task HandleAsync(
         InvoiceCreatedEto @event,
-        IContactReader contacts,
-        IContactWriter writer,
+        IPartyReader contacts,
+        IPartyWriter writer,
         IDataFilter dataFilter,
         CancellationToken cancellationToken)
     {
         // Lookup with the multi-tenant filter disabled — this handler runs in a
         // background context where the active scope may not match the contact's.
-        Contact? contact;
+        Party? contact;
         using (dataFilter.Disable<IMultiTenant>())
         {
             contact = await contacts
-                .GetByIdAsync(ContactId.Create(@event.ContactId), cancellationToken)
+                .GetByIdAsync(PartyId.Create(@event.PartyId), cancellationToken)
                 .ConfigureAwait(false);
         }
 
         if (contact is null) { return; }
 
         // AddRole is idempotent: calling it on every event is safe.
-        if (contact.AddRole(ContactRoles.Customer))
+        if (contact.AddRole(PartyRoles.Customer))
         {
             await writer.UpdateAsync(contact, cancellationToken).ConfigureAwait(false);
         }
@@ -84,14 +84,14 @@ The handler MUST:
   regardless of the integration-event's active scope.
 - Treat `AddRole` as idempotent. Persist only when the call returns `true` so the
   outbox does not accumulate no-op rows.
-- Live in a downstream module that depends on `Granit.Contacts` — never the reverse.
-  An [architecture test](https://github.com/granit-fx/granit-dotnet/blob/develop/tests/Granit.ArchitectureTests/ContactsDependencyDirectionTests.cs)
+- Live in a downstream module that depends on `Granit.Parties` — never the reverse.
+  An [architecture test](https://github.com/granit-fx/granit-dotnet/blob/develop/tests/Granit.ArchitectureTests/PartiesDependencyDirectionTests.cs)
   enforces this dependency direction.
 
 ## Manual admin overrides
 
 The auto-maintenance handler does not preclude manual admin curation. The endpoint
-exposed by `Granit.Contacts.Endpoints` (`POST /contacts/{id}/roles`) lets a host
+exposed by `Granit.Parties.Endpoints` (`POST /parties/{id}/roles`) lets a host
 operator assign or revoke roles directly — typically for legacy data backfills or
 GDPR-driven contact closures.
 

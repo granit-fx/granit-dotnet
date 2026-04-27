@@ -49,7 +49,7 @@ public sealed class LlmPiiDetectorTests
 
         // Act
         PiiDetectionResult result = await _sut.ScanAsync(
-            "Contact me at john@example.com for details.",
+            "Party me at john@example.com for details.",
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -165,7 +165,7 @@ public sealed class LlmPiiDetectorTests
 
         // Act
         PiiDetectionResult result = await _sut.ScanAsync(
-            "Contact: test@example.com",
+            "Party: test@example.com",
             TestContext.Current.CancellationToken);
 
         // Assert

@@ -29,7 +29,7 @@ internal sealed class PrivacySettingDefinitionProvider : ISettingDefinitionProvi
         {
             IsVisibleToClients = true,
             DisplayName = "Data controller — contact email",
-            Description = "Contact email address of the data controller (GDPR Art. 13 §1(a)).",
+            Description = "Party email address of the data controller (GDPR Art. 13 §1(a)).",
             Providers = { "T", "G" },
         });
 
@@ -53,7 +53,7 @@ internal sealed class PrivacySettingDefinitionProvider : ISettingDefinitionProvi
         {
             IsVisibleToClients = true,
             DisplayName = "Data Protection Officer — contact email",
-            Description = "Contact email of the Data Protection Officer (GDPR Art. 13 §1(b), Art. 38 §4).",
+            Description = "Party email of the Data Protection Officer (GDPR Art. 13 §1(b), Art. 38 §4).",
             Providers = { "T", "G" },
         });
 

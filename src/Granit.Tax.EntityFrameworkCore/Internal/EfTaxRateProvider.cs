@@ -1,8 +1,8 @@
-using Granit.Contacts;
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
 using Granit.Domain;
+using Granit.Parties;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Tax.Domain;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
@@ -18,20 +18,20 @@ namespace Granit.Tax.EntityFrameworkCore.Internal;
 internal sealed class EfTaxRateProvider(
     IDbContextFactory<TaxDbContext> contextFactory,
     ITaxRateProvider fallback,
-    IContactReader contactReader,
+    IPartyReader contactReader,
     IDataFilter dataFilter,
     IClock clock) : ITaxRateProvider
 {
     public async Task<TaxRateEntry?> GetRateAsync(
         string countryCode,
         DateTimeOffset asOf,
-        ContactId? contactId = null,
+        PartyId? contactId = null,
         CancellationToken cancellationToken = default)
     {
         // 1. Customer-specific tax status takes absolute precedence.
         if (contactId is not null)
         {
-            Contact? contact = await ResolveContactAsync(contactId, cancellationToken)
+            Party? contact = await ResolveContactAsync(contactId, cancellationToken)
                 .ConfigureAwait(false);
             if (contact?.TaxStatus.YieldsZeroRate == true)
             {
@@ -71,8 +71,8 @@ internal sealed class EfTaxRateProvider(
             .ConfigureAwait(false);
     }
 
-    private async Task<Contact?> ResolveContactAsync(
-        ContactId contactId, CancellationToken cancellationToken)
+    private async Task<Party?> ResolveContactAsync(
+        PartyId contactId, CancellationToken cancellationToken)
     {
         // The contact may be host-scoped or tenant-scoped; bypass the multi-tenant filter
         // so a host-side tax calculation can read a tenant-scoped contact's TaxStatus.

@@ -280,12 +280,12 @@
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
   <Folder Name="/src/">
-    <Project Path="src/Granit.Contacts.Abstractions/Granit.Contacts.Abstractions.csproj" />
-    <Project Path="src/Granit.Contacts.Endpoints/Granit.Contacts.Endpoints.csproj" />
-    <Project Path="src/Granit.Contacts.EntityFrameworkCore/Granit.Contacts.EntityFrameworkCore.csproj" />
-    <Project Path="src/Granit.Contacts.MultiTenancy/Granit.Contacts.MultiTenancy.csproj" />
-    <Project Path="src/Granit.Contacts.Privacy/Granit.Contacts.Privacy.csproj" />
-    <Project Path="src/Granit.Contacts/Granit.Contacts.csproj" />
+    <Project Path="src/Granit.Parties.Abstractions/Granit.Parties.Abstractions.csproj" />
+    <Project Path="src/Granit.Parties.Endpoints/Granit.Parties.Endpoints.csproj" />
+    <Project Path="src/Granit.Parties.EntityFrameworkCore/Granit.Parties.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Parties.MultiTenancy/Granit.Parties.MultiTenancy.csproj" />
+    <Project Path="src/Granit.Parties.Privacy/Granit.Parties.Privacy.csproj" />
+    <Project Path="src/Granit.Parties/Granit.Parties.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
     <Project Path="src/Granit.MultiTenancy.Provisioning/Granit.MultiTenancy.Provisioning.csproj" />
   </Folder>
@@ -603,12 +603,12 @@
     <Project Path="tests/Granit.Tax.Tests/Granit.Tax.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="tests/Granit.Contacts.Abstractions.Tests/Granit.Contacts.Abstractions.Tests.csproj" />
-    <Project Path="tests/Granit.Contacts.Endpoints.Tests/Granit.Contacts.Endpoints.Tests.csproj" />
-    <Project Path="tests/Granit.Contacts.EntityFrameworkCore.Tests/Granit.Contacts.EntityFrameworkCore.Tests.csproj" />
-    <Project Path="tests/Granit.Contacts.MultiTenancy.Tests/Granit.Contacts.MultiTenancy.Tests.csproj" />
-    <Project Path="tests/Granit.Contacts.Privacy.Tests/Granit.Contacts.Privacy.Tests.csproj" />
-    <Project Path="tests/Granit.Contacts.Tests/Granit.Contacts.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Abstractions.Tests/Granit.Parties.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Endpoints.Tests/Granit.Parties.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.EntityFrameworkCore.Tests/Granit.Parties.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.MultiTenancy.Tests/Granit.Parties.MultiTenancy.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Privacy.Tests/Granit.Parties.Privacy.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Tests/Granit.Parties.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.BlobStorage.Tests/Granit.DataExchange.BlobStorage.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration/Granit.Identity.Local.AspNetIdentity.Tests.Integration.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Provisioning.Tests/Granit.MultiTenancy.Provisioning.Tests.csproj" />

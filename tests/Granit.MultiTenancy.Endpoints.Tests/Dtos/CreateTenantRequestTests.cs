@@ -13,7 +13,7 @@ public sealed class CreateTenantRequestTests
 
         request.Name.ShouldBe("Acme Corp");
         request.Identifier.ShouldBe("acme-corp");
-        request.ContactEmail.ShouldBe("admin@acme.com");
+        request.PartyEmail.ShouldBe("admin@acme.com");
         request.Jurisdiction.ShouldBe("BE");
     }
 
@@ -22,6 +22,6 @@ public sealed class CreateTenantRequestTests
     {
         CreateTenantRequest request = new("Acme", "acme", null, null);
 
-        request.ContactEmail.ShouldBeNull();
+        request.PartyEmail.ShouldBeNull();
     }
 }

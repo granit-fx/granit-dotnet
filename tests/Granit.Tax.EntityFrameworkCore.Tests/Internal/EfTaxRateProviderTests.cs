@@ -1,7 +1,7 @@
-using Granit.Contacts;
-using Granit.Contacts.Domain;
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.DataFiltering;
+using Granit.Parties;
+using Granit.Parties.Domain;
+using Granit.Parties.Domain.ValueObjects;
 using Granit.Tax;
 using Granit.Tax.Domain;
 using Granit.Tax.EntityFrameworkCore.Internal;
@@ -20,7 +20,7 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
 
     private readonly TestFactory _factory;
     private readonly ITaxRateProvider _fallback = Substitute.For<ITaxRateProvider>();
-    private readonly IContactReader _contactReader = Substitute.For<IContactReader>();
+    private readonly IPartyReader _contactReader = Substitute.For<IPartyReader>();
     private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly EfTaxRateProvider _sut;
@@ -160,8 +160,8 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     public async Task GetRateAsync_ContactExempt_ReturnsZeroRate_BypassingDbAndFallback()
     {
         await SeedOverrideAsync("BE", 0.21m); // would normally apply
-        var contactId = ContactId.Create(Guid.NewGuid());
-        Contact contact = NewContactWithStatus(TaxStatus.Create(isExempt: true));
+        var contactId = PartyId.Create(Guid.NewGuid());
+        Party contact = NewContactWithStatus(TaxStatus.Create(isExempt: true));
         _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
             .Returns(contact);
 
@@ -173,14 +173,14 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
         result.ReducedRate.ShouldBe(0m);
         await _fallback.DidNotReceive().GetRateAsync(
             Arg.Any<string>(), Arg.Any<DateTimeOffset>(),
-            Arg.Any<ContactId?>(), Arg.Any<CancellationToken>());
+            Arg.Any<PartyId?>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
     public async Task GetRateAsync_ContactReverseCharge_ReturnsZeroRate()
     {
-        var contactId = ContactId.Create(Guid.NewGuid());
-        Contact contact = NewContactWithStatus(TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789"));
+        var contactId = PartyId.Create(Guid.NewGuid());
+        Party contact = NewContactWithStatus(TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789"));
         _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
             .Returns(contact);
 
@@ -195,8 +195,8 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     [Fact]
     public async Task GetRateAsync_ContactStandard_DelegatesToFallback()
     {
-        var contactId = ContactId.Create(Guid.NewGuid());
-        Contact contact = NewContactWithStatus(TaxStatus.Standard);
+        var contactId = PartyId.Create(Guid.NewGuid());
+        Party contact = NewContactWithStatus(TaxStatus.Standard);
         _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
             .Returns(contact);
 
@@ -214,9 +214,9 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     [Fact]
     public async Task GetRateAsync_ContactNotFound_FallsThroughToCountryRate()
     {
-        var contactId = ContactId.Create(Guid.NewGuid());
+        var contactId = PartyId.Create(Guid.NewGuid());
         _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
-            .Returns((Contact?)null);
+            .Returns((Party?)null);
         await SeedOverrideAsync("BE", 0.21m);
 
         TaxRateEntry? result = await _sut.GetRateAsync(
@@ -226,9 +226,9 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
         result.StandardRate.ShouldBe(0.21m);
     }
 
-    private static Contact NewContactWithStatus(TaxStatus status)
+    private static Party NewContactWithStatus(TaxStatus status)
     {
-        var c = Contact.Create(Guid.NewGuid(), tenantId: null, ContactKind.Company, "Test", "EUR");
+        var c = Party.Create(Guid.NewGuid(), tenantId: null, PartyKind.Company, "Test", "EUR");
         c.SetTaxStatus(status);
         return c;
     }

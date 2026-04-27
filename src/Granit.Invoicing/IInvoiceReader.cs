@@ -1,6 +1,6 @@
-using Granit.Contacts.Domain.ValueObjects;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
+using Granit.Parties.Domain.ValueObjects;
 
 namespace Granit.Invoicing;
 
@@ -13,7 +13,7 @@ public interface IInvoiceReader
     Task<IReadOnlyList<Invoice>> GetOverdueAsync(DateTimeOffset now, CancellationToken cancellationToken = default);
 
     /// <summary>Returns all invoices billed to the given contact, regardless of tenant scope.</summary>
-    Task<IReadOnlyList<Invoice>> GetByContactAsync(ContactId contactId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Invoice>> GetByContactAsync(PartyId contactId, CancellationToken cancellationToken = default);
 
     /// <summary>Returns all credit notes linked to a parent invoice.</summary>
     Task<IReadOnlyList<Invoice>> GetCreditNotesForInvoiceAsync(InvoiceId parentInvoiceId, CancellationToken cancellationToken = default);

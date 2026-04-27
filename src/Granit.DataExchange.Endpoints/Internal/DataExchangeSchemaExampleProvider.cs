@@ -37,7 +37,7 @@ internal sealed class DataExchangeSchemaExampleProvider : ISchemaExampleProvider
             [typeof(SaveExportPresetRequest)] = new JsonObject
             {
                 ["definitionName"] = "Acme.PatientExport",
-                ["presetName"] = "Contact details",
+                ["presetName"] = "Party details",
                 ["selectedFields"] = new JsonArray { "LastName", "FirstName", "Email", "Phone" },
                 ["format"] = "xlsx",
                 ["includeIdForImport"] = false,
