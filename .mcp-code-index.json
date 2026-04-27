@@ -32489,7 +32489,7 @@
       "kind": "record",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Domain/IPartyDuplicateCandidateStore.cs",
-      "line": 57,
+      "line": 58,
       "members": []
     },
     {
@@ -32523,7 +32523,7 @@
       "kind": "interface",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Domain/IPartyDuplicateCandidateStore.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "ListAsync",
@@ -32597,7 +32597,7 @@
       "kind": "class",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Exports/DuplicateCandidateExportDefinition.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "Name",
@@ -32613,7 +32613,7 @@
       "kind": "class",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Extensions/PartiesDeduplicationHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitPartiesDeduplication",
@@ -32638,7 +32638,7 @@
       "kind": "class",
       "project": "Granit.Parties.Deduplication",
       "file": "src/Granit.Parties.Deduplication/Queries/DuplicateCandidateQueryDefinition.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "Name",
@@ -33277,7 +33277,7 @@
       "kind": "class",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/Extensions/PartiesEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapGranitParties",
@@ -33437,7 +33437,7 @@
     },
     {
       "name": "PartyDuplicateCandidate",
-      "fqn": "Granit.Parties.EntityFrameworkCore.Deduplication.PartyDuplicateCandidate",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Entities.PartyDuplicateCandidate",
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Entities/PartyDuplicateCandidate.cs",

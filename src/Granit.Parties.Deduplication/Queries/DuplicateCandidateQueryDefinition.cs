@@ -1,4 +1,5 @@
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.QueryEngine;
 
 namespace Granit.Parties.Deduplication.Queries;

@@ -2,6 +2,7 @@ using Granit.DataFiltering;
 using Granit.MultiTenancy;
 using Granit.Parties.Domain;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.Parties.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;

@@ -4,6 +4,7 @@ using Granit.Parties.Endpoints.Endpoints;
 using Granit.Parties.Endpoints.Options;
 using Granit.Parties.Endpoints.Permissions;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.QueryEngine.AspNetCore.Extensions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;

@@ -4,6 +4,7 @@ using Granit.Parties.Deduplication.Exports;
 using Granit.Parties.Deduplication.Internal;
 using Granit.Parties.Deduplication.Queries;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;

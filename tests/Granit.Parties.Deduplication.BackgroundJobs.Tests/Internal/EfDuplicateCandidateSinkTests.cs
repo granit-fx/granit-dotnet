@@ -8,6 +8,7 @@ using Granit.Parties.Deduplication.BackgroundJobs.Internal;
 using Granit.Parties.Deduplication.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;

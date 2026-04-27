@@ -3,6 +3,7 @@ using Granit.Guids;
 using Granit.Parties.Deduplication.BackgroundJobs.Diagnostics;
 using Granit.Parties.Deduplication.Domain;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;

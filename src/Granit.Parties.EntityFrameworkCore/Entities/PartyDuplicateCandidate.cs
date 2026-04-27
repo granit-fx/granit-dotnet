@@ -1,6 +1,6 @@
 using Granit.Domain;
 
-namespace Granit.Parties.EntityFrameworkCore.Deduplication;
+namespace Granit.Parties.EntityFrameworkCore.Entities;
 
 /// <summary>
 /// Persisted candidate-duplicate pair surfaced by the recurring scan job

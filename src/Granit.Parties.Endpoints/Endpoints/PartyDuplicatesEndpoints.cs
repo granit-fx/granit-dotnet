@@ -6,6 +6,7 @@ using Granit.Parties.Domain;
 using Granit.Parties.Endpoints.Dtos;
 using Granit.Parties.Endpoints.Internal;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

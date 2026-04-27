@@ -1,5 +1,6 @@
 using Granit.DataExchange.Export;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 
 namespace Granit.Parties.Deduplication.Exports;
 

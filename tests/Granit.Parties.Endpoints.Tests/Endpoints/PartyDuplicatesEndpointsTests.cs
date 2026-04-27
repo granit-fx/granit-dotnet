@@ -9,6 +9,7 @@ using Granit.Parties.Endpoints.Dtos;
 using Granit.Parties.Endpoints.Endpoints;
 using Granit.Parties.Endpoints.Internal;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
+using Granit.Parties.EntityFrameworkCore.Entities;
 using Granit.Timing;
 using Granit.Users;
 using Microsoft.AspNetCore.Http.HttpResults;
