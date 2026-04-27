@@ -2440,6 +2440,7 @@
         "dependencies": {
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Invoicing": "[0.1.0-dev, )",
+          "Granit.Mergeable": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
@@ -4440,8 +4441,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.12.5",
-        "contentHash": "yS1EgVf7a3QZ3hKN/B+Yh8kHbAvdtkDLdWf74sk3fFweLc4k9SSvMGig8k8lBK3iDXeVx9r7W44g/nBxYFIuLw==",
+        "resolved": "0.13.0",
+        "contentHash": "C7rx/q7K6cF8Z2FVCg6z0z4uIqo+cC2Ge1Yaq9ThMaODQBozJ7FNCwMxiK7JeUC9x9roUUmHUJ1aAnXkdWzjNg==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }
