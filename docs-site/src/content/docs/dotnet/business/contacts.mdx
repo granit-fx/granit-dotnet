@@ -36,7 +36,8 @@ abstraction in one aggregate so:
 - Granit.Parties.Abstractions/ Value objects, enums, integration events (lightweight)
 - Granit.Parties/ Aggregate root, domain events, query / export definitions
   - Granit.Parties.EntityFrameworkCore EF Core persistence — PartiesDbContext, EfPartyStore
-  - Granit.Parties.Endpoints Admin REST API — CRUD, lifecycle, addresses / emails / phones, tax status
+  - Granit.Parties.Endpoints Admin REST API — CRUD, lifecycle, addresses / emails / phones, tax status, merge
+  - Granit.Parties.Mergeable Merge adapter + Party-children rewriter (registers with Granit.Mergeable)
   - Granit.Parties.MultiTenancy Wolverine handler that seeds a host-scoped Party per tenant
   - Granit.Parties.Privacy GDPR Article 15/17 export + erasure (pseudonymisation)
 </FileTree>
@@ -47,6 +48,7 @@ abstraction in one aggregate so:
 | `Granit.Parties` | `Party` aggregate, `IPartyReader`/`IPartyWriter`, query + export definitions | `Granit.Parties.Abstractions`, `Granit.QueryEngine.Abstractions`, `Granit.DataExchange.Abstractions` |
 | `Granit.Parties.EntityFrameworkCore` | Isolated DbContext + child-graph reconciliation writer | `Granit.Parties`, `Granit.Persistence.EntityFrameworkCore` |
 | `Granit.Parties.Endpoints` | Admin API (host + tenant scope) | `Granit.Parties`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.Parties.Mergeable` | Merge adapter + Party-children / Party-parent reference rewriters | `Granit.Parties.EntityFrameworkCore`, `Granit.Mergeable.EntityFrameworkCore` |
 | `Granit.Parties.MultiTenancy` | Tenant-creation seeder (creates host-scoped Party per tenant) | `Granit.Parties`, `Granit.MultiTenancy` |
 | `Granit.Parties.Privacy` | Privacy export provider + Article 17 pseudonymisation handler | `Granit.Parties`, `Granit.Privacy.BlobStorage` |
 
@@ -131,6 +133,65 @@ mutability guard so erasure succeeds even on archived rows.
 `Granit.Tax.ITaxRateProvider` when a `contactId` is supplied — exempt /
 reverse-charge customers yield a 0% rate regardless of country defaults.
 
+### Merging duplicates
+
+`Party` implements `IMergeable<Party>` and participates in the generic
+`Granit.Mergeable` framework. A merge folds a **loser** Party into a **survivor**:
+loser is soft-archived with a tombstone (`MergedIntoId = survivor.Id`,
+`MergedAt = now`), survivor absorbs the chosen scalar fields, and every aggregate
+that persists a typed `PartyId` (Invoicing, Subscriptions, CustomerBalance, plus
+Party self-references) has its FK rewritten in bulk SQL inside the same
+`TransactionScope`.
+
+Survivorship is decided **per merge call**, not declaratively. The admin previews
+the merge, sees a side-by-side diff with a default recommendation per conflicting
+field, picks `Survivor` or `Loser` per field, optionally writes a free-form reason,
+and submits. The chosen map is persisted in the audit log as `ResolvedChoices`.
+
+Hard invariants that fail the merge synchronously (no override possible):
+
+- Same `TenantId`, same `Kind`, same `DefaultCurrency`.
+- Survivor `Active`. Loser `Active` or `Suspended`. `Archived` rejected.
+- Loser is not already merged (idempotent re-merge attempts return 409).
+
+After a successful merge, the loser is hidden by the
+`GranitFilterNames.MergeTombstone` query filter from every standard listing.
+Bypass it explicitly when listing tombstones for audit (e.g. an admin
+"merged-out" tab):
+
+```csharp
+using (dataFilter.Disable<IHasMergeTombstone>())
+{
+    var tombstoned = await db.Parties
+        .Where(p => p.MergedIntoId != null)
+        .ToListAsync(cancellationToken);
+}
+```
+
+#### Tombstone follow-through
+
+Bulk-SQL rewriters cover **persisted typed FK columns** only. A `PartyId` may also
+live in JSON-serialized payloads that SQL cannot rewrite cleanly — Wolverine
+messages in the outbox / inbox, scheduled background jobs, queued webhook
+deliveries, queued notifications. Consumers that receive a `PartyId` must resolve
+it through the tombstone before processing:
+
+```csharp
+PartyId resolved = await partyId.ResolveCurrentAsync(reader, dataFilter, ct);
+```
+
+Chain merges (`A→B`, then `B→C`) are collapsed at merge time
+(`UPDATE parties SET MergedIntoId = C WHERE MergedIntoId = B`), so a single
+`ResolveCurrentAsync` hop always reaches the final survivor — no recursion.
+
+The audit log is intentionally **not** rewritten (immutable history); the query
+layer joins on `parties.MergedIntoId` to render "Party X (merged into Y on …)".
+
+See [ADR-037](/dotnet/architecture/adr/037-party-merge-framework/) for the
+architecture rationale: override-at-merge-time vs MDM survivorship rules,
+single-Postgres `TransactionScope` orchestration, two-layer idempotency
+(HTTP + DB), tenant-wide advisory lock, and the tombstone follow-through pattern.
+
 ---
 
 ## Setup
@@ -194,6 +255,13 @@ builder.Services.AddGranitPrivacy(p => p.AddGranitContactsPrivacyProvider());
 | `POST` / `DELETE` | `/parties/{id}/external-mappings[/{provider}]` | `Manage` |
 | `POST` / `DELETE` | `/parties/{id}/roles[/{role}]` | `Manage` |
 | `PUT` / `DELETE` | `/parties/{id}/tax-status` | `Manage` |
+| `GET` | `/parties/{id}/merge/preview?loserId={guid}` | `Merge` |
+| `POST` | `/parties/{id}/merge` | `Merge` |
+
+`POST /parties/{id}/merge` accepts a standard `Idempotency-Key` header and a
+`dryRun=true` flag to preview the conflict resolution and rewrite counts without
+committing. Validation failures return 422; concurrency / already-merged
+collisions return 409.
 
 ---
 
@@ -209,6 +277,7 @@ Published via the Wolverine outbox to `Granit.Parties.Abstractions`:
 | `PartyActivatedEto` | Lifecycle → Active |
 | `PartyArchivedEto` | Lifecycle → Archived (terminal) |
 | `PartyExternalMappingAddedEto` | External provider id registered |
+| `PartyMergedEto` | Party merged into a survivor — carries survivor id, loser id, resolved choices, rewrite counts |
 | `PartyPersonalDataPseudonymizedEto` | GDPR Article 17 erasure ran |
 
 ---
@@ -220,3 +289,4 @@ Published via the Wolverine outbox to `Granit.Parties.Abstractions`:
 - [Parties — role handler guide](/dotnet/guides/contacts-role-handler/)
 - [Privacy — data export and erasure](/dotnet/compliance/privacy/)
 - [Multi-tenancy](/dotnet/concepts/multi-tenancy/)
+- [ADR-037 — Party merge framework](/dotnet/architecture/adr/037-party-merge-framework/)

@@ -22,9 +22,10 @@ public static class PartiesMergeableHostApplicationBuilderExtensions
     /// children of the loser) and <see cref="PartyChildrenReferenceRewriter"/> (rewrites
     /// the four child collections — addresses, emails, phones, external mappings — via
     /// SQL bulk-update, with structural dedup, primary/default demotion and cap
-    /// enforcement). Cross-module rewriters (Invoice.PartyId, Subscription.PartyId, etc.)
-    /// are NOT registered here — each module that holds a <c>PartyId</c> ships its own
-    /// <c>*.Mergeable</c> package and registers its rewriter via
+    /// enforcement). Cross-module rewriters (Invoice.PartyId, Subscription.PartyId,
+    /// BalanceAccount.PartyId, …) are NOT registered here — each consuming module
+    /// inlines its rewriter inside its own <c>*.EntityFrameworkCore</c> package and
+    /// registers it from its <c>AddGranit{Module}EntityFrameworkCore</c> extension via
     /// <c>services.AddReferenceRewriter&lt;Party, ...&gt;()</c>.
     /// </summary>
     public static IHostApplicationBuilder AddGranitPartiesMergeable(
