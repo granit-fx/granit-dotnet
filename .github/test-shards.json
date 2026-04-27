@@ -333,6 +333,7 @@
         "tests/Granit.CustomerBalance.EntityFrameworkCore.Tests",
         "tests/Granit.CustomerBalance.Endpoints.Tests",
         "tests/Granit.CustomerBalance.BackgroundJobs.Tests",
+        "tests/Granit.CustomerBalance.Notifications.Tests",
         "tests/Granit.Catalog.Tests",
         "tests/Granit.Catalog.Endpoints.Tests",
         "tests/Granit.Catalog.EntityFrameworkCore.Tests"

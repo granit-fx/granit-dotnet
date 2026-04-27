@@ -241,6 +241,7 @@
     <Project Path="src/Granit.CustomerBalance.BackgroundJobs/Granit.CustomerBalance.BackgroundJobs.csproj" />
     <Project Path="src/Granit.CustomerBalance.Endpoints/Granit.CustomerBalance.Endpoints.csproj" />
     <Project Path="src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.CustomerBalance.Notifications/Granit.CustomerBalance.Notifications.csproj" />
     <Project Path="src/Granit.CustomerBalance/Granit.CustomerBalance.csproj" />
     <Project Path="src/Granit.Identity.Local.Notifications/Granit.Identity.Local.Notifications.csproj" />
     <Project Path="src/Granit.Invoicing.Abstractions/Granit.Invoicing.Abstractions.csproj" />
@@ -567,6 +568,7 @@
     <Project Path="tests/Granit.CustomerBalance.BackgroundJobs.Tests/Granit.CustomerBalance.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Endpoints.Tests/Granit.CustomerBalance.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.EntityFrameworkCore.Tests/Granit.CustomerBalance.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.CustomerBalance.Notifications.Tests/Granit.CustomerBalance.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.CustomerBalance.Tests/Granit.CustomerBalance.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Local.Notifications.Tests/Granit.Identity.Local.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Invoicing.Abstractions.Tests/Granit.Invoicing.Abstractions.Tests.csproj" />

@@ -537,6 +537,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.CustomerBalance.Notifications",
+      "deps": [
+        "Granit.CustomerBalance",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -11195,6 +11204,122 @@
           "name": "CreditOverpaymentAsync",
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiredNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiredNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
+      "line": 38,
+      "members": []
+    },
+    {
+      "name": "CreditExpiredNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiredNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiredNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditExpiredNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "CreditGrantedNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditGrantedNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditGrantedNotificationType.cs",
+      "line": 40,
+      "members": []
+    },
+    {
+      "name": "CreditGrantedNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditGrantedNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditGrantedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditGrantedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitCustomerBalanceNotificationsModule",
+      "fqn": "Granit.CustomerBalance.Notifications.GranitCustomerBalanceNotificationsModule",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/GranitCustomerBalanceNotificationsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiredNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiredNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditExpiredNotificationHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditGrantedNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditGrantedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditGrantedNotificationHandler.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BalanceCreditedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
