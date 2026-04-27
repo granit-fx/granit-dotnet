@@ -1,0 +1,16 @@
+<title>Votre solde est épuisé</title>
+<p>Bonjour,</p>
+<p>Votre solde en <strong>{{ model.currency }}</strong> vient d'atteindre
+   <strong>0</strong>. Vous n'avez plus de crédit disponible, donc toute prochaine
+   facturation sera prélevée sur votre moyen de paiement habituel, sans remise.</p>
+<p>Si vous souhaitez recharger votre solde ou simplement vérifier les opérations
+   passées, rendez-vous sur votre page de solde.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/balance/{{ model.balance_account_id }}" style="display: inline-block; padding: 12px 28px; background-color: #1d4ed8; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Voir mon solde</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">Identifiant du solde : <code>{{ model.balance_account_id }}</code></p>
+<p style="font-size: 13px; color: #4b5563;">Épuisé le :
+   {{ model.depleted_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question sur vos données ? Contactez notre équipe via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

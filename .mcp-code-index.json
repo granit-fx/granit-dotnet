@@ -10876,6 +10876,31 @@
       "members": []
     },
     {
+      "name": "CreditExpiringScanHandler",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpiringScanHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpiringScanHandler.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiringScanJob _, ICreditExpiringScanService creditExpiringScanService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringScanJob",
+      "fqn": "Granit.CustomerBalance.BackgroundJobs.Jobs.CreditExpiringScanJob",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.BackgroundJobs",
+      "file": "src/Granit.CustomerBalance.BackgroundJobs/Jobs/CreditExpiringScanJob.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "CustomerBalanceMetrics",
       "fqn": "Granit.CustomerBalance.Diagnostics.CustomerBalanceMetrics",
       "kind": "class",
@@ -10937,7 +10962,14 @@
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Domain/BalanceTransaction.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "MarkExpirationNotified",
+          "kind": "method",
+          "signature": "MarkExpirationNotified(DateTimeOffset notifiedAt)",
+          "returnType": "Guid? ReferenceId { get; private set; } public string? ReferenceType { get; private set; } public DateTimeOffset? ExpiresAt { get; private set; } public DateTimeOffset? LastExpirationNotifiedAt { get; private set; } public DateTimeOffset CreatedAt { get; private set; } internal void"
+        }
+      ]
     },
     {
       "name": "TransactionSource",
@@ -11196,12 +11228,30 @@
       "members": []
     },
     {
+      "name": "BalanceDepletedEto",
+      "fqn": "Granit.CustomerBalance.Events.BalanceDepletedEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/BalanceDepletedEto.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "CreditExpiredEto",
       "fqn": "Granit.CustomerBalance.Events.CreditExpiredEto",
       "kind": "record",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Events/CreditExpiredEto.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "CreditExpiringEto",
+      "fqn": "Granit.CustomerBalance.Events.CreditExpiringEto",
+      "kind": "record",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Events/CreditExpiringEto.cs",
+      "line": 23,
       "members": []
     },
     {
@@ -11251,7 +11301,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -11394,6 +11444,28 @@
           "kind": "method",
           "signature": "GetExpiredCreditsAsync(DateTimeOffset now, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        },
+        {
+          "name": "GetCreditsExpiringSoonAsync",
+          "kind": "method",
+          "signature": "GetCreditsExpiringSoonAsync(DateTimeOffset now, DateTimeOffset leadTimeWindowEnd, DateTimeOffset cooldownThreshold, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<BalanceTransaction>>"
+        }
+      ]
+    },
+    {
+      "name": "IBalanceTransactionWriter",
+      "fqn": "Granit.CustomerBalance.IBalanceTransactionWriter",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/IBalanceTransactionWriter.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StampExpirationNotifiedAsync",
+          "kind": "method",
+          "signature": "StampExpirationNotifiedAsync(Guid creditTransactionId, DateTimeOffset notifiedAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -11414,6 +11486,22 @@
       ]
     },
     {
+      "name": "ICreditExpiringScanService",
+      "fqn": "Granit.CustomerBalance.ICreditExpiringScanService",
+      "kind": "interface",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/ICreditExpiringScanService.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ScanAsync",
+          "kind": "method",
+          "signature": "ScanAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "IOverpaymentCreditService",
       "fqn": "Granit.CustomerBalance.IOverpaymentCreditService",
       "kind": "interface",
@@ -11426,6 +11514,37 @@
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BalanceDepletedNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.BalanceDepletedNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/BalanceDepletedNotificationType.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "BalanceDepletedNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.BalanceDepletedNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/BalanceDepletedNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "BalanceDepletedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
         }
       ]
     },
@@ -11451,6 +11570,43 @@
           "kind": "method",
           "signature": "new()",
           "returnType": "CreditExpiredNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringNotificationData",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiringNotificationData",
+      "kind": "record",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiringNotificationType.cs",
+      "line": 46,
+      "members": []
+    },
+    {
+      "name": "CreditExpiringNotificationType",
+      "fqn": "Granit.CustomerBalance.Notifications.CreditExpiringNotificationType",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/CreditExpiringNotificationType.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "CreditExpiringNotificationType Instance ="
         },
         {
           "name": "Name",
@@ -11514,6 +11670,22 @@
       ]
     },
     {
+      "name": "BalanceDepletedNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.BalanceDepletedNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/BalanceDepletedNotificationHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(BalanceDepletedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "CreditExpiredNotificationHandler",
       "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiredNotificationHandler",
       "kind": "class",
@@ -11525,6 +11697,22 @@
           "name": "HandleAsync",
           "kind": "method",
           "signature": "HandleAsync(CreditExpiredEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CreditExpiringNotificationHandler",
+      "fqn": "Granit.CustomerBalance.Notifications.Handlers.CreditExpiringNotificationHandler",
+      "kind": "class",
+      "project": "Granit.CustomerBalance.Notifications",
+      "file": "src/Granit.CustomerBalance.Notifications/Handlers/CreditExpiringNotificationHandler.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(CreditExpiringEto evt, INotificationPublisher publisher, IClock clock, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -11542,6 +11730,28 @@
           "kind": "method",
           "signature": "HandleAsync(BalanceCreditedEto evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "CustomerBalanceOptions",
+      "fqn": "Granit.CustomerBalance.Options.CustomerBalanceOptions",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Options/CustomerBalanceOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ExpirationLeadTimeDays",
+          "kind": "property",
+          "signature": "int ExpirationLeadTimeDays",
+          "returnType": "int"
+        },
+        {
+          "name": "ExpirationNotificationCooldownDays",
+          "kind": "property",
+          "signature": "int ExpirationNotificationCooldownDays",
+          "returnType": "int"
         }
       ]
     },

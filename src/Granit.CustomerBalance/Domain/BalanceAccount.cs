@@ -149,9 +149,20 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
             referenceType);
 
         _transactions.Add(transaction);
+        decimal previousBalance = Balance;
         Balance -= amount;
 
         AddDistributedEvent(new BalanceDebitedEto(
             Id, TenantId!.Value, PartyId.Value, amount, Currency, referenceId, referenceType));
+
+        // Transition-driven: only emit BalanceDepletedEto when this debit moved the
+        // running total from strictly positive to exactly zero. A no-op recompute that
+        // keeps the balance at zero (or pushes it negative — a guard above prevents
+        // that anyway) does NOT re-emit.
+        if (previousBalance > 0m && Balance == 0m)
+        {
+            AddDistributedEvent(new BalanceDepletedEto(
+                Id, TenantId.Value, PartyId.Value, Currency, createdAt));
+        }
     }
 }

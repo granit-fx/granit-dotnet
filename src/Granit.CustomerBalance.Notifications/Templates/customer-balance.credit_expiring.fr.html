@@ -1,0 +1,17 @@
+<title>Votre crédit expire dans {{ model.days_until_expiry }} jour(s)</title>
+<p>Bonjour,</p>
+<p>Information importante : votre crédit de
+   <strong>{{ model.amount | math.format '0.00' }} {{ model.currency }}</strong>
+   expirera le
+   <strong>{{ model.expires_at | date.to_string '%d/%m/%Y à %H:%M UTC' }}</strong>
+   (dans {{ model.days_until_expiry }} jour(s)).</p>
+<p>Ce crédit est automatiquement appliqué à vos prochaines facturations — la remise
+   apparaîtra dès votre prochaine facture. En revanche, si aucune facture n'est émise
+   avant la date d'expiration, la valeur restante sera perdue.</p>
+<p style="text-align: center; margin: 32px 0;">
+  <a href="{{ app.base_url }}/balance/{{ model.balance_account_id }}" style="display: inline-block; padding: 12px 28px; background-color: #b45309; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 15px; font-weight: bold;">Utiliser mon crédit</a>
+</p>
+<p style="font-size: 13px; color: #4b5563;">Identifiant du solde : <code>{{ model.balance_account_id }}</code></p>
+{{ if privacy.dpo_email }}
+<p style="font-size: 13px; color: #4b5563;">Une question sur vos données ? Contactez notre équipe via <a href="mailto:{{ privacy.dpo_email }}">{{ privacy.dpo_email }}</a>.</p>
+{{ end }}

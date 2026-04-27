@@ -23,7 +23,9 @@ public static class CustomerBalanceEntityFrameworkCoreHostApplicationBuilderExte
         builder.Services.TryAddScoped<IBalanceAccountReader>(sp => sp.GetRequiredService<EfBalanceAccountStore>());
         builder.Services.TryAddScoped<IBalanceAccountWriter>(sp => sp.GetRequiredService<EfBalanceAccountStore>());
 
-        builder.Services.TryAddScoped<IBalanceTransactionReader, EfBalanceTransactionReader>();
+        builder.Services.AddScoped<EfBalanceTransactionReader>();
+        builder.Services.TryAddScoped<IBalanceTransactionReader>(sp => sp.GetRequiredService<EfBalanceTransactionReader>());
+        builder.Services.TryAddScoped<IBalanceTransactionWriter>(sp => sp.GetRequiredService<EfBalanceTransactionReader>());
 
         // Plugs CustomerBalance into the Party merge orchestrator. Unconditional registration:
         // when no IMergeService<Party> is wired up by the host, the rewriter just sits idle in
