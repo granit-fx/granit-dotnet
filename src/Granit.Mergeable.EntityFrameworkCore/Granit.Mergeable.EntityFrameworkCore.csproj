@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Mergeable.EntityFrameworkCore</PackageId>
+    <Description>EF Core orchestrator for the Granit.Mergeable framework. Provides EfMergeService&lt;TAggregate&gt; (TransactionScope Serializable, advisory lock + FOR UPDATE, dry-run preview, Stripe-style idempotency, scatter-gather across registered IReferenceRewriter&lt;T&gt;s) and MergeableDbContext (idempotency cache table). Single-Postgres deployment assumption; no DTC.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Mergeable.EntityFrameworkCore.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Mergeable\Granit.Mergeable.csproj" />
+    <ProjectReference Include="..\Granit.Persistence\Granit.Persistence.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+  </ItemGroup>
+
+</Project>
