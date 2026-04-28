@@ -13206,6 +13206,18 @@
           "kind": "property",
           "signature": "string CatalogTagName",
           "returnType": "string"
+        },
+        {
+          "name": "InstancesTagName",
+          "kind": "property",
+          "signature": "string InstancesTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "WidgetsTagName",
+          "kind": "property",
+          "signature": "string WidgetsTagName",
+          "returnType": "string"
         }
       ]
     },
