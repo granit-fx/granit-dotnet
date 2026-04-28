@@ -432,6 +432,7 @@
   <Folder Name="/tests/Application/">
     <Project Path="tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration/Granit.Analytics.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />

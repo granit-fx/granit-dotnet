@@ -110,3 +110,43 @@ internal sealed class OrderDiscountAvgMetric : MetricDefinition<Order, double>
     public override AggregateFunction Aggregation => AggregateFunction.Avg;
     public override Expression<Func<Order, double?>>? Selector => o => o.DiscountRatio;
 }
+
+internal sealed class OrderDiscountSumMetric : MetricDefinition<Order, double>
+{
+    public override string Name => "Test.OrderDiscountSum";
+    public override MetricValueKind ValueKind => MetricValueKind.Number;
+    public override AggregateFunction Aggregation => AggregateFunction.Sum;
+    public override Expression<Func<Order, double?>>? Selector => o => o.DiscountRatio;
+}
+
+internal sealed class OrderLineCountAvgMetric : MetricDefinition<Order, int>
+{
+    public override string Name => "Test.OrderLineCountAvg";
+    public override MetricValueKind ValueKind => MetricValueKind.Count;
+    public override AggregateFunction Aggregation => AggregateFunction.Avg;
+    public override Expression<Func<Order, int?>>? Selector => o => o.LineCount;
+}
+
+internal sealed class OrderTotalCentsAvgMetric : MetricDefinition<Order, long>
+{
+    public override string Name => "Test.OrderTotalCentsAvg";
+    public override MetricValueKind ValueKind => MetricValueKind.Currency;
+    public override AggregateFunction Aggregation => AggregateFunction.Avg;
+    public override Expression<Func<Order, long?>>? Selector => o => o.TotalCents;
+}
+
+internal sealed class OrderLineCountMinMetric : MetricDefinition<Order, int>
+{
+    public override string Name => "Test.OrderLineCountMin";
+    public override MetricValueKind ValueKind => MetricValueKind.Count;
+    public override AggregateFunction Aggregation => AggregateFunction.Min;
+    public override Expression<Func<Order, int?>>? Selector => o => o.LineCount;
+}
+
+internal sealed class OrderTotalCentsMaxMetric : MetricDefinition<Order, long>
+{
+    public override string Name => "Test.OrderTotalCentsMax";
+    public override MetricValueKind ValueKind => MetricValueKind.Currency;
+    public override AggregateFunction Aggregation => AggregateFunction.Max;
+    public override Expression<Func<Order, long?>>? Selector => o => o.TotalCents;
+}

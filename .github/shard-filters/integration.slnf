@@ -2,6 +2,8 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj",
+      "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj",
@@ -58,6 +60,7 @@
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
+      "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
       "src/Granit.Scheduling/Granit.Scheduling.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
@@ -71,6 +74,7 @@
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration/Granit.Analytics.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Authorization.EntityFrameworkCore.Tests.Integration/Granit.Authorization.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj",
       "tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj",

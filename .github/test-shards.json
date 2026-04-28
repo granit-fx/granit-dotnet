@@ -353,6 +353,7 @@
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.Invoicing.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.OpenIddict.Tests.Integration",
+        "tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Parties.Mergeable.Tests.Integration",
         "tests/Granit.QueryEngine.AspNetCore.Tests.Integration",
         "tests/Granit.Subscriptions.EntityFrameworkCore.Tests.Integration",

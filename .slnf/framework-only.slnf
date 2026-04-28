@@ -218,6 +218,7 @@
       "tests/Granit.AI.Tests/Granit.AI.Tests.csproj",
       "tests/Granit.AI.VectorData.Tests/Granit.AI.VectorData.Tests.csproj",
       "tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj",
+      "tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration/Granit.Analytics.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj",
       "tests/Granit.Analyzers.CodeFixes.Tests/Granit.Analyzers.CodeFixes.Tests.csproj",
