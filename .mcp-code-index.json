@@ -12987,6 +12987,15 @@
       "members": []
     },
     {
+      "name": "AddWidgetRequest",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.AddWidgetRequest",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/AddWidgetRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DashboardCatalogEntryResponse",
       "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardCatalogEntryResponse",
       "kind": "record",

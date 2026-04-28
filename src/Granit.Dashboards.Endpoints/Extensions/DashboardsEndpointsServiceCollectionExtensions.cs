@@ -23,6 +23,7 @@ public static class DashboardsEndpointsServiceCollectionExtensions
         services.TryAddScoped<DashboardReader>();
         services.TryAddScoped<DashboardEditor>();
         services.TryAddScoped<DashboardStateTransitionService>();
+        services.TryAddScoped<DashboardWidgetService>();
 
         return services;
     }

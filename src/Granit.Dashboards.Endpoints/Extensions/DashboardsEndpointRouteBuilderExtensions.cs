@@ -37,6 +37,7 @@ public static class DashboardsEndpointRouteBuilderExtensions
         group.MapInstanceEndpoints();
         group.MapMetadataEditEndpoints();
         group.MapStateTransitionEndpoints();
+        group.MapWidgetEndpoints();
 
         return group;
     }
