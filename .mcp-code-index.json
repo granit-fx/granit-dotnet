@@ -82,6 +82,7 @@
       "name": "Granit.Analytics",
       "deps": [
         "Granit",
+        "Granit.Dashboards.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -597,6 +598,21 @@
         "Granit.CustomerBalance",
         "Granit.Notifications.Abstractions",
         "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Dashboards",
+      "deps": [
+        "Granit",
+        "Granit.Dashboards.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Dashboards.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -4048,6 +4064,51 @@
       ]
     },
     {
+      "name": "ChartType",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.ChartType",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "ChartWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.ChartWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "KpiWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.KpiWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "PivotWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.PivotWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/PivotWidgetDefinition.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "TableWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.TableWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/TableWidgetDefinition.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "AnalyticsMetrics",
       "fqn": "Granit.Analytics.Diagnostics.AnalyticsMetrics",
       "kind": "class",
@@ -4271,7 +4332,7 @@
       "kind": "class",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/GranitAnalyticsModule.cs",
-      "line": 26,
+      "line": 29,
       "members": [
         {
           "name": "ConfigureServices",
@@ -12441,6 +12502,210 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "DashboardCategory",
+      "fqn": "Granit.Dashboards.DashboardCategory",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardCategory.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "DashboardDefinition",
+      "fqn": "Granit.Dashboards.DashboardDefinition",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardDefinition.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Version",
+          "kind": "property",
+          "signature": "string Version",
+          "returnType": "string"
+        },
+        {
+          "name": "Layout",
+          "kind": "property",
+          "signature": "DashboardLayout Layout",
+          "returnType": "DashboardLayout"
+        }
+      ]
+    },
+    {
+      "name": "DashboardLayout",
+      "fqn": "Granit.Dashboards.DashboardLayout",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(12, 80)",
+          "returnType": "DashboardLayout Default =>"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Extensions.DashboardsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Extensions/DashboardsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDashboards",
+          "kind": "method",
+          "signature": "AddGranitDashboards(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDashboardsAbstractionsModule",
+      "fqn": "Granit.Dashboards.GranitDashboardsAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/GranitDashboardsAbstractionsModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "GranitDashboardsModule",
+      "fqn": "Granit.Dashboards.GranitDashboardsModule",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/GranitDashboardsModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IDashboardDefinitionDescriptor",
+      "fqn": "Granit.Dashboards.IDashboardDefinitionDescriptor",
+      "kind": "interface",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/IDashboardDefinitionDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IDashboardDefinitionRegistry",
+      "fqn": "Granit.Dashboards.IDashboardDefinitionRegistry",
+      "kind": "interface",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/IDashboardDefinitionRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<IDashboardDefinitionDescriptor>"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string name)",
+          "returnType": "IDashboardDefinitionDescriptor?"
+        }
+      ]
+    },
+    {
+      "name": "WidgetDefinition",
+      "fqn": "Granit.Dashboards.WidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetDefinition.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "WidgetSize",
+      "fqn": "Granit.Dashboards.WidgetSize",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetSize.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(3, 1)",
+          "returnType": "WidgetSize SmallKpi =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(6, 2)",
+          "returnType": "WidgetSize StandardChart =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(12, 1)",
+          "returnType": "WidgetSize FullWidthRow =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(4, 4)",
+          "returnType": "WidgetSize MediaTile =>"
+        }
+      ]
+    },
+    {
+      "name": "ImageWidgetDefinition",
+      "fqn": "Granit.Dashboards.Widgets.ImageWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Widgets/ImageWidgetDefinition.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "MarkdownWidgetDefinition",
+      "fqn": "Granit.Dashboards.Widgets.MarkdownWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Widgets/MarkdownWidgetDefinition.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "TextStyle",
+      "fqn": "Granit.Dashboards.Widgets.TextStyle",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Widgets/TextWidgetDefinition.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "TextWidgetDefinition",
+      "fqn": "Granit.Dashboards.Widgets.TextWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Widgets/TextWidgetDefinition.cs",
+      "line": 13,
+      "members": []
     },
     {
       "name": "DataExchangeAIHostApplicationBuilderExtensions",

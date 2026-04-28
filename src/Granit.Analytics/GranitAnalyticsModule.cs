@@ -1,4 +1,5 @@
 using Granit.Analytics.Extensions;
+using Granit.Dashboards;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,7 +23,9 @@ namespace Granit.Analytics;
 /// so OpenTelemetry pipelines pick them up automatically.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitQueryEngineAbstractionsModule))]
+[DependsOn(
+    typeof(GranitDashboardsAbstractionsModule),
+    typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitAnalyticsModule : GranitModule
 {
     /// <inheritdoc/>

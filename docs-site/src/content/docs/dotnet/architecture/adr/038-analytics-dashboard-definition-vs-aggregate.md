@@ -41,16 +41,39 @@ mutable counterpart on the wire. Dashboards follow the same dichotomy.
 
 ## Decision
 
-### 1. Two types, two homes
+### 1. Two types, two homes — and a dedicated package family
+
+The framework cannot host dashboards under `Granit.Analytics` because the same
+primitive will eventually power IoT real-time dashboards (gauges, camera feeds,
+alarm lights — none of which are analytics measures). Forcing `Granit.IoT` to
+depend on `Granit.Analytics` (and thus on `Granit.QueryEngine`) just to declare a
+widget would be the wrong dependency direction.
+
+The two types therefore live in a dedicated package family that mirrors the
+`QueryEngine.Abstractions` / `QueryEngine` split (ADR-020):
 
 | Concept | Type | Lives in | Mutability | Persistence |
 | ------- | ---- | -------- | ---------- | ----------- |
-| Module-shipped catalogue entry | `DashboardDefinition` | `Granit.{Module}` (base module, alongside `QueryDefinition` / `ExportDefinition`) | Immutable — code | None — assembly only |
-| Tenant-composed dashboard | `Dashboard` | `Granit.Analytics` (aggregate root) | Mutable — admin actions | `Granit.Analytics.EntityFrameworkCore` |
+| Declarative dashboard catalogue entry | `DashboardDefinition` | Per-domain — `Granit.Analytics`, future `Granit.IoT.Dashboards`, ... — declared via `Granit.Dashboards.Abstractions` | Immutable — code | None — assembly only |
+| Tenant-composed dashboard (aggregate) | `Dashboard` | `Granit.Dashboards` (aggregate root, story B2) | Mutable — admin actions | `Granit.Dashboards.EntityFrameworkCore` (story B2) |
 
-`DashboardDefinition` follows the placement rule of ADR-020: each module owns its own
-catalogue entries and registers them via `services.AddDashboardDefinition<TDef>()`.
-There is no central aggregation package.
+Package responsibilities:
+
+| Package | Contents |
+| ------- | -------- |
+| `Granit.Dashboards.Abstractions` | `DashboardDefinition`, `WidgetDefinition` (base), `DashboardLayout`, `WidgetSize`, `IDashboardDefinitionRegistry`, `DashboardCategory`. Plus presentation-only widgets shared across domains: `MarkdownWidgetDefinition`, `ImageWidgetDefinition`, `TextWidgetDefinition`. Lightweight — only consumers of contracts pull this. |
+| `Granit.Dashboards` | `IDashboardDefinitionRegistry` implementation, `AddGranitDashboards()` + `AddDashboardDefinition<TDef>()` DI extensions. Future home of the persisted `Dashboard` aggregate, import / re-sync logic, and the real-time hub for IoT live tiles. |
+| `Granit.Analytics` | Analytics-flavoured widgets: `KpiWidgetDefinition` (binds to `MetricDefinition`), `ChartWidgetDefinition` / `TableWidgetDefinition` / `PivotWidgetDefinition` (bind to `QueryDefinition`). Depends on `Granit.Dashboards.Abstractions`. |
+| `Granit.IoT.Dashboards` (future) | IoT-flavoured widgets: live sensor gauge, camera feed, alarm light. Depends on `Granit.Dashboards.Abstractions`. Will not depend on `Granit.Analytics`. |
+
+`DashboardDefinition` itself follows the placement rule of ADR-020: each module
+declares its own dashboards and registers them via
+`services.AddDashboardDefinition<TDef>()`. There is no central aggregation package.
+
+Presentation-only widgets (Markdown, Image, Text) ship in
+`Granit.Dashboards.Abstractions` because they are *domain-neutral* — a dashboard in
+any vertical may want a banner, a logo or a heading. Putting them anywhere else
+would force IoT modules to depend on Analytics for a banner.
 
 ### 2. Dashboards are *imported*, not auto-instantiated
 
@@ -258,7 +281,10 @@ widgets) and keeps reorder updates to two rows.
   the framework treats it as tenant-owned and never silently mutates it.
 - **Additive schema.** JSON `ConfigJson` + dense-ranked `Position` keeps story B7
   (`MapWidget`) and any future widget kind shippable without a migration in
-  `Granit.Analytics.EntityFrameworkCore`.
+  `Granit.Dashboards.EntityFrameworkCore`.
+- **Domain-extensible.** A new domain (IoT, observability, …) ships its own widget
+  records against `Granit.Dashboards.Abstractions` without touching `Granit.Analytics`
+  or vice versa. The dashboard runtime is the only horizontal piece.
 
 ## Consequences
 
@@ -275,7 +301,11 @@ widgets) and keeps reorder updates to two rows.
 
 - Two types instead of one — admins/devs must remember which one they are dealing
   with. Mitigated by clear naming (`Dashboard` vs `DashboardDefinition`) and by
-  putting them in the same module so IDE auto-complete keeps them adjacent.
+  shipping them in the same package family so IDE auto-complete keeps them adjacent.
+- Two new framework packages (`Granit.Dashboards.Abstractions` + `Granit.Dashboards`)
+  rather than reusing `Granit.Analytics`. Marginal — the framework already absorbs
+  the same split twice for `Granit.QueryEngine` and `Granit.DataExchange`. The
+  runtime cost is paid only by hosts that actually expose dashboards.
 - Drift between definition and persisted copy must be surfaced in the admin UI.
   Story B5 (frontend composer) is responsible for this UX. Until B5 ships, drift
   is queryable via API but not visualised.
@@ -285,15 +315,14 @@ widgets) and keeps reorder updates to two rows.
 
 ### Migration order
 
-1. **B1** (#1382) — implement `DashboardDefinition`, `WidgetDefinition`, `WidgetSize`,
-   `DashboardLayout` value objects in `Granit.Analytics`. Add
-   `services.AddDashboardDefinition<TDef>()` extension. Architecture test enforces
-   placement (base module, not `.Endpoints`).
+1. **B1** (#1382) — split `Granit.Dashboards.Abstractions` (base types + presentation
+   widgets: Markdown, Image, Text) and `Granit.Dashboards` (registry + DI).
+   Analytics-flavoured widgets (Kpi, Chart, Table, Pivot) ship in `Granit.Analytics`.
+   Architecture test enforces widget references resolve at composition time.
 2. **B2** (#1383) — implement `Dashboard` aggregate, `WidgetInstance` owned entity,
-   EF configurations, migration in `Granit.Analytics.EntityFrameworkCore`. Apply
+   EF configurations, migration in `Granit.Dashboards.EntityFrameworkCore`. Apply
    `ApplyGranitConventions` (multi-tenant + soft-delete).
-3. **B3** (#1384) — ship the five baseline widget kinds (Kpi, Chart, Table, Pivot,
-   Markdown) with per-kind `ConfigJson` validators.
+3. **B3** (#1384) — ship per-kind `ConfigJson` validators on the persisted side.
 4. **B4** (#1385) — REST endpoints (`GET /dashboards/catalog`,
    `POST /dashboards/from-definition/{name}`, full CRUD on persisted dashboards) +
    permission filtering at render time.

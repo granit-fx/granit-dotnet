@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Analytics</PackageId>
-    <Description>Declarative Business Intelligence primitives for Granit: MetricDefinition for inline KPIs and DashboardDefinition for composable dashboards. Pairs with QueryDefinition (lists rows) and ExportDefinition (extracts rows) — MetricDefinition aggregates them. Reference this package from any module that declares metrics; reference Granit.Analytics.EntityFrameworkCore from hosts that execute them.</Description>
+    <Description>Declarative Business Intelligence primitives for Granit: MetricDefinition for inline KPIs plus the analytics-flavoured widget catalogue (Kpi, Chart, Table, Pivot) that plugs into Granit.Dashboards.Abstractions. Pairs with QueryDefinition (lists rows) and ExportDefinition (extracts rows) — MetricDefinition aggregates them. Reference this package from any module that declares metrics or analytics dashboards; reference Granit.Analytics.EntityFrameworkCore from hosts that execute them.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
   </ItemGroup>
 

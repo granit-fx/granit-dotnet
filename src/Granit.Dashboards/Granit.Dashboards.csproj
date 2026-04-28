@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Dashboards</PackageId>
+    <Description>Dashboard composition runtime for Granit. Hosts the IDashboardDefinitionRegistry implementation and the AddDashboardDefinition&lt;T&gt;() DI extension. Future home of the persisted Dashboard aggregate, import/re-sync logic, and real-time hub. Reference Granit.Dashboards.Abstractions to declare dashboards or widgets; reference this package only from hosts that execute, persist, or expose them.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Dashboards.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

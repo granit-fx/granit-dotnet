@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Dashboards.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Dashboards: declarative DashboardDefinition base class, WidgetDefinition record hierarchy, layout/size value objects, registry interface, and presentation-only widgets (Markdown, Image, Text). Reference this package from any module that declares dashboards or widgets (Granit.Analytics, future Granit.IoT, ...); reference Granit.Dashboards only from hosts that execute, persist, or expose them.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Dashboards.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Dashboards" />
+    <InternalsVisibleTo Include="Granit.Dashboards.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>
