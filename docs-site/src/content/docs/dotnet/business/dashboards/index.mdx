@@ -1,0 +1,59 @@
+---
+title: "Dashboards — composable widget grids for analytics, ops, and IoT"
+description: "Granit.Dashboards ships a declarative DashboardDefinition primitive plus seven widget kinds (Markdown / Image / Text + Kpi / Chart / Table / Pivot), responsive layouts, time windows, action descriptors, named views, entity aliases, filters and per-instance overrides. Module-extensible via Granit.Dashboards.Abstractions — same pattern as QueryDefinition / ExportDefinition / MetricDefinition."
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import { Aside, FileTree } from "@astrojs/starlight/components";
+
+Granit Dashboards turn a declarative `DashboardDefinition` into a tenant-importable
+catalogue entry. The same primitive composes analytics dashboards (KPI tiles +
+charts over `MetricDefinition` / `QueryDefinition`), operational dashboards
+(status banners, alarm tables), and — once the IoT module ships — real-time
+device dashboards.
+
+## Three-layer model
+
+<Aside type="note" title="Why three layers">
+  Treating "the dashboard a module ships" and "the dashboard a tenant edited last
+  week" as the same type would conflate code-shipped catalogue entries with
+  user-owned data. ADR-038 splits the two — and a follow-up amendment moved the
+  whole stack into a dedicated `Granit.Dashboards.*` package family, decoupled
+  from `Granit.Analytics`, so future `Granit.IoT.Dashboards` can ship its own
+  widget kinds without dragging in the BI stack.
+</Aside>
+
+| Layer | Type | Lives in | Mutability | Persistence |
+| ----- | ---- | -------- | ---------- | ----------- |
+| Catalogue entry | `DashboardDefinition` | `Granit.Dashboards.Abstractions` (declarative) | Immutable — code | None — assembly only |
+| Tenant-composed dashboard | `Dashboard` aggregate | `Granit.Dashboards` (runtime) | Mutable — admin actions | `Granit.Dashboards.EntityFrameworkCore` |
+| Edit mode (frontend only) | live widget grid | `@granit/react-dashboards` (front) | Mutable — drag/drop | DOM, persisted via the runtime API |
+
+Read [ADR-038](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/)
+for the design rationale.
+
+## Package layout
+
+<FileTree>
+- src/
+  - Granit.Dashboards.Abstractions/ Declarative contracts (DashboardDefinition, WidgetDefinition, ...)
+  - Granit.Dashboards/ Runtime + DI registry. Future: Dashboard aggregate, real-time hub
+  - Granit.Dashboards.EntityFrameworkCore/ Persistence layer for the Dashboard aggregate
+  - Granit.Analytics/ Analytics-flavoured widget catalogue (Kpi, Chart, Table, Pivot)
+  - Granit.IoT.Dashboards/ Future — IoT widget catalogue (gauges, camera feeds, alarm lights)
+</FileTree>
+
+| Package | Role | Reference from |
+| ------- | ---- | -------------- |
+| `Granit.Dashboards.Abstractions` | Pure declarations — DashboardDefinition, WidgetDefinition, layout / size / time-window / action / view / alias / filter / datasource records, registry interface, three presentation widgets (Markdown / Image / Text) | Any module that declares dashboards or widgets |
+| `Granit.Dashboards` | `IDashboardDefinitionRegistry` impl, `AddGranitDashboards()` + `AddDashboardDefinition<T>()` DI, `IVariableSubstituter` runtime | Hosts that expose dashboards |
+| `Granit.Dashboards.EntityFrameworkCore` | Persisted `Dashboard` aggregate + EF configurations | Hosts that persist tenant-composed dashboards |
+| `Granit.Analytics` | Kpi / Chart / Table / Pivot widget records that bind to MetricDefinition / QueryDefinition | Modules declaring analytics dashboards |
+
+## Read next
+
+- [Conventions](/dotnet/business/dashboards/conventions/) — declarative shape, widget catalogue, JSON wire format, localization keys
+- [ADR-038 — DashboardDefinition vs Dashboard boundary](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/)
+- [Analytics conventions](/dotnet/business/analytics/conventions/) — `MetricDefinition` naming, period tokens, DAX alignment

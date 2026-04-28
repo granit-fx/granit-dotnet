@@ -1,0 +1,361 @@
+---
+title: "Dashboards conventions — declarative shape, widget catalogue, wire format"
+description: "Mandatory declarative shape and wire-format conventions for Granit.Dashboards: DashboardDefinition fields, the seven widget kinds (Markdown / Image / Text + Kpi / Chart / Table / Pivot), the Datasource abstraction, action descriptors, named views, entity aliases, time windows, filters, and the per-widget JSON polymorphism contract."
+sidebar:
+  label: Conventions
+  order: 10
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+These conventions pin the wire format the frontend's TypeScript discriminated
+unions mirror 1:1. Every JSON discriminator listed below ships in
+`Granit.Dashboards.Abstractions` as a `[JsonDerivedType]` attribute or a
+runtime registration helper — the contract is enforced at compile time.
+
+## `DashboardDefinition` — anatomy
+
+A module-shipped catalogue entry. Pure declaration — no HTTP, no DbContext.
+Registered via `services.AddDashboardDefinition<TDefinition>()` in the module's
+`ConfigureServices`.
+
+| Member | Type | Notes |
+| ------ | ---- | ----- |
+| `Name` | `string` | Wire identifier — `Granit.{Module}.{DashboardName}`, PascalCase, dot-separated. Resolves the localization keys `Dashboard:{Name}` and `Dashboard:{Name}.Description`. |
+| `Category` | `DashboardCategory` enum | General / Finance / Operations / Security / Compliance / Platform / Iot |
+| `IsSystem` | `bool` (default `false`) | When `true`, imported instances cannot be deleted by tenant admins (only re-synced). Reserved for ops dashboards mandated by the platform operator (ADR-038 §5). |
+| `Version` | `string` (semver, default `"1.0.0"`) | Bumped when the widget set changes; surfaced as drift after import. |
+| `Layout` | `DashboardLayout` (default `12 × 80`) | Grid + per-breakpoint overrides — see below. |
+| `DefaultTimeWindow` | `DashboardTimeWindow?` | Dashboard-wide time window applied to every data-bound widget that does not carry its own `TimeWindowOverride`. |
+| `Widgets` | `IReadOnlyList<WidgetDefinition>` | The widget pool for single-view dashboards. For multi-view dashboards (`Views` non-null), this is empty by convention. |
+| `Views` | `IReadOnlyList<DashboardView>?` | Named views — see [Views](#views). `null` = single-view dashboard. |
+| `DefaultView` | `string?` | Entry-view name when `Views` is non-null. `null` = first view. |
+| `Aliases` | `IReadOnlyList<EntityAlias>?` | Named entity bindings — see [Entity aliases](#entity-aliases). |
+| `Filters` | `IReadOnlyList<DashboardFilter>?` | Dashboard-scoped filters — see [Filters](#filters). |
+
+## Widget catalogue
+
+Seven widget kinds today. **JSON polymorphism uses a stable `"type"`
+discriminator with kebab tags** — frontend discriminated unions match these
+strings exactly. Three presentation widgets ship in
+`Granit.Dashboards.Abstractions` directly via `[JsonDerivedType]`; the four
+data-bound widgets ship in `Granit.Analytics` and register at runtime via
+`WidgetDefinitionPolymorphism.AddDerivedType<TWidget>(...)`.
+
+| Discriminator | Type | Package | Backed by |
+| ------------- | ---- | ------- | --------- |
+| `markdown` | `MarkdownWidgetDefinition` | `Granit.Dashboards.Abstractions` | static markdown localization key |
+| `image` | `ImageWidgetDefinition` | `Granit.Dashboards.Abstractions` | URL or blob reference, with `ImageFit` (Contain / Cover / Fill) |
+| `text` | `TextWidgetDefinition` | `Granit.Dashboards.Abstractions` | static text + `TextStyle` (Body / Heading / Subheading / Caption) |
+| `kpi` | `KpiWidgetDefinition` | `Granit.Analytics` | `Datasource` — see below |
+| `chart` | `ChartWidgetDefinition` | `Granit.Analytics` | `QueryDefinition` + `AggregateFunction` + `ChartType` |
+| `table` | `TableWidgetDefinition` | `Granit.Analytics` | `QueryDefinition` |
+| `pivot` | `PivotWidgetDefinition` | `Granit.Analytics` | `QueryDefinition` + row / column dimensions |
+
+### Common widget fields
+
+Every widget record carries these from the abstract `WidgetDefinition` base:
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| `Slug` | `string` | Widget-local identifier, PascalCase, unique within the dashboard. Composes localization keys (`Widget:{DashboardName}.{Slug}`). |
+| `Position` | `int` | Dense-ranked grid order — 0-based, contiguous. |
+| `Size` | `WidgetSize` | `(Width, Height)` in grid cells. Presets: `SmallKpi` (3×1), `StandardChart` (6×2), `FullWidthRow` (12×1), `MediaTile` (4×4). |
+| `RequiredPermission` | `string?` | Per-widget permission override. `null` = derived from the underlying metric / query at render time. |
+| `TimeWindowOverride` | `DashboardTimeWindow?` | Override the dashboard's `DefaultTimeWindow` for this widget. |
+| `Actions` | `IReadOnlyList<WidgetAction>?` | Declarative click-handlers — see below. |
+
+### Datasource abstraction (KPI)
+
+`KpiWidgetDefinition.Datasource` is the only widget field that takes a
+`Datasource`. Three kinds, JSON discriminator `"kind"`:
+
+| Discriminator | Type | Use case |
+| ------------- | ---- | -------- |
+| `metric` | `MetricDatasource(MetricName)` | Bound to a registered `MetricDefinition`. The metric's own aggregation, base filter, and period selector apply. |
+| `query-aggregate` | `QueryAggregateDatasource(QueryName, Aggregation, Field?, KeyFormats?)` | Bound to a registered `QueryDefinition` with an explicit aggregation. Reuses the widget across analytics and ad-hoc admin pages. |
+| `iot-telemetry` | `TelemetryDatasource(EntityAlias, TelemetryKey, Aggregation, KeyFormats?)` | Live IoT telemetry. Resolves the entity at render time via the dashboard's [Entity aliases](#entity-aliases). |
+
+Static factories on `Datasource` keep call sites compact:
+
+```csharp
+new KpiWidgetDefinition(
+    Slug: "UnpaidCount",
+    Datasource: Datasource.Metric("Granit.Invoicing.UnpaidInvoiceCountMetric"),
+    Position: 0);
+```
+
+`Datasource.QueryAggregate(...)` and `Datasource.Telemetry(...)` follow the
+same shape.
+
+### Per-`DataKey` formatting
+
+Color, unit, and decimal precision attach to **each `DataKey`** of a
+multi-series datasource — not to the widget. A "Revenue by Region" chart and a
+"Revenue by Product" chart are the **same** `ChartWidgetDefinition` with
+different datasources; colors and units belong to the data binding, not the
+visual.
+
+```csharp
+public sealed record DataKeyFormat(
+    string Key,
+    string? LabelLocalizationKey = null,
+    string? Color = null,
+    string? Unit = null,
+    int? Decimals = null);
+```
+
+`QueryAggregateDatasource` and `TelemetryDatasource` carry an optional
+`KeyFormats: IReadOnlyList<DataKeyFormat>?`. Each entry's `Key` matches a
+group-by value or field name.
+
+## Layout
+
+`DashboardLayout` is a base grid plus optional per-breakpoint overrides. The
+widget pool stays constant across breakpoints — only sizes / order / visibility
+shift.
+
+| Field | Type | Notes |
+| ----- | ---- | ----- |
+| `Columns` | `int` | Base column count. Default 12. |
+| `RowHeight` | `int` | Base row height in CSS pixels. Default 80. |
+| `WidgetSizes` | `IReadOnlyDictionary<string, WidgetSize>?` | Per-widget size overrides keyed by slug. |
+| `WidgetOrder` | `IReadOnlyList<string>?` | Custom slug ordering — overrides the widget's `Position` field. |
+| `Breakpoints` | `IReadOnlyDictionary<DashboardBreakpoint, DashboardLayoutOverride>?` | Per-breakpoint deltas. |
+
+`DashboardBreakpoint` ladder: `Xs` / `Sm` / `Md` / `Lg` / `Xl`.
+`DashboardLayoutOverride` mirrors the base layout fields but everything is
+nullable — overrides stay scoped to what differs at each viewport.
+
+```csharp
+public override DashboardLayout Layout => DashboardLayout.Default with
+{
+    Breakpoints = new Dictionary<DashboardBreakpoint, DashboardLayoutOverride>
+    {
+        [DashboardBreakpoint.Xs] = new(
+            Columns: 4,
+            WidgetSizes: new Dictionary<string, WidgetSize>
+            {
+                ["UnpaidCount"] = new(4, 1),
+                ["UnpaidTotal"] = new(4, 1),
+            },
+            HiddenWidgets: new HashSet<string> { "Banner" }),
+    },
+};
+```
+
+## Time window
+
+`DashboardTimeWindow` wraps the canonical `PeriodSpec` (token-or-absolute
+range, calendar-aware via DAX-aligned tokens like `mtd` / `ytd` /
+`previous_period`). Static presets: `Last24Hours`, `Last7Days`, `Last30Days`,
+`Mtd`, `Ytd`, `RealtimeLast5Minutes`.
+
+`TimeWindowKind`:
+
+| Kind | Behaviour |
+| ---- | --------- |
+| `History` (default) | Frozen window — refetch on range change. |
+| `Realtime` | Sliding window — pairs with the future SSE subscription transport (story P2.4). |
+
+Per-widget `TimeWindowOverride` lets a YTD KPI sit alongside last-30-days widgets
+on the same dashboard, or a widget render standalone outside any
+`DashboardContext` with its own range.
+
+## Actions
+
+`WidgetAction` is a declarative click-handler descriptor. **No code injection,
+no expression evaluation** — only typed dispatches the frontend interprets.
+
+```csharp
+public sealed record WidgetAction(
+    WidgetActionTrigger Trigger,
+    WidgetActionKind Kind,
+    string Target,
+    IReadOnlyDictionary<string, string>? Params = null);
+```
+
+| `Trigger` | When it fires |
+| --------- | ------------- |
+| `Click` | The widget body or KPI value. |
+| `RowClick` | A row inside a Table / Pivot. |
+| `SeriesClick` | A series segment inside a Chart (bar, line point, slice). |
+| `LegendClick` | A legend item inside a Chart. |
+
+| `Kind` | Dispatch |
+| ------ | -------- |
+| `Navigate` | Frontend route. |
+| `OpenDashboardView` | Switch view within the current dashboard ([Views](#views)). |
+| `OpenDashboard` | Navigate to another `DashboardDefinition` by name. |
+| `ExportData` | Trigger an export via `Granit.DataExchange` (target = `ExportDefinition.Name`). |
+| `OpenDetail` | Open a side drawer with the row's full detail. |
+
+`Params` values may reference variables resolved by `IVariableSubstituter`
+(see [Variable substitution](#variable-substitution)).
+
+## Views
+
+A dashboard becomes a navigable container with multiple internal views — `list` /
+`detail` / `history.heatmap` / ... Each view ships its own widget pool, sharing
+the dashboard-level `TimeWindow`, aliases, filters, and breadcrumb context.
+
+```csharp
+public sealed record DashboardView(
+    string Name,                                // unique within the dashboard
+    IReadOnlyList<WidgetDefinition> Widgets,
+    DashboardLayout? Layout = null,             // null = inherit dashboard layout
+    string? DisplayNameLocalizationKey = null); // default convention: Dashboard:{Name}.View.{ViewName}
+```
+
+URL convention for view transitions:
+`/dashboards/{Name}/view/{viewName}` (story B4 implementation).
+
+Single-view dashboards leave `Views = null` and rely on the inherited
+`Widgets` property — the existing default. Multi-view dashboards override
+`Views` and the runtime renders the entry named by `DefaultView` (or the
+first view if `DefaultView` is null).
+
+## Entity aliases
+
+Lets the same dashboard render against different entities — a chosen Customer,
+the current Device, the authenticated Tenant — without duplicating the
+definition. Five resolver kinds; JSON discriminator `"kind"`:
+
+| Discriminator | Type | Use case |
+| ------------- | ---- | -------- |
+| `route-param` | `RouteParamResolver(ParamName)` | Pulls the entity id from the URL / route. |
+| `view-entity` | `ViewEntityResolver(ParamName = "entityId")` | Pulls the id from the active view's params (drill-down patterns). |
+| `tenant-context` | `TenantContextResolver` | Resolves to the current authenticated tenant. |
+| `user-selection` | `UserSelectionResolver(LookupName, MultiSelect)` | Renders a Granit.DataLookup picker. |
+| `static` | `StaticEntityResolver(EntityId)` | Hard-coded — testing or operator-pinned widgets. |
+
+`RelationGraphResolver` (TB-style traversal) is intentionally deferred —
+requires a relation registry the framework does not have yet, and the four
+practical resolvers above cover every applicative use case in the current
+backlog.
+
+## Filters
+
+Dashboard-scoped filters apply across many widgets — distinct from per-datasource
+filters a widget may carry internally.
+
+```csharp
+public sealed record DashboardFilter(
+    string Name,                                                   // unique within the dashboard
+    string LabelLocalizationKey,
+    IReadOnlyList<DashboardFilterClause> Clauses,
+    DashboardFilterOperation Operation = DashboardFilterOperation.And,
+    bool Editable = false);                                        // when true, surfaced as a toolbar control
+
+public sealed record DashboardFilterClause(
+    string Field,
+    DashboardFilterOperator Op,
+    string? Value);                                                // `${variable}` placeholders supported
+```
+
+`DashboardFilterOperator` mirrors the OData / `Granit.QueryEngine` vocabulary:
+`Eq`, `Ne`, `Gt`, `Gte`, `Lt`, `Lte`, `In`, `Contains`, `StartsWith`.
+`DashboardFilterOperation` is `And` (default) or `Or`.
+
+`Editable = true` filters become user-editable toolbar controls above the
+grid; non-editable filters apply silently — useful for "current user",
+"current tenant" scoping that should never become a user-toggleable control.
+
+## Variable substitution
+
+`IVariableSubstituter` resolves `${variable}` placeholders in declarative
+strings (action params, filter values, persisted title overrides). **Pure
+literal lookup — no expression syntax.** No `${1+1}`, no pipes, no
+conditionals.
+
+Composition order recognised by the default implementation (later wins):
+
+1. **State parameters** — `${entityId}`, `${entityName}` from the active view's params.
+2. **Resolved aliases** — `${alias.currentDevice}` from `EntityAlias` resolution.
+3. **Time window** — `${timeWindow.from}`, `${timeWindow.to}`, `${timeWindow.span}`.
+4. **Row data** (in row-click action contexts) — `${row.customerId}`, `${row.amount}`.
+5. **Series data** (in series-click action contexts) — `${series.name}`, `${series.value}`.
+
+Unknown variables resolve to an empty string AND surface a structured log
+warning. The substituter never throws — broken templates degrade visibly
+without breaking the dashboard.
+
+## Per-instance overrides (persisted)
+
+Once an admin imports a `DashboardDefinition` into a `Dashboard` aggregate,
+they can apply per-widget runtime overrides via `WidgetInstance.Overrides:
+WidgetInstanceConfig?`. Persisted as a JSON column.
+
+```csharp
+public sealed record WidgetInstanceConfig(
+    string? TitleLocalizationKeyOverride = null,
+    string? ColorOverride = null,
+    string? UnitOverride = null,
+    int? DecimalsOverride = null,
+    IReadOnlyList<WidgetThreshold>? Thresholds = null);
+
+public sealed record WidgetThreshold(
+    decimal Value,
+    string Color,
+    WidgetThresholdOperator Operator);     // GreaterThanOrEqual / LessThanOrEqual / Equal
+```
+
+The split is deliberate: **definition-level config** (carried inline on
+`WidgetInstance` via `MetricName`, `QueryName`, `Position`, `Width`,
+`Height`, `ConfigJson`) reflects what was imported. **Runtime overrides**
+live on `WidgetInstance.Overrides` separately so the catalogue's "re-sync
+from definition" flow can cleanly reset the imported half while preserving
+the admin's overrides.
+
+## Localization
+
+Mandatory keys composed off the dashboard / widget identifiers:
+
+| Key | Source | Required? |
+| --- | ------ | --------- |
+| `Dashboard:{Name}` | Dashboard title | **Required** in all 18 cultures of the owning module. Enforced by the architecture test from D2 #1397 (companion to the metric check). |
+| `Dashboard:{Name}.Description` | Catalogue description | Optional. |
+| `Widget:{DashboardName}.{Slug}` | Widget title / content | Required when the widget references a localization key (markdown body, image alt, text body, KPI title override). |
+
+Modules ship the keys for their default cultures; tenants override them
+through `Granit.Localization.Overrides`.
+
+## Wire format — JSON polymorphism
+
+Two discriminator points pinned by the framework:
+
+```text
+WidgetDefinition          → "type"  (markdown / image / text / kpi / chart / table / pivot)
+Datasource                → "kind"  (metric / query-aggregate / iot-telemetry)
+EntityAliasResolver       → "kind"  (route-param / view-entity / tenant-context / user-selection / static)
+```
+
+Three abstractions widgets are registered at compile time via
+`[JsonDerivedType]` on the base record. Domain-specific widgets (analytics
+today, future IoT) register at runtime through:
+
+```csharp
+options.AddDerivedType<KpiWidgetDefinition>("kpi");          // implicit via AddAnalyticsWidgets()
+options.AddDerivedType<ChartWidgetDefinition>("chart");
+// ... etc
+```
+
+Hosts that expose dashboard endpoints call
+`options.AddAnalyticsWidgets()` once on their shared `JsonSerializerOptions`
+at startup. `Granit.IoT.Dashboards` (future) will ship the same convenience
+helper for its widget catalogue.
+
+## Anti-patterns
+
+- **Inline JS hooks** in widget config — XSS, untestable, untyped. Use declarative `WidgetAction` descriptors.
+- **Schemaless `settings: {}` blob** — drift guaranteed. Strongly-typed records per widget kind, with `[JsonDerivedType]` discrimination.
+- **Marketplace / dynamically loaded widget bundles** — module-shipped only, auditable supply chain.
+- **WebSocket bidirectional for everything** — `RefreshHint` discriminates static / dynamic / realtime; only realtime warrants a push transport.
+- **Mandatory state machine** — single-view dashboards stay simple. Multi-view is opt-in via `Views`.
+- **Clobbering tenant data on module upgrade** — module upgrades surface drift via `Dashboard.SourceDefinitionVersion` + admin-driven re-sync, never silent retro-edit (ADR-038 §3).
+
+## Read next
+
+- [Overview](/dotnet/business/dashboards/) — three-layer model, package layout
+- [ADR-038](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/) — DashboardDefinition vs Dashboard boundary
+- [Analytics conventions](/dotnet/business/analytics/conventions/) — `MetricDefinition` naming, period tokens
