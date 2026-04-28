@@ -44,6 +44,7 @@
     <Project Path="src/Granit/Granit.csproj" />
   </Folder>
   <Folder Name="/src/Security/">
+    <Project Path="src/Granit.Authentication/Granit.Authentication.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.BackgroundJobs/Granit.Authentication.ApiKeys.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.Endpoints/Granit.Authentication.ApiKeys.Endpoints.csproj" />
     <Project Path="src/Granit.Authentication.ApiKeys.EntityFrameworkCore/Granit.Authentication.ApiKeys.EntityFrameworkCore.csproj" />
@@ -372,6 +373,7 @@
     <Project Path="tests/Granit.Validation.UnitedKingdom.Tests/Granit.Validation.UnitedKingdom.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Security/">
+    <Project Path="tests/Granit.Authentication.Tests/Granit.Authentication.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.BackgroundJobs.Tests/Granit.Authentication.ApiKeys.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.Endpoints.Tests/Granit.Authentication.ApiKeys.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests/Granit.Authentication.ApiKeys.EntityFrameworkCore.Tests.csproj" />

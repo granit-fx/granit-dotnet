@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Authentication.Extensions;
 using Granit.OpenIddict.Options;
 using Granit.OpenIddict.Server.Handlers;
 using Microsoft.Extensions.Configuration;
@@ -176,6 +177,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             options.UseLocalServer();
             options.UseAspNetCore();
         });
+
+        // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
+        // ClaimTypes.Role so PermissionChecker.AdminRoles bypass and ICurrentUserService
+        // .GetRoles() agree with ClaimsPrincipal.IsInRole(). Mirrors what JwtBearer does
+        // implicitly via TokenValidationParameters.RoleClaimType.
+        builder.Services.AddGranitOpenIddictRoleClaimNormalization();
 
         return builder;
     }
