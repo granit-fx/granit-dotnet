@@ -89,8 +89,9 @@ when the heuristic doesn't match (e.g. `*Total` for cost amounts is `false`).
 
 ### Sub-modules
 
-Modules with internal sub-domains (Invoicing = Invoices + CreditNotes, Identity = Local
-+ Federated, BackgroundJobs = Recurring + One-shot) use a fourth segment:
+Modules with internal sub-domains (Invoicing = Invoices + CreditNotes,
+Identity = Local + Federated, BackgroundJobs = Recurring + One-shot) use a fourth
+segment:
 
 ```text
 Granit.Invoicing.CreditNotes.OutstandingCountMetric
@@ -214,6 +215,44 @@ Metric endpoints inherit the underlying entity's read permission. A metric over
 Rationale: the metric exposes an aggregate of data the user could already see via the
 list endpoint; granting a separate metric permission would be a confusing layer
 without security value.
+
+## `DashboardDefinition` — placement and lifecycle
+
+Dashboards split into two distinct types — module-shipped declarations and
+tenant-composed aggregates. Conventions are pinned by [ADR-038](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/).
+
+| Type | Lives in | Mutability | Persistence |
+| ---- | -------- | ---------- | ----------- |
+| `DashboardDefinition` | `src/Granit.{Module}/Dashboards/{Name}DashboardDefinition.cs` (base module) | Immutable — code | None — assembly only |
+| `Dashboard` (aggregate) | `Granit.Analytics` aggregate, `Granit.Analytics.EntityFrameworkCore` config | Mutable — admin actions | EF Core multi-tenant + soft-delete |
+
+Key rules:
+
+- **Definitions are imported, not auto-instantiated.** When a tenant first installs
+  a module, no `Dashboard` is created automatically. Admins explicitly import via
+  `POST /dashboards/from-definition/{name}`, which deep-copies the definition.
+- **Once imported, dashboards are frozen.** Module upgrades surface drift via
+  `Dashboard.SourceDefinitionVersion` + an admin-driven *re-sync* action — never
+  silent retro-edit.
+- **`WidgetInstance.ConfigJson` is a JSON blob**, not a polymorphic hierarchy. New
+  widget kinds (Kpi, Chart, Table, Pivot, Markdown, Map…) ship without an EF Core
+  migration.
+- **Naming**: `{Name}DashboardDefinition` (PascalCase). `Name` property uses
+  `Granit.{Module}.{Name}` (e.g. `Granit.Invoicing.FinanceOverview`).
+- **Localization key**: `Dashboard:{Name}` in the same `Localization/{Module}/`
+  folder as the metric keys, all 18 cultures.
+- **Pairing rule** (D1 #1396): every dashboard widget references a metric or query
+  the user can permission-check. Widgets that point at a missing metric/query
+  render as a *widget unavailable* placeholder card — the dashboard itself stays
+  usable.
+
+Migration story for module upgrades that remove a `DashboardDefinition`:
+
+1. Persisted `Dashboard` rows are not affected — the definition was deep-copied at
+   import time.
+2. Widgets pointing at missing metrics / queries degrade gracefully (placeholder).
+3. Drift is queryable via the catalogue endpoint; admins choose to re-sync, clear
+   the source link (turn into ad-hoc), or delete the dashboard.
 
 ## Anti-patterns
 

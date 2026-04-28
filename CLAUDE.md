@@ -492,22 +492,225 @@ include a text-rendered channel (Email, SMS, WhatsApp, Web Push…), an `Embedde
 named `Templates.{Name}.html` is present in the same assembly. Cross-link this section
 when the test lands.
 
-### Analytics (`*MetricDefinition`) — naming, placement, period tokens
+### `*.Analytics` — canonical checklist (STRICT)
 
-Full convention lives at
-[`docs-site/.../analytics/conventions.mdx`](docs-site/src/content/docs/dotnet/business/analytics/conventions.mdx)
-(rendered as the *Conventions* page under *Business Features → Analytics* on the docs
-site). Highlights — read the full page before adding a metric:
+Every `MetricDefinition` and (planned) `DashboardDefinition` follows the same shape.
+Reference implementation: `Granit.Invoicing` ships
+`UnpaidInvoiceCountMetricDefinition` and `UnpaidInvoiceTotalMetricDefinition` (story
+A4 #1377) — copy from there.
 
-- **Class file**: `src/Granit.{Module}/Metrics/{MetricName}MetricDefinition.cs`
-- **`Name` property**: `Granit.{Module}.{MetricName}Metric` (PascalCase, dot-separated)
-- **Formula**: `{Subset?}{Entity}{Field?}{Aggregation}` — aggregation **always last**
-  (`InvoicePaymentDelayAverageMetric`, NOT `AverageInvoicePaymentDelayMetric`); groups
-  metrics alphabetically by entity in IDE autocomplete and admin UI.
-- **Period tokens** in HTTP requests reuse DAX acronyms — `MTD`, `QTD`, `YTD`, `MAT`,
-  `PP`, `PY`, `PYC`, … — so analysts moving from Power BI find a familiar vocabulary.
-- **Localization**: `Metric:{Name}` keys mandatory in all 18 cultures of the owning
-  module.
+Public docs equivalent (audience: open-source consumers):
+[`docs-site/.../analytics/conventions.mdx`](docs-site/src/content/docs/dotnet/business/analytics/conventions.mdx).
+Keep the two in sync.
+
+#### 1. Package layout
+
+Three framework packages, plus per-module placement of definitions:
+
+| Package | Role |
+| ------- | ---- |
+| `Granit.Analytics` | Abstractions: `MetricDefinition<TEntity, TValue>`, `MetricValueKind`, `RefreshHint`, `PeriodSpec`, `DashboardDefinition`. Pure declarations, no runtime. |
+| `Granit.Analytics.EntityFrameworkCore` | `MetricExecutor<TEntity, TValue>` — runs metrics through the same filter pipeline as `Granit.QueryEngine`. Empty-set semantics enforced here. |
+| `Granit.Analytics.Endpoints` | HTTP layer: `POST /api/{version}/metrics/{name}` + period resolution + FusionCache wiring + period-comparison `DeltaCalculator`. |
+
+Per-module placement (mirrors ADR-020 — same rule as `QueryDefinition` /
+`ExportDefinition`):
+
+```text
+src/Granit.{Module}/
+  Metrics/
+    {Subset?}{Entity}{Field?}{Aggregation}MetricDefinition.cs
+  Dashboards/                              # planned (Feature B, ADR-038)
+    {Name}DashboardDefinition.cs
+```
+
+Concrete metric and dashboard classes live in the **base module**, NOT in
+`.Endpoints` and NOT in `.EntityFrameworkCore`. The base module references
+`Granit.Analytics` (lightweight). Hosts that execute metrics pull
+`Granit.Analytics.EntityFrameworkCore` and `Granit.Analytics.Endpoints` separately.
+
+#### 2. Module class registration
+
+```csharp
+[DependsOn(typeof(GranitAnalyticsModule), typeof(Granit{Module}Module))]
+public sealed class Granit{Module}AnalyticsModule : GranitModule { /* ... */ }
+```
+
+In practice metrics are registered from the host's `AddGranit{Module}()` extension:
+
+```csharp
+builder.Services.AddMetricDefinition<Invoice, int, UnpaidInvoiceCountMetricDefinition>();
+builder.Services.AddMetricDefinition<Invoice, decimal, UnpaidInvoiceTotalMetricDefinition>();
+// Future B1 (#1382):
+// builder.Services.AddDashboardDefinition<FinanceOverviewDashboardDefinition>();
+```
+
+Three generic args on `AddMetricDefinition`: `TEntity`, `TValue`, `TDefinition`.
+`TValue` is required because the executor dispatches per primitive type
+(`int` / `long` / `decimal` / `double`) — keeps EF Core's typed
+`SumAsync<int>` / `SumAsync<decimal>` reachable without reflection.
+
+#### 3. `MetricDefinition` skeleton
+
+```csharp
+public sealed class UnpaidInvoiceCountMetricDefinition : MetricDefinition<Invoice, int>
+{
+    public override string Name => "Granit.Invoicing.UnpaidInvoiceCount";   // wire identifier
+    public override MetricValueKind ValueKind => MetricValueKind.Count;
+    public override AggregateFunction Aggregation => AggregateFunction.Count;
+    public override Expression<Func<Invoice, int?>>? Selector => null;       // null for Count
+    public override bool IsHigherBetter => false;                            // unpaid is bad
+    public override RefreshHint RefreshHint => RefreshHint.Dynamic;
+    public override Expression<Func<Invoice, bool>>? BaseFilter
+        => i => i.Status == InvoiceStatus.Open;
+    public override Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector
+        => i => i.IssuedAt;
+}
+```
+
+- **Naming formula**: `{Subset?}{Entity}{Field?}{Aggregation}` — PascalCase,
+  aggregation **always last** (`InvoicePaymentDelayAverage`, NEVER
+  `AverageInvoicePaymentDelay`). Groups metrics alphabetically by entity in IDE
+  autocomplete, admin UI, OpenAPI schema.
+- **`Name` (wire identifier)**: `Granit.{Module}.{MetricName}` — drop the
+  `Definition` suffix, keep `Metric` is **NOT** appended (the definition's `Name`
+  is the bare measure name; `Definition` lives on the C# class only).
+  Reference: `UnpaidInvoiceCountMetricDefinition.Name == "Granit.Invoicing.UnpaidInvoiceCount"`.
+- **`BaseFilter`**: declarative subset (e.g. `Status == Open`) composed BEFORE the
+  user filter. Caches keyed per (metric, filter) so two metrics over the same
+  entity with different base filters do not collide.
+- **`PeriodSelector`**: which `DateTimeOffset` field the `?period=` window applies
+  to (e.g. `IssuedAt` for invoices, `CreatedAt` for blobs).
+
+#### 4. EF Core empty-set gotcha — `Selector` MUST be nullable
+
+```csharp
+public override Expression<Func<TEntity, TValue?>>? Selector { get; }
+//                                          ^^^^^^^ TValue? — nullable
+```
+
+`SumAsync` / `AverageAsync` over an empty `IQueryable<>` translate to SQL
+`SUM(NULL)` / `AVG(NULL)`. With a non-nullable `Expression<Func<T, TValue>>`,
+EF Core throws `InvalidOperationException: Nullable object must have a value`.
+Typing the selector `TValue?` makes the projection explicitly nullable, and the
+executor coalesces to the convention-mandated empty-set value before returning.
+
+**Empty-set semantics — locked by tests in story A3 #1374, never relax without
+architectural review:**
+
+| Aggregation | Empty result | Rationale |
+| ----------- | ------------ | --------- |
+| `Count` | `0` | Mathematically defined; no rows = zero rows. |
+| `Sum` | `default(TValue)` (`0` for numerics) | Identity element of addition. |
+| `Avg` | `null` | Division by zero — "no data" is not "zero". |
+| `Min` / `Max` | `null` | No element to compare; explicit absence. |
+
+Reference: `Granit.Analytics.EntityFrameworkCore/Internal/MetricExecutor.cs` and
+`tests/Granit.Analytics.EntityFrameworkCore.Tests/Internal/MetricExecutorEmptySetTests.cs`.
+
+#### 5. Period tokens — DAX-aligned
+
+Tokens are case-insensitive, resolved server-side via `IClock` (never
+`DateTimeOffset.UtcNow`):
+
+| Token | Meaning |
+| ----- | ------- |
+| `today`, `yesterday`, `last_7d`, `last_30d` | Calendar windows |
+| `mtd`, `qtd`, `ytd`, `mat` | Month / Quarter / Year-to-date, Moving Annual Total |
+| `previous_period` | `compareTo` only — equal-length window immediately preceding the main one |
+| `pm`, `pq`, `py`, `pmc`, `pqc`, `pyc` | Previous Month / Quarter / Year (rolling or complete) — planned |
+
+Period tokens are query parameters, NEVER part of the metric `Name`. One
+`Granit.Subscriptions.RecurringRevenue` answers MRR with `?period=mtd`, ARR with
+`?period=ytd`, last-quarter revenue with `?period=pqc`. Bake-into-name is allowed
+**only** for canonical industry terms (e.g. `MonthlyRecurringRevenue` — SaaS-MRR
+is always the monthly-equivalent regardless of the queried period).
+
+Full reference: [docs-site analytics conventions](docs-site/src/content/docs/dotnet/business/analytics/conventions.mdx).
+
+#### 6. Localization — MANDATORY
+
+Every `MetricDefinition.Name` MUST have a `Metric:{Name}` key in **all 18 cultures**
+of the owning module's `Localization/{Module}/` folder (15 base + 3 regional).
+Architecture test (D2 #1397, planned) will fail the build on missing keys.
+
+```jsonc
+// src/Granit.Invoicing/Localization/Invoicing/en.json
+{
+  "Metric:Granit.Invoicing.UnpaidInvoiceCount": "Unpaid invoices",
+  "Metric:Granit.Invoicing.UnpaidInvoiceTotal": "Total amount unpaid"
+}
+```
+
+Same convention for `Dashboard:{Name}` (planned).
+
+#### 7. Permissions — inherit from the underlying entity
+
+Metric endpoints inherit the underlying entity's read permission. A metric over
+`Invoice` is gated by `Invoicing.Invoices.Read` — NEVER a metric-specific
+permission. Rationale: the metric exposes an aggregate of data the user could
+already see via the list endpoint; granting a separate metric permission would be
+a confusing layer without security value.
+
+OData EntitySet permissions (Feature C #1393) follow the same rule:
+`OData.{Module}.{Entity}.Read` mirrors the existing list endpoint permission.
+
+#### 8. Pairing rules (STRICT, enforced by archi tests)
+
+Every admin-visible entity now participates in three pairings:
+
+| Browse | Export | Measure |
+| ------ | ------ | ------- |
+| `QueryDefinition` | `ExportDefinition` | `MetricDefinition` |
+| ADR-020 | ADR-020 | (D1 #1396) |
+
+- Adding a `MetricDefinition` for an entity **requires** an existing
+  `QueryDefinition` for the same entity (D1 inverse rule, no exemption — a metric
+  without a drill-down query is always a bug).
+- Adding a `QueryDefinition` for an admin-visible entity **should** be paired with
+  a `MetricDefinition` over the same entity (D1 forward rule, with categorised
+  baseline exemption list — `[INFRA]` for audit/config/internal cache,
+  `[BACKLOG]` for entities awaiting metrics).
+- Pure infrastructure entities (audit log details, internal cache rows like
+  `AIWorkspaceEntity`, `TenantFeatureOverride`) are exempt — see
+  `tests/Granit.ArchitectureTests/QueryMetricPairingTests.PairingExemptions`.
+
+#### 9. Tests — `tests/Granit.Analytics.EntityFrameworkCore.Tests/`
+
+Locked in story A3 #1374. Three families:
+
+```text
+tests/Granit.Analytics.EntityFrameworkCore.Tests/
+  Internal/
+    MetricExecutorTests.cs              # happy-path Sum / Avg / Min / Max / Count
+    MetricExecutorEmptySetTests.cs      # empty-set matrix per (Aggregation × TValue)
+    MetricExecutorPostgresParityTests.cs # SQLite vs Postgres parity
+```
+
+The empty-set matrix is the crown-jewel test — it pins the contract above. Touch
+it only after architectural review.
+
+#### 10. CI test sharding (MANDATORY)
+
+`*.Analytics.*` tests live in the **`business`** shard of
+[`.github/test-shards.json`](.github/test-shards.json). Run
+`python3 scripts/generate-shard-filters.py` after editing the shard map to
+regenerate the `.slnf` files (the pre-push hook does this automatically).
+
+Without registration, CI silently skips the project.
+
+#### 11. Architecture enforcement
+
+Active rules (`tests/Granit.ArchitectureTests/`):
+
+- **D1 #1396 — Pairing**: `QueryDefinition` ↔ `MetricDefinition` (forward with
+  exemption baseline + inverse strict). See
+  `QueryMetricPairingTests.cs`.
+
+Planned:
+
+- **D2 #1397** — `Metric:` and `Dashboard:` localization completeness across the
+  18 cultures.
 
 ### Declarative definitions (`*QueryDefinition`, `*ExportDefinition`) — placement (STRICT)
 
@@ -550,6 +753,9 @@ package that depends on every module to register definitions. Each module owns i
 `QueryDefinition` AND a matching `ExportDefinition`. Query and Export are two facets of
 the same admin-grid use case (browse + export). If you add one, you MUST add the other.
 Architecture tests enforce this pairing for every entity registered with either primitive.
+A third primitive — `MetricDefinition` — pairs with `QueryDefinition` for the
+*measure* facet (see the *.Analytics canonical checklist above). Adding a metric
+without an underlying query is rejected by the D1 archi test.
 
 **What counts as "admin-visible"**: any aggregate root or entity exposed in an admin
 panel — typically those with a CRUD endpoint group or those returned in a paginated grid.
@@ -638,7 +844,7 @@ alphabetically without per-app configuration.
   to error codes by `GranitErrorCodeLanguageManager`. For custom `.Must()` validators, use
   `.WithErrorCodeAndMessage("Granit:Validation:XxxCode")` and add the corresponding key
   to all 17 JSON files in `src/Granit.Validation/Localization/Validation/`. The frontend
-  resolves error codes to localized strings via `GET /api/granit/localization`.
+  resolves error codes to localized strings via `GET /api/{version}/localization`.
 
 ### Isolated DbContext — MANDATORY for `*.EntityFrameworkCore` packages
 
