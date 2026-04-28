@@ -59,7 +59,7 @@ public sealed class EmptySetSemanticsPostgresParityTests(PostgresFixture postgre
     public async Task Count_Empty_Postgres_ReturnsZero()
     {
         int? result = await _intExecutor.ExecuteAsync(
-            new OrderCountMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderCountMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(0);
     }
@@ -68,7 +68,7 @@ public sealed class EmptySetSemanticsPostgresParityTests(PostgresFixture postgre
     public async Task Sum_Empty_Postgres_ReturnsZero()
     {
         decimal? result = await _decimalExecutor.ExecuteAsync(
-            new OrderAmountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(0m);
     }
@@ -79,7 +79,7 @@ public sealed class EmptySetSemanticsPostgresParityTests(PostgresFixture postgre
         // PostgreSQL: AVG over empty returns NULL. EF Core surfaces it as null because the
         // selector is typed nullable. This assertion is the load-bearing parity check.
         decimal? result = await _decimalExecutor.ExecuteAsync(
-            new OrderAmountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -88,7 +88,7 @@ public sealed class EmptySetSemanticsPostgresParityTests(PostgresFixture postgre
     public async Task Min_Empty_Postgres_ReturnsNull()
     {
         decimal? result = await _decimalExecutor.ExecuteAsync(
-            new OrderAmountMinMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMinMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -97,7 +97,7 @@ public sealed class EmptySetSemanticsPostgresParityTests(PostgresFixture postgre
     public async Task Max_Empty_Postgres_ReturnsNull()
     {
         decimal? result = await _decimalExecutor.ExecuteAsync(
-            new OrderAmountMaxMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMaxMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }

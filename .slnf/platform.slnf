@@ -140,6 +140,8 @@
       "src/Granit.Templating.EntityFrameworkCore/Granit.Templating.EntityFrameworkCore.csproj",
       "src/Granit.Templating.Scriban/Granit.Templating.Scriban.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation.AI/Granit.Validation.AI.csproj",
       "src/Granit.Validation.Endpoints/Granit.Validation.Endpoints.csproj",

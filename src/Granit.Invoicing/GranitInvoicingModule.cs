@@ -1,3 +1,4 @@
+using Granit.Analytics;
 using Granit.Guids;
 using Granit.Invoicing.Extensions;
 using Granit.Modularity;
@@ -11,6 +12,7 @@ namespace Granit.Invoicing;
 /// Granit module for agnostic invoicing (invoices, credit notes, tax, sync, PDF).
 /// </summary>
 [DependsOn(
+    typeof(GranitAnalyticsModule),
     typeof(GranitPartiesModule),
     typeof(GranitGuidsModule),
     typeof(GranitTimingModule),

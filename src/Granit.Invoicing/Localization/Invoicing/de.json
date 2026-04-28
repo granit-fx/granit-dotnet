@@ -11,6 +11,8 @@
     "Invoicing.Columns.IssuedAt": "Ausgestellt am",
     "Invoicing.Columns.DueAt": "Fällig am",
     "Invoicing.Columns.PaidAt": "Bezahlt am",
-    "Invoicing.Columns.BillingReason": "Rechnungsgrund"
+    "Invoicing.Columns.BillingReason": "Rechnungsgrund",
+    "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Unbezahlte Rechnungen",
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Gesamtsumme unbezahlter Rechnungen"
   }
 }

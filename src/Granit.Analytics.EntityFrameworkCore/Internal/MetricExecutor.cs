@@ -48,6 +48,15 @@ internal sealed class MetricExecutor<TEntity, TValue>(
 
         IQueryable<TEntity> filtered = queryEngine.BuildFilteredQuery(source, request);
 
+        // Compose the metric's intrinsic predicate (e.g. "Status == Open" on an
+        // UnpaidInvoiceCount) AFTER the user filters, so admin-supplied filters
+        // (period, customer, …) compose with AND semantics on top of the framework's
+        // multi-tenant + soft-delete filters that BuildFilteredQuery already applied.
+        if (metric.BaseFilter is not null)
+        {
+            filtered = filtered.Where(metric.BaseFilter);
+        }
+
         TValue? result = metric.Aggregation switch
         {
             AggregateFunction.Count => await ExecuteCountAsync(filtered, cancellationToken).ConfigureAwait(false),

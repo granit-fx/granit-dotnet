@@ -51,7 +51,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderCountMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderCountMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(4);
     }
@@ -63,7 +63,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         QueryRequest request = new() { Filter = new Dictionary<string, string> { ["Status.eq"] = "Paid" } };
 
         int? result = await executor.ExecuteAsync(
-            new OrderCountMetric(), _db.Orders, request, TestContext.Current.CancellationToken);
+            new OrderCountMetricDefinition(), _db.Orders, request, TestContext.Current.CancellationToken);
 
         result.ShouldBe(2);
     }
@@ -74,7 +74,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(120.50m + 80.00m + 250.75m + 50.00m);
     }
@@ -85,7 +85,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderLineCountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderLineCountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(3 + 1 + 5 + 2);
     }
@@ -96,7 +96,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, long> executor = new(_engine);
 
         long? result = await executor.ExecuteAsync(
-            new OrderTotalCentsSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderTotalCentsSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(12050L + 8000L + 25075L + 5000L);
     }
@@ -107,7 +107,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         decimal expected = (120.50m + 80.00m + 250.75m + 50.00m) / 4m;
@@ -120,7 +120,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, double> executor = new(_engine);
 
         double? result = await executor.ExecuteAsync(
-            new OrderDiscountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderDiscountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         double expected = (0.10 + 0.00 + 0.20 + 0.05) / 4.0;
@@ -133,7 +133,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountMinMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMinMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(50.00m);
     }
@@ -144,7 +144,7 @@ public sealed class MetricExecutorTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountMaxMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMaxMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(250.75m);
     }

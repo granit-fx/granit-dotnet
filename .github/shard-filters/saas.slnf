@@ -2,6 +2,8 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj",
+      "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Authorization/Granit.Authorization.csproj",
@@ -63,6 +65,7 @@
       "src/Granit.Persistence/Granit.Persistence.csproj",
       "src/Granit.QueryEngine.Abstractions/Granit.QueryEngine.Abstractions.csproj",
       "src/Granit.QueryEngine.AspNetCore/Granit.QueryEngine.AspNetCore.csproj",
+      "src/Granit.QueryEngine.EntityFrameworkCore/Granit.QueryEngine.EntityFrameworkCore.csproj",
       "src/Granit.QueryEngine/Granit.QueryEngine.csproj",
       "src/Granit.RateLimiting/Granit.RateLimiting.csproj",
       "src/Granit.Scheduling/Granit.Scheduling.csproj",
@@ -79,6 +82,8 @@
       "src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj",
       "src/Granit.Tax/Granit.Tax.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
+      "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
+      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation.Europe/Granit.Validation.Europe.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

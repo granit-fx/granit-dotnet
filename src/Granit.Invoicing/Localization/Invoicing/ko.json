@@ -11,6 +11,8 @@
     "Invoicing.Columns.IssuedAt": "Issued At",
     "Invoicing.Columns.DueAt": "Due At",
     "Invoicing.Columns.PaidAt": "Paid At",
-    "Invoicing.Columns.BillingReason": "Billing Reason"
+    "Invoicing.Columns.BillingReason": "Billing Reason",
+    "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "미지급 청구서",
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "미지급 청구서 합계"
   }
 }

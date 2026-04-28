@@ -56,7 +56,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderCountMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderCountMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.Value.ShouldBe(0);
@@ -70,7 +70,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.Value.ShouldBe(0m);
@@ -82,7 +82,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderLineCountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderLineCountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.Value.ShouldBe(0);
@@ -94,7 +94,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, long> executor = new(_engine);
 
         long? result = await executor.ExecuteAsync(
-            new OrderTotalCentsSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderTotalCentsSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.Value.ShouldBe(0L);
@@ -106,7 +106,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, double> executor = new(_engine);
 
         double? result = await executor.ExecuteAsync(
-            new OrderDiscountSumMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderDiscountSumMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result!.Value.ShouldBe(0.0);
@@ -123,7 +123,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -134,7 +134,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderLineCountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderLineCountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -145,7 +145,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, long> executor = new(_engine);
 
         long? result = await executor.ExecuteAsync(
-            new OrderTotalCentsAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderTotalCentsAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -156,7 +156,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, double> executor = new(_engine);
 
         double? result = await executor.ExecuteAsync(
-            new OrderDiscountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderDiscountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -169,7 +169,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountMinMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMinMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -180,7 +180,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, int> executor = new(_engine);
 
         int? result = await executor.ExecuteAsync(
-            new OrderLineCountMinMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderLineCountMinMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -193,7 +193,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, decimal> executor = new(_engine);
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountMaxMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMaxMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -204,7 +204,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, long> executor = new(_engine);
 
         long? result = await executor.ExecuteAsync(
-            new OrderTotalCentsMaxMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderTotalCentsMaxMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }
@@ -228,7 +228,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
 
         MetricExecutor<Order, decimal> executor = new(_engine);
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountAvgMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountAvgMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         result.ShouldBe(42.50m);
     }
@@ -251,9 +251,9 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         MetricExecutor<Order, decimal> minExecutor = new(_engine);
         MetricExecutor<Order, decimal> maxExecutor = new(_engine);
         decimal? min = await minExecutor.ExecuteAsync(
-            new OrderAmountMinMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMinMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
         decimal? max = await maxExecutor.ExecuteAsync(
-            new OrderAmountMaxMetric(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
+            new OrderAmountMaxMetricDefinition(), _db.Orders, new QueryRequest(), TestContext.Current.CancellationToken);
 
         min.ShouldBe(99.99m);
         max.ShouldBe(99.99m);
@@ -281,7 +281,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         QueryRequest request = new() { Filter = new Dictionary<string, string> { ["Status.eq"] = "Cancelled" } };
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountSumMetric(), _db.Orders, request, TestContext.Current.CancellationToken);
+            new OrderAmountSumMetricDefinition(), _db.Orders, request, TestContext.Current.CancellationToken);
 
         result.ShouldBe(0m);
     }
@@ -305,7 +305,7 @@ public sealed class EmptySetSemanticsTests : IAsyncLifetime
         QueryRequest request = new() { Filter = new Dictionary<string, string> { ["Status.eq"] = "Cancelled" } };
 
         decimal? result = await executor.ExecuteAsync(
-            new OrderAmountAvgMetric(), _db.Orders, request, TestContext.Current.CancellationToken);
+            new OrderAmountAvgMetricDefinition(), _db.Orders, request, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
     }

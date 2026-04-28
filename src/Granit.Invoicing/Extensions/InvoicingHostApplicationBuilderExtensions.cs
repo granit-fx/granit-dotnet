@@ -1,3 +1,4 @@
+using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Invoicing.Definitions;
@@ -5,6 +6,7 @@ using Granit.Invoicing.Diagnostics;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Exports;
 using Granit.Invoicing.Internal;
+using Granit.Invoicing.Metrics;
 using Granit.Invoicing.Queries;
 using Granit.QueryEngine.Extensions;
 using Granit.Workflow.Extensions;
@@ -26,6 +28,8 @@ public static class InvoicingHostApplicationBuilderExtensions
         builder.Services.TryAddTransient<IInvoiceCreditApplier, DefaultInvoiceCreditApplier>();
         builder.Services.AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
         builder.Services.AddExportDefinition<Invoice, InvoiceExportDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, int, UnpaidInvoiceCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, decimal, UnpaidInvoiceTotalMetricDefinition>();
         GranitActivitySourceRegistry.Register(InvoicingActivitySource.Name);
         return builder;
     }

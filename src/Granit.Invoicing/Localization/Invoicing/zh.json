@@ -11,6 +11,8 @@
     "Invoicing.Columns.IssuedAt": "Issued At",
     "Invoicing.Columns.DueAt": "Due At",
     "Invoicing.Columns.PaidAt": "Paid At",
-    "Invoicing.Columns.BillingReason": "Billing Reason"
+    "Invoicing.Columns.BillingReason": "Billing Reason",
+    "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "未付款发票",
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "未付款发票总额"
   }
 }

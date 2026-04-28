@@ -14,11 +14,18 @@
     <PackageReference Include="Shouldly" />
     <PackageReference Include="NSubstitute" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Analytics\Granit.Analytics.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Analytics.EntityFrameworkCore\Granit.Analytics.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Invoicing\Granit.Invoicing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Invoicing.EntityFrameworkCore\Granit.Invoicing.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

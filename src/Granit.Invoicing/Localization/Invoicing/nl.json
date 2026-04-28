@@ -11,6 +11,8 @@
     "Invoicing.Columns.IssuedAt": "Uitgegeven op",
     "Invoicing.Columns.DueAt": "Vervaldatum",
     "Invoicing.Columns.PaidAt": "Betaald op",
-    "Invoicing.Columns.BillingReason": "Factuurreden"
+    "Invoicing.Columns.BillingReason": "Factuurreden",
+    "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Onbetaalde facturen",
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Totaal van onbetaalde facturen"
   }
 }

@@ -98,6 +98,20 @@ public abstract class MetricDefinition<TEntity, TValue> : IMetricDefinitionDescr
     /// </summary>
     public virtual Expression<Func<TEntity, DateTimeOffset>>? PeriodSelector => null;
 
+    /// <summary>
+    /// Intrinsic predicate scoping the metric to a subset of <typeparamref name="TEntity"/>.
+    /// E.g. <c>i =&gt; i.Status == InvoiceStatus.Open</c> for an <c>UnpaidInvoiceCount</c>
+    /// metric. Composed with the user-supplied <c>QueryRequest</c> filter pipeline (AND
+    /// semantics) before the aggregation runs — multi-tenant and soft-delete filters are
+    /// still applied first by EF Core's global query filters.
+    /// </summary>
+    /// <remarks>
+    /// Returning <c>null</c> means the metric aggregates over the full filtered set.
+    /// Use <see cref="BaseFilter"/> for "what makes this metric unique" (status, role,
+    /// state) — not for caller-driven filters (those go in <c>QueryRequest.Filter</c>).
+    /// </remarks>
+    public virtual Expression<Func<TEntity, bool>>? BaseFilter => null;
+
     /// <inheritdoc />
     Type IMetricDefinitionDescriptor.EntityType => typeof(TEntity);
 

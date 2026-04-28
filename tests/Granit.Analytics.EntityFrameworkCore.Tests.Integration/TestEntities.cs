@@ -32,7 +32,7 @@ internal sealed class OrderQueryDefinition : QueryDefinition<Order>
             .DefaultPageSize(50);
 }
 
-internal sealed class OrderAmountSumMetric : MetricDefinition<Order, decimal>
+internal sealed class OrderAmountSumMetricDefinition : MetricDefinition<Order, decimal>
 {
     public override string Name => "Test.AmountSum";
     public override MetricValueKind ValueKind => MetricValueKind.Currency;
@@ -40,7 +40,7 @@ internal sealed class OrderAmountSumMetric : MetricDefinition<Order, decimal>
     public override Expression<Func<Order, decimal?>>? Selector => o => o.Amount;
 }
 
-internal sealed class OrderAmountAvgMetric : MetricDefinition<Order, decimal>
+internal sealed class OrderAmountAvgMetricDefinition : MetricDefinition<Order, decimal>
 {
     public override string Name => "Test.AmountAvg";
     public override MetricValueKind ValueKind => MetricValueKind.Currency;
@@ -48,7 +48,7 @@ internal sealed class OrderAmountAvgMetric : MetricDefinition<Order, decimal>
     public override Expression<Func<Order, decimal?>>? Selector => o => o.Amount;
 }
 
-internal sealed class OrderAmountMinMetric : MetricDefinition<Order, decimal>
+internal sealed class OrderAmountMinMetricDefinition : MetricDefinition<Order, decimal>
 {
     public override string Name => "Test.AmountMin";
     public override MetricValueKind ValueKind => MetricValueKind.Currency;
@@ -56,7 +56,7 @@ internal sealed class OrderAmountMinMetric : MetricDefinition<Order, decimal>
     public override Expression<Func<Order, decimal?>>? Selector => o => o.Amount;
 }
 
-internal sealed class OrderAmountMaxMetric : MetricDefinition<Order, decimal>
+internal sealed class OrderAmountMaxMetricDefinition : MetricDefinition<Order, decimal>
 {
     public override string Name => "Test.AmountMax";
     public override MetricValueKind ValueKind => MetricValueKind.Currency;
@@ -64,7 +64,7 @@ internal sealed class OrderAmountMaxMetric : MetricDefinition<Order, decimal>
     public override Expression<Func<Order, decimal?>>? Selector => o => o.Amount;
 }
 
-internal sealed class OrderCountMetric : MetricDefinition<Order, int>
+internal sealed class OrderCountMetricDefinition : MetricDefinition<Order, int>
 {
     public override string Name => "Test.Count";
     public override MetricValueKind ValueKind => MetricValueKind.Count;

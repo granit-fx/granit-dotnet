@@ -1122,6 +1122,7 @@
       "name": "Granit.Invoicing",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.Parties",
         "Granit.DataExchange.Abstractions",
         "Granit.Invoicing.Abstractions",
@@ -4314,6 +4315,12 @@
           "kind": "property",
           "signature": "Expression<Func<TEntity, DateTimeOffset>>? PeriodSelector",
           "returnType": "Expression<Func<TEntity, DateTimeOffset>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<TEntity, bool>>? BaseFilter",
+          "returnType": "Expression<Func<TEntity, bool>>?"
         }
       ]
     },
@@ -24195,7 +24202,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitInvoicing",
@@ -24211,7 +24218,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/GranitInvoicingModule.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24448,6 +24455,110 @@
           "kind": "method",
           "signature": "CalculateAsync(TaxRequest request, CancellationToken cancellationToken = default)",
           "returnType": "string Name { get; } Task<TaxResult>"
+        }
+      ]
+    },
+    {
+      "name": "UnpaidInvoiceCountMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.UnpaidInvoiceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/UnpaidInvoiceCountMetricDefinition.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, int?>>? Selector",
+          "returnType": "Expression<Func<Invoice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "UnpaidInvoiceTotalMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.UnpaidInvoiceTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/UnpaidInvoiceTotalMetricDefinition.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, decimal?>>? Selector",
+          "returnType": "Expression<Func<Invoice, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
         }
       ]
     },
@@ -47322,6 +47433,15 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "DbContextOptionsBuilderTestExtensions",
+      "fqn": "Granit.Testing.EntityFrameworkCore.Extensions.DbContextOptionsBuilderTestExtensions",
+      "kind": "class",
+      "project": "Granit.Testing.EntityFrameworkCore",
+      "file": "src/Granit.Testing.EntityFrameworkCore/Extensions/DbContextOptionsBuilderTestExtensions.cs",
+      "line": 9,
+      "members": []
     },
     {
       "name": "TestDbContextServiceCollectionExtensions",

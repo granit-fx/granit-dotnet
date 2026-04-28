@@ -11,6 +11,8 @@
     "Invoicing.Columns.IssuedAt": "Émise le",
     "Invoicing.Columns.DueAt": "Échéance",
     "Invoicing.Columns.PaidAt": "Payée le",
-    "Invoicing.Columns.BillingReason": "Motif de facturation"
+    "Invoicing.Columns.BillingReason": "Motif de facturation",
+    "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Factures impayées",
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total des factures impayées"
   }
 }

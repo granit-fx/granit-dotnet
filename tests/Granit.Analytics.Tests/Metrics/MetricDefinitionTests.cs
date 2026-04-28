@@ -11,7 +11,7 @@ public sealed class MetricDefinitionTests
     [Fact]
     public void Defaults_AreReasonable()
     {
-        SampleCountMetric metric = new();
+        SampleCountMetricDefinition metric = new();
 
         metric.Name.ShouldBe("Sample.Count");
         metric.ValueKind.ShouldBe(MetricValueKind.Count);
@@ -25,7 +25,7 @@ public sealed class MetricDefinitionTests
     [Fact]
     public void Implements_IMetricDefinitionDescriptor()
     {
-        SampleCountMetric metric = new();
+        SampleCountMetricDefinition metric = new();
 
         metric.ShouldBeAssignableTo<IMetricDefinitionDescriptor>();
         IMetricDefinitionDescriptor descriptor = metric;
@@ -36,7 +36,7 @@ public sealed class MetricDefinitionTests
     [Fact]
     public void SumMetric_ExposesNullableSelector()
     {
-        SampleAmountSumMetric metric = new();
+        SampleAmountSumMetricDefinition metric = new();
 
         metric.Aggregation.ShouldBe(AggregateFunction.Sum);
         metric.Selector.ShouldNotBeNull();
@@ -51,7 +51,7 @@ public sealed class MetricDefinitionTests
         public decimal Amount { get; init; }
     }
 
-    private sealed class SampleCountMetric : MetricDefinition<SampleEntity, int>
+    private sealed class SampleCountMetricDefinition : MetricDefinition<SampleEntity, int>
     {
         public override string Name => "Sample.Count";
         public override MetricValueKind ValueKind => MetricValueKind.Count;
@@ -59,7 +59,7 @@ public sealed class MetricDefinitionTests
         public override Expression<Func<SampleEntity, int?>>? Selector => null;
     }
 
-    private sealed class SampleAmountSumMetric : MetricDefinition<SampleEntity, decimal>
+    private sealed class SampleAmountSumMetricDefinition : MetricDefinition<SampleEntity, decimal>
     {
         public override string Name => "Sample.AmountSum";
         public override MetricValueKind ValueKind => MetricValueKind.Currency;

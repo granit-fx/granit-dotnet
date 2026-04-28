@@ -15,12 +15,12 @@ public sealed class MetricDefinitionRegistrationTests
     {
         ServiceCollection services = new();
 
-        services.AddMetricDefinition<Order, int, OrderCountMetric>();
+        services.AddMetricDefinition<Order, int, OrderCountMetricDefinition>();
 
         ServiceProvider provider = services.BuildServiceProvider();
 
         MetricDefinition<Order, int> definition = provider.GetRequiredService<MetricDefinition<Order, int>>();
-        definition.ShouldBeOfType<OrderCountMetric>();
+        definition.ShouldBeOfType<OrderCountMetricDefinition>();
 
         IEnumerable<IMetricDefinitionDescriptor> descriptors = provider.GetServices<IMetricDefinitionDescriptor>();
         descriptors.ShouldContain(d => d.Name == "Sample.Order.Count");
@@ -31,7 +31,7 @@ public sealed class MetricDefinitionRegistrationTests
     {
         ServiceCollection services = new();
 
-        services.AddMetricDefinition<Order, int, OrderCountMetric>();
+        services.AddMetricDefinition<Order, int, OrderCountMetricDefinition>();
 
         ServiceProvider provider = services.BuildServiceProvider();
         MetricDefinition<Order, int> definition = provider.GetRequiredService<MetricDefinition<Order, int>>();
@@ -46,7 +46,7 @@ public sealed class MetricDefinitionRegistrationTests
         public int Id { get; init; }
     }
 
-    private sealed class OrderCountMetric : MetricDefinition<Order, int>
+    private sealed class OrderCountMetricDefinition : MetricDefinition<Order, int>
     {
         public override string Name => "Sample.Order.Count";
         public override MetricValueKind ValueKind => MetricValueKind.Count;

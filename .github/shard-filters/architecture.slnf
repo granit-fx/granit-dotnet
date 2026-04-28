@@ -11,6 +11,7 @@
       "src/Granit.AI.OpenAI/Granit.AI.OpenAI.csproj",
       "src/Granit.AI.VectorData/Granit.AI.VectorData.csproj",
       "src/Granit.AI/Granit.AI.csproj",
+      "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
       "src/Granit.Analyzers/Granit.Analyzers.csproj",
       "src/Granit.Auditing.ConfigurationChanges/Granit.Auditing.ConfigurationChanges.csproj",
