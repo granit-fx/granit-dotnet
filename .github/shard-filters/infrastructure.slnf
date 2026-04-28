@@ -81,7 +81,6 @@
       "src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
-      "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
       "src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj",
@@ -92,7 +91,6 @@
       "tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj",
       "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.BackgroundJobs.Notifications.Tests/Granit.BackgroundJobs.Notifications.Tests.csproj",
-      "tests/Granit.BackgroundJobs.Tests.Integration/Granit.BackgroundJobs.Tests.Integration.csproj",
       "tests/Granit.BackgroundJobs.Tests/Granit.BackgroundJobs.Tests.csproj",
       "tests/Granit.BackgroundJobs.Wolverine.Tests/Granit.BackgroundJobs.Wolverine.Tests.csproj",
       "tests/Granit.Events.Tests/Granit.Events.Tests.csproj",
@@ -143,9 +141,7 @@
       "tests/Granit.Settings.Endpoints.Tests/Granit.Settings.Endpoints.Tests.csproj",
       "tests/Granit.Settings.EntityFrameworkCore.Tests/Granit.Settings.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Settings.Tests/Granit.Settings.Tests.csproj",
-      "tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests/Granit.Wolverine.Postgresql.Tests.csproj",
-      "tests/Granit.Wolverine.SqlServer.Tests.Integration/Granit.Wolverine.SqlServer.Tests.Integration.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests/Granit.Wolverine.SqlServer.Tests.csproj",
       "tests/Granit.Wolverine.Tests/Granit.Wolverine.Tests.csproj"
     ]

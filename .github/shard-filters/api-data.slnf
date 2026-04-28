@@ -89,7 +89,6 @@
       "tests/Granit.BlobStorage.Tests/Granit.BlobStorage.Tests.csproj",
       "tests/Granit.Caching.FusionCache.Tests/Granit.Caching.FusionCache.Tests.csproj",
       "tests/Granit.Caching.StackExchangeRedis.Tests/Granit.Caching.StackExchangeRedis.Tests.csproj",
-      "tests/Granit.Caching.Tests.Integration/Granit.Caching.Tests.Integration.csproj",
       "tests/Granit.Caching.Tests/Granit.Caching.Tests.csproj",
       "tests/Granit.Http.Abstractions.Tests/Granit.Http.Abstractions.Tests.csproj",
       "tests/Granit.Http.ApiDocumentation.Tests/Granit.Http.ApiDocumentation.Tests.csproj",

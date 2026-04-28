@@ -68,14 +68,16 @@ jobs:
         run: dotnet format .github/shard-filters/src-only.slnf --verify-no-changes --no-restore
 
   # ---------------------------------------------------------------------------
-  # UNIT TESTS — 6 parallel shards aligned with architecture layers
+  # UNIT + INTEGRATION TESTS — parallel shards aligned with architecture layers,
+  # plus a dedicated `integration` shard that owns every *.Tests.Integration project
+  # (Postgres / Testcontainers — the dominant cost driver).
   # Shard definitions: .github/test-shards.json
   # Solution filters: .github/shard-filters/*.slnf (auto-generated)
   # ---------------------------------------------------------------------------
   test:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -90,6 +92,10 @@ jobs:
             label: "Infrastructure"
           - name: security
             label: "Security & Compliance"
+          - name: saas
+            label: "SaaS"
+          - name: integration
+            label: "Integration Tests"
           - name: architecture
             label: "Architecture Tests"
     name: test (${{ matrix.shard.label }})
@@ -237,9 +243,15 @@ jobs:
 
   # NuGet audit feed: complements Trivy (different CVE source, also catches
   # transitive dependencies disclosed AFTER lockfile generation).
+  # Sharded the same way as build/test — restoring + auditing the full solution
+  # (~295 projects) on a single runner exceeded the 5-minute budget.
   dotnet-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [core-ai, business, api-data, infrastructure, security, saas, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
@@ -256,13 +268,13 @@ jobs:
           restore-keys: nuget-${{ runner.os }}-
 
       - name: Restore (locked mode)
-        run: dotnet restore --locked-mode
+        run: dotnet restore .github/shard-filters/${{ matrix.shard }}.slnf --locked-mode
 
       - name: List vulnerable packages (transitive)
         run: |
-          dotnet list package --vulnerable --include-transitive 2>&1 | tee vuln.txt
+          dotnet list .github/shard-filters/${{ matrix.shard }}.slnf package --vulnerable --include-transitive 2>&1 | tee vuln.txt
           if grep -E "^\s*>\s.*(High|Critical)" vuln.txt; then
-            echo "::error::High or Critical vulnerable NuGet packages detected."
+            echo "::error::High or Critical vulnerable NuGet packages detected in shard ${{ matrix.shard }}."
             exit 1
           fi
 
