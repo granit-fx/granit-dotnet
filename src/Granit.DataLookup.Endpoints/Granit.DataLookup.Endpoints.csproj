@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.DataLookup.Endpoints</PackageId>
-    <Description>Minimal API endpoints for Granit.DataLookup. Routes GET /api/granit/lookups (manifest), GET /api/granit/lookups/{name} (paginated search) and GET /api/granit/lookups/{name}/resolve (single item). Handles authorization, scope key validation and the Accept-Language header.</Description>
+    <Description>Minimal API endpoints for Granit.DataLookup. Routes GET /lookups (manifest), GET /lookups/{name} (paginated search) and GET /lookups/{name}/resolve (single item). Handles authorization, scope key validation and the Accept-Language header.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

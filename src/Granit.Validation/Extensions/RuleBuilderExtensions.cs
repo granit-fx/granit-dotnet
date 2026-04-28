@@ -37,7 +37,7 @@ public static class RuleBuilderExtensions
     /// <para>
     /// The <see cref="FluentValidationSchemaTransformer"/> emits the hint key as the
     /// <c>x-granit-pattern-hint</c> OpenAPI extension alongside the <c>pattern</c> property.
-    /// The frontend resolves the key via <c>GET /api/granit/localization</c>.
+    /// The frontend resolves the key via <c>GET /api/{version}/localization</c>.
     /// </para>
     /// <example>
     /// <code>

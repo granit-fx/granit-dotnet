@@ -350,9 +350,9 @@ public sealed class TranslationAdminService(
 
 | Method | Route | Description |
 | --- | --- | --- |
-| `GET` | `/api/granit/localization/overrides` | List overrides by resource and culture |
-| `PUT` | `/api/granit/localization/overrides/{resource}/{culture}/{key}` | Create or update an override |
-| `DELETE` | `/api/granit/localization/overrides/{resource}/{culture}/{key}` | Remove an override |
+| `GET` | `/api/{version}/localization/overrides` | List overrides by resource and culture |
+| `PUT` | `/api/{version}/localization/overrides/{resource}/{culture}/{key}` | Create or update an override |
+| `DELETE` | `/api/{version}/localization/overrides/{resource}/{culture}/{key}` | Remove an override |
 
 ```csharp
 app.MapGranitLocalizationOverrides();

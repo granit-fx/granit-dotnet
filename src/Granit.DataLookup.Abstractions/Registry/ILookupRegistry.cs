@@ -9,7 +9,7 @@ namespace Granit.DataLookup.Registry;
 /// <remarks>
 /// Registered at startup via <c>AddLookup*</c> extensions on <c>IServiceCollection</c>.
 /// Resolved at runtime by the lookup endpoints to dispatch
-/// <c>GET /api/granit/lookups/{name}</c> to the correct source.
+/// <c>GET /lookups/{name}</c> to the correct source.
 /// </remarks>
 public interface ILookupRegistry
 {
@@ -18,7 +18,7 @@ public interface ILookupRegistry
 
     /// <summary>
     /// Returns a manifest of every registered source for
-    /// <c>GET /api/granit/lookups</c> (for tooling and frontend discovery).
+    /// <c>GET /lookups</c> (for tooling and frontend discovery).
     /// </summary>
     IReadOnlyList<LookupManifestEntry> GetManifest();
 }

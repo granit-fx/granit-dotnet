@@ -214,10 +214,10 @@ schedule or the catch-up job.
 
 | Method | Route | Permission | Description |
 |--------|-------|------------|-------------|
-| GET | `/api/granit/scheduling/{id}` | `Scheduling.Actions.Read` | Get action by ID |
-| GET | `/api/granit/scheduling/query` | `Scheduling.Actions.Read` | Paginated list (QueryEngine) |
-| DELETE | `/api/granit/scheduling/{id}` | `Scheduling.Actions.Manage` | Cancel a pending action |
-| PUT | `/api/granit/scheduling/{id}/reschedule` | `Scheduling.Actions.Manage` | Reschedule to new date |
+| GET | `/api/{version}/scheduling/{id}` | `Scheduling.Actions.Read` | Get action by ID |
+| GET | `/api/{version}/scheduling/query` | `Scheduling.Actions.Read` | Paginated list (QueryEngine) |
+| DELETE | `/api/{version}/scheduling/{id}` | `Scheduling.Actions.Manage` | Cancel a pending action |
+| PUT | `/api/{version}/scheduling/{id}/reschedule` | `Scheduling.Actions.Manage` | Reschedule to new date |
 
 ## Observability
 

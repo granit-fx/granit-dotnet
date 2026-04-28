@@ -22,7 +22,7 @@ namespace Granit.DataLookup.Endpoints.Endpoints;
 /// </remarks>
 public static class LookupEndpointHandlers
 {
-    /// <summary>GET /api/granit/lookups — returns the discovery manifest.</summary>
+    /// <summary>GET /lookups — returns the discovery manifest.</summary>
     public static Ok<LookupManifestResponse> GetManifest(
         [FromServices] ILookupRegistry registry)
     {
@@ -36,7 +36,7 @@ public static class LookupEndpointHandlers
         return TypedResults.Ok(new LookupManifestResponse(responses));
     }
 
-    /// <summary>GET /api/granit/lookups/{name} — paginated search.</summary>
+    /// <summary>GET /lookups/{name} — paginated search.</summary>
     [SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters", Justification = "Minimal-API endpoint — ASP.NET binds [FromServices]/[FromQuery] parameters explicitly; no natural domain wrapper for orthogonal request inputs and DI collaborators.")]
     public static async Task<Results<Ok<LookupResultResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>> SearchAsync(
         string name,
@@ -90,7 +90,7 @@ public static class LookupEndpointHandlers
         return TypedResults.Ok(new LookupResultResponse(items, result.TotalCount, result.ContinuationToken));
     }
 
-    /// <summary>GET /api/granit/lookups/{name}/resolve?value=… — single item lookup for rehydration.</summary>
+    /// <summary>GET /lookups/{name}/resolve?value=… — single item lookup for rehydration.</summary>
     public static async Task<Results<Ok<LookupItemResponse>, NotFound, ForbidHttpResult, ProblemHttpResult>> ResolveAsync(
         string name,
         [FromQuery] string? value,

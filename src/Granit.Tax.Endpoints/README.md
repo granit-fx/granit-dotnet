@@ -6,7 +6,7 @@ Admin API endpoints for Granit.Tax.
 
 | Method | Route | Permission |
 | ------ | ----- | ---------- |
-| POST | `/api/granit/tax/validate` | `Tax.Validations.Execute` |
-| GET | `/api/granit/tax/rates` | `Tax.Rates.Read` |
-| GET | `/api/granit/tax/rates/{countryCode}` | `Tax.Rates.Read` |
-| POST | `/api/granit/tax/calculate` | `Tax.Validations.Execute` |
+| POST | `/api/{version}/tax/validate` | `Tax.Validations.Execute` |
+| GET | `/api/{version}/tax/rates` | `Tax.Rates.Read` |
+| GET | `/api/{version}/tax/rates/{countryCode}` | `Tax.Rates.Read` |
+| POST | `/api/{version}/tax/calculate` | `Tax.Validations.Execute` |

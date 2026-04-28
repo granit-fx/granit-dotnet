@@ -245,7 +245,7 @@ FluentValidation failures get special treatment. The `errors` dictionary maps fi
 }
 ```
 
-Why codes instead of messages? Because the **frontend resolves them to localized strings** via `GET /api/granit/localization`. A French user sees "Le nom est obligatoire.", a Dutch user sees "Naam is verplicht." — from the same error code. This is how you do i18n-friendly validation without duplicating messages between backend and frontend.
+Why codes instead of messages? Because the **frontend resolves them to localized strings** via `GET /api/{version}/localization`. A French user sees "Le nom est obligatoire.", a Dutch user sees "Naam is verplicht." — from the same error code. This is how you do i18n-friendly validation without duplicating messages between backend and frontend.
 
 ### Custom mappers: extend the chain
 

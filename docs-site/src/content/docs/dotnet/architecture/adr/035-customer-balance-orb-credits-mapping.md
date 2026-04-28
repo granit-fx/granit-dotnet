@@ -66,7 +66,7 @@ upstream tenant-management), but the operations are 1:1.
 
 ### 2. Additions to close the residual gap
 
-**`POST /api/granit/customer-balance/balance/debit`** (admin debit) —
+**`POST /api/{version}/customer-balance/balance/debit`** (admin debit) —
 allows manual drawdown for corrections, scheduled debits, and non-invoice
 adjustments. Idempotent via `(ReferenceId, Source = ManualAdjustment)`
 lookup: a previous debit with the same `ReferenceId` short-circuits the

@@ -1,7 +1,7 @@
 namespace Granit.Localization.Endpoints.Dtos;
 
 /// <summary>
-/// Response payload for <c>GET /api/granit/localization</c>.
+/// Response payload for <c>GET /api/{version}/localization</c>.
 /// Contains all localization resources for the requested culture and the list of available languages.
 /// </summary>
 /// <param name="CultureName">The resolved culture name (e.g. "fr", "en").</param>

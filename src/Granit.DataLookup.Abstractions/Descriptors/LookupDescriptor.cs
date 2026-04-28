@@ -13,7 +13,7 @@ namespace Granit.DataLookup.Descriptors;
 ///     <description>
 ///     <see cref="Name"/> — resolved against the central <see cref="Registry.ILookupRegistry"/>
 ///     (recommended). The frontend issues
-///     <c>GET /api/granit/lookups/{Name}?search=&amp;scope.{key}=…</c>.
+///     <c>GET /lookups/{Name}?search=&amp;scope.{key}=…</c>.
 ///     </description>
 ///   </item>
 ///   <item>

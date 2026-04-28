@@ -204,7 +204,7 @@ hourly buckets server-side. The global ingestion watermark is **never rewound** 
 events past `to` keep flowing through the hot path.
 
 ```http
-POST /api/granit/metering/meters/{id}/recompute
+POST /api/{version}/metering/meters/{id}/recompute
 {
   "from": "2026-04-01T00:00:00Z",
   "to":   "2026-04-15T00:00:00Z"
@@ -225,7 +225,7 @@ Same shape as `POST /events`, but the per-event age validator allows up to
 on every meter window the backfilled events touched.
 
 ```http
-POST /api/granit/metering/events/backfill
+POST /api/{version}/metering/events/backfill
 { "events": [ { meterDefinitionId, idempotencyKey, quantity, timestamp, metadata }, ... ] }
 
 → 200 BackfillUsageResponse { eventsAccepted, metersAffected, aggregatesRebuilt }
@@ -242,7 +242,7 @@ preserved (audit trail, `DeprecatedAt` + `DeprecationReason` columns); the
 auto-recompute on the affected hourly bucket follows.
 
 ```http
-POST /api/granit/metering/events/{id}/deprecate
+POST /api/{version}/metering/events/{id}/deprecate
 { "reason": "duplicate from retried client" }
 
 → 200 DeprecateEventResponse { eventId, meterDefinitionId, deprecatedAt, aggregatesRebuilt }
@@ -344,19 +344,19 @@ The legacy `Activated` column is dropped by the
 
 | Method | Route | Permission |
 |--------|-------|------------|
-| GET | `/api/granit/metering/meters` | `Metering.Meters.Read` |
-| POST | `/api/granit/metering/meters` | `Metering.Meters.Manage` |
-| PUT | `/api/granit/metering/meters/{id}` | `Metering.Meters.Manage` |
-| POST | `/api/granit/metering/meters/{id}/publish` | `Metering.Meters.Manage` |
-| POST | `/api/granit/metering/meters/{id}/archive` | `Metering.Meters.Manage` |
-| POST | `/api/granit/metering/meters/{id}/recompute` | `Metering.Meters.Manage` |
-| GET | `/api/granit/metering/usage` | `Metering.Usage.Read` |
-| GET | `/api/granit/metering/quota/{meterId}` | `Metering.Usage.Read` |
-| POST | `/api/granit/metering/events` | `Metering.Usage.Record` |
-| POST | `/api/granit/metering/events/backfill` | `Metering.Events.Backfill` |
-| POST | `/api/granit/metering/events/{id}/deprecate` | `Metering.Events.Manage` |
-| GET | `/api/granit/metering/meter-definitions` | `Metering.Meters.Read` |
-| GET | `/api/granit/metering/usage-aggregates` | `Metering.Usage.Read` |
+| GET | `/api/{version}/metering/meters` | `Metering.Meters.Read` |
+| POST | `/api/{version}/metering/meters` | `Metering.Meters.Manage` |
+| PUT | `/api/{version}/metering/meters/{id}` | `Metering.Meters.Manage` |
+| POST | `/api/{version}/metering/meters/{id}/publish` | `Metering.Meters.Manage` |
+| POST | `/api/{version}/metering/meters/{id}/archive` | `Metering.Meters.Manage` |
+| POST | `/api/{version}/metering/meters/{id}/recompute` | `Metering.Meters.Manage` |
+| GET | `/api/{version}/metering/usage` | `Metering.Usage.Read` |
+| GET | `/api/{version}/metering/quota/{meterId}` | `Metering.Usage.Read` |
+| POST | `/api/{version}/metering/events` | `Metering.Usage.Record` |
+| POST | `/api/{version}/metering/events/backfill` | `Metering.Events.Backfill` |
+| POST | `/api/{version}/metering/events/{id}/deprecate` | `Metering.Events.Manage` |
+| GET | `/api/{version}/metering/meter-definitions` | `Metering.Meters.Read` |
+| GET | `/api/{version}/metering/usage-aggregates` | `Metering.Usage.Read` |
 
 All usage endpoints require tenant context. `POST /events` validates that each
 `MeterDefinitionId` in the batch belongs to the current tenant and is active.
@@ -369,7 +369,7 @@ host can review usage cross-tenant.
 
 ## Idempotency model
 
-`POST /api/granit/metering/events` enforces idempotency at **two complementary
+`POST /api/{version}/metering/events` enforces idempotency at **two complementary
 layers** — neither replaces the other.
 
 ### HTTP layer — request envelope dedup

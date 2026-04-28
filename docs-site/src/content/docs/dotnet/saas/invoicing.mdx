@@ -217,10 +217,10 @@ Both services are registered automatically by `AddGranitInvoicing()`.
 
 | Method | Route | Permission |
 |--------|-------|------------|
-| GET | `/api/granit/invoicing/invoices` | `Invoicing.Invoices.Read` |
-| GET | `/api/granit/invoicing/invoices/{id}` | `Invoicing.Invoices.Read` |
-| GET | `/api/granit/invoicing/invoices/{id}/pdf` | `Invoicing.Invoices.Download` |
-| POST | `/api/granit/invoicing/credit-notes` | `Invoicing.CreditNotes.Manage` |
+| GET | `/api/{version}/invoicing/invoices` | `Invoicing.Invoices.Read` |
+| GET | `/api/{version}/invoicing/invoices/{id}` | `Invoicing.Invoices.Read` |
+| GET | `/api/{version}/invoicing/invoices/{id}/pdf` | `Invoicing.Invoices.Download` |
+| POST | `/api/{version}/invoicing/credit-notes` | `Invoicing.CreditNotes.Manage` |
 
 ## Notifications
 

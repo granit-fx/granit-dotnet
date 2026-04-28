@@ -40,7 +40,7 @@ flowchart LR
         Reg --> EE
     end
 
-    EP[GET /api/granit/lookups/&#123;name&#125;]
+    EP[GET /api/&#123;version&#125;/lookups/&#123;name&#125;]
     MF[FilterableField.Lookup<br/>in /meta]
 
     Reg --> EP

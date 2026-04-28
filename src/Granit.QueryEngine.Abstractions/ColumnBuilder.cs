@@ -92,7 +92,7 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     /// <summary>
     /// Declares a data-lookup source for this column by registry name. The frontend
     /// renders a typeahead picker backed by
-    /// <c>GET /api/granit/lookups/{name}</c> instead of a free-text filter input.
+    /// <c>GET /lookups/{name}</c> instead of a free-text filter input.
     /// </summary>
     /// <remarks>
     /// Preferred form when the backing source is registered in the central

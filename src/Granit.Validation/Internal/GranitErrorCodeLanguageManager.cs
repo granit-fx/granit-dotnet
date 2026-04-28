@@ -11,7 +11,7 @@ namespace Granit.Validation.Internal;
 /// All built-in validator messages (e.g. <c>NotEmptyValidator</c>) are replaced
 /// by codes following the convention <c>Granit:Validation:{ValidatorName}</c>.
 /// The SPA resolves codes to localized strings using the dictionary served by
-/// <c>GET /api/granit/localization</c>, which supports per-tenant overrides.
+/// <c>GET /api/{version}/localization</c>, which supports per-tenant overrides.
 /// <para>
 /// Registered globally at startup via <c>AddGranitValidation()</c>:
 /// <c>ValidatorOptions.Global.LanguageManager = new GranitErrorCodeLanguageManager()</c>.

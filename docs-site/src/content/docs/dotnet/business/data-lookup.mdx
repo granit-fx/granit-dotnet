@@ -30,7 +30,7 @@ no duplication between backend declarations and frontend components.
 - Granit.DataLookup.Abstractions/ Contracts: LookupDescriptor, LookupItem, LookupResult, ILookupSource, ILookupRegistry
   - Granit.DataLookup/ Runtime: scoped registry, EnumLookupSource&lt;TEnum&gt;, metrics, ActivitySource
     - Granit.DataLookup.EntityFrameworkCore QueryableLookupSource&lt;T&gt; — wraps an IQueryable with value/label selectors
-    - Granit.DataLookup.Endpoints Minimal API: /api/granit/lookups manifest, search, resolve
+    - Granit.DataLookup.Endpoints Minimal API: /api/{version}/lookups manifest, search, resolve
 </FileTree>
 
 | Package | Role | Depends on |
@@ -38,7 +38,7 @@ no duplication between backend declarations and frontend components.
 | `Granit.DataLookup.Abstractions` | Pure contracts (descriptors, DTOs, interfaces) | `Granit` |
 | `Granit.DataLookup` | `ILookupRegistry`, `EnumLookupSource<TEnum>`, metrics | `.Abstractions`, `Granit.Localization` |
 | `Granit.DataLookup.EntityFrameworkCore` | `QueryableLookupSource<T>` over `IQueryable<T>` | `Granit.DataLookup`, `Granit.Persistence` |
-| `Granit.DataLookup.Endpoints` | `/api/granit/lookups` minimal API, permissions, auth | `Granit.DataLookup`, `Granit.Authorization`, `Granit.Validation` |
+| `Granit.DataLookup.Endpoints` | `/api/{version}/lookups` minimal API, permissions, auth | `Granit.DataLookup`, `Granit.Authorization`, `Granit.Validation` |
 
 ## Canonical shapes
 
@@ -107,16 +107,20 @@ Mapped once at startup:
 ```csharp
 app.MapGranitDataLookups(opts =>
 {
-    opts.RoutePrefix = "api/granit/lookups";
     opts.TagName = "Data Lookup";
 });
 ```
 
+The default `RoutePrefix` is `"lookups"`. Mount on a versioned route group
+(`api.MapGranitDataLookups()` where `api = app.MapGroup("api/v{version:apiVersion}")`)
+to expose under `/api/{version}/lookups`, or mount on `app` directly for an unversioned
+root mount (`/lookups`).
+
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/granit/lookups` | Manifest of every registered source |
-| `GET` | `/api/granit/lookups/{name}` | Paginated search (`search`, `page`, `pageSize`, `scope.*`) |
-| `GET` | `/api/granit/lookups/{name}/resolve?value=…` | Resolve a single value for rehydration |
+| `GET` | `/api/{version}/lookups` | Manifest of every registered source |
+| `GET` | `/api/{version}/lookups/{name}` | Paginated search (`search`, `page`, `pageSize`, `scope.*`) |
+| `GET` | `/api/{version}/lookups/{name}/resolve?value=…` | Resolve a single value for rehydration |
 
 Every response honors:
 

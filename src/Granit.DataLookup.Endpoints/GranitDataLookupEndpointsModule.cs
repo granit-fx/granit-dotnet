@@ -9,7 +9,7 @@ namespace Granit.DataLookup.Endpoints;
 /// Granit module for Granit.DataLookup HTTP endpoints.
 /// </summary>
 /// <remarks>
-/// Exposes the <c>/api/granit/lookups</c> routes via
+/// Exposes the <c>/lookups</c> routes via
 /// <see cref="Extensions.DataLookupEndpointRouteBuilderExtensions.MapGranitDataLookups"/>.
 /// Validators are auto-discovered by <see cref="GranitValidationModule"/>; the
 /// <c>DataLookup.Lookups.Read</c> permission is contributed automatically by

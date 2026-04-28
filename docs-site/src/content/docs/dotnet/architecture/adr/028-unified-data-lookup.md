@@ -101,9 +101,9 @@ Mapped once at host startup via `app.MapGranitDataLookups()`:
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/granit/lookups` | Discovery manifest of every registered source |
-| `GET` | `/api/granit/lookups/{name}` | Paginated typeahead search (`search`, `page`, `pageSize`, `scope.*`) |
-| `GET` | `/api/granit/lookups/{name}/resolve?value=…` | Single-item resolve for rehydrating a persisted FK value |
+| `GET` | `/api/{version}/lookups` | Discovery manifest of every registered source |
+| `GET` | `/api/{version}/lookups/{name}` | Paginated typeahead search (`search`, `page`, `pageSize`, `scope.*`) |
+| `GET` | `/api/{version}/lookups/{name}/resolve?value=…` | Single-item resolve for rehydrating a persisted FK value |
 
 Every response honors the `Accept-Language` header (labels projected
 server-side), the ambient `ICurrentTenant`, and the per-source

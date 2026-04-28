@@ -93,7 +93,7 @@ public sealed class CreateOrderRequestValidator : GranitValidator<CreateOrderReq
 }
 ```
 
-`GranitValidator<T>` is a thin base class that emits **structured error codes** (`Granit:Validation:NotEmptyValidator`, `Granit:Validation:EmailValidator`) instead of raw English strings. The frontend resolves codes to localized messages via `GET /api/granit/localization`. No backend code change ships a French translation; no hardcoded English leaks into a German UI.
+`GranitValidator<T>` is a thin base class that emits **structured error codes** (`Granit:Validation:NotEmptyValidator`, `Granit:Validation:EmailValidator`) instead of raw English strings. The frontend resolves codes to localized messages via `GET /api/{version}/localization`. No backend code change ships a French translation; no hardcoded English leaks into a German UI.
 
 For custom rules, `WithErrorCodeAndMessage("Granit:Validation:TooManyItems")` keeps the code and the message key in sync — they are the same value. Diverging the two is the single most common cause of "validation passes but UI shows nothing", and the helper makes it impossible.
 
@@ -250,7 +250,7 @@ The async uniqueness case is the one most teams get wrong. They put it in the va
 - **Validate exactly once, at the API boundary.** Scattering checks across controllers, services, and entities produces drift, duplication, and silent gaps.
 - **`MapGranitGroup` runs validation automatically** for every endpoint in the group. No per-endpoint filter, no `IValidator<T>` injection, no boilerplate.
 - **Return `422 Unprocessable Entity`** for semantic validation failures, not `400 Bad Request`. The client can act on the difference.
-- **Use structured error codes** (`Granit:Validation:*`) instead of hardcoded strings. The frontend localizes them via `GET /api/granit/localization`.
+- **Use structured error codes** (`Granit:Validation:*`) instead of hardcoded strings. The frontend localizes them via `GET /api/{version}/localization`.
 - **OpenAPI gets the rules for free** — `maxLength`, `pattern`, `required`, etc. flow into the generated schema, so frontend code generators stay accurate.
 - **Domain invariants stay on aggregate roots.** Validation is for shape; the domain owns business rules.
 

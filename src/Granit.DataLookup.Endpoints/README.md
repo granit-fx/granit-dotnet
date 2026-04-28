@@ -6,9 +6,9 @@ Minimal API endpoints for **Granit.DataLookup**.
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/granit/lookups` | Manifest of every registered source. |
-| `GET` | `/api/granit/lookups/{name}` | Paginated typeahead search (`?search=`, `?page=`, `?pageSize=`, `?scope.*=`). |
-| `GET` | `/api/granit/lookups/{name}/resolve` | Resolve a single value into a `LookupItem`. |
+| `GET` | `/lookups` | Manifest of every registered source. |
+| `GET` | `/lookups/{name}` | Paginated typeahead search (`?search=`, `?page=`, `?pageSize=`, `?scope.*=`). |
+| `GET` | `/lookups/{name}/resolve` | Resolve a single value into a `LookupItem`. |
 
 Labels in every response are already localized via the `Accept-Language` header — the
 frontend never re-translates.
@@ -18,7 +18,7 @@ frontend never re-translates.
 ```csharp
 app.MapGranitDataLookups(opts =>
 {
-    opts.RoutePrefix = "api/granit/lookups"; // default
+    opts.RoutePrefix = "lookups"; // default
     opts.TagName = "Data Lookup";            // default
 });
 ```

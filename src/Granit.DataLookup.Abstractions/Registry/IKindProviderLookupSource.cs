@@ -5,7 +5,7 @@ namespace Granit.DataLookup.Registry;
 
 /// <summary>
 /// Optional marker for <see cref="ILookupSource"/> implementations that want to
-/// advertise a specific <see cref="LookupKind"/> in the <c>GET /api/granit/lookups</c>
+/// advertise a specific <see cref="LookupKind"/> in the <c>GET /lookups</c>
 /// manifest. Implementations that do not implement this interface default to
 /// <see cref="LookupKind.Simple"/>.
 /// </summary>

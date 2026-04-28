@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.Localization.Endpoints</PackageId>
-    <Description>Minimal API endpoints for Granit localization: anonymous GET /api/granit/localization for SPA bootstrapping, and CRUD /api/granit/localization/overrides for admin management of translation overrides (requires Localization.Overrides.Manage permission).</Description>
+    <Description>Minimal API endpoints for Granit localization: anonymous GET /localization for SPA bootstrapping, and CRUD /localization/overrides for admin management of translation overrides (requires Localization.Overrides.Manage permission). Final route depends on the consumer's mount point — the host can mount under /api/v1, /api/v2, or directly on the app.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

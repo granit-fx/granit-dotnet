@@ -72,7 +72,7 @@ public static class ReferenceDataEfCoreServiceCollectionExtensions
 
         // Auto-register as a Granit.DataLookup source. Lookup name uses the kebab-case
         // "ref-{entity-name}" convention (e.g. Country → "ref-country"). Frontend picker
-        // hits GET /api/granit/lookups/ref-country with Accept-Language for localized labels.
+        // hits GET /lookups/ref-country with Accept-Language for localized labels.
         string lookupName = ReferenceDataLookupNaming.ForEntity(typeof(TEntity));
         services.AddScoped<ILookupSource>(sp => new ReferenceDataLookupSource<TEntity>(
             lookupName,

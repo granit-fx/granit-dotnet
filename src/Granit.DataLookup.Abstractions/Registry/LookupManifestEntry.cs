@@ -4,7 +4,7 @@ namespace Granit.DataLookup.Registry;
 
 /// <summary>
 /// Public metadata about a registered lookup source — one entry per registered
-/// <see cref="Sources.ILookupSource"/> in the <c>GET /api/granit/lookups</c> manifest.
+/// <see cref="Sources.ILookupSource"/> in the <c>GET /lookups</c> manifest.
 /// </summary>
 /// <param name="Name">Registry key.</param>
 /// <param name="Kind">Kind of backing source.</param>

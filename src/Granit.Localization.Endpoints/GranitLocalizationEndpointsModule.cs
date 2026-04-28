@@ -11,9 +11,9 @@ namespace Granit.Localization.Endpoints;
 /// <remarks>
 /// Exposes two sets of endpoints:
 /// <list type="bullet">
-/// <item><c>GET /api/granit/localization</c> — anonymous SPA bootstrapping, via
+/// <item><c>GET /api/{version}/localization</c> — anonymous SPA bootstrapping, via
 ///   <see cref="Extensions.LocalizationEndpointRouteBuilderExtensions.MapGranitLocalization"/>.</item>
-/// <item>CRUD <c>/api/granit/localization/overrides</c> — admin override management
+/// <item>CRUD <c>/api/{version}/localization/overrides</c> — admin override management
 ///   (requires <c>Localization.Overrides.Manage</c> permission), via
 ///   <see cref="Extensions.LocalizationEndpointRouteBuilderExtensions.MapGranitLocalizationOverrides"/>.</item>
 /// </list>
