@@ -1,0 +1,7 @@
+{
+  "culture": "it",
+  "texts": {
+    "PermissionGroup:Dashboards": "Dashboard",
+    "Permission:Dashboards.Catalog.Read": "Sfogliare il catalogo dei dashboard (elencare ogni DashboardDefinition registrata)"
+  }
+}

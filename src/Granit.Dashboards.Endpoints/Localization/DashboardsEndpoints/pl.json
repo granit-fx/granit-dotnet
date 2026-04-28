@@ -1,0 +1,7 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Dashboards": "Pulpity",
+    "Permission:Dashboards.Catalog.Read": "Przeglądanie katalogu pulpitów (lista wszystkich zarejestrowanych DashboardDefinition)"
+  }
+}

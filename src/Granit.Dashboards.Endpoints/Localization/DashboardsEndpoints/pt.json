@@ -1,0 +1,7 @@
+{
+  "culture": "pt",
+  "texts": {
+    "PermissionGroup:Dashboards": "Painéis",
+    "Permission:Dashboards.Catalog.Read": "Navegar pelo catálogo de painéis (listar todas as DashboardDefinition registadas)"
+  }
+}

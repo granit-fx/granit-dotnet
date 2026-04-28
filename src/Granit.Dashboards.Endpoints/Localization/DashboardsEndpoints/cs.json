@@ -1,0 +1,7 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Dashboards": "Dashboardy",
+    "Permission:Dashboards.Catalog.Read": "Procházet katalog dashboardů (zobrazit seznam všech registrovaných DashboardDefinition)"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Dashboards": "仪表板",
+    "Permission:Dashboards.Catalog.Read": "浏览仪表板目录（列出每个已注册的 DashboardDefinition）"
+  }
+}

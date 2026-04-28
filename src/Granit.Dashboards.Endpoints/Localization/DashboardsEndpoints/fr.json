@@ -1,0 +1,7 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:Dashboards": "Tableaux de bord",
+    "Permission:Dashboards.Catalog.Read": "Parcourir le catalogue des tableaux de bord (lister chaque DashboardDefinition enregistrée)"
+  }
+}

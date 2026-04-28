@@ -627,6 +627,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Dashboards.Endpoints",
+      "deps": [
+        "Granit.Dashboards",
+        "Granit.Authorization",
+        "Granit.Http.Abstractions",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Dashboards.EntityFrameworkCore",
       "deps": [
         "Granit.Dashboards",
@@ -12970,6 +12980,80 @@
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Domain/WidgetInstanceConfig.cs",
       "line": 55,
+      "members": []
+    },
+    {
+      "name": "DashboardCatalogEntryResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardCatalogEntryResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardCatalogEntryResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "DashboardsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Dashboards.Endpoints.Extensions.DashboardsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitDashboards",
+          "kind": "method",
+          "signature": "MapGranitDashboards(this IEndpointRouteBuilder endpoints, Action<DashboardsEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDashboardsEndpointsModule",
+      "fqn": "Granit.Dashboards.Endpoints.GranitDashboardsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/GranitDashboardsEndpointsModule.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "DashboardsEndpointsOptions",
+      "fqn": "Granit.Dashboards.Endpoints.Options.DashboardsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Options/DashboardsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "CatalogTagName",
+          "kind": "property",
+          "signature": "string CatalogTagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Catalog",
+      "fqn": "Granit.Dashboards.Endpoints.Permissions.Catalog",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "DashboardsPermissions",
+      "fqn": "Granit.Dashboards.Endpoints.Permissions.DashboardsPermissions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
+      "line": 6,
       "members": []
     },
     {

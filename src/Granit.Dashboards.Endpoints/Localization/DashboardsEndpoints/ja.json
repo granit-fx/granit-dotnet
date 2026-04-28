@@ -1,0 +1,7 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:Dashboards": "ダッシュボード",
+    "Permission:Dashboards.Catalog.Read": "ダッシュボードカタログを参照する（登録済みの DashboardDefinition をすべて一覧表示）"
+  }
+}

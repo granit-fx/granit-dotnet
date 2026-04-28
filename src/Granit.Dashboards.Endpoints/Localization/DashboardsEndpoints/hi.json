@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Dashboards": "डैशबोर्ड",
+    "Permission:Dashboards.Catalog.Read": "डैशबोर्ड कैटलॉग देखें (सभी पंजीकृत DashboardDefinition की सूची बनाएँ)"
+  }
+}

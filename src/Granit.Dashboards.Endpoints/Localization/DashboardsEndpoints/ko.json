@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:Dashboards": "대시보드",
+    "Permission:Dashboards.Catalog.Read": "대시보드 카탈로그 탐색(등록된 모든 DashboardDefinition 나열)"
+  }
+}
