@@ -18,6 +18,7 @@ namespace Granit.Analytics.Dashboards.Widgets;
 /// <param name="Size">Defaults to <see cref="WidgetSize.StandardChart"/>.</param>
 /// <param name="RequiredPermission">See <see cref="WidgetDefinition.RequiredPermission"/>.</param>
 /// <param name="TimeWindowOverride">See <see cref="WidgetDefinition.TimeWindowOverride"/>.</param>
+/// <param name="Actions">See <see cref="WidgetDefinition.Actions"/>.</param>
 public sealed record ChartWidgetDefinition(
     string Slug,
     string QueryName,
@@ -28,8 +29,9 @@ public sealed record ChartWidgetDefinition(
     int Position,
     WidgetSize? Size = null,
     string? RequiredPermission = null,
-    DashboardTimeWindow? TimeWindowOverride = null)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.StandardChart, RequiredPermission, TimeWindowOverride);
+    DashboardTimeWindow? TimeWindowOverride = null,
+    IReadOnlyList<WidgetAction>? Actions = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.StandardChart, RequiredPermission, TimeWindowOverride, Actions);
 
 /// <summary>Visual hint for chart widgets, interpreted by the frontend.</summary>
 public enum ChartType

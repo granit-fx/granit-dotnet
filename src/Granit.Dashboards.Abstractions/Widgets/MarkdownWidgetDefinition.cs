@@ -9,9 +9,11 @@ namespace Granit.Dashboards.Widgets;
 /// <param name="ContentLocalizationKey">Localization key resolving to the markdown body (e.g. <c>"Widget:Granit.Invoicing.FinanceOverview.Banner"</c>).</param>
 /// <param name="Position">See <see cref="WidgetDefinition.Position"/>.</param>
 /// <param name="Size">Defaults to <see cref="WidgetSize.FullWidthRow"/>.</param>
+/// <param name="Actions">See <see cref="WidgetDefinition.Actions"/>.</param>
 public sealed record MarkdownWidgetDefinition(
     string Slug,
     string ContentLocalizationKey,
     int Position,
-    WidgetSize? Size = null)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.FullWidthRow, RequiredPermission: null);
+    WidgetSize? Size = null,
+    IReadOnlyList<WidgetAction>? Actions = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.FullWidthRow, RequiredPermission: null, TimeWindowOverride: null, Actions);
