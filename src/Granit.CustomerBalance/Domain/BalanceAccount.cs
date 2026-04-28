@@ -26,21 +26,21 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
 
     private BalanceAccount() { }
 
-    /// <summary>Creates a new balance account for the given contact, tenant and currency.</summary>
+    /// <summary>Creates a new balance account for the given party, tenant and currency.</summary>
     /// <param name="id">Unique account identifier.</param>
     /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation).</param>
-    /// <param name="contactId">Identifier of the <c>Granit.Parties.Party</c> that owns this balance — required.</param>
+    /// <param name="partyId">Identifier of the <c>Granit.Parties.Party</c> that owns this balance — required.</param>
     /// <param name="currency">ISO 4217 currency code (e.g., "EUR").</param>
-    public static BalanceAccount Create(Guid id, Guid tenantId, PartyId contactId, string currency)
+    public static BalanceAccount Create(Guid id, Guid tenantId, PartyId partyId, string currency)
     {
-        ArgumentNullException.ThrowIfNull(contactId);
+        ArgumentNullException.ThrowIfNull(partyId);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
 
         return new BalanceAccount
         {
             Id = id,
             TenantId = tenantId,
-            PartyId = contactId,
+            PartyId = partyId,
             Currency = currency.ToUpperInvariant(),
             Balance = 0m,
             ConcurrencyStamp = string.Empty,
@@ -65,7 +65,7 @@ public sealed class BalanceAccount : AuditedAggregateRoot, IConcurrencyAware, IM
     /// <summary>
     /// Identifier of the <c>Granit.Parties.Party</c> that owns this balance. The
     /// module's name finally matches its domain — a tenant can hold many balance accounts,
-    /// one per (contact, currency) tuple, so e-commerce tenants run per-buyer balances.
+    /// one per (party, currency) tuple, so e-commerce tenants run per-buyer balances.
     /// </summary>
     public PartyId PartyId { get; private set; } = null!;
 

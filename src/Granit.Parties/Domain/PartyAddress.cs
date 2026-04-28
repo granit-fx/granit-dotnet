@@ -3,7 +3,7 @@ using Granit.Domain;
 namespace Granit.Parties.Domain;
 
 /// <summary>
-/// A typed address attached to a <see cref="Party"/>. A contact may carry several
+/// A typed address attached to a <see cref="Party"/>. A party may carry several
 /// addresses simultaneously (one for billing, one for shipping, others for HQ /
 /// returns / branches). Exactly zero or one <see cref="IsDefault"/> entry per
 /// <see cref="AddressKind"/> is enforced by the aggregate.
@@ -12,7 +12,7 @@ public sealed class PartyAddress : Entity
 {
     private PartyAddress() { }
 
-    /// <summary>Creates a new contact address.</summary>
+    /// <summary>Creates a new party address.</summary>
     public static PartyAddress Create(
         Guid id,
         AddressKind kind,

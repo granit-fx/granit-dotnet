@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 
-[Collection(ContactsDbSerialGroup.Name)]
+[Collection(PartiesDbSerialGroup.Name)]
 public sealed class EfContactStoreTests : IAsyncDisposable
 {
     private readonly TestFactory _factory;
@@ -239,8 +239,8 @@ public sealed class EfContactStoreTests : IAsyncDisposable
     }
 }
 
-[CollectionDefinition(ContactsDbSerialGroup.Name, DisableParallelization = true)]
-public sealed class ContactsDbSerialGroup
+[CollectionDefinition(PartiesDbSerialGroup.Name, DisableParallelization = true)]
+public sealed class PartiesDbSerialGroup
 {
     public const string Name = "Parties-Db-serial";
 }

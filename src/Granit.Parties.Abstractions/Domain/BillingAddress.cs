@@ -13,7 +13,7 @@ namespace Granit.Parties.Domain;
 /// <remarks>
 /// Snapshotted by <c>Granit.Invoicing.Domain.Invoice.Finalize</c> into
 /// <c>Invoice.IssuedBillingAddressSnapshot</c> so that the address shown on a finalized invoice
-/// stays stable forever, even if the contact's billing address is later updated.
+/// stays stable forever, even if the party's billing address is later updated.
 /// </remarks>
 public sealed class BillingAddress : ValueObject
 {

@@ -4,7 +4,7 @@ using Granit.Domain;
 namespace Granit.Parties.Domain;
 
 /// <summary>
-/// An email address attached to a <see cref="Party"/>. A contact may carry several
+/// An email address attached to a <see cref="Party"/>. A party may carry several
 /// emails simultaneously (personal + billing + support + …). Exactly zero or one
 /// <see cref="IsPrimary"/> entry is enforced by the aggregate.
 /// </summary>
@@ -12,7 +12,7 @@ public sealed class PartyEmail : Entity
 {
     private PartyEmail() { }
 
-    /// <summary>Creates a new contact email.</summary>
+    /// <summary>Creates a new party email.</summary>
     public static PartyEmail Create(
         Guid id,
         string address,
@@ -42,7 +42,7 @@ public sealed class PartyEmail : Entity
     [SensitiveData(Level = Sensitivity.Confidential)]
     public string? CanonicalEmail { get; private set; }
 
-    /// <summary>Whether this is the contact's primary email.</summary>
+    /// <summary>Whether this is the party's primary email.</summary>
     public bool IsPrimary { get; private set; }
 
     /// <summary>Optional user-supplied label (<c>"personal"</c>, <c>"billing"</c>, <c>"support"</c>, …).</summary>

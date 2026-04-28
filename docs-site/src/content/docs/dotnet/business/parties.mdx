@@ -26,8 +26,8 @@ abstraction in one aggregate so:
 
 - Tax / billing / payment data is captured once, referenced everywhere by `PartyId`.
 - External provider identifiers (Stripe, Mollie, Odoo, Sage, NetSuite) live on the
-  contact rather than scattered across module-specific mapping tables.
-- A single GDPR Article 17 erasure pseudonymises the contact and lets
+  party rather than scattered across module-specific mapping tables.
+- A single GDPR Article 17 erasure pseudonymises the party and lets
   downstream modules retain the row for accounting integrity.
 
 ## Package structure
@@ -78,16 +78,16 @@ graph TD
 `Party` is `IMultiTenant`. The multi-tenant filter is **always** active, even in
 host scope:
 
-- `TenantId == null` → **host-scoped** contacts (the SaaS host's tenants-as-customers, vendors, internal staff).
-- `TenantId == <tenant>` → **tenant-scoped** (a tenant's e-commerce / CRM / procurement contacts).
+- `TenantId == null` → **host-scoped** parties (the SaaS host's tenants-as-customers, vendors, internal staff).
+- `TenantId == <tenant>` → **tenant-scoped** (a tenant's e-commerce / CRM / procurement parties).
 
 Cross-scope reads must explicitly bypass the filter via
-`IDataFilter.Disable<IMultiTenant>()` — leaking a tenant's contacts into a host
+`IDataFilter.Disable<IMultiTenant>()` — leaking a tenant's parties into a host
 admin browser would be a privacy regression.
 
 ### Multi-role flags
 
-A single contact may simultaneously hold any combination of `PartyRoles`:
+A single party may simultaneously hold any combination of `PartyRoles`:
 
 ```csharp
 [Flags]
@@ -111,26 +111,26 @@ Polyglot identity — at most one mapping per provider, enforced by a unique
 `(PartyId, ProviderName)` index and defensively at the aggregate:
 
 ```csharp
-contact.AddExternalMapping(id, PartyExternalProviderNames.Stripe, "cus_NffrFeUfNV2Hib");
-contact.AddExternalMapping(id, PartyExternalProviderNames.Odoo,   "12345");
+party.AddExternalMapping(id, PartyExternalProviderNames.Stripe, "cus_NffrFeUfNV2Hib");
+party.AddExternalMapping(id, PartyExternalProviderNames.Odoo,   "12345");
 
-string? stripeId = contact.FindExternalId(PartyExternalProviderNames.Stripe);
+string? stripeId = party.FindExternalId(PartyExternalProviderNames.Stripe);
 ```
 
 The reserved `"tenant"` provider name is used by `Granit.Parties.MultiTenancy` to
-link a host-scoped contact back to its tenant.
+link a host-scoped party back to its tenant.
 
 ### Lifecycle
 
 `Active` ⇄ `Suspended`; either may transition to terminal `Archived`. Archived
-contacts are immutable. Pseudonymisation (GDPR Article 17) bypasses the
+parties are immutable. Pseudonymisation (GDPR Article 17) bypasses the
 mutability guard so erasure succeeds even on archived rows.
 
 ### Customer-specific tax classification
 
 `TaxStatus` is an owned value object capturing whether the customer is VAT-exempt
 (NGO, public body), under B2B intra-EU reverse charge, or standard. Read by
-`Granit.Tax.ITaxRateProvider` when a `contactId` is supplied — exempt /
+`Granit.Tax.ITaxRateProvider` when a `partyId` is supplied — exempt /
 reverse-charge customers yield a 0% rate regardless of country defaults.
 
 ### Merging duplicates
@@ -228,7 +228,7 @@ public class AppModule : GranitModule { }
 ```
 
 ```csharp
-builder.Services.AddGranitPrivacy(p => p.AddGranitContactsPrivacyProvider());
+builder.Services.AddGranitPrivacy(p => p.AddGranitPartiesPrivacyProvider());
 ```
 
 </TabItem>
@@ -238,15 +238,15 @@ builder.Services.AddGranitPrivacy(p => p.AddGranitContactsPrivacyProvider());
 
 ## API surface
 
-`MapGranitParties()` exposes 19 endpoints under `/contacts` (configurable via
+`MapGranitParties()` exposes 19 endpoints under `/parties` (configurable via
 `Parties:Endpoints:RoutePrefix`). All endpoints require either
 `Parties.Parties.Read` or `Parties.Parties.Manage`.
 
 | Method | Path | Permission |
 |--------|------|-----------|
-| `GET` | `/contacts` | `Read` |
+| `GET` | `/parties` | `Read` |
 | `GET` | `/parties/{id}` | `Read` |
-| `POST` | `/contacts` | `Manage` |
+| `POST` | `/parties` | `Manage` |
 | `PATCH` | `/parties/{id}` | `Manage` |
 | `POST` | `/parties/{id}/{suspend\|activate\|archive}` | `Manage` |
 | `POST` / `DELETE` | `/parties/{id}/addresses[/{addressId}]` | `Manage` |
@@ -284,9 +284,9 @@ Published via the Wolverine outbox to `Granit.Parties.Abstractions`:
 
 ## See also
 
-- [Parties — external mappings guide](/dotnet/guides/contacts-external-mappings/)
-- [Parties — tenant seeding guide](/dotnet/guides/contacts-tenant-seeding/)
-- [Parties — role handler guide](/dotnet/guides/contacts-role-handler/)
+- [Parties — external mappings guide](/dotnet/guides/parties-external-mappings/)
+- [Parties — tenant seeding guide](/dotnet/guides/parties-tenant-seeding/)
+- [Parties — role handler guide](/dotnet/guides/parties-role-handler/)
 - [Privacy — data export and erasure](/dotnet/compliance/privacy/)
 - [Multi-tenancy](/dotnet/concepts/multi-tenancy/)
 - [ADR-037 — Party merge framework](/dotnet/architecture/adr/037-party-merge-framework/)

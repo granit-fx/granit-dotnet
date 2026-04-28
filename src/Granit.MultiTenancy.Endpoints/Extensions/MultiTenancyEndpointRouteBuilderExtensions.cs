@@ -156,7 +156,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         Guid id = guidGenerator.Create();
 
         await writer
-            .CreateAsync(id, body.Name, body.Identifier, body.PartyEmail, body.Jurisdiction, cancellationToken)
+            .CreateAsync(id, body.Name, body.Identifier, body.ContactEmail, body.Jurisdiction, cancellationToken)
             .ConfigureAwait(false);
 
         TenantData? tenant = await reader
@@ -179,7 +179,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
         }
 
         await writer
-            .UpdateAsync(id, body.Name, body.PartyEmail, body.Jurisdiction, cancellationToken)
+            .UpdateAsync(id, body.Name, body.ContactEmail, body.Jurisdiction, cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.NoContent();
@@ -226,7 +226,7 @@ public static class MultiTenancyEndpointRouteBuilderExtensions
     // -------------------------------------------------------------------------
 
     private static TenantResponse ToResponse(TenantData data) =>
-        new(data.Id, data.Name, data.Identifier, data.PartyEmail, data.Activated, data.Jurisdiction, data.CreatedAt);
+        new(data.Id, data.Name, data.Identifier, data.ContactEmail, data.Activated, data.Jurisdiction, data.CreatedAt);
 
     private static ProblemHttpResult TenantNotFound(Guid id) =>
         TypedResults.Problem(

@@ -4,7 +4,7 @@ using Granit.Parties.Domain.ValueObjects;
 namespace Granit.Parties.Events;
 
 /// <summary>
-/// Domain event raised when child parties (<c>ParentContactId == loser.Id</c>) are
+/// Domain event raised when child parties (<c>ParentPartyId == loser.Id</c>) are
 /// re-parented onto the survivor as part of a merge. Emitted by the merge orchestrator
 /// after the SQL bulk-update completes. The count is reported separately from
 /// <see cref="PartyMergedEvent.RewriteCounts"/> because re-parenting is a Parties-internal

@@ -13,23 +13,23 @@ namespace Granit.Invoicing.Internal;
 
 internal sealed partial class DefaultInvoiceCreationService(
     IInvoiceWriter invoiceWriter,
-    IPartyReader contactReader,
+    IPartyReader partyReader,
     IGuidGenerator guidGenerator,
     IClock clock,
-    IDefaultPartyResolver defaultContactResolver,
+    IDefaultPartyResolver defaultPartyResolver,
     ILogger<DefaultInvoiceCreationService> logger,
     ITaxCalculator? taxCalculator = null,
     IInvoiceNumberGenerator? numberGenerator = null) : IInvoiceCreationService
 {
     public async Task CreateAsync(CreateInvoiceCommand command, CancellationToken cancellationToken = default)
     {
-        Party contact = await ResolveContactAsync(command, cancellationToken).ConfigureAwait(false);
-        var contactId = PartyId.Create(contact.Id);
+        Party party = await ResolvePartyAsync(command, cancellationToken).ConfigureAwait(false);
+        var partyId = PartyId.Create(party.Id);
 
         var invoice = Invoice.Create(
             guidGenerator.Create(),
             command.TenantId,
-            contactId,
+            partyId,
             InvoiceDocumentType.Invoice,
             command.Currency,
             command.CollectionMethod,
@@ -49,7 +49,7 @@ internal sealed partial class DefaultInvoiceCreationService(
                 productId: lineItem.ProductId));
         }
 
-        Granit.Parties.Domain.BillingAddress? billingSnapshot = contact.GetBillingAddressSnapshot();
+        Granit.Parties.Domain.BillingAddress? billingSnapshot = party.GetBillingAddressSnapshot();
 
         if (taxCalculator is not null && billingSnapshot is not null)
         {
@@ -60,7 +60,7 @@ internal sealed partial class DefaultInvoiceCreationService(
                     TaxCode: null)).ToList(),
                 SellerAddress: billingSnapshot,
                 BuyerAddress: billingSnapshot,
-                BuyerContactId: contact.Id);
+                BuyerPartyId: party.Id);
 
             TaxResult taxResult = await taxCalculator
                 .CalculateAsync(taxRequest, cancellationToken)
@@ -85,22 +85,22 @@ internal sealed partial class DefaultInvoiceCreationService(
         Log.InvoiceCreated(logger, invoice.Id, command.TenantId);
     }
 
-    private async Task<Party> ResolveContactAsync(CreateInvoiceCommand command, CancellationToken cancellationToken)
+    private async Task<Party> ResolvePartyAsync(CreateInvoiceCommand command, CancellationToken cancellationToken)
     {
         if (command.PartyId is { } explicitId)
         {
-            Party? explicitContact = await contactReader
+            Party? explicitParty = await partyReader
                 .GetByIdAsync(PartyId.Create(explicitId), cancellationToken)
                 .ConfigureAwait(false);
-            return explicitContact ?? throw new InvalidOperationException(
+            return explicitParty ?? throw new InvalidOperationException(
                 $"Party '{explicitId}' referenced by {nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.PartyId)} was not found.");
         }
 
-        Party? defaultContact = await defaultContactResolver
+        Party? defaultParty = await defaultPartyResolver
             .GetDefaultForTenantAsync(command.TenantId, cancellationToken)
             .ConfigureAwait(false);
 
-        return defaultContact ?? throw new InvalidOperationException(
+        return defaultParty ?? throw new InvalidOperationException(
             $"No default Party resolved for tenant '{command.TenantId}'. Either pass " +
             $"{nameof(CreateInvoiceCommand)}.{nameof(CreateInvoiceCommand.PartyId)} explicitly or " +
             $"seed a host-scoped Party with provider '{PartyExternalProviderNames.Tenant}' = " +

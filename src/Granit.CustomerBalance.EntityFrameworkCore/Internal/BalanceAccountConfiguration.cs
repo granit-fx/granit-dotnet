@@ -23,11 +23,11 @@ internal sealed class BalanceAccountConfiguration : IEntityTypeConfiguration<Bal
             .HasForeignKey(t => t.BalanceAccountId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Uniqueness is now per-(contact, currency) — a tenant can hold many balances,
-        // one per (contact, currency) pair, matching real e-commerce / multi-buyer flows.
+        // Uniqueness is now per-(party, currency) — a tenant can hold many balances,
+        // one per (party, currency) pair, matching real e-commerce / multi-buyer flows.
         builder.HasIndex(e => new { e.PartyId, e.Currency })
             .IsUnique()
-            .HasDatabaseName($"uq_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_contact_currency");
+            .HasDatabaseName($"uq_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_party_currency");
 
         builder.HasIndex(e => e.TenantId)
             .HasDatabaseName($"ix_{GranitCustomerBalanceDbProperties.DbTablePrefix}accounts_tenant");

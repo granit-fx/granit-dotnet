@@ -27,7 +27,7 @@ internal sealed class TenantEntityTypeConfiguration : IEntityTypeConfiguration<T
                .HasMaxLength(64)
                .IsRequired();
 
-        builder.Property(e => e.PartyEmail)
+        builder.Property(e => e.ContactEmail)
                .HasMaxLength(256);
 
         builder.Property(e => e.Jurisdiction)

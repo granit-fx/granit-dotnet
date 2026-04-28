@@ -19,10 +19,10 @@ internal sealed class UpdateTenantRequestValidator : GranitValidator<UpdateTenan
             .NotEmpty()
             .MaximumLength(MaxNameLength);
 
-        RuleFor(x => x.PartyEmail)
+        RuleFor(x => x.ContactEmail)
             .MaximumLength(MaxEmailLength)
             .EmailAddress()
-            .When(x => x.PartyEmail is not null);
+            .When(x => x.ContactEmail is not null);
 
         RuleFor(x => x.Jurisdiction)
             .MaximumLength(MaxJurisdictionLength)

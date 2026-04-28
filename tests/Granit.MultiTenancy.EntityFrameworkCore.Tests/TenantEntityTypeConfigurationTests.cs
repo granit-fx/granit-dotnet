@@ -68,7 +68,7 @@ public sealed class TenantEntityTypeConfigurationTests
         using MultiTenancyDbContext ctx = CreateInMemory();
         IEntityType entityType = ctx.Model.FindEntityType(typeof(Tenant))!;
 
-        IProperty email = entityType.FindProperty(nameof(Tenant.PartyEmail))!;
+        IProperty email = entityType.FindProperty(nameof(Tenant.ContactEmail))!;
 
         email.GetMaxLength().ShouldBe(256);
         email.IsNullable.ShouldBeTrue();

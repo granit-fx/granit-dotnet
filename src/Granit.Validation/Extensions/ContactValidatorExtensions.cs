@@ -4,7 +4,7 @@ using FluentValidation;
 namespace Granit.Validation.Extensions;
 
 /// <summary>
-/// FluentValidation extension methods for contact and communication identifiers.
+/// FluentValidation extension methods for communication identifiers (email, phone, URL).
 /// </summary>
 public static partial class ContactValidatorExtensions
 {

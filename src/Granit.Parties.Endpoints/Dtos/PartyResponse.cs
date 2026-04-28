@@ -2,7 +2,7 @@ using Granit.Parties.Domain;
 
 namespace Granit.Parties.Endpoints.Dtos;
 
-/// <summary>Response shape for a single contact.</summary>
+/// <summary>Response shape for a single party.</summary>
 public sealed record PartyResponse(
     Guid Id,
     Guid? TenantId,
@@ -14,7 +14,7 @@ public sealed record PartyResponse(
     string? Website,
     string? TaxId,
     string? RegistrationNumber,
-    Guid? ParentContactId,
+    Guid? ParentPartyId,
     Guid? UserId,
     Guid? AvatarBlobId,
     PartyRoles Roles,

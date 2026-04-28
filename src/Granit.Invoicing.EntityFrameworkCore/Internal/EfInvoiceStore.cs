@@ -23,10 +23,10 @@ internal sealed class EfInvoiceStore(
     public Task<IReadOnlyList<Invoice>> GetForTenantAsync(Guid tenantId, CancellationToken cancellationToken = default) =>
         ListAsync(Spec.For<Invoice>().Where(i => i.TenantId == tenantId), cancellationToken);
 
-    public Task<IReadOnlyList<Invoice>> GetByContactAsync(
-        PartyId contactId, CancellationToken cancellationToken = default) =>
+    public Task<IReadOnlyList<Invoice>> GetByPartyAsync(
+        PartyId partyId, CancellationToken cancellationToken = default) =>
         ListAsync(
-            Spec.For<Invoice>().Where(i => i.PartyId.Value == contactId.Value),
+            Spec.For<Invoice>().Where(i => i.PartyId.Value == partyId.Value),
             cancellationToken);
 
     public Task<IReadOnlyList<Invoice>> GetOverdueAsync(DateTimeOffset now, CancellationToken cancellationToken = default) =>

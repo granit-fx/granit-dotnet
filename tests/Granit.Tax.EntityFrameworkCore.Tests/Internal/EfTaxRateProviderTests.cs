@@ -20,7 +20,7 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
 
     private readonly TestFactory _factory;
     private readonly ITaxRateProvider _fallback = Substitute.For<ITaxRateProvider>();
-    private readonly IPartyReader _contactReader = Substitute.For<IPartyReader>();
+    private readonly IPartyReader _partyReader = Substitute.For<IPartyReader>();
     private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly EfTaxRateProvider _sut;
@@ -34,7 +34,7 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
         _factory = new TestFactory(options);
         _clock.Now.Returns(Now);
         _dataFilter.Disable<Granit.Domain.IMultiTenant>().Returns(new NullDisposable());
-        _sut = new EfTaxRateProvider(_factory, _fallback, _contactReader, _dataFilter, _clock);
+        _sut = new EfTaxRateProvider(_factory, _fallback, _partyReader, _dataFilter, _clock);
     }
 
     private sealed class NullDisposable : IDisposable
@@ -160,13 +160,13 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     public async Task GetRateAsync_ContactExempt_ReturnsZeroRate_BypassingDbAndFallback()
     {
         await SeedOverrideAsync("BE", 0.21m); // would normally apply
-        var contactId = PartyId.Create(Guid.NewGuid());
-        Party contact = NewContactWithStatus(TaxStatus.Create(isExempt: true));
-        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+        var partyId = PartyId.Create(Guid.NewGuid());
+        Party party = NewPartyWithStatus(TaxStatus.Create(isExempt: true));
+        _partyReader.GetByIdAsync(partyId, Arg.Any<CancellationToken>())
+            .Returns(party);
 
         TaxRateEntry? result = await _sut.GetRateAsync(
-            "BE", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+            "BE", Now, partyId: partyId, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.StandardRate.ShouldBe(0m);
@@ -179,13 +179,13 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     [Fact]
     public async Task GetRateAsync_ContactReverseCharge_ReturnsZeroRate()
     {
-        var contactId = PartyId.Create(Guid.NewGuid());
-        Party contact = NewContactWithStatus(TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789"));
-        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+        var partyId = PartyId.Create(Guid.NewGuid());
+        Party party = NewPartyWithStatus(TaxStatus.Create(reverseCharge: true, vatin: "BE0123456789"));
+        _partyReader.GetByIdAsync(partyId, Arg.Any<CancellationToken>())
+            .Returns(party);
 
         TaxRateEntry? result = await _sut.GetRateAsync(
-            "FR", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+            "FR", Now, partyId: partyId, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.StandardRate.ShouldBe(0m);
@@ -195,18 +195,18 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     [Fact]
     public async Task GetRateAsync_ContactStandard_DelegatesToFallback()
     {
-        var contactId = PartyId.Create(Guid.NewGuid());
-        Party contact = NewContactWithStatus(TaxStatus.Standard);
-        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+        var partyId = PartyId.Create(Guid.NewGuid());
+        Party party = NewPartyWithStatus(TaxStatus.Standard);
+        _partyReader.GetByIdAsync(partyId, Arg.Any<CancellationToken>())
+            .Returns(party);
 
         TaxRateEntry fallbackEntry = new("FR", 0.20m, EffectiveFrom: Now.AddYears(-1));
         _fallback.GetRateAsync(
-                "FR", Now, contactId, Arg.Any<CancellationToken>())
+                "FR", Now, partyId, Arg.Any<CancellationToken>())
             .Returns(fallbackEntry);
 
         TaxRateEntry? result = await _sut.GetRateAsync(
-            "FR", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+            "FR", Now, partyId: partyId, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldBe(fallbackEntry);
     }
@@ -214,19 +214,19 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     [Fact]
     public async Task GetRateAsync_ContactNotFound_FallsThroughToCountryRate()
     {
-        var contactId = PartyId.Create(Guid.NewGuid());
-        _contactReader.GetByIdAsync(contactId, Arg.Any<CancellationToken>())
+        var partyId = PartyId.Create(Guid.NewGuid());
+        _partyReader.GetByIdAsync(partyId, Arg.Any<CancellationToken>())
             .Returns((Party?)null);
         await SeedOverrideAsync("BE", 0.21m);
 
         TaxRateEntry? result = await _sut.GetRateAsync(
-            "BE", Now, contactId: contactId, cancellationToken: TestContext.Current.CancellationToken);
+            "BE", Now, partyId: partyId, cancellationToken: TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
         result.StandardRate.ShouldBe(0.21m);
     }
 
-    private static Party NewContactWithStatus(TaxStatus status)
+    private static Party NewPartyWithStatus(TaxStatus status)
     {
         var c = Party.Create(Guid.NewGuid(), tenantId: null, PartyKind.Company, "Test", "EUR");
         c.SetTaxStatus(status);

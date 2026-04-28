@@ -15,7 +15,7 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 /// column). Uses the InMemory provider — interceptors are honoured the same way as on
 /// SQL providers, just without real SQL.
 /// </summary>
-[Collection(ContactsDbSerialGroup.Name)]
+[Collection(PartiesDbSerialGroup.Name)]
 public sealed class PartyCanonicalisationInterceptorTests : IAsyncDisposable
 {
     private readonly DataFilter _filter = new();

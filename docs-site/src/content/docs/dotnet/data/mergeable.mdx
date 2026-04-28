@@ -12,7 +12,7 @@ sidebar:
 import { Tabs, TabItem } from "@astrojs/starlight/components";
 
 Multi-channel data entry produces duplicates: the same customer created twice via
-two CRM imports, a supplier mapped under two external providers, a contact captured
+two CRM imports, a supplier mapped under two external providers, a party captured
 both as an individual and as their employer. Without a merge primitive those
 duplicates corrupt every aggregate that references them — invoices issued against
 the wrong party, ledger fragmented across two balances, mappings in conflict.
@@ -482,7 +482,7 @@ the framework at build time:
 ## See also
 
 - [ADR-037 — Party merge framework](/dotnet/architecture/adr/037-party-merge-framework/) — design decisions, trade-offs, non-goals
-- [Parties — central party-management aggregate](/dotnet/business/contacts/) — the first consumer
+- [Parties — central party-management aggregate](/dotnet/business/parties/) — the first consumer
 - [Query Filters](./query-filters/) — the `MergeTombstone` filter alongside `SoftDelete`, `Active`, `MultiTenant`
 - [Persistence overview](./persistence/) — `ApplyGranitConventions` and the auto-applied column conventions
 - [Entity Lifecycle Events](./entity-lifecycle-events/) — `*Eto` integration events outbox pattern, used by `PartyMergedEto`

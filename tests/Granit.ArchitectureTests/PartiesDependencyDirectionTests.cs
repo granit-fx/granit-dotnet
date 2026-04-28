@@ -34,14 +34,14 @@ public sealed class PartiesDependencyDirectionTests
     ];
 
     [Fact]
-    public void Contacts_module_must_not_depend_on_downstream_consumers()
+    public void Parties_module_must_not_depend_on_downstream_consumers()
     {
-        IEnumerable<IType> contactsTypes = Architecture.Types.Where(t =>
+        IEnumerable<IType> partiesTypes = Architecture.Types.Where(t =>
             t.FullName.StartsWith("Granit.Parties.", StringComparison.Ordinal)
             || string.Equals(t.Namespace.FullName, "Granit.Parties", StringComparison.Ordinal)
             || t.Namespace.FullName.StartsWith("Granit.Parties.", StringComparison.Ordinal));
 
-        var violations = contactsTypes
+        var violations = partiesTypes
             .SelectMany(t => t.Dependencies.Select(d => (Source: t, TargetFullName: d.Target.FullName)))
             .Where(pair => DownstreamConsumerNamespaces.Any(ns =>
                 pair.TargetFullName.StartsWith(ns + ".", StringComparison.Ordinal)

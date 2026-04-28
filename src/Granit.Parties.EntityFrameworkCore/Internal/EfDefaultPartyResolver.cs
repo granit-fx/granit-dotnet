@@ -25,9 +25,9 @@ internal sealed class EfDefaultPartyResolver(
 
         string externalId = tenantId.ToString();
 
-        // The tenant↔contact reverse-link is by definition host-scoped (TenantId == null),
+        // The tenant↔party reverse-link is by definition host-scoped (TenantId == null),
         // so always disable the multi-tenant filter — even tenant-context callers must be
-        // able to resolve their own representative host-scoped contact.
+        // able to resolve their own representative host-scoped party.
         using IDisposable bypass = dataFilter.Disable<IMultiTenant>();
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);

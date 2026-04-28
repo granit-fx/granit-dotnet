@@ -10,7 +10,7 @@ namespace Granit.Parties.Mergeable.Internal;
 
 /// <summary>
 /// Re-parents <see cref="Party"/> children of the loser onto the survivor — i.e. parties
-/// whose <see cref="Party.ParentContactId"/> equals the loser's id are redirected to the
+/// whose <see cref="Party.ParentPartyId"/> equals the loser's id are redirected to the
 /// survivor. Implemented as a SQL bulk-update so the change tracker is not loaded with
 /// potentially thousands of rows and to avoid the EF shadow-FK pitfall.
 /// </summary>
@@ -30,7 +30,7 @@ internal sealed class PartyParentReferenceRewriter(
     /// Stable description string published as the rewrite-counts map key. Adapters route on
     /// this constant to extract the reparented-children count for downstream events.
     /// </summary>
-    internal const string RewriterDescription = "Party.ParentContactId";
+    internal const string RewriterDescription = "Party.ParentPartyId";
 
     /// <inheritdoc />
     public string Description => RewriterDescription;
@@ -45,8 +45,8 @@ internal sealed class PartyParentReferenceRewriter(
         var survivorPartyId = PartyId.Create(survivorId);
 
         return await db.Parties
-            .Where(p => p.ParentContactId == loserPartyId)
-            .ExecuteUpdateAsync(s => s.SetProperty(p => p.ParentContactId, survivorPartyId), cancellationToken)
+            .Where(p => p.ParentPartyId == loserPartyId)
+            .ExecuteUpdateAsync(s => s.SetProperty(p => p.ParentPartyId, survivorPartyId), cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -59,7 +59,7 @@ internal sealed class PartyParentReferenceRewriter(
         var loserPartyId = PartyId.Create(loserId);
 
         return await db.Parties
-            .Where(p => p.ParentContactId == loserPartyId)
+            .Where(p => p.ParentPartyId == loserPartyId)
             .CountAsync(cancellationToken)
             .ConfigureAwait(false);
     }

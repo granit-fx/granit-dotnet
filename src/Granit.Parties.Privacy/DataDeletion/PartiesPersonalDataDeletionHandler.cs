@@ -11,7 +11,7 @@ namespace Granit.Parties.Privacy.DataDeletion;
 /// <summary>
 /// Wolverine-discovered integration-event handler that fulfils the GDPR Article 17
 /// erasure obligation for the <see cref="Party"/> aggregate. Pseudonymises every PII
-/// field on the contact linked to the requesting user while preserving the row for
+/// field on the party linked to the requesting user while preserving the row for
 /// accounting integrity, then publishes a <see cref="PersonalDataDeletedEto"/> audit
 /// fragment for the privacy saga.
 /// </summary>
@@ -19,11 +19,11 @@ namespace Granit.Parties.Privacy.DataDeletion;
 /// <para>
 /// The lookup goes through the <see cref="IDataFilter"/> with the <see cref="IMultiTenant"/>
 /// filter disabled, because the deletion request is identified by user only — a single user
-/// can be linked to a host-scoped or tenant-scoped contact, and the privacy stack must
+/// can be linked to a host-scoped or tenant-scoped party, and the privacy stack must
 /// process either without leaking tenant context.
 /// </para>
 /// <para>
-/// Pseudonymisation is idempotent: if the contact has already been pseudonymised, the
+/// Pseudonymisation is idempotent: if the party has already been pseudonymised, the
 /// handler emits a <see cref="DeletionAction.Retained"/> audit record with zero affected
 /// records rather than re-publishing the domain event.
 /// </para>
@@ -36,7 +36,7 @@ public class PartiesPersonalDataDeletionHandler
 
     public static async Task HandleAsync(
         PersonalDataDeletionRequestedEto request,
-        IPartyReader contacts,
+        IPartyReader parties,
         IPartyWriter writer,
         IDataFilter dataFilter,
         IDistributedEventBus bus,
@@ -44,25 +44,25 @@ public class PartiesPersonalDataDeletionHandler
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        Party? contact;
+        Party? party;
         using (dataFilter.Disable<IMultiTenant>())
         {
-            contact = await contacts.GetByUserIdAsync(request.UserId, cancellationToken)
+            party = await parties.GetByUserIdAsync(request.UserId, cancellationToken)
                 .ConfigureAwait(false);
         }
 
-        if (contact is null)
+        if (party is null)
         {
             await bus.PublishAsync(new PersonalDataDeletedEto(
                 request.RequestId,
                 ProviderName,
                 DeletionAction.Retained,
                 AffectedRecords: 0,
-                Details: "no contact linked to user"), cancellationToken).ConfigureAwait(false);
+                Details: "no party linked to user"), cancellationToken).ConfigureAwait(false);
             return;
         }
 
-        bool changed = contact.PseudonymizePersonalData();
+        bool changed = party.PseudonymizePersonalData();
         if (!changed)
         {
             await bus.PublishAsync(new PersonalDataDeletedEto(
@@ -70,17 +70,17 @@ public class PartiesPersonalDataDeletionHandler
                 ProviderName,
                 DeletionAction.Retained,
                 AffectedRecords: 0,
-                Details: "contact already pseudonymised"), cancellationToken).ConfigureAwait(false);
+                Details: "party already pseudonymised"), cancellationToken).ConfigureAwait(false);
             return;
         }
 
-        await writer.UpdateAsync(contact, cancellationToken).ConfigureAwait(false);
+        await writer.UpdateAsync(party, cancellationToken).ConfigureAwait(false);
 
         await bus.PublishAsync(new PersonalDataDeletedEto(
             request.RequestId,
             ProviderName,
             DeletionAction.Anonymized,
             AffectedRecords: 1,
-            Details: $"contact {contact.Id} pseudonymised; row retained for accounting integrity"), cancellationToken).ConfigureAwait(false);
+            Details: $"party {party.Id} pseudonymised; row retained for accounting integrity"), cancellationToken).ConfigureAwait(false);
     }
 }

@@ -13,15 +13,15 @@ namespace Granit.Parties.Privacy.DataExport;
 /// </summary>
 /// <remarks>
 /// GDPR Article 15 requires the export to be complete regardless of the active tenant
-/// scope: a single user may be linked to a host-scoped or tenant-scoped contact and the
+/// scope: a single user may be linked to a host-scoped or tenant-scoped party and the
 /// privacy stack must locate either without leaking tenant context. The lookup therefore
 /// disables the <see cref="IMultiTenant"/> filter for the duration of the read, mirroring
-/// the deletion handler. Returns an empty buffer when no contact is linked to
+/// the deletion handler. Returns an empty buffer when no party is linked to
 /// <c>userId</c> — the privacy saga then records an <c>empty:</c> sentinel for this
 /// provider and skips blob upload.
 /// </remarks>
 public sealed class PartiesPrivacyDataProvider(
-    IPartyReader contacts,
+    IPartyReader parties,
     IDataFilter dataFilter) : IPrivacyDataProvider
 {
     /// <inheritdoc />
@@ -31,37 +31,37 @@ public sealed class PartiesPrivacyDataProvider(
     public static string ContentType => "application/json";
 
     /// <inheritdoc />
-    public static string FileName(Guid requestId) => "contacts.json";
+    public static string FileName(Guid requestId) => "parties.json";
 
     /// <inheritdoc />
     public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
     {
-        Party? contact;
+        Party? party;
         using (dataFilter.Disable<IMultiTenant>())
         {
-            contact = await contacts.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
+            party = await parties.GetByUserIdAsync(userId, cancellationToken).ConfigureAwait(false);
         }
-        if (contact is null)
+        if (party is null)
         {
             return ReadOnlyMemory<byte>.Empty;
         }
 
-        ContactsExportDto dto = new(
-            PartyId: contact.Id,
-            TenantId: contact.TenantId,
-            Kind: contact.Kind.ToString(),
-            Name: contact.Name,
-            Website: contact.Website,
-            Language: contact.Language,
-            Timezone: contact.Timezone,
-            DefaultCurrency: contact.DefaultCurrency,
-            TaxId: contact.TaxId,
-            RegistrationNumber: contact.RegistrationNumber,
-            Roles: contact.Roles.ToString(),
-            Status: contact.Status.ToString(),
-            Emails: [.. contact.Emails.Select(e => new PartyEmailDto(e.Address, e.IsPrimary, e.Label))],
-            Phones: [.. contact.Phones.Select(p => new PartyPhoneDto(p.Kind.ToString(), p.Number, p.IsPrimary, p.Label))],
-            Addresses: [.. contact.Addresses.Select(a => new PartyAddressDto(
+        PartiesExportDto dto = new(
+            PartyId: party.Id,
+            TenantId: party.TenantId,
+            Kind: party.Kind.ToString(),
+            Name: party.Name,
+            Website: party.Website,
+            Language: party.Language,
+            Timezone: party.Timezone,
+            DefaultCurrency: party.DefaultCurrency,
+            TaxId: party.TaxId,
+            RegistrationNumber: party.RegistrationNumber,
+            Roles: party.Roles.ToString(),
+            Status: party.Status.ToString(),
+            Emails: [.. party.Emails.Select(e => new PartyEmailDto(e.Address, e.IsPrimary, e.Label))],
+            Phones: [.. party.Phones.Select(p => new PartyPhoneDto(p.Kind.ToString(), p.Number, p.IsPrimary, p.Label))],
+            Addresses: [.. party.Addresses.Select(a => new PartyAddressDto(
                 a.Kind.ToString(),
                 a.IsDefault,
                 a.Label,
@@ -72,7 +72,7 @@ public sealed class PartiesPrivacyDataProvider(
                 a.Value.PostalCode,
                 a.Value.Country,
                 a.Value.CompanyName))],
-            ExternalMappings: [.. contact.ExternalMappings.Select(m => new PartyExternalMappingDto(m.ProviderName, m.ExternalId))]);
+            ExternalMappings: [.. party.ExternalMappings.Select(m => new PartyExternalMappingDto(m.ProviderName, m.ExternalId))]);
 
         return JsonSerializer.SerializeToUtf8Bytes(dto, ExportJsonOptions);
     }
@@ -83,7 +83,7 @@ public sealed class PartiesPrivacyDataProvider(
     };
 }
 
-internal sealed record ContactsExportDto(
+internal sealed record PartiesExportDto(
     Guid PartyId,
     Guid? TenantId,
     string Kind,

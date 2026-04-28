@@ -16,12 +16,12 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 /// aggregate must back both host-scoped (<c>TenantId == null</c>) and tenant-scoped
 /// (<c>TenantId == &lt;tenant&gt;</c>) usage without consumer code branches.
 ///
-/// Three contacts are seeded with the multi-tenant filter <i>disabled</i> so each row lands
+/// Three parties are seeded with the multi-tenant filter <i>disabled</i> so each row lands
 /// at its intended scope. Subsequent reads exercise the filter under each context (tenant A,
 /// tenant B, host, no-filter) and assert that <see cref="EfPartyStore"/> honours the
 /// active scope on every query path — including <c>GetByIdAsync</c>.
 /// </summary>
-[Collection(ContactsDbSerialGroup.Name)]
+[Collection(PartiesDbSerialGroup.Name)]
 public sealed class EfContactStoreScopeTests : IAsyncDisposable
 {
     private readonly Guid _tenantA = Guid.NewGuid();
@@ -91,7 +91,7 @@ public sealed class EfContactStoreScopeTests : IAsyncDisposable
     // ── ListAsync ────────────────────────────────────────────────────
 
     [Fact]
-    public async Task ListAsync_InTenantContext_ReturnsOnlyThatTenantsContacts()
+    public async Task ListAsync_InTenantContext_ReturnsOnlyThatTenantsParties()
     {
         await SeedAsync();
         (EfPartyStore store, _) = ScopedStore(_tenantA);
@@ -102,7 +102,7 @@ public sealed class EfContactStoreScopeTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task ListAsync_InHostContext_ReturnsOnlyHostScopedContacts()
+    public async Task ListAsync_InHostContext_ReturnsOnlyHostScopedParties()
     {
         await SeedAsync();
         (EfPartyStore store, _) = ScopedStore(tenantId: null);

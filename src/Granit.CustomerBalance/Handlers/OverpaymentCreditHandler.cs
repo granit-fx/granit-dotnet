@@ -5,7 +5,7 @@ using Granit.Parties.Domain.ValueObjects;
 namespace Granit.CustomerBalance.Handlers;
 
 /// <summary>
-/// Credits overpayment surplus to the contact's balance account.
+/// Credits overpayment surplus to the party's balance account.
 /// Delegates to <see cref="IOverpaymentCreditService"/>. Idempotent — Wolverine's
 /// at-least-once delivery is therefore safe.
 /// </summary>

@@ -9,9 +9,9 @@ namespace Granit.Parties.Deduplication.Domain;
 /// serialisable, no domain invariants — the caller has not yet built a <c>Party</c>
 /// aggregate at the point this struct is produced.
 /// </summary>
-/// <param name="TenantId">Owning tenant; <c>null</c> for host-scoped contacts. Detection is
+/// <param name="TenantId">Owning tenant; <c>null</c> for host-scoped parties. Detection is
 /// always tenant-scoped (cross-tenant duplicates are not a thing).</param>
-/// <param name="Kind">Whether the contact is an individual, a company, or a department —
+/// <param name="Kind">Whether the party is an individual, a company, or a department —
 /// drives the choice between the two configurable similarity thresholds (Name vs Company).</param>
 /// <param name="Name">Display / legal name. Required.</param>
 /// <param name="TaxId">VAT or registration number. Optional; canonicalised before lookup.</param>

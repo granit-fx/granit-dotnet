@@ -9,13 +9,13 @@ namespace Granit.Invoicing.Endpoints.Tests.Dtos;
 public sealed class InvoiceResponseTests
 {
     [Fact]
-    public void FromEntity_ProjectsContactId()
+    public void FromEntity_ProjectsPartyId()
     {
-        var contactId = Guid.NewGuid();
+        var partyId = Guid.NewGuid();
         var invoice = Invoice.Create(
             id: Guid.NewGuid(),
             tenantId: Guid.NewGuid(),
-            contactId: PartyId.Create(contactId),
+            partyId: PartyId.Create(partyId),
             documentType: InvoiceDocumentType.Invoice,
             currency: "EUR",
             collectionMethod: CollectionMethod.Auto,
@@ -24,7 +24,7 @@ public sealed class InvoiceResponseTests
         var response = InvoiceResponse.FromEntity(invoice);
 
         response.Id.ShouldBe(invoice.Id);
-        response.PartyId.ShouldBe(contactId);
+        response.PartyId.ShouldBe(partyId);
         response.Currency.ShouldBe("EUR");
         response.Status.ShouldBe(InvoiceStatus.Draft.ToString());
     }

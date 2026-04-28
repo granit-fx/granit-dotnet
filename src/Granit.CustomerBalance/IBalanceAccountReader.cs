@@ -10,8 +10,8 @@ public interface IBalanceAccountReader
     /// <summary>Returns a balance account by ID, including transactions.</summary>
     Task<BalanceAccount?> GetByIdAsync(BalanceAccountId id, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns the balance account for a contact and currency.</summary>
-    Task<BalanceAccount?> GetByContactAndCurrencyAsync(PartyId contactId, string currency, CancellationToken cancellationToken = default);
+    /// <summary>Returns the balance account for a party and currency.</summary>
+    Task<BalanceAccount?> GetByPartyAndCurrencyAsync(PartyId partyId, string currency, CancellationToken cancellationToken = default);
 
     /// <summary>Returns all balance accounts for a tenant (ledger management view).</summary>
     Task<IReadOnlyList<BalanceAccount>> GetByTenantAsync(Guid tenantId, CancellationToken cancellationToken = default);

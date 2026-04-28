@@ -8,8 +8,8 @@ namespace Granit.Parties.Privacy;
 
 /// <summary>
 /// Granit module that registers the <see cref="PartiesPrivacyDataProvider"/> so the
-/// contacts module participates in the privacy export scatter-gather saga, and wires
-/// the personal-data deletion handler that pseudonymises the user-linked contact on
+/// parties module participates in the privacy export scatter-gather saga, and wires
+/// the personal-data deletion handler that pseudonymises the user-linked party on
 /// Article 17 erasure.
 /// </summary>
 /// <remarks>

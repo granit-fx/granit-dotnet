@@ -141,7 +141,7 @@ internal static class PaymentMethodEndpoints
         [FromServices] IEnumerable<IPaymentMethodManager> managers,
         [FromServices] IPaymentMethodWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
-        [FromServices] IDefaultPartyResolver contactResolver,
+        [FromServices] IDefaultPartyResolver partyResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -155,24 +155,24 @@ internal static class PaymentMethodEndpoints
             return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
         }
 
-        // Resolve the host-scoped contact representing this tenant. Future iterations may
-        // accept an explicit PartyId in the request DTO when a tenant has multiple contacts.
-        Party? contact = tenantId == Guid.Empty
+        // Resolve the host-scoped party representing this tenant. Future iterations may
+        // accept an explicit PartyId in the request DTO when a tenant has multiple parties.
+        Party? party = tenantId == Guid.Empty
             ? null
-            : await contactResolver
+            : await partyResolver
                 .GetDefaultForTenantAsync(tenantId, cancellationToken)
                 .ConfigureAwait(false);
 
-        if (contact is null)
+        if (party is null)
         {
             return TypedResults.Problem(
-                detail: "No default contact resolved for the active tenant. Provision the host-scoped Party representing this tenant before attaching a payment method (see Granit.Parties.MultiTenancy).",
+                detail: "No default party resolved for the active tenant. Provision the host-scoped Party representing this tenant before attaching a payment method (see Granit.Parties.MultiTenancy).",
                 statusCode: StatusCodes.Status409Conflict);
         }
 
         PaymentProviderMethod providerMethod = await manager
             .AttachAsync(
-                new ContractAttachRequest(contact.Id, request.Type, request.Token),
+                new ContractAttachRequest(party.Id, request.Type, request.Token),
                 cancellationToken)
             .ConfigureAwait(false);
 

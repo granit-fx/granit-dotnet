@@ -13,7 +13,7 @@ public sealed class TenantExportDefinition : ExportDefinition<Tenant>
             .IncludeId()
             .Field(t => t.Name)
             .Field(t => t.Identifier)
-            .Field(t => t.PartyEmail)
+            .Field(t => t.ContactEmail)
             .Field(t => t.Jurisdiction)
             .Field(t => t.Activated)
             .Field(t => t.CustomDomain)

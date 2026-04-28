@@ -129,6 +129,6 @@ public sealed class BalanceAccountPartyReferenceRewriterPostgresTests : IClassFi
         BalanceAccount.Create(
             id: Guid.NewGuid(),
             tenantId: Guid.NewGuid(),
-            contactId: PartyId.Create(partyId),
+            partyId: PartyId.Create(partyId),
             currency: currency);
 }

@@ -7,7 +7,7 @@ sidebar:
 ---
 
 `Party.Roles` is a cheap `[Flags] int` column that reflects the actual activity of
-a contact across the platform — `Customer` if they have invoices, `Supplier` if a
+a party across the platform — `Customer` if they have invoices, `Supplier` if a
 purchase order has been issued to them, `Employee` if HR has onboarded them, etc.
 
 Granit deliberately does NOT compute these flags via cross-module joins (Odoo tried
@@ -18,7 +18,7 @@ its own integration-event handlers.
 
 ## When to add a handler
 
-Add one when your module emits an event that proves a contact is acting in a given
+Add one when your module emits an event that proves a party is acting in a given
 role. The handler converts that "first time we observed activity" signal into an
 idempotent `Party.AddRole(role)` call.
 
@@ -26,9 +26,9 @@ idempotent `Party.AddRole(role)` call.
 | --------------------------- | ----------- | --- |
 | `InvoiceCreatedEto` / `InvoiceFinalizedEto` | `PartyRoles.Customer` | Party has an invoice → they are a customer. |
 | `SubscriptionCreatedEto` | `PartyRoles.Customer` | Recurring billing relationship. |
-| `PurchaseOrderCreatedEto` | `PartyRoles.Supplier` | We bought from this contact. |
+| `PurchaseOrderCreatedEto` | `PartyRoles.Supplier` | We bought from this party. |
 | `LeadCreatedEto` | `PartyRoles.Lead` | CRM has registered a sales lead. |
-| `EmployeeOnboardedEto` | `PartyRoles.Employee` | HR onboarded this contact as staff. |
+| `EmployeeOnboardedEto` | `PartyRoles.Employee` | HR onboarded this party as staff. |
 
 ## Handler pattern
 
@@ -50,27 +50,27 @@ public class InvoiceCustomerRoleHandler
 {
     public static async Task HandleAsync(
         InvoiceCreatedEto @event,
-        IPartyReader contacts,
+        IPartyReader parties,
         IPartyWriter writer,
         IDataFilter dataFilter,
         CancellationToken cancellationToken)
     {
         // Lookup with the multi-tenant filter disabled — this handler runs in a
-        // background context where the active scope may not match the contact's.
-        Party? contact;
+        // background context where the active scope may not match the party's.
+        Party? party;
         using (dataFilter.Disable<IMultiTenant>())
         {
-            contact = await contacts
+            party = await parties
                 .GetByIdAsync(PartyId.Create(@event.PartyId), cancellationToken)
                 .ConfigureAwait(false);
         }
 
-        if (contact is null) { return; }
+        if (party is null) { return; }
 
         // AddRole is idempotent: calling it on every event is safe.
-        if (contact.AddRole(PartyRoles.Customer))
+        if (party.AddRole(PartyRoles.Customer))
         {
-            await writer.UpdateAsync(contact, cancellationToken).ConfigureAwait(false);
+            await writer.UpdateAsync(party, cancellationToken).ConfigureAwait(false);
         }
     }
 }
@@ -80,7 +80,7 @@ The handler MUST:
 
 - Be `public class` (non-static) with a `public static HandleAsync` method — required
   for Wolverine handler discovery without taking a dependency on `WolverineFx` itself.
-- Use `IDataFilter.Disable<IMultiTenant>()` around the lookup so the contact resolves
+- Use `IDataFilter.Disable<IMultiTenant>()` around the lookup so the party resolves
   regardless of the integration-event's active scope.
 - Treat `AddRole` as idempotent. Persist only when the call returns `true` so the
   outbox does not accumulate no-op rows.
@@ -93,7 +93,7 @@ The handler MUST:
 The auto-maintenance handler does not preclude manual admin curation. The endpoint
 exposed by `Granit.Parties.Endpoints` (`POST /parties/{id}/roles`) lets a host
 operator assign or revoke roles directly — typically for legacy data backfills or
-GDPR-driven contact closures.
+GDPR-driven party closures.
 
 ## Future extension
 

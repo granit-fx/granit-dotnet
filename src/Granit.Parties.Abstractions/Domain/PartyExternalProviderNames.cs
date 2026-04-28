@@ -7,7 +7,7 @@ namespace Granit.Parties.Domain;
 /// External providers should consult this registry before inventing a name to avoid
 /// collisions. The list is non-exhaustive — third-party providers register their own
 /// names freely. The <see cref="Tenant"/> value is reserved for the reverse-link
-/// between a host-scoped contact and the tenant entity it represents.
+/// between a host-scoped party and the tenant entity it represents.
 /// </remarks>
 public static class PartyExternalProviderNames
 {

@@ -61,7 +61,7 @@ public interface IMergeableAggregateAdapter<TAggregate>
     /// <param name="request">The original merge request — gives <c>Reason</c>, <c>Choices</c>, ids.</param>
     /// <param name="rewriteCounts">Counts produced by every registered <c>IReferenceRewriter&lt;TAggregate&gt;</c>,
     /// keyed by their <c>Description</c>. Adapters can extract aggregate-specific counts (e.g.
-    /// <c>Party.ParentContactId</c>) to populate richer event payloads.</param>
+    /// <c>Party.ParentPartyId</c>) to populate richer event payloads.</param>
     /// <param name="mergedAt">Merge timestamp (orchestrator-provided <c>IClock.Now</c>).</param>
     void RaiseMergedEvents(
         TAggregate survivor,

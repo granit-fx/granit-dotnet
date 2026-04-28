@@ -19,7 +19,7 @@ internal sealed partial class DefaultAdminDebitService(
 {
     public async Task<BalanceAccount> DebitAsync(
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         decimal amount,
         string currency,
         string reason,
@@ -27,16 +27,16 @@ internal sealed partial class DefaultAdminDebitService(
         string? referenceType = null,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(contactId);
+        ArgumentNullException.ThrowIfNull(partyId);
 
         using Activity? activity = CustomerBalanceActivitySource.Source
             .StartActivity(CustomerBalanceActivitySource.DebitBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
+            .GetByPartyAndCurrencyAsync(partyId, currency, cancellationToken)
             .ConfigureAwait(false)
             ?? throw new InvalidOperationException(
-                $"No balance account exists for contact '{contactId.Value}' in currency '{currency}'.");
+                $"No balance account exists for party '{partyId.Value}' in currency '{currency}'.");
 
         // Idempotency: if a previous ManualAdjustment debit with the same
         // referenceId already landed, return the account unchanged. Mirrors the
@@ -67,7 +67,7 @@ internal sealed partial class DefaultAdminDebitService(
             referenceType: referenceType);
 
         await accountWriter.UpdateAsync(account, cancellationToken).ConfigureAwait(false);
-        metrics.RecordDebited(contactId.Value.ToString(), currency, TransactionSource.ManualAdjustment.ToString());
+        metrics.RecordDebited(partyId.Value.ToString(), currency, TransactionSource.ManualAdjustment.ToString());
         Log.AdminDebited(logger, amount, account.Balance);
 
         return account;

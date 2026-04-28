@@ -35,7 +35,7 @@ public sealed class PartyTests
         c.Timezone.ShouldBe("UTC");
         c.ExternalMappings.ShouldBeEmpty();
         c.UserId.ShouldBeNull();
-        c.ParentContactId.ShouldBeNull();
+        c.ParentPartyId.ShouldBeNull();
     }
 
     [Theory]
@@ -78,7 +78,7 @@ public sealed class PartyTests
     }
 
     [Fact]
-    public void Create_RaisesContactCreatedEvents()
+    public void Create_RaisesPartyCreatedEvents()
     {
         Party c = NewCompany();
 
@@ -297,7 +297,7 @@ public sealed class PartyTests
     // ── Identity & address updates ────────────────────────────────
 
     [Fact]
-    public void UpdateContact_OnActive_AppliesAndRaisesEvent()
+    public void UpdateIdentity_OnActive_AppliesAndRaisesEvent()
     {
         Party c = NewCompany();
 
@@ -309,7 +309,7 @@ public sealed class PartyTests
     }
 
     [Fact]
-    public void UpdateContact_OnArchived_Throws()
+    public void UpdateIdentity_OnArchived_Throws()
     {
         Party c = NewCompany();
         c.Archive();
@@ -497,7 +497,7 @@ public sealed class PartyTests
 
         child.AttachToParent(parentId, parentTenantId: tenantId);
 
-        child.ParentContactId.ShouldBe(parentId);
+        child.ParentPartyId.ShouldBe(parentId);
         child.DomainEvents.OfType<PartyAttachedToParentEvent>().ShouldHaveSingleItem();
     }
 
@@ -509,7 +509,7 @@ public sealed class PartyTests
 
         child.AttachToParent(parentId, parentTenantId: null);
 
-        child.ParentContactId.ShouldBe(parentId);
+        child.ParentPartyId.ShouldBe(parentId);
     }
 
     [Fact]
@@ -541,7 +541,7 @@ public sealed class PartyTests
         bool result = c.DetachFromParent();
 
         result.ShouldBeTrue();
-        c.ParentContactId.ShouldBeNull();
+        c.ParentPartyId.ShouldBeNull();
         c.DomainEvents.OfType<PartyDetachedFromParentEvent>().ShouldHaveSingleItem();
     }
 
@@ -746,12 +746,12 @@ public sealed class PartyTests
     // ── Multi-tenancy ─────────────────────────────────────────────
 
     [Fact]
-    public void Contact_HostScoped_HasNullTenantId() =>
+    public void Party_HostScoped_HasNullTenantId() =>
         Party.Create(Guid.NewGuid(), null, PartyKind.Company, "X", "EUR")
             .TenantId.ShouldBeNull();
 
     [Fact]
-    public void Contact_ImplementsIMultiTenant() =>
+    public void Party_ImplementsIMultiTenant() =>
         typeof(Party).IsAssignableTo(typeof(Granit.Domain.IMultiTenant)).ShouldBeTrue();
 
     [Fact]

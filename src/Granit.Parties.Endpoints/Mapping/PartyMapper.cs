@@ -17,7 +17,7 @@ internal static class PartyMapper
         c.Website,
         c.TaxId,
         c.RegistrationNumber,
-        c.ParentContactId is { } pid ? pid.Value : null,
+        c.ParentPartyId is { } pid ? pid.Value : null,
         c.UserId,
         c.AvatarBlobId,
         c.Roles,

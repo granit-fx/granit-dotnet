@@ -5,7 +5,7 @@ namespace Granit.Parties;
 /// <summary>
 /// Seeds a host-scoped <see cref="Party"/> that represents a tenant in the SaaS host's
 /// billing relationship. Mirrors <see cref="IDefaultPartyResolver"/>: the resolver reads
-/// the tenant ↔ contact link, the seeder creates it.
+/// the tenant ↔ party link, the seeder creates it.
 /// </summary>
 /// <remarks>
 /// <para>
@@ -17,7 +17,7 @@ namespace Granit.Parties;
 /// </para>
 /// <para>
 /// Idempotent: calling <see cref="SeedForTenantAsync"/> a second time for the same
-/// <paramref name="tenantId"/> returns the existing contact instead of creating a
+/// <paramref name="tenantId"/> returns the existing party instead of creating a
 /// duplicate. Wolverine's at-least-once delivery is therefore safe.
 /// </para>
 /// </remarks>
@@ -29,7 +29,7 @@ public interface IDefaultPartySeeder
     /// <see cref="PartyExternalProviderNames.Tenant"/> external mapping when none exists.
     /// </summary>
     /// <param name="tenantId">Identifier of the tenant being provisioned.</param>
-    /// <param name="tenantName">Display name for the new contact (typically the tenant's name).</param>
+    /// <param name="tenantName">Display name for the new party (typically the tenant's name).</param>
     /// <param name="defaultCurrency">ISO 4217 currency code. Defaults to <c>"EUR"</c>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<Party> SeedForTenantAsync(

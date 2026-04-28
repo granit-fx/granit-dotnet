@@ -23,30 +23,30 @@ internal sealed partial class DefaultOverpaymentCreditService(
 {
     public async Task CreditOverpaymentAsync(
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         string currency,
         decimal amount,
         Guid invoiceId,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(contactId);
+        ArgumentNullException.ThrowIfNull(partyId);
 
         using Activity? activity = CustomerBalanceActivitySource.Source
             .StartActivity(CustomerBalanceActivitySource.CreditBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
+            .GetByPartyAndCurrencyAsync(partyId, currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null)
         {
-            account = BalanceAccount.Create(guidGenerator.Create(), tenantId, contactId, currency);
+            account = BalanceAccount.Create(guidGenerator.Create(), tenantId, partyId, currency);
             await accountWriter.AddAsync(account, cancellationToken).ConfigureAwait(false);
-            Log.AccountCreated(logger, contactId.Value, currency);
+            Log.AccountCreated(logger, partyId.Value, currency);
 
             // Reload to get tracked entity with transactions collection.
             account = await accountReader
-                .GetByContactAndCurrencyAsync(contactId, currency, cancellationToken)
+                .GetByPartyAndCurrencyAsync(partyId, currency, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -69,7 +69,7 @@ internal sealed partial class DefaultOverpaymentCreditService(
         [LoggerMessage(Level = LogLevel.Information, Message = "Overpayment of {Amount} credited for invoice {InvoiceId}, new balance: {NewBalance}")]
         public static partial void OverpaymentCredited(ILogger logger, Guid invoiceId, decimal amount, decimal newBalance);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for contact {PartyId} ({Currency})")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Created balance account for party {PartyId} ({Currency})")]
         public static partial void AccountCreated(ILogger logger, Guid partyId, string currency);
     }
 }

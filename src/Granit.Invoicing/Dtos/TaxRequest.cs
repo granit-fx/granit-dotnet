@@ -6,9 +6,9 @@ namespace Granit.Invoicing.Dtos;
 /// <summary>Request for tax calculation.</summary>
 /// <remarks>
 /// <para>
-/// <paramref name="BuyerContactId"/> lets the calculator honour customer-level overrides
+/// <paramref name="BuyerPartyId"/> lets the calculator honour customer-level overrides
 /// (VAT exemption, intra-EU reverse charge) carried by <c>Party.TaxStatus</c>. When
-/// supplied and the contact's status yields a 0% rate, the calculator returns 0% on
+/// supplied and the party's status yields a 0% rate, the calculator returns 0% on
 /// every line; otherwise the country / standard rate applies.
 /// </para>
 /// </remarks>
@@ -16,7 +16,7 @@ public sealed record TaxRequest(
     IReadOnlyList<TaxLineItem> LineItems,
     BillingAddress SellerAddress,
     BillingAddress BuyerAddress,
-    PartyId? BuyerContactId = null);
+    PartyId? BuyerPartyId = null);
 
 /// <summary>A line item for tax calculation.</summary>
 public sealed record TaxLineItem(string Description, decimal Amount, string? TaxCode);

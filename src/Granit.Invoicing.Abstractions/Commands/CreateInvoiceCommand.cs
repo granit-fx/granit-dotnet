@@ -13,9 +13,9 @@ namespace Granit.Invoicing.Commands;
 /// <param name="LineItems">Line items to add to the invoice.</param>
 /// <param name="PartyId">
 ///   Optional identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this invoice.
-///   When <c>null</c>, the invoicing service resolves the tenant's default host-scoped contact via
+///   When <c>null</c>, the invoicing service resolves the tenant's default host-scoped party via
 ///   <c>IDefaultPartyResolver.GetDefaultForTenantAsync</c>. Pass an explicit value when the caller already
-///   knows the contact (admin endpoints, manually issued invoices, multi-contact tenants).
+///   knows the party (admin endpoints, manually issued invoices, multi-party tenants).
 /// </param>
 /// <param name="PeriodStart">Optional billing period start.</param>
 /// <param name="PeriodEnd">Optional billing period end.</param>

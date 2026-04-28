@@ -15,7 +15,7 @@ internal static class GetBalanceEndpoint
     internal static async Task<Results<Ok<CustomerBalanceResponse>, ProblemHttpResult>> HandleAsync(
         string currency,
         [FromServices] IBalanceAccountReader accountReader,
-        [FromServices] IDefaultPartyResolver contactResolver,
+        [FromServices] IDefaultPartyResolver partyResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -24,18 +24,18 @@ internal static class GetBalanceEndpoint
             return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
-        Party? contact = await contactResolver
+        Party? party = await partyResolver
             .GetDefaultForTenantAsync(currentTenant.Id!.Value, cancellationToken)
             .ConfigureAwait(false);
 
-        if (contact is null)
+        if (party is null)
         {
             return TypedResults.Ok(new CustomerBalanceResponse(
                 Guid.Empty, currency.ToUpperInvariant(), 0m, null));
         }
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(PartyId.Create(contact.Id), currency, cancellationToken)
+            .GetByPartyAndCurrencyAsync(PartyId.Create(party.Id), currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null)

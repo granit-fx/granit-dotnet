@@ -20,7 +20,7 @@ public sealed class DefaultInvoiceCreationServiceTests
     // ======== Fixtures ========
 
     private readonly IInvoiceWriter _invoiceWriter = Substitute.For<IInvoiceWriter>();
-    private readonly IPartyReader _contactReader = Substitute.For<IPartyReader>();
+    private readonly IPartyReader _partyReader = Substitute.For<IPartyReader>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IDefaultPartyResolver _defaultContactResolver = Substitute.For<IDefaultPartyResolver>();
@@ -35,11 +35,11 @@ public sealed class DefaultInvoiceCreationServiceTests
     public DefaultInvoiceCreationServiceTests()
     {
         _clock.Now.Returns(Now);
-        // Default behaviour: an explicit PartyId resolves to a contact with no billing address.
-        // Individual tests override this when they need a contact with an address.
+        // Default behaviour: an explicit PartyId resolves to a party with no billing address.
+        // Individual tests override this when they need a party with an address.
         var bareContact = Party.Create(
             PartyId, null, PartyKind.Company, "Test Co", "EUR");
-        _contactReader.GetByIdAsync(
+        _partyReader.GetByIdAsync(
             Arg.Any<Granit.Parties.Domain.ValueObjects.PartyId>(),
             Arg.Any<CancellationToken>())
             .Returns(bareContact);
@@ -50,7 +50,7 @@ public sealed class DefaultInvoiceCreationServiceTests
         IInvoiceNumberGenerator? numberGenerator = null) =>
         new(
             _invoiceWriter,
-            _contactReader,
+            _partyReader,
             _guidGenerator,
             _clock,
             _defaultContactResolver,

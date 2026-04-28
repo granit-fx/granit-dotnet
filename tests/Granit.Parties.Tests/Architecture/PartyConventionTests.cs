@@ -21,5 +21,5 @@ public sealed class PartyConventionTests
     [Fact]
     public void Contact_TenantIdIsNullable() =>
         typeof(Party).GetProperty(nameof(IMultiTenant.TenantId))!.PropertyType
-            .ShouldBe(typeof(Guid?), "host-scoped contacts require TenantId = null");
+            .ShouldBe(typeof(Guid?), "host-scoped parties require TenantId = null");
 }

@@ -28,7 +28,7 @@ internal sealed class EfPartyStore(
     /// Overrides <see cref="EfStoreBase{TEntity,TContext}.Query(TContext)"/> to keep the
     /// multi-tenant query filter active in <i>both</i> tenant and host scope. The dual-use
     /// design treats <c>TenantId == null</c> as the host's own scope (its tenants-as-customers,
-    /// vendors, internal staff) — leaking other tenants' contacts into a host browser would be
+    /// vendors, internal staff) — leaking other tenants' parties into a host browser would be
     /// a privacy regression. The standard host-mode bypass remains available explicitly via
     /// <c>IDataFilter.Disable&lt;IMultiTenant&gt;()</c>.
     /// </summary>
@@ -93,36 +93,36 @@ internal sealed class EfPartyStore(
                 .ToListAsync(cancellationToken).ConfigureAwait(false),
             cancellationToken);
 
-    async Task IPartyWriter.AddAsync(Party contact, CancellationToken cancellationToken)
+    async Task IPartyWriter.AddAsync(Party party, CancellationToken cancellationToken)
     {
-        await base.AddAsync(contact, cancellationToken).ConfigureAwait(false);
-        EmitMetrics(contact);
+        await base.AddAsync(party, cancellationToken).ConfigureAwait(false);
+        EmitMetrics(party);
     }
 
     /// <summary>
-    /// Persists a contact aggregate. <c>DbSet.Update()</c> marks the entire disconnected
+    /// Persists a party aggregate. <c>DbSet.Update()</c> marks the entire disconnected
     /// graph as Modified — including child entities (<c>PartyAddress</c>, <c>PartyEmail</c>,
     /// <c>PartyPhone</c>, <c>PartyExternalMapping</c>) freshly added in memory and not
     /// yet in the DB. We reconcile by reading existing child IDs and re-marking new ones
     /// as Added. Mirrors the workaround in <c>EfPlanWriter</c>.
     /// </summary>
-    async Task IPartyWriter.UpdateAsync(Party contact, CancellationToken cancellationToken)
+    async Task IPartyWriter.UpdateAsync(Party party, CancellationToken cancellationToken)
     {
         await WriteAsync(async db =>
         {
-            HashSet<Guid> existingAddressIds = await CollectChildIdsAsync<PartyAddress>(db, contact.Id, cancellationToken).ConfigureAwait(false);
-            HashSet<Guid> existingEmailIds = await CollectChildIdsAsync<PartyEmail>(db, contact.Id, cancellationToken).ConfigureAwait(false);
-            HashSet<Guid> existingPhoneIds = await CollectChildIdsAsync<PartyPhone>(db, contact.Id, cancellationToken).ConfigureAwait(false);
-            HashSet<Guid> existingMappingIds = await CollectChildIdsAsync<PartyExternalMapping>(db, contact.Id, cancellationToken).ConfigureAwait(false);
+            HashSet<Guid> existingAddressIds = await CollectChildIdsAsync<PartyAddress>(db, party.Id, cancellationToken).ConfigureAwait(false);
+            HashSet<Guid> existingEmailIds = await CollectChildIdsAsync<PartyEmail>(db, party.Id, cancellationToken).ConfigureAwait(false);
+            HashSet<Guid> existingPhoneIds = await CollectChildIdsAsync<PartyPhone>(db, party.Id, cancellationToken).ConfigureAwait(false);
+            HashSet<Guid> existingMappingIds = await CollectChildIdsAsync<PartyExternalMapping>(db, party.Id, cancellationToken).ConfigureAwait(false);
 
-            db.Set<Party>().Update(contact);
+            db.Set<Party>().Update(party);
 
             ReconcileNewChildren<PartyAddress>(db, existingAddressIds);
             ReconcileNewChildren<PartyEmail>(db, existingEmailIds);
             ReconcileNewChildren<PartyPhone>(db, existingPhoneIds);
             ReconcileNewChildren<PartyExternalMapping>(db, existingMappingIds);
         }, cancellationToken).ConfigureAwait(false);
-        EmitMetrics(contact);
+        EmitMetrics(party);
     }
 
     /// <summary>
@@ -132,10 +132,10 @@ internal sealed class EfPartyStore(
     /// security-relevant operation (suspend / archive / pseudonymise / external-mapping
     /// registration / tax-status change) become observable without a separate handler chain.
     /// </summary>
-    private void EmitMetrics(Party contact)
+    private void EmitMetrics(Party party)
     {
-        string? tenantId = contact.TenantId?.ToString();
-        foreach (IDomainEvent evt in contact.DomainEvents)
+        string? tenantId = party.TenantId?.ToString();
+        foreach (IDomainEvent evt in party.DomainEvents)
         {
             switch (evt)
             {
@@ -153,12 +153,12 @@ internal sealed class EfPartyStore(
     }
 
     private static async Task<HashSet<Guid>> CollectChildIdsAsync<TChild>(
-        PartiesDbContext db, Guid contactId, CancellationToken cancellationToken)
+        PartiesDbContext db, Guid partyId, CancellationToken cancellationToken)
         where TChild : class
     {
         List<Guid> ids = await db.Set<TChild>()
             .AsNoTracking()
-            .Where(e => EF.Property<Guid>(e, "PartyId") == contactId)
+            .Where(e => EF.Property<Guid>(e, "PartyId") == partyId)
             .Select(e => EF.Property<Guid>(e, "Id"))
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);

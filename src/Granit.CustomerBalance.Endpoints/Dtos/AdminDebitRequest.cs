@@ -1,7 +1,7 @@
 namespace Granit.CustomerBalance.Endpoints.Dtos;
 
 /// <summary>
-/// Request to debit a contact's <c>BalanceAccount</c> manually — admin tooling
+/// Request to debit a party's <c>BalanceAccount</c> manually — admin tooling
 /// for corrections, scheduled drawdowns, and non-invoice adjustments.
 /// </summary>
 /// <param name="PartyId">Party whose balance account is debited.</param>

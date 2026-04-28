@@ -237,7 +237,7 @@ public sealed class EfMergeServicePartyEndToEndTests : IClassFixture<PostgresFix
 
         // Assert — both rewriters reported activity.
         result.RewriteCounts["Party.Children"].ShouldBeGreaterThan(0);
-        result.RewriteCounts["Party.ParentContactId"].ShouldBe(1);
+        result.RewriteCounts["Party.ParentPartyId"].ShouldBe(1);
 
         // Assert — every child collection now belongs to the survivor.
         await using PartiesDbContext assertDb = await _partiesFactory.CreateDbContextAsync(TestContext.Current.CancellationToken);
@@ -257,8 +257,8 @@ public sealed class EfMergeServicePartyEndToEndTests : IClassFixture<PostgresFix
         // Assert — child Party is re-parented onto the survivor.
         Party persistedChild = await assertDb.Parties
             .FirstAsync(p => p.Id == child.Id, TestContext.Current.CancellationToken);
-        persistedChild.ParentContactId.ShouldNotBeNull();
-        persistedChild.ParentContactId.Value.ShouldBe(survivor.Id);
+        persistedChild.ParentPartyId.ShouldNotBeNull();
+        persistedChild.ParentPartyId.Value.ShouldBe(survivor.Id);
     }
 
     [Fact]

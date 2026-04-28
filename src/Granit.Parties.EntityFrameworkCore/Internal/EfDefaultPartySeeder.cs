@@ -10,7 +10,7 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 /// EF Core implementation of <see cref="IDefaultPartySeeder"/>. Creates a host-scoped
 /// <see cref="Party"/> with the reserved <see cref="PartyExternalProviderNames.Tenant"/>
 /// external mapping pointing back to the tenant identifier. Idempotent — a second call
-/// returns the contact created by the first.
+/// returns the party created by the first.
 /// </summary>
 internal sealed class EfDefaultPartySeeder(
     IDefaultPartyResolver resolver,
@@ -38,13 +38,13 @@ internal sealed class EfDefaultPartySeeder(
             return existing;
         }
 
-        var contact = Party.Create(
+        var party = Party.Create(
             id: guidGenerator.Create(),
             tenantId: null,
             kind: PartyKind.Company,
             name: tenantName,
             defaultCurrency: defaultCurrency);
-        contact.AddExternalMapping(
+        party.AddExternalMapping(
             guidGenerator.Create(),
             PartyExternalProviderNames.Tenant,
             tenantId.ToString());
@@ -56,9 +56,9 @@ internal sealed class EfDefaultPartySeeder(
         using IDisposable bypass = dataFilter.Disable<IMultiTenant>();
         await using PartiesDbContext db = await contextFactory
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
-        db.Parties.Add(contact);
+        db.Parties.Add(party);
         await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
-        return contact;
+        return party;
     }
 }

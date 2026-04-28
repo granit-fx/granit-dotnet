@@ -17,23 +17,23 @@ namespace Granit.Parties.Domain;
 /// <remarks>
 /// <para><b>Dual-use design.</b> Party is <see cref="IMultiTenant"/>:</para>
 /// <list type="bullet">
-/// <item><c>TenantId == null</c> ⇒ <i>host-scoped</i> (the SaaS host's contacts: tenants-as-customers, vendors, internal staff).</item>
-/// <item><c>TenantId == &lt;tenant&gt;</c> ⇒ <i>tenant-scoped</i> (a tenant's e-commerce / CRM / procurement contacts).</item>
+/// <item><c>TenantId == null</c> ⇒ <i>host-scoped</i> (the SaaS host's parties: tenants-as-customers, vendors, internal staff).</item>
+/// <item><c>TenantId == &lt;tenant&gt;</c> ⇒ <i>tenant-scoped</i> (a tenant's e-commerce / CRM / procurement parties).</item>
 /// </list>
-/// <para><b>Multi-role.</b> A single contact can simultaneously hold any combination of
+/// <para><b>Multi-role.</b> A single party can simultaneously hold any combination of
 /// <see cref="PartyRoles"/> flags (Customer + Supplier for a reseller you both buy from
 /// and sell to, Customer + Employee for staff who consume the product, etc.). Roles are
 /// queried via <see cref="HasRole"/> and added/removed individually.</para>
-/// <para><b>Hierarchy.</b> A contact may be attached to a parent via <see cref="ParentContactId"/>
+/// <para><b>Hierarchy.</b> A party may be attached to a parent via <see cref="ParentPartyId"/>
 /// — typical use cases: a Person belongs to a Company, a Department reports to a parent
 /// Company, a subsidiary is owned by a holding. Same-tenant invariant is enforced at attach
 /// time. Cycle detection is deferred to a later iteration.</para>
-/// <para><b>User linkage.</b> An Individual contact may be linked to an authenticated user
+/// <para><b>User linkage.</b> An Individual party may be linked to an authenticated user
 /// via <see cref="UserId"/> — used by self-service portals to surface "my profile". One user
-/// may link to at most one contact (uniqueness enforced by the EF configuration).</para>
+/// may link to at most one party (uniqueness enforced by the EF configuration).</para>
 /// <para><b>Lifecycle.</b> <see cref="PartyStatus.Active"/> ↔ <see cref="PartyStatus.Suspended"/>;
 /// either may transition to terminal <see cref="PartyStatus.Archived"/>. Archived
-/// contacts are immutable and cannot be reactivated.</para>
+/// parties are immutable and cannot be reactivated.</para>
 /// <para><b>External mappings.</b> Polyglot — at most one mapping per provider, enforced
 /// defensively at the aggregate and by a unique index in the EF configuration.</para>
 /// </remarks>
@@ -62,10 +62,10 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
 
     private Party() { }
 
-    /// <summary>Creates a new contact in <see cref="PartyStatus.Active"/> status.</summary>
+    /// <summary>Creates a new party in <see cref="PartyStatus.Active"/> status.</summary>
     /// <param name="id">Unique identifier.</param>
-    /// <param name="tenantId">Owning tenant identifier; <c>null</c> for host-scoped contacts.</param>
-    /// <param name="kind">Whether the contact is an individual, a company, or a department.</param>
+    /// <param name="tenantId">Owning tenant identifier; <c>null</c> for host-scoped parties.</param>
+    /// <param name="kind">Whether the party is an individual, a company, or a department.</param>
     /// <param name="name">Display / legal name (required, max 256 chars).</param>
     /// <param name="defaultCurrency">ISO 4217 alpha-3 currency code (required, exactly 3 chars).</param>
     /// <param name="roles">Initial role set (defaults to <see cref="PartyRoles.Customer"/>).</param>
@@ -103,7 +103,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
                 nameof(internalNotes));
         }
 
-        var contact = new Party
+        var party = new Party
         {
             Id = id,
             TenantId = tenantId,
@@ -120,31 +120,31 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
             Status = PartyStatus.Active,
         };
 
-        contact.AddDomainEvent(new PartyCreatedEvent(
+        party.AddDomainEvent(new PartyCreatedEvent(
             PartyId.Create(id), tenantId, kind, name, roles));
-        contact.AddDistributedEvent(new PartyCreatedEto(
-            PartyId.Create(id), tenantId, kind, name, roles, contact.DefaultCurrency));
+        party.AddDistributedEvent(new PartyCreatedEto(
+            PartyId.Create(id), tenantId, kind, name, roles, party.DefaultCurrency));
 
-        return contact;
+        return party;
     }
 
     // ── Identity ───────────────────────────────────────────────────
 
-    /// <summary>Whether the contact is an individual, a company, or a department.</summary>
+    /// <summary>Whether the party is an individual, a company, or a department.</summary>
     public PartyKind Kind { get; private set; }
 
     /// <summary>Display / legal name.</summary>
     [SensitiveData(Level = Sensitivity.Internal)]
     public string Name { get; private set; } = string.Empty;
 
-    /// <summary>Email addresses attached to this contact (multi). Mutated via <see cref="AddEmail"/>, <see cref="RemoveEmail"/>, <see cref="UpdateEmail"/>, <see cref="SetPrimaryEmail"/>.</summary>
+    /// <summary>Email addresses attached to this party (multi). Mutated via <see cref="AddEmail"/>, <see cref="RemoveEmail"/>, <see cref="UpdateEmail"/>, <see cref="SetPrimaryEmail"/>.</summary>
     public IReadOnlyList<PartyEmail> Emails => _emails.AsReadOnly();
 
     /// <summary>Primary email if any (the entry flagged <see cref="PartyEmail.IsPrimary"/>, falling back to the first).</summary>
     public PartyEmail? PrimaryEmail =>
         _emails.FirstOrDefault(e => e.IsPrimary) ?? _emails.FirstOrDefault();
 
-    /// <summary>Phone numbers attached to this contact (multi, typed). Mutated via <see cref="AddPhone"/>, <see cref="RemovePhone"/>, <see cref="UpdatePhone"/>, <see cref="SetPrimaryPhone"/>.</summary>
+    /// <summary>Phone numbers attached to this party (multi, typed). Mutated via <see cref="AddPhone"/>, <see cref="RemovePhone"/>, <see cref="UpdatePhone"/>, <see cref="SetPrimaryPhone"/>.</summary>
     public IReadOnlyList<PartyPhone> Phones => _phones.AsReadOnly();
 
     /// <summary>Primary phone if any.</summary>
@@ -163,7 +163,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     /// <summary>ISO 4217 alpha-3 currency code (always upper-case after construction).</summary>
     public string DefaultCurrency { get; private set; } = string.Empty;
 
-    // ── Tax & legal identity (contact-level, not address-level) ───
+    // ── Tax & legal identity (party-level, not address-level) ───
 
     /// <summary>International VAT identifier (e.g. <c>"BE0123456789"</c>, <c>"FR12345678901"</c>).</summary>
     [SensitiveData(Level = Sensitivity.Internal)]
@@ -176,7 +176,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     /// <summary>
     /// Customer-specific tax classification (reverse-charge, exempt, VATIN). Defaults to
     /// <see cref="TaxStatus.Standard"/>. Read by <c>Granit.Tax</c>'s <c>ITaxRateProvider</c>
-    /// when a contact is in scope so exempt / reverse-charge customers yield a 0% rate.
+    /// when a party is in scope so exempt / reverse-charge customers yield a 0% rate.
     /// Admins opt-in via <see cref="SetTaxStatus"/>.
     /// </summary>
     public TaxStatus TaxStatus { get; private set; } = TaxStatus.Standard;
@@ -344,7 +344,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     /// <c>MergeFieldChoices.Choices</c> but with defaults filled in.</param>
     /// <param name="rewriteCounts">Counts reported by every <c>IReferenceRewriter&lt;Party&gt;</c>.</param>
     /// <param name="reparentedChildrenCount">Number of child parties whose
-    /// <c>ParentContactId</c> was redirected to this survivor.</param>
+    /// <c>ParentPartyId</c> was redirected to this survivor.</param>
     internal void RaiseMergedEvents(
         PartyId loserId,
         DateTimeOffset mergedAt,
@@ -412,10 +412,10 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         AddIfDifferent(conflicts, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
         AddIfDifferent(conflicts, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
 
-        // ParentContactId — compare the unwrapped Guid? to keep the FieldConflict payload
+        // ParentPartyId — compare the unwrapped Guid? to keep the FieldConflict payload
         // primitive and JSON-friendly (the audit cache stores it).
-        AddIfDifferent(conflicts, "ParentContactId",
-            ParentContactId?.Value, loser.ParentContactId?.Value);
+        AddIfDifferent(conflicts, "ParentPartyId",
+            ParentPartyId?.Value, loser.ParentPartyId?.Value);
 
         // TaxStatus — recommend the non-Standard side when one is Standard ; otherwise
         // SurvivorWins is the safe default and the admin can override at the endpoint.
@@ -499,8 +499,8 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         RegistrationNumber = ResolveScalar(choices, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
         AvatarBlobId = ResolveScalar(choices, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
 
-        // ParentContactId — round-trip via PartyId.
-        ParentContactId = ResolveParentContactId(choices, ParentContactId, loser.ParentContactId);
+        // ParentPartyId — round-trip via PartyId.
+        ParentPartyId = ResolveParentPartyId(choices, ParentPartyId, loser.ParentPartyId);
 
         // Roles — always union ; never overridable (losing a flag is destructive).
         Roles |= loser.Roles;
@@ -552,9 +552,9 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
             ? loser
             : survivor;
 
-    private static PartyId? ResolveParentContactId(
+    private static PartyId? ResolveParentPartyId(
         MergeFieldChoices choices, PartyId? survivor, PartyId? loser) =>
-        choices.ResolveOrDefault("ParentContactId", WinnerSide.Survivor) == WinnerSide.Loser
+        choices.ResolveOrDefault("ParentPartyId", WinnerSide.Survivor) == WinnerSide.Loser
             ? loser
             : survivor;
 
@@ -608,7 +608,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // ── Addresses ─────────────────────────────────────────────────
 
     /// <summary>
-    /// All postal addresses attached to this contact. A contact may carry several
+    /// All postal addresses attached to this party. A party may carry several
     /// (billing, shipping, other) — at most one default per <see cref="AddressKind"/>.
     /// Mutated via <see cref="AddAddress"/>, <see cref="RemoveAddress"/>,
     /// <see cref="SetDefaultAddress"/>, <see cref="UpdateAddress"/>.
@@ -628,7 +628,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // ── Avatar ────────────────────────────────────────────────────
 
     /// <summary>
-    /// Soft reference to a blob in <c>Granit.BlobStorage</c> holding the contact's
+    /// Soft reference to a blob in <c>Granit.BlobStorage</c> holding the party's
     /// avatar — photo for an Individual, logo for a Company. <c>null</c> = no avatar.
     /// Set/clear via <see cref="SetAvatar"/> / <see cref="ClearAvatar"/>.
     /// </summary>
@@ -636,21 +636,21 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
 
     // ── Hierarchy ─────────────────────────────────────────────────
 
-    /// <summary>Parent contact identifier (Person→Company, subsidiary→holding, …). Same-tenant only.</summary>
-    public PartyId? ParentContactId { get; private set; }
+    /// <summary>Parent party identifier (Person→Company, subsidiary→holding, …). Same-tenant only.</summary>
+    public PartyId? ParentPartyId { get; private set; }
 
     // ── User linkage ──────────────────────────────────────────────
 
     /// <summary>
-    /// Authenticated user identifier this contact represents. Only meaningful for
-    /// <see cref="PartyKind.Individual"/>. One user → at most one contact (enforced by
+    /// Authenticated user identifier this party represents. Only meaningful for
+    /// <see cref="PartyKind.Individual"/>. One user → at most one party (enforced by
     /// a partial unique index in the EF configuration).
     /// </summary>
     public Guid? UserId { get; private set; }
 
     // ── Roles ─────────────────────────────────────────────────────
 
-    /// <summary>Set of roles this contact plays (<see cref="PartyRoles"/> flags).</summary>
+    /// <summary>Set of roles this party plays (<see cref="PartyRoles"/> flags).</summary>
     public PartyRoles Roles { get; private set; }
 
     // ── Lifecycle ─────────────────────────────────────────────────
@@ -676,7 +676,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // Lifecycle (idempotent transitions)
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>Reactivates a suspended contact. Idempotent; throws on Archived.</summary>
+    /// <summary>Reactivates a suspended party. Idempotent; throws on Archived.</summary>
     public bool Activate()
     {
         if (Status == PartyStatus.Active) { return false; }
@@ -688,7 +688,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         return true;
     }
 
-    /// <summary>Suspends an active contact. Idempotent; throws on Archived.</summary>
+    /// <summary>Suspends an active party. Idempotent; throws on Archived.</summary>
     public bool Suspend(string? reason = null)
     {
         if (Status == PartyStatus.Suspended) { return false; }
@@ -700,7 +700,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         return true;
     }
 
-    /// <summary>Archives the contact (terminal state). Idempotent.</summary>
+    /// <summary>Archives the party (terminal state). Idempotent.</summary>
     public bool Archive()
     {
         if (Status == PartyStatus.Archived) { return false; }
@@ -712,12 +712,12 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     }
 
     /// <summary>
-    /// Pseudonymises every PII field on the contact while preserving the row for accounting
+    /// Pseudonymises every PII field on the party while preserving the row for accounting
     /// integrity (ISO 27001 / legal retention). Replaces <see cref="Name"/> with the supplied
     /// placeholder, clears all <see cref="Emails"/>, <see cref="Phones"/>, <see cref="Addresses"/>,
     /// and unlinks the user. Tax and registration identifiers and external mappings are kept
     /// because downstream finance systems still reference them. Bypasses the standard mutability
-    /// guard — GDPR Article 17 erasure must succeed even on an Archived contact.
+    /// guard — GDPR Article 17 erasure must succeed even on an Archived party.
     /// </summary>
     /// <returns><c>true</c> if any PII was actually cleared; <c>false</c> when nothing remained
     /// to pseudonymise (idempotent re-run).</returns>
@@ -750,7 +750,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Updates the contact's identity fields (name, website, locale, timezone). Emails
+    /// Updates the party's identity fields (name, website, locale, timezone). Emails
     /// and phones live in their own collections — see <see cref="AddEmail"/>,
     /// <see cref="UpdateEmail"/>, <see cref="AddPhone"/>, <see cref="UpdatePhone"/>.
     /// </summary>
@@ -780,9 +780,9 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     }
 
     /// <summary>
-    /// Returns the canonical billing-address snapshot for this contact: combines the default
+    /// Returns the canonical billing-address snapshot for this party: combines the default
     /// <see cref="AddressKind.Billing"/> entry from <see cref="Addresses"/> with the
-    /// contact-level <see cref="TaxId"/> (VAT) and falls back to <see cref="Name"/> as the
+    /// party-level <see cref="TaxId"/> (VAT) and falls back to <see cref="Name"/> as the
     /// company name when the address has none. <c>null</c> when no default billing address
     /// is registered. Used by <c>Granit.Invoicing.Domain.Invoice.Finalize</c> to capture the
     /// legal address shown on the issued document.
@@ -1094,38 +1094,38 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // Hierarchy
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>Attaches this contact to a parent contact.</summary>
-    /// <param name="parentContactId">The parent contact's identifier.</param>
-    /// <param name="parentTenantId">The parent contact's <see cref="IMultiTenant.TenantId"/> for same-scope validation.</param>
-    public void AttachToParent(PartyId parentContactId, Guid? parentTenantId)
+    /// <summary>Attaches this party to a parent party.</summary>
+    /// <param name="parentPartyId">The parent party's identifier.</param>
+    /// <param name="parentTenantId">The parent party's <see cref="IMultiTenant.TenantId"/> for same-scope validation.</param>
+    public void AttachToParent(PartyId parentPartyId, Guid? parentTenantId)
     {
         EnsureMutable();
-        ArgumentNullException.ThrowIfNull(parentContactId);
+        ArgumentNullException.ThrowIfNull(parentPartyId);
 
-        if (parentContactId.Value == Id)
+        if (parentPartyId.Value == Id)
         {
-            throw new InvalidOperationException("A contact cannot be its own parent.");
+            throw new InvalidOperationException("A party cannot be its own parent.");
         }
 
         if (parentTenantId != TenantId)
         {
             throw new InvalidOperationException(
-                "Parent contact must live in the same tenant scope (host or specific tenant).");
+                "Parent party must live in the same tenant scope (host or specific tenant).");
         }
 
-        ParentContactId = parentContactId;
+        ParentPartyId = parentPartyId;
         AddDomainEvent(new PartyAttachedToParentEvent(
-            PartyId.Create(Id), TenantId, parentContactId));
+            PartyId.Create(Id), TenantId, parentPartyId));
     }
 
-    /// <summary>Detaches this contact from its parent. Idempotent.</summary>
+    /// <summary>Detaches this party from its parent. Idempotent.</summary>
     public bool DetachFromParent()
     {
         EnsureMutable();
-        if (ParentContactId is null) { return false; }
+        if (ParentPartyId is null) { return false; }
 
-        PartyId former = ParentContactId;
-        ParentContactId = null;
+        PartyId former = ParentPartyId;
+        ParentPartyId = null;
         AddDomainEvent(new PartyDetachedFromParentEvent(
             PartyId.Create(Id), TenantId, former));
         return true;
@@ -1136,8 +1136,8 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // ─────────────────────────────────────────────────────────────────
 
     /// <summary>
-    /// Links this contact to an authenticated user. Only valid for
-    /// <see cref="PartyKind.Individual"/> contacts.
+    /// Links this party to an authenticated user. Only valid for
+    /// <see cref="PartyKind.Individual"/> parties.
     /// </summary>
     public void LinkToUser(Guid userId)
     {
@@ -1149,7 +1149,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         if (Kind != PartyKind.Individual)
         {
             throw new InvalidOperationException(
-                $"Only Individual contacts can be linked to a user (this contact is {Kind}).");
+                $"Only Individual parties can be linked to a user (this party is {Kind}).");
         }
 
         UserId = userId;
@@ -1231,7 +1231,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // External mappings
     // ─────────────────────────────────────────────────────────────────
 
-    /// <summary>Registers an external provider identifier against this contact.</summary>
+    /// <summary>Registers an external provider identifier against this party.</summary>
     /// <exception cref="InvalidOperationException">A mapping for <paramref name="providerName"/> already exists.</exception>
     public void AddExternalMapping(Guid mappingId, string providerName, string externalId)
     {
@@ -1286,7 +1286,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         if (Status == PartyStatus.Archived)
         {
             throw new InvalidOperationException(
-                $"Party '{Id}' is Archived. Archived contacts are immutable.");
+                $"Party '{Id}' is Archived. Archived parties are immutable.");
         }
     }
 

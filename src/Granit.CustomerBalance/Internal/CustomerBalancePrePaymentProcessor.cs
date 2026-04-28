@@ -31,7 +31,7 @@ internal sealed partial class CustomerBalancePrePaymentProcessor(
             .StartActivity(CustomerBalanceActivitySource.DebitBalance);
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(PartyId.Create(eto.PartyId), eto.Currency, cancellationToken)
+            .GetByPartyAndCurrencyAsync(PartyId.Create(eto.PartyId), eto.Currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null || account.Balance <= 0)

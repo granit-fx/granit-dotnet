@@ -16,12 +16,12 @@ internal sealed class ConfigTaxRateProvider(
     public Task<TaxRateEntry?> GetRateAsync(
         string countryCode,
         DateTimeOffset asOf,
-        PartyId? contactId = null,
+        PartyId? partyId = null,
         CancellationToken cancellationToken = default)
     {
         // PartyId is honoured by the upstream EfTaxRateProvider; this provider
         // returns the country default only.
-        _ = contactId;
+        _ = partyId;
 
         string normalized = countryCode.ToUpperInvariant();
 
