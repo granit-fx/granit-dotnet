@@ -1,3 +1,5 @@
+using Granit.Analytics.Dashboards;
+using Granit.Analytics.Dashboards.Internal;
 using Granit.Analytics.Diagnostics;
 using Granit.Analytics.Metrics;
 using Granit.Diagnostics;
@@ -27,6 +29,7 @@ public static class AnalyticsServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<AnalyticsMetrics>();
+        services.TryAddSingleton<IDashboardDefinitionRegistry, DashboardDefinitionRegistry>();
         GranitActivitySourceRegistry.Register(AnalyticsActivitySource.Name);
 
         return services;
@@ -51,6 +54,25 @@ public static class AnalyticsServiceCollectionExtensions
         services.AddSingleton<MetricDefinition<TEntity, TValue>>(_ => new TDefinition());
         services.AddSingleton<IMetricDefinitionDescriptor>(sp =>
             sp.GetRequiredService<MetricDefinition<TEntity, TValue>>());
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers a dashboard definition. Each definition is exposed as a singleton
+    /// <see cref="IDashboardDefinitionDescriptor"/> picked up by the
+    /// <see cref="IDashboardDefinitionRegistry"/> at composition time.
+    /// </summary>
+    /// <typeparam name="TDefinition">The dashboard definition implementation.</typeparam>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection for chaining.</returns>
+    public static IServiceCollection AddDashboardDefinition<TDefinition>(this IServiceCollection services)
+        where TDefinition : DashboardDefinition, new()
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services.AddSingleton<TDefinition>(_ => new TDefinition());
+        services.AddSingleton<IDashboardDefinitionDescriptor>(sp => sp.GetRequiredService<TDefinition>());
 
         return services;
     }

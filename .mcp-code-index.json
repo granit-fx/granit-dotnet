@@ -4048,6 +4048,181 @@
       ]
     },
     {
+      "name": "ChartType",
+      "fqn": "Granit.Analytics.Dashboards.ChartType",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 133,
+      "members": []
+    },
+    {
+      "name": "ChartWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.ChartWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 59,
+      "members": []
+    },
+    {
+      "name": "DashboardCategory",
+      "fqn": "Granit.Analytics.Dashboards.DashboardCategory",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/DashboardCategory.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "DashboardDefinition",
+      "fqn": "Granit.Analytics.Dashboards.DashboardDefinition",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/DashboardDefinition.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Version",
+          "kind": "property",
+          "signature": "string Version",
+          "returnType": "string"
+        },
+        {
+          "name": "Layout",
+          "kind": "property",
+          "signature": "DashboardLayout Layout",
+          "returnType": "DashboardLayout"
+        }
+      ]
+    },
+    {
+      "name": "DashboardLayout",
+      "fqn": "Granit.Analytics.Dashboards.DashboardLayout",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/DashboardLayout.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(12, 80)",
+          "returnType": "DashboardLayout Default =>"
+        }
+      ]
+    },
+    {
+      "name": "IDashboardDefinitionDescriptor",
+      "fqn": "Granit.Analytics.Dashboards.IDashboardDefinitionDescriptor",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/IDashboardDefinitionDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IDashboardDefinitionRegistry",
+      "fqn": "Granit.Analytics.Dashboards.IDashboardDefinitionRegistry",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/IDashboardDefinitionRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetAll",
+          "kind": "method",
+          "signature": "GetAll()",
+          "returnType": "IReadOnlyList<IDashboardDefinitionDescriptor>"
+        },
+        {
+          "name": "Find",
+          "kind": "method",
+          "signature": "Find(string name)",
+          "returnType": "IDashboardDefinitionDescriptor?"
+        }
+      ]
+    },
+    {
+      "name": "KpiWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.KpiWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "MarkdownWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.MarkdownWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 125,
+      "members": []
+    },
+    {
+      "name": "PivotWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.PivotWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 104,
+      "members": []
+    },
+    {
+      "name": "TableWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.TableWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 82,
+      "members": []
+    },
+    {
+      "name": "WidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.WidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetDefinition.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "WidgetSize",
+      "fqn": "Granit.Analytics.Dashboards.WidgetSize",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/WidgetSize.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(3, 1)",
+          "returnType": "WidgetSize SmallKpi =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(6, 2)",
+          "returnType": "WidgetSize StandardChart =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(12, 1)",
+          "returnType": "WidgetSize FullWidthRow =>"
+        }
+      ]
+    },
+    {
       "name": "AnalyticsMetrics",
       "fqn": "Granit.Analytics.Diagnostics.AnalyticsMetrics",
       "kind": "class",
@@ -4255,7 +4430,7 @@
       "kind": "class",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Extensions/AnalyticsServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAnalytics",
