@@ -5,6 +5,7 @@ using Granit.Mergeable;
 using Granit.Mergeable.Domain;
 using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Mergeable.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -35,7 +36,7 @@ public sealed class EfMergeServiceTests
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly FakeStringEncryption _encryption = new();
     private readonly IMergeableSecretProvider _secretProvider = new FakeSecretProvider();
-    private readonly IOptions<MergeableOptions> _options = Options.Create(new MergeableOptions());
+    private readonly IOptions<MergeableOptions> _options = Microsoft.Extensions.Options.Options.Create(new MergeableOptions());
     private int _idCounter;
 
     public EfMergeServiceTests()

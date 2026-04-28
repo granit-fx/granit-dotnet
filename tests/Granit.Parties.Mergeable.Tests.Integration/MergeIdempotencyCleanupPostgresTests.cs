@@ -2,6 +2,7 @@ using Granit.Mergeable.BackgroundJobs.Services;
 using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Domain;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Abstractions;

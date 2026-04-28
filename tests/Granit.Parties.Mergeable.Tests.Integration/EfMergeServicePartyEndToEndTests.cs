@@ -5,6 +5,7 @@ using Granit.Guids;
 using Granit.Mergeable;
 using Granit.Mergeable.EntityFrameworkCore;
 using Granit.Mergeable.EntityFrameworkCore.Internal;
+using Granit.Mergeable.EntityFrameworkCore.Options;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.EntityFrameworkCore;
