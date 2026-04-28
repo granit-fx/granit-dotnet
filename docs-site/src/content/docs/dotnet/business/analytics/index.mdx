@@ -1,0 +1,126 @@
+---
+title: "Analytics — Inline KPIs, Dashboards & BI Connectivity"
+description: "Granit.Analytics ships declarative MetricDefinition primitives, composable dashboards, and an OData v4 surface for Power BI / Excel / Tableau — all multi-tenant safe and locked to the same filter pipeline as the grid endpoints."
+sidebar:
+  label: Overview
+  order: 0
+---
+
+import { Aside, FileTree } from "@astrojs/starlight/components";
+
+`Granit.Analytics` brings first-class Business Intelligence to the framework — from a
+single counter above an admin grid, to fully composable Odoo-style dashboards, to native
+Power BI / Excel / Tableau connectivity — without compromising multi-tenancy isolation,
+GDPR, or ISO 27001 audit guarantees.
+
+## Why a built-in BI layer?
+
+Every Granit-based application that needs analytics either rolls its own (hand-coded
+counters, ad-hoc SQL, no caching, no period comparison, no localization) or grants
+read-only SQL access to BI tools — a multi-tenant liability waiting to happen the day a
+custom view forgets a `WHERE tenant_id = …` clause. `Granit.Analytics` closes both gaps:
+KPIs are declared once and shared across inline displays, dashboards and external BI
+tools through a single, security-reviewed pipeline.
+
+## The three layers
+
+The framework's BI story is structured in three additive layers, each useful on its own:
+
+<FileTree>
+- Layer 1 — Inline metrics  KPIs above a list, single-value tiles
+  - Granit.Analytics  Declarative MetricDefinition base classes
+  - Granit.Analytics.EntityFrameworkCore  EF Core executor with empty-set semantics
+  - Granit.Analytics.Endpoints  POST /metrics/:name surface with FusionCache
+- Layer 2 — Composable dashboards  Drag-drop layouts, multiple widget kinds
+  - Granit.Analytics  DashboardDefinition + widget contracts (planned)
+  - Granit.Analytics.EntityFrameworkCore  Persisted Dashboard aggregate (planned)
+- Layer 3 — OData v4 connector  Power BI / Excel / Tableau native consumption
+  - Granit.Http.ODataExposure  Bridge QueryDefinition → OData EntitySet (planned)
+</FileTree>
+
+## Package structure (Layer 1, shipped)
+
+<FileTree>
+- Granit.Analytics  Abstractions — no EF Core dependency
+  - Metrics/MetricDefinition.cs  Aggregation declaration + period selector
+  - Metrics/MetricValueKind.cs  Count / Number / Currency / Percentage / Duration / Date
+  - Metrics/RefreshHint.cs  Static / Dynamic / Realtime
+  - Widgets/IWidgetSource.cs  Pull-and-future-push widget contract
+  - Widgets/WidgetPayload.cs  Snapshot envelope with sequence + emitted-at metadata
+- Granit.Analytics.EntityFrameworkCore  Concrete EF Core executor
+  - IMetricExecutor.cs  Public façade — typed per (TEntity, TValue)
+  - Internal/MetricExecutor.cs  Typed dispatch per TValue (int / long / decimal / double)
+- Granit.Analytics.Endpoints  Minimal API surface
+  - Endpoints/MetricEndpoints.cs  POST /metrics/:name
+  - Internal/MetricEndpointService.cs  FusionCache + period comparison + delta
+  - Internal/PeriodResolver.cs  today / last_30d / mtd / qtd / ytd / previous_period
+  - Permissions/AnalyticsPermissions.cs  Analytics.Metrics.Read
+</FileTree>
+
+## What you ship to declare a metric
+
+A metric is a one-class declaration in your module's `Metrics/` folder, registered once in
+`ConfigureServices`. The framework takes care of the rest — caching, multi-tenancy, period
+filtering, comparison-window math, localization, and the HTTP surface.
+
+```csharp
+// src/Granit.Invoicing/Metrics/UnpaidInvoiceCountMetricDefinition.cs
+public sealed class UnpaidInvoiceCountMetricDefinition : MetricDefinition<Invoice, int>
+{
+    public override string Name => "Granit.Invoicing.UnpaidInvoiceCountMetric";
+    public override MetricValueKind ValueKind => MetricValueKind.Count;
+    public override AggregateFunction Aggregation => AggregateFunction.Count;
+    public override Expression<Func<Invoice, int?>>? Selector => null;
+    public override Expression<Func<Invoice, bool>>? BaseFilter
+        => i => i.Status == InvoiceStatus.Open;
+    public override Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector
+        => i => i.IssuedAt!.Value;
+    public override bool IsHigherBetter => false;  // fewer unpaid invoices = better
+}
+```
+
+Naming, casing, and structural rules are codified in the
+[Conventions](/dotnet/business/analytics/conventions/) page — they're worth reading
+before adding a metric, because the same names land in:
+
+- Localization keys (`Metric:{Name}` across 18 cultures)
+- HTTP route parameters (`POST /api/granit/analytics/metrics/{Name}`)
+- Dashboard widget references (Layer 2)
+- OData EntitySet routing (Layer 3)
+- Power BI / Excel client measure aliases
+
+<Aside type="tip" title="Power BI alignment">
+  Granit metric names follow the same Subject + Aggregation pattern as DAX measures in
+  Microsoft Power BI / Analysis Services. An analyst migrating their Power BI model on
+  top of Granit's OData feed (Layer 3) finds familiar names and semantics.
+</Aside>
+
+## Empty-set semantics — locked
+
+The contract every analytics consumer can rely on:
+
+| Aggregation | Empty set | Single row | Multi row |
+| ----------- | --------- | ---------- | --------- |
+| `Count` | `0` | `1` | rows count |
+| `Sum` | `0` (mathematical sum-of-empty) | the row's value | sum of values |
+| `Avg` / `Min` / `Max` | **`null`** ("no data") | the row's value | computed |
+
+Without this contract, a tenant's onboarding day — first dashboard view, zero rows —
+would either mislead with "Average invoice amount: 0 €" (because EF Core could silently
+coalesce) or throw `InvalidOperationException`. Locked by integration tests against both
+SQLite and PostgreSQL.
+
+## Future-proofing for real-time
+
+Layer 1 is intentionally pull-based (FusionCache TTL 60–120 s). Real-time push (WebSocket
+delta updates, ThingsBoard-style for IoT) is deferred to the
+[`granit-iot`](https://github.com/granit-fx/granit-iot) repo, where the ingestion
+pipeline (MQTT bridge, AWS IoT, TimescaleDB) already lives. The wire-format envelope
+`{ Snapshot, Sequence, EmittedAt, RefreshHint }` and the `IWidgetSource<T>` contract
+(with stub `SubscribeAsync`) are locked v1 so push transport can be added later without
+breaking pull consumers.
+
+## Read next
+
+- [Conventions](/dotnet/business/analytics/conventions/) — Naming rules, mandatory
+  metric structure, localization keys, project layout. Read this first.

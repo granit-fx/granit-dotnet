@@ -492,6 +492,23 @@ include a text-rendered channel (Email, SMS, WhatsApp, Web Push…), an `Embedde
 named `Templates.{Name}.html` is present in the same assembly. Cross-link this section
 when the test lands.
 
+### Analytics (`*MetricDefinition`) — naming, placement, period tokens
+
+Full convention lives at
+[`docs-site/.../analytics/conventions.mdx`](docs-site/src/content/docs/dotnet/business/analytics/conventions.mdx)
+(rendered as the *Conventions* page under *Business Features → Analytics* on the docs
+site). Highlights — read the full page before adding a metric:
+
+- **Class file**: `src/Granit.{Module}/Metrics/{MetricName}MetricDefinition.cs`
+- **`Name` property**: `Granit.{Module}.{MetricName}Metric` (PascalCase, dot-separated)
+- **Formula**: `{Subset?}{Entity}{Field?}{Aggregation}` — aggregation **always last**
+  (`InvoicePaymentDelayAverageMetric`, NOT `AverageInvoicePaymentDelayMetric`); groups
+  metrics alphabetically by entity in IDE autocomplete and admin UI.
+- **Period tokens** in HTTP requests reuse DAX acronyms — `MTD`, `QTD`, `YTD`, `MAT`,
+  `PP`, `PY`, `PYC`, … — so analysts moving from Power BI find a familiar vocabulary.
+- **Localization**: `Metric:{Name}` keys mandatory in all 18 cultures of the owning
+  module.
+
 ### Declarative definitions (`*QueryDefinition`, `*ExportDefinition`) — placement (STRICT)
 
 Two declarative primitives describe how an entity is consulted (grid filter/sort) and

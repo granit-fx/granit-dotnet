@@ -1,0 +1,234 @@
+---
+title: "Analytics conventions — naming, structure, localization"
+description: "Mandatory naming and structural conventions for Granit.Analytics MetricDefinition, dashboards, and period tokens. Aligned with DAX (Microsoft Power BI / Analysis Services) so analysts and their tooling reuse the same vocabulary."
+sidebar:
+  label: Conventions
+  order: 10
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+These conventions are not just style preferences — they're load-bearing for the whole
+Granit BI stack. The same metric name appears in localization JSON keys, HTTP route
+parameters, dashboard widget references, OData EntitySet aliases, and Power BI client
+measures. Drift here breaks the link between layers.
+
+<Aside type="tip" title="Inspiration">
+  Granit analytics naming follows the same Subject + Aggregation pattern as **DAX
+  measures** in Microsoft Power BI / Analysis Services. Time-period tokens reuse the
+  canonical DAX acronyms (`YTD`, `MTD`, `QTD`, `MAT`, `PY`, `PYC`, `PP`…) documented at
+  [daxpatterns.com — Standard Time-Related Calculations](https://www.daxpatterns.com/standard-time-related-calculations/).
+  The intent is alignment, not imitation: an analyst arriving with a Power BI model
+  finds a familiar vocabulary on top of Granit's OData feed.
+</Aside>
+
+## `MetricDefinition` — naming
+
+### Format
+
+| Element | Format | Example |
+| ------- | ------ | ------- |
+| File path | `src/Granit.{Module}/Metrics/{MetricName}MetricDefinition.cs` | `src/Granit.Invoicing/Metrics/UnpaidInvoiceCountMetricDefinition.cs` |
+| Class name | `{MetricName}MetricDefinition` | `UnpaidInvoiceCountMetricDefinition` |
+| `Name` property | `Granit.{Module}.{MetricName}Metric` | `"Granit.Invoicing.UnpaidInvoiceCountMetric"` |
+| Localization key | `Metric:{Name}` | `Metric:Granit.Invoicing.UnpaidInvoiceCountMetric` |
+
+The class file uses the `MetricDefinition` suffix (parallel to `QueryDefinition` /
+`ExportDefinition`); the `Name` property drops `Definition` but keeps `Metric` so the
+three primitives can be listed side-by-side in admin tools without ambiguity.
+
+### Formula
+
+`{Subset?}{Entity}{Field?}{Aggregation}` — PascalCase, no spaces, no abbreviations,
+**aggregation always at the end**.
+
+| Slot | Role | Examples |
+| ---- | ---- | -------- |
+| **Subset** (optional) | Adjective scoping the data | `Unpaid`, `Active`, `Recent`, `Orphan`, `Pending`, `Failed`, `Distinct` |
+| **Entity** | Singular noun | `Invoice`, `Subscription`, `Blob`, `Webhook`, `Job`, `Customer` |
+| **Field** (optional) | Property being aggregated, when the entity has multiple aggregable dimensions | `Amount`, `PaymentDelay`, `Duration`, `LineCount` |
+| **Aggregation** | Suffix matching the function — **always last** | `Count`, `Total`, `Average`, `Min`, `Max`, `Rate`, `Ratio` |
+
+#### Why aggregation as suffix (not prefix)
+
+Strict suffix-position groups metrics alphabetically by domain in IDE autocomplete, in
+the admin UI metric picker, and in the OpenAPI schema. Typing
+`Granit.Invoicing.Invoice` in any of these surfaces brings up `InvoiceCount`,
+`InvoiceTotal`, `InvoiceAmountAverage`, `InvoiceAmountMin`, `InvoiceAmountMax` clustered
+together by entity — far more discoverable than scattering them across `Average*`,
+`Min*`, `Max*` first letters.
+
+DAX users will recognise this as the same intuition behind `[Sales Amount Average]`
+(prefer) over `[Average Sales Amount]` — Microsoft's own measure-naming guidance for
+Analysis Services follows the same logic.
+
+### Aggregation suffix decision table
+
+| Suffix | Meaning | Maps to | Default `ValueKind` |
+| ------ | ------- | ------- | ------------------- |
+| `Count` | Number of rows matching the subset | `AggregateFunction.Count` | `Count` |
+| `Total` | Sum over a numeric field | `AggregateFunction.Sum` | `Currency` (override to `Number` for non-monetary sums) |
+| `Average` | Arithmetic mean over the named field | `AggregateFunction.Avg` | depends on the field |
+| `Min` / `Max` | Lowest / highest value of the named field | `AggregateFunction.Min` / `Max` | depends on the field |
+| `Rate` | Events per time unit | `Sum` divided by interval | `Number` (rate per second / hour…) |
+| `Ratio` | Part / total fraction | Composite (numerator / denominator) | `Percentage` |
+
+`Rate` vs `Ratio` follows DAX: a *rate* is "events per unit of time" (e.g. crash rate
+per day), a *ratio* is "part over whole" (e.g. win ratio = wins / total games). Both
+typically render as percentages, but the underlying math differs.
+
+### `IsHigherBetter` heuristic
+
+| Subset | `IsHigherBetter` |
+| ------ | ---------------- |
+| `Failed*`, `Unpaid*`, `Orphan*`, `Pending*`, `Stale*`, `Overdue*` | `false` (less is better) |
+| `Active*`, `Successful*`, `Completed*`, `Approved*`, `Distinct*Count`, `*Revenue`, `*Total` (revenue) | `true` (more is better) |
+
+Drives the green/red color of the delta arrow in the UI. Override via the property
+when the heuristic doesn't match (e.g. `*Total` for cost amounts is `false`).
+
+### Sub-modules
+
+Modules with internal sub-domains (Invoicing = Invoices + CreditNotes, Identity = Local
++ Federated, BackgroundJobs = Recurring + One-shot) use a fourth segment:
+
+```text
+Granit.Invoicing.CreditNotes.OutstandingCountMetric
+Granit.Identity.Local.LockedAccountCountMetric
+Granit.BackgroundJobs.Recurring.FailureRateMetric
+```
+
+The sub-module segment is optional — only use it when the same `Module + Entity`
+pair would otherwise collide between sub-domains.
+
+## Examples — projected on the framework's modules
+
+Notice how every entity's metrics cluster alphabetically: all `Invoice*` together, all
+`PaymentTransaction*` together. The aggregation is always the final word.
+
+| Module | Class | `Name` |
+| ------ | ----- | ------ |
+| Invoicing | `UnpaidInvoiceCountMetricDefinition` | `Granit.Invoicing.UnpaidInvoiceCountMetric` |
+| Invoicing | `UnpaidInvoiceTotalMetricDefinition` | `Granit.Invoicing.UnpaidInvoiceTotalMetric` |
+| Invoicing | `InvoicePaymentDelayAverageMetricDefinition` | `Granit.Invoicing.InvoicePaymentDelayAverageMetric` |
+| Invoicing | `InvoicePaymentDelayMaxMetricDefinition` | `Granit.Invoicing.InvoicePaymentDelayMaxMetric` |
+| Subscriptions | `MonthlyRecurringRevenueMetricDefinition` | `Granit.Subscriptions.MonthlyRecurringRevenueMetric` (canonical SaaS term — see exception below) |
+| Subscriptions | `SubscriptionChurnRateMetricDefinition` | `Granit.Subscriptions.SubscriptionChurnRateMetric` |
+| Payments | `PaymentTransactionCountMetricDefinition` | `Granit.Payments.PaymentTransactionCountMetric` |
+| Payments | `PaymentTransactionSuccessRateMetricDefinition` | `Granit.Payments.PaymentTransactionSuccessRateMetric` |
+| Privacy | `PendingErasureRequestCountMetricDefinition` | `Granit.Privacy.PendingErasureRequestCountMetric` |
+| BackgroundJobs | `FailedJobCountMetricDefinition` | `Granit.BackgroundJobs.FailedJobCountMetric` |
+| BlobStorage | `OrphanBlobCountMetricDefinition` | `Granit.BlobStorage.OrphanBlobCountMetric` |
+| Webhooks | `WebhookDeliveryFailureRateMetricDefinition` | `Granit.Webhooks.WebhookDeliveryFailureRateMetric` |
+
+### Time references in the name — when to inline, when not to
+
+The framework's principle: **time periods are query parameters, not part of the
+identity**. One `Granit.Subscriptions.RecurringRevenueMetric` answers MRR with
+`?period=mtd`, ARR with `?period=ytd&aggregation=annualize`, last-quarter
+revenue with `?period=pqc`, and so on. Adding `Monthly` / `Yearly` / `Daily` to the
+name multiplies definitions for no analytical gain.
+
+The single exception: when the time unit is part of a canonical industry name and
+the metric **always normalises to it** regardless of the query period. SaaS
+"Monthly Recurring Revenue" and "Annual Recurring Revenue" are the textbook
+examples — MRR is always the monthly equivalent of the recurring book of business
+(yearly subscription / 12, etc.) at any point in time. In those cases keep the
+domain term *and* document why in the class XML doc:
+
+```csharp
+/// <summary>
+/// Monthly Recurring Revenue (MRR) — SaaS canonical metric: the monthly-equivalent
+/// recurring book of business at the queried instant. The "Monthly" is part of the
+/// metric's identity, not a time period (see Granit conventions).
+/// </summary>
+public sealed class MonthlyRecurringRevenueMetricDefinition : MetricDefinition<Subscription, decimal> { … }
+```
+
+When in doubt, drop the time word from the name.
+
+## Period tokens — DAX-aligned
+
+The HTTP endpoint accepts named tokens for both the main `period` and the optional
+`compareTo` window. Tokens are case-insensitive and resolved server-side via
+`IClock` (never `DateTimeOffset.UtcNow`), so the same request is reproducible across
+machines and time zones.
+
+### Aggregation windows (`period`)
+
+DAX users will recognise the upper-cased acronyms — they're the same calendar
+semantics:
+
+| Token | DAX acronym | Window |
+| ----- | ----------- | ------ |
+| `today` | — | `[start of today, end of today)` |
+| `yesterday` | — | `[start of yesterday, start of today)` |
+| `last_60s` / `last_5m` | — | rolling seconds / minutes (real-time-friendly) |
+| `last_7d` | — | `[7 days ago at midnight, end of today)` |
+| `last_30d` | — | `[30 days ago at midnight, end of today)` |
+| `mtd` | **MTD** (Month-to-date) | `[1st of current month, end of today)` |
+| `qtd` | **QTD** (Quarter-to-date) | `[1st of current quarter, end of today)` |
+| `ytd` | **YTD** (Year-to-date) | `[1st of January current year, end of today)` |
+| `mat` | **MAT** (Moving Annual Total) | `[365 days ago, end of today)` — rolling 12 months. Planned. |
+
+### Comparison windows (`compareTo`)
+
+Same DAX acronyms; the framework computes the time shift:
+
+| Token | DAX acronym | Resolves to |
+| ----- | ----------- | ----------- |
+| `previous_period` | **PP** (Previous Period) | Equal-length window immediately preceding the main one — works for any main period |
+| `pm` | **PM** (Previous Month — rolling) | Same offset within the previous month. Planned. |
+| `pq` | **PQ** (Previous Quarter — rolling) | Same offset within the previous quarter. Planned. |
+| `py` | **PY** (Previous Year — rolling) | Same offset within the previous year. Planned. |
+| `pmc` | **PMC** (Previous Month Complete) | Full previous calendar month. Planned. |
+| `pqc` | **PQC** (Previous Quarter Complete) | Full previous calendar quarter. Planned. |
+| `pyc` | **PYC** (Previous Year Complete) | Full previous calendar year. Planned. |
+
+<Aside type="note" title="Why tokens, not bake-into-the-name">
+  In Power BI / DAX, time-shifted measures are physical entities — `[Sales]` and
+  `[Sales YTD]` are two different measures. Granit takes the orthogonal route: one
+  metric, multiple period evaluations at request time. So you have ONE
+  `Granit.Sales.SalesMetric`, called with `?period=ytd&compareTo=py` for the YTD vs
+  previous-year-rolling comparison, with `?period=mat&compareTo=pp` for MAT vs the
+  previous 12 months, and so on. Fewer definitions to maintain, and the comparison
+  math is centralized in `DeltaCalculator`.
+</Aside>
+
+## Localization — mandatory
+
+Every `MetricDefinition.Name` MUST have a `Metric:{Name}` key in **all 18 base /
+regional cultures** of the owning module's `Localization/` folder. This includes:
+
+- 15 base cultures: `en, fr, nl, de, es, it, pt, zh, ja, pl, tr, ko, sv, cs, hi`
+- 3 regional variants: `fr-CA, en-GB, pt-BR` (only differing keys; fall through to
+  base culture for unchanged strings)
+
+Architecture test (story #1397, planned) will fail the build when a metric ships
+without complete coverage.
+
+## Permissions
+
+Metric endpoints inherit the underlying entity's read permission. A metric over
+`Invoice` is gated by `Invoicing.Invoices.Read` — never a metric-specific permission.
+Rationale: the metric exposes an aggregate of data the user could already see via the
+list endpoint; granting a separate metric permission would be a confusing layer
+without security value.
+
+## Anti-patterns
+
+- **Abbreviations**: `UnpaidInvCnt` ❌. DAX rule applies — verbose names beat clever
+  ones, especially when the same identifier surfaces in URLs and JSON keys.
+- **Mixed case in module segment**: `Granit.invoicing.UnpaidInvoiceCountMetric` ❌. The
+  module segment must match the C# module name exactly.
+- **Time intelligence baked into the name**: `Granit.Sales.SalesYTDMetric` ❌. Use the
+  `period` parameter — see the `note` callout above.
+- **Hyphens / underscores in `Name`**: `granit-invoicing-unpaid-invoice-count` ❌.
+  PascalCase + dot-separated only. Background-jobs are the exception (`-` separator)
+  because they're a different namespace category.
+- **Redundant suffixes**: `Granit.Invoicing.UnpaidInvoiceCountMetricDefinition` ❌
+  (the `Definition` suffix lives on the C# class only, not the wire identifier).
+
+## Read next
+
+- [Overview](/dotnet/business/analytics/) — Three-layer BI stack, package structure.
