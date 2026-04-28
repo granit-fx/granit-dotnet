@@ -67,4 +67,9 @@ public interface IDashboardDefinitionDescriptor
     /// beyond what individual widgets carry.
     /// </summary>
     IReadOnlyList<DashboardFilter>? Filters { get; }
+
+    /// <summary>
+    /// Named entity bindings — see <see cref="DashboardDefinition.Aliases"/>.
+    /// </summary>
+    IReadOnlyList<EntityAlias>? Aliases { get; }
 }

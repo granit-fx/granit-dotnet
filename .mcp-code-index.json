@@ -12619,6 +12619,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<DashboardFilter>? Filters",
           "returnType": "IReadOnlyList<DashboardFilter>?"
+        },
+        {
+          "name": "Aliases",
+          "kind": "property",
+          "signature": "IReadOnlyList<EntityAlias>? Aliases",
+          "returnType": "IReadOnlyList<EntityAlias>?"
         }
       ]
     },
@@ -12929,6 +12935,24 @@
       "members": []
     },
     {
+      "name": "EntityAlias",
+      "fqn": "Granit.Dashboards.EntityAlias",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAlias.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "EntityAliasResolver",
+      "fqn": "Granit.Dashboards.EntityAliasResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Dashboards.EntityFrameworkCore.Extensions.DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -13060,6 +13084,24 @@
       "members": []
     },
     {
+      "name": "RouteParamResolver",
+      "fqn": "Granit.Dashboards.RouteParamResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "StaticEntityResolver",
+      "fqn": "Granit.Dashboards.StaticEntityResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 66,
+      "members": []
+    },
+    {
       "name": "IVariableSubstituter",
       "fqn": "Granit.Dashboards.Templating.IVariableSubstituter",
       "kind": "interface",
@@ -13076,12 +13118,39 @@
       ]
     },
     {
+      "name": "TenantContextResolver",
+      "fqn": "Granit.Dashboards.TenantContextResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 48,
+      "members": []
+    },
+    {
       "name": "TimeWindowKind",
       "fqn": "Granit.Dashboards.TimeWindowKind",
       "kind": "enum",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/DashboardTimeWindow.cs",
       "line": 56,
+      "members": []
+    },
+    {
+      "name": "UserSelectionResolver",
+      "fqn": "Granit.Dashboards.UserSelectionResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 57,
+      "members": []
+    },
+    {
+      "name": "ViewEntityResolver",
+      "fqn": "Granit.Dashboards.ViewEntityResolver",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
+      "line": 42,
       "members": []
     },
     {

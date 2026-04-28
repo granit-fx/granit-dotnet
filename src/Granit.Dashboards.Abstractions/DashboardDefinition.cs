@@ -102,4 +102,13 @@ public abstract class DashboardDefinition : IDashboardDefinitionDescriptor
     /// dashboard has no filters beyond what individual widgets carry.
     /// </summary>
     public virtual IReadOnlyList<DashboardFilter>? Filters => null;
+
+    /// <summary>
+    /// Named entity bindings declared by this dashboard. Each alias is resolved at
+    /// render time by its <see cref="EntityAliasResolver"/> (route param, view entity,
+    /// tenant context, user selection, static). Data sources (story P2.2) reference
+    /// aliases by name to scope their queries. <c>null</c> = the dashboard does not
+    /// take entity parameters.
+    /// </summary>
+    public virtual IReadOnlyList<EntityAlias>? Aliases => null;
 }
