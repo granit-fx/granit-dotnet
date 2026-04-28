@@ -13014,6 +13014,15 @@
       "members": []
     },
     {
+      "name": "DashboardMetadataUpdateRequest",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardMetadataUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardMetadataUpdateRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "DashboardSummaryResponse",
       "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardSummaryResponse",
       "kind": "record",
