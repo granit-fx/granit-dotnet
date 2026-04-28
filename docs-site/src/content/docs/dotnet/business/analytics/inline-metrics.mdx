@@ -1,0 +1,242 @@
+---
+title: "Inline metrics — counters above admin grids"
+description: "Ship a Granit.Analytics MetricDefinition end-to-end: declare, register, localize, consume from a React MetricCard. Full Invoicing reference walk-through with caching, period comparison, and empty-set semantics."
+sidebar:
+  label: Inline metrics
+  order: 20
+---
+
+import { Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Inline metrics are the KPI tiles you place above an admin grid — "12 unpaid
+invoices · €42 350" with a green or red delta arrow next to a 30-day comparison.
+They reuse the same filter pipeline as the grid endpoint, so the count above
+exactly matches the rows below for any user-applied filter — no drift, no
+duplicated SQL.
+
+This page walks through shipping one end-to-end, using the
+`Granit.Invoicing.UnpaidInvoiceCountMetric` reference implementation that's
+already in the framework (story #1377).
+
+## Anatomy of a metric
+
+A metric is a four-property declaration: what you aggregate, how, on which
+subset, over which time field. Everything else — caching, multi-tenant
+isolation, soft-delete, period comparison, delta computation, localization —
+is the framework's job.
+
+```csharp
+// src/Granit.Invoicing/Metrics/UnpaidInvoiceCountMetricDefinition.cs
+public sealed class UnpaidInvoiceCountMetricDefinition : MetricDefinition<Invoice, int>
+{
+    public override string Name => "Granit.Invoicing.UnpaidInvoiceCountMetric";
+    public override MetricValueKind ValueKind => MetricValueKind.Count;
+    public override AggregateFunction Aggregation => AggregateFunction.Count;
+    public override Expression<Func<Invoice, int?>>? Selector => null;       // Count needs no selector
+    public override Expression<Func<Invoice, bool>>? BaseFilter
+        => i => i.Status == InvoiceStatus.Open;                              // intrinsic to the metric
+    public override Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector
+        => i => i.IssuedAt!.Value;                                           // time field for ?period=
+    public override bool IsHigherBetter => false;                            // fewer unpaid = better
+}
+```
+
+Naming and placement follow the
+[Conventions](/dotnet/business/analytics/conventions/) page — class is
+`*MetricDefinition`, `Name` is `Granit.{Module}.{...}Metric`, the file lives
+under `src/Granit.{Module}/Metrics/`.
+
+## End-to-end checklist
+
+<Steps>
+1. **Declare the metric** in your module's `Metrics/` folder. One class per metric.
+   Override only what differs from the base class defaults; everything else
+   inherits sensible defaults (`IsHigherBetter = true`, `RefreshHint = Dynamic`,
+   `BaseFilter = null`, `PeriodSelector = null`).
+
+2. **Add a project reference** to `Granit.Analytics` in the module's `.csproj`,
+   alongside the existing `Granit.QueryEngine.Abstractions` reference:
+
+   ```xml
+   <ProjectReference Include="..\Granit.Analytics\Granit.Analytics.csproj" />
+   ```
+
+3. **Mark the dependency** on the module class:
+
+   ```csharp
+   [DependsOn(
+       typeof(GranitAnalyticsModule),
+       /* …existing dependencies… */
+   )]
+   public sealed class GranitInvoicingModule : GranitModule { … }
+   ```
+
+4. **Register the metric** in your `AddGranit{Module}` extension:
+
+   ```csharp
+   builder.Services.AddMetricDefinition<Invoice, int, UnpaidInvoiceCountMetricDefinition>();
+   ```
+
+   The generic parameters are `<TEntity, TValue, TDefinition>`. The framework
+   wires it as a singleton and indexes it by name for the HTTP surface to find.
+
+5. **Ship localization keys** for the metric title across the 18 cultures
+   (`en, fr, de, nl, es, it, pt, zh, ja, pl, tr, ko, sv, cs, hi, fr-CA, en-GB,
+   pt-BR`). Key shape: `Metric:{Name}` — same prefix as `Permission:`,
+   `Column:`, `ExportHeader:`.
+
+   ```json
+   // src/Granit.Invoicing/Localization/Invoicing/en.json
+   {
+     "culture": "en",
+     "texts": {
+       "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Unpaid invoices"
+     }
+   }
+   ```
+
+   Architecture test (story #1397, planned) will fail the build when a metric
+   ships without complete coverage — the 18-culture rule is enforced
+   mechanically, not by review.
+
+6. **Wire the host** to expose the HTTP endpoint. Once your module is loaded
+   (`builder.AddGranitInvoicing()`), the metric is registered. The host adds
+   the route group:
+
+   ```csharp
+   app.MapGranitAnalytics();   // exposes POST /api/granit/analytics/metrics/{name}
+   ```
+
+7. **Consume from the frontend** with the `<MetricCard>` component (story
+   #1378 — wires through to `useMetric()`). Period and comparison are query
+   parameters:
+
+   ```tsx
+   <MetricCard
+     metric="Granit.Invoicing.UnpaidInvoiceCountMetric"
+     period={{ token: 'last_30d' }}
+     compareTo={{ token: 'previous_period' }}
+   />
+   ```
+</Steps>
+
+## What the framework does for you
+
+Once registered, the metric is exposed at `POST /api/granit/analytics/metrics/{name}`
+and the framework pipeline guarantees the following — none of which you write
+yourself:
+
+- **Multi-tenant isolation.** The DbContext's `ApplyGranitConventions` global
+  filter restricts the underlying `IQueryable<Invoice>` to the current tenant
+  before the metric runs. A user from tenant A cannot read tenant B's
+  unpaid-invoice count even by crafting a `?filter=tenantId eq <other>`.
+- **Soft-delete + `IActive` filtering.** Deleted or inactive invoices are
+  excluded by the same global filters that hide them in the admin grid.
+- **`BaseFilter` composition.** The metric's intrinsic predicate (e.g.
+  `Status == Open`) is `AND`-composed *after* the user filters and tenant
+  filters. The KPI count exactly matches the grid's row count for the same
+  user filter set.
+- **Period filtering.** When the request carries `?period=last_30d`, the
+  `PeriodSelector` (here `IssuedAt`) is wrapped in a `[from, to)` predicate
+  resolved server-side via `IClock` (`TimeProvider`) — never
+  `DateTimeOffset.UtcNow`. Period tokens map to the canonical
+  [DAX acronyms](/dotnet/business/analytics/conventions/#period-tokens---dax-aligned)
+  (`MTD`, `QTD`, `YTD`, …).
+- **Period comparison + delta.** If the request includes
+  `compareTo: { token: 'previous_period' }`, the framework runs the metric
+  twice (current + comparison window) and computes `deltaRatio`, `trend`, and
+  `isFavorable` — the last derived from `trend × IsHigherBetter` so the
+  frontend renders green or red without local logic.
+- **Empty-set semantics.** `Count` and `Sum` over an empty set return `0`
+  (mathematical sum-of-empty); `Avg`, `Min`, `Max` return `null` (semantic
+  "no data"). The frontend renders `—` and hides the delta block when
+  `noData: true`. Locked by the empty-set matrix tests on both SQLite and
+  PostgreSQL — your metric is covered without writing additional tests.
+- **FusionCache.** Results are cached with key
+  `analytics:metric:{name}:{tenantId|global}:{period.from}:{period.to}[:cmp:...]`.
+  The tenant is the first security boundary; cross-tenant cache contamination
+  is impossible by construction. TTL is 60 s for `Dynamic` metrics, 5 min for
+  `Static`. `Realtime` is reserved for the future push transport (granit-iot).
+
+## `BaseFilter` vs `Selector` — which is which
+
+This is the only subtle distinction. They look similar but compose differently.
+
+| Property | Type | Role | Example |
+| -------- | ---- | ---- | ------- |
+| `BaseFilter` | `Expression<Func<TEntity, bool>>?` | What the metric is **about** — the subset that defines its identity | `i => i.Status == InvoiceStatus.Open` for `UnpaidInvoiceCount` |
+| `Selector` | `Expression<Func<TEntity, TValue?>>?` | What the metric **measures** — the field aggregated | `i => i.AmountRemaining` for `UnpaidInvoiceTotal` |
+
+`BaseFilter` is intrinsic and never user-controllable — `UnpaidInvoiceCount`
+must always exclude `Paid` / `Void` / `Draft`, regardless of caller. Period
+filters and user filters compose on top with `AND`.
+
+`Selector` is the "what is summed / averaged / minned / maxed". For `Count`,
+leave it `null` (no field is aggregated, just rows are counted). For `Sum`,
+`Avg`, `Min`, `Max`, declare a typed nullable expression — the nullability is
+load-bearing for empty-set semantics (see
+[the conventions page](/dotnet/business/analytics/conventions/#aggregation-suffix-decision-table)).
+
+<Aside type="caution" title="`AmountRemaining` vs `Total`">
+  `UnpaidInvoiceTotalMetric` sums `AmountRemaining`, not `Total`. A partially
+  paid invoice (Total 1 000 €, AmountPaid 600 €) contributes 400 € to the
+  unpaid total — not 1 000 €. The same logic applies to any "outstanding" /
+  "remaining" KPI — sum what's still due, not the headline figure.
+</Aside>
+
+## Integration tests
+
+The empty-set matrix and tenant filter are framework-covered. Your module's
+test suite only needs to assert the **business semantics** of your metric —
+typically:
+
+```csharp
+[Fact]
+public async Task UnpaidInvoiceCount_OnlyCountsOpenStatus()
+{
+    // 3 Open + 1 Paid + 1 Void + 1 Draft = only 3 should count.
+    _db.Invoices.AddRange(/* … */);
+    await _db.SaveChangesAsync();
+
+    int? result = await _countExecutor.ExecuteAsync(
+        new UnpaidInvoiceCountMetricDefinition(),
+        _db.Invoices,
+        new QueryRequest(),
+        cancellationToken);
+
+    result.ShouldBe(3);
+}
+```
+
+The full reference test class is
+[`UnpaidInvoiceMetricsTests.cs`](https://github.com/granit-fx/granit-dotnet/blob/develop/tests/Granit.Invoicing.EntityFrameworkCore.Tests/Internal/UnpaidInvoiceMetricsTests.cs)
+— five assertions: `Open` filter, `AmountRemaining` summation, empty-set count,
+empty-set total, and a regression test that locks the `BaseFilter` against
+non-`Open` statuses leaking through.
+
+<Aside type="note" title="Multi-tenant test gotcha">
+  When your test class instantiates multiple `DbContext`s with different
+  mocked `ICurrentTenant` instances, EF Core's process-wide internal service
+  provider caches the model — including the captured tenant reference. Use
+  `DbContextOptionsBuilder.EnableGranitTestModelIsolation()` from
+  `Granit.Testing.EntityFrameworkCore` to defeat the cache. Production is
+  unaffected; this only matters for multi-test mocking.
+</Aside>
+
+## Reference implementation index
+
+The Invoicing reference impl is intentionally minimal — two metrics that
+showcase the most common patterns:
+
+| Metric | Aggregation | `BaseFilter` | `PeriodSelector` | `IsHigherBetter` | `ValueKind` |
+| ------ | ----------- | ------------ | ---------------- | ---------------- | ----------- |
+| `Granit.Invoicing.UnpaidInvoiceCountMetric` | `Count` | `Status == Open` | `IssuedAt` | `false` | `Count` |
+| `Granit.Invoicing.UnpaidInvoiceTotalMetric` | `Sum(AmountRemaining)` | `Status == Open` | `IssuedAt` | `false` | `Currency` |
+
+Use these as a starting template when shipping metrics for your own module.
+
+## Read next
+
+- [Overview](/dotnet/business/analytics/) — Three-layer BI stack
+- [Conventions](/dotnet/business/analytics/conventions/) — Naming formula, period
+  tokens, anti-patterns

@@ -5,8 +5,8 @@
       "AWSSDK.KeyManagementService": {
         "type": "Direct",
         "requested": "[4.*, )",
-        "resolved": "4.0.9.13",
-        "contentHash": "D8WKD7niFTrP4FLjxUB/fHaC0pEtQXqRN74ylkib+IDCOqe5MATONPpfXJ9wthXXX+ihOP3rpsBJRAi2NL4Cvw==",
+        "resolved": "4.0.10",
+        "contentHash": "GdALkbXp7y3+2qbLbC0DILy3CwhaPBlMOXamxAF2kEQLHc5f5nxQVi5j80ZrcjWd0sIxMfls8CyLueYSwe76kA==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.4, 5.0.0)"
         }
