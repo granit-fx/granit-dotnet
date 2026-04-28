@@ -9,11 +9,12 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ### Fixed
 
-- `Granit.Authentication.OpenIddict` & `Granit.OpenIddict.Server` — role claims emitted by OpenIddict.Validation under the OIDC short claim type `role` are now normalized to `ClaimTypes.Role`, restoring parity with `Granit.Authentication.JwtBearer`. Without this, `ICurrentUserService.GetRoles()` and the `PermissionChecker.AdminRoles` bypass returned empty even when `ClaimsPrincipal.IsInRole()` matched, causing 403s on permission-protected endpoints for admin-role users on resource servers using OpenIddict validation. Implemented as a shared `OpenIddictRoleClaimsTransformation` in the new `Granit.Authentication` base package.
+- `Granit.Authentication.OpenIddict` & `Granit.OpenIddict.Server` — role claims emitted by OpenIddict.Validation under the OIDC short claim type `role` are now normalized to `ClaimTypes.Role`, restoring parity with `Granit.Authentication.JwtBearer`. Without this, `ICurrentUserService.GetRoles()` and the `PermissionChecker.AdminRoles` bypass returned empty even when `ClaimsPrincipal.IsInRole()` matched, causing 403s on permission-protected endpoints for admin-role users on resource servers using OpenIddict validation.
 
 ### Added (framework)
 
-- `Granit.Authentication` — new base package hosting cross-scheme authentication primitives. Currently exposes `OpenIddictRoleClaimsTransformation` (scoped to the `OpenIddict.Validation.AspNetCore` scheme) and the `AddGranitOpenIddictRoleClaimNormalization()` registration helper. Future home for shared `ICurrentUserService` machinery currently living in `Granit.Authentication.JwtBearer`.
+- `Granit.Authentication` — new base package hosting cross-scheme authentication primitives. Ships a generic, options-driven `RoleClaimNormalizationTransformation` (`IClaimsTransformation`) that copies values from configurable source claim types (default: OIDC short `role`) onto `ClaimTypes.Role` for principals authenticated via configurable schemes. Registered via `AddGranitRoleClaimNormalization(o => { o.Schemes.Add(...); o.SourceClaimTypes = ...; })`. Reusable by any IdP that emits roles under non-standard claim names (OpenIddict, IdentityServer, Auth0, custom). Future home for shared `ICurrentUserService` machinery currently living in `Granit.Authentication.JwtBearer`.
+- `Granit.Authentication.OpenIddict` — adds `AddGranitOpenIddictRoleClaimNormalization()` sugar that pre-configures the generic primitive with the `OpenIddict.Validation.AspNetCore` scheme. Auto-applied by `AddGranitOpenIddictAuthentication()` and `AddGranitOpenIddictServer()`.
 
 ### Security
 

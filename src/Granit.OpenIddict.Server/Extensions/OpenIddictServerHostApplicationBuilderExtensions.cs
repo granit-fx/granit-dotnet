@@ -181,8 +181,17 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
         // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
         // ClaimTypes.Role so PermissionChecker.AdminRoles bypass and ICurrentUserService
         // .GetRoles() agree with ClaimsPrincipal.IsInRole(). Mirrors what JwtBearer does
-        // implicitly via TokenValidationParameters.RoleClaimType.
-        builder.Services.AddGranitOpenIddictRoleClaimNormalization();
+        // implicitly via TokenValidationParameters.RoleClaimType. Scheme name kept as a
+        // string literal so this package does not depend on
+        // OpenIddict.Validation.AspNetCore solely to reference its constant.
+        builder.Services.AddGranitRoleClaimNormalization(o =>
+        {
+            const string openIddictValidationScheme = "OpenIddict.Validation.AspNetCore";
+            if (!o.Schemes.Contains(openIddictValidationScheme))
+            {
+                o.Schemes.Add(openIddictValidationScheme);
+            }
+        });
 
         return builder;
     }

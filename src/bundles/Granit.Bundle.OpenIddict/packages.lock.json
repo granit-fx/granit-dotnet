@@ -490,10 +490,17 @@
       "granit": {
         "type": "Project"
       },
+      "granit.authentication": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.authentication.openiddict": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Authentication": "[0.1.0-dev, )",
           "OpenIddict.Validation.AspNetCore": "[7.*, )",
           "OpenIddict.Validation.SystemNetHttp": "[7.*, )"
         }
@@ -730,6 +737,7 @@
       "granit.openiddict.server": {
         "type": "Project",
         "dependencies": {
+          "Granit.Authentication": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.Server.AspNetCore": "[7.*, )",

@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Granit.Authentication.Extensions;
 using Granit.Authentication.OpenIddict.Internal;
 using Granit.Authentication.OpenIddict.Options;
 using Microsoft.AspNetCore.Builder;

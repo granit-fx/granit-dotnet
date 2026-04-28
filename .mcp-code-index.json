@@ -6502,12 +6502,34 @@
       ]
     },
     {
-      "name": "OpenIddictRoleClaimsTransformation",
-      "fqn": "Granit.Authentication.Claims.OpenIddictRoleClaimsTransformation",
+      "name": "RoleClaimNormalizationOptions",
+      "fqn": "Granit.Authentication.Claims.RoleClaimNormalizationOptions",
       "kind": "class",
       "project": "Granit.Authentication",
-      "file": "src/Granit.Authentication/Claims/OpenIddictRoleClaimsTransformation.cs",
-      "line": 30,
+      "file": "src/Granit.Authentication/Claims/RoleClaimNormalizationOptions.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "Schemes",
+          "kind": "property",
+          "signature": "IList<string> Schemes",
+          "returnType": "IList<string>"
+        },
+        {
+          "name": "SourceClaimTypes",
+          "kind": "property",
+          "signature": "IList<string> SourceClaimTypes",
+          "returnType": "IList<string>"
+        }
+      ]
+    },
+    {
+      "name": "RoleClaimNormalizationTransformation",
+      "fqn": "Granit.Authentication.Claims.RoleClaimNormalizationTransformation",
+      "kind": "class",
+      "project": "Granit.Authentication",
+      "file": "src/Granit.Authentication/Claims/RoleClaimNormalizationTransformation.cs",
+      "line": 31,
       "members": [
         {
           "name": "TransformAsync",
@@ -6628,17 +6650,17 @@
       ]
     },
     {
-      "name": "AuthenticationServiceCollectionExtensions",
-      "fqn": "Granit.Authentication.Extensions.AuthenticationServiceCollectionExtensions",
+      "name": "RoleClaimNormalizationServiceCollectionExtensions",
+      "fqn": "Granit.Authentication.Extensions.RoleClaimNormalizationServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Authentication",
-      "file": "src/Granit.Authentication/Extensions/AuthenticationServiceCollectionExtensions.cs",
+      "file": "src/Granit.Authentication/Extensions/RoleClaimNormalizationServiceCollectionExtensions.cs",
       "line": 11,
       "members": [
         {
-          "name": "AddGranitOpenIddictRoleClaimNormalization",
+          "name": "AddGranitRoleClaimNormalization",
           "kind": "method",
-          "signature": "AddGranitOpenIddictRoleClaimNormalization(this IServiceCollection services)",
+          "signature": "AddGranitRoleClaimNormalization(this IServiceCollection services, Action<RoleClaimNormalizationOptions> configure)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -7180,12 +7202,28 @@
       ]
     },
     {
+      "name": "OpenIddictRoleClaimNormalizationServiceCollectionExtensions",
+      "fqn": "Granit.Authentication.OpenIddict.Extensions.OpenIddictRoleClaimNormalizationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication.OpenIddict",
+      "file": "src/Granit.Authentication.OpenIddict/Extensions/OpenIddictRoleClaimNormalizationServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictRoleClaimNormalization",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictRoleClaimNormalization(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "OpenIddictValidationHostApplicationBuilderExtensions",
       "fqn": "Granit.Authentication.OpenIddict.Extensions.OpenIddictValidationHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Authentication.OpenIddict",
       "file": "src/Granit.Authentication.OpenIddict/Extensions/OpenIddictValidationHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitOpenIddictAuthentication",
