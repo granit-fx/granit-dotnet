@@ -14,4 +14,15 @@ public static class DashboardsPermissions
         /// <summary>Grants read access to the dashboard catalogue (list every registered DashboardDefinition).</summary>
         public const string Read = "Dashboards.Catalog.Read";
     }
+
+    /// <summary>Permissions on the persisted Dashboard aggregate.</summary>
+    public static class Instances
+    {
+        /// <summary>
+        /// Grants write access to the persisted Dashboard aggregate — covers import (deep-copy
+        /// from a registered DashboardDefinition), state transitions (publish / archive /
+        /// restore), and the upcoming widget-edit endpoints.
+        /// </summary>
+        public const string Manage = "Dashboards.Instances.Manage";
+    }
 }

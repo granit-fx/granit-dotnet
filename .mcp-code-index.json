@@ -630,6 +630,7 @@
       "name": "Granit.Dashboards.Endpoints",
       "deps": [
         "Granit.Dashboards",
+        "Granit.Dashboards.EntityFrameworkCore",
         "Granit.Authorization",
         "Granit.Http.Abstractions",
         "Granit.Validation"
@@ -639,7 +640,10 @@
     {
       "name": "Granit.Dashboards.EntityFrameworkCore",
       "deps": [
+        "Granit.Analytics",
         "Granit.Dashboards",
+        "Granit.Guids",
+        "Granit.MultiTenancy",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -12992,6 +12996,15 @@
       "members": []
     },
     {
+      "name": "DashboardImportResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardImportResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardImportResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "DashboardsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Dashboards.Endpoints.Extensions.DashboardsEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -13008,13 +13021,36 @@
       ]
     },
     {
+      "name": "DashboardsEndpointsServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Endpoints.Extensions.DashboardsEndpointsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsEndpointsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDashboardsEndpoints",
+          "kind": "method",
+          "signature": "AddGranitDashboardsEndpoints(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitDashboardsEndpointsModule",
       "fqn": "Granit.Dashboards.Endpoints.GranitDashboardsEndpointsModule",
       "kind": "class",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/GranitDashboardsEndpointsModule.cs",
-      "line": 18,
-      "members": []
+      "line": 23,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DashboardsEndpointsOptions",
@@ -13054,6 +13090,15 @@
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "Instances",
+      "fqn": "Granit.Dashboards.Endpoints.Permissions.Instances",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
+      "line": 19,
       "members": []
     },
     {

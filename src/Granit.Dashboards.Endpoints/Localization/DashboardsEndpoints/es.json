@@ -2,6 +2,7 @@
   "culture": "es",
   "texts": {
     "PermissionGroup:Dashboards": "Paneles",
-    "Permission:Dashboards.Catalog.Read": "Explorar el catálogo de paneles (listar todas las DashboardDefinition registradas)"
+    "Permission:Dashboards.Catalog.Read": "Explorar el catálogo de paneles (listar todas las DashboardDefinition registradas)",
+    "Permission:Dashboards.Instances.Manage": "Gestionar paneles del inquilino (importar desde definición, editar, publicar, archivar, restaurar)"
   }
 }

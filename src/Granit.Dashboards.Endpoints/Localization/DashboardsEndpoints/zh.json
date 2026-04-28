@@ -2,6 +2,7 @@
   "culture": "zh",
   "texts": {
     "PermissionGroup:Dashboards": "仪表板",
-    "Permission:Dashboards.Catalog.Read": "浏览仪表板目录（列出每个已注册的 DashboardDefinition）"
+    "Permission:Dashboards.Catalog.Read": "浏览仪表板目录（列出每个已注册的 DashboardDefinition）",
+    "Permission:Dashboards.Instances.Manage": "管理租户范围的仪表板（从定义导入、编辑、发布、归档、恢复）"
   }
 }

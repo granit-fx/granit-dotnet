@@ -14,8 +14,9 @@ public static class DashboardsEndpointRouteBuilderExtensions
 {
     /// <summary>
     /// Maps the Granit.Dashboards endpoints onto <paramref name="endpoints"/>. Today
-    /// ships the read-only catalogue endpoint; the import / CRUD endpoints land on
-    /// the same route group in subsequent stories.
+    /// ships the read-only catalogue endpoint and the import endpoint
+    /// (<c>POST /from-definition/{name}</c>); the list / read / state-transition
+    /// endpoints land on the same route group in subsequent stories.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
     /// <param name="configure">Optional delegate to customize <see cref="DashboardsEndpointsOptions"/>.</param>
@@ -32,6 +33,7 @@ public static class DashboardsEndpointRouteBuilderExtensions
             .WithTags(options.CatalogTagName);
 
         group.MapCatalogEndpoints();
+        group.MapImportEndpoints();
 
         return group;
     }

@@ -2,6 +2,7 @@
   "culture": "en",
   "texts": {
     "PermissionGroup:Dashboards": "Dashboards",
-    "Permission:Dashboards.Catalog.Read": "Browse the dashboard catalogue (list every registered DashboardDefinition)"
+    "Permission:Dashboards.Catalog.Read": "Browse the dashboard catalogue (list every registered DashboardDefinition)",
+    "Permission:Dashboards.Instances.Manage": "Manage tenant-scoped dashboards (import from definition, edit, publish, archive, restore)"
   }
 }

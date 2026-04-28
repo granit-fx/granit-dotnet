@@ -2,6 +2,7 @@
   "culture": "fr",
   "texts": {
     "PermissionGroup:Dashboards": "Tableaux de bord",
-    "Permission:Dashboards.Catalog.Read": "Parcourir le catalogue des tableaux de bord (lister chaque DashboardDefinition enregistrée)"
+    "Permission:Dashboards.Catalog.Read": "Parcourir le catalogue des tableaux de bord (lister chaque DashboardDefinition enregistrée)",
+    "Permission:Dashboards.Instances.Manage": "Gérer les tableaux de bord du locataire (importer depuis une définition, éditer, publier, archiver, restaurer)"
   }
 }

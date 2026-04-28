@@ -1978,6 +1978,7 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Dashboards": "[0.1.0-dev, )",
+          "Granit.Dashboards.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
@@ -1985,7 +1986,10 @@
       "granit.dashboards.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.Dashboards": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }

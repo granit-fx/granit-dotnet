@@ -23,5 +23,11 @@ internal sealed class DashboardsPermissionDefinitionProvider : IPermissionDefini
             LocalizableString.Create<DashboardsEndpointsLocalizationResource>(
                 "Permission:Dashboards.Catalog.Read"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            DashboardsPermissions.Instances.Manage,
+            LocalizableString.Create<DashboardsEndpointsLocalizationResource>(
+                "Permission:Dashboards.Instances.Manage"),
+            MultiTenancySides.Both);
     }
 }

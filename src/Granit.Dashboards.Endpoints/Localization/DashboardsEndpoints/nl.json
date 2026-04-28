@@ -2,6 +2,7 @@
   "culture": "nl",
   "texts": {
     "PermissionGroup:Dashboards": "Dashboards",
-    "Permission:Dashboards.Catalog.Read": "Door de dashboard-catalogus bladeren (alle geregistreerde DashboardDefinitions weergeven)"
+    "Permission:Dashboards.Catalog.Read": "Door de dashboard-catalogus bladeren (alle geregistreerde DashboardDefinitions weergeven)",
+    "Permission:Dashboards.Instances.Manage": "Beheer huurder-specifieke dashboards (importeren vanuit definitie, bewerken, publiceren, archiveren, herstellen)"
   }
 }

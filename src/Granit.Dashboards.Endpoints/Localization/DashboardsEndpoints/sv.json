@@ -2,6 +2,7 @@
   "culture": "sv",
   "texts": {
     "PermissionGroup:Dashboards": "Instrumentpaneler",
-    "Permission:Dashboards.Catalog.Read": "Bläddra i instrumentpanelskatalogen (lista alla registrerade DashboardDefinition)"
+    "Permission:Dashboards.Catalog.Read": "Bläddra i instrumentpanelskatalogen (lista alla registrerade DashboardDefinition)",
+    "Permission:Dashboards.Instances.Manage": "Hantera klientspecifika instrumentpaneler (importera från definition, redigera, publicera, arkivera, återställa)"
   }
 }
