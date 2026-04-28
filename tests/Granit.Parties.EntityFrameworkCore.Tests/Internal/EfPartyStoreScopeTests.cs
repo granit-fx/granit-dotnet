@@ -27,7 +27,7 @@ public sealed class EfContactStoreScopeTests : IAsyncDisposable
     private readonly Guid _tenantA = Guid.NewGuid();
     private readonly Guid _tenantB = Guid.NewGuid();
     private readonly DataFilter _filter = new();
-    private readonly string _databaseName = $"contacts-scope-{Guid.NewGuid()}";
+    private readonly string _databaseName = $"parties-scope-{Guid.NewGuid()}";
     // Shared in-memory root so the per-scope service providers (each with its own
     // IModelSource and model cache) all read/write the same underlying store.
     private readonly InMemoryDatabaseRoot _dbRoot = new();

@@ -18,7 +18,7 @@ public sealed class EfContactStoreTests : IAsyncDisposable
     public EfContactStoreTests()
     {
         DbContextOptions<PartiesDbContext> options = new DbContextOptionsBuilder<PartiesDbContext>()
-            .UseInMemoryDatabase($"contacts-{Guid.NewGuid()}")
+            .UseInMemoryDatabase($"parties-{Guid.NewGuid()}")
             .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
             .Options;
         _factory = new TestFactory(options);

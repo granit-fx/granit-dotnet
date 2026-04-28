@@ -5,8 +5,8 @@ namespace Granit.Parties.EntityFrameworkCore;
 /// <summary>Table-naming properties for the Parties EF Core module.</summary>
 public static class GranitPartiesDbProperties
 {
-    /// <summary>Table prefix. Default: <c>"contacts_"</c>.</summary>
-    public static string DbTablePrefix { get; set; } = "contacts_";
+    /// <summary>Table prefix. Default: <c>"parties_"</c>.</summary>
+    public static string DbTablePrefix { get; set; } = "parties_";
 
     private static string? _dbSchema;
     private static bool _dbSchemaExplicitlySet;

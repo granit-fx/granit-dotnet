@@ -9,12 +9,18 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Deduplication;
 
 public sealed class PartiesPostgresMigrationExtensionsTests
 {
+    // Use the configured prefix (default "parties_") so tests stay aligned with whatever
+    // GranitPartiesDbProperties.DbTablePrefix the host app sets, instead of pinning the
+    // pre-rename literal.
+    private static readonly string PartiesTable = $"{GranitPartiesDbProperties.DbTablePrefix}parties";
+    private static readonly string PartiesIndex = $"IX_{PartiesTable}_name_trgm";
+
     [Fact]
     public void Add_emits_CREATE_EXTENSION_and_CREATE_INDEX_on_Npgsql()
     {
         MigrationBuilder builder = new(GranitDbProviders.Postgres);
 
-        builder.AddPartyTrigramSimilarityIndexes(schema: "granit", tableName: "contacts_parties");
+        builder.AddPartyTrigramSimilarityIndexes(schema: "granit", tableName: PartiesTable);
 
         builder.Operations.Count.ShouldBe(2);
 
@@ -23,8 +29,8 @@ public sealed class PartiesPostgresMigrationExtensionsTests
 
         var indexOp = (SqlOperation)builder.Operations[1];
         indexOp.Sql.ShouldContain("CREATE INDEX IF NOT EXISTS");
-        indexOp.Sql.ShouldContain("\"IX_contacts_parties_name_trgm\"");
-        indexOp.Sql.ShouldContain("\"granit\".\"contacts_parties\"");
+        indexOp.Sql.ShouldContain($"\"{PartiesIndex}\"");
+        indexOp.Sql.ShouldContain($"\"granit\".\"{PartiesTable}\"");
         indexOp.Sql.ShouldContain("USING GIST (lower(\"name\") gist_trgm_ops)");
     }
 
@@ -33,7 +39,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     {
         MigrationBuilder builder = new(GranitDbProviders.SqlServer);
 
-        builder.AddPartyTrigramSimilarityIndexes(schema: "dbo", tableName: "contacts_parties");
+        builder.AddPartyTrigramSimilarityIndexes(schema: "dbo", tableName: PartiesTable);
 
         builder.Operations.ShouldBeEmpty();
     }
@@ -48,7 +54,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
         builder.Operations.Count.ShouldBe(2);
         var indexOp = (SqlOperation)builder.Operations[1];
         // Default table name follows the GranitPartiesDbProperties.DbTablePrefix convention.
-        indexOp.Sql.ShouldContain("\"contacts_parties\"");
+        indexOp.Sql.ShouldContain($"\"{PartiesTable}\"");
     }
 
     [Fact]
@@ -56,12 +62,12 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     {
         MigrationBuilder builder = new(GranitDbProviders.Postgres);
 
-        builder.RemovePartyTrigramSimilarityIndexes(schema: "granit", tableName: "contacts_parties");
+        builder.RemovePartyTrigramSimilarityIndexes(schema: "granit", tableName: PartiesTable);
 
         builder.Operations.Count.ShouldBe(1);
         var dropOp = (SqlOperation)builder.Operations[0];
         dropOp.Sql.ShouldContain("DROP INDEX IF EXISTS");
-        dropOp.Sql.ShouldContain("\"IX_contacts_parties_name_trgm\"");
+        dropOp.Sql.ShouldContain($"\"{PartiesIndex}\"");
         // Extension is NOT dropped — shared with other modules / tables, removing it
         // here would break unrelated indexes elsewhere in the database.
         dropOp.Sql.ShouldNotContain("DROP EXTENSION");
@@ -72,7 +78,7 @@ public sealed class PartiesPostgresMigrationExtensionsTests
     {
         MigrationBuilder builder = new(GranitDbProviders.SqlServer);
 
-        builder.RemovePartyTrigramSimilarityIndexes(schema: "dbo", tableName: "contacts_parties");
+        builder.RemovePartyTrigramSimilarityIndexes(schema: "dbo", tableName: PartiesTable);
 
         builder.Operations.ShouldBeEmpty();
     }

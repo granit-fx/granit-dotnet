@@ -16,7 +16,7 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 public sealed class EfDefaultContactSeederTests : IAsyncDisposable
 {
     private readonly DataFilter _filter = new();
-    private readonly string _databaseName = $"contacts-seeder-{Guid.NewGuid()}";
+    private readonly string _databaseName = $"parties-seeder-{Guid.NewGuid()}";
     private readonly InMemoryDatabaseRoot _dbRoot = new();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
 

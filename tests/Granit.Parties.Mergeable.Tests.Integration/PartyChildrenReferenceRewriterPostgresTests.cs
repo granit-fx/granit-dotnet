@@ -36,7 +36,7 @@ public sealed class PartyChildrenReferenceRewriterPostgresTests : IClassFixture<
         await using PartiesDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
         await db.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
         // Tables created via EnsureCreated; truncate between tests for isolation.
-        // Use the configured prefix (default "contacts_") so tests stay aligned with whatever
+        // Use the configured prefix (default "parties_") so tests stay aligned with whatever
         // GranitPartiesDbProperties.DbTablePrefix is set to in the future.
         string p = GranitPartiesDbProperties.DbTablePrefix;
         await db.Database.ExecuteSqlRawAsync(
