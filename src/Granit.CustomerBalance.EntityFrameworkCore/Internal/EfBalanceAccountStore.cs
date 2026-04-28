@@ -19,8 +19,8 @@ internal sealed class EfBalanceAccountStore(
     public Task<BalanceAccount?> GetByIdAsync(BalanceAccountId id, CancellationToken cancellationToken = default) =>
         FindByIdAsync(id.Value, cancellationToken);
 
-    public async Task<BalanceAccount?> GetByContactAndCurrencyAsync(
-        PartyId contactId, string currency, CancellationToken cancellationToken = default)
+    public async Task<BalanceAccount?> GetByPartyAndCurrencyAsync(
+        PartyId partyId, string currency, CancellationToken cancellationToken = default)
     {
         string normalizedCurrency = currency.ToUpperInvariant();
         await using CustomerBalanceDbContext context = await _contextFactory
@@ -28,7 +28,7 @@ internal sealed class EfBalanceAccountStore(
         return await context.Accounts
             .Include(a => a.Transactions)
             .FirstOrDefaultAsync(
-                a => a.PartyId.Value == contactId.Value && a.Currency == normalizedCurrency,
+                a => a.PartyId.Value == partyId.Value && a.Currency == normalizedCurrency,
                 cancellationToken)
             .ConfigureAwait(false);
     }

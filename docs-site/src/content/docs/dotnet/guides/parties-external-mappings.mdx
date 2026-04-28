@@ -38,7 +38,7 @@ A `PartyExternalMapping` is a `(ProviderName, ExternalId)` pair attached to a
   | `Odoo` | Odoo `res.partner` |
   | `Sage` | Sage customer |
   | `NetSuite` | NetSuite customer |
-  | `Tenant` | Reverse-link from a host-scoped contact to the Granit tenant |
+  | `Tenant` | Reverse-link from a host-scoped party to the Granit tenant |
 
   If your provider is not on this list, add a constant in a follow-up PR rather
   than coining a string ad hoc.
@@ -54,11 +54,11 @@ A `PartyExternalMapping` is a `(ProviderName, ExternalId)` pair attached to a
 ## Reading
 
 ```csharp
-Party? contact = await contactReader.GetByIdAsync(contactId, ct);
-string? externalId = contact?.FindExternalId(PartyExternalProviderNames.Stripe);
+Party? party = await partyReader.GetByIdAsync(partyId, ct);
+string? externalId = party?.FindExternalId(PartyExternalProviderNames.Stripe);
 ```
 
-The contact may be host-scoped or tenant-scoped. When you do not know the active
+The party may be host-scoped or tenant-scoped. When you do not know the active
 scope (typical for a Wolverine handler running in some tenant context), wrap the
 read in `IDataFilter.Disable<IMultiTenant>()` — see
 `Granit.Payments.Stripe.Internal.StripePaymentMethodManager` for the canonical
@@ -69,8 +69,8 @@ pattern.
 After creating the customer in the provider:
 
 ```csharp
-contact.AddExternalMapping(guidGenerator.Create(), "stripe", customer.Id);
-await contactWriter.UpdateAsync(contact, ct);
+party.AddExternalMapping(guidGenerator.Create(), "stripe", customer.Id);
+await partyWriter.UpdateAsync(party, ct);
 ```
 
 Always go through `IGuidGenerator.Create()` (Granit framework rule) — never
@@ -96,8 +96,8 @@ minimal.
 
 - **Do not** create a new aggregate `*ProviderMapping` (Stripe / Sage / NetSuite
   / …). Use `Party.ExternalMappings`.
-- **Do not** add a `(ProviderName, TenantId)` row outside the contact aggregate.
-  Tenant ↔ contact already lives in `Party.ExternalMappings` under the
+- **Do not** add a `(ProviderName, TenantId)` row outside the party aggregate.
+  Tenant ↔ party already lives in `Party.ExternalMappings` under the
   reserved provider name `tenant` (seeded automatically by
   `Granit.Parties.MultiTenancy`).
 - **Do not** reuse an `ExternalId` across providers. Each provider lives in its

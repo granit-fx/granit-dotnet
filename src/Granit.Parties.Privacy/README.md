@@ -25,7 +25,7 @@ dotnet add package Granit.Parties.Privacy
 ## Usage
 
 ```csharp
-services.AddGranitPrivacy(p => p.AddGranitContactsPrivacyProvider());
+services.AddGranitPrivacy(p => p.AddGranitPartiesPrivacyProvider());
 ```
 
 ## Documentation

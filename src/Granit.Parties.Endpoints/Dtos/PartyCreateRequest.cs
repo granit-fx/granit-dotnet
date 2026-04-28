@@ -2,7 +2,7 @@ using Granit.Parties.Domain;
 
 namespace Granit.Parties.Endpoints.Dtos;
 
-/// <summary>Request to create a new contact.</summary>
+/// <summary>Request to create a new party.</summary>
 /// <param name="Kind">Individual / Company / Department.</param>
 /// <param name="Name">Display / legal name (required, max 256 chars).</param>
 /// <param name="DefaultCurrency">ISO 4217 alpha-3 currency code (required).</param>

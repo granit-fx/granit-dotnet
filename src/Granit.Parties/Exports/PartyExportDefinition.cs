@@ -3,7 +3,7 @@ using Granit.Parties.Domain;
 
 namespace Granit.Parties.Exports;
 
-/// <summary>CSV / XLSX export whitelist for contacts.</summary>
+/// <summary>CSV / XLSX export whitelist for parties.</summary>
 public sealed class PartyExportDefinition : ExportDefinition<Party>
 {
     /// <inheritdoc/>

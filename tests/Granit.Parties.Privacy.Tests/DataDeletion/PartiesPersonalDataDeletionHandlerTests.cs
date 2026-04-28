@@ -13,14 +13,14 @@ using Xunit;
 
 namespace Granit.Parties.Privacy.Tests.DataDeletion;
 
-public sealed class ContactsPersonalDataDeletionHandlerTests
+public sealed class PartiesPersonalDataDeletionHandlerTests
 {
     private readonly IPartyReader _reader = Substitute.For<IPartyReader>();
     private readonly IPartyWriter _writer = Substitute.For<IPartyWriter>();
     private readonly IDataFilter _dataFilter = Substitute.For<IDataFilter>();
     private readonly IDistributedEventBus _bus = Substitute.For<IDistributedEventBus>();
 
-    public ContactsPersonalDataDeletionHandlerTests()
+    public PartiesPersonalDataDeletionHandlerTests()
     {
         _dataFilter.Disable<IMultiTenant>().Returns(Substitute.For<IDisposable>());
     }
@@ -58,21 +58,21 @@ public sealed class ContactsPersonalDataDeletionHandlerTests
     public async Task HandleAsync_WithLinkedContact_PseudonymisesAndPublishesAnonymised()
     {
         PersonalDataDeletionRequestedEto request = Request();
-        var contact = Party.Create(
+        var party = Party.Create(
             Guid.NewGuid(), null, PartyKind.Individual, "Jean Dupont", "EUR");
-        contact.AddEmail(Guid.NewGuid(), "jean@example.com");
-        contact.LinkToUser(request.UserId);
+        party.AddEmail(Guid.NewGuid(), "jean@example.com");
+        party.LinkToUser(request.UserId);
 
         _reader.GetByUserIdAsync(request.UserId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+            .Returns(party);
 
         await PartiesPersonalDataDeletionHandler.HandleAsync(
             request, _reader, _writer, _dataFilter, _bus, TestContext.Current.CancellationToken);
 
-        contact.Name.ShouldBe("[deleted]");
-        contact.Emails.ShouldBeEmpty();
-        contact.UserId.ShouldBeNull();
-        await _writer.Received(1).UpdateAsync(contact, Arg.Any<CancellationToken>());
+        party.Name.ShouldBe("[deleted]");
+        party.Emails.ShouldBeEmpty();
+        party.UserId.ShouldBeNull();
+        await _writer.Received(1).UpdateAsync(party, Arg.Any<CancellationToken>());
         await _bus.Received(1).PublishAsync(
             Arg.Is<PersonalDataDeletedEto>(e =>
                 e.Action == DeletionAction.Anonymized
@@ -84,12 +84,12 @@ public sealed class ContactsPersonalDataDeletionHandlerTests
     public async Task HandleAsync_AlreadyPseudonymised_PublishesRetainedNoUpdate()
     {
         PersonalDataDeletionRequestedEto request = Request();
-        var contact = Party.Create(
+        var party = Party.Create(
             Guid.NewGuid(), null, PartyKind.Company, "[deleted]", "EUR");
         // already pseudonymised: no email, no phone, no address, no website, no user link
 
         _reader.GetByUserIdAsync(request.UserId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+            .Returns(party);
 
         await PartiesPersonalDataDeletionHandler.HandleAsync(
             request, _reader, _writer, _dataFilter, _bus, TestContext.Current.CancellationToken);

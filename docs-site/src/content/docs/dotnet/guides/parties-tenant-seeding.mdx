@@ -1,15 +1,15 @@
 ---
-title: "Seed the default contact at tenant provisioning"
+title: "Seed the default party at tenant provisioning"
 description: Wire Granit.Parties.MultiTenancy so each new tenant automatically gets the host-scoped Party that downstream Invoicing / Subscriptions / Payments / Tax / CustomerBalance modules use as the canonical billing identity.
 sidebar:
   order: 31
-  label: Seed contact on tenant created
+  label: Seed party on tenant created
 ---
 
 Downstream modules (Invoicing, Subscriptions, Payments, Tax, CustomerBalance)
 resolve the billing identity for a tenant via `IDefaultPartyResolver`, which
 looks up the host-scoped `Party` carrying the reserved
-`PartyExternalProviderNames.Tenant` external mapping. That contact has to
+`PartyExternalProviderNames.Tenant` external mapping. That party has to
 exist before any of them can issue an invoice, charge a card, or run a tax
 calculation against the tenant.
 
@@ -35,10 +35,10 @@ seeder itself is registered by `Granit.Parties.EntityFrameworkCore` regardless.
 When `Granit.MultiTenancy` raises `TenantCreatedEvent(tenantId, name, identifier)`:
 
 1. The handler resolves `IDefaultPartySeeder` from DI.
-2. The seeder asks `IDefaultPartyResolver` whether a contact already exists
+2. The seeder asks `IDefaultPartyResolver` whether a party already exists
    for `tenantId` (via the reserved `tenant` external mapping). If yes, it
    returns the existing one — replays of the same event are no-ops.
-3. Otherwise it creates a host-scoped (`TenantId == null`) `Company` contact
+3. Otherwise it creates a host-scoped (`TenantId == null`) `Company` party
    named after the tenant, attaches the
    `PartyExternalProviderNames.Tenant = tenantId.ToString()` external mapping,
    and persists it with the multi-tenant query filter disabled (the handler
@@ -63,11 +63,11 @@ public async Task BackfillAsync(IServiceProvider sp, CancellationToken ct)
 }
 ```
 
-## Customising the seeded contact
+## Customising the seeded party
 
 Apps that need to seed extra fields (taxId, billing address, language…) should
 register their own subscriber for `TenantCreatedEvent` after the framework
-handler — read the just-created contact via `IPartyReader.GetByIdAsync`,
+handler — read the just-created party via `IPartyReader.GetByIdAsync`,
 mutate it through the aggregate's methods (`UpdateContact`, `AddAddress`, …),
 and persist with `IPartyWriter.UpdateAsync`. The seeder only ships the
 identity-level baseline so it stays composable.

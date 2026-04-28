@@ -14,7 +14,7 @@ namespace Granit.Parties.Mergeable.Tests.Integration;
 
 /// <summary>
 /// Postgres integration tests for <see cref="PartyParentReferenceRewriter"/>. The
-/// <c>UPDATE parties SET ParentContactId = survivorId WHERE ParentContactId = loserId</c>
+/// <c>UPDATE parties SET ParentPartyId = survivorId WHERE ParentPartyId = loserId</c>
 /// path requires a relational provider, hence Postgres rather than the in-memory provider.
 /// </summary>
 public sealed class PartyParentReferenceRewriterPostgresTests : IClassFixture<PostgresFixture>, IAsyncLifetime
@@ -66,12 +66,12 @@ public sealed class PartyParentReferenceRewriterPostgresTests : IClassFixture<Po
         await using PartiesDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
         var survivorPartyId = PartyId.Create(survivor.Id);
         int childrenOfSurvivor = await db.Parties
-            .CountAsync(p => p.ParentContactId == survivorPartyId, TestContext.Current.CancellationToken);
+            .CountAsync(p => p.ParentPartyId == survivorPartyId, TestContext.Current.CancellationToken);
         childrenOfSurvivor.ShouldBe(3);
 
         var loserPartyId = PartyId.Create(loser.Id);
         int childrenOfLoser = await db.Parties
-            .CountAsync(p => p.ParentContactId == loserPartyId, TestContext.Current.CancellationToken);
+            .CountAsync(p => p.ParentPartyId == loserPartyId, TestContext.Current.CancellationToken);
         childrenOfLoser.ShouldBe(0);
     }
 
@@ -102,7 +102,7 @@ public sealed class PartyParentReferenceRewriterPostgresTests : IClassFixture<Po
         await using PartiesDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
         var loserPartyId = PartyId.Create(loser.Id);
         int still = await db.Parties
-            .CountAsync(p => p.ParentContactId == loserPartyId, TestContext.Current.CancellationToken);
+            .CountAsync(p => p.ParentPartyId == loserPartyId, TestContext.Current.CancellationToken);
         still.ShouldBe(2);
     }
 

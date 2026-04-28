@@ -9,15 +9,15 @@ using Xunit;
 namespace Granit.ArchitectureTests;
 
 /// <summary>
-/// US #1245 — pin cross-module consistency: every aggregate that exposes a contact
+/// US #1245 — pin cross-module consistency: every aggregate that exposes a party
 /// reference uses the typed <see cref="PartyId"/> value object, not a bare
-/// <see cref="Guid"/> named "contactId" / "customerId". Reverting any of these to a
+/// <see cref="Guid"/> named "partyId" / "customerId". Reverting any of these to a
 /// raw <c>Guid</c> would let downstream callers pass an unrelated identifier
 /// (TenantId, UserId, …) without compile-time checks.
 /// </summary>
 public sealed class CrossModulePartyIdTypingTests
 {
-    private static readonly Type[] AggregatesCarryingContactId =
+    private static readonly Type[] AggregatesCarryingPartyId =
     [
         typeof(Invoice),
         typeof(Subscription),
@@ -28,7 +28,7 @@ public sealed class CrossModulePartyIdTypingTests
     [InlineData(typeof(Invoice))]
     [InlineData(typeof(Subscription))]
     [InlineData(typeof(BalanceAccount))]
-    public void Aggregate_ContactId_IsTypedValueObject(Type aggregateType)
+    public void Aggregate_PartyId_IsTypedValueObject(Type aggregateType)
     {
         PropertyInfo? prop = aggregateType.GetProperty("PartyId");
 
@@ -40,9 +40,9 @@ public sealed class CrossModulePartyIdTypingTests
     }
 
     [Fact]
-    public void All_5_migrated_aggregates_carry_a_typed_ContactId()
+    public void All_5_migrated_aggregates_carry_a_typed_PartyId()
     {
-        IEnumerable<string> missing = AggregatesCarryingContactId
+        IEnumerable<string> missing = AggregatesCarryingPartyId
             .Where(t => t.GetProperty("PartyId")?.PropertyType != typeof(PartyId))
             .Select(t => t.Name);
 
@@ -53,7 +53,7 @@ public sealed class CrossModulePartyIdTypingTests
     }
 
     /// <summary>
-    /// US #1245 AC: every Eto event raised by a contact-aware aggregate carries a Guid PartyId.
+    /// US #1245 AC: every Eto event raised by a party-aware aggregate carries a Guid PartyId.
     /// </summary>
     [Theory]
     [InlineData(typeof(Granit.Invoicing.Events.InvoiceFinalizedEto))]
@@ -69,7 +69,7 @@ public sealed class CrossModulePartyIdTypingTests
     [InlineData(typeof(Granit.Subscriptions.Events.SubscriptionPlanChangedEto))]
     [InlineData(typeof(Granit.CustomerBalance.Events.BalanceCreditedEto))]
     [InlineData(typeof(Granit.CustomerBalance.Events.BalanceDebitedEto))]
-    public void Eto_CarriesGuidContactId(Type etoType)
+    public void Eto_CarriesGuidPartyId(Type etoType)
     {
         PropertyInfo? prop = etoType.GetProperty("PartyId");
 

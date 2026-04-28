@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Granit.Parties.Endpoints.Endpoints;
 
-/// <summary>HTTP handlers for the contacts admin API. Wired by <c>PartiesEndpointRouteBuilderExtensions</c>.</summary>
+/// <summary>HTTP handlers for the parties admin API. Wired by <c>PartiesEndpointRouteBuilderExtensions</c>.</summary>
 internal static class PartyEndpoints
 {
     public static async Task<Results<Ok<IReadOnlyList<PartyListItemResponse>>, ProblemHttpResult>> HandleListAsync(
@@ -21,11 +21,11 @@ internal static class PartyEndpoints
         PartyRoles? role,
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<Party> contacts = role.HasValue && role.Value != PartyRoles.None
+        IReadOnlyList<Party> parties = role.HasValue && role.Value != PartyRoles.None
             ? await reader.ListByRoleAsync(role.Value, cancellationToken).ConfigureAwait(false)
             : await reader.ListAsync(cancellationToken).ConfigureAwait(false);
 
-        return TypedResults.Ok(contacts.Select(PartyMapper.ToListItem).ToList()
+        return TypedResults.Ok(parties.Select(PartyMapper.ToListItem).ToList()
             as IReadOnlyList<PartyListItemResponse>);
     }
 

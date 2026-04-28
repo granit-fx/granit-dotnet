@@ -11,9 +11,9 @@ namespace Granit.Parties.Domain;
 /// <remarks>
 /// <para>
 /// Read by <c>Granit.Tax</c>'s <c>ITaxRateProvider.GetRateAsync(...)</c> when a
-/// <c>contactId</c> is supplied: an exempt or reverse-charge contact yields a 0% rate
+/// <c>partyId</c> is supplied: an exempt or reverse-charge party yields a 0% rate
 /// regardless of the country default, with the note flag indicating which mechanism
-/// applied. Standard contacts fall back to the country / standard rate.
+/// applied. Standard parties fall back to the country / standard rate.
 /// </para>
 /// <para>
 /// Defaults to <see cref="Standard"/>. Admins opt customers in via

@@ -8,8 +8,8 @@ public interface IPaymentMethodManager
     /// <summary>Provider name this manager serves.</summary>
     string ProviderName { get; }
 
-    /// <summary>Lists saved payment methods for the given contact.</summary>
-    Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(Guid contactId, CancellationToken cancellationToken = default);
+    /// <summary>Lists saved payment methods for the given party.</summary>
+    Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(Guid partyId, CancellationToken cancellationToken = default);
 
     /// <summary>Attaches a new payment method.</summary>
     Task<PaymentProviderMethod> AttachAsync(PaymentAttachMethodRequest request, CancellationToken cancellationToken = default);

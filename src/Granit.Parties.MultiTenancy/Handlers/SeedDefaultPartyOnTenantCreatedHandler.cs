@@ -6,7 +6,7 @@ namespace Granit.Parties.MultiTenancy.Handlers;
 /// <summary>
 /// Wolverine-discovered handler that seeds the host-scoped <c>Granit.Parties.Domain.Party</c>
 /// representing every newly created tenant via <see cref="IDefaultPartySeeder"/>. Idempotent —
-/// replays of the same <see cref="TenantCreatedEvent"/> return the existing contact instead of
+/// replays of the same <see cref="TenantCreatedEvent"/> return the existing party instead of
 /// duplicating it. Runtime equivalent of the historical-data backfill the showcase / consuming
 /// app would run as a one-shot migration script.
 /// </summary>

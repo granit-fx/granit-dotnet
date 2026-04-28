@@ -9,7 +9,7 @@ namespace Granit.Parties.Domain;
 /// <item><see cref="Suspended"/> → <see cref="Archived"/></item>
 /// </list>
 /// <para>
-/// <see cref="Archived"/> is terminal: archived contacts cannot be reactivated and
+/// <see cref="Archived"/> is terminal: archived parties cannot be reactivated and
 /// can no longer be edited. The row is preserved (legal retention).
 /// </para>
 /// </remarks>

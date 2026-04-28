@@ -4,7 +4,7 @@ using Granit.Privacy;
 namespace Granit.Parties.Privacy.Extensions;
 
 /// <summary>
-/// <see cref="GranitPrivacyBuilder"/> extensions that register the contacts privacy provider.
+/// <see cref="GranitPrivacyBuilder"/> extensions that register the parties privacy provider.
 /// </summary>
 public static class PrivacyBuilderPartiesExtensions
 {

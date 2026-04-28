@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 
-[Collection(ContactsDbSerialGroup.Name)]
+[Collection(PartiesDbSerialGroup.Name)]
 public sealed class EfDefaultContactResolverTests : IAsyncDisposable
 {
     private readonly DataFilter _filter = new();
@@ -42,15 +42,15 @@ public sealed class EfDefaultContactResolverTests : IAsyncDisposable
 
     private async Task<Party> SeedHostContactForTenantAsync(Guid tenantId, string name = "Tenant-as-customer")
     {
-        var contact = Party.Create(Guid.NewGuid(), null, PartyKind.Company, name, "EUR");
-        contact.AddExternalMapping(Guid.NewGuid(), PartyExternalProviderNames.Tenant, tenantId.ToString());
+        var party = Party.Create(Guid.NewGuid(), null, PartyKind.Company, name, "EUR");
+        party.AddExternalMapping(Guid.NewGuid(), PartyExternalProviderNames.Tenant, tenantId.ToString());
 
         (_, ScopedFactory factory, _) = BuildResolver(tenantId: null);
         using IDisposable bypass = _filter.Disable<IMultiTenant>();
         await using PartiesDbContext db = await factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-        db.Parties.Add(contact);
+        db.Parties.Add(party);
         await db.SaveChangesAsync(TestContext.Current.CancellationToken);
-        return contact;
+        return party;
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public sealed class EfDefaultContactResolverTests : IAsyncDisposable
     public async Task GetDefaultForTenantAsync_TenantContextActive_StillResolvesHostScoped()
     {
         // Resolver must work even when called from inside a tenant scope (tenant code
-        // looking up its own representative host-scoped contact). The tenant filter
+        // looking up its own representative host-scoped party). The tenant filter
         // would otherwise hide the host-scoped row (TenantId == null != current tenant).
         var tenantId = Guid.NewGuid();
         Party seeded = await SeedHostContactForTenantAsync(tenantId);
@@ -98,17 +98,17 @@ public sealed class EfDefaultContactResolverTests : IAsyncDisposable
     [Fact]
     public async Task GetDefaultForTenantAsync_OtherProviderMapping_NotMatched()
     {
-        // A contact whose only external mapping is e.g. "stripe" must not be returned
+        // A party whose only external mapping is e.g. "stripe" must not be returned
         // for a tenantId that happens to equal the stripe customer id.
         var tenantId = Guid.NewGuid();
-        var contact = Party.Create(Guid.NewGuid(), null, PartyKind.Company, "Acme", "EUR");
-        contact.AddExternalMapping(
+        var party = Party.Create(Guid.NewGuid(), null, PartyKind.Company, "Acme", "EUR");
+        party.AddExternalMapping(
             Guid.NewGuid(), PartyExternalProviderNames.Stripe, tenantId.ToString());
         (_, ScopedFactory factory, _) = BuildResolver(tenantId: null);
         using (IDisposable bypass = _filter.Disable<IMultiTenant>())
         {
             await using PartiesDbContext db = await factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
-            db.Parties.Add(contact);
+            db.Parties.Add(party);
             await db.SaveChangesAsync(TestContext.Current.CancellationToken);
         }
 

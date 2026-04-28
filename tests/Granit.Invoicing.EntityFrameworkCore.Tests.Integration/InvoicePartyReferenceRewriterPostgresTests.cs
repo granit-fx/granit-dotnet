@@ -127,7 +127,7 @@ public sealed class InvoicePartyReferenceRewriterPostgresTests : IClassFixture<P
         var invoice = Invoice.Create(
             id: Guid.NewGuid(),
             tenantId: Guid.NewGuid(),
-            contactId: PartyId.Create(partyId),
+            partyId: PartyId.Create(partyId),
             documentType: InvoiceDocumentType.Invoice,
             currency: "EUR",
             collectionMethod: CollectionMethod.Auto,

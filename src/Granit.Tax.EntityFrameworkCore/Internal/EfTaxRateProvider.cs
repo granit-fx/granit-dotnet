@@ -10,30 +10,30 @@ using Microsoft.EntityFrameworkCore;
 namespace Granit.Tax.EntityFrameworkCore.Internal;
 
 /// <summary>
-/// DB-backed tax rate provider. Checks the contact's <c>TaxStatus</c> first (when a
-/// <c>contactId</c> is supplied) — exempt or reverse-charge customers yield a 0% rate.
+/// DB-backed tax rate provider. Checks the party's <c>TaxStatus</c> first (when a
+/// <c>partyId</c> is supplied) — exempt or reverse-charge customers yield a 0% rate.
 /// Otherwise checks <see cref="TaxRateOverride"/> rows, then delegates to the fallback
 /// (config-based) provider if no override exists.
 /// </summary>
 internal sealed class EfTaxRateProvider(
     IDbContextFactory<TaxDbContext> contextFactory,
     ITaxRateProvider fallback,
-    IPartyReader contactReader,
+    IPartyReader partyReader,
     IDataFilter dataFilter,
     IClock clock) : ITaxRateProvider
 {
     public async Task<TaxRateEntry?> GetRateAsync(
         string countryCode,
         DateTimeOffset asOf,
-        PartyId? contactId = null,
+        PartyId? partyId = null,
         CancellationToken cancellationToken = default)
     {
         // 1. Customer-specific tax status takes absolute precedence.
-        if (contactId is not null)
+        if (partyId is not null)
         {
-            Party? contact = await ResolveContactAsync(contactId, cancellationToken)
+            Party? party = await ResolvePartyAsync(partyId, cancellationToken)
                 .ConfigureAwait(false);
-            if (contact?.TaxStatus.YieldsZeroRate == true)
+            if (party?.TaxStatus.YieldsZeroRate == true)
             {
                 return new TaxRateEntry(
                     CountryCode: countryCode,
@@ -67,17 +67,17 @@ internal sealed class EfTaxRateProvider(
         }
 
         // 3. Fallback to the config-based provider.
-        return await fallback.GetRateAsync(countryCode, asOf, contactId, cancellationToken)
+        return await fallback.GetRateAsync(countryCode, asOf, partyId, cancellationToken)
             .ConfigureAwait(false);
     }
 
-    private async Task<Party?> ResolveContactAsync(
-        PartyId contactId, CancellationToken cancellationToken)
+    private async Task<Party?> ResolvePartyAsync(
+        PartyId partyId, CancellationToken cancellationToken)
     {
-        // The contact may be host-scoped or tenant-scoped; bypass the multi-tenant filter
-        // so a host-side tax calculation can read a tenant-scoped contact's TaxStatus.
+        // The party may be host-scoped or tenant-scoped; bypass the multi-tenant filter
+        // so a host-side tax calculation can read a tenant-scoped party's TaxStatus.
         using IDisposable bypass = dataFilter.Disable<IMultiTenant>();
-        return await contactReader.GetByIdAsync(contactId, cancellationToken)
+        return await partyReader.GetByIdAsync(partyId, cancellationToken)
             .ConfigureAwait(false);
     }
 

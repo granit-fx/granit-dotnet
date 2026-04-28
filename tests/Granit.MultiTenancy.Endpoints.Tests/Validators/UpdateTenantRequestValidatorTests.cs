@@ -50,7 +50,7 @@ public sealed class UpdateTenantRequestValidatorTests
         ValidationResult result = _validator.Validate(request);
 
         result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.PropertyName == "PartyEmail");
+        result.Errors.ShouldContain(e => e.PropertyName == "ContactEmail");
     }
 
     [Fact]

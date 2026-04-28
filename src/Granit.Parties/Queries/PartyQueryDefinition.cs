@@ -4,7 +4,7 @@ using Granit.QueryEngine;
 namespace Granit.Parties.Queries;
 
 /// <summary>
-/// Query definition for the contacts admin grid — declares columns, filters, sorting,
+/// Query definition for the parties admin grid — declares columns, filters, sorting,
 /// search, and pagination metadata for the query engine.
 /// </summary>
 public sealed class PartyQueryDefinition : QueryDefinition<Party>

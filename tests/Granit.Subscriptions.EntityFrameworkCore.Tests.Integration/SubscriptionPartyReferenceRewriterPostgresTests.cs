@@ -112,7 +112,7 @@ public sealed class SubscriptionPartyReferenceRewriterPostgresTests : IClassFixt
         return Subscription.Create(
             id: SubscriptionId.Create(Guid.NewGuid()),
             tenantId: Guid.NewGuid(),
-            contactId: PartyId.Create(partyId),
+            partyId: PartyId.Create(partyId),
             planId: PlanId.Create(Guid.NewGuid()),
             currency: "EUR",
             period: new SubscriptionPeriod(now, now.AddMonths(1), BillingCycleAnchor: now));

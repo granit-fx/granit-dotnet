@@ -36,10 +36,10 @@ public sealed class EfInvoiceStoreTests : IAsyncDisposable
         await db.Database.EnsureDeletedAsync();
     }
 
-    private static Invoice NewDraftInvoice(Guid? tenantId = null, Guid? contactId = null) =>
+    private static Invoice NewDraftInvoice(Guid? tenantId = null, Guid? partyId = null) =>
         Invoice.Create(
             Guid.NewGuid(), tenantId ?? Guid.NewGuid(),
-            PartyId.Create(contactId ?? Guid.NewGuid()),
+            PartyId.Create(partyId ?? Guid.NewGuid()),
             InvoiceDocumentType.Invoice, "EUR",
             CollectionMethod.Auto, BillingReason.SubscriptionCycle);
 

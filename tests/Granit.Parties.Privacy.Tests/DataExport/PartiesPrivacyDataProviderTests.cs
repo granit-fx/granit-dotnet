@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Granit.Parties.Privacy.Tests.DataExport;
 
-public sealed class ContactsPrivacyDataProviderTests
+public sealed class PartiesPrivacyDataProviderTests
 {
     private readonly IPartyReader _reader = Substitute.For<IPartyReader>();
     private readonly NoopDataFilter _dataFilter = new();
@@ -32,7 +32,7 @@ public sealed class ContactsPrivacyDataProviderTests
     }
 
     [Fact]
-    public void ProviderName_IsContacts() =>
+    public void ProviderName_IsParties() =>
         PartiesPrivacyDataProvider.ProviderName.ShouldBe("parties");
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class ContactsPrivacyDataProviderTests
 
     [Fact]
     public void FileName_IsStable() =>
-        PartiesPrivacyDataProvider.FileName(Guid.NewGuid()).ShouldBe("contacts.json");
+        PartiesPrivacyDataProvider.FileName(Guid.NewGuid()).ShouldBe("parties.json");
 
     [Fact]
     public async Task ExportAsync_NoLinkedContact_ReturnsEmpty()
@@ -58,18 +58,18 @@ public sealed class ContactsPrivacyDataProviderTests
     public async Task ExportAsync_WithLinkedContact_ReturnsJsonPayload()
     {
         var userId = Guid.NewGuid();
-        var contact = Party.Create(
+        var party = Party.Create(
             Guid.NewGuid(), null, PartyKind.Individual, "Jean Dupont", "EUR",
             taxId: "BE0123456789", registrationNumber: "0123.456.789");
-        contact.AddEmail(Guid.NewGuid(), "jean@example.com");
-        contact.AddPhone(Guid.NewGuid(), PhoneKind.Mobile, "+33611223344");
-        contact.AddAddress(Guid.NewGuid(), AddressKind.Billing,
+        party.AddEmail(Guid.NewGuid(), "jean@example.com");
+        party.AddPhone(Guid.NewGuid(), PhoneKind.Mobile, "+33611223344");
+        party.AddAddress(Guid.NewGuid(), AddressKind.Billing,
             Address.Create("rue 1", "Brussels", "1000", "BE"));
-        contact.AddExternalMapping(Guid.NewGuid(), "stripe", "cus_42");
-        contact.LinkToUser(userId);
+        party.AddExternalMapping(Guid.NewGuid(), "stripe", "cus_42");
+        party.LinkToUser(userId);
 
         _reader.GetByUserIdAsync(userId, Arg.Any<CancellationToken>())
-            .Returns(contact);
+            .Returns(party);
 
         ReadOnlyMemory<byte> result = await Sut().ExportAsync(userId, TestContext.Current.CancellationToken);
 

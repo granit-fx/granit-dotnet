@@ -36,8 +36,8 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
 
     /// <summary>Creates a new invoice in Draft status.</summary>
     /// <param name="id">Unique invoice identifier.</param>
-    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="contactId"/>).</param>
-    /// <param name="contactId">Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this invoice. Required.</param>
+    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="partyId"/>).</param>
+    /// <param name="partyId">Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this invoice. Required.</param>
     /// <param name="documentType">Whether this is an invoice or a credit note.</param>
     /// <param name="currency">ISO 4217 currency code.</param>
     /// <param name="collectionMethod">How payment is collected (auto-charge or manual).</param>
@@ -47,7 +47,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public static Invoice Create(
         Guid id,
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         InvoiceDocumentType documentType,
         string currency,
         CollectionMethod collectionMethod,
@@ -55,7 +55,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         CreditNoteInfo? creditNoteInfo = null,
         BillingPeriod? period = null)
     {
-        ArgumentNullException.ThrowIfNull(contactId);
+        ArgumentNullException.ThrowIfNull(partyId);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
 
         if (documentType == InvoiceDocumentType.CreditNote && creditNoteInfo is null)
@@ -68,7 +68,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
         {
             Id = id,
             TenantId = tenantId,
-            PartyId = contactId,
+            PartyId = partyId,
             DocumentType = documentType,
             Currency = currency,
             CollectionMethod = collectionMethod,
@@ -80,7 +80,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
             PeriodEnd = period?.End,
         };
 
-        invoice.AddDomainEvent(new InvoiceCreatedEvent(id, tenantId, contactId.Value));
+        invoice.AddDomainEvent(new InvoiceCreatedEvent(id, tenantId, partyId.Value));
         return invoice;
     }
 
@@ -88,12 +88,12 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public static Invoice CreateCreditNote(
         Guid id,
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         InvoiceId parentInvoiceId,
         string currency,
         string reason) =>
         Create(
-            id, tenantId, contactId, InvoiceDocumentType.CreditNote, currency,
+            id, tenantId, partyId, InvoiceDocumentType.CreditNote, currency,
             CollectionMethod.Auto, BillingReason.Manual,
             creditNoteInfo: new CreditNoteInfo(parentInvoiceId, reason));
 
@@ -104,7 +104,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     /// identity (legal name, addresses, external mappings) for this invoice. Required —
     /// the invoice is meaningless without a billing party. Use
     /// <c>IDefaultPartyResolver.GetDefaultForTenantAsync</c> to obtain the host-scoped
-    /// contact representing a tenant when migrating from tenant-keyed billing.
+    /// party representing a tenant when migrating from tenant-keyed billing.
     /// </summary>
     public PartyId PartyId { get; private set; } = null!;
 
@@ -127,12 +127,12 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
     public string Currency { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Immutable snapshot of the contact's billing address taken at <see cref="Finalize"/>
+    /// Immutable snapshot of the party's billing address taken at <see cref="Finalize"/>
     /// time. <c>null</c> while the invoice is still in <see cref="InvoiceStatus.Draft"/>;
     /// callers in Draft state should read the live address from
     /// <c>Granit.Parties.Domain.Party.BillingAddress</c> via <see cref="PartyId"/>.
     /// Once an invoice is finalized this snapshot must remain stable forever — the address
-    /// shown on a legal invoice cannot change retroactively even if the contact later
+    /// shown on a legal invoice cannot change retroactively even if the party later
     /// updates their billing address.
     /// </summary>
     public Granit.Parties.Domain.BillingAddress? IssuedBillingAddressSnapshot { get; private set; }
@@ -239,7 +239,7 @@ public sealed class Invoice : AuditedAggregateRoot, IWorkflowStateful, IMultiTen
 
     /// <summary>
     /// Finalizes the document (Draft → Open). Assigns the document number and snapshots
-    /// the contact's billing address into <see cref="IssuedBillingAddressSnapshot"/> so the
+    /// the party's billing address into <see cref="IssuedBillingAddressSnapshot"/> so the
     /// address shown on this legal document stays stable forever.
     /// </summary>
     /// <param name="documentNumber">Sequential document number assigned by the number generator.</param>

@@ -5,7 +5,7 @@ using Granit.Parties.Endpoints.Internal;
 
 namespace Granit.Parties.Endpoints.Permissions;
 
-/// <summary>Declares permission definitions for contacts administration endpoints.</summary>
+/// <summary>Declares permission definitions for parties administration endpoints.</summary>
 internal sealed class PartiesPermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     /// <inheritdoc />
@@ -16,7 +16,7 @@ internal sealed class PartiesPermissionDefinitionProvider : IPermissionDefinitio
             LocalizableString.Create<PartiesEndpointsLocalizationResource>(
                 "PermissionGroup:Parties"));
 
-        // Visible at both host (managing host-scoped contacts e.g. tenants-as-customers)
+        // Visible at both host (managing host-scoped parties e.g. tenants-as-customers)
         // and tenant (managing the tenant's own end-customers / vendors / leads).
         group.AddPermission(
             PartiesPermissions.Parties.Read,

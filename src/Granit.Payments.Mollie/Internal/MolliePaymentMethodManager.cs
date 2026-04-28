@@ -17,7 +17,7 @@ internal sealed class MolliePaymentMethodManager : IPaymentMethodManager
 
     /// <inheritdoc/>
     public Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(
-        Guid contactId, CancellationToken cancellationToken = default) =>
+        Guid partyId, CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<PaymentProviderMethod>>([]);
 
     /// <inheritdoc/>

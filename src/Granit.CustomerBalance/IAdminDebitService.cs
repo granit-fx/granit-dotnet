@@ -23,7 +23,7 @@ public interface IAdminDebitService
     /// for the given currency.
     /// </summary>
     /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation).</param>
-    /// <param name="contactId">Party whose balance account is debited.</param>
+    /// <param name="partyId">Party whose balance account is debited.</param>
     /// <param name="amount">Amount to debit (must be positive).</param>
     /// <param name="currency">ISO 4217 currency code.</param>
     /// <param name="reason">Human-readable description (audit trail).</param>
@@ -31,11 +31,11 @@ public interface IAdminDebitService
     /// <param name="referenceType">Type of the referenced document (e.g. <c>"AdminAdjustment"</c>).</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The updated <see cref="BalanceAccount"/>.</returns>
-    /// <exception cref="System.InvalidOperationException">Thrown when no account exists for the contact/currency.</exception>
+    /// <exception cref="System.InvalidOperationException">Thrown when no account exists for the party/currency.</exception>
     /// <exception cref="Exceptions.InsufficientBalanceException">Thrown when the balance is insufficient.</exception>
     Task<BalanceAccount> DebitAsync(
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         decimal amount,
         string currency,
         string reason,

@@ -21,7 +21,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
     public string Identifier { get; private set; } = string.Empty;
 
     /// <summary>Optional contact email address (max 256 characters).</summary>
-    public string? PartyEmail { get; private set; }
+    public string? ContactEmail { get; private set; }
 
     /// <inheritdoc/>
     public string? Jurisdiction { get; private set; }
@@ -69,7 +69,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
             Id = id,
             Name = name,
             Identifier = identifier,
-            PartyEmail = contactEmail,
+            ContactEmail = contactEmail,
             Jurisdiction = jurisdiction,
             Activated = true,
         };
@@ -89,7 +89,7 @@ public sealed class Tenant : FullAuditedAggregateRoot, ITenantInfo
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
         Name = name;
-        PartyEmail = contactEmail;
+        ContactEmail = contactEmail;
         Jurisdiction = jurisdiction;
 
         AddDomainEvent(new TenantUpdatedEvent(Id, name, contactEmail));

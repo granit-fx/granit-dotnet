@@ -31,8 +31,8 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
 
     /// <summary>Creates a new subscription in Trial or Active status.</summary>
     /// <param name="id">Unique subscription identifier.</param>
-    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="contactId"/>).</param>
-    /// <param name="contactId">Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this subscription. Required.</param>
+    /// <param name="tenantId">Owning tenant identifier (multi-tenant isolation, orthogonal to <paramref name="partyId"/>).</param>
+    /// <param name="partyId">Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity for this subscription. Required.</param>
     /// <param name="planId">Plan the subscription is for.</param>
     /// <param name="currency">ISO 4217 currency code (e.g., "EUR").</param>
     /// <param name="period">Initial billing period boundaries.</param>
@@ -41,14 +41,14 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     public static Subscription Create(
         SubscriptionId id,
         Guid tenantId,
-        PartyId contactId,
+        PartyId partyId,
         PlanId planId,
         string currency,
         SubscriptionPeriod period,
         DateTimeOffset? trialEndsAt = null,
         Guid? planPriceId = null)
     {
-        ArgumentNullException.ThrowIfNull(contactId);
+        ArgumentNullException.ThrowIfNull(partyId);
         ArgumentException.ThrowIfNullOrWhiteSpace(currency);
         ArgumentNullException.ThrowIfNull(period);
 
@@ -60,7 +60,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
         {
             Id = id,
             TenantId = tenantId,
-            PartyId = contactId,
+            PartyId = partyId,
             PlanId = planId,
             Currency = currency.ToUpperInvariant(),
             Status = initialStatus,
@@ -72,9 +72,9 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
             PlanPriceId = planPriceId,
         };
 
-        subscription.AddDomainEvent(new SubscriptionCreatedEvent(id, planId, tenantId, contactId.Value));
+        subscription.AddDomainEvent(new SubscriptionCreatedEvent(id, planId, tenantId, partyId.Value));
         subscription.AddDistributedEvent(new SubscriptionCreatedEto(
-            id, planId, tenantId, contactId.Value, trialEndsAt.HasValue));
+            id, planId, tenantId, partyId.Value, trialEndsAt.HasValue));
 
         return subscription;
     }
@@ -143,7 +143,7 @@ public sealed class Subscription : AuditedAggregateRoot, IWorkflowStateful, IMul
     /// <summary>
     /// Identifier of the <c>Granit.Parties.Party</c> that holds the billing identity
     /// (legal name, addresses, payment methods) for this subscription. Required — pinned
-    /// at creation. Switching contact mid-life-cycle is not supported (would invalidate
+    /// at creation. Switching party mid-life-cycle is not supported (would invalidate
     /// the running invoice cycle); cancel + re-create instead.
     /// </summary>
     public PartyId PartyId { get; private set; } = null!;

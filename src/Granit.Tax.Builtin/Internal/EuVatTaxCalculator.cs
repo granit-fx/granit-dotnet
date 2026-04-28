@@ -61,7 +61,7 @@ internal sealed class EuVatTaxCalculator(
                 .GetRateAsync(
                     context.RateCountryCode,
                     clock.Now,
-                    request.BuyerContactId,
+                    request.BuyerPartyId,
                     cancellationToken)
                 .ConfigureAwait(false);
 

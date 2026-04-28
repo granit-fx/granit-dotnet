@@ -11318,7 +11318,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PartyId contactId, string currency)",
+          "signature": "Create(Guid id, Guid tenantId, PartyId partyId, string currency)",
           "returnType": "BalanceAccount"
         },
         {
@@ -11752,7 +11752,7 @@
         {
           "name": "ApplyAsync",
           "kind": "method",
-          "signature": "ApplyAsync(Guid tenantId, PartyId contactId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
+          "signature": "ApplyAsync(Guid tenantId, PartyId partyId, decimal amount, string currency, TransactionSource source, string reason, DateTimeOffset? expiresAt, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11768,7 +11768,7 @@
         {
           "name": "DebitAsync",
           "kind": "method",
-          "signature": "DebitAsync(Guid tenantId, PartyId contactId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
+          "signature": "DebitAsync(Guid tenantId, PartyId partyId, decimal amount, string currency, string reason, Guid? referenceId = null, string? referenceType = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount>"
         }
       ]
@@ -11788,9 +11788,9 @@
           "returnType": "Task<BalanceAccount?>"
         },
         {
-          "name": "GetByContactAndCurrencyAsync",
+          "name": "GetByPartyAndCurrencyAsync",
           "kind": "method",
-          "signature": "GetByContactAndCurrencyAsync(PartyId contactId, string currency, CancellationToken cancellationToken = default)",
+          "signature": "GetByPartyAndCurrencyAsync(PartyId partyId, string currency, CancellationToken cancellationToken = default)",
           "returnType": "Task<BalanceAccount?>"
         },
         {
@@ -11910,7 +11910,7 @@
         {
           "name": "CreditOverpaymentAsync",
           "kind": "method",
-          "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId contactId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
+          "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId partyId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -23510,7 +23510,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, Guid tenantId, PartyId contactId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
+          "signature": "Create(Guid id, Guid tenantId, PartyId partyId, InvoiceDocumentType documentType, string currency, CollectionMethod collectionMethod, BillingReason billingReason, CreditNoteInfo? creditNoteInfo = null, BillingPeriod? period = null)",
           "returnType": "Invoice"
         },
         {
@@ -24185,9 +24185,9 @@
           "returnType": "Task<IReadOnlyList<Invoice>>"
         },
         {
-          "name": "GetByContactAsync",
+          "name": "GetByPartyAsync",
           "kind": "method",
-          "signature": "GetByContactAsync(PartyId contactId, CancellationToken cancellationToken = default)",
+          "signature": "GetByPartyAsync(PartyId partyId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Invoice>>"
         },
         {
@@ -27286,9 +27286,9 @@
           "returnType": "string"
         },
         {
-          "name": "PartyEmail",
+          "name": "ContactEmail",
           "kind": "property",
-          "signature": "string? PartyEmail",
+          "signature": "string? ContactEmail",
           "returnType": "string?"
         },
         {
@@ -33016,7 +33016,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "Guid? AvatarBlobId { get; private set; } public PartyId? ParentContactId { get; private set; } public Guid? UserId { get; private set; } public PartyRoles Roles { get; private set; } public PartyStatus Status { get; private set; } public IReadOnlyList<PartyExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "Guid? AvatarBlobId { get; private set; } public PartyId? ParentPartyId { get; private set; } public Guid? UserId { get; private set; } public PartyRoles Roles { get; private set; } public PartyStatus Status { get; private set; } public IReadOnlyList<PartyExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "TenantId",
@@ -33513,6 +33513,30 @@
           "name": "TagName",
           "kind": "property",
           "signature": "string TagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ContactInfoTagName",
+          "kind": "property",
+          "signature": "string ContactInfoTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ClassificationTagName",
+          "kind": "property",
+          "signature": "string ClassificationTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "MergeTagName",
+          "kind": "property",
+          "signature": "string MergeTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "DuplicatesTagName",
+          "kind": "property",
+          "signature": "string DuplicatesTagName",
           "returnType": "string"
         }
       ]
@@ -34044,13 +34068,13 @@
         {
           "name": "AddAsync",
           "kind": "method",
-          "signature": "AddAsync(Party contact, CancellationToken cancellationToken = default)",
+          "signature": "AddAsync(Party party, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
           "name": "UpdateAsync",
           "kind": "method",
-          "signature": "UpdateAsync(Party contact, CancellationToken cancellationToken = default)",
+          "signature": "UpdateAsync(Party party, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -34116,7 +34140,7 @@
         {
           "name": "HandleAsync",
           "kind": "method",
-          "signature": "HandleAsync(PersonalDataDeletionRequestedEto request, IPartyReader contacts, IPartyWriter writer, IDataFilter dataFilter, IDistributedEventBus bus, CancellationToken cancellationToken)",
+          "signature": "HandleAsync(PersonalDataDeletionRequestedEto request, IPartyReader parties, IPartyWriter writer, IDataFilter dataFilter, IDistributedEventBus bus, CancellationToken cancellationToken)",
           "returnType": "Task"
         }
       ]
@@ -35488,7 +35512,7 @@
         {
           "name": "ListAsync",
           "kind": "method",
-          "signature": "ListAsync(Guid contactId, CancellationToken cancellationToken = default)",
+          "signature": "ListAsync(Guid partyId, CancellationToken cancellationToken = default)",
           "returnType": "string ProviderName { get; } Task<IReadOnlyList<PaymentProviderMethod>>"
         },
         {
@@ -44007,7 +44031,7 @@
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(SubscriptionId id, Guid tenantId, PartyId contactId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
+          "signature": "Create(SubscriptionId id, Guid tenantId, PartyId partyId, PlanId planId, string currency, SubscriptionPeriod period, DateTimeOffset? trialEndsAt = null, Guid? planPriceId = null)",
           "returnType": "Subscription"
         },
         {
@@ -45882,7 +45906,7 @@
         {
           "name": "GetRateAsync",
           "kind": "method",
-          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, PartyId? contactId = null, CancellationToken cancellationToken = default)",
+          "signature": "GetRateAsync(string countryCode, DateTimeOffset asOf, PartyId? partyId = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<TaxRateEntry?>"
         },
         {

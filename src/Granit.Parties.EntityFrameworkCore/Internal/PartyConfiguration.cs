@@ -26,7 +26,7 @@ internal sealed class PartyConfiguration : IEntityTypeConfiguration<Party>
         builder.Property(c => c.RegistrationNumber).HasMaxLength(64);
 
         // Customer-specific tax classification — owned single-valued VO inlined into the
-        // contacts table. Defaults to TaxStatus.Standard (all flags false) on materialisation.
+        // parties table. Defaults to TaxStatus.Standard (all flags false) on materialisation.
         builder.OwnsOne(c => c.TaxStatus, ts =>
         {
             ts.Property(t => t.IsExempt).IsRequired().HasDefaultValue(false);
@@ -48,8 +48,8 @@ internal sealed class PartyConfiguration : IEntityTypeConfiguration<Party>
         // Internal notes — long free-form text bounded for DoS protection.
         builder.Property(c => c.InternalNotes).HasMaxLength(Party.MaxInternalNotesLength);
 
-        // ParentContactId is a SingleValueObject<Guid> — declare explicitly as a scalar.
-        builder.Property(c => c.ParentContactId);
+        // ParentPartyId is a SingleValueObject<Guid> — declare explicitly as a scalar.
+        builder.Property(c => c.ParentPartyId);
 
         // Child collections use HasMany (not OwnsMany) so they can be queried directly via
         // their own DbSet — required by the reconciliation logic in EfPartyStore.UpdateAsync.

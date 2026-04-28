@@ -1,7 +1,7 @@
 namespace Granit.Parties.Endpoints.Dtos;
 
 /// <summary>
-/// Request to set a contact's customer-specific tax status — exempt, reverse-charge,
+/// Request to set a party's customer-specific tax status — exempt, reverse-charge,
 /// or standard (none of the flags set).
 /// </summary>
 /// <param name="IsExempt">VAT-exempt customer (NGO, public body, charity).</param>

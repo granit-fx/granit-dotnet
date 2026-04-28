@@ -15,7 +15,7 @@ namespace Granit.ArchitectureTests;
 public sealed class SubscriptionPartyIdConventionTests
 {
     [Fact]
-    public void Subscription_ContactId_IsTypedContactIdValueObject()
+    public void Subscription_PartyId_IsTypedPartyIdValueObject()
     {
         PropertyInfo? prop = typeof(Subscription).GetProperty(nameof(Subscription.PartyId));
 

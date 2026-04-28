@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 
-[Collection(ContactsDbSerialGroup.Name)]
+[Collection(PartiesDbSerialGroup.Name)]
 public sealed class EfDefaultContactSeederTests : IAsyncDisposable
 {
     private readonly DataFilter _filter = new();
@@ -78,7 +78,7 @@ public sealed class EfDefaultContactSeederTests : IAsyncDisposable
             tenantId, "Different Name", cancellationToken: TestContext.Current.CancellationToken);
 
         second.Id.ShouldBe(first.Id);
-        second.Name.ShouldBe("ACME Inc.", "the existing contact must be preserved — second call must not rename");
+        second.Name.ShouldBe("ACME Inc.", "the existing party must be preserved — second call must not rename");
     }
 
     [Fact]

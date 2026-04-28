@@ -18,7 +18,7 @@ internal static class ListTransactionsEndpoint
         int pageSize,
         [FromServices] IBalanceAccountReader accountReader,
         [FromServices] IBalanceTransactionReader transactionReader,
-        [FromServices] IDefaultPartyResolver contactResolver,
+        [FromServices] IDefaultPartyResolver partyResolver,
         [FromServices] ICurrentTenant currentTenant,
         CancellationToken cancellationToken)
     {
@@ -30,17 +30,17 @@ internal static class ListTransactionsEndpoint
             return TypedResults.Problem("Tenant context required.", statusCode: StatusCodes.Status422UnprocessableEntity);
         }
 
-        Party? contact = await contactResolver
+        Party? party = await partyResolver
             .GetDefaultForTenantAsync(currentTenant.Id!.Value, cancellationToken)
             .ConfigureAwait(false);
 
-        if (contact is null)
+        if (party is null)
         {
             return TypedResults.Ok<IReadOnlyList<BalanceTransactionResponse>>([]);
         }
 
         BalanceAccount? account = await accountReader
-            .GetByContactAndCurrencyAsync(PartyId.Create(contact.Id), currency, cancellationToken)
+            .GetByPartyAndCurrencyAsync(PartyId.Create(party.Id), currency, cancellationToken)
             .ConfigureAwait(false);
 
         if (account is null)

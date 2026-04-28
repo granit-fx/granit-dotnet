@@ -4,7 +4,7 @@ using Granit.Domain;
 namespace Granit.Parties.Domain;
 
 /// <summary>
-/// A phone number attached to a <see cref="Party"/>. A contact may carry several phone
+/// A phone number attached to a <see cref="Party"/>. A party may carry several phone
 /// numbers (mobile + office + home + other). Exactly zero or one <see cref="IsPrimary"/>
 /// entry is enforced by the aggregate.
 /// </summary>
@@ -12,7 +12,7 @@ public sealed class PartyPhone : Entity
 {
     private PartyPhone() { }
 
-    /// <summary>Creates a new contact phone number.</summary>
+    /// <summary>Creates a new party phone number.</summary>
     public static PartyPhone Create(
         Guid id,
         PhoneKind kind,
@@ -47,7 +47,7 @@ public sealed class PartyPhone : Entity
     [SensitiveData(Level = Sensitivity.Confidential)]
     public string? CanonicalNumber { get; private set; }
 
-    /// <summary>Whether this is the contact's primary phone.</summary>
+    /// <summary>Whether this is the party's primary phone.</summary>
     public bool IsPrimary { get; private set; }
 
     /// <summary>Optional user-supplied label.</summary>

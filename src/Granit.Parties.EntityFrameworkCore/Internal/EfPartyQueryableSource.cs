@@ -8,9 +8,9 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 /// <remarks>
 /// The standard <see cref="IMultiTenant"/> query filter is intentionally left active. When no
 /// tenant context is in scope (host admin), the filter naturally restricts the result set to
-/// host-scoped contacts (<c>TenantId == null</c>) — exactly the documented invariant in
+/// host-scoped parties (<c>TenantId == null</c>) — exactly the documented invariant in
 /// <see cref="EfPartyStore"/>. Disabling the filter in that branch would expose every tenant's
-/// contacts to a host-scoped browser, which is a privacy regression. Cross-tenant browsing
+/// parties to a host-scoped browser, which is a privacy regression. Cross-tenant browsing
 /// must be opt-in via <c>IDataFilter.Disable&lt;IMultiTenant&gt;()</c> from a dedicated,
 /// permission-gated endpoint, not the default behaviour of this source.
 /// </remarks>

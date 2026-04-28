@@ -18,8 +18,8 @@ namespace Granit.Payments.Stripe.Internal;
 /// </summary>
 internal sealed partial class StripePaymentMethodManager(
     IStripeClient stripeClient,
-    IPartyReader contactReader,
-    IPartyWriter contactWriter,
+    IPartyReader partyReader,
+    IPartyWriter partyWriter,
     IDataFilter dataFilter,
     IGuidGenerator guidGenerator,
     ILogger<StripePaymentMethodManager> logger) : IPaymentMethodManager
@@ -31,10 +31,10 @@ internal sealed partial class StripePaymentMethodManager(
 
     /// <inheritdoc/>
     public async Task<IReadOnlyList<PaymentProviderMethod>> ListAsync(
-        Guid contactId, CancellationToken cancellationToken = default)
+        Guid partyId, CancellationToken cancellationToken = default)
     {
-        Party? contact = await ResolveContactAsync(contactId, cancellationToken).ConfigureAwait(false);
-        string? stripeCustomerId = contact?.FindExternalId(Provider);
+        Party? party = await ResolvePartyAsync(partyId, cancellationToken).ConfigureAwait(false);
+        string? stripeCustomerId = party?.FindExternalId(Provider);
 
         if (stripeCustomerId is null)
         {
@@ -92,13 +92,13 @@ internal sealed partial class StripePaymentMethodManager(
     }
 
     private async Task<string> GetOrCreateStripeCustomerAsync(
-        Guid contactId, CancellationToken cancellationToken)
+        Guid partyId, CancellationToken cancellationToken)
     {
-        Party contact = await ResolveContactAsync(contactId, cancellationToken).ConfigureAwait(false)
+        Party party = await ResolvePartyAsync(partyId, cancellationToken).ConfigureAwait(false)
             ?? throw new InvalidOperationException(
-                $"Party '{contactId}' not found — cannot attach a Stripe payment method to a non-existent contact.");
+                $"Party '{partyId}' not found — cannot attach a Stripe payment method to a non-existent party.");
 
-        string? existing = contact.FindExternalId(Provider);
+        string? existing = party.FindExternalId(Provider);
         if (existing is not null)
         {
             return existing;
@@ -108,26 +108,26 @@ internal sealed partial class StripePaymentMethodManager(
         Customer customer = await service.CreateAsync(
             new CustomerCreateOptions
             {
-                Name = contact.Name,
-                Metadata = new Dictionary<string, string> { ["granit_contact_id"] = contact.Id.ToString() },
+                Name = party.Name,
+                Metadata = new Dictionary<string, string> { ["granit_party_id"] = party.Id.ToString() },
             },
             cancellationToken: cancellationToken).ConfigureAwait(false);
 
-        contact.AddExternalMapping(guidGenerator.Create(), Provider, customer.Id);
-        await contactWriter.UpdateAsync(contact, cancellationToken).ConfigureAwait(false);
+        party.AddExternalMapping(guidGenerator.Create(), Provider, customer.Id);
+        await partyWriter.UpdateAsync(party, cancellationToken).ConfigureAwait(false);
 
-        Log.CustomerCreated(logger, customer.Id, contactId);
+        Log.CustomerCreated(logger, customer.Id, partyId);
 
         return customer.Id;
     }
 
-    private async Task<Party?> ResolveContactAsync(Guid contactId, CancellationToken cancellationToken)
+    private async Task<Party?> ResolvePartyAsync(Guid partyId, CancellationToken cancellationToken)
     {
-        // The contact may be host-scoped or tenant-scoped — bypass the tenant filter so a
-        // host-side payment workflow can resolve a tenant-scoped contact, and vice versa.
+        // The party may be host-scoped or tenant-scoped — bypass the tenant filter so a
+        // host-side payment workflow can resolve a tenant-scoped party, and vice versa.
         using IDisposable bypass = dataFilter.Disable<IMultiTenant>();
-        return await contactReader
-            .GetByIdAsync(PartyId.Create(contactId), cancellationToken)
+        return await partyReader
+            .GetByIdAsync(PartyId.Create(partyId), cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -140,13 +140,13 @@ internal sealed partial class StripePaymentMethodManager(
 
     private static partial class Log
     {
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe payment method attached: {MethodId} for contact {PartyId}")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe payment method attached: {MethodId} for party {PartyId}")]
         public static partial void PaymentMethodAttached(ILogger logger, string methodId, Guid partyId);
 
         [LoggerMessage(Level = LogLevel.Information, Message = "Stripe payment method detached: {MethodId}")]
         public static partial void PaymentMethodDetached(ILogger logger, string methodId);
 
-        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe customer created: {CustomerId} for contact {PartyId}")]
+        [LoggerMessage(Level = LogLevel.Information, Message = "Stripe customer created: {CustomerId} for party {PartyId}")]
         public static partial void CustomerCreated(ILogger logger, string customerId, Guid partyId);
     }
 }

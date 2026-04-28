@@ -10,8 +10,8 @@ public sealed class InvoiceCreateRequestValidatorTests
 {
     private readonly InvoiceCreateRequestValidator _sut = new();
 
-    private static InvoiceCreateRequest ValidRequest(Guid? contactId = null) => new(
-        PartyId: contactId ?? Guid.NewGuid(),
+    private static InvoiceCreateRequest ValidRequest(Guid? partyId = null) => new(
+        PartyId: partyId ?? Guid.NewGuid(),
         DocumentType: InvoiceDocumentType.Invoice,
         Currency: "EUR",
         CollectionMethod: CollectionMethod.Auto,
