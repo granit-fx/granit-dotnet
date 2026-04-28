@@ -280,6 +280,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.authentication": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "granit.authorization": {
         "type": "Project",
         "dependencies": {

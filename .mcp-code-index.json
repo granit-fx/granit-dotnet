@@ -168,6 +168,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Authentication",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Authentication.ApiKeys",
       "deps": [
         "Granit",
@@ -268,9 +275,7 @@
     {
       "name": "Granit.Authentication.OpenIddict",
       "deps": [
-        "Granit",
-        "Granit",
-        "Granit",
+        "Granit.Authentication",
         "Granit"
       ],
       "framework": "net10.0"
@@ -1690,6 +1695,7 @@
     {
       "name": "Granit.OpenIddict.Server",
       "deps": [
+        "Granit.Authentication",
         "Granit.OpenIddict"
       ],
       "framework": "net10.0"
@@ -6496,6 +6502,22 @@
       ]
     },
     {
+      "name": "OpenIddictRoleClaimsTransformation",
+      "fqn": "Granit.Authentication.Claims.OpenIddictRoleClaimsTransformation",
+      "kind": "class",
+      "project": "Granit.Authentication",
+      "file": "src/Granit.Authentication/Claims/OpenIddictRoleClaimsTransformation.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "TransformAsync",
+          "kind": "method",
+          "signature": "TransformAsync(ClaimsPrincipal principal)",
+          "returnType": "Task<ClaimsPrincipal>"
+        }
+      ]
+    },
+    {
       "name": "DPoPJwtBearerExtensions",
       "fqn": "Granit.Authentication.DPoP.Extensions.DPoPJwtBearerExtensions",
       "kind": "class",
@@ -6604,6 +6626,31 @@
           "returnType": "Task<string?>"
         }
       ]
+    },
+    {
+      "name": "AuthenticationServiceCollectionExtensions",
+      "fqn": "Granit.Authentication.Extensions.AuthenticationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Authentication",
+      "file": "src/Granit.Authentication/Extensions/AuthenticationServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitOpenIddictRoleClaimNormalization",
+          "kind": "method",
+          "signature": "AddGranitOpenIddictRoleClaimNormalization(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAuthenticationModule",
+      "fqn": "Granit.Authentication.GranitAuthenticationModule",
+      "kind": "class",
+      "project": "Granit.Authentication",
+      "file": "src/Granit.Authentication/GranitAuthenticationModule.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "CurrentUserService",
@@ -7138,7 +7185,7 @@
       "kind": "class",
       "project": "Granit.Authentication.OpenIddict",
       "file": "src/Granit.Authentication.OpenIddict/Extensions/OpenIddictValidationHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitOpenIddictAuthentication",
@@ -32672,7 +32719,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",
@@ -32688,7 +32735,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",

@@ -9,22 +9,20 @@
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Authentication.OpenIddict.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="OpenIddict.Validation.AspNetCore" />
     <PackageReference Include="OpenIddict.Validation.SystemNetHttp" />
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Authentication\Granit.Authentication.csproj" />
+    <ProjectReference Include="..\Granit\Granit.csproj" />
   </ItemGroup>
 
 </Project>

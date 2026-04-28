@@ -1,3 +1,4 @@
+using Granit.Authentication;
 using Granit.Modularity;
 using Granit.OpenIddict.Server.Handlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +10,7 @@ namespace Granit.OpenIddict.Server;
 /// Granit module that configures the OpenIddict OIDC server:
 /// endpoint URIs, flows, signing keys, custom grant types, and ASP.NET Core integration.
 /// </summary>
-[DependsOn(typeof(GranitOpenIddictModule))]
+[DependsOn(typeof(GranitAuthenticationModule), typeof(GranitOpenIddictModule))]
 public sealed class GranitOpenIddictServerModule : GranitModule
 {
     // Scoped handlers must be registered in DI for OpenIddict to resolve them

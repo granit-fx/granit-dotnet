@@ -7,6 +7,14 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `Granit.Authentication.OpenIddict` & `Granit.OpenIddict.Server` — role claims emitted by OpenIddict.Validation under the OIDC short claim type `role` are now normalized to `ClaimTypes.Role`, restoring parity with `Granit.Authentication.JwtBearer`. Without this, `ICurrentUserService.GetRoles()` and the `PermissionChecker.AdminRoles` bypass returned empty even when `ClaimsPrincipal.IsInRole()` matched, causing 403s on permission-protected endpoints for admin-role users on resource servers using OpenIddict validation. Implemented as a shared `OpenIddictRoleClaimsTransformation` in the new `Granit.Authentication` base package.
+
+### Added (framework)
+
+- `Granit.Authentication` — new base package hosting cross-scheme authentication primitives. Currently exposes `OpenIddictRoleClaimsTransformation` (scoped to the `OpenIddict.Validation.AspNetCore` scheme) and the `AddGranitOpenIddictRoleClaimNormalization()` registration helper. Future home for shared `ICurrentUserService` machinery currently living in `Granit.Authentication.JwtBearer`.
+
 ### Security
 
 - `Granit.Vault.{HashiCorp,Azure,Aws,GoogleCloud}` — dynamic database credentials (`IDatabaseCredentialProvider.Username` / `Password`) are now stored in `byte[]` buffers and zeroized via `CryptographicOperations.ZeroMemory` on every rotation, mitigating credential residency in process memory (CWE-522 / GDPR Art. 32). Shared helper: `Granit.Vault.Internal.ZeroizingCredentialStore`.

@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using Granit.Authentication.Extensions;
 using Granit.Authentication.OpenIddict.Internal;
 using Granit.Authentication.OpenIddict.Options;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +47,12 @@ public static class OpenIddictValidationHostApplicationBuilderExtensions
                 options.UseSystemNetHttp();
                 options.UseAspNetCore();
             });
+
+        // Normalize OIDC short-name "role" claims emitted by OpenIddict.Validation into
+        // ClaimTypes.Role so PermissionChecker.AdminRoles bypass and ICurrentUserService
+        // .GetRoles() agree with ClaimsPrincipal.IsInRole(). Mirrors what JwtBearer does
+        // implicitly via TokenValidationParameters.RoleClaimType.
+        builder.Services.AddGranitOpenIddictRoleClaimNormalization();
 
         // Store RequireDPoP flag for middleware registration
         if (validationOptions.RequireDPoP)

@@ -186,6 +186,12 @@
       "granit": {
         "type": "Project"
       },
+      "granit.authentication": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
+        }
+      },
       "Microsoft.Extensions.Http.Resilience": {
         "type": "CentralTransitive",
         "requested": "[10.*, )",

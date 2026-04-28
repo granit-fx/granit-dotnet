@@ -34,6 +34,7 @@
       "src/Granit.Authentication.JwtBearer.Keycloak/Granit.Authentication.JwtBearer.Keycloak.csproj",
       "src/Granit.Authentication.JwtBearer/Granit.Authentication.JwtBearer.csproj",
       "src/Granit.Authentication.OpenIddict/Granit.Authentication.OpenIddict.csproj",
+      "src/Granit.Authentication/Granit.Authentication.csproj",
       "src/Granit.Authorization.AI/Granit.Authorization.AI.csproj",
       "src/Granit.Authorization.Endpoints/Granit.Authorization.Endpoints.csproj",
       "src/Granit.Authorization.EntityFrameworkCore/Granit.Authorization.EntityFrameworkCore.csproj",
