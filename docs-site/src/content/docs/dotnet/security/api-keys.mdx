@@ -138,7 +138,7 @@ Five lifecycle events (`*Eto` reach the Wolverine outbox; `*Event` is local-only
 |----------|---------|---------|-------------|
 | `ExpirationLeadTimeDays` | `Granit:ApiKeys` | `14` | Days before `ExpiresAt` at which the scanner starts emitting `ApiKeyExpiringSoonEto`. Range: 1–90. |
 | `RoutePrefix` | `ApiKeysEndpoints` | `"authentication"` | URL prefix for the admin endpoints (full path: `/{prefix}/api-keys`). |
-| `TagName` | `ApiKeysEndpoints` | `"API Keys"` | OpenAPI tag (Title Case With Spaces — see [tag conventions](/dotnet/api/conventions/)). |
+| `TagName` | `ApiKeysEndpoints` | `"API Keys"` | OpenAPI tag (Title Case With Spaces — see [tag conventions](/dotnet/architecture/http-conventions/#openapi-endpoint-metadata)). |
 | `AllowedEnvironments` | `ApiKeysEndpointsOptions` | `["live", "test", "dev"]` | Whitelist enforced at create-time. |
 
 `ApiKeysOptions` lives in the base module and is distinct from the ASP.NET
@@ -150,7 +150,7 @@ scheme registration on the request pipeline.
 
 All endpoints are mounted under `MapGranitApiKeys()` (default prefix
 `/authentication/api-keys`). Each endpoint declares the [five mandatory OpenAPI
-metadata elements](/dotnet/api/conventions/) and is gated by a granular permission
+metadata elements](/dotnet/architecture/http-conventions/#openapi-endpoint-metadata) and is gated by a granular permission
 (see next section).
 
 | Verb | Path | Operation | Permission |
