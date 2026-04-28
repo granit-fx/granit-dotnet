@@ -33513,6 +33513,30 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "ContactInfoTagName",
+          "kind": "property",
+          "signature": "string ContactInfoTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "ClassificationTagName",
+          "kind": "property",
+          "signature": "string ClassificationTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "MergeTagName",
+          "kind": "property",
+          "signature": "string MergeTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "DuplicatesTagName",
+          "kind": "property",
+          "signature": "string DuplicatesTagName",
+          "returnType": "string"
         }
       ]
     },
