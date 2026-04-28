@@ -104,7 +104,7 @@ under `src/Granit.{Module}/Metrics/`.
    the route group:
 
    ```csharp
-   app.MapGranitAnalytics();   // exposes POST /api/granit/analytics/metrics/{name}
+   app.MapGranitAnalytics();   // exposes POST /api/{version}/analytics/metrics/{name}
    ```
 
 7. **Consume from the frontend** with the `<MetricCard>` component (story
@@ -122,7 +122,10 @@ under `src/Granit.{Module}/Metrics/`.
 
 ## What the framework does for you
 
-Once registered, the metric is exposed at `POST /api/granit/analytics/metrics/{name}`
+Once registered, the metric is exposed at `POST /api/{version}/analytics/metrics/{name}`
+(the `{version}` segment is supplied by the host's `Granit.Http.ApiVersioning`
+configuration; the route prefix defaults to `analytics` and is overridable via
+`MapGranitAnalytics(opts => opts.RoutePrefix = …)`)
 and the framework pipeline guarantees the following — none of which you write
 yourself:
 
