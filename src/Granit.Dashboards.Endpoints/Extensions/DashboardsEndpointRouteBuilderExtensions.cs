@@ -35,6 +35,7 @@ public static class DashboardsEndpointRouteBuilderExtensions
         group.MapCatalogEndpoints();
         group.MapImportEndpoints();
         group.MapInstanceEndpoints();
+        group.MapStateTransitionEndpoints();
 
         return group;
     }

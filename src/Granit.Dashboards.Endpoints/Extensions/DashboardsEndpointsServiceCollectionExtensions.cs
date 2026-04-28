@@ -21,6 +21,7 @@ public static class DashboardsEndpointsServiceCollectionExtensions
 
         services.TryAddScoped<DashboardImporter>();
         services.TryAddScoped<DashboardReader>();
+        services.TryAddScoped<DashboardStateTransitionService>();
 
         return services;
     }
