@@ -9,7 +9,7 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Deduplication;
 
 public sealed class PartiesPostgresMigrationExtensionsTests
 {
-    // Use the configured prefix (default "contacts_") so tests stay aligned with whatever
+    // Use the configured prefix (default "parties_") so tests stay aligned with whatever
     // GranitPartiesDbProperties.DbTablePrefix the host app sets, instead of pinning the
     // pre-rename literal.
     private static readonly string PartiesTable = $"{GranitPartiesDbProperties.DbTablePrefix}parties";

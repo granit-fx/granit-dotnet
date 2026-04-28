@@ -14,7 +14,7 @@ namespace Granit.Parties.EntityFrameworkCore.Tests.Internal;
 public sealed class EfDefaultContactResolverTests : IAsyncDisposable
 {
     private readonly DataFilter _filter = new();
-    private readonly string _databaseName = $"contacts-resolver-{Guid.NewGuid()}";
+    private readonly string _databaseName = $"parties-resolver-{Guid.NewGuid()}";
     private readonly InMemoryDatabaseRoot _dbRoot = new();
 
     public async ValueTask DisposeAsync()
