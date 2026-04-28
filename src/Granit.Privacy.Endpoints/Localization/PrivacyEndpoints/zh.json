@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "查看法律文件和同意状态",
     "Permission:Privacy.Deletion.Execute": "请求删除个人数据",
     "Permission:Privacy.Export.Execute": "请求导出个人数据",
+    "Permission:Privacy.LegalDocuments.Create": "创建新的法律文档草稿",
+    "Permission:Privacy.LegalDocuments.Manage": "编辑、发布和归档法律文档",
+    "Permission:Privacy.LegalDocuments.Read": "查看法律文档的版本和历史记录",
     "Permission:Privacy.Purposes.Read": "查看已注册的处理目的",
     "PermissionGroup:Privacy": "隐私 (GDPR)"
   }

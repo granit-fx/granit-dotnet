@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "Rechtliche Dokumente und Einwilligungsstatus anzeigen",
     "Permission:Privacy.Deletion.Execute": "Löschung personenbezogener Daten anfordern",
     "Permission:Privacy.Export.Execute": "Export personenbezogener Daten anfordern",
+    "Permission:Privacy.LegalDocuments.Create": "Neue Entwürfe rechtlicher Dokumente erstellen",
+    "Permission:Privacy.LegalDocuments.Manage": "Rechtliche Dokumente bearbeiten, veröffentlichen und archivieren",
+    "Permission:Privacy.LegalDocuments.Read": "Versionen und Historie rechtlicher Dokumente anzeigen",
     "Permission:Privacy.Purposes.Read": "Registrierte Verarbeitungszwecke anzeigen",
     "PermissionGroup:Privacy": "Datenschutz (DSGVO)"
   }

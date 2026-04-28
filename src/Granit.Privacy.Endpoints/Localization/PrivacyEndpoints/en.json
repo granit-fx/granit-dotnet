@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "View legal documents and consent status",
     "Permission:Privacy.Deletion.Execute": "Request personal data deletion",
     "Permission:Privacy.Export.Execute": "Request personal data export",
+    "Permission:Privacy.LegalDocuments.Create": "Create new legal document drafts",
+    "Permission:Privacy.LegalDocuments.Manage": "Edit, publish, and archive legal documents",
+    "Permission:Privacy.LegalDocuments.Read": "View legal document versions and history",
     "Permission:Privacy.Purposes.Read": "Read registered processing purposes",
     "PermissionGroup:Privacy": "Privacy"
   }

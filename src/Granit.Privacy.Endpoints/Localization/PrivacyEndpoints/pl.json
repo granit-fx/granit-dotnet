@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "Wyświetlanie dokumentów prawnych i statusu zgody",
     "Permission:Privacy.Deletion.Execute": "Żądanie usunięcia danych osobowych",
     "Permission:Privacy.Export.Execute": "Żądanie eksportu danych osobowych",
+    "Permission:Privacy.LegalDocuments.Create": "Tworzenie nowych szkiców dokumentów prawnych",
+    "Permission:Privacy.LegalDocuments.Manage": "Edytowanie, publikowanie i archiwizowanie dokumentów prawnych",
+    "Permission:Privacy.LegalDocuments.Read": "Wyświetlanie wersji i historii dokumentów prawnych",
     "Permission:Privacy.Purposes.Read": "Przeglądaj zarejestrowane cele przetwarzania",
     "PermissionGroup:Privacy": "Prywatność (RODO)"
   }

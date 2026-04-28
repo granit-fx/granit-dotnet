@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "법적 문서 및 동의 상태 조회",
     "Permission:Privacy.Deletion.Execute": "개인 데이터 삭제 요청",
     "Permission:Privacy.Export.Execute": "개인 데이터 내보내기 요청",
+    "Permission:Privacy.LegalDocuments.Create": "새 법적 문서 초안 작성",
+    "Permission:Privacy.LegalDocuments.Manage": "법적 문서 편집, 게시 및 보관",
+    "Permission:Privacy.LegalDocuments.Read": "법적 문서 버전 및 이력 조회",
     "Permission:Privacy.Purposes.Read": "등록된 처리 목적 조회",
     "PermissionGroup:Privacy": "개인정보 (GDPR)"
   }

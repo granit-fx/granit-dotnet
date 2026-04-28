@@ -5,6 +5,9 @@
     "Permission:Privacy.Agreements.Read": "Zobrazit právní dokumenty a stav souhlasu",
     "Permission:Privacy.Deletion.Execute": "Požádat o smazání osobních údajů",
     "Permission:Privacy.Export.Execute": "Požádat o export osobních údajů",
+    "Permission:Privacy.LegalDocuments.Create": "Vytvořit nové návrhy právních dokumentů",
+    "Permission:Privacy.LegalDocuments.Manage": "Upravit, publikovat a archivovat právní dokumenty",
+    "Permission:Privacy.LegalDocuments.Read": "Zobrazit verze a historii právních dokumentů",
     "Permission:Privacy.Purposes.Read": "Zobrazit registrované účely zpracování",
     "PermissionGroup:Privacy": "Soukromí (GDPR)"
   }
