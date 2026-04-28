@@ -1,0 +1,213 @@
+---
+title: "REST Endpoints — Catalogue, Import, CRUD, State Transitions, Widgets"
+description: "Granit.Dashboards exposes a full HTTP surface for the persisted Dashboard aggregate: browse the catalogue of registered DashboardDefinitions, import one into a tenant-scoped Dashboard, list / read / edit / publish / archive / restore the persisted instances, and add / update / remove widgets in the pool."
+sidebar:
+  label: Endpoints
+  order: 5
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+`Granit.Dashboards.Endpoints` maps every route under the `/dashboards` prefix
+(configurable via `DashboardsEndpointsOptions.RoutePrefix`). Every endpoint
+requires authentication **and** a permission from `DashboardsPermissions`. The
+`DashboardsDbContext` applies multi-tenant filtering through
+`ApplyGranitConventions` — endpoints never have to add `WHERE tenant_id = …`
+themselves, and cross-tenant rows are never reachable.
+
+| Permission | Scope |
+|------------|-------|
+| `Dashboards.Catalog.Read` | Read the in-memory catalogue of registered `DashboardDefinition`s. |
+| `Dashboards.Instances.Read` | Read the tenant's persisted `Dashboard` aggregate — list, read-by-id. |
+| `Dashboards.Instances.Manage` | Write access — import, edit metadata, state transitions, widget add / update / remove. |
+
+<Aside type="note" title="Three-segment naming">
+Permission strings follow the framework convention `[Group].[Resource].[Action]`
+— see [CLAUDE.md](https://github.com/granit-fx/granit-dotnet/blob/develop/CLAUDE.md#permissions--naming-convention-strict).
+The split between `Catalog.Read` and `Instances.Read` lets a tenant-admin role
+grant catalogue browsing without leaking the live dashboard list to a service
+account that only needs to know *what can be imported*.
+</Aside>
+
+## Catalogue
+
+Read-only view over the `IDashboardDefinitionRegistry` — the pool of
+`DashboardDefinition`s registered by every loaded module. No tenant scope: the
+catalogue is the same for every tenant on the host.
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| `GET` | `/dashboards/catalog` | `Catalog.Read` | List every registered `DashboardDefinition` with its name, version, category, layout summary, widget count and view count. |
+
+## Import
+
+Deep-copies a registered `DashboardDefinition` into a fresh tenant-scoped
+`Dashboard` aggregate. The import is **explicit** — there is no auto-import on
+first read (ADR-038 §2). Multi-view definitions yield a `Dashboard` whose
+widget pool is the entry view's widgets (`DefaultView`, falling back to the
+first view when `DefaultView` is `null`).
+
+| Method | Route | Permission | Status codes |
+|--------|-------|------------|--------------|
+| `POST` | `/dashboards/from-definition/{name}` | `Instances.Manage` | `201` + `DashboardImportResponse` · `404` when the definition name is not registered |
+
+The new dashboard is created in `Draft` status with the source-definition
+version captured at import time — drift detection between the
+running-definition and the persisted snapshot lands in a follow-up story.
+
+## Persisted dashboards (read)
+
+| Method | Route | Permission | Description |
+|--------|-------|------------|-------------|
+| `GET` | `/dashboards` | `Instances.Read` | List the tenant's persisted dashboards, paginated. |
+| `GET` | `/dashboards/{id:guid}` | `Instances.Read` | Read one dashboard with its full widget tree (ordered by `Position`). |
+
+`GET /dashboards` accepts three query parameters:
+
+| Parameter | Type | Default | Notes |
+|-----------|------|---------|-------|
+| `status` | `DashboardStatus?` | _none_ | Filter by `Draft` / `Published` / `Archived`. Omit to return everything in scope. |
+| `page` | `int` | `0` | Zero-based page index (`< 0` returns `400`). |
+| `pageSize` | `int` | `50` | Capped at `200` (out-of-range returns `400`). |
+
+Results are ordered by `Name` ascending. The response is a
+`PagedResponse<DashboardSummaryResponse>` envelope — summary entries strip the
+widget tree but expose `WidgetCount` so list views can render a badge without a
+follow-up GET.
+
+`GET /dashboards/{id}` returns `404` when the id is not in scope (multi-tenant
+isolation is enforced at the DbContext level — the existence of a cross-tenant
+dashboard is never leaked).
+
+## Persisted dashboards (write)
+
+### Edit metadata
+
+| Method | Route | Permission | Status codes |
+|--------|-------|------------|--------------|
+| `PUT` | `/dashboards/{id:guid}` | `Instances.Manage` | `200` + `DashboardSummaryResponse` · `400` validation · `404` not in scope · `422` domain-guard rejection |
+
+Full replacement of the editable metadata: `Name`, `LayoutColumns`,
+`LayoutRowHeight`. Status, source-definition pinning and the widget pool stay
+out of scope here — they are owned by the state-transition / import / widget
+endpoints respectively.
+
+`FluentValidation` runs first (`NotEmpty`, `MaximumLength(200)`,
+`GreaterThan(0)`). The domain guards in `Dashboard.Rename` and
+`Dashboard.UpdateLayout` stay as defense-in-depth and surface as `422` if hit.
+
+### State transitions
+
+Three idempotent transitions on the aggregate's state machine — each returns
+the post-transition `DashboardSummaryResponse` so callers refresh without a
+follow-up `GET`.
+
+| Method | Route | Permission |
+| ------ | ----- | ---------- |
+| `POST` | `/dashboards/{id:guid}/publish` | `Instances.Manage` |
+| `POST` | `/dashboards/{id:guid}/archive` | `Instances.Manage` |
+| `POST` | `/dashboards/{id:guid}/restore` | `Instances.Manage` |
+
+Transitions and status codes:
+
+- `publish` — `Draft` → `Published` (idempotent on `Published`); `200` on success, `404` on miss, `409` when the dashboard is `Archived`.
+- `archive` — _any_ → `Archived` (always idempotent); `200` on success, `404` on miss.
+- `restore` — `Archived` → `Draft`; `200` on success, `404` on miss, `409` when the dashboard is not `Archived`.
+
+`409 Conflict` carries the domain's invariant message verbatim (e.g.
+_"An archived dashboard must be restored before it can be published."_) — the
+state machine is one-way except for `Archived → Draft`.
+
+## Widgets
+
+Widget operations target the dashboard's widget pool. The widget id is
+allocated server-side on create — callers never choose it. Switching widget
+kind (`WidgetType`) or rebinding to a different metric / query is **delete +
+add**, not edit.
+
+| Method | Route | Permission |
+| ------ | ----- | ---------- |
+| `POST` | `/dashboards/{id:guid}/widgets` | `Instances.Manage` |
+| `PUT` | `/dashboards/{id:guid}/widgets/{widgetId:guid}` | `Instances.Manage` |
+| `DELETE` | `/dashboards/{id:guid}/widgets/{widgetId:guid}` | `Instances.Manage` |
+
+Status codes:
+
+- `POST` — `201` + `WidgetInstanceResponse`; `400` validation; `404` parent not in scope; `422` domain-guard rejection.
+- `PUT` — `200` + `WidgetInstanceResponse`; `400` validation; `404` dashboard or widget not in scope; `422` domain-guard rejection.
+- `DELETE` — `204`; `404` dashboard or widget not in scope.
+
+### Add — `AddWidgetRequest`
+
+```json
+{
+  "widgetType": "Kpi",
+  "position": 0,
+  "width": 3,
+  "height": 1,
+  "titleLocalizationKey": "Widget:Sample.UnpaidCount",
+  "configJson": "{\"kind\":\"metric\"}",
+  "metricName": "Sample.UnpaidInvoiceCount",
+  "queryName": null,
+  "requiredPermission": "Custom.Composite.Read"
+}
+```
+
+- `widgetType` — non-empty, ≤ 100 chars.
+- `position` — `>= 0`.
+- `width`, `height` — `> 0`.
+- `titleLocalizationKey` — non-empty, ≤ 200 chars.
+- `configJson` — non-empty, ≤ 16 000 chars.
+- `metricName`, `queryName` — optional, ≤ 200 chars each. Exactly one of them carries kind-specific context: KPI uses `metricName`, table uses `queryName`, free-form widgets use neither.
+- `requiredPermission` — optional, ≤ 200 chars. Narrows visibility on top of the dashboard-level permission.
+
+### Update — `UpdateWidgetRequest`
+
+```json
+{
+  "position": 4,
+  "width": 6,
+  "height": 2,
+  "titleLocalizationKey": "Widget:Sample.UnpaidCount.Highlighted",
+  "configJson": "{\"kind\":\"metric\",\"emphasis\":\"high\"}"
+}
+```
+
+The shape is the create-request minus the immutable fields. Constraints match
+their `AddWidgetRequest` counterparts — same error codes, so callers handle
+validation uniformly.
+
+### 404 — dashboard vs widget
+
+The `DELETE` and `PUT` widget endpoints distinguish the two 404 reasons:
+
+- **Dashboard not in scope** — `Dashboard '{id}' not found.`
+- **Widget not on that dashboard** — `Widget '{widgetId}' not found on dashboard '{id}'.`
+
+The reason matters for caller UX — the first is a routing / tenant problem,
+the second is a stale widget id (typically: another tab removed the widget).
+Idempotent retries on a removed widget therefore receive the _widget_ 404,
+which UIs treat as benign.
+
+## Architecture & validation
+
+- **Endpoint metadata** — every route declares the five mandatory OpenAPI
+  metadata elements per CLAUDE.md (`WithName`, `WithSummary`, `WithDescription`,
+  `Produces<T>`, `ProducesProblem` for each error path).
+- **Validation** — every `*Request` DTO has a matching FluentValidation
+  validator under `Granit.Dashboards.Endpoints/Validators/`. Built-in operators
+  (`NotEmpty`, `MaximumLength`, `GreaterThan`, …) auto-localize via
+  `GranitErrorCodeLanguageManager` — no hardcoded messages.
+- **No EF Core leak** — endpoint handlers never reference EF Core types.
+  Reader / Editor / StateTransitionService / WidgetService all live in
+  `Granit.Dashboards.EntityFrameworkCore.Internal` and are reachable from
+  `*.Endpoints` via `InternalsVisibleTo`.
+- **Multi-tenant isolation** — applied by the DbContext through
+  `ApplyGranitConventions(currentTenant, dataFilter)`. The endpoints inherit
+  that filter; cross-tenant rows are never reachable from any handler.
+
+## Read next
+
+- [Conventions](/dotnet/business/dashboards/conventions/) — `DashboardDefinition` declarative shape, widget catalogue, JSON wire format.
+- [ADR-038](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/) — boundary between the catalogue entry and the persisted aggregate.
+- [Permissions](https://github.com/granit-fx/granit-dotnet/blob/develop/src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs) — full source of the permission constants.
