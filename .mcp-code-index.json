@@ -33397,7 +33397,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Deduplication/PartiesPostgresMigrationExtensions.cs",
-      "line": 43,
+      "line": 44,
       "members": [
         {
           "name": "AddPartyTrigramSimilarityIndexes",
@@ -33482,9 +33482,9 @@
       "line": 7,
       "members": [
         {
-          "name": "ConfigureContactsModule",
+          "name": "ConfigurePartiesModule",
           "kind": "method",
-          "signature": "ConfigureContactsModule(this ModelBuilder modelBuilder)",
+          "signature": "ConfigurePartiesModule(this ModelBuilder modelBuilder)",
           "returnType": "ModelBuilder"
         }
       ]

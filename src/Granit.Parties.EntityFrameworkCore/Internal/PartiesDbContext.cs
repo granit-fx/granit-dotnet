@@ -23,7 +23,7 @@ internal sealed class PartiesDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ConfigureContactsModule();
+        modelBuilder.ConfigurePartiesModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
     }
 }

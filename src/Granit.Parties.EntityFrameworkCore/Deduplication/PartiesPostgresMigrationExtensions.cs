@@ -29,8 +29,9 @@ namespace Granit.Parties.EntityFrameworkCore.Deduplication;
 /// }
 /// </code>
 /// Schema and table-name defaults follow the Granit convention
-/// (<c>contacts_parties</c> / <see cref="GranitPartiesDbProperties.DbSchema"/>); pass the
-/// parameters explicitly when the app overrides the defaults.
+/// (<c><see cref="GranitPartiesDbProperties.DbSchema"/> + <see cref="GranitPartiesDbProperties.DbTablePrefix"/>parties</c>,
+/// resolved at call time so the helper stays aligned with whatever the host app
+/// configures); pass the parameters explicitly when the app overrides the defaults.
 /// </para>
 /// <para>
 /// Index choice: <b>GIST + gist_trgm_ops</b> rather than GIN. GIN is ~3× faster on pure
@@ -50,7 +51,8 @@ public static class PartiesPostgresMigrationExtensions
     /// <param name="schema">Schema of the parties table. Defaults to
     /// <see cref="GranitPartiesDbProperties.DbSchema"/>; pass explicitly if the consuming app
     /// overrides it after framework-default resolution.</param>
-    /// <param name="tableName">Parties table name. Defaults to <c>contacts_parties</c>.</param>
+    /// <param name="tableName">Parties table name. Defaults to
+    /// <see cref="GranitPartiesDbProperties.DbTablePrefix"/> + <c>"parties"</c>.</param>
     /// <returns>The migration builder for chaining.</returns>
     public static MigrationBuilder AddPartyTrigramSimilarityIndexes(
         this MigrationBuilder migrationBuilder,

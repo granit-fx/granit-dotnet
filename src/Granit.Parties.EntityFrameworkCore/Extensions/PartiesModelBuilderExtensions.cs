@@ -7,7 +7,7 @@ namespace Granit.Parties.EntityFrameworkCore.Extensions;
 public static class PartiesModelBuilderExtensions
 {
     /// <summary>Applies all entity configurations for the Parties module.</summary>
-    public static ModelBuilder ConfigureContactsModule(this ModelBuilder modelBuilder)
+    public static ModelBuilder ConfigurePartiesModule(this ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new PartyConfiguration());
         modelBuilder.ApplyConfiguration(new PartyAddressConfiguration());
