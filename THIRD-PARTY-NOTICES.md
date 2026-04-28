@@ -76,7 +76,7 @@ Dernière mise à jour : 2026-04-28
 | Mollie.Api | 4.19.0 | Copyright (c) 2023 Vincent Kok |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
 | PuppeteerSharp | 24.40.0 | PuppeteerSharp Contributors |
-| Scalar.AspNetCore | 2.14.5 | Scalar Contributors |
+| Scalar.AspNetCore | 2.14.6 | Scalar Contributors |
 | Sep | 0.13.0 | Copyright (c) 2023 nietras |
 | SmartFormat | 3.6.1 | Copyright 2011-2025 SmartFormat Project |
 | SoftWx.Match | 2.0.3 | Copyright © 2015-2018 SoftWx, Inc. |
