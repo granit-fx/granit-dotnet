@@ -70,8 +70,30 @@ public abstract class DashboardDefinition : IDashboardDefinitionDescriptor
     /// </summary>
     public virtual DashboardTimeWindow? DefaultTimeWindow => null;
 
-    /// <summary>Widgets shipped by this dashboard, in declared order.</summary>
+    /// <summary>
+    /// Widgets shipped by this dashboard, in declared order. For single-view
+    /// dashboards this is the rendered list. For multi-view dashboards
+    /// (<see cref="Views"/> non-null), the runtime renders the active view's
+    /// widgets and treats this property as the entry-view fallback used only when
+    /// <see cref="DefaultView"/> is <c>null</c> and <see cref="Views"/> is empty.
+    /// </summary>
     public abstract IReadOnlyList<WidgetDefinition> Widgets { get; }
+
+    /// <summary>
+    /// Named views — separate widget arrangements within the same dashboard, sharing
+    /// time window, entity aliases and filters but each shipping its own widget pool
+    /// and optional layout override. <c>null</c> (default) = single-view dashboard
+    /// rendering <see cref="Widgets"/>. See P2.1 of the dashboards-architecture-proposals
+    /// roadmap.
+    /// </summary>
+    public virtual IReadOnlyList<DashboardView>? Views => null;
+
+    /// <summary>
+    /// Entry-view name when <see cref="Views"/> is non-null. <c>null</c> = the
+    /// runtime falls back to the first view in <see cref="Views"/>. Ignored for
+    /// single-view dashboards (where <see cref="Views"/> is null).
+    /// </summary>
+    public virtual string? DefaultView => null;
 
     /// <summary>
     /// Dashboard-scoped filters. Each filter may be referenced by name from a widget's

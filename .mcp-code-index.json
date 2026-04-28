@@ -12607,6 +12607,18 @@
           "kind": "property",
           "signature": "IReadOnlyList<WidgetDefinition> Widgets",
           "returnType": "IReadOnlyList<WidgetDefinition>"
+        },
+        {
+          "name": "DefaultView",
+          "kind": "property",
+          "signature": "string? DefaultView",
+          "returnType": "string?"
+        },
+        {
+          "name": "Filters",
+          "kind": "property",
+          "signature": "IReadOnlyList<DashboardFilter>? Filters",
+          "returnType": "IReadOnlyList<DashboardFilter>?"
         }
       ]
     },
@@ -12716,6 +12728,15 @@
           "returnType": "DashboardTimeWindow RealtimeLast5Minutes =>"
         }
       ]
+    },
+    {
+      "name": "DashboardView",
+      "fqn": "Granit.Dashboards.DashboardView",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardView.cs",
+      "line": 43,
+      "members": []
     },
     {
       "name": "Dashboard",

@@ -45,8 +45,19 @@ public interface IDashboardDefinitionDescriptor
     /// </summary>
     DashboardTimeWindow? DefaultTimeWindow { get; }
 
-    /// <summary>Widgets shipped by this dashboard, in declared order.</summary>
+    /// <summary>Widgets shipped by this dashboard, in declared order (single-view dashboards).</summary>
     IReadOnlyList<WidgetDefinition> Widgets { get; }
+
+    /// <summary>
+    /// Named views — separate widget arrangements within the same dashboard. <c>null</c>
+    /// = single-view dashboard rendering <see cref="Widgets"/>. See P2.1.
+    /// </summary>
+    IReadOnlyList<DashboardView>? Views { get; }
+
+    /// <summary>
+    /// Entry-view name when <see cref="Views"/> is non-null. <c>null</c> = first view.
+    /// </summary>
+    string? DefaultView { get; }
 
     /// <summary>
     /// Dashboard-scoped filters declared by this dashboard. Each filter is referenced
