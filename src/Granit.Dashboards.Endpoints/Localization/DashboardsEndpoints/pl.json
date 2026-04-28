@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "Pulpity",
     "Permission:Dashboards.Catalog.Read": "Przeglądanie katalogu pulpitów (lista wszystkich zarejestrowanych DashboardDefinition)",
-    "Permission:Dashboards.Instances.Manage": "Zarządzanie pulpitami dzierżawcy (importowanie z definicji, edycja, publikowanie, archiwizowanie, przywracanie)"
+    "Permission:Dashboards.Instances.Manage": "Zarządzanie pulpitami dzierżawcy (importowanie z definicji, edycja, publikowanie, archiwizowanie, przywracanie)",
+    "Permission:Dashboards.Instances.Read": "Odczyt pulpitów dzierżawcy (lista i odczyt po identyfikatorze, w tym wykrywanie dryfu)"
   }
 }

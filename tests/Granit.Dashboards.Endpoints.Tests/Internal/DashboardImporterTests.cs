@@ -1,7 +1,6 @@
 using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
-using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Granit.Dashboards.Widgets;
 using Granit.Guids;
 using Microsoft.Data.Sqlite;

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "대시보드",
     "Permission:Dashboards.Catalog.Read": "대시보드 카탈로그 탐색(등록된 모든 DashboardDefinition 나열)",
-    "Permission:Dashboards.Instances.Manage": "테넌트 범위 대시보드 관리(정의에서 가져오기, 편집, 게시, 보관, 복원)"
+    "Permission:Dashboards.Instances.Manage": "테넌트 범위 대시보드 관리(정의에서 가져오기, 편집, 게시, 보관, 복원)",
+    "Permission:Dashboards.Instances.Read": "테넌트 범위 대시보드 읽기(목록 및 ID 단일 조회, 드리프트 감지 포함)"
   }
 }

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "Instrumentpaneler",
     "Permission:Dashboards.Catalog.Read": "Bläddra i instrumentpanelskatalogen (lista alla registrerade DashboardDefinition)",
-    "Permission:Dashboards.Instances.Manage": "Hantera klientspecifika instrumentpaneler (importera från definition, redigera, publicera, arkivera, återställa)"
+    "Permission:Dashboards.Instances.Manage": "Hantera klientspecifika instrumentpaneler (importera från definition, redigera, publicera, arkivera, återställa)",
+    "Permission:Dashboards.Instances.Read": "Läsa klientspecifika instrumentpaneler (lista och läs efter id, inklusive driftdetektion)"
   }
 }

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "Panolar",
     "Permission:Dashboards.Catalog.Read": "Pano kataloğunu görüntüleme (kayıtlı her DashboardDefinition'ı listeleme)",
-    "Permission:Dashboards.Instances.Manage": "Kiracıya özel panoları yönet (tanımdan içe aktar, düzenle, yayınla, arşivle, geri yükle)"
+    "Permission:Dashboards.Instances.Manage": "Kiracıya özel panoları yönet (tanımdan içe aktar, düzenle, yayınla, arşivle, geri yükle)",
+    "Permission:Dashboards.Instances.Read": "Kiracıya özel panoları oku (liste ve id ile okuma, sürüm sapması tespiti dâhil)"
   }
 }

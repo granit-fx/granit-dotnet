@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "Painéis",
     "Permission:Dashboards.Catalog.Read": "Navegar pelo catálogo de painéis (listar todas as DashboardDefinition registadas)",
-    "Permission:Dashboards.Instances.Manage": "Gerir painéis do inquilino (importar a partir de definição, editar, publicar, arquivar, restaurar)"
+    "Permission:Dashboards.Instances.Manage": "Gerir painéis do inquilino (importar a partir de definição, editar, publicar, arquivar, restaurar)",
+    "Permission:Dashboards.Instances.Read": "Ler painéis do inquilino (lista e leitura por id, incluindo deteção de desvio)"
   }
 }

@@ -20,6 +20,7 @@ public static class DashboardsEndpointsServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<DashboardImporter>();
+        services.TryAddScoped<DashboardReader>();
 
         return services;
     }

@@ -3,6 +3,7 @@
   "texts": {
     "PermissionGroup:Dashboards": "Dashboard",
     "Permission:Dashboards.Catalog.Read": "Sfogliare il catalogo dei dashboard (elencare ogni DashboardDefinition registrata)",
-    "Permission:Dashboards.Instances.Manage": "Gestire i dashboard del tenant (importare dalla definizione, modificare, pubblicare, archiviare, ripristinare)"
+    "Permission:Dashboards.Instances.Manage": "Gestire i dashboard del tenant (importare dalla definizione, modificare, pubblicare, archiviare, ripristinare)",
+    "Permission:Dashboards.Instances.Read": "Leggere i dashboard del tenant (elenco e lettura per id, inclusa la rilevazione del drift)"
   }
 }

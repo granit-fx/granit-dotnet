@@ -12996,12 +12996,48 @@
       "members": []
     },
     {
+      "name": "DashboardDetailResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardDetailResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardDetailResponse.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "DashboardImportResponse",
       "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardImportResponse",
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardImportResponse.cs",
       "line": 15,
+      "members": []
+    },
+    {
+      "name": "DashboardSummaryResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardSummaryResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardSummaryResponse.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "PagedResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.PagedResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/PagedResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "WidgetInstanceResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.WidgetInstanceResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/WidgetInstanceResponse.cs",
+      "line": 19,
       "members": []
     },
     {

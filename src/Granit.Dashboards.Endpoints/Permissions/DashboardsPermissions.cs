@@ -19,6 +19,12 @@ public static class DashboardsPermissions
     public static class Instances
     {
         /// <summary>
+        /// Grants read access to the tenant's persisted Dashboards — list, read-by-id,
+        /// drift-detection. Required by every read-side endpoint on the aggregate.
+        /// </summary>
+        public const string Read = "Dashboards.Instances.Read";
+
+        /// <summary>
         /// Grants write access to the persisted Dashboard aggregate — covers import (deep-copy
         /// from a registered DashboardDefinition), state transitions (publish / archive /
         /// restore), and the upcoming widget-edit endpoints.
