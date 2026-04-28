@@ -161,9 +161,9 @@ export default defineConfig({
                         { label: "Add Background Jobs", link: "/dotnet/guides/add-background-jobs/" },
                         { label: "Configure Blob Storage", link: "/dotnet/guides/configure-blob-storage/" },
                         { label: "Implement Webhooks", link: "/dotnet/guides/implement-webhooks/" },
-                        { label: "Auto-maintain Contact Roles", link: "/dotnet/guides/contacts-role-handler/" },
-                        { label: "Seed Contact on Tenant Created", link: "/dotnet/guides/contacts-tenant-seeding/" },
-                        { label: "External Mapping Contract", link: "/dotnet/guides/contacts-external-mappings/" },
+                        { label: "Auto-maintain Party Roles", link: "/dotnet/guides/parties-role-handler/" },
+                        { label: "Seed Party on Tenant Created", link: "/dotnet/guides/parties-tenant-seeding/" },
+                        { label: "External Mapping Contract", link: "/dotnet/guides/parties-external-mappings/" },
                       ],
                     },
                     {
