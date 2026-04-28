@@ -143,7 +143,7 @@ yourself:
   `PeriodSelector` (here `IssuedAt`) is wrapped in a `[from, to)` predicate
   resolved server-side via `IClock` (`TimeProvider`) — never
   `DateTimeOffset.UtcNow`. Period tokens map to the canonical
-  [DAX acronyms](/dotnet/business/analytics/conventions/#period-tokens---dax-aligned)
+  [DAX acronyms](/dotnet/business/analytics/conventions/#period-tokens--dax-aligned)
   (`MTD`, `QTD`, `YTD`, …).
 - **Period comparison + delta.** If the request includes
   `compareTo: { token: 'previous_period' }`, the framework runs the metric
