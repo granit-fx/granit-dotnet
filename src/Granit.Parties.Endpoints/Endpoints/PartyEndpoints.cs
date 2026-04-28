@@ -40,12 +40,12 @@ internal static class PartyEndpoints
 
     public static async Task<Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>> HandleCreateAsync(
         PartyCreateRequest request,
-        [FromQuery] bool force,
-        [FromHeader(Name = "X-Skip-Duplicate-Check")] bool skipDuplicateCheck,
         [FromServices] IPartyWriter writer,
         [FromServices] IGuidGenerator guidGenerator,
         [FromServices] IPartyDuplicateDetector detector,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] bool force = false,
+        [FromHeader(Name = "X-Skip-Duplicate-Check")] bool skipDuplicateCheck = false)
     {
         // Online duplicate detection (story #1302). Skipped when:
         //   ?force=true          — admin acknowledges the duplicate is intentional
