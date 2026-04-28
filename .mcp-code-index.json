@@ -12601,8 +12601,50 @@
           "kind": "property",
           "signature": "DashboardTimeWindow? DefaultTimeWindow",
           "returnType": "DashboardTimeWindow?"
+        },
+        {
+          "name": "Widgets",
+          "kind": "property",
+          "signature": "IReadOnlyList<WidgetDefinition> Widgets",
+          "returnType": "IReadOnlyList<WidgetDefinition>"
         }
       ]
+    },
+    {
+      "name": "DashboardFilter",
+      "fqn": "Granit.Dashboards.DashboardFilter",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardFilter.cs",
+      "line": 50,
+      "members": []
+    },
+    {
+      "name": "DashboardFilterClause",
+      "fqn": "Granit.Dashboards.DashboardFilterClause",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardFilter.cs",
+      "line": 67,
+      "members": []
+    },
+    {
+      "name": "DashboardFilterOperation",
+      "fqn": "Granit.Dashboards.DashboardFilterOperation",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardFilter.cs",
+      "line": 110,
+      "members": []
+    },
+    {
+      "name": "DashboardFilterOperator",
+      "fqn": "Granit.Dashboards.DashboardFilterOperator",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardFilter.cs",
+      "line": 79,
+      "members": []
     },
     {
       "name": "DashboardLayout",

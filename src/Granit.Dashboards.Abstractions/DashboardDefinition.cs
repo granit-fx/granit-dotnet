@@ -72,4 +72,12 @@ public abstract class DashboardDefinition : IDashboardDefinitionDescriptor
 
     /// <summary>Widgets shipped by this dashboard, in declared order.</summary>
     public abstract IReadOnlyList<WidgetDefinition> Widgets { get; }
+
+    /// <summary>
+    /// Dashboard-scoped filters. Each filter may be referenced by name from a widget's
+    /// data source; toolbar-exposed filters (<see cref="DashboardFilter.Editable"/>
+    /// = <c>true</c>) become user-editable controls above the grid. <c>null</c> = the
+    /// dashboard has no filters beyond what individual widgets carry.
+    /// </summary>
+    public virtual IReadOnlyList<DashboardFilter>? Filters => null;
 }
