@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using Granit.Dashboards.Widgets;
+
 namespace Granit.Dashboards;
 
 /// <summary>
@@ -20,6 +23,19 @@ namespace Granit.Dashboards;
 /// data source (metric / query / IoT topic) — see ADR-038 §6.
 /// Presentation-only widgets ignore this field.
 /// </param>
+/// <remarks>
+/// JSON polymorphism uses a stable <c>"type"</c> discriminator with short tags
+/// (<c>"markdown"</c>, <c>"image"</c>, <c>"text"</c>, <c>"kpi"</c>, ...). The three
+/// presentation-only kinds are registered here via <see cref="JsonDerivedTypeAttribute"/>;
+/// data-bound kinds defined in downstream packages (<c>Granit.Analytics</c>,
+/// <c>Granit.IoT.Dashboards</c>, ...) extend the chain at runtime through
+/// <see cref="WidgetDefinitionPolymorphism.AddDerivedType{TWidget}"/>. Avoids leaking
+/// CLR type names into the wire format.
+/// </remarks>
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonDerivedType(typeof(MarkdownWidgetDefinition), "markdown")]
+[JsonDerivedType(typeof(ImageWidgetDefinition), "image")]
+[JsonDerivedType(typeof(TextWidgetDefinition), "text")]
 public abstract record WidgetDefinition(
     string Slug,
     int Position,

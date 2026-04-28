@@ -1,4 +1,6 @@
 using Granit.Dashboards.Internal;
+using Granit.Dashboards.Internal.Templating;
+using Granit.Dashboards.Templating;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -21,6 +23,7 @@ public static class DashboardsServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddSingleton<IDashboardDefinitionRegistry, DashboardDefinitionRegistry>();
+        services.TryAddSingleton<IVariableSubstituter, DefaultVariableSubstituter>();
 
         return services;
     }

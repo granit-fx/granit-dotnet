@@ -4072,6 +4072,22 @@
       ]
     },
     {
+      "name": "AnalyticsWidgetSerialization",
+      "fqn": "Granit.Analytics.Dashboards.Json.AnalyticsWidgetSerialization",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Json/AnalyticsWidgetSerialization.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "AddAnalyticsWidgets",
+          "kind": "method",
+          "signature": "AddAnalyticsWidgets(this JsonSerializerOptions options)",
+          "returnType": "JsonSerializerOptions"
+        }
+      ]
+    },
+    {
       "name": "ChartType",
       "fqn": "Granit.Analytics.Dashboards.Widgets.ChartType",
       "kind": "enum",
@@ -12512,6 +12528,15 @@
       ]
     },
     {
+      "name": "DashboardBreakpoint",
+      "fqn": "Granit.Dashboards.DashboardBreakpoint",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
+      "line": 40,
+      "members": []
+    },
+    {
       "name": "DashboardCategory",
       "fqn": "Granit.Dashboards.DashboardCategory",
       "kind": "enum",
@@ -12554,7 +12579,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
-      "line": 11,
+      "line": 24,
       "members": [
         {
           "name": "new",
@@ -12563,6 +12588,15 @@
           "returnType": "DashboardLayout Default =>"
         }
       ]
+    },
+    {
+      "name": "DashboardLayoutOverride",
+      "fqn": "Granit.Dashboards.DashboardLayoutOverride",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
+      "line": 71,
+      "members": []
     },
     {
       "name": "Dashboard",
@@ -12783,7 +12817,7 @@
       "kind": "class",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Extensions/DashboardsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDashboards",
@@ -12824,7 +12858,7 @@
       "kind": "interface",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/IDashboardDefinitionDescriptor.cs",
-      "line": 8,
+      "line": 23,
       "members": []
     },
     {
@@ -12850,12 +12884,37 @@
       ]
     },
     {
+      "name": "WidgetDefinitionPolymorphism",
+      "fqn": "Granit.Dashboards.Json.WidgetDefinitionPolymorphism",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Json/WidgetDefinitionPolymorphism.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "IVariableSubstituter",
+      "fqn": "Granit.Dashboards.Templating.IVariableSubstituter",
+      "kind": "interface",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Templating/IVariableSubstituter.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Substitute",
+          "kind": "method",
+          "signature": "Substitute(string? input, IReadOnlyDictionary<string, object?> context)",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "WidgetDefinition",
       "fqn": "Granit.Dashboards.WidgetDefinition",
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/WidgetDefinition.cs",
-      "line": 23,
+      "line": 39,
       "members": []
     },
     {
@@ -12893,12 +12952,21 @@
       ]
     },
     {
+      "name": "ImageFit",
+      "fqn": "Granit.Dashboards.Widgets.ImageFit",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Widgets/ImageWidgetDefinition.cs",
+      "line": 28,
+      "members": []
+    },
+    {
       "name": "ImageWidgetDefinition",
       "fqn": "Granit.Dashboards.Widgets.ImageWidgetDefinition",
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/ImageWidgetDefinition.cs",
-      "line": 13,
+      "line": 18,
       "members": []
     },
     {
