@@ -87,6 +87,20 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Analytics.Endpoints",
+      "deps": [
+        "Granit.Analytics",
+        "Granit.Analytics.EntityFrameworkCore",
+        "Granit.Authorization",
+        "Granit.Caching",
+        "Granit.Http.Abstractions",
+        "Granit.MultiTenancy",
+        "Granit.Timing",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Analytics.EntityFrameworkCore",
       "deps": [
         "Granit.Analytics",
@@ -4036,6 +4050,151 @@
       "members": []
     },
     {
+      "name": "MetricPreviousPayload",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricPreviousPayload",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricPreviousPayload.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MetricRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricRequest.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "MetricResponse",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricResponse",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricResponse.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "MetricSnapshotPayload",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricSnapshotPayload",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricSnapshotPayload.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "PeriodSpec",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.PeriodSpec",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/PeriodSpec.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "AnalyticsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Analytics.Endpoints.Extensions.AnalyticsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsEndpointRouteBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "MapGranitAnalytics",
+          "kind": "method",
+          "signature": "MapGranitAnalytics(this IEndpointRouteBuilder endpoints, Action<AnalyticsEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "AnalyticsEndpointsServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.Endpoints.Extensions.AnalyticsEndpointsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsEndpointsServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitAnalyticsEndpoints",
+          "kind": "method",
+          "signature": "AddGranitAnalyticsEndpoints(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAnalyticsEndpointsModule",
+      "fqn": "Granit.Analytics.Endpoints.GranitAnalyticsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/GranitAnalyticsEndpointsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AnalyticsEndpointsOptions",
+      "fqn": "Granit.Analytics.Endpoints.Options.AnalyticsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Options/AnalyticsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "MetricsTagName",
+          "kind": "property",
+          "signature": "string MetricsTagName",
+          "returnType": "string"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(60)",
+          "returnType": "TimeSpan DynamicTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan StaticTtl { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "AnalyticsPermissions",
+      "fqn": "Granit.Analytics.Endpoints.Permissions.AnalyticsPermissions",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Permissions/AnalyticsPermissions.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "Metrics",
+      "fqn": "Granit.Analytics.Endpoints.Permissions.Metrics",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Permissions/AnalyticsPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "fqn": "Granit.Analytics.EntityFrameworkCore.Extensions.AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
@@ -4149,6 +4308,12 @@
           "kind": "property",
           "signature": "RefreshHint RefreshHint",
           "returnType": "RefreshHint"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<TEntity, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<TEntity, DateTimeOffset>>?"
         }
       ]
     },

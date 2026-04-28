@@ -3,6 +3,7 @@
     "path": "Granit.slnx",
     "projects": [
       "src/Granit.AI/Granit.AI.csproj",
+      "src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj",
       "src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj",
       "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
@@ -155,6 +156,7 @@
       "src/bundles/Granit.Bundle.Essentials/Granit.Bundle.Essentials.csproj",
       "src/bundles/Granit.Bundle.Notifications/Granit.Bundle.Notifications.csproj",
       "src/bundles/Granit.Bundle.SaaS/Granit.Bundle.SaaS.csproj",
+      "tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj",
       "tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj",
       "tests/Granit.Bundle.Tests/Granit.Bundle.Tests.csproj",

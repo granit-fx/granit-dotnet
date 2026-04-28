@@ -1,0 +1,7 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Analytics": "Analityka",
+    "Permission:Analytics.Metrics.Read": "Oceniaj definicje wskaźników analityki za pośrednictwem interfejsu HTTP API"
+  }
+}

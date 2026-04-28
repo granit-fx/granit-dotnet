@@ -64,6 +64,7 @@
         "tests/Granit.Parties.Tests",
         "tests/Granit.Analytics.Tests",
         "tests/Granit.Analytics.EntityFrameworkCore.Tests",
+        "tests/Granit.Analytics.Endpoints.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",

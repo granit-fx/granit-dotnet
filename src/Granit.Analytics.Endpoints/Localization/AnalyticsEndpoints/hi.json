@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Analytics": "विश्लेषण",
+    "Permission:Analytics.Metrics.Read": "HTTP API के माध्यम से विश्लेषण मेट्रिक परिभाषाओं का मूल्यांकन करें"
+  }
+}

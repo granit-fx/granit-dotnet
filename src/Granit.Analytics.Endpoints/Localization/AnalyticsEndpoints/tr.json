@@ -1,0 +1,7 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Analytics": "Analitik",
+    "Permission:Analytics.Metrics.Read": "Analitik metrik tanımlarını HTTP API üzerinden değerlendir"
+  }
+}

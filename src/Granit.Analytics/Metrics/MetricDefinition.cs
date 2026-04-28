@@ -89,6 +89,15 @@ public abstract class MetricDefinition<TEntity, TValue> : IMetricDefinitionDescr
     /// </summary>
     public virtual RefreshHint RefreshHint => RefreshHint.Dynamic;
 
+    /// <summary>
+    /// Expression projecting the time dimension used to bound the metric to a period
+    /// (e.g. <c>e =&gt; e.IssuedAt</c> on an <c>Invoice</c>). Required for time-bounded
+    /// metrics consumed by <c>Granit.Analytics.Endpoints</c> with a period filter or a
+    /// comparison window. <c>null</c> for "right now" / time-invariant metrics
+    /// (e.g. count of currently-unpaid invoices).
+    /// </summary>
+    public virtual Expression<Func<TEntity, DateTimeOffset>>? PeriodSelector => null;
+
     /// <inheritdoc />
     Type IMetricDefinitionDescriptor.EntityType => typeof(TEntity);
 

@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Analytics.Endpoints</PackageId>
+    <Description>Minimal API endpoint for Granit.Analytics inline metrics. Generic /metrics/{name} route resolves a registered MetricDefinition, applies the QueryEngine filter pipeline, executes the aggregation through Granit.Analytics.EntityFrameworkCore, caches the result via FusionCache (key composed with tenantId), and supports current-vs-previous period comparison with computed delta.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Analytics\Granit.Analytics.csproj" />
+    <ProjectReference Include="..\Granit.Analytics.EntityFrameworkCore\Granit.Analytics.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

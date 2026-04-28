@@ -2,6 +2,7 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj",
       "src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj",
       "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
@@ -78,6 +79,7 @@
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj",
       "tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj",
       "tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj",
