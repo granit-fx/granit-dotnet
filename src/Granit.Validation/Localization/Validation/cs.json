@@ -76,6 +76,8 @@
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' nesmí mít celkem více než {ExpectedPrecision} číslic, z toho {ExpectedScale} desetinných míst.",
     "Granit:Validation:ScheduledAction:FutureDate": "Plánované datum musí být v budoucnosti.",
     "Granit:Validation:UrlMustBeHttps": "Adresa URL musí používat HTTPS.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'."
+    "Granit:Validation:ValidToAfterValidFrom": "'Platné do' musí být pozdější než 'Platné od'.",
+    "Granit:Validation:PeriodSpecBoundsCode": "Období musí být buď pojmenovaný token (např. 'last_30d') nebo obojí From a To — ne obojí, ne nic.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From musí být přísně před Period.To."
   }
 }

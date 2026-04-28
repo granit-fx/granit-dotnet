@@ -76,6 +76,8 @@
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' कुल {ExpectedPrecision} अंकों से अधिक नहीं होना चाहिए, {ExpectedScale} दशमलव की अनुमति के साथ।",
     "Granit:Validation:ScheduledAction:FutureDate": "निर्धारित तिथि भविष्य में होनी चाहिए।",
     "Granit:Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।",
-    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।"
+    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।",
+    "Granit:Validation:PeriodSpecBoundsCode": "अवधि या तो एक नामित टोकन (जैसे 'last_30d') होनी चाहिए या From और To दोनों — दोनों नहीं, कोई नहीं नहीं।",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To से सख्ती से पहले होना चाहिए।"
   }
 }

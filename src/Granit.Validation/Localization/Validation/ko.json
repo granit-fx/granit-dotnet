@@ -76,6 +76,8 @@
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}'은(는) 총 {ExpectedPrecision}자리를 초과할 수 없으며 소수점 이하 {ExpectedScale}자리까지 허용됩니다.",
     "Granit:Validation:ScheduledAction:FutureDate": "예약 날짜는 미래여야 합니다.",
     "Granit:Validation:UrlMustBeHttps": "URL은 HTTPS를 사용해야 합니다.",
-    "Granit:Validation:ValidToAfterValidFrom": "'유효 종료일'은 '유효 시작일' 이후여야 합니다."
+    "Granit:Validation:ValidToAfterValidFrom": "'유효 종료일'은 '유효 시작일' 이후여야 합니다.",
+    "Granit:Validation:PeriodSpecBoundsCode": "기간은 명명된 토큰(예: 'last_30d') 또는 From과 To 둘 다여야 합니다 — 둘 다이거나 둘 다 아니어선 안 됩니다.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From은 Period.To보다 엄격히 이전이어야 합니다."
   }
 }

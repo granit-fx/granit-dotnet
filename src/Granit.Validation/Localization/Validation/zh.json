@@ -76,6 +76,8 @@
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' 总共不能超过 {ExpectedPrecision} 位数字，其中允许 {ExpectedScale} 位小数。",
     "Granit:Validation:ScheduledAction:FutureDate": "计划日期必须是将来的日期。",
     "Granit:Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。"
+    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。",
+    "Granit:Validation:PeriodSpecBoundsCode": "周期必须是命名令牌(如 'last_30d')或同时包含 From 和 To,不能两者皆是或都为空。",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From 必须严格早于 Period.To。"
   }
 }

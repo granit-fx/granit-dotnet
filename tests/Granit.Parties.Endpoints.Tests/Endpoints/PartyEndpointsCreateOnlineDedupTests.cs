@@ -52,8 +52,8 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
 
         Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
-                _request, force: false, skipDuplicateCheck: false,
-                _writer, _guidGenerator, _detector, ct);
+                _request, _writer, _guidGenerator, _detector, ct,
+                force: false, skipDuplicateCheck: false);
 
         Conflict<PartyCreateConflictResponse> conflict =
             response.Result.ShouldBeOfType<Conflict<PartyCreateConflictResponse>>();
@@ -79,8 +79,8 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
 
         Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
-                _request, force: false, skipDuplicateCheck: false,
-                _writer, _guidGenerator, _detector, ct);
+                _request, _writer, _guidGenerator, _detector, ct,
+                force: false, skipDuplicateCheck: false);
 
         // Tier-3 fuzzy doesn't block — create proceeds. Recurring scan surfaces it later.
         response.Result.ShouldBeOfType<Created<PartyResponse>>();
@@ -100,8 +100,8 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
 
         Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
-                _request, force: true, skipDuplicateCheck: false,
-                _writer, _guidGenerator, _detector, ct);
+                _request, _writer, _guidGenerator, _detector, ct,
+                force: true, skipDuplicateCheck: false);
 
         response.Result.ShouldBeOfType<Created<PartyResponse>>();
         // Detector never called — short-circuited before the round-trip.
@@ -120,8 +120,8 @@ public sealed class PartyEndpointsCreateOnlineDedupTests
 
         Results<Created<PartyResponse>, Conflict<PartyCreateConflictResponse>, ProblemHttpResult, ValidationProblem>
             response = await PartyEndpoints.HandleCreateAsync(
-                _request, force: false, skipDuplicateCheck: true,
-                _writer, _guidGenerator, _detector, ct);
+                _request, _writer, _guidGenerator, _detector, ct,
+                force: false, skipDuplicateCheck: true);
 
         response.Result.ShouldBeOfType<Created<PartyResponse>>();
         await _detector.DidNotReceiveWithAnyArgs().FindCandidatesAsync(default!, ct);

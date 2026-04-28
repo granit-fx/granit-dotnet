@@ -76,6 +76,8 @@
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
     "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
     "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
+    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen.",
+    "Granit:Validation:PeriodSpecBoundsCode": "Periode moet ofwel een benoemd token zijn (bijv. 'last_30d') ofwel From en To bevatten — niet beide, niet geen van beide.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From moet strikt vóór Period.To liggen."
   }
 }

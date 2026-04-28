@@ -1490,6 +1490,28 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
+      "granit.analytics.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics": "[0.1.0-dev, )",
+          "Granit.Analytics.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.Abstractions": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.analytics.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Analytics": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.QueryEngine.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
+        }
+      },
       "granit.architecturetests.abstractions": {
         "type": "Project",
         "dependencies": {
