@@ -4101,7 +4101,7 @@
       "kind": "class",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Json/AnalyticsWidgetSerialization.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddAnalyticsWidgets",
@@ -4130,6 +4130,15 @@
       "members": []
     },
     {
+      "name": "Geography",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.Geography",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "line": 30,
+      "members": []
+    },
+    {
       "name": "KpiWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.KpiWidgetDefinition",
       "kind": "record",
@@ -4137,6 +4146,69 @@
       "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
       "line": 26,
       "members": []
+    },
+    {
+      "name": "LatLng",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.LatLng",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "MapCenter",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.MapCenter",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "line": 88,
+      "members": [
+        {
+          "name": "MapCenter",
+          "kind": "method",
+          "signature": "MapCenter(double latitude, double longitude)",
+          "returnType": "double Latitude { get; } public double Longitude { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "MapPointSource",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.MapPointSource",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "LatLng",
+          "kind": "method",
+          "signature": "LatLng(string LatitudeColumn, string LongitudeColumn)",
+          "returnType": "sealed record"
+        },
+        {
+          "name": "Geography",
+          "kind": "method",
+          "signature": "Geography(string GeographyColumn)",
+          "returnType": "sealed record"
+        }
+      ]
+    },
+    {
+      "name": "MapWidgetDefinition",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.MapWidgetDefinition",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
+      "line": 67,
+      "members": [
+        {
+          "name": "MapCenter",
+          "kind": "method",
+          "signature": "MapCenter(double latitude, double longitude)",
+          "returnType": "double Latitude { get; } public double Longitude { get; } public"
+        }
+      ]
     },
     {
       "name": "PivotWidgetDefinition",

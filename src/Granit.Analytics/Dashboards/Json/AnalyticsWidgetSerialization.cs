@@ -5,21 +5,22 @@ using Granit.Dashboards.Json;
 namespace Granit.Analytics.Dashboards.Json;
 
 /// <summary>
-/// Convenience helpers wiring the four analytics-flavoured widget kinds
+/// Convenience helpers wiring the analytics-flavoured widget kinds
 /// (<see cref="KpiWidgetDefinition"/>, <see cref="ChartWidgetDefinition"/>,
-/// <see cref="TableWidgetDefinition"/>, <see cref="PivotWidgetDefinition"/>) into
-/// the JSON polymorphism chain shared by the dashboards stack.
+/// <see cref="TableWidgetDefinition"/>, <see cref="PivotWidgetDefinition"/>,
+/// <see cref="MapWidgetDefinition"/>) into the JSON polymorphism chain shared
+/// by the dashboards stack.
 /// </summary>
 /// <remarks>
 /// Hosts that expose dashboard endpoints call
 /// <see cref="AddAnalyticsWidgets(JsonSerializerOptions)"/> once on their shared
 /// <see cref="JsonSerializerOptions"/> at startup. The discriminators (<c>"kpi"</c>,
-/// <c>"chart"</c>, <c>"table"</c>, <c>"pivot"</c>) become the contract surfaced to
-/// frontends and stay stable across module upgrades.
+/// <c>"chart"</c>, <c>"table"</c>, <c>"pivot"</c>, <c>"map"</c>) become the
+/// contract surfaced to frontends and stay stable across module upgrades.
 /// </remarks>
 public static class AnalyticsWidgetSerialization
 {
-    /// <summary>Registers the four analytics widget kinds on the supplied options.</summary>
+    /// <summary>Registers the analytics widget kinds on the supplied options.</summary>
     /// <param name="options">Target serializer options.</param>
     /// <returns>The same <paramref name="options"/> for chaining.</returns>
     public static JsonSerializerOptions AddAnalyticsWidgets(this JsonSerializerOptions options)
@@ -30,6 +31,7 @@ public static class AnalyticsWidgetSerialization
         options.AddDerivedType<ChartWidgetDefinition>("chart");
         options.AddDerivedType<TableWidgetDefinition>("table");
         options.AddDerivedType<PivotWidgetDefinition>("pivot");
+        options.AddDerivedType<MapWidgetDefinition>("map");
 
         return options;
     }
