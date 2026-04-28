@@ -90,6 +90,7 @@
       "name": "Granit.Analytics.EntityFrameworkCore",
       "deps": [
         "Granit.Analytics",
+        "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -4056,7 +4057,7 @@
       "kind": "class",
       "project": "Granit.Analytics.EntityFrameworkCore",
       "file": "src/Granit.Analytics.EntityFrameworkCore/GranitAnalyticsEntityFrameworkCoreModule.cs",
-      "line": 14,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
