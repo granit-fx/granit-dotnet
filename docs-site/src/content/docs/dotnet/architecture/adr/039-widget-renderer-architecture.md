@@ -329,7 +329,7 @@ unchanged — one source of truth for "this metric, this tenant, this period".
 {
   "dashboardId": "8c6b...",
   "renderedAt": "2026-04-29T12:34:56.789Z",
-  "period": { "from": "2026-04-01T00:00:00Z", "to": "2026-04-29T00:00:00Z", "token": "Mtd" },
+  "period": { "from": "2026-04-01T00:00:00Z", "to": "2026-04-29T00:00:00Z", "token": "mtd" },
   "widgets": [
     {
       "id": "...",
@@ -376,6 +376,14 @@ TypeScript types must match exactly (`type RefreshHint = "Static" | "Dynamic"
 
 Adopting `JsonNamingPolicy.CamelCase` retroactively would be a wire-format
 break on every existing endpoint. Stay PascalCase here.
+
+`PeriodSpec.Token` is a `string?`, **not** an enum, so the
+`JsonStringEnumConverter` rule does not apply to it. Period tokens follow the
+documented analytics-conventions lowercase set
+(`today`, `yesterday`, `last_7d`, `last_30d`, `mtd`, `qtd`, `ytd`,
+`previous_period`, …) — that's why the example payload has
+`"token": "mtd"`, lowercase, alongside `"refreshHint": "Dynamic"`,
+PascalCase. Different shapes by design.
 
 #### 6.2 Frontend reconciliation — per-widget TanStack cache entries
 
