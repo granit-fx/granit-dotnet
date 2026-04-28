@@ -12,10 +12,12 @@ namespace Granit.Analytics.Dashboards.Widgets;
 /// <param name="Position">See <see cref="WidgetDefinition.Position"/>.</param>
 /// <param name="Size">Defaults to <see cref="WidgetSize.SmallKpi"/>.</param>
 /// <param name="RequiredPermission">See <see cref="WidgetDefinition.RequiredPermission"/>.</param>
+/// <param name="TimeWindowOverride">See <see cref="WidgetDefinition.TimeWindowOverride"/>.</param>
 public sealed record KpiWidgetDefinition(
     string Slug,
     string MetricName,
     int Position,
     WidgetSize? Size = null,
-    string? RequiredPermission = null)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.SmallKpi, RequiredPermission);
+    string? RequiredPermission = null,
+    DashboardTimeWindow? TimeWindowOverride = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.SmallKpi, RequiredPermission, TimeWindowOverride);

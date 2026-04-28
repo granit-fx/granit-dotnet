@@ -37,6 +37,14 @@ public interface IDashboardDefinitionDescriptor
     /// <summary>Layout configuration applied to the widget grid.</summary>
     DashboardLayout Layout { get; }
 
+    /// <summary>
+    /// Default time window applied to every data-bound widget that does not carry its
+    /// own <see cref="WidgetDefinition.TimeWindowOverride"/>. <c>null</c> means the
+    /// frontend falls back to its global default (typically <c>last_30d</c>) — useful
+    /// for dashboards that mix unrelated time scopes per widget.
+    /// </summary>
+    DashboardTimeWindow? DefaultTimeWindow { get; }
+
     /// <summary>Widgets shipped by this dashboard, in declared order.</summary>
     IReadOnlyList<WidgetDefinition> Widgets { get; }
 }

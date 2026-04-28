@@ -23,6 +23,14 @@ namespace Granit.Dashboards;
 /// data source (metric / query / IoT topic) — see ADR-038 §6.
 /// Presentation-only widgets ignore this field.
 /// </param>
+/// <param name="TimeWindowOverride">
+/// Optional override of the dashboard-wide <see cref="DashboardDefinition.DefaultTimeWindow"/>
+/// for this widget specifically. Useful when (a) the widget is rendered standalone
+/// outside a dashboard (e.g. a KPI tile above an invoice list — no surrounding
+/// <c>DashboardContext</c>), or (b) the widget needs a different range than its
+/// peers (e.g. a year-to-date KPI next to last-30-days widgets).
+/// Presentation-only widgets ignore this field.
+/// </param>
 /// <remarks>
 /// JSON polymorphism uses a stable <c>"type"</c> discriminator with short tags
 /// (<c>"markdown"</c>, <c>"image"</c>, <c>"text"</c>, <c>"kpi"</c>, ...). The three
@@ -40,4 +48,5 @@ public abstract record WidgetDefinition(
     string Slug,
     int Position,
     WidgetSize Size,
-    string? RequiredPermission = null);
+    string? RequiredPermission = null,
+    DashboardTimeWindow? TimeWindowOverride = null);

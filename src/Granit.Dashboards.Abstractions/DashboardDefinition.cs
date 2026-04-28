@@ -62,6 +62,14 @@ public abstract class DashboardDefinition : IDashboardDefinitionDescriptor
     /// <summary>Grid layout configuration. Defaults to <see cref="DashboardLayout.Default"/>.</summary>
     public virtual DashboardLayout Layout => DashboardLayout.Default;
 
+    /// <summary>
+    /// Default time window applied to every data-bound widget that does not carry
+    /// its own <see cref="WidgetDefinition.TimeWindowOverride"/>. <c>null</c> means
+    /// "let the frontend pick its global default" — typical for a dashboard whose
+    /// widgets each scope their own range explicitly.
+    /// </summary>
+    public virtual DashboardTimeWindow? DefaultTimeWindow => null;
+
     /// <summary>Widgets shipped by this dashboard, in declared order.</summary>
     public abstract IReadOnlyList<WidgetDefinition> Widgets { get; }
 }

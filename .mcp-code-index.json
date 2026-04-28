@@ -620,7 +620,8 @@
     {
       "name": "Granit.Dashboards.Abstractions",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.Analytics.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -4101,7 +4102,7 @@
       "kind": "enum",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
-      "line": 33,
+      "line": 35,
       "members": []
     },
     {
@@ -4110,7 +4111,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {
@@ -4119,7 +4120,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -4128,7 +4129,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/PivotWidgetDefinition.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -4137,7 +4138,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/TableWidgetDefinition.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -4448,7 +4449,14 @@
       "project": "Granit.Analytics.Abstractions",
       "file": "src/Granit.Analytics.Abstractions/PeriodSpec.cs",
       "line": 22,
-      "members": []
+      "members": [
+        {
+          "name": "FromToken",
+          "kind": "method",
+          "signature": "FromToken(string token)",
+          "returnType": "PeriodSpec"
+        }
+      ]
     },
     {
       "name": "IWidgetSource",
@@ -12587,6 +12595,12 @@
           "kind": "property",
           "signature": "DashboardLayout Layout",
           "returnType": "DashboardLayout"
+        },
+        {
+          "name": "DefaultTimeWindow",
+          "kind": "property",
+          "signature": "DashboardTimeWindow? DefaultTimeWindow",
+          "returnType": "DashboardTimeWindow?"
         }
       ]
     },
@@ -12614,6 +12628,52 @@
       "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
       "line": 71,
       "members": []
+    },
+    {
+      "name": "DashboardTimeWindow",
+      "fqn": "Granit.Dashboards.DashboardTimeWindow",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardTimeWindow.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"last_24h\")",
+          "returnType": "DashboardTimeWindow Last24Hours =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"last_7d\")",
+          "returnType": "DashboardTimeWindow Last7Days =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"last_30d\")",
+          "returnType": "DashboardTimeWindow Last30Days =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"mtd\")",
+          "returnType": "DashboardTimeWindow Mtd =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"ytd\")",
+          "returnType": "DashboardTimeWindow Ytd =>"
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(PeriodSpec.FromToken(\"last_5m\")",
+          "returnType": "DashboardTimeWindow RealtimeLast5Minutes =>"
+        }
+      ]
     },
     {
       "name": "Dashboard",
@@ -12926,12 +12986,21 @@
       ]
     },
     {
+      "name": "TimeWindowKind",
+      "fqn": "Granit.Dashboards.TimeWindowKind",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardTimeWindow.cs",
+      "line": 56,
+      "members": []
+    },
+    {
       "name": "WidgetDefinition",
       "fqn": "Granit.Dashboards.WidgetDefinition",
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/WidgetDefinition.cs",
-      "line": 39,
+      "line": 47,
       "members": []
     },
     {

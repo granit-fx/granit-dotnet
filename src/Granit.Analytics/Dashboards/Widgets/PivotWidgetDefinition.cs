@@ -15,6 +15,7 @@ namespace Granit.Analytics.Dashboards.Widgets;
 /// <param name="Position">See <see cref="WidgetDefinition.Position"/>.</param>
 /// <param name="Size">Defaults to <see cref="WidgetSize.StandardChart"/>.</param>
 /// <param name="RequiredPermission">See <see cref="WidgetDefinition.RequiredPermission"/>.</param>
+/// <param name="TimeWindowOverride">See <see cref="WidgetDefinition.TimeWindowOverride"/>.</param>
 public sealed record PivotWidgetDefinition(
     string Slug,
     string QueryName,
@@ -24,5 +25,6 @@ public sealed record PivotWidgetDefinition(
     AggregateFunction ValueAggregation,
     int Position,
     WidgetSize? Size = null,
-    string? RequiredPermission = null)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.StandardChart, RequiredPermission);
+    string? RequiredPermission = null,
+    DashboardTimeWindow? TimeWindowOverride = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.StandardChart, RequiredPermission, TimeWindowOverride);
