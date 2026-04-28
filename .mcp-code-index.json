@@ -79,6 +79,22 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Analytics",
+      "deps": [
+        "Granit",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Analytics.EntityFrameworkCore",
+      "deps": [
+        "Granit.Analytics",
+        "Granit.QueryEngine.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
@@ -4008,6 +4024,181 @@
           "returnType": "Task"
         }
       ]
+    },
+    {
+      "name": "AnalyticsMetrics",
+      "fqn": "Granit.Analytics.Diagnostics.AnalyticsMetrics",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Diagnostics/AnalyticsMetrics.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.EntityFrameworkCore.Extensions.AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.EntityFrameworkCore",
+      "file": "src/Granit.Analytics.EntityFrameworkCore/Extensions/AnalyticsEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitAnalyticsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitAnalyticsEntityFrameworkCore(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAnalyticsEntityFrameworkCoreModule",
+      "fqn": "Granit.Analytics.EntityFrameworkCore.GranitAnalyticsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Analytics.EntityFrameworkCore",
+      "file": "src/Granit.Analytics.EntityFrameworkCore/GranitAnalyticsEntityFrameworkCoreModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IMetricExecutor",
+      "fqn": "Granit.Analytics.EntityFrameworkCore.IMetricExecutor",
+      "kind": "interface",
+      "project": "Granit.Analytics.EntityFrameworkCore",
+      "file": "src/Granit.Analytics.EntityFrameworkCore/IMetricExecutor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(MetricDefinition<TEntity, TValue> metric, IQueryable<TEntity> source, QueryRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TValue?>"
+        }
+      ]
+    },
+    {
+      "name": "AnalyticsServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.Extensions.AnalyticsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Extensions/AnalyticsServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitAnalytics",
+          "kind": "method",
+          "signature": "AddGranitAnalytics(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAnalyticsModule",
+      "fqn": "Granit.Analytics.GranitAnalyticsModule",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/GranitAnalyticsModule.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IMetricDefinitionDescriptor",
+      "fqn": "Granit.Analytics.Metrics.IMetricDefinitionDescriptor",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/IMetricDefinitionDescriptor.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "MetricDefinition",
+      "fqn": "Granit.Analytics.Metrics.MetricDefinition",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/MetricDefinition.cs",
+      "line": 46,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        },
+        {
+          "name": "RefreshHint",
+          "kind": "property",
+          "signature": "RefreshHint RefreshHint",
+          "returnType": "RefreshHint"
+        }
+      ]
+    },
+    {
+      "name": "MetricValueKind",
+      "fqn": "Granit.Analytics.Metrics.MetricValueKind",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/MetricValueKind.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RefreshHint",
+      "fqn": "Granit.Analytics.Metrics.RefreshHint",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/RefreshHint.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "IWidgetSource",
+      "fqn": "Granit.Analytics.Widgets.IWidgetSource",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Widgets/IWidgetSource.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "RenderAsync",
+          "kind": "method",
+          "signature": "RenderAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<WidgetPayload<TSnapshot>>"
+        },
+        {
+          "name": "SubscribeAsync",
+          "kind": "method",
+          "signature": "SubscribeAsync(CancellationToken cancellationToken = default)",
+          "returnType": "ChannelReader<WidgetPayload<TSnapshot>>"
+        }
+      ]
+    },
+    {
+      "name": "WidgetPayload",
+      "fqn": "Granit.Analytics.Widgets.WidgetPayload",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Widgets/WidgetPayload.cs",
+      "line": 24,
+      "members": []
     },
     {
       "name": "AlterColumnWithoutContractAnalyzer",
@@ -40750,6 +40941,12 @@
           "kind": "method",
           "signature": "GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null)",
           "returnType": "QueryMetadata"
+        },
+        {
+          "name": "BuildFilteredQuery",
+          "kind": "method",
+          "signature": "BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request)",
+          "returnType": "IQueryable<TEntity>"
         }
       ]
     },
