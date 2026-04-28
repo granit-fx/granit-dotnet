@@ -13050,6 +13050,15 @@
       "members": []
     },
     {
+      "name": "UpdateWidgetRequest",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.UpdateWidgetRequest",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/UpdateWidgetRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "WidgetInstanceResponse",
       "fqn": "Granit.Dashboards.Endpoints.Dtos.WidgetInstanceResponse",
       "kind": "record",

@@ -146,6 +146,92 @@ public sealed class DashboardWidgetServiceTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task UpdateWidgetAsync_UpdatesEditableFields_AndPersists()
+    {
+        (Guid dashboardId, Guid widgetId) = await SeedWithKnownWidgetAsync();
+        DashboardWidgetService service = NewService();
+
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            dashboardId, widgetId,
+            position: 5, width: 6, height: 2,
+            titleLocalizationKey: "Widget:Renamed",
+            configJson: "{\"v\":2}",
+            cancellationToken: TestContext.Current.CancellationToken);
+
+        result.Outcome.ShouldBe(DashboardWidgetUpdateOutcome.Updated);
+        result.Widget.ShouldNotBeNull();
+        result.Widget.Position.ShouldBe(5);
+        result.Widget.Width.ShouldBe(6);
+        result.Widget.Height.ShouldBe(2);
+        result.Widget.TitleLocalizationKey.ShouldBe("Widget:Renamed");
+        result.Widget.ConfigJson.ShouldBe("{\"v\":2}");
+
+        await using DashboardsDbContext readBack = NewContext();
+        WidgetInstance onDisk = await readBack.WidgetInstances.AsNoTracking()
+            .SingleAsync(w => w.Id == widgetId, TestContext.Current.CancellationToken);
+        onDisk.Position.ShouldBe(5);
+        onDisk.TitleLocalizationKey.ShouldBe("Widget:Renamed");
+        onDisk.ConfigJson.ShouldBe("{\"v\":2}");
+    }
+
+    [Fact]
+    public async Task UpdateWidgetAsync_BlankTitle_ReturnsInvalid_AndDoesNotPersist()
+    {
+        (Guid dashboardId, Guid widgetId) = await SeedWithKnownWidgetAsync();
+        DashboardWidgetService service = NewService();
+
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            dashboardId, widgetId, 0, 12, 1, "  ", "{}",
+            TestContext.Current.CancellationToken);
+
+        result.Outcome.ShouldBe(DashboardWidgetUpdateOutcome.Invalid);
+        result.InvalidReason.ShouldNotBeNullOrWhiteSpace();
+
+        await using DashboardsDbContext readBack = NewContext();
+        WidgetInstance onDisk = await readBack.WidgetInstances.AsNoTracking()
+            .SingleAsync(w => w.Id == widgetId, TestContext.Current.CancellationToken);
+        onDisk.TitleLocalizationKey.ShouldBe("Widget:Sample.0");
+    }
+
+    [Fact]
+    public async Task UpdateWidgetAsync_NegativePosition_ReturnsInvalid()
+    {
+        (Guid dashboardId, Guid widgetId) = await SeedWithKnownWidgetAsync();
+        DashboardWidgetService service = NewService();
+
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            dashboardId, widgetId, -1, 12, 1, "Widget:K", "{}",
+            TestContext.Current.CancellationToken);
+
+        result.Outcome.ShouldBe(DashboardWidgetUpdateOutcome.Invalid);
+    }
+
+    [Fact]
+    public async Task UpdateWidgetAsync_UnknownDashboard_ReturnsDashboardNotFound()
+    {
+        DashboardWidgetService service = NewService();
+
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            Guid.NewGuid(), Guid.NewGuid(), 0, 12, 1, "Widget:K", "{}",
+            TestContext.Current.CancellationToken);
+
+        result.Outcome.ShouldBe(DashboardWidgetUpdateOutcome.DashboardNotFound);
+    }
+
+    [Fact]
+    public async Task UpdateWidgetAsync_UnknownWidgetOnExistingDashboard_ReturnsWidgetNotFound()
+    {
+        Guid dashboardId = await SeedAsync(widgetCount: 1);
+        DashboardWidgetService service = NewService();
+
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            dashboardId, Guid.NewGuid(), 0, 12, 1, "Widget:K", "{}",
+            TestContext.Current.CancellationToken);
+
+        result.Outcome.ShouldBe(DashboardWidgetUpdateOutcome.WidgetNotFound);
+    }
+
+    [Fact]
     public async Task RemoveWidgetAsync_RemovesPinnedWidget_AndPersists()
     {
         (Guid dashboardId, Guid widgetId) = await SeedWithKnownWidgetAsync();

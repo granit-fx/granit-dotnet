@@ -202,6 +202,36 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
         AddDomainEvent(new DashboardModifiedEvent(Id, TenantId));
     }
 
+    /// <summary>
+    /// Updates the layout (position / size), title localization key, and JSON
+    /// configuration of a pinned widget. WidgetType, MetricName, QueryName and
+    /// RequiredPermission are intentionally immutable here — switching widget
+    /// kind or rebinding to a different metric/query is delete + add, not edit.
+    /// Returns <c>true</c> when the widget existed; <c>false</c> when it was
+    /// not pinned.
+    /// </summary>
+    public bool UpdateWidget(
+        Guid widgetId,
+        int position,
+        int width,
+        int height,
+        string titleLocalizationKey,
+        string configJson)
+    {
+        WidgetInstance? widget = _widgets.FirstOrDefault(w => w.Id == widgetId);
+        if (widget is null)
+        {
+            return false;
+        }
+
+        widget.Reposition(position, width, height);
+        widget.UpdateTitle(titleLocalizationKey);
+        widget.UpdateConfig(configJson);
+
+        AddDomainEvent(new DashboardModifiedEvent(Id, TenantId));
+        return true;
+    }
+
     /// <summary>Transitions <see cref="DashboardStatus.Draft"/> → <see cref="DashboardStatus.Published"/>.</summary>
     public void Publish()
     {

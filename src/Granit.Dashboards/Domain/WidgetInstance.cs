@@ -150,6 +150,13 @@ public sealed class WidgetInstance : Entity
         ConfigJson = configJson;
     }
 
+    /// <summary>Updates the localization key used to render the widget's title.</summary>
+    internal void UpdateTitle(string titleLocalizationKey)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(titleLocalizationKey);
+        TitleLocalizationKey = titleLocalizationKey;
+    }
+
     /// <summary>
     /// Applies (or clears) the per-instance presentation overrides. Pass <c>null</c>
     /// to revert to the imported defaults.

@@ -137,6 +137,84 @@ public sealed class DashboardStateMachineTests
     }
 
     [Fact]
+    public void UpdateWidget_UpdatesEditableFields_AndRaisesModifiedEvent()
+    {
+        Dashboard dashboard = NewDraft();
+        WidgetInstance widget = dashboard.AddWidget(
+            Guid.NewGuid(), "Kpi", position: 0, width: 3, height: 1,
+            titleLocalizationKey: "Widget:Sample.Title",
+            configJson: "{\"a\":1}",
+            metricName: "M",
+            requiredPermission: "P.Read");
+        dashboard.ClearDomainEvents();
+
+        bool found = dashboard.UpdateWidget(
+            widget.Id, position: 4, width: 6, height: 2,
+            titleLocalizationKey: "Widget:Sample.Renamed",
+            configJson: "{\"a\":2}");
+
+        found.ShouldBeTrue();
+        widget.Position.ShouldBe(4);
+        widget.Width.ShouldBe(6);
+        widget.Height.ShouldBe(2);
+        widget.TitleLocalizationKey.ShouldBe("Widget:Sample.Renamed");
+        widget.ConfigJson.ShouldBe("{\"a\":2}");
+        // Identity-bound fields stay frozen.
+        widget.WidgetType.ShouldBe("Kpi");
+        widget.MetricName.ShouldBe("M");
+        widget.RequiredPermission.ShouldBe("P.Read");
+        dashboard.DomainEvents.OfType<DashboardModifiedEvent>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void UpdateWidget_UnknownId_ReturnsFalseAndRaisesNoEvent()
+    {
+        Dashboard dashboard = NewDraft();
+        dashboard.AddWidget(Guid.NewGuid(), "Markdown", 0, 12, 1, "Widget:S", "{}");
+        dashboard.ClearDomainEvents();
+
+        bool found = dashboard.UpdateWidget(
+            Guid.NewGuid(), 1, 6, 1, "Widget:Other", "{}");
+
+        found.ShouldBeFalse();
+        dashboard.DomainEvents.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void UpdateWidget_RejectsNegativePosition()
+    {
+        Dashboard dashboard = NewDraft();
+        WidgetInstance widget = dashboard.AddWidget(Guid.NewGuid(), "Markdown", 0, 12, 1, "Widget:S", "{}");
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            dashboard.UpdateWidget(widget.Id, -1, 12, 1, "Widget:S", "{}"));
+    }
+
+    [Fact]
+    public void UpdateWidget_RejectsNonPositiveSize()
+    {
+        Dashboard dashboard = NewDraft();
+        WidgetInstance widget = dashboard.AddWidget(Guid.NewGuid(), "Markdown", 0, 12, 1, "Widget:S", "{}");
+
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            dashboard.UpdateWidget(widget.Id, 0, 0, 1, "Widget:S", "{}"));
+        Should.Throw<ArgumentOutOfRangeException>(() =>
+            dashboard.UpdateWidget(widget.Id, 0, 12, 0, "Widget:S", "{}"));
+    }
+
+    [Fact]
+    public void UpdateWidget_RejectsBlankTitleOrConfig()
+    {
+        Dashboard dashboard = NewDraft();
+        WidgetInstance widget = dashboard.AddWidget(Guid.NewGuid(), "Markdown", 0, 12, 1, "Widget:S", "{}");
+
+        Should.Throw<ArgumentException>(() =>
+            dashboard.UpdateWidget(widget.Id, 0, 12, 1, "  ", "{}"));
+        Should.Throw<ArgumentException>(() =>
+            dashboard.UpdateWidget(widget.Id, 0, 12, 1, "Widget:S", "  "));
+    }
+
+    [Fact]
     public void Create_RejectsEmptyName()
     {
         Should.Throw<ArgumentException>(() =>

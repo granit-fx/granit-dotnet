@@ -63,6 +63,42 @@ internal sealed class DashboardWidgetService(DashboardsDbContext db, IGuidGenera
         return DashboardWidgetAddResult.Success(dashboard, widget);
     }
 
+    public async Task<DashboardWidgetUpdateResult> UpdateWidgetAsync(
+        Guid dashboardId,
+        Guid widgetId,
+        int position,
+        int width,
+        int height,
+        string titleLocalizationKey,
+        string configJson,
+        CancellationToken cancellationToken)
+    {
+        Dashboard? dashboard = await LoadAsync(dashboardId, cancellationToken).ConfigureAwait(false);
+        if (dashboard is null)
+        {
+            return DashboardWidgetUpdateResult.DashboardNotFound();
+        }
+
+        bool found;
+        try
+        {
+            found = dashboard.UpdateWidget(widgetId, position, width, height, titleLocalizationKey, configJson);
+        }
+        catch (ArgumentException ex)
+        {
+            return DashboardWidgetUpdateResult.Invalid(ex.Message);
+        }
+
+        if (!found)
+        {
+            return DashboardWidgetUpdateResult.WidgetNotFound();
+        }
+
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        WidgetInstance widget = dashboard.Widgets.Single(w => w.Id == widgetId);
+        return DashboardWidgetUpdateResult.Success(widget);
+    }
+
     public async Task<DashboardWidgetRemoveResult> RemoveWidgetAsync(
         Guid dashboardId,
         Guid widgetId,
@@ -129,4 +165,35 @@ internal enum DashboardWidgetRemoveResult
     Removed,
     DashboardNotFound,
     WidgetNotFound,
+}
+
+/// <summary>
+/// Outcome of an update request — updated widget on success, or one of three
+/// failure reasons (dashboard not found, widget not found on that dashboard,
+/// domain-guard rejection).
+/// </summary>
+internal sealed record DashboardWidgetUpdateResult(
+    DashboardWidgetUpdateOutcome Outcome,
+    WidgetInstance? Widget,
+    string? InvalidReason)
+{
+    public static DashboardWidgetUpdateResult Success(WidgetInstance widget)
+        => new(DashboardWidgetUpdateOutcome.Updated, widget, null);
+
+    public static DashboardWidgetUpdateResult DashboardNotFound()
+        => new(DashboardWidgetUpdateOutcome.DashboardNotFound, null, null);
+
+    public static DashboardWidgetUpdateResult WidgetNotFound()
+        => new(DashboardWidgetUpdateOutcome.WidgetNotFound, null, null);
+
+    public static DashboardWidgetUpdateResult Invalid(string reason)
+        => new(DashboardWidgetUpdateOutcome.Invalid, null, reason);
+}
+
+internal enum DashboardWidgetUpdateOutcome
+{
+    Updated,
+    DashboardNotFound,
+    WidgetNotFound,
+    Invalid,
 }

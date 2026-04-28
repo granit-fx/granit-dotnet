@@ -13,9 +13,10 @@ using Microsoft.AspNetCore.Routing;
 namespace Granit.Dashboards.Endpoints.Endpoints;
 
 /// <summary>
-/// HTTP handlers for the dashboard's widget pool — add and remove widget
-/// instances. Update lands later (requires a new aggregate method); for now,
-/// editing config means delete + add.
+/// HTTP handlers for the dashboard's widget pool — add, update and remove
+/// widget instances. The update endpoint replaces layout / title / config but
+/// not WidgetType / MetricName / QueryName / RequiredPermission (those are
+/// delete + add).
 /// </summary>
 internal static class DashboardWidgetEndpoints
 {
@@ -33,6 +34,23 @@ internal static class DashboardWidgetEndpoints
                 + "dashboard is not in the current tenant's scope.")
             .RequireAuthorization(DashboardsPermissions.Instances.Manage)
             .Produces<WidgetInstanceResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+
+        group.MapPut("/{id:guid}/widgets/{widgetId:guid}", UpdateWidgetAsync)
+            .WithName("UpdateGranitDashboardWidget")
+            .WithSummary("Updates a widget's layout, title and config.")
+            .WithDescription(
+                "Full replacement of the widget's editable fields: Position, Width, "
+                + "Height, TitleLocalizationKey, ConfigJson. WidgetType, MetricName, "
+                + "QueryName and RequiredPermission stay immutable — switching widget "
+                + "kind or rebinding to a different metric/query is delete + add, not "
+                + "edit. Returns 200 with the updated widget, 404 when the dashboard "
+                + "or the widget id is not in scope, or 422 when the domain guards "
+                + "reject the input.")
+            .RequireAuthorization(DashboardsPermissions.Instances.Manage)
+            .Produces<WidgetInstanceResponse>()
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
@@ -83,6 +101,43 @@ internal static class DashboardWidgetEndpoints
                     detail: $"Dashboard '{id}' not found.",
                     statusCode: StatusCodes.Status404NotFound),
             DashboardWidgetAddOutcome.Invalid =>
+                TypedResults.Problem(
+                    detail: result.InvalidReason,
+                    statusCode: StatusCodes.Status422UnprocessableEntity),
+            _ => throw new InvalidOperationException($"Unhandled outcome '{result.Outcome}'."),
+        };
+    }
+
+    private static async Task<Results<Ok<WidgetInstanceResponse>, ProblemHttpResult>> UpdateWidgetAsync(
+        [FromRoute] Guid id,
+        [FromRoute] Guid widgetId,
+        [FromBody] UpdateWidgetRequest request,
+        [FromServices] DashboardWidgetService service,
+        CancellationToken cancellationToken)
+    {
+        DashboardWidgetUpdateResult result = await service.UpdateWidgetAsync(
+            dashboardId: id,
+            widgetId: widgetId,
+            position: request.Position,
+            width: request.Width,
+            height: request.Height,
+            titleLocalizationKey: request.TitleLocalizationKey,
+            configJson: request.ConfigJson,
+            cancellationToken: cancellationToken).ConfigureAwait(false);
+
+        return result.Outcome switch
+        {
+            DashboardWidgetUpdateOutcome.Updated =>
+                TypedResults.Ok(DashboardInstanceProjection.ToWidgetInstance(result.Widget!)),
+            DashboardWidgetUpdateOutcome.DashboardNotFound =>
+                TypedResults.Problem(
+                    detail: $"Dashboard '{id}' not found.",
+                    statusCode: StatusCodes.Status404NotFound),
+            DashboardWidgetUpdateOutcome.WidgetNotFound =>
+                TypedResults.Problem(
+                    detail: $"Widget '{widgetId}' not found on dashboard '{id}'.",
+                    statusCode: StatusCodes.Status404NotFound),
+            DashboardWidgetUpdateOutcome.Invalid =>
                 TypedResults.Problem(
                     detail: result.InvalidReason,
                     statusCode: StatusCodes.Status422UnprocessableEntity),
