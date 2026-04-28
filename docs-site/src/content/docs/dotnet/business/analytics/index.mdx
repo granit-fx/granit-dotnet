@@ -84,7 +84,7 @@ Naming, casing, and structural rules are codified in the
 before adding a metric, because the same names land in:
 
 - Localization keys (`Metric:{Name}` across 18 cultures)
-- HTTP route parameters (`POST /api/granit/analytics/metrics/{Name}`)
+- HTTP route parameters (`POST /api/{version}/analytics/metrics/{Name}` — exact path depends on the host's API versioning prefix)
 - Dashboard widget references (Layer 2)
 - OData EntitySet routing (Layer 3)
 - Power BI / Excel client measure aliases
