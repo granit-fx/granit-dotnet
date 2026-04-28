@@ -20,13 +20,13 @@ public sealed class AnalyticsWidgetActionsTests
 
     [Fact]
     public void Kpi_DefaultsToNoActions()
-        => new KpiWidgetDefinition("K", "M", Position: 0).Actions.ShouldBeNull();
+        => new KpiWidgetDefinition("K", Datasource.Metric("M"), Position: 0).Actions.ShouldBeNull();
 
     [Fact]
     public void Kpi_AcceptsActions()
     {
         KpiWidgetDefinition widget = new(
-            "UnpaidCount", "Sample.Metric", Position: 0, Actions: OneClickAction);
+            "UnpaidCount", Datasource.Metric("Sample.Metric"), Position: 0, Actions: OneClickAction);
 
         widget.Actions.ShouldBe(OneClickAction);
     }

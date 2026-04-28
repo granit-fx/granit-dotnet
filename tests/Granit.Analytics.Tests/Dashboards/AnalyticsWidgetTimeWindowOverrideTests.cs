@@ -18,7 +18,7 @@ public sealed class AnalyticsWidgetTimeWindowOverrideTests
     public void Kpi_AcceptsTimeWindowOverride()
     {
         KpiWidgetDefinition widget = new(
-            "YtdKpi", "Sample.Metric", Position: 0,
+            "YtdKpi", Datasource.Metric("Sample.Metric"), Position: 0,
             TimeWindowOverride: DashboardTimeWindow.Ytd);
 
         widget.TimeWindowOverride.ShouldBe(DashboardTimeWindow.Ytd);
@@ -59,7 +59,7 @@ public sealed class AnalyticsWidgetTimeWindowOverrideTests
     [Fact]
     public void Kpi_DefaultsToNullOverride()
     {
-        KpiWidgetDefinition widget = new("DefaultKpi", "Sample.Metric", Position: 0);
+        KpiWidgetDefinition widget = new("DefaultKpi", Datasource.Metric("Sample.Metric"), Position: 0);
 
         widget.TimeWindowOverride.ShouldBeNull();
     }

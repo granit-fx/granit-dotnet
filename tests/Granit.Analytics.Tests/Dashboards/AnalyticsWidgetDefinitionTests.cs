@@ -16,10 +16,12 @@ public sealed class AnalyticsWidgetDefinitionTests
     [Fact]
     public void Kpi_DefaultsToSmallKpiSize()
     {
-        KpiWidgetDefinition widget = new("UnpaidCount", "Sample.UnpaidInvoiceCountMetric", Position: 0);
+        KpiWidgetDefinition widget = new(
+            "UnpaidCount", Datasource.Metric("Sample.UnpaidInvoiceCountMetric"), Position: 0);
 
         widget.Size.ShouldBe(WidgetSize.SmallKpi);
         widget.RequiredPermission.ShouldBeNull();
+        widget.Datasource.ShouldBeOfType<MetricDatasource>();
     }
 
     [Fact]
@@ -27,7 +29,7 @@ public sealed class AnalyticsWidgetDefinitionTests
     {
         KpiWidgetDefinition widget = new(
             Slug: "RestrictedKpi",
-            MetricName: "Sample.Metric",
+            Datasource: Datasource.Metric("Sample.Metric"),
             Position: 0,
             RequiredPermission: "Custom.Composite.Read");
 

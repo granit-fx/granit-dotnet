@@ -621,7 +621,8 @@
       "name": "Granit.Dashboards.Abstractions",
       "deps": [
         "Granit",
-        "Granit.Analytics.Abstractions"
+        "Granit.Analytics.Abstractions",
+        "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -4120,7 +4121,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
-      "line": 17,
+      "line": 26,
       "members": []
     },
     {
@@ -12745,6 +12746,43 @@
       "members": []
     },
     {
+      "name": "DataKeyFormat",
+      "fqn": "Granit.Dashboards.DataKeyFormat",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DataKeyFormat.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "Datasource",
+      "fqn": "Granit.Dashboards.Datasource",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Metric",
+          "kind": "method",
+          "signature": "Metric(string metricName)",
+          "returnType": "MetricDatasource"
+        },
+        {
+          "name": "QueryAggregate",
+          "kind": "method",
+          "signature": "QueryAggregate(string queryName, AggregateFunction aggregation, string? field = null, IReadOnlyList<DataKeyFormat>? keyFormats = null)",
+          "returnType": "QueryAggregateDatasource"
+        },
+        {
+          "name": "Telemetry",
+          "kind": "method",
+          "signature": "Telemetry(string entityAlias, string telemetryKey, TelemetryAggregation aggregation = TelemetryAggregation.Last, IReadOnlyList<DataKeyFormat>? keyFormats = null)",
+          "returnType": "TelemetryDatasource"
+        }
+      ]
+    },
+    {
       "name": "Dashboard",
       "fqn": "Granit.Dashboards.Domain.Dashboard",
       "kind": "class",
@@ -13084,6 +13122,24 @@
       "members": []
     },
     {
+      "name": "MetricDatasource",
+      "fqn": "Granit.Dashboards.MetricDatasource",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
+      "line": 54,
+      "members": []
+    },
+    {
+      "name": "QueryAggregateDatasource",
+      "fqn": "Granit.Dashboards.QueryAggregateDatasource",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
+      "line": 68,
+      "members": []
+    },
+    {
       "name": "RouteParamResolver",
       "fqn": "Granit.Dashboards.RouteParamResolver",
       "kind": "record",
@@ -13099,6 +13155,24 @@
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/EntityAliasResolver.cs",
       "line": 66,
+      "members": []
+    },
+    {
+      "name": "TelemetryAggregation",
+      "fqn": "Granit.Dashboards.TelemetryAggregation",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
+      "line": 92,
+      "members": []
+    },
+    {
+      "name": "TelemetryDatasource",
+      "fqn": "Granit.Dashboards.TelemetryDatasource",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
+      "line": 85,
       "members": []
     },
     {

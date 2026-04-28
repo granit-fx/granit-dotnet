@@ -47,9 +47,19 @@ public sealed class DashboardWidgetReferenceTests
             {
                 switch (widget)
                 {
-                    case KpiWidgetDefinition kpi
-                        when !inventory.MetricNames.Contains(kpi.MetricName):
-                        dangling.Add($"{dashboard.Name}/{kpi.Slug} -> KPI references missing metric '{kpi.MetricName}'");
+                    case KpiWidgetDefinition kpi:
+                        // P2.2: Kpi binds to a Datasource — Metric / QueryAggregate
+                        // are validated; TelemetryDatasource is skipped (no
+                        // compile-time inventory of telemetry keys).
+                        switch (kpi.Datasource)
+                        {
+                            case MetricDatasource md when !inventory.MetricNames.Contains(md.MetricName):
+                                dangling.Add($"{dashboard.Name}/{kpi.Slug} -> KPI MetricDatasource references missing metric '{md.MetricName}'");
+                                break;
+                            case QueryAggregateDatasource qa when !inventory.QueryNames.Contains(qa.QueryName):
+                                dangling.Add($"{dashboard.Name}/{kpi.Slug} -> KPI QueryAggregateDatasource references missing query '{qa.QueryName}'");
+                                break;
+                        }
                         break;
 
                     case ChartWidgetDefinition chart

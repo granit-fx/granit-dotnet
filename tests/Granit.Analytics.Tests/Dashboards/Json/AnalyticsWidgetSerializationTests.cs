@@ -27,7 +27,7 @@ public sealed class AnalyticsWidgetSerializationTests
     public void Kpi_SerializesWithStableDiscriminator()
     {
         WidgetDefinition widget = new KpiWidgetDefinition(
-            "UnpaidCount", "Granit.Invoicing.UnpaidInvoiceCountMetric", Position: 0);
+            "UnpaidCount", Datasource.Metric("Granit.Invoicing.UnpaidInvoiceCountMetric"), Position: 0);
 
         string json = JsonSerializer.Serialize(widget, NewOptions());
 
@@ -84,7 +84,7 @@ public sealed class AnalyticsWidgetSerializationTests
 
         WidgetDefinition[] originals =
         [
-            new KpiWidgetDefinition("Kpi", "M1", Position: 0),
+            new KpiWidgetDefinition("Kpi", Datasource.Metric("M1"), Position: 0),
             new ChartWidgetDefinition("Chart", "Q1", "g", AggregateFunction.Sum, "f", ChartType.Bar, Position: 1),
             new TableWidgetDefinition("Table", "Q1", null, 25, Position: 2),
             new PivotWidgetDefinition("Pivot", "Q1", ["r"], ["c"], null, AggregateFunction.Count, Position: 3),
