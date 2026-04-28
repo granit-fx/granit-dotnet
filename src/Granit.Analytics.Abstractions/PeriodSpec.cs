@@ -1,4 +1,4 @@
-namespace Granit.Analytics.Endpoints.Dtos;
+namespace Granit.Analytics;
 
 /// <summary>
 /// A time window — either explicit (<see cref="From"/> / <see cref="To"/>) or named
@@ -13,6 +13,12 @@ namespace Granit.Analytics.Endpoints.Dtos;
 /// <c>ytd</c> (year-to-date), <c>previous_period</c> (only valid for the comparison
 /// window — refers to the period of equal length immediately preceding the main one).
 /// </param>
+/// <remarks>
+/// Lives in <c>Granit.Analytics.Abstractions</c> rather than the HTTP DTOs package so
+/// modules outside the analytics HTTP surface (notably <c>Granit.Dashboards.Abstractions</c>
+/// for the upcoming <c>DashboardTimeWindow</c> primitive in P1.3) can reuse the same
+/// time-window model without taking a dependency on the analytics HTTP layer.
+/// </remarks>
 public sealed record PeriodSpec(
     DateTimeOffset? From = null,
     DateTimeOffset? To = null,

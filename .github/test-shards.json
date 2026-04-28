@@ -63,6 +63,7 @@
         "tests/Granit.Parties.Privacy.Tests",
         "tests/Granit.Parties.Tests",
         "tests/Granit.Analytics.Tests",
+        "tests/Granit.Analytics.Abstractions.Tests",
         "tests/Granit.Analytics.EntityFrameworkCore.Tests",
         "tests/Granit.Analytics.Endpoints.Tests",
         "tests/Granit.Dashboards.Tests",

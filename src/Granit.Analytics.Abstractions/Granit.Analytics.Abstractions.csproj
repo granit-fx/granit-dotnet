@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Analytics.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Analytics: PeriodSpec (token-or-absolute time window) shared between metric requests and dashboard time windows. Reference this package from any module that needs to describe a time window without pulling the full analytics runtime.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Analytics.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics" />
+    <InternalsVisibleTo Include="Granit.Analytics.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

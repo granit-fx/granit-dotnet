@@ -82,8 +82,16 @@
       "name": "Granit.Analytics",
       "deps": [
         "Granit",
+        "Granit.Analytics.Abstractions",
         "Granit.Dashboards.Abstractions",
         "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Analytics.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -4162,15 +4170,6 @@
       "members": []
     },
     {
-      "name": "PeriodSpec",
-      "fqn": "Granit.Analytics.Endpoints.Dtos.PeriodSpec",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Dtos/PeriodSpec.cs",
-      "line": 16,
-      "members": []
-    },
-    {
       "name": "AnalyticsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Analytics.Endpoints.Extensions.AnalyticsEndpointRouteBuilderExtensions",
       "kind": "class",
@@ -4335,6 +4334,15 @@
       ]
     },
     {
+      "name": "GranitAnalyticsAbstractionsModule",
+      "fqn": "Granit.Analytics.GranitAnalyticsAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/GranitAnalyticsAbstractionsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "GranitAnalyticsModule",
       "fqn": "Granit.Analytics.GranitAnalyticsModule",
       "kind": "class",
@@ -4415,6 +4423,15 @@
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Metrics/RefreshHint.cs",
       "line": 15,
+      "members": []
+    },
+    {
+      "name": "PeriodSpec",
+      "fqn": "Granit.Analytics.PeriodSpec",
+      "kind": "record",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/PeriodSpec.cs",
+      "line": 22,
       "members": []
     },
     {
