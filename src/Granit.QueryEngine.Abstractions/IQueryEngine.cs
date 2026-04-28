@@ -75,4 +75,28 @@ public interface IQueryEngine<TEntity> where TEntity : class
     /// <param name="savedViews">Optional saved views to include in the metadata.</param>
     /// <returns>The query metadata.</returns>
     QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null);
+
+    /// <summary>
+    /// Applies the <see cref="QueryDefinition{TEntity}"/>'s filter pipeline (filters, presets,
+    /// quick filters, global search) to <paramref name="source"/> and returns the unsorted,
+    /// unpaginated, unprojected <see cref="IQueryable{T}"/>.
+    /// </summary>
+    /// <param name="source">The base queryable.</param>
+    /// <param name="request">The query parameters (only filter-related fields are applied).</param>
+    /// <returns>The filtered queryable, ready for downstream aggregation.</returns>
+    /// <remarks>
+    /// <para>
+    /// Use this entry point from analytics modules (<c>Granit.Analytics</c> metric executors,
+    /// dashboard widget renderers) to apply aggregations such as <c>Count</c>, <c>Sum</c>,
+    /// <c>Avg</c>, <c>Min</c>, <c>Max</c> against the same set of rows the grid endpoint sees —
+    /// so that a KPI like "12 unpaid invoices" exactly matches the grid's row count for the
+    /// same filter spec.
+    /// </para>
+    /// <para>
+    /// Sort, projection, pagination, and group-by are <b>NOT</b> applied. Multi-tenancy and
+    /// soft-delete filters are expected to be applied by the caller on <paramref name="source"/>
+    /// (typically via <c>ApplyGranitConventions</c> on the DbContext) before invoking this method.
+    /// </para>
+    /// </remarks>
+    IQueryable<TEntity> BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request);
 }

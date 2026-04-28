@@ -97,6 +97,8 @@
     <Project Path="src/Granit.Vault/Granit.Vault.csproj" />
   </Folder>
   <Folder Name="/src/Application/">
+    <Project Path="src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Analytics/Granit.Analytics.csproj" />
     <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
@@ -427,6 +429,8 @@
     <Project Path="tests/Granit.Vault.Tests/Granit.Vault.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Application/">
+    <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />

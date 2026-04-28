@@ -63,6 +63,8 @@
         "tests/Granit.Parties.MultiTenancy.Tests",
         "tests/Granit.Parties.Privacy.Tests",
         "tests/Granit.Parties.Tests",
+        "tests/Granit.Analytics.Tests",
+        "tests/Granit.Analytics.EntityFrameworkCore.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",

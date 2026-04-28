@@ -803,6 +803,9 @@ public sealed class ExportOrchestratorTests
 
         public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null) =>
             throw new NotSupportedException();
+
+        public IQueryable<TestEntity> BuildFilteredQuery(IQueryable<TestEntity> source, QueryRequest request) =>
+            throw new NotSupportedException();
     }
 
     private sealed class TestDataSource : IExportDataSource<TestEntity>

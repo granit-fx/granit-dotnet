@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Analytics.EntityFrameworkCore</PackageId>
+    <Description>EF Core executor for Granit.Analytics MetricDefinition. Runs Count / Sum / Avg / Min / Max aggregations through the Granit.QueryEngine filter pipeline so KPIs always match grid row counts for the same filter spec, and locks the empty-set semantics (Sum to 0, Avg/Min/Max to null) that the Analytics module promises.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Analytics\Granit.Analytics.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Analytics</PackageId>
+    <Description>Declarative Business Intelligence primitives for Granit: MetricDefinition for inline KPIs and DashboardDefinition for composable dashboards. Pairs with QueryDefinition (lists rows) and ExportDefinition (extracts rows) — MetricDefinition aggregates them. Reference this package from any module that declares metrics; reference Granit.Analytics.EntityFrameworkCore from hosts that execute them.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Analytics.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -249,6 +249,14 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <inheritdoc/>
+    public IQueryable<TEntity> BuildFilteredQuery(IQueryable<TEntity> source, QueryRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(request);
+        return ApplyCommonFilters(source.AsNoTracking(), request);
+    }
+
+    /// <inheritdoc/>
     public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null)
     {
         IStringLocalizer? localizer = ResolveLocalizer();
