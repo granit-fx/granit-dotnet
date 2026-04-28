@@ -15,14 +15,16 @@ namespace Granit.Dashboards.Widgets;
 /// (preserves aspect, letterboxes) — the right call for logos. Use
 /// <see cref="ImageFit.Cover"/> for banner photos that should fill the tile.
 /// </param>
+/// <param name="Actions">See <see cref="WidgetDefinition.Actions"/>.</param>
 public sealed record ImageWidgetDefinition(
     string Slug,
     string Source,
     string AltLocalizationKey,
     int Position,
     WidgetSize? Size = null,
-    ImageFit Fit = ImageFit.Contain)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.MediaTile, RequiredPermission: null);
+    ImageFit Fit = ImageFit.Contain,
+    IReadOnlyList<WidgetAction>? Actions = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.MediaTile, RequiredPermission: null, TimeWindowOverride: null, Actions);
 
 /// <summary>How an <see cref="ImageWidgetDefinition"/> fills its grid cell.</summary>
 public enum ImageFit

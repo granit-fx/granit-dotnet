@@ -10,13 +10,15 @@ namespace Granit.Dashboards.Widgets;
 /// <param name="Style">Visual style hint — interpreted by the frontend.</param>
 /// <param name="Position">See <see cref="WidgetDefinition.Position"/>.</param>
 /// <param name="Size">Defaults to <see cref="WidgetSize.FullWidthRow"/>.</param>
+/// <param name="Actions">See <see cref="WidgetDefinition.Actions"/>.</param>
 public sealed record TextWidgetDefinition(
     string Slug,
     string ContentLocalizationKey,
     TextStyle Style,
     int Position,
-    WidgetSize? Size = null)
-    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.FullWidthRow, RequiredPermission: null);
+    WidgetSize? Size = null,
+    IReadOnlyList<WidgetAction>? Actions = null)
+    : WidgetDefinition(Slug, Position, Size ?? WidgetSize.FullWidthRow, RequiredPermission: null, TimeWindowOverride: null, Actions);
 
 /// <summary>Visual style hint for <see cref="TextWidgetDefinition"/>.</summary>
 public enum TextStyle

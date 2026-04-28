@@ -4102,7 +4102,7 @@
       "kind": "enum",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
-      "line": 35,
+      "line": 37,
       "members": []
     },
     {
@@ -4111,7 +4111,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/ChartWidgetDefinition.cs",
-      "line": 21,
+      "line": 22,
       "members": []
     },
     {
@@ -4120,7 +4120,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/KpiWidgetDefinition.cs",
-      "line": 16,
+      "line": 17,
       "members": []
     },
     {
@@ -4129,7 +4129,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/PivotWidgetDefinition.cs",
-      "line": 19,
+      "line": 20,
       "members": []
     },
     {
@@ -4138,7 +4138,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/TableWidgetDefinition.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -13022,12 +13022,39 @@
       "members": []
     },
     {
+      "name": "WidgetAction",
+      "fqn": "Granit.Dashboards.WidgetAction",
+      "kind": "record",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetAction.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "WidgetActionKind",
+      "fqn": "Granit.Dashboards.WidgetActionKind",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetAction.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "WidgetActionTrigger",
+      "fqn": "Granit.Dashboards.WidgetActionTrigger",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetAction.cs",
+      "line": 35,
+      "members": []
+    },
+    {
       "name": "WidgetDefinition",
       "fqn": "Granit.Dashboards.WidgetDefinition",
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/WidgetDefinition.cs",
-      "line": 47,
+      "line": 55,
       "members": []
     },
     {
@@ -13070,7 +13097,7 @@
       "kind": "enum",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/ImageWidgetDefinition.cs",
-      "line": 28,
+      "line": 30,
       "members": []
     },
     {
@@ -13079,7 +13106,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/ImageWidgetDefinition.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -13088,7 +13115,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/MarkdownWidgetDefinition.cs",
-      "line": 12,
+      "line": 13,
       "members": []
     },
     {
@@ -13097,7 +13124,7 @@
       "kind": "enum",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/TextWidgetDefinition.cs",
-      "line": 22,
+      "line": 24,
       "members": []
     },
     {
@@ -13106,7 +13133,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Widgets/TextWidgetDefinition.cs",
-      "line": 13,
+      "line": 14,
       "members": []
     },
     {

@@ -31,6 +31,14 @@ namespace Granit.Dashboards;
 /// peers (e.g. a year-to-date KPI next to last-30-days widgets).
 /// Presentation-only widgets ignore this field.
 /// </param>
+/// <param name="Actions">
+/// Declarative click-handler descriptors. Each <see cref="WidgetAction"/> binds a
+/// trigger (click / row-click / series-click / legend-click) to a typed dispatch kind
+/// (navigate / open view / open dashboard / export / open detail) plus an optional
+/// param map. The frontend dispatches them — no code injection, no expression
+/// evaluation; values may reference variables resolved by <c>IVariableSubstituter</c>
+/// (P3.3). <c>null</c> = the widget has no actions wired.
+/// </param>
 /// <remarks>
 /// JSON polymorphism uses a stable <c>"type"</c> discriminator with short tags
 /// (<c>"markdown"</c>, <c>"image"</c>, <c>"text"</c>, <c>"kpi"</c>, ...). The three
@@ -49,4 +57,5 @@ public abstract record WidgetDefinition(
     int Position,
     WidgetSize Size,
     string? RequiredPermission = null,
-    DashboardTimeWindow? TimeWindowOverride = null);
+    DashboardTimeWindow? TimeWindowOverride = null,
+    IReadOnlyList<WidgetAction>? Actions = null);
