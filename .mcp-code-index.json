@@ -617,6 +617,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Dashboards.EntityFrameworkCore",
+      "deps": [
+        "Granit.Dashboards",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -12555,6 +12563,219 @@
           "returnType": "DashboardLayout Default =>"
         }
       ]
+    },
+    {
+      "name": "Dashboard",
+      "fqn": "Granit.Dashboards.Domain.Dashboard",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Dashboard.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Id)",
+          "returnType": "DashboardId DashboardId => DashboardId."
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Category",
+          "kind": "property",
+          "signature": "DashboardCategory Category",
+          "returnType": "DashboardCategory"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string name, DashboardCategory category, int layoutColumns = 12, int layoutRowHeight = 80, Guid? tenantId = null, string? sourceDefinitionName = null, string? sourceDefinitionVersion = null, bool isSystem = false)",
+          "returnType": "Dashboard"
+        }
+      ]
+    },
+    {
+      "name": "DashboardStatus",
+      "fqn": "Granit.Dashboards.Domain.DashboardStatus",
+      "kind": "enum",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/DashboardStatus.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DashboardArchivedEvent",
+      "fqn": "Granit.Dashboards.Domain.Events.DashboardArchivedEvent",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "DashboardCreatedEvent",
+      "fqn": "Granit.Dashboards.Domain.Events.DashboardCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "DashboardModifiedEvent",
+      "fqn": "Granit.Dashboards.Domain.Events.DashboardModifiedEvent",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "DashboardPublishedEvent",
+      "fqn": "Granit.Dashboards.Domain.Events.DashboardPublishedEvent",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "DashboardId",
+      "fqn": "Granit.Dashboards.Domain.ValueObjects.DashboardId",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/ValueObjects/DashboardId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public DashboardId"
+        },
+        {
+          "name": "DashboardId",
+          "kind": "method",
+          "signature": "DashboardId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "WidgetInstanceId",
+      "fqn": "Granit.Dashboards.Domain.ValueObjects.WidgetInstanceId",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/ValueObjects/WidgetInstanceId.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid value)",
+          "returnType": "required Guid Value { get; init; } public WidgetInstanceId"
+        },
+        {
+          "name": "WidgetInstanceId",
+          "kind": "method",
+          "signature": "WidgetInstanceId(Guid value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
+      "name": "WidgetInstance",
+      "fqn": "Granit.Dashboards.Domain.WidgetInstance",
+      "kind": "class",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/WidgetInstance.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Id)",
+          "returnType": "WidgetInstanceId WidgetInstanceId => WidgetInstanceId."
+        },
+        {
+          "name": "DashboardId",
+          "kind": "property",
+          "signature": "Guid DashboardId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "Position",
+          "kind": "property",
+          "signature": "int Position",
+          "returnType": "int"
+        },
+        {
+          "name": "TitleLocalizationKey",
+          "kind": "property",
+          "signature": "string TitleLocalizationKey",
+          "returnType": "string"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid dashboardId, string widgetType, int position, int width, int height, string titleLocalizationKey, string configJson, string? metricName = null, string? queryName = null, string? requiredPermission = null)",
+          "returnType": "string? RequiredPermission { get; private set; } internal WidgetInstance"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Dashboards.EntityFrameworkCore.Extensions.DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.EntityFrameworkCore",
+      "file": "src/Granit.Dashboards.EntityFrameworkCore/Extensions/DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDashboardsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDashboardsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsModelBuilderExtensions",
+      "fqn": "Granit.Dashboards.EntityFrameworkCore.Extensions.DashboardsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.EntityFrameworkCore",
+      "file": "src/Granit.Dashboards.EntityFrameworkCore/Extensions/DashboardsModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureDashboardsModule",
+          "kind": "method",
+          "signature": "ConfigureDashboardsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDashboardsDbProperties",
+      "fqn": "Granit.Dashboards.EntityFrameworkCore.GranitDashboardsDbProperties",
+      "kind": "class",
+      "project": "Granit.Dashboards.EntityFrameworkCore",
+      "file": "src/Granit.Dashboards.EntityFrameworkCore/GranitDashboardsDbProperties.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitDashboardsEntityFrameworkCoreModule",
+      "fqn": "Granit.Dashboards.EntityFrameworkCore.GranitDashboardsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Dashboards.EntityFrameworkCore",
+      "file": "src/Granit.Dashboards.EntityFrameworkCore/GranitDashboardsEntityFrameworkCoreModule.cs",
+      "line": 19,
+      "members": []
     },
     {
       "name": "DashboardsServiceCollectionExtensions",

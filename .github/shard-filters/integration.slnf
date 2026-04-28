@@ -67,6 +67,7 @@
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Subscriptions.EntityFrameworkCore/Granit.Subscriptions.EntityFrameworkCore.csproj",
       "src/Granit.Subscriptions/Granit.Subscriptions.csproj",
+      "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",

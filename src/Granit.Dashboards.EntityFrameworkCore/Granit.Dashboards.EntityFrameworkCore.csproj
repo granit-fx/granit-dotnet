@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Dashboards.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence layer for Granit.Dashboards. Hosts the isolated DashboardsDbContext, the Dashboard aggregate's EF configurations (multi-tenant + soft-delete via ApplyGranitConventions), and the initial schema migration. Reference from hosts that persist tenant-composed dashboards.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Dashboards.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Dashboards.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Dashboards\Granit.Dashboards.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
