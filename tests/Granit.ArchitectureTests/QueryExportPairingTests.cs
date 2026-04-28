@@ -21,25 +21,13 @@ namespace Granit.ArchitectureTests;
 /// </remarks>
 public sealed class QueryExportPairingTests
 {
-    /// <summary>
-    /// Entities deliberately exempted from the pairing rule. Each entry MUST be justified.
-    /// Pure infrastructure entities (internal cache rows, audit log details, internal
-    /// config state) that are not exposed in an admin grid use the reflection-based
-    /// fallback <c>ReflectionExportDefinition</c> and do not need a paired Query.
-    /// </summary>
-    private static readonly HashSet<string> PairingExemptions = new(StringComparer.Ordinal)
-    {
-        // Add justified exemptions here, e.g.:
-        // "Granit.AI.Domain.AIWorkspaceEntity",  // internal workspace state, never admin-listed
-    };
-
     [Fact]
     public void Every_QueryDefinition_should_have_a_matching_ExportDefinition()
     {
         (HashSet<Type> queryEntities, HashSet<Type> exportEntities) = ScanEntities();
 
         IEnumerable<string> queryWithoutExport = queryEntities
-            .Where(t => !exportEntities.Contains(t) && !PairingExemptions.Contains(t.FullName!))
+            .Where(t => !exportEntities.Contains(t) && !PairingExemptions.Infrastructure.Contains(t.FullName!))
             .Select(t => t.FullName!)
             .OrderBy(s => s, StringComparer.Ordinal);
 
@@ -47,7 +35,7 @@ public sealed class QueryExportPairingTests
             "ADR-020 pairing rule: every entity with a QueryDefinition must also have an ExportDefinition. " +
             "Add the matching `ExportDefinition<T>` in the same module's `Exports/` folder, " +
             "register it via `services.AddExportDefinition<T, TDefinition>()`, " +
-            "or add the entity to PairingExemptions with a justification.");
+            "or add the entity to PairingExemptions.Infrastructure with a justification (`[INFRA]`).");
     }
 
     [Fact]
@@ -56,7 +44,7 @@ public sealed class QueryExportPairingTests
         (HashSet<Type> queryEntities, HashSet<Type> exportEntities) = ScanEntities();
 
         IEnumerable<string> exportWithoutQuery = exportEntities
-            .Where(t => !queryEntities.Contains(t) && !PairingExemptions.Contains(t.FullName!))
+            .Where(t => !queryEntities.Contains(t) && !PairingExemptions.Infrastructure.Contains(t.FullName!))
             .Select(t => t.FullName!)
             .OrderBy(s => s, StringComparer.Ordinal);
 
@@ -64,7 +52,7 @@ public sealed class QueryExportPairingTests
             "ADR-020 pairing rule: every entity with an ExportDefinition must also have a QueryDefinition. " +
             "Add the matching `QueryDefinition<T>` in the same module's `Queries/` folder, " +
             "register it via `services.AddQueryDefinition<T, TDefinition>()`, " +
-            "or add the entity to PairingExemptions with a justification.");
+            "or add the entity to PairingExemptions.Infrastructure with a justification (`[INFRA]`).");
     }
 
     private static (HashSet<Type> queryEntities, HashSet<Type> exportEntities) ScanEntities()

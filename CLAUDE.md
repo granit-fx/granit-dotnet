@@ -763,6 +763,18 @@ Pure infrastructure entities (audit log details, internal cache rows like
 `AIWorkspaceEntity`, `TenantFeatureOverride`) are exempt and use the reflection-based
 fallback.
 
+**Exemption list — canonical location**: `tests/Granit.ArchitectureTests/PairingExemptions.cs`
+holds the **shared** `[INFRA]` set consumed by both `QueryExportPairingTests` and
+`QueryMetricPairingTests`. Adding an `[INFRA]` entry exempts the entity from **both**
+pairings (it surfaces in neither admin grids nor business KPIs). Each entry MUST carry
+a one-line inline-comment justification.
+
+`[BACKLOG]` exemptions (admin-visible entities awaiting their first metric) live
+locally in `QueryMetricPairingTests.MetricBacklog` — the backlog is metric-specific and
+is removed entry-by-entry as each module ships its first `MetricDefinition` for that
+entity. The Query↔Export pairing has no backlog mechanism: an admin-visible entity
+without an `ExportDefinition` is always rejected.
+
 ### DTOs & API responses
 
 - **Prefixed names**: `WorkflowTransitionRequest`, not `TransitionRequest` — OpenAPI flattens namespaces

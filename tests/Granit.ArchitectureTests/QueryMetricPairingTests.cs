@@ -42,63 +42,21 @@ namespace Granit.ArchitectureTests;
 public sealed class QueryMetricPairingTests
 {
     /// <summary>
-    /// Entities exempted from the Query ↔ Metric pairing rule. Each entry MUST carry a
-    /// one-line justification (inline comment).
+    /// <c>[BACKLOG]</c> entities — admin-visible aggregates that <i>should</i>
+    /// ship at least one <see cref="MetricDefinition{TEntity, TValue}"/> but
+    /// haven't yet. These are exempted as a known-debt baseline at the time D1
+    /// (#1396) landed (post-A4 #1377). Remove an entry when the owning module
+    /// ships its first <c>MetricDefinition</c> for that entity — the rule then
+    /// begins enforcing for that entity going forward.
     /// </summary>
     /// <remarks>
-    /// This list is pre-populated with the current baseline at the time of D1's
-    /// introduction (EPIC #1366). Entries marked <c>[BACKLOG]</c> are admin-visible
-    /// entities that should eventually ship a metric — they are exempted today so the
-    /// rule can be enforced going forward without forcing a framework-wide retrofit.
-    /// Removing an entry from <c>[BACKLOG]</c> requires shipping at least one
-    /// MetricDefinition for that entity.
-    ///
-    /// Entries marked <c>[INFRA]</c> are genuine infrastructure / audit / internal cache
-    /// entities that have no useful KPI on the admin UI — these are permanent
-    /// exemptions.
+    /// <c>[INFRA]</c> exemptions live in the shared <see cref="PairingExemptions"/>
+    /// set so Query↔Export and Query↔Metric stay in lockstep. Each entry below MUST
+    /// carry a one-line justification (inline comment) describing the metric that
+    /// would unblock removal.
     /// </remarks>
-    private static readonly HashSet<string> PairingExemptions = new(StringComparer.Ordinal)
+    private static readonly HashSet<string> MetricBacklog = new(StringComparer.Ordinal)
     {
-        // ── [INFRA] permanent exemptions ────────────────────────────────────
-        // System / audit / configuration entities with no useful business KPI on the
-        // admin UI. These are not "admin-visible" in the grid-with-KPI sense — they
-        // either back tooling (saved views, exports), record auditing trails, or
-        // hold security / config state.
-
-        "Granit.AI.AIUsageRecord",                                                        // [INFRA] AI cost / audit log
-        "Granit.Auditing.Domain.AuditEntityChange",                                       // [INFRA] audit log
-        "Granit.Auditing.Domain.AuditEntry",                                              // [INFRA] audit log
-        "Granit.Authorization.Domain.PermissionGrant",                                    // [INFRA] RBAC config
-        "Granit.Authorization.Domain.RoleMetadata",                                       // [INFRA] RBAC config
-        "Granit.BackgroundJobs.Domain.BackgroundJobDefinition",                           // [INFRA] job config
-        "Granit.DataExchange.Export.Domain.ExportJob",                                    // [INFRA] transient export job
-        "Granit.DataExchange.Import.Domain.ImportJob",                                    // [INFRA] transient import job
-        "Granit.Identity.Federated.Domain.UserCacheEntry",                                // [INFRA] internal user cache
-        "Granit.Identity.Local.Domain.GranitRole",                                        // [INFRA] RBAC config
-        "Granit.Identity.Local.Domain.GranitUserGroup",                                   // [INFRA] RBAC config
-        "Granit.Localization.Domain.LocalizationOverride",                                // [INFRA] localization config
-        "Granit.Metering.Domain.MeterDefinition",                                         // [INFRA] metering config
-        "Granit.MultiTenancy.Domain.Tenant",                                              // [INFRA] platform-admin entity
-        "Granit.Notifications.Domain.NotificationPreference",                             // [INFRA] user preference config
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",              // [INFRA] OAuth client config
-        "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",                    // [INFRA] OAuth scope config
-        "Granit.Parties.EntityFrameworkCore.Entities.PartyDuplicateCandidate",            // [INFRA] deduplication queue
-        "Granit.QueryEngine.SavedViews.Domain.SavedView",                                 // [INFRA] grid tooling
-        "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",                         // [INFRA] reference-data config
-        "Granit.Scheduling.Domain.ScheduledAction",                                       // [INFRA] scheduling state
-        "Granit.Settings.Domain.SettingRecord",                                           // [INFRA] settings config
-        "Granit.Tax.Domain.TaxRateOverride",                                              // [INFRA] tax config
-        "Granit.Tax.TaxRateEntry",                                                        // [INFRA] tax config
-        "Granit.Timeline.Domain.TimelineEntry",                                           // [INFRA] audit log
-        "Granit.Workflow.Domain.WorkflowTransitionRecord",                                // [INFRA] workflow audit
-
-        // ── [BACKLOG] admin-visible entities awaiting their first metric ────
-        // These DO surface in admin grids and SHOULD ship at least one MetricDefinition.
-        // They are exempted here as a known-debt baseline at the time D1 (#1396)
-        // landed (post-A4 #1377). Remove an entry from this list when the matching
-        // module ships its first MetricDefinition for that entity — the rule then
-        // begins enforcing for that entity going forward.
-
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
         "Granit.Catalog.Domain.Product",                                                  // [BACKLOG] catalog count / activation
         "Granit.CustomerBalance.Domain.BalanceAccount",                                   // [BACKLOG] balance totals
@@ -118,13 +76,16 @@ public sealed class QueryMetricPairingTests
         "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count
     };
 
+    private static bool IsExempt(string fullName) =>
+        PairingExemptions.Infrastructure.Contains(fullName) || MetricBacklog.Contains(fullName);
+
     [Fact]
     public void Every_QueryDefinition_should_have_a_matching_MetricDefinition()
     {
         (HashSet<Type> queryEntities, HashSet<Type> metricEntities) = ScanEntities();
 
         IEnumerable<string> queryWithoutMetric = queryEntities
-            .Where(t => !metricEntities.Contains(t) && !PairingExemptions.Contains(t.FullName!))
+            .Where(t => !metricEntities.Contains(t) && !IsExempt(t.FullName!))
             .Select(t => t.FullName!)
             .OrderBy(s => s, StringComparer.Ordinal);
 
@@ -133,9 +94,8 @@ public sealed class QueryMetricPairingTests
             "should also have at least one MetricDefinition. " +
             "Add a `*MetricDefinition` in the same module's `Metrics/` folder, " +
             "register it via `services.AddMetricDefinition<TEntity, TValue, TDefinition>()`, " +
-            "or add the entity to PairingExemptions with a justification " +
-            "(`[BACKLOG]` for admin-visible entities awaiting their first metric, " +
-            "`[INFRA]` for permanent exemptions on infrastructure / audit / internal cache entities).");
+            "or add the entity to MetricBacklog (`[BACKLOG]` admin-visible entity awaiting its first metric) " +
+            "or PairingExemptions.Infrastructure (`[INFRA]` permanent exemption on an audit / config / cache entity).");
     }
 
     [Fact]
