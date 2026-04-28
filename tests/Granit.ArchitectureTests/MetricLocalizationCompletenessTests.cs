@@ -47,8 +47,14 @@ public sealed class MetricLocalizationCompletenessTests
 
         foreach (MetricDescriptor metric in metrics)
         {
-            string moduleSrcDir = Path.Combine(RepoRoot, "src", metric.OwningAssemblyName);
-            string localizationDir = Path.Combine(moduleSrcDir, "Localization");
+            if (Path.IsPathRooted(metric.OwningAssemblyName))
+            {
+                missing.Add($"{metric.Name}: owning assembly name '{metric.OwningAssemblyName}' is rooted — refusing to combine into a path.");
+                continue;
+            }
+
+            string moduleSrcDir = Path.Join(RepoRoot, "src", metric.OwningAssemblyName);
+            string localizationDir = Path.Join(moduleSrcDir, "Localization");
 
             if (!Directory.Exists(localizationDir))
             {
@@ -77,16 +83,7 @@ public sealed class MetricLocalizationCompletenessTests
     private static bool LocateKeyInCultureFiles(string localizationDir, string culture, string resourceKey)
     {
         string[] candidateFiles = Directory.GetFiles(localizationDir, $"{culture}.json", SearchOption.AllDirectories);
-
-        foreach (string file in candidateFiles)
-        {
-            if (FileContainsKey(file, resourceKey))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return candidateFiles.Any(file => FileContainsKey(file, resourceKey));
     }
 
     private static bool FileContainsKey(string filePath, string key)
@@ -102,12 +99,11 @@ public sealed class MetricLocalizationCompletenessTests
 
         // Granit localization files use either a flat root object ({ "Key": "Value" })
         // or a nested layout with the culture envelope ({ "culture": "...", "texts": { "Key": "Value" } }).
-        if (root.TryGetProperty("texts", out JsonElement texts) && texts.ValueKind == JsonValueKind.Object)
+        if (root.TryGetProperty("texts", out JsonElement texts)
+            && texts.ValueKind == JsonValueKind.Object
+            && texts.TryGetProperty(key, out _))
         {
-            if (texts.TryGetProperty(key, out _))
-            {
-                return true;
-            }
+            return true;
         }
 
         return root.TryGetProperty(key, out _);
@@ -154,7 +150,7 @@ public sealed class MetricLocalizationCompletenessTests
 
                 object instance;
                 try { instance = Activator.CreateInstance(type)!; }
-                catch (Exception)
+                catch (Exception ex) when (ex is MissingMethodException or MemberAccessException or TargetInvocationException)
                 {
                     // Definitions without a parameterless ctor are out of scope for this
                     // archi check — every shipped metric should be parameterless per the
