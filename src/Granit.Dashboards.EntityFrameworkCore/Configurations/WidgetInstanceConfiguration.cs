@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Granit.Dashboards.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Granit.Dashboards.EntityFrameworkCore.Configurations;
 
@@ -41,6 +44,24 @@ internal sealed class WidgetInstanceConfiguration : IEntityTypeConfiguration<Wid
             .IsRequired();
 
         builder.Property(w => w.RequiredPermission).HasMaxLength(200);
+
+        // Per-instance overrides (P3.2) — persisted as a JSON string. JSON keeps the
+        // schema additive when new override fields ship; same trade-off as ConfigJson
+        // and intentionally not OwnsOne(...).ToJson() since the override record carries
+        // a nullable list of thresholds which round-trips more reliably as a single
+        // serialised payload.
+        ValueConverter<WidgetInstanceConfig?, string?> overridesConverter = new(
+            v => v == null ? null : JsonSerializer.Serialize(v, JsonSerializerOptions.Default),
+            v => string.IsNullOrEmpty(v) ? null : JsonSerializer.Deserialize<WidgetInstanceConfig>(v, JsonSerializerOptions.Default));
+
+        ValueComparer<WidgetInstanceConfig?> overridesComparer = new(
+            (l, r) => Equals(l, r),
+            v => v == null ? 0 : v.GetHashCode(),
+            v => v);
+
+        builder.Property(w => w.Overrides)
+            .HasColumnName("overrides_json")
+            .HasConversion(overridesConverter, overridesComparer);
 
         // Index supports the typical "list widgets for this dashboard, ordered by position" query.
         builder.HasIndex(w => new { w.DashboardId, w.Position })

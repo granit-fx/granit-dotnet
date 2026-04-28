@@ -12834,9 +12834,36 @@
           "name": "Create",
           "kind": "method",
           "signature": "Create(Guid id, Guid dashboardId, string widgetType, int position, int width, int height, string titleLocalizationKey, string configJson, string? metricName = null, string? queryName = null, string? requiredPermission = null)",
-          "returnType": "string? RequiredPermission { get; private set; } internal WidgetInstance"
+          "returnType": "string? RequiredPermission { get; private set; } public WidgetInstanceConfig? Overrides { get; private set; } internal WidgetInstance"
         }
       ]
+    },
+    {
+      "name": "WidgetInstanceConfig",
+      "fqn": "Granit.Dashboards.Domain.WidgetInstanceConfig",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/WidgetInstanceConfig.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "WidgetThreshold",
+      "fqn": "Granit.Dashboards.Domain.WidgetThreshold",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/WidgetInstanceConfig.cs",
+      "line": 49,
+      "members": []
+    },
+    {
+      "name": "WidgetThresholdOperator",
+      "fqn": "Granit.Dashboards.Domain.WidgetThresholdOperator",
+      "kind": "enum",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/WidgetInstanceConfig.cs",
+      "line": 55,
+      "members": []
     },
     {
       "name": "DashboardsEntityFrameworkCoreHostApplicationBuilderExtensions",

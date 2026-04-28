@@ -62,6 +62,15 @@ public sealed class WidgetInstance : Entity
     /// </summary>
     public string? RequiredPermission { get; private set; }
 
+    /// <summary>
+    /// Per-instance presentation overrides applied on top of the imported config —
+    /// title, colour, unit, decimals, threshold rules. <c>null</c> = the widget renders
+    /// strictly from <see cref="ConfigJson"/> + the data source's declared formatting.
+    /// Mutated through <see cref="ApplyOverrides(WidgetInstanceConfig?)"/>.
+    /// See P3.2 of the dashboards-architecture-proposals roadmap.
+    /// </summary>
+    public WidgetInstanceConfig? Overrides { get; private set; }
+
     /// <summary>Creates a new <see cref="WidgetInstance"/>. Called only by <see cref="Dashboard"/>.</summary>
     internal static WidgetInstance Create(
         Guid id,
@@ -140,4 +149,10 @@ public sealed class WidgetInstance : Entity
         ArgumentException.ThrowIfNullOrWhiteSpace(configJson);
         ConfigJson = configJson;
     }
+
+    /// <summary>
+    /// Applies (or clears) the per-instance presentation overrides. Pass <c>null</c>
+    /// to revert to the imported defaults.
+    /// </summary>
+    public void ApplyOverrides(WidgetInstanceConfig? overrides) => Overrides = overrides;
 }
