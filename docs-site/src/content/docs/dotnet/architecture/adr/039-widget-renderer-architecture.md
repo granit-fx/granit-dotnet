@@ -77,8 +77,9 @@ A new abstraction in `Granit.Dashboards.Abstractions`:
 public interface IWidgetInstanceRenderer
 {
     /// <summary>
-    /// The discriminator this renderer handles. Matches
-    /// <see cref="WidgetInstance.WidgetType"/> exactly (case-sensitive).
+    /// The widget-type discriminator this renderer handles. Matches
+    /// <see cref="WidgetInstance.WidgetType"/> exactly (case-sensitive) and
+    /// <see cref="WidgetDefinition"/>'s <c>"type"</c> JSON discriminator (P1.1).
     /// </summary>
     string WidgetType { get; }
 
@@ -86,7 +87,7 @@ public interface IWidgetInstanceRenderer
     /// Renders the widget. Returns a non-generic envelope so the dispatcher
     /// can bundle heterogeneous widgets into one response without leaking
     /// per-kind generics. Permission filtering and error handling are the
-    /// renderer's responsibility — see WidgetSnapshotKind.
+    /// dispatcher's responsibility — see <see cref="WidgetSnapshotStatus"/>.
     /// </summary>
     Task<WidgetSnapshotEnvelope> RenderAsync(
         WidgetInstance widget,
@@ -95,14 +96,15 @@ public interface IWidgetInstanceRenderer
 }
 
 public sealed record WidgetSnapshotEnvelope(
-    WidgetSnapshotKind Kind,
-    object? Snapshot,
+    WidgetSnapshotStatus Status,                    // runtime outcome — never the widget kind
+    string WidgetType,                              // wire discriminator — "Kpi", "Chart", "Markdown", …
+    JsonElement? Snapshot,                          // pre-serialised — see §2.1
     long Sequence,
     DateTimeOffset EmittedAt,
     RefreshHint RefreshHint,
     string? UnavailableReasonLocalizationKey = null);
 
-public enum WidgetSnapshotKind
+public enum WidgetSnapshotStatus
 {
     Snapshot,       // Snapshot is non-null, the typed payload for the kind
     Unavailable,    // Permission denied — UnavailableReasonLocalizationKey is set
@@ -110,17 +112,85 @@ public enum WidgetSnapshotKind
 }
 ```
 
+The envelope splits two concerns the early draft accidentally collapsed onto a
+single `kind` field:
+
+- **`Status`** — runtime outcome (`Snapshot` / `Unavailable` / `Error`). Drives
+  the frontend's "render the snapshot" vs "render a placeholder" branch.
+- **`WidgetType`** — declarative type (`Kpi` / `Chart` / `Markdown` / `Map` /
+  …). Mirrors the `[JsonDerivedType]` discriminator on
+  `WidgetDefinition` (P1.1) so the frontend's TypeScript discriminated union
+  matches by string compare. Carried even on `Unavailable` / `Error` so the
+  UI can keep a typed slot for the absent widget instead of an opaque
+  placeholder.
+
 Each kind ships its `IWidgetInstanceRenderer` adapter alongside its
 `IWidgetSource<TSnapshot>`. The adapter:
 
 - Builds the typed source from the `WidgetInstance` + `WidgetRenderContext`.
 - Calls `source.RenderAsync(...)`.
-- Wraps the typed `WidgetPayload<T>.Snapshot` into the non-generic
+- **Materialises the typed snapshot into a `JsonElement` at the boundary** via
+  `JsonSerializer.SerializeToElement(payload.Snapshot, options)` — see §2.1
+  below.
+- Wraps the resulting `JsonElement` into the non-generic
   `WidgetSnapshotEnvelope`.
 
 The adapter is the **only** non-generic edge. Frontend wire schema stays per
 EPIC #1366 invariant #8 — the dashboard render endpoint serialises the
 envelopes into `{ widgets: [{ id, sequence, refreshHint, snapshot, kind }] }`.
+
+#### 2.1 Serialization boundary — `JsonElement?`, not `object?`
+
+The `Snapshot` field on `WidgetSnapshotEnvelope` is intentionally typed
+`JsonElement?`, not `object?`. Two reasons:
+
+1. **`System.Text.Json` serialises `object` based on the declared type, not the
+   runtime type.** A field declared `object? Snapshot` containing a
+   `KpiSnapshot` instance serialises as `{}` unless every call site remembers
+   to pass `value.GetType()` to `JsonSerializer.Serialize`. The
+   `IDashboardRenderer` aggregates heterogeneous envelopes into one response;
+   forgetting that on any of N rendering paths is a silent payload-emptying
+   bug. Forcing the typed → JSON conversion *at the adapter* makes the
+   boundary explicit and impossible to forget.
+2. **The downstream pipeline only handles JSON anyway.** The endpoint serialises
+   `DashboardRenderResponse`, the FusionCache stores cache entries as JSON,
+   the future WS push transport will multiplex `JsonElement`-shaped delta
+   messages. Doing the conversion once in the adapter (when the typed payload
+   is fresh on the stack) is strictly cheaper than letting it propagate
+   through generic-erased code paths.
+
+The adapter pattern collapses to:
+
+```csharp
+internal sealed class KpiWidgetInstanceRenderer(
+    KpiWidgetSourceFactory factory,
+    JsonSerializerOptions json) : IWidgetInstanceRenderer
+{
+    public string WidgetType => "Kpi";
+
+    public async Task<WidgetSnapshotEnvelope> RenderAsync(
+        WidgetInstance widget,
+        WidgetRenderContext context,
+        CancellationToken cancellationToken)
+    {
+        IWidgetSource<KpiSnapshot> source = factory.Create(widget, context);
+        WidgetPayload<KpiSnapshot> payload = await source.RenderAsync(cancellationToken).ConfigureAwait(false);
+
+        // Boundary conversion — KpiSnapshot is serialised by its CONCRETE type
+        // here, not by `object`. Downstream code only sees the JsonElement.
+        JsonElement snapshot = JsonSerializer.SerializeToElement(payload.Snapshot, json);
+
+        return WidgetSnapshotEnvelope.Snapshot(
+            snapshot,
+            payload.Sequence,
+            payload.EmittedAt,
+            payload.RefreshHint);
+    }
+}
+```
+
+A small `WidgetSourceAdapter<TSource, TSnapshot>` generic helper can hide the
+three-line ceremony so per-kind adapters stay ~5 lines after B3-3.
 
 ### 3. Registry + dashboard renderer — `IDashboardRenderer`
 
@@ -214,12 +284,22 @@ public sealed record WidgetRenderContext(
     ClaimsPrincipal User,
     ResolvedPeriod? Period,
     string Locale,
-    IReadOnlyDictionary<string, string> DashboardFilters);
+    IReadOnlyDictionary<string, string> DashboardFilters,
+    IReadOnlyDictionary<string, EntityAliasBinding> ResolvedEntityAliases);
 ```
 
 Built once at the dashboard render endpoint entry and passed unchanged to
-every renderer. Locks the same five inputs across kinds, so the cache key
+every renderer. Locks the same six inputs across kinds, so the cache key
 composition (next §) is uniform.
+
+The `ResolvedEntityAliases` dictionary materialises the dashboard's declared
+`EntityAlias` list (see `Granit.Dashboards.Abstractions.EntityAlias` —
+introduced in P2.3) at render time. The render endpoint runs every registered
+`EntityAliasResolver` against the request before invoking renderers and
+freezes the results into the context. Telemetry KPIs that reference an alias
+(e.g. `TelemetryDatasource.EntityAlias = "currentDevice"`) read the resolved
+binding directly from the context — they never touch `IEntityAliasResolver`
+themselves, keeping the renderer side stateless and easy to test.
 
 ### 5. Cache key composition — matches future WS subscription identity
 
@@ -249,37 +329,73 @@ unchanged — one source of truth for "this metric, this tenant, this period".
 {
   "dashboardId": "8c6b...",
   "renderedAt": "2026-04-29T12:34:56.789Z",
-  "period": { "from": "2026-04-01T00:00:00Z", "to": "2026-04-29T00:00:00Z", "token": "mtd" },
+  "period": { "from": "2026-04-01T00:00:00Z", "to": "2026-04-29T00:00:00Z", "token": "Mtd" },
   "widgets": [
     {
       "id": "...",
-      "kind": "Kpi",
+      "widgetType": "Kpi",
+      "status": "Snapshot",
       "sequence": 1,
-      "refreshHint": "dynamic",
+      "refreshHint": "Dynamic",
       "snapshot": { /* KpiSnapshot — typed per kind */ }
     },
     {
       "id": "...",
-      "kind": "Markdown",
+      "widgetType": "Markdown",
+      "status": "Snapshot",
       "sequence": 1,
-      "refreshHint": "static",
+      "refreshHint": "Static",
       "snapshot": { "content": "## Quarterly review\n…" }
     },
     {
       "id": "...",
-      "kind": "Chart",
+      "widgetType": "Chart",
+      "status": "Unavailable",
       "sequence": 1,
-      "refreshHint": "dynamic",
-      "status": "unavailable",
-      "unavailableReasonKey": "Widget:Unavailable"
+      "refreshHint": "Dynamic",
+      "snapshot": null,
+      "unavailableReasonLocalizationKey": "Widget:Unavailable"
     }
   ]
 }
 ```
 
-Matches EPIC #1366 invariant #8. Push messages later carry
-`{ widgetId, sequence, delta }` on the same logical schema — the frontend
-hook (`useDashboard`) reconciles by `widgetId` + `sequence`.
+Matches EPIC #1366 invariant #8. Two fields disambiguate concerns the early
+draft conflated: `widgetType` is the declarative kind discriminator (mirror of
+`WidgetDefinition`'s P1.1 `[JsonDerivedType]` `"type"`), `status` is the
+runtime outcome (`Snapshot` / `Unavailable` / `Error`).
+
+#### 6.1 Enum casing on the wire — PascalCase by default
+
+The framework's host `JsonStringEnumConverter()` registration uses **no naming
+policy**, so `RefreshHint`, `WidgetSnapshotStatus`, `MetricValueKind`,
+`ChartType`, etc. all serialise as PascalCase (`"Dynamic"`, `"Snapshot"`,
+`"Count"`, `"Line"`). The example above intentionally reflects this — frontend
+TypeScript types must match exactly (`type RefreshHint = "Static" | "Dynamic"
+| "Realtime"`).
+
+Adopting `JsonNamingPolicy.CamelCase` retroactively would be a wire-format
+break on every existing endpoint. Stay PascalCase here.
+
+#### 6.2 Frontend reconciliation — per-widget TanStack cache entries
+
+The dashboard render endpoint returns one bundle, but the frontend
+`useDashboard` hook MUST split the payload into one TanStack Query entry per
+widget (`['dashboard', dashboardId, 'widget', widgetId]`) before storing it.
+This single decision unlocks two future invariants:
+
+- **Push-message reconciliation.** When a future SSE / WebSocket transport
+  emits `{ widgetId, sequence, delta }`, the hook updates only the matching
+  cache entry. No global refetch, no cross-widget invalidation cascade.
+- **Independent staleness per widget.** Static-hint widgets stay fresh for
+  5 min; dynamic widgets refresh at 60–120 s. Per-widget cache entries let
+  TanStack apply the right TTL per kind without recomputing the whole
+  dashboard on the first refresh tick.
+
+The bundle response is a *transport optimisation* (one HTTP round-trip over
+N widgets), not the cache identity. Frontends that bypass `useDashboard` and
+store the full bundle as a single cache entry will need to refactor when
+push lands.
 
 ### 7. Discovery + DI registration
 
@@ -305,6 +421,77 @@ An architecture test will assert that every concrete `WidgetDefinition` shipped
 in any loaded assembly has exactly one matching `IWidgetInstanceRenderer`
 registered, so a kind that ships in `Granit.Analytics` without its renderer in
 `Granit.Analytics.Endpoints` fails the build.
+
+### 7.bis. KPI renderer — dispatch on `Datasource.Kind`
+
+The `KpiWidgetInstanceRenderer` is **not** a thin adapter over
+`MetricEndpointService`. Since P2.2 (PR #1464), `KpiWidgetDefinition.Datasource`
+is the polymorphic abstraction `MetricDatasource | QueryAggregateDatasource |
+TelemetryDatasource`. Hard-coding the metric path would silently regress IoT
+gauges and ad-hoc query-aggregate KPIs — both shipped contracts.
+
+The KPI renderer therefore dispatches on `Datasource.Kind`:
+
+```csharp
+internal sealed class KpiWidgetInstanceRenderer(
+    IDatasourceEvaluator<MetricDatasource> metricEvaluator,
+    IDatasourceEvaluator<QueryAggregateDatasource> queryEvaluator,
+    IDatasourceEvaluator<TelemetryDatasource> telemetryEvaluator,
+    JsonSerializerOptions json) : IWidgetInstanceRenderer
+{
+    public string WidgetType => "Kpi";
+
+    public async Task<WidgetSnapshotEnvelope> RenderAsync(
+        WidgetInstance widget, WidgetRenderContext ctx, CancellationToken ct)
+    {
+        Datasource datasource = ParseConfigDatasource(widget.ConfigJson);
+
+        KpiSnapshot snapshot = datasource switch
+        {
+            MetricDatasource m         => await metricEvaluator.EvaluateAsync(m, widget, ctx, ct).ConfigureAwait(false),
+            QueryAggregateDatasource q => await queryEvaluator.EvaluateAsync(q, widget, ctx, ct).ConfigureAwait(false),
+            TelemetryDatasource t      => await telemetryEvaluator.EvaluateAsync(t, widget, ctx, ct).ConfigureAwait(false),
+            _ => throw new InvalidOperationException($"Unknown KPI datasource '{datasource.GetType().Name}'."),
+        };
+
+        return WidgetSnapshotEnvelope.Snapshot(
+            JsonSerializer.SerializeToElement(snapshot, json),
+            sequence: 1,
+            emittedAt: ctx.Clock.Now,
+            refreshHint: snapshot.RefreshHint,
+            widgetType: WidgetType);
+    }
+}
+
+public interface IDatasourceEvaluator<TDatasource> where TDatasource : Datasource
+{
+    Task<KpiSnapshot> EvaluateAsync(
+        TDatasource datasource,
+        WidgetInstance widget,
+        WidgetRenderContext context,
+        CancellationToken cancellationToken);
+}
+```
+
+Concrete evaluators ship per data source:
+
+- **`MetricDatasourceEvaluator`** in `Granit.Analytics.Endpoints` —
+  delegates to the existing `MetricEndpointService` (no duplication).
+- **`QueryAggregateDatasourceEvaluator`** in `Granit.Analytics.Endpoints` —
+  builds an `IQueryable<TEntity>` from the named `QueryDefinition`, applies
+  the dashboard filter spec + period selector, runs the declared
+  `AggregateFunction`. Empty-set semantics shared with the metric path
+  (`Sum/Count → 0`, `Avg/Min/Max → null`).
+- **`TelemetryDatasourceEvaluator`** in `Granit.IoT.Dashboards` (deferred,
+  outside `granit-dotnet`) — resolves
+  `TelemetryDatasource.EntityAlias → deviceId` via
+  `WidgetRenderContext.ResolvedEntityAliases`, then queries the IoT
+  telemetry store.
+
+The framework ships only the first two; the third is a stub that returns
+`UnsupportedDatasourceKind` until the IoT package lands. The arch test from
+§7 ignores `IDatasourceEvaluator<T>` registrations — pairing is enforced
+*per `WidgetDefinition` ↔ `IWidgetInstanceRenderer`*, not per datasource kind.
 
 ## Alternatives considered
 
@@ -398,7 +585,12 @@ The ADR unblocks the following stories, each shippable independently:
 1. **B3-1** — `IWidgetInstanceRenderer` + `WidgetSnapshotEnvelope` +
    `WidgetRenderContext` in `Granit.Dashboards.Abstractions`. Pure contracts,
    no implementation. ✓ archi test "every WidgetDefinition has a renderer".
-2. **B3-2** — `KpiWidgetInstanceRenderer` (delegates to `MetricEndpointService`).
+2. **B3-2** — `KpiWidgetInstanceRenderer` plus `MetricDatasourceEvaluator`
+   and `QueryAggregateDatasourceEvaluator`. The renderer dispatches on
+   `Datasource.Kind` per §7.bis; both bundled evaluators ship together so
+   the analytics flavours of KPI work end-to-end. The
+   `TelemetryDatasourceEvaluator` is stubbed (returns `Unavailable`) until
+   `Granit.IoT.Dashboards` lands.
 3. **B3-3** — `MarkdownWidgetInstanceRenderer` + `TextWidgetInstanceRenderer` +
    `ImageWidgetInstanceRenderer` (no I/O, pure projection of
    `WidgetInstance.ConfigJson`).
