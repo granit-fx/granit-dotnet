@@ -68,14 +68,16 @@ jobs:
         run: dotnet format .github/shard-filters/src-only.slnf --verify-no-changes --no-restore
 
   # ---------------------------------------------------------------------------
-  # UNIT TESTS — 6 parallel shards aligned with architecture layers
+  # UNIT + INTEGRATION TESTS — parallel shards aligned with architecture layers,
+  # plus a dedicated `integration` shard that owns every *.Tests.Integration project
+  # (Postgres / Testcontainers — the dominant cost driver).
   # Shard definitions: .github/test-shards.json
   # Solution filters: .github/shard-filters/*.slnf (auto-generated)
   # ---------------------------------------------------------------------------
   test:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -90,6 +92,10 @@ jobs:
             label: "Infrastructure"
           - name: security
             label: "Security & Compliance"
+          - name: saas
+            label: "SaaS"
+          - name: integration
+            label: "Integration Tests"
           - name: architecture
             label: "Architecture Tests"
     name: test (${{ matrix.shard.label }})
@@ -245,7 +251,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [core-ai, business, api-data, infrastructure, security, architecture]
+        shard: [core-ai, business, api-data, infrastructure, security, saas, integration, architecture]
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
