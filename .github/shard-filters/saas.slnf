@@ -2,6 +2,7 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj",
       "src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj",
       "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
@@ -17,6 +18,7 @@
       "src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj",
       "src/Granit.CustomerBalance.Notifications/Granit.CustomerBalance.Notifications.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
+      "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",

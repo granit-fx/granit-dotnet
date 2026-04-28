@@ -23,6 +23,7 @@
     <Project Path="src/Granit.Mcp.Client/Granit.Mcp.Client.csproj" />
     <Project Path="src/Granit.Mcp.Server/Granit.Mcp.Server.csproj" />
     <Project Path="src/Granit.Mcp/Granit.Mcp.csproj" />
+    <Project Path="src/Granit.Mergeable.BackgroundJobs/Granit.Mergeable.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Mergeable.EntityFrameworkCore/Granit.Mergeable.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Mergeable/Granit.Mergeable.csproj" />
     <Project Path="src/Granit.MultiTenancy.Endpoints/Granit.MultiTenancy.Endpoints.csproj" />
@@ -98,9 +99,14 @@
     <Project Path="src/Granit.Vault/Granit.Vault.csproj" />
   </Folder>
   <Folder Name="/src/Application/">
+    <Project Path="src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj" />
     <Project Path="src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj" />
     <Project Path="src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Analytics/Granit.Analytics.csproj" />
+    <Project Path="src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj" />
+    <Project Path="src/Granit.Dashboards.Endpoints/Granit.Dashboards.Endpoints.csproj" />
+    <Project Path="src/Granit.Dashboards.EntityFrameworkCore/Granit.Dashboards.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
     <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
@@ -352,6 +358,7 @@
     <Project Path="tests/Granit.Mcp.Client.Tests/Granit.Mcp.Client.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Server.Tests/Granit.Mcp.Server.Tests.csproj" />
     <Project Path="tests/Granit.Mcp.Tests/Granit.Mcp.Tests.csproj" />
+    <Project Path="tests/Granit.Mergeable.BackgroundJobs.Tests/Granit.Mergeable.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Mergeable.EntityFrameworkCore.Tests/Granit.Mergeable.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Mergeable.Tests/Granit.Mergeable.Tests.csproj" />
     <Project Path="tests/Granit.MultiTenancy.Endpoints.Tests/Granit.MultiTenancy.Endpoints.Tests.csproj" />
@@ -432,10 +439,16 @@
     <Project Path="tests/Granit.Vault.Tests/Granit.Vault.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Application/">
+    <Project Path="tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration/Granit.Analytics.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj" />
+    <Project Path="tests/Granit.Dashboards.Abstractions.Tests/Granit.Dashboards.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Dashboards.Endpoints.Tests/Granit.Dashboards.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests/Granit.Dashboards.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests.Integration/Granit.Dashboards.EntityFrameworkCore.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.Dashboards.Tests/Granit.Dashboards.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />
