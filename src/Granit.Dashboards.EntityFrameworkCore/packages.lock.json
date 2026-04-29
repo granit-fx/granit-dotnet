@@ -118,6 +118,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
           "Granit.Dashboards.Abstractions": "[0.1.0-dev, )"
         }
       },

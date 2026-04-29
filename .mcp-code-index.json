@@ -613,6 +613,7 @@
       "name": "Granit.Dashboards",
       "deps": [
         "Granit",
+        "Granit.Analytics.Abstractions",
         "Granit.Dashboards.Abstractions"
       ],
       "framework": "net10.0"
@@ -4524,8 +4525,8 @@
       "name": "RefreshHint",
       "fqn": "Granit.Analytics.Metrics.RefreshHint",
       "kind": "enum",
-      "project": "Granit.Analytics",
-      "file": "src/Granit.Analytics/Metrics/RefreshHint.cs",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/Metrics/RefreshHint.cs",
       "line": 15,
       "members": []
     },
@@ -4574,6 +4575,15 @@
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Widgets/WidgetPayload.cs",
       "line": 24,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Analytics.struct",
+      "kind": "record",
+      "project": "Granit.Analytics.Abstractions",
+      "file": "src/Granit.Analytics.Abstractions/ResolvedPeriod.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -13413,6 +13423,77 @@
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
       "line": 68,
+      "members": []
+    },
+    {
+      "name": "EntityAliasBinding",
+      "fqn": "Granit.Dashboards.Rendering.EntityAliasBinding",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/EntityAliasBinding.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "IWidgetInstanceRenderer",
+      "fqn": "Granit.Dashboards.Rendering.IWidgetInstanceRenderer",
+      "kind": "interface",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/IWidgetInstanceRenderer.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "RenderAsync",
+          "kind": "method",
+          "signature": "RenderAsync(WidgetInstance widget, WidgetRenderContext context, CancellationToken cancellationToken)",
+          "returnType": "string WidgetType { get; } Task<WidgetSnapshotEnvelope>"
+        }
+      ]
+    },
+    {
+      "name": "WidgetRenderContext",
+      "fqn": "Granit.Dashboards.Rendering.WidgetRenderContext",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/WidgetRenderContext.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "WidgetSnapshotEnvelope",
+      "fqn": "Granit.Dashboards.Rendering.WidgetSnapshotEnvelope",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/WidgetSnapshotEnvelope.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "ForSnapshot",
+          "kind": "method",
+          "signature": "ForSnapshot(string widgetType, JsonElement snapshot, long sequence, DateTimeOffset emittedAt, RefreshHint refreshHint)",
+          "returnType": "WidgetSnapshotEnvelope"
+        },
+        {
+          "name": "Unavailable",
+          "kind": "method",
+          "signature": "Unavailable(string widgetType, long sequence, DateTimeOffset emittedAt, RefreshHint refreshHint, string reasonLocalizationKey = \"Widget:Unavailable\")",
+          "returnType": "WidgetSnapshotEnvelope"
+        },
+        {
+          "name": "Error",
+          "kind": "method",
+          "signature": "Error(string widgetType, long sequence, DateTimeOffset emittedAt, RefreshHint refreshHint)",
+          "returnType": "WidgetSnapshotEnvelope"
+        }
+      ]
+    },
+    {
+      "name": "WidgetSnapshotStatus",
+      "fqn": "Granit.Dashboards.Rendering.WidgetSnapshotStatus",
+      "kind": "enum",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/WidgetSnapshotStatus.cs",
+      "line": 16,
       "members": []
     },
     {

@@ -1,3 +1,4 @@
+using Granit.Analytics;
 using Granit.Analytics.Endpoints.Dtos;
 using Granit.Timing;
 
@@ -83,5 +84,3 @@ internal sealed class PeriodResolver(IClock clock)
     }
 }
 
-/// <summary>An absolute, half-open <c>[From, To)</c> time window.</summary>
-internal readonly record struct ResolvedPeriod(DateTimeOffset From, DateTimeOffset To);
