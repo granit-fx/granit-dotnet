@@ -79,11 +79,20 @@ internal static class DashboardRenderEndpoints
             DashboardFilters: body.Filters ?? new Dictionary<string, string>(),
             ResolvedEntityAliases: new Dictionary<string, EntityAliasBinding>());
 
+        // P2.1 multi-view dispatch — resolve the active view and the matching
+        // widget pool. Single-view dashboards short-circuit to dashboard.Widgets
+        // with ActiveViewName: null; non-entry views materialise ephemeral
+        // WidgetInstances from the source DashboardDefinition.
+        IDashboardDefinitionDescriptor? descriptor = dashboard.SourceDefinitionName is { } sn
+            ? definitionRegistry.Find(sn)
+            : null;
+        ResolvedRenderTarget target = ActiveViewResolver.Resolve(dashboard, descriptor, body.ViewName);
+
         DashboardRenderResult result = await renderer
-            .RenderAsync(dashboard, context, cancellationToken)
+            .RenderAsync(dashboard.Id, target.Widgets, context, cancellationToken)
             .ConfigureAwait(false);
 
         return TypedResults.Ok(DashboardRenderProjection.ToResponse(
-            result, dashboard, definitionRegistry, body.PeriodToken));
+            result, dashboard, target, definitionRegistry, body.PeriodToken));
     }
 }

@@ -27,19 +27,29 @@ internal sealed partial class DashboardRenderer(
     private readonly IClock _clock = clock;
     private readonly ILogger<DashboardRenderer> _logger = logger;
 
-    public async Task<DashboardRenderResult> RenderAsync(
+    public Task<DashboardRenderResult> RenderAsync(
         Dashboard dashboard,
         WidgetRenderContext context,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(dashboard);
+        return RenderAsync(dashboard.Id, dashboard.Widgets, context, cancellationToken);
+    }
+
+    public async Task<DashboardRenderResult> RenderAsync(
+        Guid dashboardId,
+        IReadOnlyList<WidgetInstance> widgets,
+        WidgetRenderContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(widgets);
         ArgumentNullException.ThrowIfNull(context);
 
-        List<RenderedWidget> results = new(dashboard.Widgets.Count);
+        List<RenderedWidget> results = new(widgets.Count);
 
         // Project to a stable List in Position order BEFORE iterating — keeps the
         // outbound order deterministic regardless of which renderer is faster.
-        WidgetInstance[] ordered = [.. dashboard.Widgets.OrderBy(w => w.Position)];
+        WidgetInstance[] ordered = [.. widgets.OrderBy(w => w.Position)];
 
         foreach (WidgetInstance widget in ordered)
         {
@@ -100,7 +110,7 @@ internal sealed partial class DashboardRenderer(
         }
 
         return new DashboardRenderResult(
-            DashboardId: dashboard.Id,
+            DashboardId: dashboardId,
             RenderedAt: _clock.Now,
             Period: context.Period,
             Widgets: results);

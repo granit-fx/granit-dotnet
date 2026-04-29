@@ -15,11 +15,20 @@ namespace Granit.Dashboards.Endpoints.Dtos;
 /// <param name="DashboardId">Dashboard identifier — matches <c>Dashboard.Id</c>.</param>
 /// <param name="RenderedAt">Server-side timestamp at which the bundle was composed.</param>
 /// <param name="Period">Period the renderer ran against. <see langword="null"/> when the request omitted period bounds.</param>
-/// <param name="Widgets">One flat record per widget, in <c>WidgetInstance.Position</c> order.</param>
+/// <param name="ActiveViewName">
+/// Name of the <c>DashboardView</c> the renderer actually served. Reflects the
+/// fallback chain from <c>DashboardRenderRequest.ViewName</c> through
+/// <c>DefaultView</c> through first-view; <see langword="null"/> when the source
+/// definition has no views (single-view dashboard) or when the dashboard has no
+/// registered source definition. The frontend's TanStack cache partitions per
+/// <c>(dashboardId, ActiveViewName)</c> tuple so view switches invalidate cleanly.
+/// </param>
+/// <param name="Widgets">One flat record per widget, in <c>WidgetInstance.Position</c> order. Reflects the active view only.</param>
 public sealed record DashboardRenderResponse(
     Guid DashboardId,
     DateTimeOffset RenderedAt,
     DashboardRenderPeriodResponse? Period,
+    string? ActiveViewName,
     IReadOnlyList<DashboardRenderedWidgetResponse> Widgets);
 
 /// <summary>

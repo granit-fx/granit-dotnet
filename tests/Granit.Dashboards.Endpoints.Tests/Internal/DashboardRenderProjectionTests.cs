@@ -57,8 +57,9 @@ public sealed class DashboardRenderProjectionTests
 
         IDashboardDefinitionRegistry registry = EmptyRegistry();
 
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
         DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
-            result, dashboard, registry, periodToken: "mtd");
+            result, dashboard, target, registry, periodToken: "mtd");
 
         response.DashboardId.ShouldBe(dashboard.Id);
         response.RenderedAt.ShouldBe(RenderedAt);
@@ -128,8 +129,9 @@ public sealed class DashboardRenderProjectionTests
                     refreshHint: RefreshHint.Dynamic)),
             ]);
 
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
         DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
-            result, dashboard, registry, periodToken: null);
+            result, dashboard, target, registry, periodToken: null);
 
         DashboardRenderedWidgetResponse w = response.Widgets[0];
         w.Slug.ShouldBe("click-target");
@@ -171,8 +173,9 @@ public sealed class DashboardRenderProjectionTests
                     refreshHint: RefreshHint.Static)),
             ]);
 
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
         DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
-            result, dashboard, EmptyRegistry(), periodToken: null);
+            result, dashboard, target, EmptyRegistry(), periodToken: null);
 
         DashboardRenderedWidgetResponse w = response.Widgets[0];
         w.Actions.ShouldBeNull();
@@ -189,8 +192,9 @@ public sealed class DashboardRenderProjectionTests
             Period: null,
             Widgets: []);
 
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
         DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
-            result, dashboard, EmptyRegistry(), periodToken: null);
+            result, dashboard, target, EmptyRegistry(), periodToken: null);
 
         response.Period.ShouldBeNull();
     }
@@ -222,8 +226,9 @@ public sealed class DashboardRenderProjectionTests
                     reasonLocalizationKey: "Widget:Unavailable.MetricNotFound")),
             ]);
 
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
         DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
-            result, dashboard, EmptyRegistry(), periodToken: null);
+            result, dashboard, target, EmptyRegistry(), periodToken: null);
 
         DashboardRenderedWidgetResponse w = response.Widgets[0];
         w.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);

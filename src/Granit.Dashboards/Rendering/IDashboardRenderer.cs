@@ -19,13 +19,39 @@ public interface IDashboardRenderer
 {
     /// <summary>
     /// Renders the supplied dashboard against <paramref name="context"/>, returning
-    /// one envelope per widget plus the surrounding bundle metadata.
+    /// one envelope per widget plus the surrounding bundle metadata. Convenience
+    /// wrapper around
+    /// <see cref="RenderAsync(Guid, IReadOnlyList{WidgetInstance}, WidgetRenderContext, CancellationToken)"/>
+    /// — equivalent to passing <see cref="Dashboard.Id"/> and
+    /// <see cref="Dashboard.Widgets"/>.
     /// </summary>
     /// <param name="dashboard">The dashboard aggregate (already loaded from persistence).</param>
     /// <param name="context">Per-render context — see <see cref="WidgetRenderContext"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     Task<DashboardRenderResult> RenderAsync(
         Dashboard dashboard,
+        WidgetRenderContext context,
+        CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Renders an arbitrary widget pool under the given <paramref name="dashboardId"/>
+    /// — used by the endpoint layer when serving a non-entry view of a multi-view
+    /// dashboard (P2.1 multi-view dispatch). The widgets MAY be ephemeral, e.g.
+    /// materialised from a <c>WidgetDefinition</c> at render time with deterministic
+    /// ids derived from <c>(dashboardId, viewName, slug)</c>; they need not be
+    /// persisted.
+    /// </summary>
+    /// <remarks>
+    /// All three guarantees from the persisted-dashboard overload hold here too:
+    /// permission gate, error isolation, deterministic ordering.
+    /// </remarks>
+    /// <param name="dashboardId">Dashboard identifier echoed in the result.</param>
+    /// <param name="widgets">The widget pool to render — typically <see cref="Dashboard.Widgets"/> for the entry view, or a materialised pool for a non-entry view.</param>
+    /// <param name="context">Per-render context — see <see cref="WidgetRenderContext"/>.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<DashboardRenderResult> RenderAsync(
+        Guid dashboardId,
+        IReadOnlyList<WidgetInstance> widgets,
         WidgetRenderContext context,
         CancellationToken cancellationToken);
 }

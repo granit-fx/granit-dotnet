@@ -35,11 +35,13 @@ internal static class DashboardRenderProjection
     public static DashboardRenderResponse ToResponse(
         DashboardRenderResult result,
         Dashboard dashboard,
+        ResolvedRenderTarget target,
         IDashboardDefinitionRegistry definitionRegistry,
         string? periodToken)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(dashboard);
+        ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(definitionRegistry);
 
         DashboardRenderPeriodResponse? period = result.Period is { } p
@@ -49,7 +51,12 @@ internal static class DashboardRenderProjection
         Dictionary<string, IReadOnlyList<WidgetAction>?> actionsBySlug =
             ResolveActionsBySlug(dashboard, definitionRegistry);
 
-        var instanceById = dashboard.Widgets.ToDictionary(w => w.Id);
+        // The widget pool actually rendered is the resolved render target's pool —
+        // either persisted (entry view / single-view) or materialised (non-entry).
+        // The structural metadata (Position, Width, Height, ...) on each
+        // RenderedWidget therefore comes from `target.Widgets`, not from
+        // `dashboard.Widgets` (which only carries the entry view).
+        var instanceById = target.Widgets.ToDictionary(w => w.Id);
 
         DashboardRenderedWidgetResponse[] widgets = [.. result.Widgets.Select(rw =>
         {
@@ -79,6 +86,7 @@ internal static class DashboardRenderProjection
             DashboardId: result.DashboardId,
             RenderedAt: result.RenderedAt,
             Period: period,
+            ActiveViewName: target.ActiveViewName,
             Widgets: widgets);
     }
 
