@@ -27,6 +27,9 @@ public static class AnalyticsRenderingServiceCollectionExtensions
     ///   <item><c>"Table"</c> — runs the named <c>QueryDefinition</c>
     ///         through the QueryEngine pipeline, projects the first
     ///         <c>pageSize</c> rows.</item>
+    ///   <item><c>"Chart"</c> — runs the named <c>QueryDefinition</c>'s
+    ///         <c>ExecuteGroupedAsync</c> pipeline, returns one bucket per
+    ///         group (Count only in B3-5; Sum/Avg/Min/Max in a follow-up).</item>
     /// </list>
     /// </summary>
     /// <remarks>
@@ -51,6 +54,7 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         // Keeps request-time dispatch reflection-free.
         services.TryAddScoped<QueryAggregateService>();
         services.TryAddScoped<TableService>();
+        services.TryAddScoped<ChartService>();
 
         foreach (ServiceDescriptor descriptor in services
             .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
@@ -80,10 +84,24 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                 return (ITableRunner)Activator.CreateInstance(
                     runnerType, d.Name, queryableSource, engine, definition)!;
             });
+
+            services.AddScoped<IChartRunner>(sp =>
+            {
+                IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
+                Type runnerType = typeof(ChartRunner<>).MakeGenericType(d.EntityType);
+                object queryableSource = sp.GetRequiredService(
+                    typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+                object engine = sp.GetRequiredService(
+                    typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+
+                return (IChartRunner)Activator.CreateInstance(
+                    runnerType, d.Name, queryableSource, engine)!;
+            });
         }
 
         services.AddScoped<IWidgetInstanceRenderer, KpiWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, TableWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, ChartWidgetInstanceRenderer>();
 
         return services;
     }

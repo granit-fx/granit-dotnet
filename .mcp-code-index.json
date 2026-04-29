@@ -4393,6 +4393,24 @@
       "members": []
     },
     {
+      "name": "ChartBucket",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.ChartBucket",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/ChartWidgetSnapshot.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "ChartWidgetSnapshot",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.ChartWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/ChartWidgetSnapshot.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "IDatasourceEvaluator",
       "fqn": "Granit.Analytics.Endpoints.Rendering.IDatasourceEvaluator",
       "kind": "interface",
