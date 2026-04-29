@@ -29,7 +29,12 @@ public static class AnalyticsRenderingServiceCollectionExtensions
     ///         <c>pageSize</c> rows.</item>
     ///   <item><c>"Chart"</c> — runs the named <c>QueryDefinition</c>'s
     ///         <c>ExecuteGroupedAsync</c> pipeline, returns one bucket per
-    ///         group (Count only in B3-5; Sum/Avg/Min/Max in a follow-up).</item>
+    ///         group (Count via SQL, numeric aggregations via SQL-level
+    ///         GroupBy + Select expression trees).</item>
+    ///   <item><c>"Pivot"</c> — streams the named <c>QueryDefinition</c>
+    ///         through <c>ExecuteStreamAsync</c> and pivots in-memory by
+    ///         a (row-tuple × column-tuple) composite key. Bounded by the
+    ///         QueryDefinition's <c>MaxStreamSize</c>.</item>
     /// </list>
     /// </summary>
     /// <remarks>
@@ -55,6 +60,7 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         services.TryAddScoped<QueryAggregateService>();
         services.TryAddScoped<TableService>();
         services.TryAddScoped<ChartService>();
+        services.TryAddScoped<PivotService>();
 
         foreach (ServiceDescriptor descriptor in services
             .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
@@ -99,11 +105,25 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                 return (IChartRunner)Activator.CreateInstance(
                     runnerType, d.Name, queryableSource, engine)!;
             });
+
+            services.AddScoped<IPivotRunner>(sp =>
+            {
+                IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
+                Type runnerType = typeof(PivotRunner<>).MakeGenericType(d.EntityType);
+                object queryableSource = sp.GetRequiredService(
+                    typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+                object engine = sp.GetRequiredService(
+                    typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+
+                return (IPivotRunner)Activator.CreateInstance(
+                    runnerType, d.Name, queryableSource, engine)!;
+            });
         }
 
         services.AddScoped<IWidgetInstanceRenderer, KpiWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, TableWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, ChartWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, PivotWidgetInstanceRenderer>();
 
         return services;
     }
