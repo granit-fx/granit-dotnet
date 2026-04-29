@@ -105,7 +105,8 @@ internal sealed class MapWidgetInstanceRenderer(
             DefaultCenter: defaultCenter,
             ClusterThreshold: config.ClusterThreshold,
             DetailRoute: config.DetailRoute,
-            TileUrlTemplate: config.TileUrlTemplate);
+            TileUrlTemplate: config.TileUrlTemplate,
+            DefaultLayerKind: config.DefaultLayerKind);
 
         return WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,
@@ -122,7 +123,8 @@ internal sealed class MapWidgetInstanceRenderer(
         MapCenterConfig? DefaultCenter,
         int ClusterThreshold,
         string? DetailRoute,
-        string? TileUrlTemplate);
+        string? TileUrlTemplate,
+        MapTileLayerKind? DefaultLayerKind = null);
 
     /// <summary>
     /// Wire shape for <see cref="MapWidgetDefinition.DefaultCenter"/> in the

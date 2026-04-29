@@ -133,6 +133,47 @@ public sealed class MapWidgetInstanceRendererTests
     }
 
     [Fact]
+    public async Task RenderAsync_DefaultLayerKindOmitted_SerialisesAsNullOnTheWire()
+    {
+        // Acceptance criterion #2 from B7-3 (#1577) — when the persisted
+        // ConfigJson has no defaultLayerKind, the snapshot wire field is
+        // null. Frontend treats absence as "no preference" and falls back
+        // to the active provider's first layer.
+        StubRunner runner = new("Granit.Test.Items", points: []);
+        MapWidgetInstanceRenderer renderer = new(new MapService([runner]), _clock);
+
+        WidgetSnapshotEnvelope envelope = await renderer.RenderAsync(
+            BuildWidget(
+                "Granit.Test.Items",
+                @"{""pointSource"":{""kind"":""lat-lng"",""latitudeColumn"":""Latitude"",""longitudeColumn"":""Longitude""},""popupColumns"":null,""defaultZoom"":5,""defaultCenter"":null,""clusterThreshold"":200,""detailRoute"":null,""tileUrlTemplate"":null}"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        envelope.Snapshot!.Value.GetProperty("defaultLayerKind").ValueKind.ShouldBe(JsonValueKind.Null);
+    }
+
+    [Fact]
+    public async Task RenderAsync_DefaultLayerKindSet_PropagatesAsPascalCaseString()
+    {
+        // Acceptance criterion #1 from B7-3 (#1577) — Satellite on the
+        // definition becomes "Satellite" on the wire (PascalCase via the
+        // framework's standard JsonStringEnumConverter()). The frontend
+        // matches this string against its layer registry to pick the active
+        // tile URL.
+        StubRunner runner = new("Granit.Test.Items", points: []);
+        MapWidgetInstanceRenderer renderer = new(new MapService([runner]), _clock);
+
+        WidgetSnapshotEnvelope envelope = await renderer.RenderAsync(
+            BuildWidget(
+                "Granit.Test.Items",
+                @"{""pointSource"":{""kind"":""lat-lng"",""latitudeColumn"":""Latitude"",""longitudeColumn"":""Longitude""},""popupColumns"":null,""defaultZoom"":5,""defaultCenter"":null,""clusterThreshold"":200,""detailRoute"":null,""tileUrlTemplate"":null,""defaultLayerKind"":""Satellite""}"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        envelope.Snapshot!.Value.GetProperty("defaultLayerKind").GetString().ShouldBe("Satellite");
+    }
+
+    [Fact]
     public async Task RenderAsync_DefaultCenterNull_SerialisesAsNullOnTheWire()
     {
         StubRunner runner = new("Granit.Test.Items", points: []);

@@ -89,6 +89,28 @@ internal static class WidgetDefinitionToInstanceMapper
                 },
                 JsonOptions)),
 
+        MapWidgetDefinition map => new(
+            "Map", null, map.QueryName,
+            JsonSerializer.Serialize(
+                new
+                {
+                    pointSource = SerializeMapPointSource(map.PointSource),
+                    popupColumns = map.PopupColumns,
+                    defaultZoom = map.DefaultZoom,
+                    defaultCenter = map.DefaultCenter is { } c
+                        ? new { latitude = c.Latitude, longitude = c.Longitude }
+                        : null,
+                    clusterThreshold = map.ClusterThreshold,
+                    detailRoute = map.DetailRoute,
+                    tileUrlTemplate = map.TileUrlTemplate,
+                    // B7-3 (#1577) — preferred layer kind is part of the persisted
+                    // contract; the renderer round-trips it onto MapWidgetSnapshot
+                    // and the frontend resolves the matching layer from whichever
+                    // MapTileProvider the host registered.
+                    defaultLayerKind = map.DefaultLayerKind?.ToString(),
+                },
+                JsonOptions)),
+
         _ => throw new InvalidOperationException(
             $"No persisted-shape mapping registered for widget kind '{widget.GetType().Name}'. "
             + "Custom widget kinds shipped by downstream packages (Granit.IoT.Dashboards, ...) "
@@ -105,5 +127,22 @@ internal static class WidgetDefinitionToInstanceMapper
     {
         QueryAggregateDatasource qa => qa.QueryName,
         _ => null,
+    };
+
+    private static object SerializeMapPointSource(MapPointSource source) => source switch
+    {
+        MapPointSource.LatLng latLng => new
+        {
+            kind = "lat-lng",
+            latitudeColumn = latLng.LatitudeColumn,
+            longitudeColumn = latLng.LongitudeColumn,
+        },
+        MapPointSource.Geography geo => new
+        {
+            kind = "geography",
+            geographyColumn = geo.GeographyColumn,
+        },
+        _ => throw new InvalidOperationException(
+            $"Unknown MapPointSource subtype '{source.GetType().Name}'."),
     };
 }

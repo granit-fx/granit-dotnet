@@ -353,11 +353,14 @@ Per-column currency: a single table can mix `AmountEur` and `AmountUsd` on diffe
   "defaultCenter": { "latitude": 50.0, "longitude": 1.0 },
   "clusterThreshold": 150,
   "detailRoute": "/cities/{id}",
-  "tileUrlTemplate": null            // null = host's default (typically OpenStreetMap)
+  "tileUrlTemplate": null,           // null = host's default (typically OpenStreetMap)
+  "defaultLayerKind": "Satellite"    // optional preferred layer; null = no preference
 }
 ```
 
-LatLng path (`double` / `decimal` lat-lng columns) works on any database. Geography path (PostGIS `geography(Point)`) is deferred to `granit-iot` — the renderer surfaces `Widget:Unavailable.MapGeographyNotImplemented` until then.
+LatLng path (`double` / `decimal` lat-lng columns) works on any database. PostGIS path (`geography(Point)`) is opt-in via the `Granit.Analytics.PostGIS` package; without it the renderer surfaces `Widget:Unavailable.MapGeographyNotImplemented`.
+
+`defaultLayerKind` (B7-3) is a per-widget preference — `Plan`, `Satellite`, `Hybrid`, `Topo`, or `Custom`, PascalCase on the wire. The frontend resolves it against the active `MapTileProvider`: matching layer wins, otherwise the provider's first layer is used. Useful when a single host registers multiple providers (OSM + SPW Wallonia + ArcGIS) and wants delivery-tracking widgets to default to satellite while parcel maps default to plan.
 
 #### `Markdown` / `Text` / `Image` — static content
 

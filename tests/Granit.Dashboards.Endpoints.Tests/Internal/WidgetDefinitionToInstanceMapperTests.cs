@@ -165,6 +165,11 @@ public sealed class WidgetDefinitionToInstanceMapperTests
             new ChartWidgetDefinition("C", "Q1", "g", AggregateFunction.Count, null, ChartType.Bar, Position: 4),
             new TableWidgetDefinition("Tab", "Q1", null, 10, Position: 5),
             new PivotWidgetDefinition("P", "Q1", ["r"], ["c"], null, AggregateFunction.Count, Position: 6),
+            new MapWidgetDefinition(
+                "M2", "Q1",
+                new MapPointSource.LatLng("Lat", "Lng"),
+                PopupColumns: null,
+                Position: 7),
         ];
 
         foreach (WidgetDefinition widget in widgets)
@@ -175,5 +180,75 @@ public sealed class WidgetDefinitionToInstanceMapperTests
             using var doc = JsonDocument.Parse(result.ConfigJson);
             doc.RootElement.ValueKind.ShouldBe(JsonValueKind.Object);
         }
+    }
+
+    [Fact]
+    public void Map_MapsToMapType_WithLatLngPointSource_PersistedAsKindKey()
+    {
+        // Persisted ConfigJson follows the same JSON polymorphism convention
+        // as the renderer's MapConfig deserialiser — the discriminator field
+        // is "kind" with values "lat-lng" / "geography" (kebab-case to mirror
+        // MapPointSource.JsonPolymorphic attribute on the abstraction).
+        WidgetDefinitionToInstanceMapper.Mapping result =
+            WidgetDefinitionToInstanceMapper.Map(
+                new MapWidgetDefinition(
+                    "Customers",
+                    "Test.Customers",
+                    new MapPointSource.LatLng("Latitude", "Longitude"),
+                    PopupColumns: ["Name", "Country"],
+                    Position: 0));
+
+        result.WidgetType.ShouldBe("Map");
+        result.QueryName.ShouldBe("Test.Customers");
+
+        using var doc = JsonDocument.Parse(result.ConfigJson);
+        JsonElement root = doc.RootElement;
+
+        root.GetProperty("pointSource").GetProperty("kind").GetString().ShouldBe("lat-lng");
+        root.GetProperty("pointSource").GetProperty("latitudeColumn").GetString().ShouldBe("Latitude");
+        root.GetProperty("pointSource").GetProperty("longitudeColumn").GetString().ShouldBe("Longitude");
+        root.GetProperty("popupColumns").EnumerateArray().Select(e => e.GetString()).ShouldBe(["Name", "Country"]);
+
+        // DefaultLayerKind absent on the definition → null on the wire.
+        root.GetProperty("defaultLayerKind").ValueKind.ShouldBe(JsonValueKind.Null);
+    }
+
+    [Fact]
+    public void Map_DefaultLayerKind_RoundTripsAsPascalCaseString()
+    {
+        // B7-3 (#1577) — the persisted ConfigJson MUST carry the layer kind
+        // as a PascalCase string ("Satellite", not "SATELLITE", not "1") so
+        // the renderer can deserialise it via JsonStringEnumConverter() into
+        // MapTileLayerKind without a custom converter.
+        WidgetDefinitionToInstanceMapper.Mapping result =
+            WidgetDefinitionToInstanceMapper.Map(
+                new MapWidgetDefinition(
+                    "Deliveries",
+                    "Test.Deliveries",
+                    new MapPointSource.LatLng("Lat", "Lng"),
+                    PopupColumns: null,
+                    Position: 0,
+                    DefaultLayerKind: MapTileLayerKind.Satellite));
+
+        using var doc = JsonDocument.Parse(result.ConfigJson);
+        doc.RootElement.GetProperty("defaultLayerKind").GetString().ShouldBe("Satellite");
+    }
+
+    [Fact]
+    public void Map_GeographyPointSource_PersistedWithGeographyDiscriminator()
+    {
+        WidgetDefinitionToInstanceMapper.Mapping result =
+            WidgetDefinitionToInstanceMapper.Map(
+                new MapWidgetDefinition(
+                    "Branches",
+                    "Test.Branches",
+                    new MapPointSource.Geography("Location"),
+                    PopupColumns: null,
+                    Position: 0));
+
+        using var doc = JsonDocument.Parse(result.ConfigJson);
+        JsonElement pointSource = doc.RootElement.GetProperty("pointSource");
+        pointSource.GetProperty("kind").GetString().ShouldBe("geography");
+        pointSource.GetProperty("geographyColumn").GetString().ShouldBe("Location");
     }
 }

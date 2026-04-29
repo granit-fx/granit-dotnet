@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Analytics.Dashboards.Widgets;
 
 namespace Granit.Analytics.Endpoints.Rendering;
 
@@ -14,13 +15,15 @@ namespace Granit.Analytics.Endpoints.Rendering;
 /// <param name="ClusterThreshold">Marker count above which the frontend activates clustering.</param>
 /// <param name="DetailRoute">Optional route template invoked on marker click (<c>{id}</c> substituted with the row's primary key).</param>
 /// <param name="TileUrlTemplate">Optional Leaflet tile-URL override; <see langword="null"/> falls back to the host's default (typically OpenStreetMap).</param>
+/// <param name="DefaultLayerKind">Optional preferred layer kind from the widget definition (B7-3 #1577). The frontend resolves it against the active <c>MapTileProvider</c>: matching layer wins, otherwise the provider's first layer is used. <see langword="null"/> means "no preference — use the provider default".</param>
 public sealed record MapWidgetSnapshot(
     IReadOnlyList<MapPoint> Points,
     int DefaultZoom,
     MapCenterPayload? DefaultCenter,
     int ClusterThreshold,
     string? DetailRoute,
-    string? TileUrlTemplate);
+    string? TileUrlTemplate,
+    MapTileLayerKind? DefaultLayerKind);
 
 /// <summary>One marker on the map.</summary>
 /// <param name="Id">Entity primary key when the entity exposes a <c>Guid Id</c> property; <see langword="null"/> otherwise. Drives the click-through to <c>DetailRoute</c>.</param>

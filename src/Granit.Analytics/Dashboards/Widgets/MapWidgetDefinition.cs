@@ -59,6 +59,7 @@ public abstract record MapPointSource
 /// <param name="ClusterThreshold">Row count above which marker clustering activates automatically. Defaults to <c>200</c>.</param>
 /// <param name="DetailRoute">Optional route template invoked on marker click — <c>{id}</c> is substituted with the row's primary key. Example: <c>/customers/{id}</c>.</param>
 /// <param name="TileUrlTemplate">Optional Leaflet tile-URL template overriding the OpenStreetMap default. Frontend hosts MUST keep a visible attribution that matches the tile provider's licence.</param>
+/// <param name="DefaultLayerKind">Optional preferred layer kind (plan / satellite / hybrid / topo / custom). When set, the frontend picks the matching layer from whatever <c>MapTileProvider</c> the host registered; <see langword="null"/> falls back to the provider's default. See <see cref="MapTileLayerKind"/>.</param>
 /// <param name="Position">See <see cref="WidgetDefinition.Position"/>.</param>
 /// <param name="Size">Defaults to <see cref="WidgetSize.MediaTile"/> — maps usually want square real-estate.</param>
 /// <param name="RequiredPermission">See <see cref="WidgetDefinition.RequiredPermission"/>.</param>
@@ -75,6 +76,7 @@ public sealed record MapWidgetDefinition(
     int ClusterThreshold = 200,
     string? DetailRoute = null,
     string? TileUrlTemplate = null,
+    MapTileLayerKind? DefaultLayerKind = null,
     WidgetSize? Size = null,
     string? RequiredPermission = null,
     DashboardTimeWindow? TimeWindowOverride = null,

@@ -4192,7 +4192,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
-      "line": 88,
+      "line": 90,
       "members": [
         {
           "name": "MapCenter",
@@ -4225,12 +4225,21 @@
       ]
     },
     {
+      "name": "MapTileLayerKind",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.MapTileLayerKind",
+      "kind": "enum",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/MapTileLayerKind.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "MapWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.MapWidgetDefinition",
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
-      "line": 67,
+      "line": 68,
       "members": [
         {
           "name": "MapCenter",
@@ -4484,7 +4493,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 39,
+      "line": 42,
       "members": []
     },
     {
@@ -4493,7 +4502,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 30,
+      "line": 33,
       "members": []
     },
     {
@@ -4502,7 +4511,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 17,
+      "line": 19,
       "members": []
     },
     {
