@@ -4277,15 +4277,6 @@
       "members": []
     },
     {
-      "name": "AnalyticsEndpointsMetrics",
-      "fqn": "Granit.Analytics.Endpoints.Diagnostics.AnalyticsEndpointsMetrics",
-      "kind": "class",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Diagnostics/AnalyticsEndpointsMetrics.cs",
-      "line": 13,
-      "members": []
-    },
-    {
       "name": "MetricPreviousPayload",
       "fqn": "Granit.Analytics.Endpoints.Dtos.MetricPreviousPayload",
       "kind": "record",
@@ -4359,7 +4350,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitAnalyticsWidgetRenderers",
@@ -4548,6 +4539,15 @@
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Rendering/TableWidgetSnapshot.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "AnalyticsRuntimeMetrics",
+      "fqn": "Granit.Analytics.EntityFrameworkCore.Diagnostics.AnalyticsRuntimeMetrics",
+      "kind": "class",
+      "project": "Granit.Analytics.EntityFrameworkCore",
+      "file": "src/Granit.Analytics.EntityFrameworkCore/Diagnostics/AnalyticsRuntimeMetrics.cs",
+      "line": 21,
       "members": []
     },
     {

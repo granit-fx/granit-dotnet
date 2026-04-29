@@ -1,7 +1,8 @@
 using System.Security.Claims;
 using Granit.Analytics;
-using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards;
 using Granit.Dashboards.Domain;

@@ -2,11 +2,12 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Diagnostics;
+using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.Internal;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Typed implementation of <see cref="IMapRunner"/> — closes over
@@ -28,7 +29,7 @@ internal sealed class MapRunner<TEntity>(
     string name,
     IQueryableSource<TEntity> source,
     IQueryEngine<TEntity> engine,
-    AnalyticsEndpointsMetrics metrics,
+    AnalyticsRuntimeMetrics metrics,
     ICurrentTenant? currentTenant = null,
     IGeographyPointProjector<TEntity>? geographyProjector = null) : IMapRunner
     where TEntity : class
@@ -50,7 +51,7 @@ internal sealed class MapRunner<TEntity>(
 
     private readonly IQueryableSource<TEntity> _source = source;
     private readonly IQueryEngine<TEntity> _engine = engine;
-    private readonly AnalyticsEndpointsMetrics _metrics = metrics;
+    private readonly AnalyticsRuntimeMetrics _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
     private readonly IGeographyPointProjector<TEntity>? _geographyProjector = geographyProjector;
 

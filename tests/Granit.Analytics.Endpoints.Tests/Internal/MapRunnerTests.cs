@@ -2,8 +2,9 @@ using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Diagnostics;
-using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
@@ -253,7 +254,7 @@ public sealed class MapRunnerTests
 
         using var scope = new MetricsScope();
         using MetricCollector<long> collector = new(
-            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+            scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
@@ -288,7 +289,7 @@ public sealed class MapRunnerTests
 
         using var scope = new MetricsScope();
         using MetricCollector<long> collector = new(
-            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+            scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
@@ -379,7 +380,7 @@ public sealed class MapRunnerTests
 
         using var scope = new MetricsScope();
         using MetricCollector<long> collector = new(
-            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+            scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
         MapRunner<TestItem> runner = new(
@@ -406,7 +407,7 @@ public sealed class MapRunnerTests
 
         using var scope = new MetricsScope();
         using MetricCollector<long> collector = new(
-            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+            scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.IsAvailable.Returns(true);
@@ -450,21 +451,21 @@ public sealed class MapRunnerTests
     }
 
     /// <summary>
-    /// Builds a throwaway <see cref="AnalyticsEndpointsMetrics"/> for tests that don't
+    /// Builds a throwaway <see cref="AnalyticsRuntimeMetrics"/> for tests that don't
     /// inspect the counter — keeps the existing happy-path tests focused on projection
     /// without leaking metric setup boilerplate.
     /// </summary>
-    private static AnalyticsEndpointsMetrics BuildMetrics()
+    private static AnalyticsRuntimeMetrics BuildMetrics()
     {
         ServiceCollection services = new();
         services.AddMetrics();
         ServiceProvider sp = services.BuildServiceProvider();
-        return new AnalyticsEndpointsMetrics(sp.GetRequiredService<IMeterFactory>());
+        return new AnalyticsRuntimeMetrics(sp.GetRequiredService<IMeterFactory>());
     }
 
     /// <summary>
     /// Disposable harness — owns a <see cref="ServiceProvider"/> + <see cref="IMeterFactory"/>
-    /// and exposes the matching <see cref="AnalyticsEndpointsMetrics"/>. The metric collector
+    /// and exposes the matching <see cref="AnalyticsRuntimeMetrics"/>. The metric collector
     /// must be created from the SAME factory that built the metrics instance, otherwise
     /// the snapshot will be empty.
     /// </summary>
@@ -472,7 +473,7 @@ public sealed class MapRunnerTests
     {
         private readonly ServiceProvider _sp;
         public IMeterFactory MeterFactory { get; }
-        public AnalyticsEndpointsMetrics Metrics { get; }
+        public AnalyticsRuntimeMetrics Metrics { get; }
 
         public MetricsScope()
         {
@@ -480,7 +481,7 @@ public sealed class MapRunnerTests
             services.AddMetrics();
             _sp = services.BuildServiceProvider();
             MeterFactory = _sp.GetRequiredService<IMeterFactory>();
-            Metrics = new AnalyticsEndpointsMetrics(MeterFactory);
+            Metrics = new AnalyticsRuntimeMetrics(MeterFactory);
         }
 
         public void Dispose() => _sp.Dispose();

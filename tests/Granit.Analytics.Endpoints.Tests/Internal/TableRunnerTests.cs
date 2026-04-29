@@ -1,5 +1,6 @@
 using System.Text.Json;
-using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.QueryEngine;
 using NSubstitute;
 using Shouldly;

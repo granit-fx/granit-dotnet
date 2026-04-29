@@ -1,6 +1,7 @@
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Diagnostics;
-using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.Analytics.PostGIS.Internal;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
@@ -54,7 +55,7 @@ public sealed class MapPostGisIntegrationTests(PostGisFixture postgis)
         ServiceCollection services = new();
         services.AddMetrics();
         ServiceProvider metricsProvider = services.BuildServiceProvider();
-        AnalyticsEndpointsMetrics metrics = new(metricsProvider.GetRequiredService<System.Diagnostics.Metrics.IMeterFactory>());
+        AnalyticsRuntimeMetrics metrics = new(metricsProvider.GetRequiredService<System.Diagnostics.Metrics.IMeterFactory>());
 
         _runner = new MapRunner<Branch>(
             name: "Test.Branches",

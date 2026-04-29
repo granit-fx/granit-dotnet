@@ -1,9 +1,10 @@
 using System.Reflection;
 using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Typed implementation of <see cref="IQueryAggregateRunner"/> — closes over

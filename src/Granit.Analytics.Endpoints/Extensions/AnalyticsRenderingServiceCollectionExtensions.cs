@@ -1,7 +1,9 @@
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
+using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
 using Granit.MultiTenancy;
@@ -55,7 +57,7 @@ public static class AnalyticsRenderingServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        services.TryAddSingleton<AnalyticsEndpointsMetrics>();
+        services.TryAddSingleton<AnalyticsRuntimeMetrics>();
 
         services.TryAddScoped<IDatasourceEvaluator<MetricDatasource>, MetricDatasourceEvaluator>();
         services.TryAddScoped<IDatasourceEvaluator<QueryAggregateDatasource>, QueryAggregateDatasourceEvaluator>();
@@ -143,7 +145,7 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
-                AnalyticsEndpointsMetrics metrics = sp.GetRequiredService<AnalyticsEndpointsMetrics>();
+                AnalyticsRuntimeMetrics metrics = sp.GetRequiredService<AnalyticsRuntimeMetrics>();
                 ICurrentTenant? currentTenant = sp.GetService<ICurrentTenant>();
                 // Optional Geography projector — registered by Granit.Analytics.PostGIS
                 // (or any other geography provider) per entity type. Absent on hosts

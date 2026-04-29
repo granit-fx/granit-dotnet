@@ -1,25 +1,33 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace Granit.Analytics.Endpoints.Diagnostics;
+namespace Granit.Analytics.EntityFrameworkCore.Diagnostics;
 
 /// <summary>
-/// OpenTelemetry metrics for the analytics HTTP endpoints — the runtime layer
-/// that turns persisted widget instances into render payloads. Operational
-/// counters only; metric *values* themselves travel on the wire response and
-/// are not re-emitted as OTel measurements.
-/// Meter: <c>Granit.Analytics.Endpoints</c>.
+/// OpenTelemetry metrics for the analytics widget runners — the runtime
+/// layer that streams entities through <c>IQueryEngine</c> and shapes them
+/// into widget snapshots. Operational counters only; metric *values*
+/// themselves travel on the wire response and are not re-emitted as OTel
+/// measurements.
+/// Meter: <c>Granit.Analytics</c>.
 /// </summary>
-public sealed class AnalyticsEndpointsMetrics
+/// <remarks>
+/// Renamed from <c>AnalyticsEndpointsMetrics</c> in D5 (#1569) when the
+/// runners moved out of <c>Granit.Analytics.Endpoints</c>. The meter name
+/// also changed from <c>Granit.Analytics.Endpoints</c> to
+/// <c>Granit.Analytics</c> to align with the new placement; observability
+/// dashboards keying off the old name need updating.
+/// </remarks>
+public sealed class AnalyticsRuntimeMetrics
 {
-    public const string MeterName = "Granit.Analytics.Endpoints";
+    public const string MeterName = "Granit.Analytics";
 
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
 
     private readonly Counter<long> _mapInvalidCoordinates;
 
-    public AnalyticsEndpointsMetrics(IMeterFactory meterFactory)
+    public AnalyticsRuntimeMetrics(IMeterFactory meterFactory)
     {
         ArgumentNullException.ThrowIfNull(meterFactory);
 

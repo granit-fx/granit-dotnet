@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Non-generic façade over a typed <c>QueryDefinition&lt;TEntity&gt;</c> that

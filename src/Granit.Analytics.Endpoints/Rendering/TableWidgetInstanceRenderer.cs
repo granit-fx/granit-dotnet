@@ -1,6 +1,8 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.EntityFrameworkCore.Internal;
+using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;

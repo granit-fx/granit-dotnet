@@ -10,6 +10,7 @@
     <InternalsVisibleTo Include="Granit.Analytics.Tests" />
     <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore" />
     <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests.Integration" />
     <InternalsVisibleTo Include="Granit.Analytics.Endpoints" />
     <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />

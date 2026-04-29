@@ -1,8 +1,9 @@
 using System.Reflection;
 using System.Text.Json;
+using Granit.Analytics.Internal;
 using Granit.QueryEngine;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Typed implementation of <see cref="ITableRunner"/> — closes over
