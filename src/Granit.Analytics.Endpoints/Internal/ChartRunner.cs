@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Reflection;
+using Granit.Analytics.EntityFrameworkCore.Internal;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
 

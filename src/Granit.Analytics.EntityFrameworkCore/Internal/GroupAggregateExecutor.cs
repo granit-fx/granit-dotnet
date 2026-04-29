@@ -3,7 +3,7 @@ using System.Reflection;
 using Granit.QueryEngine.Filtering;
 using Microsoft.EntityFrameworkCore;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.EntityFrameworkCore.Internal;
 
 /// <summary>
 /// Builds and executes a typed <c>GroupBy(...).Select(...)</c> expression
@@ -38,7 +38,7 @@ internal static class GroupAggregateExecutor
     /// <summary>Result row materialised by the EF projection.</summary>
     /// <param name="Key">Boxed group key — matches the runtime CLR type of the GroupBy property.</param>
     /// <param name="Value">Aggregate value coerced to <see cref="decimal"/>; <see langword="null"/> for empty Avg/Min/Max groups.</param>
-    public sealed record GroupBucket(object? Key, decimal? Value);
+    internal sealed record GroupBucket(object? Key, decimal? Value);
 
     /// <summary>Supported aggregate field types.</summary>
     private static readonly HashSet<Type> SupportedNumericTypes =

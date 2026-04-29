@@ -4,6 +4,11 @@
     <PackageId>Granit.Analytics.Endpoints</PackageId>
     <Description>Minimal API endpoint for Granit.Analytics inline metrics. Generic /metrics/{name} route resolves a registered MetricDefinition, applies the QueryEngine filter pipeline, executes the aggregation through Granit.Analytics.EntityFrameworkCore, caches the result via FusionCache (key composed with tenantId), and supports current-vs-previous period comparison with computed delta.</Description>
     <IsPackable>true</IsPackable>
+    <!-- EF1001: false positive — QueryAggregateExecutor / GroupAggregateExecutor live in
+         Granit.Analytics.EntityFrameworkCore.Internal (per the framework's "no EF Core in
+         Endpoints types" architecture rule), reachable here via InternalsVisibleTo. The
+         analyzer flags any *.Internal.* namespace touched from outside its assembly. -->
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
