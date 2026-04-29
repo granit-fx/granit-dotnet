@@ -266,6 +266,128 @@ Per-widget fields disambiguate two concerns the early draft conflated: `widgetTy
 
 Enum values travel as PascalCase strings on the wire (ADR-039 §6.1) — `RefreshHint`, `WidgetSnapshotStatus`, `MetricValueKind`, etc. all serialise that way. Frontend TypeScript types match exactly: `type RefreshHint = "Static" | "Dynamic" | "Realtime"`.
 
+### Per-widget snapshot shapes
+
+Eight shipped kinds. Each carries its own typed `snapshot` payload — the
+frontend dispatches on `widgetType` to pick the matching renderer.
+
+#### `Kpi` — single-value tile
+
+```jsonc
+{
+  "value": 1234.56,                 // null when noData=true
+  "valueKind": "Currency",          // Count / Number / Currency / Percentage / Duration / Date
+  "currency": "EUR",                // ISO 4217 — non-null when valueKind=Currency
+  "isHigherBetter": true,           // drives delta colouring on the frontend
+  "noData": false,                  // true for empty Avg/Min/Max
+  "previous": null                  // optional comparison-window payload
+}
+```
+
+KPIs dispatch internally on `Datasource.Kind` (Metric / QueryAggregate / Telemetry). The wire shape stays uniform regardless. Currency promotion happens automatically when the underlying column declares `.Currency("EUR")`.
+
+#### `Chart` — group-by series
+
+```jsonc
+{
+  "chartType": "Bar",               // Bar / HorizontalBar / Line / Area / Pie / Donut
+  "groupBy": "Status",
+  "aggregation": "Sum",             // Count / Sum / Avg / Min / Max
+  "field": "Amount",                // null for Count
+  "buckets": [
+    { "label": "Open", "value": 60.0 },
+    { "label": "Paid", "value": 150.0 }
+  ],
+  "currency": "EUR"                 // shared across buckets — null for Count or non-monetary
+}
+```
+
+`Count` aggregations use SQL `GROUP BY` directly. `Sum`/`Avg`/`Min`/`Max` push the aggregation to SQL via dynamically-built expression trees — chart tiles scale with the number of groups, not the row count.
+
+#### `Table` — paginated row list
+
+```jsonc
+{
+  "columns": [
+    { "name": "customer", "labelLocalizationKey": "Column:Customer", "currencyCode": null },
+    { "name": "amount",   "labelLocalizationKey": "Column:Amount",   "currencyCode": "EUR" }
+  ],
+  "rows": [
+    { "customer": "Alice", "amount": 1000.0 },
+    { "customer": "Bob",   "amount": 2000.0 }
+  ],
+  "totalRowCount": 142
+}
+```
+
+Per-column currency: a single table can mix `AmountEur` and `AmountUsd` on different columns. `totalRowCount` reflects the underlying query after filters, so the frontend can render "showing 2 of 142" without a second round-trip.
+
+#### `Pivot` — rows × columns × value
+
+```jsonc
+{
+  "rowFields": ["Region"],
+  "columnFields": ["Year"],
+  "valueField": "Amount",           // null for Count
+  "aggregation": "Sum",
+  "cells": [
+    { "rowKeys": ["EU"], "columnKeys": ["2025"], "value": 15000.0 },
+    { "rowKeys": ["EU"], "columnKeys": ["2026"], "value": 22000.0 },
+    { "rowKeys": ["US"], "columnKeys": ["2025"], "value": 18000.0 }
+  ],
+  "currency": "EUR"                 // shared across cells
+}
+```
+
+`cells` is a flat list — the frontend pivots into a row-major matrix. Multi-dimension friendly: `rowFields` and `columnFields` accept ordered lists, each cell carries the full row/column-key tuples. Null property values surface as `"(null)"` keys.
+
+#### `Map` — geocoded markers
+
+```jsonc
+{
+  "points": [
+    { "id": "8c6b...", "latitude": 48.85, "longitude": 2.35, "popup": { "name": "Paris", "country": "FR" } },
+    { "id": "...",     "latitude": 51.50, "longitude": -0.12, "popup": { "name": "London", "country": "GB" } }
+  ],
+  "defaultZoom": 7,
+  "defaultCenter": { "latitude": 50.0, "longitude": 1.0 },
+  "clusterThreshold": 150,
+  "detailRoute": "/cities/{id}",
+  "tileUrlTemplate": null            // null = host's default (typically OpenStreetMap)
+}
+```
+
+LatLng path (`double` / `decimal` lat-lng columns) works on any database. Geography path (PostGIS `geography(Point)`) is deferred to `granit-iot` — the renderer surfaces `Widget:Unavailable.MapGeographyNotImplemented` until then.
+
+#### `Markdown` / `Text` / `Image` — static content
+
+```jsonc
+// Markdown
+{ "contentLocalizationKey": "Widget:Granit.Invoicing.FinanceOverview.Banner" }
+
+// Text
+{ "contentLocalizationKey": "Widget:Title", "style": "Heading" }
+
+// Image
+{ "source": "blob:logo-banner", "altLocalizationKey": "Widget:Logo.Alt", "fit": "Contain" }
+```
+
+`refreshHint` is always `"Static"` — these widgets don't refetch.
+
+### Empty-set semantics (locked)
+
+Numeric aggregations across every kind share the same contract (locked by tests `#1374`):
+
+- `Count` over zero rows → `0` (`noData: false`).
+- `Sum` over an empty set → `0` (sum-of-empty identity, `noData: false`).
+- `Avg` / `Min` / `Max` over a cell with no usable values → `null` (`noData: true` on KPI; `value: null` on Chart bucket / Pivot cell). The frontend renders `—`.
+
+### Dashboard filters narrow every data-bound widget
+
+The request's `filters` dictionary applies uniformly to every data-bound kind (Kpi / Chart / Table / Pivot / Map). A `{ "Status": "Open" }` filter narrows the unpaid-invoices KPI, the unpaid-invoices table, AND the unpaid-invoices region map identically — they all run through the same `IQueryEngine.BuildFilteredQuery` pipeline as the admin grid, so a dashboard never disagrees with a list endpoint on which rows count as "open".
+
+Operator syntax: bare keys default to equality (`Status` → `Status.eq`); pre-encoded keys pass through (`Amount.gte` → `>= 100`). The `QueryEngine`'s `FilterableField` rules apply downstream — unknown fields and non-whitelisted operators are silently dropped.
+
 ### Guarantees
 
 - **Permission gate** — widgets carrying a `RequiredPermission` the user lacks short-circuit to `Unavailable` BEFORE the typed renderer runs. The dashboard returns `200` with the unreadable widget masked; no `403` on the whole request, and the underlying metric / query is never touched.
