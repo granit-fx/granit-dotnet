@@ -92,8 +92,29 @@ public sealed class ODataEntitySetBuilder<TEntity>
     public ODataEntitySetBuilder<TEntity> RequirePermission(string permission)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(permission);
-        return Update(_descriptor with { RequiredPermission = permission });
+        return Update(_descriptor with
+        {
+            RequiredPermission = permission,
+            // RequirePermission satisfies the strict-config validator's
+            // "either gated or explicitly anonymous" rule.
+            AnonymousAccessAcknowledged = false,
+        });
     }
+
+    /// <summary>
+    /// Explicit opt-in: this EntitySet IS anonymous-readable, by design.
+    /// Use case: a public reference-data feed (countries, currencies) that
+    /// truly has no per-tenant restriction. Without calling this method (or
+    /// <see cref="RequirePermission"/>), <c>MapGranitODataEndpoints</c>
+    /// throws at startup — the strict-config validator (C6 #1395) refuses
+    /// to ship a permission-less EntitySet by accident.
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> AllowAnonymousAccess()
+        => Update(_descriptor with
+        {
+            RequiredPermission = null,
+            AnonymousAccessAcknowledged = true,
+        });
 
     /// <summary>
     /// Caps the user-supplied <c>$top</c>. Requests above this value are
@@ -138,8 +159,28 @@ public sealed class ODataEntitySetBuilder<TEntity>
     public ODataEntitySetBuilder<TEntity> ExpandWhitelist(params string[] properties)
     {
         ArgumentNullException.ThrowIfNull(properties);
-        return Update(_descriptor with { ExpandWhitelist = [.. properties] });
+        return Update(_descriptor with
+        {
+            ExpandWhitelist = [.. properties],
+            ExpandConfigurationAcknowledged = true,
+        });
     }
+
+    /// <summary>
+    /// Explicit opt-out: this EntitySet does NOT support <c>$expand</c> — any
+    /// expand request returns <c>400 Bad Request</c>. Equivalent to calling
+    /// <see cref="ExpandWhitelist"/> with no arguments, but reads more
+    /// clearly at the call site. The strict-config validator (C6 #1395)
+    /// requires either this or <see cref="ExpandWhitelist"/> on every
+    /// EntitySet — implicit "expand disabled" is a security smell, the
+    /// host must declare the intent.
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> DisableExpand()
+        => Update(_descriptor with
+        {
+            ExpandWhitelist = [],
+            ExpandConfigurationAcknowledged = true,
+        });
 
     /// <summary>
     /// Sets the maximum nesting depth allowed for <c>$expand</c>. Default

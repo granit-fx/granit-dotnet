@@ -20384,9 +20384,21 @@
       "line": 75,
       "members": [
         {
+          "name": "MaxTop",
+          "kind": "method",
+          "signature": "MaxTop(int maxTop)",
+          "returnType": "ODataEntitySetBuilder<TEntity>"
+        },
+        {
           "name": "ExpandWhitelist",
           "kind": "method",
           "signature": "ExpandWhitelist(params string[] properties)",
+          "returnType": "ODataEntitySetBuilder<TEntity>"
+        },
+        {
+          "name": "MaxExpansionDepth",
+          "kind": "method",
+          "signature": "MaxExpansionDepth(int depth)",
           "returnType": "ODataEntitySetBuilder<TEntity>"
         }
       ]

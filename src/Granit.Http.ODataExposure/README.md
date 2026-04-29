@@ -61,6 +61,15 @@ Per EntitySet `GET /api/granit/odata/{Name}?$filter=…&$select=…&$top=…`:
 The order is load-bearing: tenant first, framework filters second, user
 query third.
 
+## Strict-config validator (C6 #1395)
+
+Every EntitySet MUST explicitly declare two security-sensitive intents:
+
+1. **Permission** — call `.RequirePermission(...)` (gated) **OR** `.AllowAnonymousAccess()` (public-feed scenario, e.g. tenant-agnostic reference data).
+2. **`$expand` policy** — call `.ExpandWhitelist(...)` (allow listed navigations) **OR** `.DisableExpand()` (no navigation exposed).
+
+Without one of each, `MapGranitODataEndpoints` throws at host startup with a list of every misconfigured EntitySet. The framework deliberately does NOT default-deny silently — silent defaults let convention drift reach production unchecked. Failing fast at composition time is the equivalent of an architecture test for a config surface that lives inside a closure (and is therefore not statically reflectable).
+
 ## Hardening (per EntitySet)
 
 The fluent builder ships safe-by-default caps; override per set when the
@@ -68,12 +77,12 @@ data product warrants it:
 
 ```csharp
 opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
-    .MaxTop(2500)                    // default 5000 — silently clamps user $top
-    .PageSize(500)                   // default 1000 — used when caller omits $top
-    .EnableCount()                   // default disabled — opt in for cheap-to-count tables
-    .ExpandWhitelist("Customer")     // default disabled — list allowed top-level navigations
-    .MaxExpansionDepth(2)            // default 1 — flat expand only
-    .RequirePermission("OData.Invoicing.Invoices.Read");
+    .RequirePermission("OData.Invoicing.Invoices.Read")  // strict-config: required
+    .ExpandWhitelist("Customer")                         // strict-config: required (or DisableExpand())
+    .MaxTop(2500)                                        // default 5000 — silently clamps user $top
+    .PageSize(500)                                       // default 1000 — used when caller omits $top
+    .EnableCount()                                       // default disabled — opt in for cheap-to-count tables
+    .MaxExpansionDepth(2);                               // default 1 — flat expand only
 ```
 
 Behaviour:

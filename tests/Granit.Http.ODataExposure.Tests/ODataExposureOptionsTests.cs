@@ -205,6 +205,62 @@ public sealed class ODataExposureOptionsTests
             .ShouldBe("OData.Test.Invoices.Read");
     }
 
+    [Fact]
+    public void AllowAnonymousAccess_ClearsRequiredPermission_AndFlagsAcknowledgement()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .RequirePermission("OData.Test.Invoices.Read")
+            .AllowAnonymousAccess();
+
+        object d = GetSingleDescriptor(options);
+        ((string?)d.GetType().GetProperty("RequiredPermission")!.GetValue(d)).ShouldBeNull();
+        ((bool)d.GetType().GetProperty("AnonymousAccessAcknowledged")!.GetValue(d)!).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void RequirePermission_ClearsAnonymousAccessFlag()
+    {
+        // Switching back to a permission gate after explicitly opting into
+        // anonymous must take precedence — last call wins, and the flag is
+        // reset so the strict validator sees the permission.
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .AllowAnonymousAccess()
+            .RequirePermission("OData.Test.Invoices.Read");
+
+        object d = GetSingleDescriptor(options);
+        ((string?)d.GetType().GetProperty("RequiredPermission")!.GetValue(d))
+            .ShouldBe("OData.Test.Invoices.Read");
+        ((bool)d.GetType().GetProperty("AnonymousAccessAcknowledged")!.GetValue(d)!).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void DisableExpand_SetsEmptyWhitelist_AndFlagsAcknowledgement()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .DisableExpand();
+
+        object d = GetSingleDescriptor(options);
+        var whitelist = (System.Collections.Generic.IReadOnlyList<string>?)
+            d.GetType().GetProperty("ExpandWhitelist")!.GetValue(d);
+        whitelist.ShouldNotBeNull();
+        whitelist!.ShouldBeEmpty();
+        ((bool)d.GetType().GetProperty("ExpandConfigurationAcknowledged")!.GetValue(d)!).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ExpandWhitelist_AlsoFlagsAcknowledgement()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .ExpandWhitelist("Customer");
+
+        object d = GetSingleDescriptor(options);
+        ((bool)d.GetType().GetProperty("ExpandConfigurationAcknowledged")!.GetValue(d)!).ShouldBeTrue();
+    }
+
     private static object GetSingleDescriptor(ODataExposureOptions options)
     {
         object? list = options.GetType()

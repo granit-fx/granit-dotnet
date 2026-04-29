@@ -70,6 +70,8 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 nameof(configure));
         }
 
+        ValidateStrictConfiguration(options.Descriptors);
+
         IEdmModel edmModel = ODataEdmModelBuilder.Build(options.Descriptors);
 
         RouteGroupBuilder root = endpoints.MapGroup(prefix)
@@ -97,6 +99,49 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         return root;
     }
+
+    /// <summary>
+    /// Strict-config validator (C6 #1395). Refuses to start the host when a
+    /// registered EntitySet hasn't acknowledged its security-sensitive
+    /// configuration choices: permission gating and <c>$expand</c> policy.
+    /// The framework deliberately does NOT default-deny and does NOT
+    /// silently apply safe defaults — those would let convention drift
+    /// reach production unchecked. Failing fast at <c>MapGranitODataEndpoints</c>
+    /// time is the equivalent of an architecture test for a config surface
+    /// that lives inside a closure (and is therefore not statically
+    /// reflectable).
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Any descriptor lacks both <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/> and <see cref="ODataEntitySetBuilder{TEntity}.AllowAnonymousAccess"/>, OR neither <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/> nor <see cref="ODataEntitySetBuilder{TEntity}.DisableExpand"/>.</exception>
+    private static void ValidateStrictConfiguration(IReadOnlyList<ODataEntitySetDescriptor> descriptors)
+    {
+        List<string> errors = [];
+
+        foreach (ODataEntitySetDescriptor descriptor in descriptors)
+        {
+            if (descriptor.RequiredPermission is null && !descriptor.AnonymousAccessAcknowledged)
+            {
+                errors.Add(
+                    $"EntitySet '{descriptor.EntitySetName}' must call either RequirePermission(string) or AllowAnonymousAccess() — implicit anonymous OData access is rejected by the strict-config validator (C6 #1395). Convention: {RequiredPermissionConvention(descriptor)}.");
+            }
+
+            if (!descriptor.ExpandConfigurationAcknowledged)
+            {
+                errors.Add(
+                    $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
+            }
+        }
+
+        if (errors.Count > 0)
+        {
+            throw new InvalidOperationException(
+                "OData EntitySet configuration is incomplete:" + Environment.NewLine
+                + string.Join(Environment.NewLine, errors.Select(e => "  - " + e)));
+        }
+    }
+
+    /// <summary>Suggests the conventional <c>OData.{Module}.{Entity}.Read</c> permission name for the descriptor's entity, used in the strict-config error message.</summary>
+    private static string RequiredPermissionConvention(ODataEntitySetDescriptor descriptor) =>
+        $"OData.{descriptor.EntityType.Namespace?.Split('.').LastOrDefault() ?? "Module"}.{descriptor.EntityType.Name}.Read";
 
     /// <summary>
     /// Wires one EntitySet's <c>GET /{EntitySetName}</c> route. Closed over

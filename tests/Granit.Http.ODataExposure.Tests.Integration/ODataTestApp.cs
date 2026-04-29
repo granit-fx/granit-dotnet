@@ -126,8 +126,16 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         app.MapGranitODataEndpoints("/api/granit/odata", opts =>
         {
+            // Strict-config validator (C6 #1395) requires every EntitySet to
+            // declare its permission and $expand intents. The integration
+            // suites are about tenant isolation / query hardening / rate
+            // limiting, not auth — apply safe defaults that the per-test
+            // configureEntitySet callback can override (e.g. by calling
+            // ExpandWhitelist(...) or RequirePermission(...)).
             ODataEntitySetBuilder<Invoice> builder =
-                opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices");
+                opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+                    .AllowAnonymousAccess()
+                    .DisableExpand();
             configureEntitySet?.Invoke(builder);
         });
 
