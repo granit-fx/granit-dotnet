@@ -1,6 +1,8 @@
+using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
 using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
+using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -35,8 +37,33 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<IDatasourceEvaluator<MetricDatasource>, MetricDatasourceEvaluator>();
-        services.TryAddSingleton<IDatasourceEvaluator<QueryAggregateDatasource>, QueryAggregateDatasourceEvaluator>();
+        services.TryAddScoped<IDatasourceEvaluator<QueryAggregateDatasource>, QueryAggregateDatasourceEvaluator>();
         services.TryAddSingleton<IDatasourceEvaluator<TelemetryDatasource>, TelemetryDatasourceEvaluator>();
+
+        // Query-aggregate runner registry — built once at startup. Iterates every
+        // registered IQueryDefinitionDescriptor and closes QueryAggregateRunner<T>
+        // over each entity type, mirroring how AnalyticsEndpointsServiceCollectionExtensions
+        // builds metric runners. Keeps request-time dispatch reflection-free.
+        services.TryAddScoped<QueryAggregateService>();
+
+        foreach (ServiceDescriptor descriptor in services
+            .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
+            .ToList())
+        {
+            services.AddSingleton<IQueryAggregateRunner>(sp =>
+            {
+                var d = (IQueryDefinitionDescriptor)
+                    (descriptor.ImplementationFactory?.Invoke(sp)
+                     ?? throw new InvalidOperationException(
+                         "IQueryDefinitionDescriptor must be registered with an implementation factory."));
+
+                Type runnerType = typeof(QueryAggregateRunner<>).MakeGenericType(d.EntityType);
+                object queryableSource = sp.GetRequiredService(
+                    typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+
+                return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource)!;
+            });
+        }
 
         services.AddScoped<IWidgetInstanceRenderer, KpiWidgetInstanceRenderer>();
 

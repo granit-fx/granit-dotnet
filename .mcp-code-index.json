@@ -4314,7 +4314,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAnalyticsWidgetRenderers",
