@@ -1,0 +1,7 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Metric:Granit.Identity.Federated.EnabledUserCacheEntryCountMetric": "सक्रिय फेडरेटेड उपयोगकर्ता",
+    "Metric:Granit.Identity.Federated.UserCacheEntryCountMetric": "फेडरेटेड उपयोगकर्ता (कुल)"
+  }
+}

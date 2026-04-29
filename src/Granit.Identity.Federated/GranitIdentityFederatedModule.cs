@@ -1,8 +1,10 @@
+using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Identity;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Exports;
 using Granit.Identity.Federated.Internal;
+using Granit.Identity.Federated.Metrics;
 using Granit.Identity.Federated.Options;
 using Granit.Identity.Federated.Queries;
 using Granit.Identity.Federated.RateLimiting;
@@ -27,6 +29,9 @@ public sealed class GranitIdentityFederatedModule : GranitModule
         // Query + Export definitions (ADR-020: owned by the base module).
         context.Services.AddQueryDefinition<UserCacheEntry, UserCacheEntryQueryDefinition>();
         context.Services.AddExportDefinition<UserCacheEntry, UserCacheEntryExportDefinition>();
+
+        context.Services.AddMetricDefinition<UserCacheEntry, int, EnabledUserCacheEntryCountMetricDefinition>();
+        context.Services.AddMetricDefinition<UserCacheEntry, int, UserCacheEntryCountMetricDefinition>();
 
         // Default to a no-op rate limiter on token-exchange. Hosts that wire
         // Granit.RateLimiting can replace this registration with a distributed-store

@@ -1,0 +1,7 @@
+{
+  "culture": "de",
+  "texts": {
+    "Metric:Granit.Identity.Federated.EnabledUserCacheEntryCountMetric": "Aktive föderierte Benutzer",
+    "Metric:Granit.Identity.Federated.UserCacheEntryCountMetric": "Föderierte Benutzer (gesamt)"
+  }
+}

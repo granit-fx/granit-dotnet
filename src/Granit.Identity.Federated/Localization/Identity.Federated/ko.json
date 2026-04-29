@@ -1,0 +1,7 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Metric:Granit.Identity.Federated.EnabledUserCacheEntryCountMetric": "활성 연합 사용자",
+    "Metric:Granit.Identity.Federated.UserCacheEntryCountMetric": "연합 사용자 (총)"
+  }
+}

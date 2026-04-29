@@ -1022,9 +1022,11 @@
     {
       "name": "Granit.Identity.Federated",
       "deps": [
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption.EntityFrameworkCore",
         "Granit.Identity",
+        "Granit.Localization",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -22415,7 +22417,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "ConfigureServices",
@@ -22612,6 +22614,92 @@
           "kind": "method",
           "signature": "SyncAsync(CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EnabledUserCacheEntryCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Metrics.EnabledUserCacheEntryCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Metrics/EnabledUserCacheEntryCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserCacheEntry, int?>>? Selector",
+          "returnType": "Expression<Func<UserCacheEntry, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<UserCacheEntry, bool>>? BaseFilter",
+          "returnType": "Expression<Func<UserCacheEntry, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserCacheEntry, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserCacheEntry, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "UserCacheEntryCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Metrics.UserCacheEntryCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Metrics/UserCacheEntryCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserCacheEntry, int?>>? Selector",
+          "returnType": "Expression<Func<UserCacheEntry, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserCacheEntry, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserCacheEntry, DateTimeOffset>>?"
         }
       ]
     },

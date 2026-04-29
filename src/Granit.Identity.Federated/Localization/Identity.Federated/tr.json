@@ -1,0 +1,7 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Identity.Federated.EnabledUserCacheEntryCountMetric": "Aktif federe kullanıcılar",
+    "Metric:Granit.Identity.Federated.UserCacheEntryCountMetric": "Federe kullanıcılar (toplam)"
+  }
+}
