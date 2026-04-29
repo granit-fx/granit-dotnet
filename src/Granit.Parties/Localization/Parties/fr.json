@@ -1,0 +1,8 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Metric:Granit.Parties.ActivePartyCountMetric": "Tiers actifs",
+    "Metric:Granit.Parties.MergedPartyCountMetric": "Tiers fusionnés",
+    "Metric:Granit.Parties.PartyCountMetric": "Total des tiers"
+  }
+}

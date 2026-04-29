@@ -1777,6 +1777,8 @@
       "name": "Granit.Parties",
       "deps": [
         "Granit",
+        "Granit.Analytics",
+        "Granit.Localization",
         "Granit.Mergeable",
         "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
@@ -36264,7 +36266,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Extensions/PartiesHostApplicationBuilderExtensions.cs",
-      "line": 10,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitParties",
@@ -36408,6 +36410,138 @@
       "file": "src/Granit.Parties.Mergeable/GranitPartiesMergeableModule.cs",
       "line": 19,
       "members": []
+    },
+    {
+      "name": "ActivePartyCountMetricDefinition",
+      "fqn": "Granit.Parties.Metrics.ActivePartyCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Metrics/ActivePartyCountMetricDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, int?>>? Selector",
+          "returnType": "Expression<Func<Party, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Party, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Party, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Party, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "MergedPartyCountMetricDefinition",
+      "fqn": "Granit.Parties.Metrics.MergedPartyCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Metrics/MergedPartyCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, int?>>? Selector",
+          "returnType": "Expression<Func<Party, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Party, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Party, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Party, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "PartyCountMetricDefinition",
+      "fqn": "Granit.Parties.Metrics.PartyCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Metrics/PartyCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, int?>>? Selector",
+          "returnType": "Expression<Func<Party, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Party, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Party, DateTimeOffset>>?"
+        }
+      ]
     },
     {
       "name": "GranitPartiesMultiTenancyModule",

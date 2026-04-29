@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Metric:Granit.Parties.ActivePartyCountMetric": "सक्रिय पक्ष",
+    "Metric:Granit.Parties.MergedPartyCountMetric": "विलय किए गए पक्ष",
+    "Metric:Granit.Parties.PartyCountMetric": "कुल पक्ष"
+  }
+}

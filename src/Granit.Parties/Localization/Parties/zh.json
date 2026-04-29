@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Metric:Granit.Parties.ActivePartyCountMetric": "活跃对方",
+    "Metric:Granit.Parties.MergedPartyCountMetric": "已合并对方",
+    "Metric:Granit.Parties.PartyCountMetric": "对方总数"
+  }
+}

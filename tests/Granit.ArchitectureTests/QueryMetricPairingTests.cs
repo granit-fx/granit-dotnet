@@ -60,7 +60,6 @@ public sealed class QueryMetricPairingTests
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
         "Granit.Notifications.Domain.UserNotification",                                   // [BACKLOG] delivery / read-rate KPIs
-        "Granit.Parties.Domain.Party",                                                    // [BACKLOG] active-party count
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt",                                  // [BACKLOG] delivery failure rate
         "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count
     };
