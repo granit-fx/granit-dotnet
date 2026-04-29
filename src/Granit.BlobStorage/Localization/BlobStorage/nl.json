@@ -1,18 +1,21 @@
 {
   "culture": "nl",
   "texts": {
-    "BlobStorage:NotFound": "Het gevraagde bestand werd niet gevonden.",
-    "BlobStorage:NotValid": "Het bestand is niet beschikbaar om te downloaden.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "Bestandsnaam",
     "BlobStorage.Columns.ContentType": "Inhoudstype",
-    "BlobStorage.Columns.VerifiedContentType": "Geverifieerd inhoudstype",
+    "BlobStorage.Columns.CreatedAt": "Aangemaakt op",
+    "BlobStorage.Columns.DeletedAt": "Verwijderd op",
+    "BlobStorage.Columns.FileName": "Bestandsnaam",
+    "BlobStorage.Columns.RejectionReason": "Reden van afwijzing",
     "BlobStorage.Columns.SizeBytes": "Grootte (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Aangemaakt op",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Gevalideerd op",
-    "BlobStorage.Columns.DeletedAt": "Verwijderd op",
-    "BlobStorage.Columns.RejectionReason": "Reden van afwijzing"
+    "BlobStorage.Columns.VerifiedContentType": "Geverifieerd inhoudstype",
+    "BlobStorage:NotFound": "Het gevraagde bestand werd niet gevonden.",
+    "BlobStorage:NotValid": "Het bestand is niet beschikbaar om te downloaden.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Verweesde blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Geldige blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Totale opslag (bytes)"
   }
 }

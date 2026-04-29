@@ -1,18 +1,21 @@
 {
   "culture": "it",
   "texts": {
-    "BlobStorage:NotFound": "Il file richiesto non è stato trovato.",
-    "BlobStorage:NotValid": "Il file non è disponibile per il download.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "Il file richiesto non è stato trovato.",
+    "BlobStorage:NotValid": "Il file non è disponibile per il download.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Blob orfani",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Blob validi",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Archiviazione totale (byte)"
   }
 }

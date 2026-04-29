@@ -436,6 +436,7 @@
       "name": "Granit.BlobStorage",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.QueryEngine.Abstractions"
@@ -10753,7 +10754,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -10925,6 +10926,150 @@
           "kind": "method",
           "signature": "BuildAttachmentHeader(string fileName)",
           "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "OrphanBlobDescriptorCountMetricDefinition",
+      "fqn": "Granit.BlobStorage.Metrics.OrphanBlobDescriptorCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Metrics/OrphanBlobDescriptorCountMetricDefinition.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ValidBlobDescriptorCountMetricDefinition",
+      "fqn": "Granit.BlobStorage.Metrics.ValidBlobDescriptorCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Metrics/ValidBlobDescriptorCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, int?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "ValidBlobDescriptorSizeTotalMetricDefinition",
+      "fqn": "Granit.BlobStorage.Metrics.ValidBlobDescriptorSizeTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Metrics/ValidBlobDescriptorSizeTotalMetricDefinition.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, long?>>? Selector",
+          "returnType": "Expression<Func<BlobDescriptor, long?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BlobDescriptor, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BlobDescriptor, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BlobDescriptor, DateTimeOffset>>?"
         }
       ]
     },

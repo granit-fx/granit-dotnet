@@ -1,18 +1,21 @@
 {
   "culture": "zh",
   "texts": {
-    "BlobStorage:NotFound": "请求的文件未找到。",
-    "BlobStorage:NotValid": "该文件不可下载。",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "请求的文件未找到。",
+    "BlobStorage:NotValid": "该文件不可下载。",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "孤立 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "有效 Blob",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "总存储（字节）"
   }
 }

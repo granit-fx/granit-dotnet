@@ -1,18 +1,21 @@
 {
   "culture": "cs",
   "texts": {
-    "BlobStorage:NotFound": "Požadovaný soubor nebyl nalezen.",
-    "BlobStorage:NotValid": "Soubor není dostupný ke stažení.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "Požadovaný soubor nebyl nalezen.",
+    "BlobStorage:NotValid": "Soubor není dostupný ke stažení.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Osiřelé bloby",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Platné bloby",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Celkové úložiště (bajty)"
   }
 }

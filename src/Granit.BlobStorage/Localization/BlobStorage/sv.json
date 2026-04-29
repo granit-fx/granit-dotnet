@@ -1,18 +1,21 @@
 {
   "culture": "sv",
   "texts": {
-    "BlobStorage:NotFound": "Den begärda filen hittades inte.",
-    "BlobStorage:NotValid": "Filen är inte tillgänglig för nedladdning.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "Den begärda filen hittades inte.",
+    "BlobStorage:NotValid": "Filen är inte tillgänglig för nedladdning.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Föräldralösa blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Giltiga blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Total lagring (byte)"
   }
 }

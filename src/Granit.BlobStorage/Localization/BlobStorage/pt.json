@@ -1,18 +1,21 @@
 {
   "culture": "pt",
   "texts": {
-    "BlobStorage:NotFound": "O ficheiro solicitado não foi encontrado.",
-    "BlobStorage:NotValid": "O ficheiro não está disponível para transferência.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "O ficheiro solicitado não foi encontrado.",
+    "BlobStorage:NotValid": "O ficheiro não está disponível para transferência.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Blobs órfãos",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Blobs válidos",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Armazenamento total (bytes)"
   }
 }

@@ -1,18 +1,21 @@
 {
   "culture": "de",
   "texts": {
-    "BlobStorage:NotFound": "Die angeforderte Datei wurde nicht gefunden.",
-    "BlobStorage:NotValid": "Die Datei steht nicht zum Download zur Verfügung.",
-    "BlobStorage.Columns.Tenant": "Mandant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "Dateiname",
     "BlobStorage.Columns.ContentType": "Inhaltstyp",
-    "BlobStorage.Columns.VerifiedContentType": "Verifizierter Inhaltstyp",
+    "BlobStorage.Columns.CreatedAt": "Erstellt am",
+    "BlobStorage.Columns.DeletedAt": "Gelöscht am",
+    "BlobStorage.Columns.FileName": "Dateiname",
+    "BlobStorage.Columns.RejectionReason": "Ablehnungsgrund",
     "BlobStorage.Columns.SizeBytes": "Größe (Bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Erstellt am",
+    "BlobStorage.Columns.Tenant": "Mandant",
     "BlobStorage.Columns.ValidatedAt": "Validiert am",
-    "BlobStorage.Columns.DeletedAt": "Gelöscht am",
-    "BlobStorage.Columns.RejectionReason": "Ablehnungsgrund"
+    "BlobStorage.Columns.VerifiedContentType": "Verifizierter Inhaltstyp",
+    "BlobStorage:NotFound": "Die angeforderte Datei wurde nicht gefunden.",
+    "BlobStorage:NotValid": "Die Datei steht nicht zum Download zur Verfügung.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Verwaiste Blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Gültige Blobs",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Gesamtspeicher (Bytes)"
   }
 }

@@ -1,18 +1,21 @@
 {
   "culture": "tr",
   "texts": {
-    "BlobStorage:NotFound": "İstenen dosya bulunamadı.",
-    "BlobStorage:NotValid": "Dosya indirilebilir durumda değil.",
-    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.Container": "Container",
-    "BlobStorage.Columns.FileName": "File Name",
     "BlobStorage.Columns.ContentType": "Content Type",
-    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.DeletedAt": "Deleted At",
+    "BlobStorage.Columns.FileName": "File Name",
+    "BlobStorage.Columns.RejectionReason": "Rejection Reason",
     "BlobStorage.Columns.SizeBytes": "Size (bytes)",
     "BlobStorage.Columns.Status": "Status",
-    "BlobStorage.Columns.CreatedAt": "Created At",
+    "BlobStorage.Columns.Tenant": "Tenant",
     "BlobStorage.Columns.ValidatedAt": "Validated At",
-    "BlobStorage.Columns.DeletedAt": "Deleted At",
-    "BlobStorage.Columns.RejectionReason": "Rejection Reason"
+    "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
+    "BlobStorage:NotFound": "İstenen dosya bulunamadı.",
+    "BlobStorage:NotValid": "Dosya indirilebilir durumda değil.",
+    "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Yetim bloblar",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Geçerli bloblar",
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Toplam depolama (bayt)"
   }
 }
