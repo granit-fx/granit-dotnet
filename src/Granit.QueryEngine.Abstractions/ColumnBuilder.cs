@@ -16,6 +16,7 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     internal bool IsVisibleValue { get; private set; } = true;
     internal string? FormatValue { get; private set; }
     internal LookupDescriptor? LookupValue { get; private set; }
+    internal string? CurrencyCodeValue { get; private set; }
 
     /// <summary>
     /// Sets the user-facing label for this column.
@@ -129,6 +130,28 @@ public sealed class ColumnBuilder<TEntity> where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(descriptor);
         LookupValue = descriptor;
+        return this;
+    }
+
+    /// <summary>
+    /// Tags this column as a monetary amount in the supplied ISO 4217 currency
+    /// (e.g. <c>"EUR"</c>, <c>"USD"</c>, <c>"JPY"</c>). Surfaced on the wire so
+    /// dashboard renderers (KPI / Chart / Table / Pivot) emit the
+    /// <c>"Currency"</c> value-kind with the right currency code, letting the
+    /// frontend pick the matching locale + symbol when formatting.
+    /// </summary>
+    /// <remarks>
+    /// Per-column metadata (not per-entity) — different columns on the same
+    /// entity can carry different currencies (e.g. <c>AmountEur</c> /
+    /// <c>AmountUsd</c>). The framework treats the code as opaque text;
+    /// downstream rendering may validate against the ISO 4217 list. Use the
+    /// uppercase three-letter code by convention.
+    /// </remarks>
+    /// <param name="isoCode">ISO 4217 alpha-3 currency code.</param>
+    public ColumnBuilder<TEntity> Currency(string isoCode)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(isoCode);
+        CurrencyCodeValue = isoCode;
         return this;
     }
 }

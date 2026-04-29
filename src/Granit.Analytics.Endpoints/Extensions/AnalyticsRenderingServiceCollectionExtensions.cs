@@ -74,8 +74,10 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                object definition = sp.GetRequiredService(
+                    typeof(QueryDefinition<>).MakeGenericType(d.EntityType));
 
-                return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource, engine)!;
+                return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource, engine, definition)!;
             });
 
             services.AddScoped<ITableRunner>(sp =>

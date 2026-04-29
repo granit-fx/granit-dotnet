@@ -26,15 +26,17 @@ namespace Granit.Analytics.Endpoints.Internal;
 internal sealed class QueryAggregateRunner<TEntity>(
     string name,
     IQueryableSource<TEntity> source,
-    IQueryEngine<TEntity> engine) : IQueryAggregateRunner
+    IQueryEngine<TEntity> engine,
+    QueryDefinition<TEntity> definition) : IQueryAggregateRunner
     where TEntity : class
 {
     private readonly IQueryableSource<TEntity> _source = source;
     private readonly IQueryEngine<TEntity> _engine = engine;
+    private readonly QueryDefinition<TEntity> _definition = definition;
 
     public string Name { get; } = name;
 
-    public async Task<decimal?> ExecuteAsync(
+    public async Task<QueryAggregateRunnerResult> ExecuteAsync(
         AggregateFunction aggregation,
         string? field,
         IReadOnlyDictionary<string, string>? dashboardFilters,
@@ -55,7 +57,10 @@ internal sealed class QueryAggregateRunner<TEntity>(
 
         if (aggregation == AggregateFunction.Count)
         {
-            return await QueryAggregateExecutor.ExecuteCountAsync(queryable, cancellationToken).ConfigureAwait(false);
+            // Count never carries a currency — the projected value is a row
+            // count, not a monetary amount.
+            decimal? count = await QueryAggregateExecutor.ExecuteCountAsync(queryable, cancellationToken).ConfigureAwait(false);
+            return new QueryAggregateRunnerResult(count, CurrencyCode: null);
         }
 
         if (string.IsNullOrWhiteSpace(field))
@@ -74,7 +79,7 @@ internal sealed class QueryAggregateRunner<TEntity>(
 
         Type underlying = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 
-        return aggregation switch
+        decimal? value = aggregation switch
         {
             AggregateFunction.Sum => await QueryAggregateExecutor.ExecuteSumAsync(queryable, prop, underlying, cancellationToken).ConfigureAwait(false),
             AggregateFunction.Avg => await QueryAggregateExecutor.ExecuteAvgAsync(queryable, prop, underlying, cancellationToken).ConfigureAwait(false),
@@ -83,5 +88,20 @@ internal sealed class QueryAggregateRunner<TEntity>(
             _ => throw new NotSupportedException(
                 FormattableString.Invariant($"Aggregation '{aggregation}' is not supported.")),
         };
+
+        // Look up the column descriptor for the aggregated field — its
+        // declared CurrencyCode propagates to the wire envelope so the
+        // frontend formats e.g. €1,234.56 instead of bare 1234.56.
+        string? currencyCode = ResolveCurrencyCode(prop);
+
+        return new QueryAggregateRunnerResult(value, currencyCode);
+    }
+
+    private string? ResolveCurrencyCode(PropertyInfo prop)
+    {
+        IReadOnlyList<ColumnDescriptor> columns = _definition.GetColumns();
+        ColumnDescriptor? match = columns.FirstOrDefault(c =>
+            string.Equals(c.PropertyName, prop.Name, StringComparison.Ordinal));
+        return match?.CurrencyCode;
     }
 }

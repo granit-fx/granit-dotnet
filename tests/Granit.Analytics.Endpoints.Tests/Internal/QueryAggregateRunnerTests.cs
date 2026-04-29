@@ -45,12 +45,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Count, field: null, dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(3m);
+        result.Value.ShouldBe(3m);
     }
 
     [Fact]
@@ -58,12 +58,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
     {
         // Locked semantics shared with MetricExecutor (story #1374): Count over
         // an empty set is always 0, never null.
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Count, field: null, dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(0m);
+        result.Value.ShouldBe(0m);
     }
 
     [Fact]
@@ -72,24 +72,24 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(60m); // 10 + 20 + 30
+        result.Value.ShouldBe(60m); // 10 + 20 + 30
     }
 
     [Fact]
     public async Task ExecuteAsync_Sum_OverEmptySet_ReturnsZero_NotNull()
     {
         // Sum-of-empty is 0 (mathematical identity). Never null.
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(0m);
+        result.Value.ShouldBe(0m);
     }
 
     [Fact]
@@ -98,24 +98,24 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Avg, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(20m); // (10 + 20 + 30) / 3
+        result.Value.ShouldBe(20m); // (10 + 20 + 30) / 3
     }
 
     [Fact]
     public async Task ExecuteAsync_Avg_OverEmptySet_ReturnsNull()
     {
         // Avg-of-empty is undefined (division by zero). Never zero.
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Avg, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBeNull();
+        result.Value.ShouldBeNull();
     }
 
     [Theory]
@@ -126,12 +126,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             aggregation, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(expected);
+        result.Value.ShouldBe(expected);
     }
 
     [Theory]
@@ -139,12 +139,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
     [InlineData(AggregateFunction.Max)]
     public async Task ExecuteAsync_MinMax_OverEmptySet_ReturnsNull(AggregateFunction aggregation)
     {
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             aggregation, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBeNull();
+        result.Value.ShouldBeNull();
     }
 
     [Fact]
@@ -153,12 +153,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "Quantity", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(6m); // 1 + 2 + 3
+        result.Value.ShouldBe(6m); // 1 + 2 + 3
     }
 
     [Fact]
@@ -167,12 +167,12 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "Score", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(6m); // 1.0 + 2.0 + 3.0
+        result.Value.ShouldBe(6m); // 1.0 + 2.0 + 3.0
     }
 
     [Fact]
@@ -185,18 +185,18 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
             new TestItem { Id = Guid.NewGuid(), Amount = 0m, Quantity = 0, Score = 0d, Bonus = null });
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "Bonus", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(0m);
+        result.Value.ShouldBe(0m);
     }
 
     [Fact]
     public async Task ExecuteAsync_UnknownField_Throws()
     {
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -212,7 +212,7 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         // Aggregating Sum over a string column makes no sense — surface a clear
         // error so the dashboard renderer's per-widget isolation surfaces it
         // as Error (config bug, not data bug).
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<NotSupportedException>(async () =>
             await runner.ExecuteAsync(
@@ -222,7 +222,7 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
     [Fact]
     public async Task ExecuteAsync_NonCountAggregation_WithoutField_Throws()
     {
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -235,12 +235,87 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
         SeedThree();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        QueryAggregateRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
-        decimal? result = await runner.ExecuteAsync(
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
             AggregateFunction.Sum, field: "amount", dashboardFilters: null, TestContext.Current.CancellationToken);
 
-        result.ShouldBe(60m);
+        result.Value.ShouldBe(60m);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_FieldWithCurrencyDeclaration_PropagatesCurrencyCode()
+    {
+        // CurrencyAwareQueryDefinition declares Amount with .Currency("EUR").
+        // Sum/Avg/Min/Max over it must surface "EUR" on the result so the
+        // evaluator can promote the snapshot to MetricValueKind.Currency.
+        SeedThree();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        QueryAggregateRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
+            AggregateFunction.Sum, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
+
+        result.Value.ShouldBe(60m);
+        result.CurrencyCode.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_FieldWithoutCurrencyDeclaration_PropagatesNullCurrencyCode()
+    {
+        // Quantity has no .Currency(...) — the result's CurrencyCode is null,
+        // so the evaluator picks MetricValueKind.Number, not Currency.
+        SeedThree();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        QueryAggregateRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
+            AggregateFunction.Sum, field: "Quantity", dashboardFilters: null, TestContext.Current.CancellationToken);
+
+        result.Value.ShouldBe(6m);
+        result.CurrencyCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Count_NeverCarriesCurrency_EvenIfDefinitionHasCurrencyColumns()
+    {
+        // Count is a row count, not a monetary aggregation — no currency
+        // applies even when the definition declares Amount as EUR.
+        SeedThree();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        QueryAggregateRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        QueryAggregateRunnerResult result = await runner.ExecuteAsync(
+            AggregateFunction.Count, field: null, dashboardFilters: null, TestContext.Current.CancellationToken);
+
+        result.Value.ShouldBe(3m);
+        result.CurrencyCode.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DifferentCurrenciesPerColumn_AreIndependent()
+    {
+        // Amount → EUR, Bonus → USD on the same definition. Each aggregation
+        // surfaces its own column's currency.
+        SeedThree();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        QueryAggregateRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        QueryAggregateRunnerResult amount = await runner.ExecuteAsync(
+            AggregateFunction.Sum, field: "Amount", dashboardFilters: null, TestContext.Current.CancellationToken);
+        QueryAggregateRunnerResult bonus = await runner.ExecuteAsync(
+            AggregateFunction.Sum, field: "Bonus", dashboardFilters: null, TestContext.Current.CancellationToken);
+
+        amount.CurrencyCode.ShouldBe("EUR");
+        bonus.CurrencyCode.ShouldBe("USD");
     }
 
     private void SeedThree()
@@ -282,5 +357,35 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
     public sealed class TestItemSource(TestDbContext db) : IQueryableSource<TestItem>
     {
         public IQueryable<TestItem> GetQueryable() => db.Items.AsQueryable();
+    }
+
+    public sealed class TestQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Amount, c => c.Label("Amount"))
+                .Column(x => x.Quantity, c => c.Label("Quantity"))
+                .Column(x => x.Score, c => c.Label("Score"))
+                .Column(x => x.Label, c => c.Label("Label"))
+                .Column(x => x.Bonus, c => c.Label("Bonus"));
+        }
+    }
+
+    public sealed class CurrencyAwareQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Amount, c => c.Label("Amount").Currency("EUR"))
+                .Column(x => x.Quantity, c => c.Label("Quantity"))
+                .Column(x => x.Score, c => c.Label("Score"))
+                .Column(x => x.Label, c => c.Label("Label"))
+                .Column(x => x.Bonus, c => c.Label("Bonus").Currency("USD"));
+        }
     }
 }

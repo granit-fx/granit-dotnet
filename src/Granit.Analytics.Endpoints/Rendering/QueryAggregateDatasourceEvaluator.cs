@@ -43,7 +43,7 @@ internal sealed class QueryAggregateDatasourceEvaluator(QueryAggregateService qu
         // are caught by IDashboardRenderer's per-widget error isolation
         // (ADR-039 §3.c). The dashboard render still returns 200; the
         // misconfigured widget alone is surfaced as Error.
-        decimal? value = await runner
+        QueryAggregateRunnerResult result = await runner
             .ExecuteAsync(datasource.Aggregation, datasource.Field, context.DashboardFilters, cancellationToken)
             .ConfigureAwait(false);
 
@@ -52,15 +52,23 @@ internal sealed class QueryAggregateDatasourceEvaluator(QueryAggregateService qu
         // - Avg / Min / Max: null when no rows — NoData true so the frontend
         //   renders the "—" placeholder instead of "0" (which would imply a
         //   real measurement).
-        bool noData = !value.HasValue;
-        MetricValueKind valueKind = datasource.Aggregation == AggregateFunction.Count
-            ? MetricValueKind.Count
-            : MetricValueKind.Number;
+        bool noData = !result.Value.HasValue;
+
+        // ValueKind precedence:
+        //  1. Count -> Count (always; Count never carries a currency)
+        //  2. Currency code declared on the column -> Currency
+        //  3. Otherwise -> Number
+        MetricValueKind valueKind = datasource.Aggregation switch
+        {
+            AggregateFunction.Count => MetricValueKind.Count,
+            _ when result.CurrencyCode is not null => MetricValueKind.Currency,
+            _ => MetricValueKind.Number,
+        };
 
         MetricSnapshotPayload payload = new(
-            value,
+            result.Value,
             ValueKind: valueKind,
-            Currency: null,
+            Currency: result.CurrencyCode,
             IsHigherBetter: true,
             NoData: noData,
             Previous: null);

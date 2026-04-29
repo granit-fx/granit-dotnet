@@ -35,6 +35,15 @@ public sealed class ColumnDescriptor
     public string? Format { get; init; }
 
     /// <summary>
+    /// ISO 4217 alpha-3 currency code (e.g. <c>"EUR"</c>, <c>"USD"</c>) when
+    /// the column carries a monetary amount; <c>null</c> for non-monetary
+    /// columns. Set via <see cref="ColumnBuilder{TEntity}.Currency(string)"/>.
+    /// Drives the <c>"Currency"</c> value-kind on dashboard widget snapshots
+    /// so the frontend formats values with the right symbol + locale.
+    /// </summary>
+    public string? CurrencyCode { get; init; }
+
+    /// <summary>
     /// Whether this column maps to an EF Core Shadow Property (not a CLR property).
     /// Shadow columns are accessed via <c>EF.Property&lt;T&gt;(entity, name)</c> instead of
     /// direct member access.

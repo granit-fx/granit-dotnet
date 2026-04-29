@@ -51,9 +51,20 @@ internal interface IQueryAggregateRunner
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="ArgumentException">Field is null/empty for a non-Count aggregation, or field is not a property of the entity.</exception>
     /// <exception cref="NotSupportedException">Field's primitive type is not one of int / long / decimal / double.</exception>
-    Task<decimal?> ExecuteAsync(
+    Task<QueryAggregateRunnerResult> ExecuteAsync(
         AggregateFunction aggregation,
         string? field,
         IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken);
 }
+
+/// <summary>
+/// Outcome of an <see cref="IQueryAggregateRunner.ExecuteAsync"/> call.
+/// Bundles the projected value with the column's ISO 4217 currency code
+/// (when declared on the QueryDefinition's column descriptor), so the
+/// evaluator can promote the snapshot to <c>MetricValueKind.Currency</c>
+/// without re-traversing the query metadata.
+/// </summary>
+/// <param name="Value">Projected aggregate value, coerced to <see cref="decimal"/>; <see langword="null"/> for empty Avg/Min/Max.</param>
+/// <param name="CurrencyCode">ISO 4217 alpha-3 code from the underlying column's <c>Currency(...)</c> declaration; <see langword="null"/> for non-monetary aggregations and for <c>Count</c>.</param>
+internal sealed record QueryAggregateRunnerResult(decimal? Value, string? CurrencyCode);

@@ -110,6 +110,51 @@ public sealed class StubDatasourceEvaluatorsTests
         result.Payload.NoData.ShouldBeFalse();
     }
 
+    [Fact]
+    public async Task QueryAggregateEvaluator_RunnerReturnsCurrencyCode_PromotesValueKindToCurrency()
+    {
+        // The runner surfaces "EUR" alongside the aggregated value (column has
+        // Currency("EUR") on its QueryDefinition column descriptor). The
+        // evaluator must promote ValueKind from Number to Currency and forward
+        // the code so the frontend formats e.g. €1,234.56.
+        StubRunner runner = new("Granit.Test.Query", value: 1234.56m, currencyCode: "EUR");
+        QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
+
+        KpiEvaluation result = await evaluator.EvaluateAsync(
+            new QueryAggregateDatasource(
+                QueryName: "Granit.Test.Query",
+                Aggregation: AggregateFunction.Sum,
+                Field: "Amount"),
+            BuildWidget("Kpi"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        result.Payload.ShouldNotBeNull();
+        result.Payload!.Value.ShouldBe(1234.56m);
+        result.Payload.ValueKind.ShouldBe(MetricValueKind.Currency);
+        result.Payload.Currency.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public async Task QueryAggregateEvaluator_Count_KeepsValueKindCount_EvenWithCurrencyOnRunner()
+    {
+        // Defensive: even if the runner surfaces a currency (it shouldn't for
+        // Count, but the evaluator must not promote Count → Currency anyway).
+        StubRunner runner = new("Granit.Test.Query", value: 42m, currencyCode: "EUR");
+        QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
+
+        KpiEvaluation result = await evaluator.EvaluateAsync(
+            new QueryAggregateDatasource(
+                QueryName: "Granit.Test.Query",
+                Aggregation: AggregateFunction.Count),
+            BuildWidget("Kpi"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        result.Payload.ShouldNotBeNull();
+        result.Payload!.ValueKind.ShouldBe(MetricValueKind.Count);
+    }
+
     [Theory]
     [InlineData(AggregateFunction.Avg)]
     [InlineData(AggregateFunction.Min)]
@@ -138,16 +183,16 @@ public sealed class StubDatasourceEvaluatorsTests
         result.Payload.ValueKind.ShouldBe(MetricValueKind.Number);
     }
 
-    private sealed class StubRunner(string name, decimal? value) : IQueryAggregateRunner
+    private sealed class StubRunner(string name, decimal? value, string? currencyCode = null) : IQueryAggregateRunner
     {
         public string Name { get; } = name;
 
-        public Task<decimal?> ExecuteAsync(
+        public Task<QueryAggregateRunnerResult> ExecuteAsync(
             AggregateFunction aggregation,
             string? field,
             IReadOnlyDictionary<string, string>? dashboardFilters,
             CancellationToken cancellationToken) =>
-            Task.FromResult(value);
+            Task.FromResult(new QueryAggregateRunnerResult(value, currencyCode));
     }
 
     [Fact]
