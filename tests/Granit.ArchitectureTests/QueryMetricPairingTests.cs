@@ -64,7 +64,6 @@ public sealed class QueryMetricPairingTests
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
         "Granit.Notifications.Domain.UserNotification",                                   // [BACKLOG] delivery / read-rate KPIs
         "Granit.Parties.Domain.Party",                                                    // [BACKLOG] active-party count
-        "Granit.Payments.SepaDirectDebit.Domain.Mandate",                                 // [BACKLOG] active-mandate count
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt",                                  // [BACKLOG] delivery failure rate
         "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count
     };

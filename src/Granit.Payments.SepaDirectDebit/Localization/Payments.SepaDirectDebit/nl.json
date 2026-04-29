@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "Actieve SEPA-mandaten",
+    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "Geannuleerde SEPA-mandaten",
+    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "Lopende SEPA-mandaten"
+  }
+}

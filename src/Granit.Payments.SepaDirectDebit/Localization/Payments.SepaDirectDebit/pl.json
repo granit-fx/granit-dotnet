@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "Aktywne mandaty SEPA",
+    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "Anulowane mandaty SEPA",
+    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "Oczekujące mandaty SEPA"
+  }
+}

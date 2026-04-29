@@ -1,7 +1,9 @@
+using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Modularity;
 using Granit.Payments.SepaDirectDebit.Domain;
 using Granit.Payments.SepaDirectDebit.Exports;
+using Granit.Payments.SepaDirectDebit.Metrics;
 using Granit.Payments.SepaDirectDebit.Queries;
 using Granit.QueryEngine.Extensions;
 using Granit.Timing;
@@ -24,5 +26,9 @@ public sealed class GranitPaymentsSepaDirectDebitModule : GranitModule
         // Query + Export definitions (ADR-020: owned by the base module).
         context.Services.AddQueryDefinition<Mandate, MandateQueryDefinition>();
         context.Services.AddExportDefinition<Mandate, MandateExportDefinition>();
+
+        context.Services.AddMetricDefinition<Mandate, int, ActiveMandateCountMetricDefinition>();
+        context.Services.AddMetricDefinition<Mandate, int, PendingMandateCountMetricDefinition>();
+        context.Services.AddMetricDefinition<Mandate, int, CancelledMandateCountMetricDefinition>();
     }
 }

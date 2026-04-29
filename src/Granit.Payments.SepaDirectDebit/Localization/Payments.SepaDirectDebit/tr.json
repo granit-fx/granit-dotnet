@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "Aktif SEPA yetkileri",
+    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "İptal edilen SEPA yetkileri",
+    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "Bekleyen SEPA yetkileri"
+  }
+}

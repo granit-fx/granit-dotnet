@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "सक्रिय SEPA अधिदेश",
+    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "रद्द किए गए SEPA अधिदेश",
+    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "लंबित SEPA अधिदेश"
+  }
+}

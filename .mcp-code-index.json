@@ -38813,7 +38813,7 @@
       "kind": "class",
       "project": "Granit.Payments.SepaDirectDebit",
       "file": "src/Granit.Payments.SepaDirectDebit/GranitPaymentsSepaDirectDebitModule.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -38920,6 +38920,150 @@
           "kind": "method",
           "signature": "UpdateAsync(Mandate mandate, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActiveMandateCountMetricDefinition",
+      "fqn": "Granit.Payments.SepaDirectDebit.Metrics.ActiveMandateCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Metrics/ActiveMandateCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, int?>>? Selector",
+          "returnType": "Expression<Func<Mandate, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Mandate, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Mandate, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "CancelledMandateCountMetricDefinition",
+      "fqn": "Granit.Payments.SepaDirectDebit.Metrics.CancelledMandateCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Metrics/CancelledMandateCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, int?>>? Selector",
+          "returnType": "Expression<Func<Mandate, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Mandate, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Mandate, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PendingMandateCountMetricDefinition",
+      "fqn": "Granit.Payments.SepaDirectDebit.Metrics.PendingMandateCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments.SepaDirectDebit",
+      "file": "src/Granit.Payments.SepaDirectDebit/Metrics/PendingMandateCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, int?>>? Selector",
+          "returnType": "Expression<Func<Mandate, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Mandate, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Mandate, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Mandate, DateTimeOffset>>?"
         }
       ]
     },

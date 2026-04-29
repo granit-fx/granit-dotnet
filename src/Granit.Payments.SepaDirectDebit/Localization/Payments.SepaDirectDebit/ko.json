@@ -1,0 +1,8 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Metric:Granit.Payments.SepaDirectDebit.ActiveMandateCountMetric": "활성 SEPA 위임",
+    "Metric:Granit.Payments.SepaDirectDebit.CancelledMandateCountMetric": "취소된 SEPA 위임",
+    "Metric:Granit.Payments.SepaDirectDebit.PendingMandateCountMetric": "대기 중인 SEPA 위임"
+  }
+}
