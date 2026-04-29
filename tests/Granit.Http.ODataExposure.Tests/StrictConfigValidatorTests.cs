@@ -111,15 +111,8 @@ public sealed class StrictConfigValidatorTests
             };
         });
 
-        WebApplication app = builder.Build();
-        try
-        {
-            app.MapGranitODataEndpoints("/api/granit/odata", configure);
-        }
-        finally
-        {
-            ((IDisposable)app).Dispose();
-        }
+        using WebApplication app = builder.Build();
+        app.MapGranitODataEndpoints("/api/granit/odata", configure);
     }
 
     public sealed class Invoice
