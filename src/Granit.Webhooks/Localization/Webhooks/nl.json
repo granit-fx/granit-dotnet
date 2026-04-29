@@ -1,19 +1,23 @@
 {
   "culture": "nl",
   "texts": {
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Webhooks.Columns.EventType": "Gebeurtenistype",
-    "Webhooks.Columns.TargetUrl": "Doel-URL",
-    "Webhooks.Columns.Status": "Status",
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Actieve webhook-abonnementen",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Mislukte webhook-leveringen",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook-latentie (gem. ms)",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Slaagpercentage webhook-leveringen",
     "Webhooks.Columns.ConsecutiveFailures": "Opeenvolgende fouten",
+    "Webhooks.Columns.DurationMs": "Duur (ms)",
+    "Webhooks.Columns.ErrorMessage": "Foutmelding",
+    "Webhooks.Columns.EventType": "Gebeurtenistype",
+    "Webhooks.Columns.HttpStatus": "HTTP-status",
     "Webhooks.Columns.LastSuccessAt": "Laatst succesvol op",
+    "Webhooks.Columns.OccurredAt": "Opgetreden op",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.Subscription": "Abonnement",
+    "Webhooks.Columns.Success": "Succes",
     "Webhooks.Columns.SuspendedAt": "Opgeschort op",
     "Webhooks.Columns.SuspendedBy": "Opgeschort door",
-    "Webhooks.Columns.Subscription": "Abonnement",
-    "Webhooks.Columns.HttpStatus": "HTTP-status",
-    "Webhooks.Columns.Success": "Succes",
-    "Webhooks.Columns.OccurredAt": "Opgetreden op",
-    "Webhooks.Columns.DurationMs": "Duur (ms)",
-    "Webhooks.Columns.ErrorMessage": "Foutmelding"
+    "Webhooks.Columns.TargetUrl": "Doel-URL",
+    "Webhooks.Columns.Tenant": "Tenant"
   }
 }

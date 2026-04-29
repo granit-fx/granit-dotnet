@@ -1,19 +1,23 @@
 {
   "culture": "pt",
   "texts": {
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Webhooks.Columns.EventType": "Event Type",
-    "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Status": "Status",
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "Subscrições de webhook ativas",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "Entregas de webhook com falha",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Latência de webhook (média ms)",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Taxa de sucesso da entrega de webhook",
     "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
     "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.Success": "Success",
     "Webhooks.Columns.SuspendedAt": "Suspended At",
     "Webhooks.Columns.SuspendedBy": "Suspended By",
-    "Webhooks.Columns.Subscription": "Subscription",
-    "Webhooks.Columns.HttpStatus": "HTTP Status",
-    "Webhooks.Columns.Success": "Success",
-    "Webhooks.Columns.OccurredAt": "Occurred At",
-    "Webhooks.Columns.DurationMs": "Duration (ms)",
-    "Webhooks.Columns.ErrorMessage": "Error Message"
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Tenant": "Tenant"
   }
 }

@@ -59,8 +59,6 @@ public sealed class QueryMetricPairingTests
     {
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
-        "Granit.Webhooks.Domain.WebhookDeliveryAttempt",                                  // [BACKLOG] delivery failure rate
-        "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count
     };
 
     private static bool IsExempt(string fullName) =>

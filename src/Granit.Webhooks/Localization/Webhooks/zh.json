@@ -1,19 +1,23 @@
 {
   "culture": "zh",
   "texts": {
-    "Webhooks.Columns.Tenant": "Tenant",
-    "Webhooks.Columns.EventType": "Event Type",
-    "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Status": "Status",
+    "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "活跃 Webhook 订阅",
+    "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "失败的 Webhook 投递",
+    "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook 延迟（平均毫秒）",
+    "Metric:Granit.Webhooks.WebhookDeliverySuccessRateMetric": "Webhook 投递成功率",
     "Webhooks.Columns.ConsecutiveFailures": "Consecutive Failures",
+    "Webhooks.Columns.DurationMs": "Duration (ms)",
+    "Webhooks.Columns.ErrorMessage": "Error Message",
+    "Webhooks.Columns.EventType": "Event Type",
+    "Webhooks.Columns.HttpStatus": "HTTP Status",
     "Webhooks.Columns.LastSuccessAt": "Last Success At",
+    "Webhooks.Columns.OccurredAt": "Occurred At",
+    "Webhooks.Columns.Status": "Status",
+    "Webhooks.Columns.Subscription": "Subscription",
+    "Webhooks.Columns.Success": "Success",
     "Webhooks.Columns.SuspendedAt": "Suspended At",
     "Webhooks.Columns.SuspendedBy": "Suspended By",
-    "Webhooks.Columns.Subscription": "Subscription",
-    "Webhooks.Columns.HttpStatus": "HTTP Status",
-    "Webhooks.Columns.Success": "Success",
-    "Webhooks.Columns.OccurredAt": "Occurred At",
-    "Webhooks.Columns.DurationMs": "Duration (ms)",
-    "Webhooks.Columns.ErrorMessage": "Error Message"
+    "Webhooks.Columns.TargetUrl": "Target URL",
+    "Webhooks.Columns.Tenant": "Tenant"
   }
 }

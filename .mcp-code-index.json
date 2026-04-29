@@ -2632,6 +2632,7 @@
       "name": "Granit.Webhooks",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Resilience",
@@ -54434,7 +54435,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Extensions/WebhooksHostApplicationBuilderExtensions.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "AddGranitWebhooks",
@@ -54557,6 +54558,190 @@
           "kind": "method",
           "signature": "NewGuid()",
           "returnType": "Guid EventId { get; init; } = Guid."
+        }
+      ]
+    },
+    {
+      "name": "ActiveWebhookSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Webhooks.Metrics.ActiveWebhookSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Metrics/ActiveWebhookSubscriptionCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, int?>>? Selector",
+          "returnType": "Expression<Func<WebhookSubscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<WebhookSubscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookSubscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookSubscription, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "FailedWebhookDeliveryAttemptCountMetricDefinition",
+      "fqn": "Granit.Webhooks.Metrics.FailedWebhookDeliveryAttemptCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Metrics/FailedWebhookDeliveryAttemptCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, int?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, bool>>? BaseFilter",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliveryLatencyAverageMetricDefinition",
+      "fqn": "Granit.Webhooks.Metrics.WebhookDeliveryLatencyAverageMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Metrics/WebhookDeliveryLatencyAverageMetricDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "WebhookDeliverySuccessRateMetricDefinition",
+      "fqn": "Granit.Webhooks.Metrics.WebhookDeliverySuccessRateMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Metrics/WebhookDeliverySuccessRateMetricDefinition.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, double?>>? Selector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, double?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<WebhookDeliveryAttempt, DateTimeOffset>>?"
         }
       ]
     },
