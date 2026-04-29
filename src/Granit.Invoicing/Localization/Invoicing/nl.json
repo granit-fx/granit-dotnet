@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Btw-totaal",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Totaal",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Totaal creditnota's",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Uitgegeven facturen",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Totaal gefactureerd",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Achterstallige facturen",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Achterstallig bedrag",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Te veel betaalde facturen",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Betaalde facturen",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Totaal geïnd",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Onbetaalde facturen",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Totaal van onbetaalde facturen"
   }

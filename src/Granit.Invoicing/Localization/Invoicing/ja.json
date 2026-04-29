@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "税額合計",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "クレジットノート合計",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "発行された請求書",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "請求総額",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "支払い遅延の請求書",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "支払い遅延額",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "過払いの請求書",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "支払い済みの請求書",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "回収総額",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "未払い請求書",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "未払い請求書の合計"
   }

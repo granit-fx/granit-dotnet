@@ -30,6 +30,14 @@ public static class InvoicingHostApplicationBuilderExtensions
         builder.Services.AddExportDefinition<Invoice, InvoiceExportDefinition>();
         builder.Services.AddMetricDefinition<Invoice, int, UnpaidInvoiceCountMetricDefinition>();
         builder.Services.AddMetricDefinition<Invoice, decimal, UnpaidInvoiceTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, int, OverdueInvoiceCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, decimal, OverdueInvoiceTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, int, IssuedInvoiceCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, decimal, IssuedInvoiceTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, int, PaidInvoiceCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, decimal, PaidInvoiceTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, decimal, CreditNoteTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Invoice, int, OverpaidInvoiceCountMetricDefinition>();
         GranitActivitySourceRegistry.Register(InvoicingActivitySource.Name);
         return builder;
     }

@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "세금 합계",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "대변 메모 총액",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "발행된 청구서",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "총 청구액",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "연체된 청구서",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "연체 금액",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "초과 지급 청구서",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "지불된 청구서",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "총 수금액",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "미지급 청구서",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "미지급 청구서 합계"
   }

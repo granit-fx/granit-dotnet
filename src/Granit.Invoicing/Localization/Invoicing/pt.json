@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Total de impostos",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Total de notas de crédito",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Faturas emitidas",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Total faturado",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Faturas vencidas",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Valor vencido",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Faturas pagas a mais",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Faturas pagas",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Total recebido",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Faturas por pagar",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total das faturas por pagar"
   }

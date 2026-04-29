@@ -26710,6 +26710,398 @@
       ]
     },
     {
+      "name": "CreditNoteTotalMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.CreditNoteTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/CreditNoteTotalMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, decimal?>>? Selector",
+          "returnType": "Expression<Func<Invoice, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IssuedInvoiceCountMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.IssuedInvoiceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/IssuedInvoiceCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, int?>>? Selector",
+          "returnType": "Expression<Func<Invoice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "IssuedInvoiceTotalMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.IssuedInvoiceTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/IssuedInvoiceTotalMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, decimal?>>? Selector",
+          "returnType": "Expression<Func<Invoice, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "OverdueInvoiceCountMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.OverdueInvoiceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/OverdueInvoiceCountMetricDefinition.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, int?>>? Selector",
+          "returnType": "Expression<Func<Invoice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "OverdueInvoiceTotalMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.OverdueInvoiceTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/OverdueInvoiceTotalMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, decimal?>>? Selector",
+          "returnType": "Expression<Func<Invoice, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "OverpaidInvoiceCountMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.OverpaidInvoiceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/OverpaidInvoiceCountMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, int?>>? Selector",
+          "returnType": "Expression<Func<Invoice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PaidInvoiceCountMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.PaidInvoiceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/PaidInvoiceCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, int?>>? Selector",
+          "returnType": "Expression<Func<Invoice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "PaidInvoiceTotalMetricDefinition",
+      "fqn": "Granit.Invoicing.Metrics.PaidInvoiceTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Metrics/PaidInvoiceTotalMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, decimal?>>? Selector",
+          "returnType": "Expression<Func<Invoice, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Invoice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Invoice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Invoice, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
       "name": "UnpaidInvoiceCountMetricDefinition",
       "fqn": "Granit.Invoicing.Metrics.UnpaidInvoiceCountMetricDefinition",
       "kind": "class",

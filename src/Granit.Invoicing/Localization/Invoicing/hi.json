@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "कुल कर",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "क्रेडिट नोट कुल",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "जारी चालान",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "कुल बिल राशि",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "बकाया चालान",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "बकाया राशि",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "अधिक भुगतान किए गए चालान",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "भुगतान किए गए चालान",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "कुल वसूली",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "अवैतनिक चालान",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "अवैतनिक चालानों का कुल"
   }

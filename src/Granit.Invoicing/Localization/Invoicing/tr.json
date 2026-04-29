@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Toplam vergi",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Alacak dekontu toplamı",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Düzenlenen faturalar",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Toplam faturalanan",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Vadesi geçmiş faturalar",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Vadesi geçmiş tutar",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Fazla ödenen faturalar",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Ödenen faturalar",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Tahsil edilen toplam",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Ödenmemiş faturalar",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Ödenmemiş faturaların toplamı"
   }

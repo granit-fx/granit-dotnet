@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Daň celkem",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Dobropisy celkem",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Vystavené faktury",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Celkem fakturováno",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Faktury po splatnosti",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Částka po splatnosti",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Přeplacené faktury",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Zaplacené faktury",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Celkem inkasováno",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Neuhrazené faktury",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Součet neuhrazených faktur"
   }
