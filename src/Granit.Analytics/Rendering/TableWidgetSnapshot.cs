@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Table"</c> widget kind. The dashboard

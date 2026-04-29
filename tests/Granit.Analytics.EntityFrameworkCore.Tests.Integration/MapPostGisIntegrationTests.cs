@@ -1,5 +1,5 @@
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.Diagnostics;
 using Granit.Analytics.EntityFrameworkCore.Internal;
 using Granit.Analytics.Internal;
 using Granit.Analytics.PostGIS.Internal;

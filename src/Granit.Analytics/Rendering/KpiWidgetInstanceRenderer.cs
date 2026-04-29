@@ -5,7 +5,7 @@ using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
 using Granit.Timing;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// <see cref="IWidgetInstanceRenderer"/> for the <c>"Kpi"</c> widget kind.

@@ -6,6 +6,8 @@ using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Analytics.Endpoints.Extensions;
 
@@ -20,14 +22,18 @@ public static class AnalyticsEndpointRouteBuilderExtensions
     /// <see cref="AnalyticsPermissions.Metrics.Read"/>.
     /// </summary>
     /// <param name="endpoints">The endpoint route builder.</param>
-    /// <param name="configure">Optional delegate to customize <see cref="AnalyticsEndpointsOptions"/>.</param>
     /// <returns>The <see cref="RouteGroupBuilder"/> for further chaining.</returns>
-    public static RouteGroupBuilder MapGranitAnalytics(
-        this IEndpointRouteBuilder endpoints,
-        Action<AnalyticsEndpointsOptions>? configure = null)
+    /// <remarks>
+    /// <see cref="AnalyticsEndpointsOptions"/> is resolved from DI — it is bound from the
+    /// <c>AnalyticsEndpoints</c> section of <c>appsettings.json</c> by
+    /// <c>AddGranitAnalyticsEndpoints</c>. Override per-app via configuration.
+    /// </remarks>
+    public static RouteGroupBuilder MapGranitAnalytics(this IEndpointRouteBuilder endpoints)
     {
-        AnalyticsEndpointsOptions options = new();
-        configure?.Invoke(options);
+        ArgumentNullException.ThrowIfNull(endpoints);
+
+        AnalyticsEndpointsOptions options = endpoints.ServiceProvider
+            .GetRequiredService<IOptions<AnalyticsEndpointsOptions>>().Value;
 
         RouteGroupBuilder group = endpoints
             .MapGranitGroup(options.RoutePrefix)

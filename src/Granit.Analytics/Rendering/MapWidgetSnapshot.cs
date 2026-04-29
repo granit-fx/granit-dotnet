@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Granit.Analytics.Dashboards.Widgets;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Map"</c> widget kind. Carries the rendered

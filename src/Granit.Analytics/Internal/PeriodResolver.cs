@@ -1,8 +1,9 @@
 using Granit.Analytics;
-using Granit.Analytics.Endpoints.Dtos;
+using Granit.Analytics.Rendering;
+using Granit.Exceptions;
 using Granit.Timing;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Resolves a <see cref="PeriodSpec"/> (with optional named token) into an absolute
@@ -26,14 +27,21 @@ internal sealed class PeriodResolver(IClock clock)
             return ResolveToken(spec.Token, _clock.Now);
         }
 
+        // Bounds validation is enforced upstream by MetricRequestValidator; these
+        // exceptions are a defence-in-depth fallback for callers that bypass the
+        // validator (e.g. internal cron-driven invocations or tests).
         if (spec.From is null || spec.To is null)
         {
-            throw new ArgumentException("PeriodSpec requires either Token or both From and To.", nameof(spec));
+            throw new BusinessRuleViolationException(
+                "Granit.Analytics:PeriodSpecBounds",
+                "PeriodSpec requires either Token or both From and To.");
         }
 
         if (spec.From >= spec.To)
         {
-            throw new ArgumentException("PeriodSpec.From must be strictly before PeriodSpec.To.", nameof(spec));
+            throw new BusinessRuleViolationException(
+                "Granit.Analytics:PeriodSpecOrdering",
+                "PeriodSpec.From must be strictly before PeriodSpec.To.");
         }
 
         return new ResolvedPeriod(spec.From.Value, spec.To.Value);
@@ -71,7 +79,8 @@ internal sealed class PeriodResolver(IClock clock)
             "mtd" => new(new DateTimeOffset(now.Year, now.Month, 1, 0, 0, 0, now.Offset), todayStart.AddDays(1)),
             "qtd" => ResolveQuarterToDate(now, todayStart),
             "ytd" => new(new DateTimeOffset(now.Year, 1, 1, 0, 0, 0, now.Offset), todayStart.AddDays(1)),
-            _ => throw new ArgumentException(
+            _ => throw new BusinessRuleViolationException(
+                "Granit.Analytics:UnknownPeriodToken",
                 $"Unknown period token '{token}'. Supported: today, yesterday, last_60s, last_5m, last_7d, last_30d, mtd, qtd, ytd."),
         };
     }

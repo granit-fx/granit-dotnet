@@ -1,6 +1,6 @@
 using Granit.QueryEngine.Filtering;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Pivot"</c> widget kind. Echoes the

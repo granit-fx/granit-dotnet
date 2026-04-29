@@ -1,7 +1,6 @@
-using Granit.Analytics.Endpoints.Dtos;
 using Granit.Analytics.Metrics;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Result of an <see cref="IDatasourceEvaluator{TDatasource}"/> evaluation for a

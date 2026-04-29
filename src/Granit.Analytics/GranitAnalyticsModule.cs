@@ -24,7 +24,7 @@ namespace Granit.Analytics;
 /// </para>
 /// </remarks>
 [DependsOn(
-    typeof(GranitDashboardsAbstractionsModule),
+    typeof(GranitDashboardsModule),
     typeof(GranitQueryEngineAbstractionsModule))]
 public sealed class GranitAnalyticsModule : GranitModule
 {

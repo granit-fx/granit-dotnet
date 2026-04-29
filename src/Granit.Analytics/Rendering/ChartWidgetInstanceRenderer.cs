@@ -1,8 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Internal;
-using Granit.Analytics.EntityFrameworkCore.Internal;
 using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Domain;
@@ -10,7 +8,7 @@ using Granit.Dashboards.Rendering;
 using Granit.QueryEngine.Filtering;
 using Granit.Timing;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// <see cref="IWidgetInstanceRenderer"/> for the <c>"Chart"</c> widget kind.

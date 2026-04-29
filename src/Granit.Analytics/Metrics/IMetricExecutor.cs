@@ -1,7 +1,6 @@
-using Granit.Analytics.Metrics;
 using Granit.QueryEngine;
 
-namespace Granit.Analytics.EntityFrameworkCore;
+namespace Granit.Analytics.Metrics;
 
 /// <summary>
 /// Executes a <see cref="MetricDefinition{TEntity, TValue}"/> against a base

@@ -1,5 +1,7 @@
+using Granit.Analytics;
 using Granit.Analytics.Endpoints.Dtos;
-using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.Internal;
+using Granit.Exceptions;
 using Granit.Timing;
 using NSubstitute;
 using Shouldly;
@@ -89,7 +91,7 @@ public sealed class PeriodResolverTests
     [Fact]
     public void Resolve_UnknownToken_Throws()
     {
-        Should.Throw<ArgumentException>(() =>
+        Should.Throw<BusinessRuleViolationException>(() =>
             _resolver.Resolve(new PeriodSpec(Token: "next_century")));
     }
 
@@ -99,7 +101,7 @@ public sealed class PeriodResolverTests
         DateTimeOffset from = new(2026, 5, 1, 0, 0, 0, TimeSpan.Zero);
         DateTimeOffset to = new(2026, 4, 1, 0, 0, 0, TimeSpan.Zero);
 
-        Should.Throw<ArgumentException>(() => _resolver.Resolve(new PeriodSpec(from, to)));
+        Should.Throw<BusinessRuleViolationException>(() => _resolver.Resolve(new PeriodSpec(from, to)));
     }
 
     [Fact]

@@ -19,6 +19,7 @@
       "src/Granit.CustomerBalance.Notifications/Granit.CustomerBalance.Notifications.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
+      "src/Granit.Dashboards/Granit.Dashboards.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",

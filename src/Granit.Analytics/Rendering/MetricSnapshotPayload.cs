@@ -1,6 +1,6 @@
 using Granit.Analytics.Metrics;
 
-namespace Granit.Analytics.Endpoints.Dtos;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Snapshot side of a metric response — the value at a point in time, plus everything

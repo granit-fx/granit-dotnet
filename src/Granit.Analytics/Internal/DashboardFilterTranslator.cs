@@ -1,6 +1,6 @@
 using Granit.QueryEngine;
 
-namespace Granit.Analytics.EntityFrameworkCore.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Translates the dashboard-level filter dictionary carried by

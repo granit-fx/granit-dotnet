@@ -62,6 +62,7 @@ FLAGS
   --fix                       Auto-fix findings (default: report only)
   --scope <category>          Restrict to one category:
     anatomy       Module structure and layering
+    layer-purity  Detect domain code leaking into .Endpoints / .EntityFrameworkCore
     code          C# 14 idioms, anti-patterns, modern patterns
     naming        Permissions, events, jobs, DTOs, module homogeneity
     http          HTTP conventions, status codes, pagination, caching
@@ -95,6 +96,7 @@ EXAMPLES
   /audit pr --fix
   /audit all --scope openapi
   /audit Encryption --scope ddd --fix
+  /audit Analytics --scope layer-purity
 ```
 
 **Stop here** — do NOT proceed with an actual audit.

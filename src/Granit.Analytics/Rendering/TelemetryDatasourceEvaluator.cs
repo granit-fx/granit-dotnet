@@ -3,7 +3,7 @@ using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Stub <see cref="IDatasourceEvaluator{TDatasource}"/> for

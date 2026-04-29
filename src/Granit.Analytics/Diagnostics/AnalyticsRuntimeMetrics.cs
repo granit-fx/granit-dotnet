@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
 
-namespace Granit.Analytics.EntityFrameworkCore.Diagnostics;
+namespace Granit.Analytics.Diagnostics;
 
 /// <summary>
 /// OpenTelemetry metrics for the analytics widget runners — the runtime
@@ -20,6 +20,7 @@ namespace Granit.Analytics.EntityFrameworkCore.Diagnostics;
 /// </remarks>
 public sealed class AnalyticsRuntimeMetrics
 {
+    /// <summary>The OpenTelemetry meter name shared with <c>AnalyticsMetrics</c>.</summary>
     public const string MeterName = "Granit.Analytics";
 
     private const string TagTenantId = "tenant_id";
@@ -27,6 +28,8 @@ public sealed class AnalyticsRuntimeMetrics
 
     private readonly Counter<long> _mapInvalidCoordinates;
 
+    /// <summary>Creates a new <see cref="AnalyticsRuntimeMetrics"/> instance.</summary>
+    /// <param name="meterFactory">The meter factory.</param>
     public AnalyticsRuntimeMetrics(IMeterFactory meterFactory)
     {
         ArgumentNullException.ThrowIfNull(meterFactory);

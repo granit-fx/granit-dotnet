@@ -83,8 +83,9 @@
       "deps": [
         "Granit",
         "Granit.Analytics.Abstractions",
-        "Granit.Dashboards.Abstractions",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.Dashboards",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -4277,12 +4278,12 @@
       "members": []
     },
     {
-      "name": "MetricPreviousPayload",
-      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricPreviousPayload",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricPreviousPayload.cs",
-      "line": 17,
+      "name": "AnalyticsRuntimeMetrics",
+      "fqn": "Granit.Analytics.Diagnostics.AnalyticsRuntimeMetrics",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Diagnostics/AnalyticsRuntimeMetrics.cs",
+      "line": 21,
       "members": []
     },
     {
@@ -4300,16 +4301,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Dtos/MetricResponse.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "MetricSnapshotPayload",
-      "fqn": "Granit.Analytics.Endpoints.Dtos.MetricSnapshotPayload",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Dtos/MetricSnapshotPayload.cs",
-      "line": 25,
+      "line": 20,
       "members": []
     },
     {
@@ -4318,12 +4310,12 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitAnalytics",
           "kind": "method",
-          "signature": "MapGranitAnalytics(this IEndpointRouteBuilder endpoints, Action<AnalyticsEndpointsOptions>? configure = null)",
+          "signature": "MapGranitAnalytics(this IEndpointRouteBuilder endpoints)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -4350,7 +4342,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
-      "line": 23,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitAnalyticsWidgetRenderers",
@@ -4382,7 +4374,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Options/AnalyticsEndpointsOptions.cs",
-      "line": 6,
+      "line": 11,
       "members": [
         {
           "name": "RoutePrefix",
@@ -4429,134 +4421,12 @@
       "members": []
     },
     {
-      "name": "ChartBucket",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.ChartBucket",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/ChartWidgetSnapshot.cs",
-      "line": 35,
-      "members": []
-    },
-    {
-      "name": "ChartWidgetSnapshot",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.ChartWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/ChartWidgetSnapshot.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "IDatasourceEvaluator",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.IDatasourceEvaluator",
-      "kind": "interface",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/IDatasourceEvaluator.cs",
-      "line": 21,
-      "members": [
-        {
-          "name": "EvaluateAsync",
-          "kind": "method",
-          "signature": "EvaluateAsync(TDatasource datasource, WidgetInstance widget, WidgetRenderContext context, CancellationToken cancellationToken)",
-          "returnType": "Task<KpiEvaluation>"
-        }
-      ]
-    },
-    {
-      "name": "KpiEvaluation",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.KpiEvaluation",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/KpiEvaluation.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "Snapshot",
-          "kind": "method",
-          "signature": "Snapshot(MetricSnapshotPayload payload, RefreshHint refreshHint)",
-          "returnType": "KpiEvaluation"
-        }
-      ]
-    },
-    {
-      "name": "MapCenterPayload",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.MapCenterPayload",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 42,
-      "members": []
-    },
-    {
-      "name": "MapPoint",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.MapPoint",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 33,
-      "members": []
-    },
-    {
-      "name": "MapWidgetSnapshot",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.MapWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "PivotCell",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.PivotCell",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/PivotWidgetSnapshot.cs",
-      "line": 36,
-      "members": []
-    },
-    {
-      "name": "PivotWidgetSnapshot",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.PivotWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/PivotWidgetSnapshot.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "TableWidgetColumn",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.TableWidgetColumn",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/TableWidgetSnapshot.cs",
-      "line": 25,
-      "members": []
-    },
-    {
-      "name": "TableWidgetSnapshot",
-      "fqn": "Granit.Analytics.Endpoints.Rendering.TableWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Analytics.Endpoints",
-      "file": "src/Granit.Analytics.Endpoints/Rendering/TableWidgetSnapshot.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "AnalyticsRuntimeMetrics",
-      "fqn": "Granit.Analytics.EntityFrameworkCore.Diagnostics.AnalyticsRuntimeMetrics",
-      "kind": "class",
-      "project": "Granit.Analytics.EntityFrameworkCore",
-      "file": "src/Granit.Analytics.EntityFrameworkCore/Diagnostics/AnalyticsRuntimeMetrics.cs",
-      "line": 21,
-      "members": []
-    },
-    {
       "name": "AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "fqn": "Granit.Analytics.EntityFrameworkCore.Extensions.AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Analytics.EntityFrameworkCore",
       "file": "src/Granit.Analytics.EntityFrameworkCore/Extensions/AnalyticsEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 9,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitAnalyticsEntityFrameworkCore",
@@ -4572,7 +4442,7 @@
       "kind": "class",
       "project": "Granit.Analytics.EntityFrameworkCore",
       "file": "src/Granit.Analytics.EntityFrameworkCore/GranitAnalyticsEntityFrameworkCoreModule.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -4583,28 +4453,12 @@
       ]
     },
     {
-      "name": "IMetricExecutor",
-      "fqn": "Granit.Analytics.EntityFrameworkCore.IMetricExecutor",
-      "kind": "interface",
-      "project": "Granit.Analytics.EntityFrameworkCore",
-      "file": "src/Granit.Analytics.EntityFrameworkCore/IMetricExecutor.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "ExecuteAsync",
-          "kind": "method",
-          "signature": "ExecuteAsync(MetricDefinition<TEntity, TValue> metric, IQueryable<TEntity> source, QueryRequest request, CancellationToken cancellationToken = default)",
-          "returnType": "Task<TValue?>"
-        }
-      ]
-    },
-    {
       "name": "AnalyticsServiceCollectionExtensions",
       "fqn": "Granit.Analytics.Extensions.AnalyticsServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Extensions/AnalyticsServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAnalytics",
@@ -4647,6 +4501,22 @@
       "file": "src/Granit.Analytics/Metrics/IMetricDefinitionDescriptor.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "IMetricExecutor",
+      "fqn": "Granit.Analytics.Metrics.IMetricExecutor",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/IMetricExecutor.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(MetricDefinition<TEntity, TValue> metric, IQueryable<TEntity> source, QueryRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TValue?>"
+        }
+      ]
     },
     {
       "name": "MetricDefinition",
@@ -4753,6 +4623,137 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "ChartBucket",
+      "fqn": "Granit.Analytics.Rendering.ChartBucket",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/ChartWidgetSnapshot.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "ChartWidgetSnapshot",
+      "fqn": "Granit.Analytics.Rendering.ChartWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/ChartWidgetSnapshot.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "IDatasourceEvaluator",
+      "fqn": "Granit.Analytics.Rendering.IDatasourceEvaluator",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/IDatasourceEvaluator.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "EvaluateAsync",
+          "kind": "method",
+          "signature": "EvaluateAsync(TDatasource datasource, WidgetInstance widget, WidgetRenderContext context, CancellationToken cancellationToken)",
+          "returnType": "Task<KpiEvaluation>"
+        }
+      ]
+    },
+    {
+      "name": "KpiEvaluation",
+      "fqn": "Granit.Analytics.Rendering.KpiEvaluation",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/KpiEvaluation.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Snapshot",
+          "kind": "method",
+          "signature": "Snapshot(MetricSnapshotPayload payload, RefreshHint refreshHint)",
+          "returnType": "KpiEvaluation"
+        }
+      ]
+    },
+    {
+      "name": "MapCenterPayload",
+      "fqn": "Granit.Analytics.Rendering.MapCenterPayload",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/MapWidgetSnapshot.cs",
+      "line": 42,
+      "members": []
+    },
+    {
+      "name": "MapPoint",
+      "fqn": "Granit.Analytics.Rendering.MapPoint",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/MapWidgetSnapshot.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "MapWidgetSnapshot",
+      "fqn": "Granit.Analytics.Rendering.MapWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/MapWidgetSnapshot.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "MetricPreviousPayload",
+      "fqn": "Granit.Analytics.Rendering.MetricPreviousPayload",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/MetricPreviousPayload.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MetricSnapshotPayload",
+      "fqn": "Granit.Analytics.Rendering.MetricSnapshotPayload",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/MetricSnapshotPayload.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "PivotCell",
+      "fqn": "Granit.Analytics.Rendering.PivotCell",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/PivotWidgetSnapshot.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "PivotWidgetSnapshot",
+      "fqn": "Granit.Analytics.Rendering.PivotWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/PivotWidgetSnapshot.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "TableWidgetColumn",
+      "fqn": "Granit.Analytics.Rendering.TableWidgetColumn",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/TableWidgetSnapshot.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "TableWidgetSnapshot",
+      "fqn": "Granit.Analytics.Rendering.TableWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Rendering/TableWidgetSnapshot.cs",
+      "line": 16,
+      "members": []
     },
     {
       "name": "IWidgetSource",
