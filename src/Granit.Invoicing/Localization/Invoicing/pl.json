@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Razem podatek",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Łączna suma not kredytowych",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Wystawione faktury",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Łączna kwota wystawiona",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Zaległe faktury",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Kwota zaległa",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Faktury nadpłacone",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Opłacone faktury",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Łączna kwota pobrana",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Niezapłacone faktury",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Suma niezapłaconych faktur"
   }

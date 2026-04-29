@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Tax Total",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Credit notes total",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Invoices issued",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Total billed",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Overdue invoices",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Overdue amount",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Overpaid invoices",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Invoices paid",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Total collected",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Unpaid invoices",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Unpaid invoices total"
   }

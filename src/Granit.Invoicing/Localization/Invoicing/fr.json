@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Total TVA",
     "Invoicing.Columns.Tenant": "Locataire",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Total des avoirs",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Factures émises",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Total facturé",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Factures en retard",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Montant en retard",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Factures surpayées",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Factures payées",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Total encaissé",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Factures impayées",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total des factures impayées"
   }

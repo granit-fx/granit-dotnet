@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Total moms",
     "Invoicing.Columns.Tenant": "Tenant",
     "Invoicing.Columns.Total": "Total",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Kreditfakturor totalt",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Utfärdade fakturor",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Totalt fakturerat",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Förfallna fakturor",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Förfallet belopp",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Överbetalda fakturor",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Betalda fakturor",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Totalt inkasserat",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Obetalda fakturor",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Totalsumma obetalda fakturor"
   }

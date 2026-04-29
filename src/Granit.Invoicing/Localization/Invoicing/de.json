@@ -23,6 +23,14 @@
     "Invoicing.Columns.TaxTotal": "Steuerbetrag gesamt",
     "Invoicing.Columns.Tenant": "Mandant",
     "Invoicing.Columns.Total": "Gesamt",
+    "Metric:Granit.Invoicing.CreditNoteTotalMetric": "Gutschriften gesamt",
+    "Metric:Granit.Invoicing.IssuedInvoiceCountMetric": "Ausgestellte Rechnungen",
+    "Metric:Granit.Invoicing.IssuedInvoiceTotalMetric": "Gesamtbetrag fakturiert",
+    "Metric:Granit.Invoicing.OverdueInvoiceCountMetric": "Überfällige Rechnungen",
+    "Metric:Granit.Invoicing.OverdueInvoiceTotalMetric": "Überfälliger Betrag",
+    "Metric:Granit.Invoicing.OverpaidInvoiceCountMetric": "Überzahlte Rechnungen",
+    "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Bezahlte Rechnungen",
+    "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Gesamtbetrag eingenommen",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Unbezahlte Rechnungen",
     "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Gesamtsumme unbezahlter Rechnungen"
   }
