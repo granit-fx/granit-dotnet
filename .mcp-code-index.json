@@ -4341,6 +4341,15 @@
       ]
     },
     {
+      "name": "GroupBucket",
+      "fqn": "Granit.Analytics.Endpoints.Internal.GroupBucket",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Internal/GroupAggregateExecutor.cs",
+      "line": 41,
+      "members": []
+    },
+    {
       "name": "AnalyticsEndpointsOptions",
       "fqn": "Granit.Analytics.Endpoints.Options.AnalyticsEndpointsOptions",
       "kind": "class",
