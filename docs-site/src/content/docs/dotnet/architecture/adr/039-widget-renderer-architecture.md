@@ -445,16 +445,18 @@ internal sealed class KpiWidgetInstanceRenderer(
     IDatasourceEvaluator<MetricDatasource> metricEvaluator,
     IDatasourceEvaluator<QueryAggregateDatasource> queryEvaluator,
     IDatasourceEvaluator<TelemetryDatasource> telemetryEvaluator,
-    JsonSerializerOptions json) : IWidgetInstanceRenderer
+    IClock clock) : IWidgetInstanceRenderer
 {
     public string WidgetType => "Kpi";
 
     public async Task<WidgetSnapshotEnvelope> RenderAsync(
         WidgetInstance widget, WidgetRenderContext ctx, CancellationToken ct)
     {
-        Datasource datasource = ParseConfigDatasource(widget.ConfigJson);
+        Datasource datasource = JsonSerializer.Deserialize<Datasource>(widget.ConfigJson, ConfigJsonOptions)
+            ?? throw new InvalidOperationException(
+                $"Widget {widget.Id} ('Kpi') has empty ConfigJson — datasource cannot be resolved.");
 
-        KpiSnapshot snapshot = datasource switch
+        KpiEvaluation evaluation = datasource switch
         {
             MetricDatasource m         => await metricEvaluator.EvaluateAsync(m, widget, ctx, ct).ConfigureAwait(false),
             QueryAggregateDatasource q => await queryEvaluator.EvaluateAsync(q, widget, ctx, ct).ConfigureAwait(false),
@@ -462,44 +464,65 @@ internal sealed class KpiWidgetInstanceRenderer(
             _ => throw new InvalidOperationException($"Unknown KPI datasource '{datasource.GetType().Name}'."),
         };
 
-        return WidgetSnapshotEnvelope.Snapshot(
-            JsonSerializer.SerializeToElement(snapshot, json),
-            sequence: 1,
-            emittedAt: ctx.Clock.Now,
-            refreshHint: snapshot.RefreshHint,
-            widgetType: WidgetType);
+        return evaluation.Payload is { } payload
+            ? WidgetSnapshotEnvelope.ForSnapshot(WidgetType,
+                JsonSerializer.SerializeToElement(payload, SnapshotJsonOptions),
+                sequence: 1, emittedAt: clock.Now, refreshHint: evaluation.RefreshHint)
+            : WidgetSnapshotEnvelope.Unavailable(WidgetType,
+                sequence: 1, emittedAt: clock.Now, refreshHint: evaluation.RefreshHint,
+                reasonLocalizationKey: evaluation.UnavailableReasonLocalizationKey ?? "Widget:Unavailable");
     }
 }
 
 public interface IDatasourceEvaluator<TDatasource> where TDatasource : Datasource
 {
-    Task<KpiSnapshot> EvaluateAsync(
+    Task<KpiEvaluation> EvaluateAsync(
         TDatasource datasource,
         WidgetInstance widget,
         WidgetRenderContext context,
         CancellationToken cancellationToken);
 }
+
+public sealed record KpiEvaluation(
+    MetricSnapshotPayload? Payload,                      // null when unavailable
+    RefreshHint RefreshHint,
+    string? UnavailableReasonLocalizationKey = null);    // surfaced when Payload is null
 ```
+
+The evaluator returns `KpiEvaluation` (envelope-shaped) rather than
+`KpiSnapshot` directly so stubbed datasource kinds —
+`QueryAggregateDatasourceEvaluator` until its full pipeline lands,
+`TelemetryDatasourceEvaluator` until `Granit.IoT.Dashboards` ships —
+participate in dispatch without throwing. The renderer maps the result
+1-to-1 onto `WidgetSnapshotEnvelope.ForSnapshot` / `Unavailable`; a
+dashboard bound to a not-yet-implemented kind renders a typed
+`Widget:Unavailable.*` widget instead of falling over.
 
 Concrete evaluators ship per data source:
 
 - **`MetricDatasourceEvaluator`** in `Granit.Analytics.Endpoints` —
-  delegates to the existing `MetricEndpointService` (no duplication).
+  resolves the matching `IMetricRunner` and shapes the value into a
+  `MetricSnapshotPayload`. Reuses the same runner registry as the inline
+  `POST /metrics/{name}` endpoint, so dashboard-rendered KPIs and ad-hoc
+  metric requests cannot diverge in semantics (`BaseFilter`, period
+  selector, multi-tenant filter all flow through the runner).
 - **`QueryAggregateDatasourceEvaluator`** in `Granit.Analytics.Endpoints` —
-  builds an `IQueryable<TEntity>` from the named `QueryDefinition`, applies
-  the dashboard filter spec + period selector, runs the declared
-  `AggregateFunction`. Empty-set semantics shared with the metric path
-  (`Sum/Count → 0`, `Avg/Min/Max → null`).
+  ships in B3-2 as a stub returning
+  `Widget:Unavailable.QueryAggregateNotImplemented`. The full
+  implementation builds an `IQueryable<TEntity>` from the named
+  `QueryDefinition`, applies the dashboard filter spec + period selector,
+  runs the declared `AggregateFunction`. Empty-set semantics will mirror
+  the metric path (`Sum`/`Count` → 0, `Avg`/`Min`/`Max` → null).
 - **`TelemetryDatasourceEvaluator`** in `Granit.IoT.Dashboards` (deferred,
   outside `granit-dotnet`) — resolves
   `TelemetryDatasource.EntityAlias → deviceId` via
   `WidgetRenderContext.ResolvedEntityAliases`, then queries the IoT
-  telemetry store.
+  telemetry store. Until that package lands, B3-2 ships a framework-side
+  stub returning `Widget:Unavailable.TelemetryNotImplemented`.
 
-The framework ships only the first two; the third is a stub that returns
-`UnsupportedDatasourceKind` until the IoT package lands. The arch test from
-§7 ignores `IDatasourceEvaluator<T>` registrations — pairing is enforced
-*per `WidgetDefinition` ↔ `IWidgetInstanceRenderer`*, not per datasource kind.
+The arch test from §7 ignores `IDatasourceEvaluator<T>` registrations —
+pairing is enforced *per `WidgetDefinition` ↔ `IWidgetInstanceRenderer`*,
+not per datasource kind.
 
 ## Alternatives considered
 
