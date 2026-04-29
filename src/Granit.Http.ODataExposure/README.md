@@ -25,7 +25,7 @@ builder.Services
     .AddQueryDefinition<Invoice, InvoiceQueryDefinition>();
 
 // after authentication + authorization middleware
-app.MapGranitODataEndpoints("/api/granit/odata", opts =>
+app.MapGranitODataEndpoints("/api/{version}/odata", opts =>
 {
     opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
         .RequirePermission("OData.Invoicing.Invoices.Read");
@@ -36,14 +36,14 @@ app.MapGranitODataEndpoints("/api/granit/odata", opts =>
 ```
 
 Power BI Desktop then connects via *Get Data → OData feed* with the URL
-`https://your-app/api/granit/odata` — discovers `Invoices` and `Customers`
+`https://your-app/api/{version}/odata` — discovers `Invoices` and `Customers`
 through the OData service document, queries them with `$filter` /
 `$select` / `$top` / `$orderby`, and never sees rows belonging to other
 tenants.
 
 ## Request flow
 
-Per EntitySet `GET /api/granit/odata/{Name}?$filter=…&$select=…&$top=…`:
+Per EntitySet `GET /api/{version}/odata/{Name}?$filter=…&$select=…&$top=…`:
 
 1. **Authentication** — enforced by the surrounding pipeline (the framework's
    bearer token / DPoP setup).

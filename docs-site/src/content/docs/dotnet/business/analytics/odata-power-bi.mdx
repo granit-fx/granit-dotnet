@@ -1,0 +1,236 @@
+---
+title: "OData feed — Power BI / Excel / Tableau"
+description: "Connect Power BI Desktop / Excel / Tableau to a Granit-based application via the OData v4 feed shipped by Granit.Http.ODataExposure. Tenant-isolated, permission-gated, rate-limited — the only sanctioned BI bridge in Granit."
+sidebar:
+  label: OData feed (Power BI)
+  order: 40
+---
+
+import { Aside, Steps, Tabs, TabItem } from "@astrojs/starlight/components";
+
+Granit applications expose registered `QueryDefinition<T>` instances as
+**OData v4 EntitySets** so external BI tools can query the application's data
+via the standard *Get Data → OData feed* connector — no custom connector,
+no SQL replica, no bypass of multi-tenancy.
+
+This page walks through connecting **Power BI Desktop** to a Granit-based
+application end-to-end. Excel and Tableau follow the same flow: their
+respective *Get Data → OData feed* / *Connect → OData* dialogs accept
+the same URL and authentication.
+
+## Why OData (vs SQL replica)
+
+The classical "give BI tools read-only SQL access to a replica" pattern is
+unacceptable in a multi-tenant SaaS:
+
+- **Cross-tenant leak risk** — one missing `WHERE tenant_id = …` in a
+  custom view exposes another tenant's data.
+- **Soft-delete bypass** — deleted rows resurface in BI tools because the
+  replica skips the `IsDeleted = 0` filter the application enforces.
+- **No permission propagation** — any user with the SQL credential reads
+  everything.
+- **Silent audit** — BI queries don't go through the application's audit
+  log.
+- **Schema becomes public contract** — every internal refactor risks
+  breaking customer Power BI reports.
+
+OData is **the only sanctioned BI bridge** in Granit. Every OData request
+flows through the same pipeline as the application's grid endpoints,
+inheriting tenant filtering, soft-delete, per-EntitySet permissions, audit,
+and rate limiting.
+
+<Aside type="caution" title="Direct SQL replica access is forbidden">
+  EPIC #1366 explicitly rejects granting BI tools direct SQL access to
+  the multi-tenant database. Hosts that need to expose data to BI MUST
+  go through the OData layer documented here.
+</Aside>
+
+## Prerequisites
+
+<Steps>
+
+1. **Application has `Granit.Http.ODataExposure` wired.** The host's
+   `Program.cs` calls `services.AddGranitODataExposure()` and
+   `app.MapGranitODataEndpoints("/api/{version}/odata", opts => …)` with
+   at least one EntitySet declared.
+
+2. **Tenant admin grants the required permission.** Each EntitySet
+   declared with `.RequirePermission("OData.{Module}.{Entity}.Read")`
+   needs the tenant admin to grant that permission to the user (or the
+   service principal) connecting via Power BI. Issue scoped tokens
+   distinct from interactive admin access — the
+   `OData.{Module}.{Entity}.Read` permissions are deliberately separate
+   from the admin grid's `{Module}.{Entity}.Read` per ISO 27001 A.9.4
+   least-privilege.
+
+3. **Rate-limit policy configured.** The host's `appsettings.json`
+   declares the `granit-odata` policy under `RateLimiting:Policies` —
+   recommended 60 req/min per tenant for interactive analysts, 600
+   req/min for service accounts. See
+   [`Granit.Http.ODataExposure` README](https://github.com/granit-fx/granit-dotnet/blob/develop/src/Granit.Http.ODataExposure/README.md)
+   for the snippet.
+
+</Steps>
+
+## Connect Power BI Desktop in three clicks
+
+<Steps>
+
+1. **Download the connector descriptor.** The
+   [`samples/PowerBI/granit-showcase.pbids`](https://github.com/granit-fx/granit-dotnet/blob/develop/samples/PowerBI/granit-showcase.pbids)
+   file in the repo is a Power BI machine-readable "connect to this
+   data source" descriptor. Edit the URL to point at your deployment:
+
+   ```jsonc
+   {
+     "version": "0.1",
+     "connections": [
+       {
+         "details": {
+           "protocol": "odata",
+           "address": {
+             "url": "https://your-app.example.com/api/v1/odata"
+           }
+         },
+         "options": {},
+         "mode": "DirectQuery"
+       }
+     ]
+   }
+   ```
+
+   The path follows the framework's `Granit.Http.ApiVersioning`
+   convention `/api/{version}/odata` — `{version}` resolves to `v1`,
+   `v2`, etc. depending on the host's versioning configuration. The
+   sample pins `v1`; bump to match your deployment.
+
+2. **Open it from Power BI Desktop.** Double-click the `.pbids` file.
+   Power BI Desktop launches and prompts for authentication.
+
+3. **Authenticate with your Organizational account.** Pick
+   *Organizational account → Sign in*, complete the OAuth2 flow against
+   your Granit host's `Granit.Identity` provider. Power BI then opens
+   the Navigator listing every EntitySet you have permission to read.
+
+</Steps>
+
+<Aside type="tip" title="Manual connection (no .pbids)">
+  *Get Data → OData feed → Basic*, paste
+  `https://your-app.example.com/api/v1/odata` (or whichever version
+  the host's `Granit.Http.ApiVersioning` exposes), then *OK → Sign in
+  with Organizational account*. Same end result.
+</Aside>
+
+## Refresh schedules and rate-limit awareness
+
+Power BI Service refresh jobs hit the OData feed periodically — every 30
+minutes for shared workspaces, hourly for Premium, custom for
+DirectQuery. Each refresh issues one request per EntitySet × per
+incremental partition.
+
+| Policy default | Effective allowance |
+| -------------- | -------------------- |
+| `granit-odata` policy: 60 req/min, partitioned by tenant | A single tenant has up to 60 OData calls per minute across all its analysts and refresh jobs combined. |
+| `granit-odata` policy: 600 req/min for service accounts (plan-based via `Granit.Features`) | Use a dedicated service principal for Power BI Service refresh jobs to avoid starving interactive analysts. |
+
+<Aside type="caution" title="Rate-limit responses">
+  When the bucket is empty, the server returns
+  **`429 Too Many Requests`** with a `Retry-After` header. Power BI
+  Desktop surfaces this as *"OData service returned: too many requests.
+  Please retry later"*. Power BI Service marks the dataset refresh as
+  failed after three retries; configure refresh frequency so it stays
+  inside the bucket.
+</Aside>
+
+## Known limits
+
+The Granit OData layer is hardened against DoS-style queries — Power BI
+analysts authoring reports must work within these guardrails.
+
+### `$expand` is whitelisted per EntitySet
+
+By default, `$expand` is **disabled** on every EntitySet — `?$expand=Customer`
+returns `400 Bad Request` unless the EntitySet's host explicitly called
+`.ExpandWhitelist("Customer")`. The whitelist is per EntitySet, not
+global; ask the application team which navigations are exposed.
+
+### `$top` is silently capped
+
+User-supplied `$top` is clamped to the EntitySet's `MaxTop` (default
+5000). Above that, the response carries the response header
+`OData-MaxTop-Applied: <cap>` so observability tooling can spot
+misconfigured BI refresh jobs. Power BI's Navigator preview honours
+this cap automatically.
+
+### `$count` is opt-in
+
+`?$count=true` on a set without `.EnableCount()` returns `400 Bad
+Request`. Huge tables face a full-table-scan count on every refresh —
+the framework default-disables it. Power BI's *Edit Queries → Count
+rows* uses a separate query path that shouldn't trigger this.
+
+### Pagination
+
+Without `$top`, the server returns at most `PageSize` rows (default
+1000) and includes `@odata.nextLink` so OData clients walk pagination.
+Power BI handles this transparently.
+
+## Example DAX measures
+
+Two sample measures over an `Invoices` EntitySet, illustrating common
+analytics on top of the framework's filter pipeline.
+
+```dax
+% Unpaid invoices =
+DIVIDE(
+    CALCULATE(COUNTROWS('Invoices'), 'Invoices'[Status] = "Unpaid"),
+    COUNTROWS('Invoices')
+)
+```
+
+```dax
+Avg days to payment =
+AVERAGEX(
+    FILTER('Invoices', NOT(ISBLANK('Invoices'[PaidAt]))),
+    DATEDIFF('Invoices'[IssuedAt], 'Invoices'[PaidAt], DAY)
+)
+```
+
+Both measures execute in Power BI's local engine — Power BI fetches the
+filtered row set via OData, then evaluates the DAX. The Granit filter
+pipeline (tenant + soft-delete + per-EntitySet permission) runs *first*;
+Power BI never sees rows it shouldn't.
+
+## Troubleshooting
+
+| Symptom | Cause | Fix |
+| ------- | ----- | --- |
+| `429 Too Many Requests` | Tenant exceeded `granit-odata` rate-limit bucket | Lower refresh frequency; switch the refresh job to a dedicated service principal with a higher quota. |
+| `400 Bad Request` — *Expand of property X is not permitted* | `$expand=X` requested but `X` not in `ExpandWhitelist` | Ask the application owner to add `X` to the whitelist (per-EntitySet `.ExpandWhitelist(...)` call), or remove the `$expand` from the Power BI query. |
+| `400 Bad Request` — *Count is not enabled on this entity set* | `?$count=true` on a set without `.EnableCount()` | Use a manual count query in DAX (`COUNTROWS`) instead of relying on `$count`. |
+| `401 Unauthorized` | Token expired | Power BI Desktop: *File → Options → Data source settings → Edit credentials → Sign in again*. |
+| `403 Forbidden` | The user / service principal lacks the EntitySet's permission | Grant `OData.{Module}.{Entity}.Read` to the calling identity. |
+| Navigator shows no EntitySets | Missing read permissions on every set, or auth completed with the wrong tenant | Verify the tenant context (Power BI's `Organizational account` flow respects the host's tenant resolver — usually the user's bearer token claim). |
+| `OData-MaxTop-Applied` header set on every response | Power BI Service refresh job uses `$top=10000000` or similar | Power BI clamps to 5000 silently. The header is informational; no action needed unless reports show fewer rows than expected. |
+
+## What about Excel and Tableau?
+
+Excel and Tableau both consume OData v4 natively. The `.pbids` file is
+Power-BI-specific, but the **URL** is the same:
+
+- **Excel** — *Data → Get Data → From Other Sources → From OData Feed*,
+  paste `https://your-app.example.com/api/v1/odata`, sign in with
+  Organizational account.
+- **Tableau** — *Connect → OData*, paste the URL, choose
+  *Authentication: OAuth*, sign in.
+
+Both tools issue the same `$filter` / `$select` / `$top` / `$skip` /
+`$orderby` clauses Power BI does, hit the same rate-limit policy, and
+respect the same per-EntitySet caps.
+
+## See also
+
+- [`Granit.Http.ODataExposure` README](https://github.com/granit-fx/granit-dotnet/blob/develop/src/Granit.Http.ODataExposure/README.md) — the framework-side configuration surface (fluent builder, hardening defaults, rate-limit policy snippet).
+- [Inline metrics](/dotnet/business/analytics/inline-metrics/) — Layer 1: counters above admin grids.
+- [Dashboards endpoints](/dotnet/business/dashboards/endpoints/) — Layer 2: composable dashboards.
+- [Analytics conventions](/dotnet/business/analytics/conventions/) — naming, period tokens, pairing rules.

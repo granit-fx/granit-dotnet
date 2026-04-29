@@ -47,7 +47,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// </list>
     /// </summary>
     /// <param name="endpoints">Endpoint route builder (the host's <c>app</c>).</param>
-    /// <param name="prefix">Route prefix mounted at, conventionally <c>"/api/granit/odata"</c>.</param>
+    /// <param name="prefix">Route prefix mounted at, conventionally <c>"/api/{version}/odata"</c>.</param>
     /// <param name="configure">Configuration callback declaring EntitySets via <see cref="ODataExposureOptions"/>.</param>
     /// <returns>The outer <see cref="RouteGroupBuilder"/> for further chaining.</returns>
     /// <exception cref="ArgumentException">No EntitySet was declared in <paramref name="configure"/>.</exception>
