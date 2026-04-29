@@ -1,9 +1,15 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Dashboards": "ダッシュボード",
     "Permission:Dashboards.Catalog.Read": "ダッシュボードカタログを参照する（登録済みの DashboardDefinition をすべて一覧表示）",
     "Permission:Dashboards.Instances.Manage": "テナントスコープのダッシュボードを管理する（定義からインポート、編集、公開、アーカイブ、復元）",
-    "Permission:Dashboards.Instances.Read": "テナントスコープのダッシュボードを読み取る（一覧、ID 単一読み取り、ドリフト検出を含む）"
+    "Permission:Dashboards.Instances.Read": "テナントスコープのダッシュボードを読み取る（一覧、ID 単一読み取り、ドリフト検出を含む）",
+    "PermissionGroup:Dashboards": "ダッシュボード",
+    "Widget:Unavailable": "ウィジェットを利用できません",
+    "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS マップ ウィジェットはまだサポートされていません",
+    "Widget:Unavailable.MetricNotFound": "メトリックが見つかりません",
+    "Widget:Unavailable.QueryAggregateNotFound": "クエリが見つかりません",
+    "Widget:Unavailable.QueryNotFound": "クエリが見つかりません",
+    "Widget:Unavailable.TelemetryNotImplemented": "テレメトリ データ ソースはまだサポートされていません"
   }
 }

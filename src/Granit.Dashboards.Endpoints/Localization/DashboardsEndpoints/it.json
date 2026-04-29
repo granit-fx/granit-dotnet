@@ -1,9 +1,15 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Dashboards": "Dashboard",
     "Permission:Dashboards.Catalog.Read": "Sfogliare il catalogo dei dashboard (elencare ogni DashboardDefinition registrata)",
     "Permission:Dashboards.Instances.Manage": "Gestire i dashboard del tenant (importare dalla definizione, modificare, pubblicare, archiviare, ripristinare)",
-    "Permission:Dashboards.Instances.Read": "Leggere i dashboard del tenant (elenco e lettura per id, inclusa la rilevazione del drift)"
+    "Permission:Dashboards.Instances.Read": "Leggere i dashboard del tenant (elenco e lettura per id, inclusa la rilevazione del drift)",
+    "PermissionGroup:Dashboards": "Dashboard",
+    "Widget:Unavailable": "Widget non disponibile",
+    "Widget:Unavailable.MapGeographyNotImplemented": "Widget mappa PostGIS non ancora supportati",
+    "Widget:Unavailable.MetricNotFound": "Metrica non trovata",
+    "Widget:Unavailable.QueryAggregateNotFound": "Query non trovata",
+    "Widget:Unavailable.QueryNotFound": "Query non trovata",
+    "Widget:Unavailable.TelemetryNotImplemented": "Origine dati di telemetria non ancora supportata"
   }
 }

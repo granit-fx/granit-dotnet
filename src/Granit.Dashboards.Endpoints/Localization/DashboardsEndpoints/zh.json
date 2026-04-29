@@ -1,9 +1,15 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:Dashboards": "仪表板",
     "Permission:Dashboards.Catalog.Read": "浏览仪表板目录（列出每个已注册的 DashboardDefinition）",
     "Permission:Dashboards.Instances.Manage": "管理租户范围的仪表板（从定义导入、编辑、发布、归档、恢复）",
-    "Permission:Dashboards.Instances.Read": "读取租户范围的仪表板（列表与按 id 读取，含偏移检测）"
+    "Permission:Dashboards.Instances.Read": "读取租户范围的仪表板（列表与按 id 读取，含偏移检测）",
+    "PermissionGroup:Dashboards": "仪表板",
+    "Widget:Unavailable": "小组件不可用",
+    "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS 地图小组件尚不支持",
+    "Widget:Unavailable.MetricNotFound": "未找到指标",
+    "Widget:Unavailable.QueryAggregateNotFound": "未找到查询",
+    "Widget:Unavailable.QueryNotFound": "未找到查询",
+    "Widget:Unavailable.TelemetryNotImplemented": "尚不支持遥测数据源"
   }
 }

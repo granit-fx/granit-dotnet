@@ -1,9 +1,15 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Dashboards": "Paneles",
     "Permission:Dashboards.Catalog.Read": "Explorar el catálogo de paneles (listar todas las DashboardDefinition registradas)",
     "Permission:Dashboards.Instances.Manage": "Gestionar paneles del inquilino (importar desde definición, editar, publicar, archivar, restaurar)",
-    "Permission:Dashboards.Instances.Read": "Leer paneles del inquilino (lista y lectura por identificador, incluida la detección de desviaciones)"
+    "Permission:Dashboards.Instances.Read": "Leer paneles del inquilino (lista y lectura por identificador, incluida la detección de desviaciones)",
+    "PermissionGroup:Dashboards": "Paneles",
+    "Widget:Unavailable": "Widget no disponible",
+    "Widget:Unavailable.MapGeographyNotImplemented": "Widgets de mapa PostGIS aún no compatibles",
+    "Widget:Unavailable.MetricNotFound": "Métrica no encontrada",
+    "Widget:Unavailable.QueryAggregateNotFound": "Consulta no encontrada",
+    "Widget:Unavailable.QueryNotFound": "Consulta no encontrada",
+    "Widget:Unavailable.TelemetryNotImplemented": "Fuente de telemetría aún no compatible"
   }
 }

@@ -1,9 +1,15 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Dashboards": "Pulpity",
     "Permission:Dashboards.Catalog.Read": "Przeglądanie katalogu pulpitów (lista wszystkich zarejestrowanych DashboardDefinition)",
     "Permission:Dashboards.Instances.Manage": "Zarządzanie pulpitami dzierżawcy (importowanie z definicji, edycja, publikowanie, archiwizowanie, przywracanie)",
-    "Permission:Dashboards.Instances.Read": "Odczyt pulpitów dzierżawcy (lista i odczyt po identyfikatorze, w tym wykrywanie dryfu)"
+    "Permission:Dashboards.Instances.Read": "Odczyt pulpitów dzierżawcy (lista i odczyt po identyfikatorze, w tym wykrywanie dryfu)",
+    "PermissionGroup:Dashboards": "Pulpity",
+    "Widget:Unavailable": "Widget niedostępny",
+    "Widget:Unavailable.MapGeographyNotImplemented": "Widżety map PostGIS jeszcze nieobsługiwane",
+    "Widget:Unavailable.MetricNotFound": "Nie znaleziono metryki",
+    "Widget:Unavailable.QueryAggregateNotFound": "Nie znaleziono zapytania",
+    "Widget:Unavailable.QueryNotFound": "Nie znaleziono zapytania",
+    "Widget:Unavailable.TelemetryNotImplemented": "Źródło telemetrii jeszcze nieobsługiwane"
   }
 }

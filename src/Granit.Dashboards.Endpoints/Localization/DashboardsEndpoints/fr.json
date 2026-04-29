@@ -1,9 +1,15 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Dashboards": "Tableaux de bord",
     "Permission:Dashboards.Catalog.Read": "Parcourir le catalogue des tableaux de bord (lister chaque DashboardDefinition enregistrée)",
     "Permission:Dashboards.Instances.Manage": "Gérer les tableaux de bord du locataire (importer depuis une définition, éditer, publier, archiver, restaurer)",
-    "Permission:Dashboards.Instances.Read": "Lire les tableaux de bord du locataire (liste et lecture par identifiant, détection de dérive)"
+    "Permission:Dashboards.Instances.Read": "Lire les tableaux de bord du locataire (liste et lecture par identifiant, détection de dérive)",
+    "PermissionGroup:Dashboards": "Tableaux de bord",
+    "Widget:Unavailable": "Widget indisponible",
+    "Widget:Unavailable.MapGeographyNotImplemented": "Cartes PostGIS non encore prises en charge",
+    "Widget:Unavailable.MetricNotFound": "Métrique introuvable",
+    "Widget:Unavailable.QueryAggregateNotFound": "Requête introuvable",
+    "Widget:Unavailable.QueryNotFound": "Requête introuvable",
+    "Widget:Unavailable.TelemetryNotImplemented": "Source de télémétrie non encore prise en charge"
   }
 }
