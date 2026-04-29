@@ -20302,12 +20302,28 @@
       "members": []
     },
     {
+      "name": "ODataExposureMetrics",
+      "fqn": "Granit.Http.ODataExposure.Diagnostics.ODataExposureMetrics",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Diagnostics/ODataExposureMetrics.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "RecordTopClamped",
+          "kind": "method",
+          "signature": "RecordTopClamped(string entitySet, string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "ODataExposureEndpointRouteBuilderExtensions",
       "fqn": "Granit.Http.ODataExposure.Extensions.ODataExposureEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 21,
+      "line": 26,
       "members": [
         {
           "name": "MapGranitODataEndpoints",
@@ -20323,7 +20339,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitODataExposure",
@@ -20356,7 +20372,14 @@
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Options/ODataExposureOptions.cs",
       "line": 75,
-      "members": []
+      "members": [
+        {
+          "name": "ExpandWhitelist",
+          "kind": "method",
+          "signature": "ExpandWhitelist(params string[] properties)",
+          "returnType": "ODataEntitySetBuilder<TEntity>"
+        }
+      ]
     },
     {
       "name": "ODataExposureOptions",

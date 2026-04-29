@@ -90,6 +90,129 @@ public sealed class ODataExposureOptionsTests
         Should.Throw<ArgumentException>(() => builder.RequirePermission(""));
     }
 
+    [Fact]
+    public void Defaults_MatchHardeningContract()
+    {
+        // The C3 (#1392) defaults are intentional and load-bearing — a host
+        // that registers an EntitySet without overriding MUST land on the
+        // safe side (small page, capped top, count off, expand off). A
+        // future relaxation here would silently widen every consuming app's
+        // OData surface.
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices");
+
+        object descriptor = GetSingleDescriptor(options);
+        ((int)descriptor.GetType().GetProperty("MaxTop")!.GetValue(descriptor)!).ShouldBe(5000);
+        ((int)descriptor.GetType().GetProperty("PageSize")!.GetValue(descriptor)!).ShouldBe(1000);
+        ((bool)descriptor.GetType().GetProperty("CountEnabled")!.GetValue(descriptor)!).ShouldBeFalse();
+        descriptor.GetType().GetProperty("ExpandWhitelist")!.GetValue(descriptor).ShouldBeNull();
+        ((int)descriptor.GetType().GetProperty("MaxExpansionDepth")!.GetValue(descriptor)!).ShouldBe(1);
+    }
+
+    [Fact]
+    public void MaxTop_StoresOnDescriptor_AndRejectsZeroOrNegative()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices").MaxTop(2500);
+
+        ((int)GetSingleDescriptor(options).GetType().GetProperty("MaxTop")!.GetValue(GetSingleDescriptor(options))!)
+            .ShouldBe(2500);
+
+        ODataExposureOptions other = new();
+        ODataEntitySetBuilder<Invoice> builder = other.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices");
+        Should.Throw<ArgumentOutOfRangeException>(() => builder.MaxTop(0));
+        Should.Throw<ArgumentOutOfRangeException>(() => builder.MaxTop(-1));
+    }
+
+    [Fact]
+    public void PageSize_StoresOnDescriptor()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices").PageSize(250);
+
+        ((int)GetSingleDescriptor(options).GetType().GetProperty("PageSize")!.GetValue(GetSingleDescriptor(options))!)
+            .ShouldBe(250);
+    }
+
+    [Fact]
+    public void EnableCount_FlipsFlag()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices").EnableCount();
+
+        ((bool)GetSingleDescriptor(options).GetType().GetProperty("CountEnabled")!.GetValue(GetSingleDescriptor(options))!)
+            .ShouldBeTrue();
+    }
+
+    [Fact]
+    public void ExpandWhitelist_StoresPropertyList()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .ExpandWhitelist("Customer", "Lines");
+
+        var whitelist = (System.Collections.Generic.IReadOnlyList<string>?)
+            GetSingleDescriptor(options).GetType().GetProperty("ExpandWhitelist")!.GetValue(GetSingleDescriptor(options));
+
+        whitelist.ShouldNotBeNull();
+        whitelist!.ShouldBe(["Customer", "Lines"]);
+    }
+
+    [Fact]
+    public void ExpandWhitelist_EmptyArray_IsValid_AndDifferentFromNull()
+    {
+        // Default null = expand never registered; explicit [] = "I want zero
+        // navigations exposed". Both reject every $expand request, but the
+        // explicit empty form documents intent in the host code.
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices").ExpandWhitelist();
+
+        var whitelist = (System.Collections.Generic.IReadOnlyList<string>?)
+            GetSingleDescriptor(options).GetType().GetProperty("ExpandWhitelist")!.GetValue(GetSingleDescriptor(options));
+
+        whitelist.ShouldNotBeNull();
+        whitelist!.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void MaxExpansionDepth_RejectsZeroOrNegative()
+    {
+        ODataExposureOptions options = new();
+        ODataEntitySetBuilder<Invoice> builder = options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices");
+
+        Should.Throw<ArgumentOutOfRangeException>(() => builder.MaxExpansionDepth(0));
+        Should.Throw<ArgumentOutOfRangeException>(() => builder.MaxExpansionDepth(-1));
+    }
+
+    [Fact]
+    public void Builder_Chains_AcrossMultipleCalls()
+    {
+        ODataExposureOptions options = new();
+        options.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+            .MaxTop(2500)
+            .PageSize(250)
+            .EnableCount()
+            .ExpandWhitelist("Customer")
+            .MaxExpansionDepth(2)
+            .RequirePermission("OData.Test.Invoices.Read");
+
+        object d = GetSingleDescriptor(options);
+        ((int)d.GetType().GetProperty("MaxTop")!.GetValue(d)!).ShouldBe(2500);
+        ((int)d.GetType().GetProperty("PageSize")!.GetValue(d)!).ShouldBe(250);
+        ((bool)d.GetType().GetProperty("CountEnabled")!.GetValue(d)!).ShouldBeTrue();
+        ((int)d.GetType().GetProperty("MaxExpansionDepth")!.GetValue(d)!).ShouldBe(2);
+        ((string?)d.GetType().GetProperty("RequiredPermission")!.GetValue(d))
+            .ShouldBe("OData.Test.Invoices.Read");
+    }
+
+    private static object GetSingleDescriptor(ODataExposureOptions options)
+    {
+        object? list = options.GetType()
+            .GetProperty("Descriptors", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!
+            .GetValue(options);
+        return ((System.Collections.IEnumerable)list!).Cast<object>().Single();
+    }
+
     private sealed class Invoice
     {
         public Guid Id { get; init; }

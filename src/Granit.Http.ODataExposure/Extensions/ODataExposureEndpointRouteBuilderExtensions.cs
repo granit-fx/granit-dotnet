@@ -1,14 +1,19 @@
 using System.Reflection;
 using Granit.Authorization;
+using Granit.Http.ODataExposure.Diagnostics;
 using Granit.Http.ODataExposure.Internal;
 using Granit.Http.ODataExposure.Options;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 using Microsoft.OData.Edm;
 
 namespace Granit.Http.ODataExposure.Extensions;
@@ -20,6 +25,9 @@ namespace Granit.Http.ODataExposure.Extensions;
 /// </summary>
 public static class ODataExposureEndpointRouteBuilderExtensions
 {
+    /// <summary>Header set on the response when a user-supplied <c>$top</c> was clamped to the EntitySet's <see cref="ODataEntitySetDescriptor.MaxTop"/>. Lets observability tools spot misconfigured BI refresh jobs.</summary>
+    internal const string MaxTopAppliedHeader = "OData-MaxTop-Applied";
+
     /// <summary>
     /// Maps the configured OData EntitySets under <paramref name="prefix"/>.
     /// Generates the EDM model at call time, exposes <c>$metadata</c> +
@@ -28,9 +36,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <list type="number">
     ///   <item>Authentication — required by the surrounding pipeline (the framework's bearer token / DPoP).</item>
     ///   <item>Permission gate — when the set declared one via <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/>.</item>
+    ///   <item>C3 hardening (#1392) — <c>$count</c>, <c>$expand</c> whitelist enforcement against the per-set descriptor.</item>
     ///   <item>Resolve <c>IQueryableSource&lt;TEntity&gt;</c> — emits a queryable already filtered by tenant + soft-delete (via <c>ApplyGranitConventions</c> on the host's DbContext).</item>
     ///   <item>Apply the <c>QueryDefinition</c> filter pipeline via <c>IQueryEngine.BuildFilteredQuery</c> with an empty <c>QueryRequest</c> — composes the framework's required filters.</item>
-    ///   <item>Layer the user's <c>$filter</c> / <c>$select</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> — user filters compose ON TOP of the framework filters, never bypassing them.</item>
+    ///   <item>Layer the user's <c>$filter</c> / <c>$select</c> / <c>$top</c> / <c>$skip</c> / <c>$orderby</c> via <c>ODataQueryOptions&lt;TEntity&gt;.ApplyTo</c> with the per-set <c>PageSize</c> and <c>MaxTop</c> caps applied — user filters compose ON TOP of framework filters, never bypassing them.</item>
     /// </list>
     /// </summary>
     /// <param name="endpoints">Endpoint route builder (the host's <c>app</c>).</param>
@@ -61,9 +70,6 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         RouteGroupBuilder root = endpoints.MapGroup(prefix).WithTags("OData");
 
-        // Service document + $metadata. Power BI Desktop reads $metadata to
-        // populate its "Navigator" picker; service-document is the human-
-        // readable index of EntitySet names.
         root.MapODataServiceDocument("", edmModel)
             .WithName("ODataServiceDocument")
             .WithSummary("OData v4 service document — lists every exposed EntitySet with its metadata link.")
@@ -74,9 +80,6 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             .WithSummary("OData v4 EDM metadata document (CSDL XML).")
             .WithDescription("BI tools consume this CSDL document to populate their Navigator / table picker. The EDM is built from the application's registered QueryDefinition&lt;T&gt; instances.");
 
-        // Per-set GET route. Closed-generic Activator dance avoids a
-        // closed-generic registration per descriptor — same pattern the
-        // analytics widget runners use for IQueryEngine resolution.
         foreach (ODataEntitySetDescriptor descriptor in options.Descriptors)
         {
             MethodInfo mapper = typeof(ODataExposureEndpointRouteBuilderExtensions)
@@ -103,9 +106,12 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     {
         RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async (
                 ODataQueryOptions<TEntity> options,
+                HttpContext httpContext,
                 [FromServices] IQueryableSource<TEntity> source,
                 [FromServices] IQueryEngine<TEntity> engine,
                 [FromServices] IPermissionChecker permissionChecker,
+                [FromServices] ODataExposureMetrics metrics,
+                [FromServices] ICurrentTenant? currentTenant,
                 CancellationToken cancellationToken) =>
             {
                 if (descriptor.RequiredPermission is { } perm
@@ -114,32 +120,158 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                     return (IResult)TypedResults.Forbid();
                 }
 
-                // Step 1: tenant + soft-delete already applied on `source` (the
-                // host's IQueryableSource pulls from a DbContext that wired
-                // ApplyGranitConventions). Step 2: layer the QueryDefinition's
-                // filter pipeline. Step 3: apply OData query options on top.
+                string? tenantTag = currentTenant is { IsAvailable: true, Id: { } tid }
+                    ? tid.ToString()
+                    : null;
+
+                if (RejectIfCountDisallowed(httpContext, descriptor) is { } countRejection)
+                {
+                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "count_disabled", tenantTag);
+                    return countRejection;
+                }
+
+                if (RejectIfExpandUnauthorised(httpContext, descriptor) is { } expandRejection)
+                {
+                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag);
+                    return expandRejection;
+                }
+
+                ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag);
+
                 IQueryable<TEntity> filtered = engine.BuildFilteredQuery(
                     source.GetQueryable(), new QueryRequest());
 
-                IQueryable applied = options.ApplyTo(filtered);
+                ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
+                IQueryable applied = options.ApplyTo(filtered, querySettings);
                 return TypedResults.Ok(applied);
             })
             .WithODataModel(edmModel)
-            .WithODataResult();
+            .WithODataResult()
+            .WithODataOptions(opts => opts.SetMaxTop(descriptor.MaxTop));
 
         route.WithName($"OData{descriptor.EntitySetName}List")
              .WithSummary($"Returns the {descriptor.EntitySetName} EntitySet, filtered by the framework's tenant + soft-delete pipeline.")
-             .WithDescription($"OData v4 endpoint for the {descriptor.EntitySetName} set. Supports $filter, $select, $top, $skip, $orderby. Tenant and soft-delete filters are applied BEFORE any user $filter — the OData query never bypasses framework access control.")
+             .WithDescription($"OData v4 endpoint for the {descriptor.EntitySetName} set. Supports $filter, $select, $top, $skip, $orderby. Tenant and soft-delete filters are applied BEFORE any user $filter — the OData query never bypasses framework access control. Per-set caps: MaxTop={descriptor.MaxTop}, PageSize={descriptor.PageSize}, $count={(descriptor.CountEnabled ? "enabled" : "disabled")}, $expand={(descriptor.ExpandWhitelist is null or { Count: 0 } ? "disabled" : string.Join(",", descriptor.ExpandWhitelist))}.")
              .Produces(StatusCodes.Status200OK)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status401Unauthorized)
              .ProducesProblem(StatusCodes.Status403Forbidden);
 
         if (descriptor.RequiredPermission is not null)
         {
-            // Authorization is enforced inline (permission checker) — keep
-            // the metadata in sync so OpenAPI schemas can hint at the gate
-            // even if the runtime check is the source of truth.
             route.RequireAuthorization();
         }
+    }
+
+    /// <summary>
+    /// Returns a <c>400</c> result when the request asks for <c>$count=true</c>
+    /// on an EntitySet whose owner did NOT call <see cref="ODataEntitySetBuilder{TEntity}.EnableCount"/>.
+    /// Default-disabled because <c>$count</c> on a 50M-row table forces a
+    /// full-table scan per request — Power BI refresh jobs can hit it
+    /// repeatedly.
+    /// </summary>
+    private static ProblemHttpResult? RejectIfCountDisallowed(HttpContext httpContext, ODataEntitySetDescriptor descriptor)
+    {
+        if (descriptor.CountEnabled)
+        {
+            return null;
+        }
+
+        if (httpContext.Request.Query.TryGetValue("$count", out StringValues raw)
+            && string.Equals(raw.ToString(), "true", StringComparison.OrdinalIgnoreCase))
+        {
+            return TypedResults.Problem(
+                detail: $"$count is not enabled on the '{descriptor.EntitySetName}' EntitySet. Contact the API owner to enable it.",
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not allowed");
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Validates the user's <c>$expand</c> clause against the EntitySet's
+    /// whitelist. Default whitelist is empty (or <see langword="null"/>) →
+    /// <c>$expand</c> rejected outright. Non-empty whitelist allows only the
+    /// listed top-level navigation properties; nested-expand depth is
+    /// enforced separately by <c>ODataMiniOptions.SetMaxTop</c> / the
+    /// framework's <c>MaxExpansionDepth</c> validator hook.
+    /// </summary>
+    private static ProblemHttpResult? RejectIfExpandUnauthorised(HttpContext httpContext, ODataEntitySetDescriptor descriptor)
+    {
+        if (!httpContext.Request.Query.TryGetValue("$expand", out StringValues raw))
+        {
+            return null;
+        }
+
+        string rawExpand = raw.ToString();
+        if (string.IsNullOrWhiteSpace(rawExpand))
+        {
+            return null;
+        }
+
+        IReadOnlyList<string>? whitelist = descriptor.ExpandWhitelist;
+        if (whitelist is null || whitelist.Count == 0)
+        {
+            return TypedResults.Problem(
+                detail: $"$expand is not enabled on the '{descriptor.EntitySetName}' EntitySet.",
+                statusCode: StatusCodes.Status400BadRequest,
+                title: "Query option not allowed");
+        }
+
+        // Top-level navigation extraction — `Customer($expand=Lines),Address`
+        // → ["Customer", "Address"]. We only validate the first segment of
+        // each comma-split entry; nested expansion semantics are validated
+        // separately by MaxExpansionDepth.
+        string[] requested = [..
+            rawExpand.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(segment =>
+                {
+                    int parenIndex = segment.IndexOf('(', StringComparison.Ordinal);
+                    return parenIndex >= 0 ? segment[..parenIndex].Trim() : segment;
+                })];
+
+        foreach (string property in requested)
+        {
+            if (string.IsNullOrEmpty(property))
+            {
+                continue;
+            }
+
+            if (!whitelist.Contains(property, StringComparer.OrdinalIgnoreCase))
+            {
+                return TypedResults.Problem(
+                    detail: $"$expand of property '{property}' is not permitted on the '{descriptor.EntitySetName}' EntitySet. Allowed: {string.Join(", ", whitelist)}.",
+                    statusCode: StatusCodes.Status400BadRequest,
+                    title: "Expand property not whitelisted");
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Sets the <c>OData-MaxTop-Applied</c> response header when the user's
+    /// <c>$top</c> exceeded the descriptor's cap — the framework clamps
+    /// silently (per acceptance criteria), the header surfaces the clamping
+    /// to observability tooling. Also bumps the rejected-query counter for
+    /// the same reason.
+    /// </summary>
+    private static void ApplyMaxTopAppliedHeader(
+        HttpContext httpContext,
+        ODataEntitySetDescriptor descriptor,
+        ODataExposureMetrics metrics,
+        string? tenantTag)
+    {
+        if (!httpContext.Request.Query.TryGetValue("$top", out StringValues topRaw)
+            || !int.TryParse(topRaw.ToString(), out int requestedTop)
+            || requestedTop <= descriptor.MaxTop)
+        {
+            return;
+        }
+
+        httpContext.Response.Headers[MaxTopAppliedHeader] =
+            descriptor.MaxTop.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        metrics.RecordTopClamped(descriptor.EntitySetName, tenantTag);
     }
 }

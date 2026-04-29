@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Http.ODataExposure.Extensions;
+using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
@@ -48,7 +49,12 @@ internal sealed class ODataTestApp : IAsyncDisposable
         Client.Dispose();
     }
 
-    public static async Task<ODataTestApp> CreateAsync(string connectionString)
+    public static Task<ODataTestApp> CreateAsync(string connectionString)
+        => CreateAsync(connectionString, configureEntitySet: null);
+
+    public static async Task<ODataTestApp> CreateAsync(
+        string connectionString,
+        Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -95,7 +101,11 @@ internal sealed class ODataTestApp : IAsyncDisposable
         });
 
         app.MapGranitODataEndpoints("/api/granit/odata", opts =>
-            opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices"));
+        {
+            ODataEntitySetBuilder<Invoice> builder =
+                opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices");
+            configureEntitySet?.Invoke(builder);
+        });
 
         await app.StartAsync().ConfigureAwait(false);
 

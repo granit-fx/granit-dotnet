@@ -92,8 +92,70 @@ public sealed class ODataEntitySetBuilder<TEntity>
     public ODataEntitySetBuilder<TEntity> RequirePermission(string permission)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(permission);
+        return Update(_descriptor with { RequiredPermission = permission });
+    }
 
-        ODataEntitySetDescriptor updated = _descriptor with { RequiredPermission = permission };
+    /// <summary>
+    /// Caps the user-supplied <c>$top</c>. Requests above this value are
+    /// silently clamped and the response carries an
+    /// <c>OData-MaxTop-Applied</c> header so observability tools can spot
+    /// misconfigured BI refresh jobs. Must be positive.
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> MaxTop(int maxTop)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(maxTop);
+        return Update(_descriptor with { MaxTop = maxTop });
+    }
+
+    /// <summary>
+    /// Sets the server-side default page size returned when the caller
+    /// omits <c>$top</c>. The response then carries <c>@odata.nextLink</c>
+    /// for OData clients to walk pagination. Must be positive.
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> PageSize(int pageSize)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(pageSize);
+        return Update(_descriptor with { PageSize = pageSize });
+    }
+
+    /// <summary>
+    /// Enables <c>$count=true</c> on this EntitySet. Disabled by default —
+    /// huge tables would otherwise face a full-table-scan count on every BI
+    /// refresh. Enable explicitly for sets where the count query is cheap
+    /// (small tables, or covered by a dedicated index).
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> EnableCount()
+        => Update(_descriptor with { CountEnabled = true });
+
+    /// <summary>
+    /// Whitelists the top-level navigation properties allowed in
+    /// <c>$expand</c>. Default behaviour is <c>$expand</c> disabled —
+    /// without this call, any <c>$expand</c> request returns
+    /// <c>400 Bad Request</c>. An empty list still disables expand
+    /// (explicit "I want zero navigations exposed").
+    /// </summary>
+    /// <param name="properties">Navigation property names allowed at the top level (e.g. <c>"Customer"</c>, <c>"Lines"</c>).</param>
+    public ODataEntitySetBuilder<TEntity> ExpandWhitelist(params string[] properties)
+    {
+        ArgumentNullException.ThrowIfNull(properties);
+        return Update(_descriptor with { ExpandWhitelist = [.. properties] });
+    }
+
+    /// <summary>
+    /// Sets the maximum nesting depth allowed for <c>$expand</c>. Default
+    /// is <c>1</c> (flat expand only). Set to <c>2</c> or more when a
+    /// specific consumer needs to walk a navigation chain
+    /// (e.g. <c>Customer($expand=Address)</c>). Higher depths exponentially
+    /// increase the risk of N+1 explosions — review carefully.
+    /// </summary>
+    public ODataEntitySetBuilder<TEntity> MaxExpansionDepth(int depth)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(depth);
+        return Update(_descriptor with { MaxExpansionDepth = depth });
+    }
+
+    private ODataEntitySetBuilder<TEntity> Update(ODataEntitySetDescriptor updated)
+    {
         _options.Replace(_descriptor, updated);
         _descriptor = updated;
         return this;

@@ -1,5 +1,7 @@
+using Granit.Http.ODataExposure.Diagnostics;
 using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 #pragma warning disable IDE0058 // Expression value is never used — fluent ODataMiniOptions config returns the options instance
 
@@ -33,6 +35,12 @@ public static class ODataExposureServiceCollectionExtensions
         // $count); per-route restrictions are layered via
         // AddODataQueryEndpointFilter in #1392 / C3.
         services.AddOData(opt => opt.EnableAll());
+
+        // C3 hardening telemetry: counts rejected queries (count disabled,
+        // expand not whitelisted) and top-clamps. Always on so observability
+        // tooling can spot misconfigured BI refresh jobs without per-host
+        // setup.
+        services.TryAddSingleton<ODataExposureMetrics>();
 
         return services;
     }
