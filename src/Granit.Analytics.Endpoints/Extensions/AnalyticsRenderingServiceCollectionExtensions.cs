@@ -35,6 +35,10 @@ public static class AnalyticsRenderingServiceCollectionExtensions
     ///         through <c>ExecuteStreamAsync</c> and pivots in-memory by
     ///         a (row-tuple × column-tuple) composite key. Bounded by the
     ///         QueryDefinition's <c>MaxStreamSize</c>.</item>
+    ///   <item><c>"Map"</c> — streams the named <c>QueryDefinition</c> and
+    ///         projects each row into a map marker. B7-2 ships the
+    ///         <c>LatLng</c> path (decimal columns); the PostGIS
+    ///         <c>Geography</c> path is deferred and surfaces Unavailable.</item>
     /// </list>
     /// </summary>
     /// <remarks>
@@ -61,6 +65,7 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         services.TryAddScoped<TableService>();
         services.TryAddScoped<ChartService>();
         services.TryAddScoped<PivotService>();
+        services.TryAddScoped<MapService>();
 
         foreach (ServiceDescriptor descriptor in services
             .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
@@ -124,12 +129,26 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                 return (IPivotRunner)Activator.CreateInstance(
                     runnerType, d.Name, queryableSource, engine, definition)!;
             });
+
+            services.AddScoped<IMapRunner>(sp =>
+            {
+                IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
+                Type runnerType = typeof(MapRunner<>).MakeGenericType(d.EntityType);
+                object queryableSource = sp.GetRequiredService(
+                    typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+                object engine = sp.GetRequiredService(
+                    typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+
+                return (IMapRunner)Activator.CreateInstance(
+                    runnerType, d.Name, queryableSource, engine)!;
+            });
         }
 
         services.AddScoped<IWidgetInstanceRenderer, KpiWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, TableWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, ChartWidgetInstanceRenderer>();
         services.AddScoped<IWidgetInstanceRenderer, PivotWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, MapWidgetInstanceRenderer>();
 
         return services;
     }

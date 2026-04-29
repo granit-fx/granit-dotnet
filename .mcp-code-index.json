@@ -4443,6 +4443,33 @@
       ]
     },
     {
+      "name": "MapCenterPayload",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.MapCenterPayload",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "MapPoint",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.MapPoint",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "MapWidgetSnapshot",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.MapWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/MapWidgetSnapshot.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "PivotCell",
       "fqn": "Granit.Analytics.Endpoints.Rendering.PivotCell",
       "kind": "record",

@@ -1,0 +1,134 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Granit.Analytics.Dashboards.Widgets;
+using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.Metrics;
+using Granit.Dashboards.Domain;
+using Granit.Dashboards.Rendering;
+using Granit.Timing;
+
+namespace Granit.Analytics.Endpoints.Rendering;
+
+/// <summary>
+/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Map"</c> widget kind.
+/// Resolves the registered <see cref="IMapRunner"/> by query name, runs it
+/// with the configured latitude/longitude columns plus the popup whitelist,
+/// and shapes the result into a <see cref="MapWidgetSnapshot"/>. Per-widget
+/// permission gate + error isolation already apply upstream
+/// (<see cref="IDashboardRenderer"/> / ADR-039 §3); this renderer is
+/// responsible for the body shape only.
+/// </summary>
+/// <remarks>
+/// B7-2 ships <see cref="MapPointSource.LatLng"/> (decimal lat/lng columns,
+/// works on any database). The PostGIS <see cref="MapPointSource.Geography"/>
+/// path is deferred — the renderer surfaces
+/// <c>Widget:Unavailable.MapGeographyNotImplemented</c> until
+/// <c>granit-iot</c> ships the NetTopologySuite plumbing.
+/// </remarks>
+internal sealed class MapWidgetInstanceRenderer(
+    MapService mapService,
+    IClock clock) : IWidgetInstanceRenderer
+{
+    private static readonly JsonSerializerOptions ConfigJsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() },
+    };
+
+    private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() },
+    };
+
+    private readonly MapService _mapService = mapService;
+    private readonly IClock _clock = clock;
+
+    public string WidgetType => "Map";
+
+    public async Task<WidgetSnapshotEnvelope> RenderAsync(
+        WidgetInstance widget,
+        WidgetRenderContext context,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(widget);
+
+        MapConfig config = JsonSerializer.Deserialize<MapConfig>(widget.ConfigJson, ConfigJsonOptions)
+            ?? throw new InvalidOperationException(
+                $"Widget {widget.Id} ('Map') has empty ConfigJson — map config cannot be resolved.");
+
+        if (string.IsNullOrWhiteSpace(widget.QueryName))
+        {
+            throw new InvalidOperationException(
+                $"Widget {widget.Id} ('Map') has no QueryName — Map widgets must reference a registered QueryDefinition.");
+        }
+
+        DateTimeOffset emittedAt = _clock.Now;
+
+        // PostGIS path is deferred until granit-iot ships NetTopologySuite
+        // plumbing — the renderer never throws on the Geography pointSource;
+        // it surfaces a typed Unavailable so the dashboard renders the rest
+        // of its widgets normally.
+        if (config.PointSource is not MapPointSource.LatLng latLng)
+        {
+            return WidgetSnapshotEnvelope.Unavailable(
+                widgetType: WidgetType,
+                sequence: 1,
+                emittedAt: emittedAt,
+                refreshHint: RefreshHint.Static,
+                reasonLocalizationKey: "Widget:Unavailable.MapGeographyNotImplemented");
+        }
+
+        if (!_mapService.TryGetRunner(widget.QueryName, out IMapRunner runner))
+        {
+            return WidgetSnapshotEnvelope.Unavailable(
+                widgetType: WidgetType,
+                sequence: 1,
+                emittedAt: emittedAt,
+                refreshHint: RefreshHint.Static,
+                reasonLocalizationKey: "Widget:Unavailable.QueryNotFound");
+        }
+
+        MapRunnerResult result = await runner.ExecuteAsync(
+            latitudeColumn: latLng.LatitudeColumn,
+            longitudeColumn: latLng.LongitudeColumn,
+            popupColumns: config.PopupColumns,
+            dashboardFilters: context.DashboardFilters,
+            cancellationToken).ConfigureAwait(false);
+
+        MapCenterPayload? defaultCenter = config.DefaultCenter is { } center
+            ? new MapCenterPayload(center.Latitude, center.Longitude)
+            : null;
+
+        MapWidgetSnapshot snapshot = new(
+            Points: [.. result.Points.Select(p => new MapPoint(p.Id, p.Latitude, p.Longitude, p.Popup))],
+            DefaultZoom: config.DefaultZoom,
+            DefaultCenter: defaultCenter,
+            ClusterThreshold: config.ClusterThreshold,
+            DetailRoute: config.DetailRoute,
+            TileUrlTemplate: config.TileUrlTemplate);
+
+        return WidgetSnapshotEnvelope.ForSnapshot(
+            widgetType: WidgetType,
+            snapshot: JsonSerializer.SerializeToElement(snapshot, SnapshotJsonOptions),
+            sequence: 1,
+            emittedAt: emittedAt,
+            refreshHint: RefreshHint.Dynamic);
+    }
+
+    private sealed record MapConfig(
+        MapPointSource PointSource,
+        IReadOnlyList<string>? PopupColumns,
+        int DefaultZoom,
+        MapCenterConfig? DefaultCenter,
+        int ClusterThreshold,
+        string? DetailRoute,
+        string? TileUrlTemplate);
+
+    /// <summary>
+    /// Wire shape for <see cref="MapWidgetDefinition.DefaultCenter"/> in the
+    /// persisted ConfigJson — a plain pair of doubles, no validation here
+    /// (the import path validated against <see cref="MapCenter"/>).
+    /// </summary>
+    private sealed record MapCenterConfig(double Latitude, double Longitude);
+}
