@@ -1,3 +1,4 @@
+using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Invoicing;
@@ -5,6 +6,7 @@ using Granit.Payments.Diagnostics;
 using Granit.Payments.Domain;
 using Granit.Payments.Exports;
 using Granit.Payments.Internal;
+using Granit.Payments.Metrics;
 using Granit.Payments.Queries;
 using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +39,16 @@ public static class PaymentsHostApplicationBuilderExtensions
         builder.Services.AddExportDefinition<PaymentMethod, PaymentMethodExportDefinition>();
         builder.Services.AddExportDefinition<Refund, RefundExportDefinition>();
         builder.Services.AddExportDefinition<Dispute, DisputeExportDefinition>();
+
+        builder.Services.AddMetricDefinition<PaymentTransaction, int, SuccessfulPaymentTransactionCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<PaymentTransaction, decimal, SuccessfulPaymentTransactionTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<PaymentTransaction, int, FailedPaymentTransactionCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<PaymentTransaction, int, PendingPaymentTransactionCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<PaymentMethod, int, DefaultPaymentMethodCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Refund, int, SuccessfulRefundCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Refund, decimal, SuccessfulRefundTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<Dispute, int, OpenDisputeCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Dispute, decimal, OpenDisputeTotalMetricDefinition>();
 
         return builder;
     }

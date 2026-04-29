@@ -1,0 +1,14 @@
+{
+  "culture": "it",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "Metodi di pagamento predefiniti",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "Pagamenti falliti",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "Contestazioni aperte",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "Importo in contestazione",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "Pagamenti in corso",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "Pagamenti riusciti",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "Totale incassato",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "Rimborsi completati",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "Totale rimborsato"
+  }
+}

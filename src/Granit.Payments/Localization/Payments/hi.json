@@ -1,0 +1,14 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "डिफ़ॉल्ट भुगतान तरीके",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "विफल भुगतान",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "खुले विवाद",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "खुले विवादों की राशि",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "लंबित भुगतान",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "सफल भुगतान",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "कुल वसूली",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "पूरी की गई वापसी",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "कुल वापसी राशि"
+  }
+}

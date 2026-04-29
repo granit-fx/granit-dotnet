@@ -1,0 +1,14 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "Standaardbetaalmethoden",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "Mislukte betalingen",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "Lopende geschillen",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "Openstaand bedrag in geschillen",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "Lopende betalingen",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "Geslaagde betalingen",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "Totaal geïnd",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "Voltooide terugbetalingen",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "Totaal terugbetaald"
+  }
+}

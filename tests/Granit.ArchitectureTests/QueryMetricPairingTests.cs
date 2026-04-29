@@ -64,10 +64,6 @@ public sealed class QueryMetricPairingTests
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
         "Granit.Notifications.Domain.UserNotification",                                   // [BACKLOG] delivery / read-rate KPIs
         "Granit.Parties.Domain.Party",                                                    // [BACKLOG] active-party count
-        "Granit.Payments.Domain.Dispute",                                                 // [BACKLOG] open-dispute count / total
-        "Granit.Payments.Domain.PaymentMethod",                                           // [BACKLOG] active-method count
-        "Granit.Payments.Domain.PaymentTransaction",                                      // [BACKLOG] success-rate / volume
-        "Granit.Payments.Domain.Refund",                                                  // [BACKLOG] refund-volume KPIs
         "Granit.Payments.SepaDirectDebit.Domain.Mandate",                                 // [BACKLOG] active-mandate count
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt",                                  // [BACKLOG] delivery failure rate
         "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count

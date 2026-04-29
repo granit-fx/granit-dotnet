@@ -1872,11 +1872,13 @@
     {
       "name": "Granit.Payments",
       "deps": [
+        "Granit.Analytics",
         "Granit.Caching",
         "Granit",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Invoicing.Abstractions",
+        "Granit.Localization",
         "Granit.Payments.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
@@ -37309,7 +37311,7 @@
       "kind": "class",
       "project": "Granit.Payments",
       "file": "src/Granit.Payments/Extensions/PaymentsHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitPayments",
@@ -37784,6 +37786,450 @@
           "kind": "method",
           "signature": "ProcessAsync(ProcessWebhookCommand command, CancellationToken cancellationToken)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DefaultPaymentMethodCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.DefaultPaymentMethodCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/DefaultPaymentMethodCountMetricDefinition.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentMethod, int?>>? Selector",
+          "returnType": "Expression<Func<PaymentMethod, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentMethod, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PaymentMethod, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentMethod, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PaymentMethod, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "FailedPaymentTransactionCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.FailedPaymentTransactionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/FailedPaymentTransactionCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, int?>>? Selector",
+          "returnType": "Expression<Func<PaymentTransaction, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PaymentTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PaymentTransaction, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "OpenDisputeCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.OpenDisputeCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/OpenDisputeCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, int?>>? Selector",
+          "returnType": "Expression<Func<Dispute, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Dispute, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Dispute, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "OpenDisputeTotalMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.OpenDisputeTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/OpenDisputeTotalMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, decimal?>>? Selector",
+          "returnType": "Expression<Func<Dispute, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Dispute, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Dispute, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Dispute, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PendingPaymentTransactionCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.PendingPaymentTransactionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/PendingPaymentTransactionCountMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, int?>>? Selector",
+          "returnType": "Expression<Func<PaymentTransaction, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PaymentTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PaymentTransaction, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "SuccessfulPaymentTransactionCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.SuccessfulPaymentTransactionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/SuccessfulPaymentTransactionCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, int?>>? Selector",
+          "returnType": "Expression<Func<PaymentTransaction, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PaymentTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PaymentTransaction, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "SuccessfulPaymentTransactionTotalMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.SuccessfulPaymentTransactionTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/SuccessfulPaymentTransactionTotalMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, decimal?>>? Selector",
+          "returnType": "Expression<Func<PaymentTransaction, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PaymentTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PaymentTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PaymentTransaction, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "SuccessfulRefundCountMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.SuccessfulRefundCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/SuccessfulRefundCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, int?>>? Selector",
+          "returnType": "Expression<Func<Refund, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Refund, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Refund, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "SuccessfulRefundTotalMetricDefinition",
+      "fqn": "Granit.Payments.Metrics.SuccessfulRefundTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Payments",
+      "file": "src/Granit.Payments/Metrics/SuccessfulRefundTotalMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, decimal?>>? Selector",
+          "returnType": "Expression<Func<Refund, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Refund, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Refund, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Refund, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
         }
       ]
     },

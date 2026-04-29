@@ -1,0 +1,14 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "Standardbetalningssätt",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "Misslyckade betalningar",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "Öppna tvister",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "Belopp under tvist",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "Pågående betalningar",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "Lyckade betalningar",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "Totalt inkasserat",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "Genomförda återbetalningar",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "Totalt återbetalat"
+  }
+}

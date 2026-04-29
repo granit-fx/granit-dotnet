@@ -1,0 +1,14 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "Výchozí platební metody",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "Neúspěšné platby",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "Otevřené spory",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "Částka v otevřených sporech",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "Probíhající platby",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "Úspěšné platby",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "Celkem inkasováno",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "Dokončené refundace",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "Celkem refundováno"
+  }
+}

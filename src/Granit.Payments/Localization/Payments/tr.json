@@ -1,0 +1,14 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Payments.DefaultPaymentMethodCountMetric": "Varsayılan ödeme yöntemleri",
+    "Metric:Granit.Payments.FailedPaymentTransactionCountMetric": "Başarısız ödemeler",
+    "Metric:Granit.Payments.OpenDisputeCountMetric": "Açık itirazlar",
+    "Metric:Granit.Payments.OpenDisputeTotalMetric": "Açık itirazların tutarı",
+    "Metric:Granit.Payments.PendingPaymentTransactionCountMetric": "Bekleyen ödemeler",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionCountMetric": "Başarılı ödemeler",
+    "Metric:Granit.Payments.SuccessfulPaymentTransactionTotalMetric": "Tahsil edilen toplam",
+    "Metric:Granit.Payments.SuccessfulRefundCountMetric": "Tamamlanan iadeler",
+    "Metric:Granit.Payments.SuccessfulRefundTotalMetric": "Toplam iade edilen tutar"
+  }
+}
