@@ -37,13 +37,14 @@ public static class DashboardsEndpointRouteBuilderExtensions
             .WithTags(options.CatalogTagName);
         catalogGroup.MapCatalogEndpoints();
 
-        // Instances — the persisted Dashboard aggregate (import + CRUD on metadata + state machine).
+        // Instances — the persisted Dashboard aggregate (import + CRUD on metadata + state machine + render).
         RouteGroupBuilder instancesGroup = group.MapGranitGroup("")
             .WithTags(options.InstancesTagName);
         instancesGroup.MapImportEndpoints();
         instancesGroup.MapInstanceEndpoints();
         instancesGroup.MapMetadataEditEndpoints();
         instancesGroup.MapStateTransitionEndpoints();
+        instancesGroup.MapRenderEndpoints();
 
         // Widgets — pool CRUD scoped under /{id}/widgets.
         RouteGroupBuilder widgetsGroup = group.MapGranitGroup("")

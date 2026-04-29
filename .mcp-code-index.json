@@ -13164,6 +13164,42 @@
       "members": []
     },
     {
+      "name": "DashboardRenderPeriodResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardRenderPeriodResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "DashboardRenderRequest",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardRenderRequest",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderRequest.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "DashboardRenderResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardRenderResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "DashboardRenderedWidgetResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardRenderedWidgetResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
+      "line": 47,
+      "members": []
+    },
+    {
       "name": "DashboardSummaryResponse",
       "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardSummaryResponse",
       "kind": "record",
@@ -13221,7 +13257,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsEndpointsServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDashboardsEndpoints",
@@ -13519,6 +13555,15 @@
       "members": []
     },
     {
+      "name": "DashboardRenderResult",
+      "fqn": "Granit.Dashboards.Rendering.DashboardRenderResult",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
+      "line": 43,
+      "members": []
+    },
+    {
       "name": "EntityAliasBinding",
       "fqn": "Granit.Dashboards.Rendering.EntityAliasBinding",
       "kind": "record",
@@ -13526,6 +13571,22 @@
       "file": "src/Granit.Dashboards/Rendering/EntityAliasBinding.cs",
       "line": 14,
       "members": []
+    },
+    {
+      "name": "IDashboardRenderer",
+      "fqn": "Granit.Dashboards.Rendering.IDashboardRenderer",
+      "kind": "interface",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "RenderAsync",
+          "kind": "method",
+          "signature": "RenderAsync(Dashboard dashboard, WidgetRenderContext context, CancellationToken cancellationToken)",
+          "returnType": "Task<DashboardRenderResult>"
+        }
+      ]
     },
     {
       "name": "IWidgetInstanceRenderer",
@@ -13542,6 +13603,15 @@
           "returnType": "string WidgetType { get; } Task<WidgetSnapshotEnvelope>"
         }
       ]
+    },
+    {
+      "name": "RenderedWidget",
+      "fqn": "Granit.Dashboards.Rendering.RenderedWidget",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
+      "line": 56,
+      "members": []
     },
     {
       "name": "WidgetRenderContext",
