@@ -189,6 +189,97 @@ the second is a stale widget id (typically: another tab removed the widget).
 Idempotent retries on a removed widget therefore receive the _widget_ 404,
 which UIs treat as benign.
 
+## Render
+
+Bundles every widget on the dashboard into one HTTP response. The renderer
+applies a uniform permission gate, registry-driven dispatch, and per-widget
+exception isolation per [ADR-039 §3](/dotnet/architecture/adr/039-widget-renderer-architecture/) — one bad widget never 500s the
+whole render.
+
+| Method | Route | Permission |
+| ------ | ----- | ---------- |
+| `POST` | `/dashboards/{id:guid}/render` | `Instances.Read` |
+
+Status codes:
+
+- `POST` — `200` + `DashboardRenderResponse`; `400` period-bound validation; `404` dashboard not in scope.
+
+### Request — `DashboardRenderRequest`
+
+```json
+{
+  "periodFrom": "2026-04-01T00:00:00Z",
+  "periodTo": "2026-05-01T00:00:00Z",
+  "periodToken": "mtd",
+  "locale": "en",
+  "filters": { "Status": "Open" }
+}
+```
+
+- `periodFrom` / `periodTo` — both required together (or both omitted). `from` strictly before `to`. Absolute UTC; named-token resolution stays client-side.
+- `periodToken` — optional named token (`mtd`, `qtd`, `ytd`, …) echoed back in the response for client convenience; the renderer never re-resolves it server-side.
+- `locale` — BCP-47 tag. Defaults to `en`.
+- `filters` — dashboard-level filter spec applied uniformly across widgets that share the same underlying entity (e.g. `{ "Status": "Open" }` drives an unpaid-invoices KPI and an unpaid-invoices table on the same dashboard). The renderer pipeline never interprets the values; each typed renderer applies them in its own way.
+
+### Response — `DashboardRenderResponse`
+
+```jsonc
+{
+  "dashboardId": "8c6b...",
+  "renderedAt": "2026-04-29T12:34:56.789Z",
+  "period": { "from": "2026-04-01T00:00:00Z", "to": "2026-05-01T00:00:00Z", "token": "mtd" },
+  "widgets": [
+    {
+      "id": "...",
+      "widgetType": "Kpi",
+      "status": "Snapshot",
+      "sequence": 1,
+      "emittedAt": "2026-04-29T12:34:56.789Z",
+      "refreshHint": "Dynamic",
+      "snapshot": { "value": 12, "valueKind": "Count", "noData": false, /* ... */ },
+      "unavailableReasonLocalizationKey": null
+    },
+    {
+      "id": "...",
+      "widgetType": "Markdown",
+      "status": "Snapshot",
+      "sequence": 1,
+      "emittedAt": "2026-04-29T12:34:56.789Z",
+      "refreshHint": "Static",
+      "snapshot": { "contentLocalizationKey": "Widget:Banner" }
+    },
+    {
+      "id": "...",
+      "widgetType": "Kpi",
+      "status": "Unavailable",
+      "sequence": 1,
+      "emittedAt": "2026-04-29T12:34:56.789Z",
+      "refreshHint": "Static",
+      "snapshot": null,
+      "unavailableReasonLocalizationKey": "Widget:Unavailable"
+    }
+  ]
+}
+```
+
+Per-widget fields disambiguate two concerns the early draft conflated: `widgetType` is the declarative kind discriminator (mirror of `WidgetDefinition`'s `[JsonDerivedType]` `"type"` tag), `status` is the runtime outcome (`Snapshot` / `Unavailable` / `Error`).
+
+Enum values travel as PascalCase strings on the wire (ADR-039 §6.1) — `RefreshHint`, `WidgetSnapshotStatus`, `MetricValueKind`, etc. all serialise that way. Frontend TypeScript types match exactly: `type RefreshHint = "Static" | "Dynamic" | "Realtime"`.
+
+### Guarantees
+
+- **Permission gate** — widgets carrying a `RequiredPermission` the user lacks short-circuit to `Unavailable` BEFORE the typed renderer runs. The dashboard returns `200` with the unreadable widget masked; no `403` on the whole request, and the underlying metric / query is never touched.
+- **Unknown kind = `Error`, not `500`** — a `WidgetType` with no registered `IWidgetInstanceRenderer` (module unloaded, version mismatch) becomes an `Error` envelope. Other widgets continue.
+- **Per-widget exception isolation** — a renderer that throws is logged server-side and surfaced as `Error`. `OperationCanceledException` propagates unchanged (caller cancellation honoured).
+- **Deterministic ordering** — widgets stream out in `WidgetInstance.Position` order regardless of which renderer is faster. The frontend reconciles future incremental push messages by widget id, not position.
+
+### Frontend cache identity — per-widget, not per-bundle
+
+The bundle response is a transport optimisation (one HTTP round-trip over N widgets), not the cache identity. The `useDashboard` hook splits the payload into one TanStack Query entry per widget (`['dashboard', dashboardId, 'widget', widgetId]`) before storing it. This single decision unlocks two future invariants:
+
+- **Push-message reconciliation.** When a future SSE / WebSocket transport emits `{ widgetId, sequence, delta }`, the hook updates only the matching cache entry. No global refetch, no cross-widget invalidation cascade.
+- **Independent staleness per widget.** Static-hint widgets stay fresh for 5 min; dynamic widgets refresh at 60–120 s. Per-widget cache entries let TanStack apply the right TTL per kind without recomputing the whole dashboard on the first refresh tick.
+
 ## Architecture & validation
 
 - **Endpoint metadata** — every route declares the five mandatory OpenAPI
@@ -212,4 +303,5 @@ which UIs treat as benign.
 - [Analytics inline metrics](/dotnet/business/analytics/inline-metrics/) — How the metrics surfaced by `KpiWidget` are declared and rendered.
 - [Analytics conventions](/dotnet/business/analytics/conventions/) — Naming formula, period tokens, and the empty-set semantics shared with widget renderers.
 - [ADR-038](/dotnet/architecture/adr/038-analytics-dashboard-definition-vs-aggregate/) — boundary between the catalogue entry and the persisted aggregate.
+- [ADR-039](/dotnet/architecture/adr/039-widget-renderer-architecture/) — widget renderer architecture: `IWidgetInstanceRenderer`, `IDashboardRenderer`, JSON boundary, error isolation, frontend cache identity.
 - [Permissions](https://github.com/granit-fx/granit-dotnet/blob/develop/src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs) — full source of the permission constants.
