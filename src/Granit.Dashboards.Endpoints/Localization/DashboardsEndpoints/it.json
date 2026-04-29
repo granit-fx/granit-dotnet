@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Gestire i dashboard del tenant (importare dalla definizione, modificare, pubblicare, archiviare, ripristinare)",
     "Permission:Dashboards.Instances.Read": "Leggere i dashboard del tenant (elenco e lettura per id, inclusa la rilevazione del drift)",
     "PermissionGroup:Dashboards": "Dashboard",
+    "Widget:Error": "Errore di rendering del widget",
+    "Widget:Error.UnknownWidgetType": "Tipo di widget non disponibile — il modulo che lo fornisce potrebbe essere stato scaricato",
     "Widget:Unavailable": "Widget non disponibile",
     "Widget:Unavailable.MapGeographyNotImplemented": "Widget mappa PostGIS non ancora supportati",
     "Widget:Unavailable.MetricNotFound": "Metrica non trovata",

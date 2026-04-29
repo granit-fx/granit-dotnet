@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "テナントスコープのダッシュボードを管理する（定義からインポート、編集、公開、アーカイブ、復元）",
     "Permission:Dashboards.Instances.Read": "テナントスコープのダッシュボードを読み取る（一覧、ID 単一読み取り、ドリフト検出を含む）",
     "PermissionGroup:Dashboards": "ダッシュボード",
+    "Widget:Error": "ウィジェットのレンダリングに失敗しました",
+    "Widget:Error.UnknownWidgetType": "ウィジェット タイプを利用できません — 提供元のモジュールがアンロードされている可能性があります",
     "Widget:Unavailable": "ウィジェットを利用できません",
     "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS マップ ウィジェットはまだサポートされていません",
     "Widget:Unavailable.MetricNotFound": "メトリックが見つかりません",

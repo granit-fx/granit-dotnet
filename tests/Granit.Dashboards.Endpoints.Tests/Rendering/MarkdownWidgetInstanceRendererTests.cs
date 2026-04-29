@@ -40,7 +40,7 @@ public sealed class MarkdownWidgetInstanceRendererTests
         envelope.RefreshHint.ShouldBe(RefreshHint.Static);
         envelope.EmittedAt.ShouldBe(Now);
         envelope.Sequence.ShouldBe(1);
-        envelope.UnavailableReasonLocalizationKey.ShouldBeNull();
+        envelope.ReasonLocalizationKey.ShouldBeNull();
 
         envelope.Snapshot.ShouldNotBeNull();
         envelope.Snapshot!.Value

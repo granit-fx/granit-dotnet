@@ -68,7 +68,8 @@ internal sealed partial class DashboardRenderer(
                     widgetType: widget.WidgetType,
                     sequence: 1,
                     emittedAt: emittedAt,
-                    refreshHint: RefreshHint.Static)));
+                    refreshHint: RefreshHint.Static,
+                    reasonLocalizationKey: "Widget:Error.UnknownWidgetType")));
                 continue;
             }
 

@@ -48,7 +48,7 @@ public sealed class MapWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Map");
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public sealed class MapWidgetInstanceRendererTests
             TestContext.Current.CancellationToken);
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.MapGeographyNotImplemented");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.MapGeographyNotImplemented");
     }
 
     [Fact]

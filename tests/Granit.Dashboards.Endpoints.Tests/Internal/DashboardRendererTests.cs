@@ -103,6 +103,7 @@ public sealed class DashboardRendererTests
 
         result.Widgets[0].Envelope.Status.ShouldBe(WidgetSnapshotStatus.Error);
         result.Widgets[0].Envelope.WidgetType.ShouldBe("PhantomKind");
+        result.Widgets[0].Envelope.ReasonLocalizationKey.ShouldBe("Widget:Error.UnknownWidgetType");
     }
 
     [Fact]
@@ -124,6 +125,7 @@ public sealed class DashboardRendererTests
         result.Widgets[0].Envelope.Status.ShouldBe(WidgetSnapshotStatus.Snapshot);
         result.Widgets[1].Envelope.Status.ShouldBe(WidgetSnapshotStatus.Error);
         result.Widgets[1].Envelope.WidgetType.ShouldBe("Boom");
+        result.Widgets[1].Envelope.ReasonLocalizationKey.ShouldBe("Widget:Error");
         result.Widgets[2].Envelope.Status.ShouldBe(WidgetSnapshotStatus.Snapshot);
     }
 

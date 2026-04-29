@@ -59,7 +59,7 @@ public sealed class StubDatasourceEvaluatorsTests
             TestContext.Current.CancellationToken);
 
         result.Payload.ShouldBeNull();
-        result.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryAggregateNotFound");
+        result.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryAggregateNotFound");
         result.RefreshHint.ShouldBe(RefreshHint.Static);
     }
 
@@ -209,7 +209,7 @@ public sealed class StubDatasourceEvaluatorsTests
             TestContext.Current.CancellationToken);
 
         result.Payload.ShouldBeNull();
-        result.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.TelemetryNotImplemented");
+        result.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.TelemetryNotImplemented");
         result.RefreshHint.ShouldBe(RefreshHint.Static);
     }
 }

@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Tenant-spezifische Dashboards verwalten (aus Definition importieren, bearbeiten, veröffentlichen, archivieren, wiederherstellen)",
     "Permission:Dashboards.Instances.Read": "Tenant-spezifische Dashboards lesen (Liste und Lesen anhand der ID, einschließlich Drift-Erkennung)",
     "PermissionGroup:Dashboards": "Dashboards",
+    "Widget:Error": "Widget konnte nicht gerendert werden",
+    "Widget:Error.UnknownWidgetType": "Widgettyp nicht verfügbar — das bereitstellende Modul wurde möglicherweise entladen",
     "Widget:Unavailable": "Widget nicht verfügbar",
     "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS-Karten-Widgets noch nicht unterstützt",
     "Widget:Unavailable.MetricNotFound": "Metrik nicht gefunden",

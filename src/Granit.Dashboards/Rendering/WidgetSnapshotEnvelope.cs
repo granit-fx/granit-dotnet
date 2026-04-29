@@ -24,7 +24,7 @@ namespace Granit.Dashboards.Rendering;
 /// <param name="Sequence">Always <c>1</c> in pull mode; future push transport increments per (widget instance, tenant). Locked v1 per EPIC #1366 invariant #2.</param>
 /// <param name="EmittedAt">Server-side timestamp of the computation.</param>
 /// <param name="RefreshHint">Pull / push transport hint inherited from the underlying definition.</param>
-/// <param name="UnavailableReasonLocalizationKey">Localization key for the user-facing reason (e.g. <c>"Widget:Unavailable"</c>) when <see cref="Status"/> is <see cref="WidgetSnapshotStatus.Unavailable"/>; <see langword="null"/> otherwise.</param>
+/// <param name="ReasonLocalizationKey">Localization key for the user-facing reason — set on <see cref="WidgetSnapshotStatus.Unavailable"/> (e.g. <c>"Widget:Unavailable.MetricNotFound"</c>) and on <see cref="WidgetSnapshotStatus.Error"/> (e.g. <c>"Widget:Error.UnknownWidgetType"</c>); <see langword="null"/> on <see cref="WidgetSnapshotStatus.Snapshot"/>. The dashboard render endpoint never resolves the key server-side — the frontend is the only translation point so the same envelope can be cached across user locales.</param>
 public sealed record WidgetSnapshotEnvelope(
     WidgetSnapshotStatus Status,
     string WidgetType,
@@ -32,7 +32,7 @@ public sealed record WidgetSnapshotEnvelope(
     long Sequence,
     DateTimeOffset EmittedAt,
     RefreshHint RefreshHint,
-    string? UnavailableReasonLocalizationKey = null)
+    string? ReasonLocalizationKey = null)
 {
     /// <summary>Snapshot envelope — the typed payload is in <paramref name="snapshot"/>, status is <see cref="WidgetSnapshotStatus.Snapshot"/>.</summary>
     public static WidgetSnapshotEnvelope ForSnapshot(
@@ -52,11 +52,12 @@ public sealed record WidgetSnapshotEnvelope(
         string reasonLocalizationKey = "Widget:Unavailable")
         => new(WidgetSnapshotStatus.Unavailable, widgetType, Snapshot: null, sequence, emittedAt, refreshHint, reasonLocalizationKey);
 
-    /// <summary>Error envelope — the renderer threw. The dashboard bundle stays 200; the error is logged server-side, never surfaced verbatim to the client.</summary>
+    /// <summary>Error envelope — the renderer threw, or the widget's <c>WidgetType</c> has no registered renderer. The dashboard bundle stays 200; the error is logged server-side, never surfaced verbatim to the client.</summary>
     public static WidgetSnapshotEnvelope Error(
         string widgetType,
         long sequence,
         DateTimeOffset emittedAt,
-        RefreshHint refreshHint)
-        => new(WidgetSnapshotStatus.Error, widgetType, Snapshot: null, sequence, emittedAt, refreshHint);
+        RefreshHint refreshHint,
+        string reasonLocalizationKey = "Widget:Error")
+        => new(WidgetSnapshotStatus.Error, widgetType, Snapshot: null, sequence, emittedAt, refreshHint, reasonLocalizationKey);
 }

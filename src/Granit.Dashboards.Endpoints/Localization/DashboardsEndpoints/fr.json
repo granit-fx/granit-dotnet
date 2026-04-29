@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Gérer les tableaux de bord du locataire (importer depuis une définition, éditer, publier, archiver, restaurer)",
     "Permission:Dashboards.Instances.Read": "Lire les tableaux de bord du locataire (liste et lecture par identifiant, détection de dérive)",
     "PermissionGroup:Dashboards": "Tableaux de bord",
+    "Widget:Error": "Échec du rendu du widget",
+    "Widget:Error.UnknownWidgetType": "Type de widget indisponible — le module qui le fournit a peut-être été déchargé",
     "Widget:Unavailable": "Widget indisponible",
     "Widget:Unavailable.MapGeographyNotImplemented": "Cartes PostGIS non encore prises en charge",
     "Widget:Unavailable.MetricNotFound": "Métrique introuvable",

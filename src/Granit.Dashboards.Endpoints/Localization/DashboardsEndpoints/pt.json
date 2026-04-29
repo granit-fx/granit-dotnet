@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Gerir painéis do inquilino (importar a partir de definição, editar, publicar, arquivar, restaurar)",
     "Permission:Dashboards.Instances.Read": "Ler painéis do inquilino (lista e leitura por id, incluindo deteção de desvio)",
     "PermissionGroup:Dashboards": "Painéis",
+    "Widget:Error": "Falha ao renderizar o widget",
+    "Widget:Error.UnknownWidgetType": "Tipo de widget indisponível — o módulo que o fornece pode ter sido descarregado",
     "Widget:Unavailable": "Widget indisponível",
     "Widget:Unavailable.MapGeographyNotImplemented": "Widgets de mapa PostGIS ainda não suportados",
     "Widget:Unavailable.MetricNotFound": "Métrica não encontrada",

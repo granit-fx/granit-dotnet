@@ -49,7 +49,7 @@ public sealed class TableWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Table");
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
     }
 
     [Fact]

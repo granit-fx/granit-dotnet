@@ -13726,7 +13726,7 @@
         {
           "name": "Error",
           "kind": "method",
-          "signature": "Error(string widgetType, long sequence, DateTimeOffset emittedAt, RefreshHint refreshHint)",
+          "signature": "Error(string widgetType, long sequence, DateTimeOffset emittedAt, RefreshHint refreshHint, string reasonLocalizationKey = \"Widget:Error\")",
           "returnType": "WidgetSnapshotEnvelope"
         }
       ]

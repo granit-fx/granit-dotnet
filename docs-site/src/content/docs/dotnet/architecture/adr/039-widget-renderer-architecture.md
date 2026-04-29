@@ -102,13 +102,13 @@ public sealed record WidgetSnapshotEnvelope(
     long Sequence,
     DateTimeOffset EmittedAt,
     RefreshHint RefreshHint,
-    string? UnavailableReasonLocalizationKey = null);
+    string? ReasonLocalizationKey = null);          // set on Unavailable AND Error; null on Snapshot
 
 public enum WidgetSnapshotStatus
 {
     Snapshot,       // Snapshot is non-null, the typed payload for the kind
-    Unavailable,    // Permission denied — UnavailableReasonLocalizationKey is set
-    Error,          // Renderer threw an unexpected exception — Snapshot is null
+    Unavailable,    // Permission denied or referenced datasource missing — ReasonLocalizationKey is set
+    Error,          // Renderer threw or WidgetType unknown — Snapshot is null, ReasonLocalizationKey is set
 }
 ```
 
@@ -354,7 +354,7 @@ unchanged — one source of truth for "this metric, this tenant, this period".
       "sequence": 1,
       "refreshHint": "Dynamic",
       "snapshot": null,
-      "unavailableReasonLocalizationKey": "Widget:Unavailable"
+      "reasonLocalizationKey": "Widget:Unavailable"
     }
   ]
 }
@@ -470,7 +470,7 @@ internal sealed class KpiWidgetInstanceRenderer(
                 sequence: 1, emittedAt: clock.Now, refreshHint: evaluation.RefreshHint)
             : WidgetSnapshotEnvelope.Unavailable(WidgetType,
                 sequence: 1, emittedAt: clock.Now, refreshHint: evaluation.RefreshHint,
-                reasonLocalizationKey: evaluation.UnavailableReasonLocalizationKey ?? "Widget:Unavailable");
+                reasonLocalizationKey: evaluation.ReasonLocalizationKey ?? "Widget:Unavailable");
     }
 }
 
@@ -486,7 +486,7 @@ public interface IDatasourceEvaluator<TDatasource> where TDatasource : Datasourc
 public sealed record KpiEvaluation(
     MetricSnapshotPayload? Payload,                      // null when unavailable
     RefreshHint RefreshHint,
-    string? UnavailableReasonLocalizationKey = null);    // surfaced when Payload is null
+    string? ReasonLocalizationKey = null);               // surfaced when Payload is null
 ```
 
 The evaluator returns `KpiEvaluation` (envelope-shaped) rather than

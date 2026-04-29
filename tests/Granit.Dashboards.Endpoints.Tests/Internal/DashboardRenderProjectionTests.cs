@@ -58,7 +58,7 @@ public sealed class DashboardRenderProjectionTests
         w.RefreshHint.ShouldBe(RefreshHint.Dynamic);
         w.Snapshot.ShouldNotBeNull();
         w.Snapshot!.Value.GetProperty("value").GetInt32().ShouldBe(42);
-        w.UnavailableReasonLocalizationKey.ShouldBeNull();
+        w.ReasonLocalizationKey.ShouldBeNull();
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public sealed class DashboardRenderProjectionTests
         DashboardRenderedWidgetResponse w = response.Widgets[0];
         w.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         w.Snapshot.ShouldBeNull();
-        w.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.MetricNotFound");
+        w.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.MetricNotFound");
     }
 
     [Theory]

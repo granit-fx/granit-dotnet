@@ -29,7 +29,7 @@ internal static class DashboardRenderProjection
                 EmittedAt: rw.Envelope.EmittedAt,
                 RefreshHint: rw.Envelope.RefreshHint,
                 Snapshot: rw.Envelope.Snapshot,
-                UnavailableReasonLocalizationKey: rw.Envelope.UnavailableReasonLocalizationKey))];
+                ReasonLocalizationKey: rw.Envelope.ReasonLocalizationKey))];
 
         return new DashboardRenderResponse(
             DashboardId: result.DashboardId,

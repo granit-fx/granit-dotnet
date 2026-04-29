@@ -52,7 +52,7 @@ public sealed class MetricDatasourceEvaluatorTests
         result.Payload.NoData.ShouldBeFalse();
         result.Payload.Previous.ShouldBeNull();
         result.RefreshHint.ShouldBe(RefreshHint.Dynamic);
-        result.UnavailableReasonLocalizationKey.ShouldBeNull();
+        result.ReasonLocalizationKey.ShouldBeNull();
     }
 
     [Fact]
@@ -95,7 +95,7 @@ public sealed class MetricDatasourceEvaluatorTests
             TestContext.Current.CancellationToken);
 
         result.Payload.ShouldBeNull();
-        result.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.MetricNotFound");
+        result.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.MetricNotFound");
         result.RefreshHint.ShouldBe(RefreshHint.Static);
     }
 

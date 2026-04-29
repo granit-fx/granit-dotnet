@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "टेनेंट डैशबोर्ड प्रबंधित करें (परिभाषा से आयात, संपादन, प्रकाशन, संग्रह, पुनर्स्थापन)",
     "Permission:Dashboards.Instances.Read": "टेनेंट डैशबोर्ड पढ़ें (सूची और आईडी द्वारा पढ़ना, ड्रिफ्ट डिटेक्शन सहित)",
     "PermissionGroup:Dashboards": "डैशबोर्ड",
+    "Widget:Error": "विजेट रेंडर करने में विफल",
+    "Widget:Error.UnknownWidgetType": "विजेट प्रकार अनुपलब्ध — इसे प्रदान करने वाला मॉड्यूल अनलोड हो सकता है",
     "Widget:Unavailable": "विजेट अनुपलब्ध",
     "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS मानचित्र विजेट अभी तक समर्थित नहीं हैं",
     "Widget:Unavailable.MetricNotFound": "मेट्रिक नहीं मिली",

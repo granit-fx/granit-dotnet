@@ -66,7 +66,7 @@ public sealed class KpiWidgetInstanceRendererTests
         envelope.RefreshHint.ShouldBe(RefreshHint.Dynamic);
         envelope.EmittedAt.ShouldBe(Now);
         envelope.Sequence.ShouldBe(1);
-        envelope.UnavailableReasonLocalizationKey.ShouldBeNull();
+        envelope.ReasonLocalizationKey.ShouldBeNull();
 
         envelope.Snapshot.ShouldNotBeNull();
         envelope.Snapshot!.Value.GetProperty("value").GetDecimal().ShouldBe(42m);
@@ -91,7 +91,7 @@ public sealed class KpiWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Kpi");
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryAggregateNotImplemented");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryAggregateNotImplemented");
         envelope.Snapshot.ShouldBeNull();
     }
 
@@ -112,7 +112,7 @@ public sealed class KpiWidgetInstanceRendererTests
         _telemetryEvaluator.LastDatasource.TelemetryKey.ShouldBe("temperature");
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.TelemetryNotImplemented");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.TelemetryNotImplemented");
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public sealed class KpiWidgetInstanceRendererTests
         _metricEvaluator.Result = new KpiEvaluation(
             Payload: null,
             RefreshHint: RefreshHint.Static,
-            UnavailableReasonLocalizationKey: null);
+            ReasonLocalizationKey: null);
 
         WidgetSnapshotEnvelope envelope = await BuildRenderer().RenderAsync(
             BuildWidget("{\"kind\":\"metric\",\"metricName\":\"Granit.Test.Count\"}"),
@@ -132,7 +132,7 @@ public sealed class KpiWidgetInstanceRendererTests
             TestContext.Current.CancellationToken);
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable");
     }
 
     [Fact]

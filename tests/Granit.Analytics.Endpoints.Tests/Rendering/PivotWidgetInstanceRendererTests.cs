@@ -48,7 +48,7 @@ public sealed class PivotWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Pivot");
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
     }
 
     [Fact]

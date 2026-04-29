@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Manage tenant-scoped dashboards (import from definition, edit, publish, archive, restore)",
     "Permission:Dashboards.Instances.Read": "Read tenant-scoped dashboards (list and read-by-id, including drift detection)",
     "PermissionGroup:Dashboards": "Dashboards",
+    "Widget:Error": "Widget failed to render",
+    "Widget:Error.UnknownWidgetType": "Widget kind is unavailable — the module that ships it may have been unloaded",
     "Widget:Unavailable": "Widget unavailable",
     "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS map widgets not yet supported",
     "Widget:Unavailable.MetricNotFound": "Metric not found",

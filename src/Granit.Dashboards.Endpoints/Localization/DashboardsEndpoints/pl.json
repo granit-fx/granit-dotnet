@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Zarządzanie pulpitami dzierżawcy (importowanie z definicji, edycja, publikowanie, archiwizowanie, przywracanie)",
     "Permission:Dashboards.Instances.Read": "Odczyt pulpitów dzierżawcy (lista i odczyt po identyfikatorze, w tym wykrywanie dryfu)",
     "PermissionGroup:Dashboards": "Pulpity",
+    "Widget:Error": "Nie udało się wyrenderować widżetu",
+    "Widget:Error.UnknownWidgetType": "Typ widżetu niedostępny — moduł, który go dostarcza, mógł zostać wyładowany",
     "Widget:Unavailable": "Widget niedostępny",
     "Widget:Unavailable.MapGeographyNotImplemented": "Widżety map PostGIS jeszcze nieobsługiwane",
     "Widget:Unavailable.MetricNotFound": "Nie znaleziono metryki",

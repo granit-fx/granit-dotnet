@@ -49,7 +49,7 @@ public sealed class ChartWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Chart");
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryNotFound");
     }
 
     [Fact]

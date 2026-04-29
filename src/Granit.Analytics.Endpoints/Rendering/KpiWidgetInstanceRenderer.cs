@@ -83,6 +83,6 @@ internal sealed class KpiWidgetInstanceRenderer(
                 sequence: 1,
                 emittedAt: emittedAt,
                 refreshHint: evaluation.RefreshHint,
-                reasonLocalizationKey: evaluation.UnavailableReasonLocalizationKey ?? "Widget:Unavailable");
+                reasonLocalizationKey: evaluation.ReasonLocalizationKey ?? "Widget:Unavailable");
     }
 }

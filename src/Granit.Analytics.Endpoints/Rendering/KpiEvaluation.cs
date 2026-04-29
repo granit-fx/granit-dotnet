@@ -23,11 +23,11 @@ namespace Granit.Analytics.Endpoints.Rendering;
 /// </remarks>
 /// <param name="Payload">The KPI snapshot payload — non-null when the evaluation succeeded; <see langword="null"/> when the datasource yielded no usable result.</param>
 /// <param name="RefreshHint">The refresh hint surfaced on the wire envelope. For metric paths it mirrors the underlying <c>MetricDefinition.RefreshHint</c>; for stub paths it is <see cref="RefreshHint.Static"/>.</param>
-/// <param name="UnavailableReasonLocalizationKey">Localization key surfaced on the unavailable envelope. Ignored when <paramref name="Payload"/> is non-null. Defaults to <c>Widget:Unavailable</c> when null on an unavailable result.</param>
+/// <param name="ReasonLocalizationKey">Localization key surfaced on the unavailable envelope. Ignored when <paramref name="Payload"/> is non-null. Defaults to <c>Widget:Unavailable</c> when null on an unavailable result.</param>
 public sealed record KpiEvaluation(
     MetricSnapshotPayload? Payload,
     RefreshHint RefreshHint,
-    string? UnavailableReasonLocalizationKey = null)
+    string? ReasonLocalizationKey = null)
 {
     /// <summary>Builds a successful evaluation carrying the supplied payload.</summary>
     public static KpiEvaluation Snapshot(MetricSnapshotPayload payload, RefreshHint refreshHint)

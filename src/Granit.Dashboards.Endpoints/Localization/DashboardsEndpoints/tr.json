@@ -5,6 +5,8 @@
     "Permission:Dashboards.Instances.Manage": "Kiracıya özel panoları yönet (tanımdan içe aktar, düzenle, yayınla, arşivle, geri yükle)",
     "Permission:Dashboards.Instances.Read": "Kiracıya özel panoları oku (liste ve id ile okuma, sürüm sapması tespiti dâhil)",
     "PermissionGroup:Dashboards": "Panolar",
+    "Widget:Error": "Widget oluşturulamadı",
+    "Widget:Error.UnknownWidgetType": "Widget türü kullanılamıyor — onu sağlayan modül kaldırılmış olabilir",
     "Widget:Unavailable": "Widget kullanılamıyor",
     "Widget:Unavailable.MapGeographyNotImplemented": "PostGIS harita widget'ları henüz desteklenmiyor",
     "Widget:Unavailable.MetricNotFound": "Metrik bulunamadı",

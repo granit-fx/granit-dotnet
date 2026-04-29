@@ -43,7 +43,7 @@ public sealed record DashboardRenderPeriodResponse(DateTimeOffset From, DateTime
 /// <param name="EmittedAt">Server-side timestamp of the widget's computation.</param>
 /// <param name="RefreshHint">Pull / push transport hint — drives the frontend's per-widget cache TTL.</param>
 /// <param name="Snapshot">Pre-serialised typed payload. <see langword="null"/> when <see cref="Status"/> is not <see cref="WidgetSnapshotStatus.Snapshot"/>.</param>
-/// <param name="UnavailableReasonLocalizationKey">Localization key for the user-facing reason when <see cref="Status"/> is <see cref="WidgetSnapshotStatus.Unavailable"/>; <see langword="null"/> otherwise.</param>
+/// <param name="ReasonLocalizationKey">Localization key for the user-facing reason — set on <see cref="WidgetSnapshotStatus.Unavailable"/> and <see cref="WidgetSnapshotStatus.Error"/>; <see langword="null"/> on <see cref="WidgetSnapshotStatus.Snapshot"/>. Resolved client-side so the same envelope can be cached across user locales.</param>
 public sealed record DashboardRenderedWidgetResponse(
     Guid Id,
     string WidgetType,
@@ -52,4 +52,4 @@ public sealed record DashboardRenderedWidgetResponse(
     DateTimeOffset EmittedAt,
     RefreshHint RefreshHint,
     JsonElement? Snapshot,
-    string? UnavailableReasonLocalizationKey = null);
+    string? ReasonLocalizationKey = null);

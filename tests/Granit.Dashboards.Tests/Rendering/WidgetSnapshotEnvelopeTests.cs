@@ -40,7 +40,7 @@ public sealed class WidgetSnapshotEnvelopeTests
         envelope.Sequence.ShouldBe(1);
         envelope.EmittedAt.ShouldBe(SampleTime);
         envelope.RefreshHint.ShouldBe(RefreshHint.Dynamic);
-        envelope.UnavailableReasonLocalizationKey.ShouldBeNull();
+        envelope.ReasonLocalizationKey.ShouldBeNull();
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public sealed class WidgetSnapshotEnvelopeTests
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.WidgetType.ShouldBe("Chart");
         envelope.Snapshot.ShouldBeNull();
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable");
     }
 
     [Fact]
@@ -68,11 +68,11 @@ public sealed class WidgetSnapshotEnvelopeTests
             refreshHint: RefreshHint.Static,
             reasonLocalizationKey: "Widget:Unavailable.AliasUnresolved");
 
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.AliasUnresolved");
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.AliasUnresolved");
     }
 
     [Fact]
-    public void Error_BuildsEnvelopeWithoutSnapshotOrReasonKey()
+    public void Error_BuildsEnvelopeWithoutSnapshot_AndDefaultReasonKey()
     {
         var envelope = WidgetSnapshotEnvelope.Error(
             widgetType: "Map",
@@ -83,7 +83,20 @@ public sealed class WidgetSnapshotEnvelopeTests
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Error);
         envelope.WidgetType.ShouldBe("Map");
         envelope.Snapshot.ShouldBeNull();
-        envelope.UnavailableReasonLocalizationKey.ShouldBeNull();
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Error");
+    }
+
+    [Fact]
+    public void Error_AcceptsCustomReasonKey()
+    {
+        var envelope = WidgetSnapshotEnvelope.Error(
+            widgetType: "Kpi",
+            sequence: 1,
+            emittedAt: SampleTime,
+            refreshHint: RefreshHint.Static,
+            reasonLocalizationKey: "Widget:Error.UnknownWidgetType");
+
+        envelope.ReasonLocalizationKey.ShouldBe("Widget:Error.UnknownWidgetType");
     }
 
     [Fact]
