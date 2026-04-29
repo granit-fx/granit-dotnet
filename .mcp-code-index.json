@@ -635,6 +635,7 @@
         "Granit.Dashboards.EntityFrameworkCore",
         "Granit.Authorization",
         "Granit.Http.Abstractions",
+        "Granit.Timing",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -13231,6 +13232,22 @@
       ]
     },
     {
+      "name": "DashboardsRenderingServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Endpoints.Extensions.DashboardsRenderingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsRenderingServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitDashboardsContentWidgetRenderers",
+          "kind": "method",
+          "signature": "AddGranitDashboardsContentWidgetRenderers(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitDashboardsEndpointsModule",
       "fqn": "Granit.Dashboards.Endpoints.GranitDashboardsEndpointsModule",
       "kind": "class",
@@ -13305,6 +13322,33 @@
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
       "line": 19,
+      "members": []
+    },
+    {
+      "name": "ImageWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Endpoints.Rendering.ImageWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Rendering/ImageWidgetSnapshot.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "MarkdownWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Endpoints.Rendering.MarkdownWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Rendering/MarkdownWidgetSnapshot.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TextWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Endpoints.Rendering.TextWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Rendering/TextWidgetSnapshot.cs",
+      "line": 13,
       "members": []
     },
     {
