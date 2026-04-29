@@ -73,23 +73,9 @@ internal sealed class ChartWidgetInstanceRenderer(
                 reasonLocalizationKey: "Widget:Unavailable.QueryNotFound");
         }
 
-        ChartRunnerResult? result = await runner
+        ChartRunnerResult result = await runner
             .ExecuteAsync(config.GroupBy, config.Aggregation, config.Field, cancellationToken)
             .ConfigureAwait(false);
-
-        if (result is null)
-        {
-            // Sum / Avg / Min / Max with field aggregation aren't wired yet —
-            // the runner returned null. Surface a dedicated reason so the UI
-            // can distinguish "operation not implemented" from "query not
-            // found".
-            return WidgetSnapshotEnvelope.Unavailable(
-                widgetType: WidgetType,
-                sequence: 1,
-                emittedAt: emittedAt,
-                refreshHint: RefreshHint.Static,
-                reasonLocalizationKey: "Widget:Unavailable.ChartOperationNotImplemented");
-        }
 
         ChartWidgetSnapshot snapshot = new(
             ChartType: config.ChartType,

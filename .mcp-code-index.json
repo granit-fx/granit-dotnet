@@ -4398,7 +4398,7 @@
       "kind": "record",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Rendering/ChartWidgetSnapshot.cs",
-      "line": 28,
+      "line": 33,
       "members": []
     },
     {

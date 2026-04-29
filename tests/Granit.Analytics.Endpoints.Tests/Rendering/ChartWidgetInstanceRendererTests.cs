@@ -83,16 +83,18 @@ public sealed class ChartWidgetInstanceRendererTests
     }
 
     [Theory]
-    [InlineData(AggregateFunction.Sum)]
-    [InlineData(AggregateFunction.Avg)]
-    [InlineData(AggregateFunction.Min)]
-    [InlineData(AggregateFunction.Max)]
-    public async Task RenderAsync_NonCountAggregation_ReturnsUnavailable(AggregateFunction aggregation)
+    [InlineData(AggregateFunction.Sum, "12")]
+    [InlineData(AggregateFunction.Avg, "12")]
+    [InlineData(AggregateFunction.Min, "12")]
+    [InlineData(AggregateFunction.Max, "12")]
+    public async Task RenderAsync_NumericAggregation_BuildsSnapshotWithDecimalValue(
+        AggregateFunction aggregation, string expectedValue)
     {
-        // The runner returns null for non-Count aggregations (B3-5 staging) —
-        // the renderer surfaces a dedicated reason key. The frontend can
-        // distinguish "operation not yet implemented" from "query not found".
-        StubRunner runner = new("Granit.Test.Items", buckets: []) { ReturnsNull = true };
+        // Sum/Avg/Min/Max all flow through the runner to the snapshot now —
+        // no special "OperationNotImplemented" branch (B3-5bis closes that gap).
+        StubRunner runner = new(
+            "Granit.Test.Items",
+            buckets: [new ChartRunnerBucket("Open", decimal.Parse(expectedValue, System.Globalization.CultureInfo.InvariantCulture))]);
 
         ChartWidgetInstanceRenderer renderer = new(new ChartService([runner]), _clock);
 
@@ -103,8 +105,32 @@ public sealed class ChartWidgetInstanceRendererTests
             BuildContext(),
             TestContext.Current.CancellationToken);
 
-        envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
-        envelope.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.ChartOperationNotImplemented");
+        envelope.Status.ShouldBe(WidgetSnapshotStatus.Snapshot);
+        System.Text.Json.JsonElement bucket = envelope.Snapshot!.Value.GetProperty("buckets")[0];
+        bucket.GetProperty("label").GetString().ShouldBe("Open");
+        bucket.GetProperty("value").GetDecimal().ShouldBe(12m);
+    }
+
+    [Fact]
+    public async Task RenderAsync_NullBucketValue_SerialisesAsJsonNull()
+    {
+        // Avg/Min/Max over an empty group surfaces null on the bucket — wire
+        // representation is JSON null, not an omitted field.
+        StubRunner runner = new(
+            "Granit.Test.Items",
+            buckets: [new ChartRunnerBucket("Open", null)]);
+
+        ChartWidgetInstanceRenderer renderer = new(new ChartService([runner]), _clock);
+
+        WidgetSnapshotEnvelope envelope = await renderer.RenderAsync(
+            BuildWidget(
+                "Granit.Test.Items",
+                "{\"groupBy\":\"Status\",\"aggregation\":\"Avg\",\"field\":\"Amount\",\"chartType\":\"Bar\"}"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        System.Text.Json.JsonElement bucket = envelope.Snapshot!.Value.GetProperty("buckets")[0];
+        bucket.GetProperty("value").ValueKind.ShouldBe(System.Text.Json.JsonValueKind.Null);
     }
 
     [Theory]
@@ -174,13 +200,11 @@ public sealed class ChartWidgetInstanceRendererTests
     {
         public string Name { get; } = name;
 
-        public bool ReturnsNull { get; init; }
-
         public string? LastGroupBy { get; private set; }
         public AggregateFunction LastAggregation { get; private set; }
         public string? LastField { get; private set; }
 
-        public Task<ChartRunnerResult?> ExecuteAsync(
+        public Task<ChartRunnerResult> ExecuteAsync(
             string groupBy,
             AggregateFunction aggregation,
             string? field,
@@ -189,8 +213,7 @@ public sealed class ChartWidgetInstanceRendererTests
             LastGroupBy = groupBy;
             LastAggregation = aggregation;
             LastField = field;
-            return Task.FromResult<ChartRunnerResult?>(
-                ReturnsNull ? null : new ChartRunnerResult(buckets));
+            return Task.FromResult(new ChartRunnerResult(buckets));
         }
     }
 }

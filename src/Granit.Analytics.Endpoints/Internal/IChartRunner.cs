@@ -11,20 +11,31 @@ namespace Granit.Analytics.Endpoints.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// B3-5 ships <see cref="AggregateFunction.Count"/> only — the most common
-/// chart shape ("invoices per status", "tickets per priority"). Reuses
-/// <c>IQueryEngine&lt;TEntity&gt;.ExecuteGroupedAsync</c> for the heavy
-/// lifting so chart tiles inherit the same group-by semantics, multi-tenancy
-/// filter and MaxGroupCount cap as the grid endpoint's grouping pivot.
+/// Wires every <see cref="AggregateFunction"/> member (B3-5 + B3-5bis):
+/// <see cref="AggregateFunction.Count"/> uses
+/// <c>IQueryEngine&lt;TEntity&gt;.ExecuteGroupedAsync</c> for SQL-level
+/// grouping; the numeric aggregations
+/// (<see cref="AggregateFunction.Sum"/> / <see cref="AggregateFunction.Avg"/>
+/// / <see cref="AggregateFunction.Min"/> / <see cref="AggregateFunction.Max"/>)
+/// stream the filtered entity set through <c>ExecuteStreamAsync</c> and
+/// compute the per-group aggregate in memory. The stream is capped by the
+/// QueryDefinition's <c>MaxStreamSize</c> — chart tiles are bounded data
+/// products and the in-memory pass keeps the implementation
+/// reflection-only at the property-access level (no expression-tree
+/// surgery to push the aggregation to SQL).
 /// </para>
 /// <para>
-/// <see cref="AggregateFunction.Sum"/> / <see cref="AggregateFunction.Avg"/> /
-/// <see cref="AggregateFunction.Min"/> / <see cref="AggregateFunction.Max"/>
-/// need a typed group-by expression plus per-primitive-type dispatch
-/// (mirrors <c>QueryAggregateRunner</c> B3-2ter, with an extra GroupBy axis);
-/// they ship in a follow-up slice. Until then the runner returns
-/// <see langword="null"/> for those operations and the caller surfaces a
-/// dedicated <c>Widget:Unavailable.*</c> reason.
+/// Empty-set semantics shared with the metric path (locked by tests #1374):
+/// </para>
+/// <list type="bullet">
+///   <item><c>Count</c> empty → <c>0</c>. <c>Sum</c> empty → <c>0</c> (sum-of-empty identity).</item>
+///   <item><c>Avg</c> / <c>Min</c> / <c>Max</c> empty group → <see langword="null"/> on the bucket value (the bucket is still reported; the frontend renders "—" for that data point).</item>
+/// </list>
+/// <para>
+/// Configuration errors throw — <c>IDashboardRenderer</c>'s per-widget error
+/// isolation surfaces those as <c>Error</c> envelopes per ADR-039 §3.c.
+/// Unknown field, unsupported field type and empty group-by all fall in
+/// this category.
 /// </para>
 /// </remarks>
 internal interface IChartRunner
@@ -34,16 +45,17 @@ internal interface IChartRunner
 
     /// <summary>
     /// Runs <paramref name="aggregation"/> over the entity's queryable, grouped
-    /// by <paramref name="groupBy"/>. Returns one bucket per group, ordered as
-    /// the underlying <c>ExecuteGroupedAsync</c> orders them. Returns
-    /// <see langword="null"/> when the aggregation is not yet implemented
-    /// (Sum / Avg / Min / Max in B3-5).
+    /// by <paramref name="groupBy"/>. Returns one bucket per group, ordered by
+    /// the underlying query result. Buckets carry <see langword="null"/>
+    /// values for empty-group <c>Avg</c> / <c>Min</c> / <c>Max</c>.
     /// </summary>
-    /// <param name="groupBy">Group-by field name (case-insensitive). Resolved against the QueryDefinition's column descriptors; unknown field is rejected upstream by the QueryEngine.</param>
+    /// <param name="groupBy">Group-by field name (case-insensitive).</param>
     /// <param name="aggregation">Aggregation function applied per group.</param>
     /// <param name="field">Field aggregated; required for non-Count aggregations, ignored for <see cref="AggregateFunction.Count"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task<ChartRunnerResult?> ExecuteAsync(
+    /// <exception cref="ArgumentException">Group-by is null/empty, or non-Count aggregation is missing a field, or the field is not a property of the entity.</exception>
+    /// <exception cref="NotSupportedException">Field's primitive type is not one of int / long / decimal / double.</exception>
+    Task<ChartRunnerResult> ExecuteAsync(
         string groupBy,
         AggregateFunction aggregation,
         string? field,
@@ -52,13 +64,13 @@ internal interface IChartRunner
 
 /// <summary>
 /// Outcome of an <see cref="IChartRunner.ExecuteAsync"/> call. One bucket per
-/// group; <see cref="ChartRunnerBucket.Label"/> renders directly, <see cref="ChartRunnerBucket.Value"/>
-/// is the projected aggregate value coerced to <see cref="decimal"/>.
+/// group; <see cref="ChartRunnerBucket.Label"/> renders directly,
+/// <see cref="ChartRunnerBucket.Value"/> is the projected aggregate value.
 /// </summary>
-/// <param name="Buckets">Group-aggregate results in the order surfaced by <c>IQueryEngine.ExecuteGroupedAsync</c>.</param>
+/// <param name="Buckets">Group-aggregate results in the order surfaced by the underlying query.</param>
 internal sealed record ChartRunnerResult(IReadOnlyList<ChartRunnerBucket> Buckets);
 
 /// <summary>One group's contribution to the chart series.</summary>
-/// <param name="Label">String-friendly group key (e.g. <c>"Open"</c>, <c>"Paid"</c>, <c>"2026-04"</c>). The QueryEngine builds it from the raw key; null group keys surface as <c>"(null)"</c>.</param>
-/// <param name="Value">Aggregate value for the group. Always a count (B3-5 Count-only); future Sum/Avg/Min/Max land here once the typed dispatch slice ships.</param>
-internal sealed record ChartRunnerBucket(string Label, decimal Value);
+/// <param name="Label">String-friendly group key. Null group keys surface as <c>"(null)"</c>.</param>
+/// <param name="Value">Aggregate value. <see langword="null"/> when the aggregation is <c>Avg</c>/<c>Min</c>/<c>Max</c> over a group with no usable values (frontend renders "—").</param>
+internal sealed record ChartRunnerBucket(string Label, decimal? Value);

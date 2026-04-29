@@ -24,5 +24,10 @@ public sealed record ChartWidgetSnapshot(
 
 /// <summary>One data point on the chart's category axis.</summary>
 /// <param name="Label">String-friendly group key (e.g. <c>"Open"</c>, <c>"Paid"</c>, <c>"2026-04"</c>). Null group keys surface as <c>"(null)"</c>.</param>
-/// <param name="Value">Aggregate value for the bucket — always a count in B3-5; Sum/Avg/Min/Max ship in a follow-up.</param>
-public sealed record ChartBucket(string Label, decimal Value);
+/// <param name="Value">
+/// Aggregate value for the bucket. <see langword="null"/> when the aggregation
+/// is <c>Avg</c> / <c>Min</c> / <c>Max</c> over a group with no usable values
+/// — the frontend renders "—" for that data point. <c>Count</c> and <c>Sum</c>
+/// always carry a non-null value (zero for empty groups).
+/// </param>
+public sealed record ChartBucket(string Label, decimal? Value);
