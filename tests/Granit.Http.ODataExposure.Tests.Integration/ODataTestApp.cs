@@ -4,6 +4,8 @@ using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
+using Granit.RateLimiting.Extensions;
+using Granit.RateLimiting.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -50,11 +52,17 @@ internal sealed class ODataTestApp : IAsyncDisposable
     }
 
     public static Task<ODataTestApp> CreateAsync(string connectionString)
-        => CreateAsync(connectionString, configureEntitySet: null);
+        => CreateAsync(connectionString, configureEntitySet: null, rateLimitPermitLimit: null);
+
+    public static Task<ODataTestApp> CreateAsync(
+        string connectionString,
+        Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet)
+        => CreateAsync(connectionString, configureEntitySet, rateLimitPermitLimit: null);
 
     public static async Task<ODataTestApp> CreateAsync(
         string connectionString,
-        Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet)
+        Action<ODataEntitySetBuilder<Invoice>>? configureEntitySet,
+        int? rateLimitPermitLimit)
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -80,6 +88,22 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         builder.Services.AddScoped<IQueryableSource<Invoice>, InvoiceSource>();
         builder.Services.AddGranitODataExposure();
+
+        // C3b — every OData route is gated by the "granit-odata" rate-limit
+        // policy. Tests register an in-memory limiter (no Redis) with a
+        // generous default cap; suites that exercise 429 explicitly pass a
+        // tight limit via the rateLimitPermitLimit parameter.
+        builder.Services.AddGranitRateLimiting(options =>
+        {
+            options.Enabled = true;
+            options.Policies["granit-odata"] = new RateLimitPolicyOptions
+            {
+                Algorithm = RateLimitAlgorithm.SlidingWindow,
+                PartitionBy = RateLimitPartition.Tenant,
+                PermitLimit = rateLimitPermitLimit ?? 100_000,
+                Window = TimeSpan.FromMinutes(1),
+            };
+        });
 
         WebApplication app = builder.Build();
 

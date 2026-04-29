@@ -951,7 +951,8 @@
         "Granit",
         "Granit.Authorization",
         "Granit.Http.Abstractions",
-        "Granit.QueryEngine.Abstractions"
+        "Granit.QueryEngine.Abstractions",
+        "Granit.RateLimiting"
       ],
       "framework": "net10.0"
     },
@@ -20323,7 +20324,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "MapGranitODataEndpoints",
@@ -20355,7 +20356,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/GranitHttpODataExposureModule.cs",
-      "line": 15,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",

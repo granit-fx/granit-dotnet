@@ -5,6 +5,7 @@ using Granit.Http.ODataExposure.Internal;
 using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
+using Granit.RateLimiting.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -27,6 +28,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 {
     /// <summary>Header set on the response when a user-supplied <c>$top</c> was clamped to the EntitySet's <see cref="ODataEntitySetDescriptor.MaxTop"/>. Lets observability tools spot misconfigured BI refresh jobs.</summary>
     internal const string MaxTopAppliedHeader = "OData-MaxTop-Applied";
+
+    /// <summary>Rate-limit policy name applied to every OData route in the group. Hosts configure quotas under <c>RateLimiting:Policies:granit-odata</c>.</summary>
+    public const string RateLimitPolicyName = "granit-odata";
 
     /// <summary>
     /// Maps the configured OData EntitySets under <paramref name="prefix"/>.
@@ -68,7 +72,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         IEdmModel edmModel = ODataEdmModelBuilder.Build(options.Descriptors);
 
-        RouteGroupBuilder root = endpoints.MapGroup(prefix).WithTags("OData");
+        RouteGroupBuilder root = endpoints.MapGroup(prefix)
+            .WithTags("OData")
+            .RequireGranitRateLimiting(RateLimitPolicyName);
 
         root.MapODataServiceDocument("", edmModel)
             .WithName("ODataServiceDocument")

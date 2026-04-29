@@ -91,14 +91,43 @@ Behaviour:
   `granit.odata.query.rejected` (tagged with `entity_set`, `reason`,
   `tenant_id`); every clamped `$top` bumps `granit.odata.query.top_clamped`.
 
+## Rate limiting (per tenant)
+
+Every OData route is gated by the `granit-odata` rate-limit policy from
+`Granit.RateLimiting`. The host MUST configure quotas in
+`appsettings.json`:
+
+```json
+{
+  "RateLimiting": {
+    "Policies": {
+      "granit-odata": {
+        "Algorithm": "SlidingWindow",
+        "PartitionBy": "Tenant",
+        "PermitLimit": 60,
+        "Window": "00:01:00"
+      }
+    }
+  }
+}
+```
+
+Behaviour: requests are partitioned per tenant (one bucket per tenant);
+once the bucket is empty, the route returns `429 Too Many Requests` with
+a `Retry-After` header. Accepted requests carry `X-RateLimit-Limit` and
+`X-RateLimit-Remaining` so BI tools can see how much budget is left.
+
+Recommended defaults: 60 req/min for interactive users, 600 req/min for
+service accounts (set via `Granit.Features` plan-based quotas if the
+host has that integration wired). Reduce for huge datasets where each
+request can trigger a long-running query.
+
 ## Limits
 
 - v1 is read-only — no `POST` / `PATCH` / `DELETE` per EntitySet.
 - v1 ships collection access (`GET /Invoices`); single-entity-by-key access
   (`GET /Invoices(<id>)`) is deferred upstream — see
   [OData/AspNetCoreOData#1567](https://github.com/OData/AspNetCoreOData/issues/1567).
-- Per-tenant rate limiting is a follow-up scope (deeper integration with
-  `Granit.RateLimiting`).
 - Native `Microsoft.AspNetCore.OpenApi` does not produce a complete OData
   schema (upstream [#1381](https://github.com/OData/AspNetCoreOData/issues/1381));
   the OData metadata document at `/{prefix}/$metadata` (CSDL XML) is the

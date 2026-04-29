@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
+    <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine\Granit.QueryEngine.csproj" />
