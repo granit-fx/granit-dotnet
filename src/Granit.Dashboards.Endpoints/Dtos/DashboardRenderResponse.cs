@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
 
 namespace Granit.Dashboards.Endpoints.Dtos;
@@ -33,11 +34,23 @@ public sealed record DashboardRenderPeriodResponse(DateTimeOffset From, DateTime
 
 /// <summary>
 /// One widget's slot in the bundle. Flattens the widget id alongside the
-/// envelope fields surfaced by <see cref="WidgetSnapshotEnvelope"/> — the wire
-/// shape ADR-039 §6 locks for every framework dashboard endpoint.
+/// structural metadata of the persisted <c>WidgetInstance</c>, the declarative
+/// click-handlers from the source <c>WidgetDefinition</c>, and the envelope
+/// fields produced by <see cref="WidgetSnapshotEnvelope"/>. The wire shape
+/// ADR-039 §6 locks for every framework dashboard endpoint — both the bundle
+/// path (<c>POST /dashboards/{id}/render</c>) and the per-widget single-render
+/// path (<c>POST /widgets/{kind}/render</c>) project to this same record so
+/// frontend renderers can be wrapped identically across the two paths.
 /// </summary>
 /// <param name="Id">Persisted <c>WidgetInstance.Id</c>.</param>
 /// <param name="WidgetType">Declarative kind discriminator — mirrors <c>WidgetDefinition</c>'s <c>[JsonDerivedType]</c> tag (<c>"Kpi"</c>, <c>"Markdown"</c>, …).</param>
+/// <param name="Slug">Per-widget slug, extracted from <see cref="TitleLocalizationKey"/> (<c>"Widget:{DashboardName}.{Slug}"</c>). Surfaced flat so the frontend's action dispatcher can address the widget without re-parsing the key.</param>
+/// <param name="Position">0-based dense-ranked grid position; matches <c>WidgetInstance.Position</c>.</param>
+/// <param name="Width">Grid columns spanned by the widget; matches <c>WidgetInstance.Width</c>.</param>
+/// <param name="Height">Grid rows spanned by the widget; matches <c>WidgetInstance.Height</c>.</param>
+/// <param name="TitleLocalizationKey">Localization key for the widget title (<c>Widget:{DashboardName}.{Slug}</c>); the frontend resolves it client-side.</param>
+/// <param name="Actions">Declarative click-handlers from the source <c>WidgetDefinition</c>. <see langword="null"/> when the widget declared none — the frontend dispatcher ignores it.</param>
+/// <param name="RequiredPermission">Optional per-widget permission gate; mirrors <c>WidgetInstance.RequiredPermission</c>. Already enforced server-side (lacking the permission yields <see cref="WidgetSnapshotStatus.Unavailable"/>); echoed here for the frontend's defensive UI.</param>
 /// <param name="Status">Runtime outcome (<see cref="WidgetSnapshotStatus.Snapshot"/> / <see cref="WidgetSnapshotStatus.Unavailable"/> / <see cref="WidgetSnapshotStatus.Error"/>).</param>
 /// <param name="Sequence">Always <c>1</c> in pull mode; future push transport increments per (widget, tenant). EPIC #1366 invariant #2.</param>
 /// <param name="EmittedAt">Server-side timestamp of the widget's computation.</param>
@@ -47,6 +60,13 @@ public sealed record DashboardRenderPeriodResponse(DateTimeOffset From, DateTime
 public sealed record DashboardRenderedWidgetResponse(
     Guid Id,
     string WidgetType,
+    string Slug,
+    int Position,
+    int Width,
+    int Height,
+    string TitleLocalizationKey,
+    IReadOnlyList<WidgetAction>? Actions,
+    string? RequiredPermission,
     WidgetSnapshotStatus Status,
     long Sequence,
     DateTimeOffset EmittedAt,

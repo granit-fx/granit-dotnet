@@ -13599,7 +13599,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 32,
+      "line": 33,
       "members": []
     },
     {
@@ -13617,7 +13617,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -13626,7 +13626,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 47,
+      "line": 60,
       "members": []
     },
     {

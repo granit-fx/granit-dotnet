@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Granit.Analytics;
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Endpoints.Internal;
@@ -50,6 +51,7 @@ internal static class DashboardRenderEndpoints
         [FromBody] DashboardRenderRequest? request,
         [FromServices] DashboardReader reader,
         [FromServices] IDashboardRenderer renderer,
+        [FromServices] IDashboardDefinitionRegistry definitionRegistry,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
@@ -81,6 +83,7 @@ internal static class DashboardRenderEndpoints
             .RenderAsync(dashboard, context, cancellationToken)
             .ConfigureAwait(false);
 
-        return TypedResults.Ok(DashboardRenderProjection.ToResponse(result, body.PeriodToken));
+        return TypedResults.Ok(DashboardRenderProjection.ToResponse(
+            result, dashboard, definitionRegistry, body.PeriodToken));
     }
 }
