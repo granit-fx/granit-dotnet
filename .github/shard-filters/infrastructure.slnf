@@ -90,6 +90,7 @@
       "src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj",
       "src/Granit.Wolverine.SqlServer/Granit.Wolverine.SqlServer.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
+      "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj",

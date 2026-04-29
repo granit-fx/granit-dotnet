@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Workflow.Abstractions</PackageId>
+    <Description>Lightweight contracts for the Granit.Workflow finite state machine engine: IWorkflowDefinition&lt;TState&gt;, WorkflowDefinition&lt;TState&gt;, fluent builders, transition records and ambient transition context. Pull from a base module to declare a workflow shape without taking a runtime dependency on Granit.Workflow.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Workflow" />
+    <InternalsVisibleTo Include="Granit.Workflow.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+  </ItemGroup>
+
+</Project>

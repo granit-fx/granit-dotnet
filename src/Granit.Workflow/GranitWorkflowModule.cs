@@ -12,7 +12,8 @@ namespace Granit.Workflow;
 /// </summary>
 [DependsOn(
     typeof(GranitQueryEngineAbstractionsModule),
-    typeof(GranitTimingModule))]
+    typeof(GranitTimingModule),
+    typeof(GranitWorkflowAbstractionsModule))]
 public sealed class GranitWorkflowModule : GranitModule
 {
     /// <inheritdoc/>

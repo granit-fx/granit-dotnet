@@ -292,6 +292,7 @@
       "src/Granit.Wolverine.SqlServer/Granit.Wolverine.SqlServer.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
       "src/Granit.Workflow.AI/Granit.Workflow.AI.csproj",
+      "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow.Endpoints/Granit.Workflow.Endpoints.csproj",
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",

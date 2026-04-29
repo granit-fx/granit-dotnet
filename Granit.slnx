@@ -154,6 +154,7 @@
     <Project Path="src/Granit.Timeline.Notifications/Granit.Timeline.Notifications.csproj" />
     <Project Path="src/Granit.Timeline/Granit.Timeline.csproj" />
     <Project Path="src/Granit.Workflow.AI/Granit.Workflow.AI.csproj" />
+    <Project Path="src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj" />
     <Project Path="src/Granit.Workflow.Endpoints/Granit.Workflow.Endpoints.csproj" />
     <Project Path="src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj" />
@@ -495,6 +496,7 @@
     <Project Path="tests/Granit.Timeline.EntityFrameworkCore.Tests/Granit.Timeline.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Notifications.Tests/Granit.Timeline.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Timeline.Tests/Granit.Timeline.Tests.csproj" />
+    <Project Path="tests/Granit.Workflow.Abstractions.Tests/Granit.Workflow.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.AI.Tests/Granit.Workflow.AI.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.Endpoints.Tests/Granit.Workflow.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Workflow.EntityFrameworkCore.Tests/Granit.Workflow.EntityFrameworkCore.Tests.csproj" />

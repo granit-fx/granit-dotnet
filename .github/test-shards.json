@@ -103,6 +103,7 @@
         "tests/Granit.Timeline.EntityFrameworkCore.Tests",
         "tests/Granit.Timeline.Notifications.Tests",
         "tests/Granit.Timeline.Tests",
+        "tests/Granit.Workflow.Abstractions.Tests",
         "tests/Granit.Workflow.Endpoints.Tests",
         "tests/Granit.Workflow.EntityFrameworkCore.Tests",
         "tests/Granit.Workflow.Notifications.Tests",

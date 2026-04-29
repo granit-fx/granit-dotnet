@@ -93,6 +93,7 @@
       "src/Granit.Vault.GoogleCloud/Granit.Vault.GoogleCloud.csproj",
       "src/Granit.Vault.HashiCorp/Granit.Vault.HashiCorp.csproj",
       "src/Granit.Vault/Granit.Vault.csproj",
+      "src/Granit.Workflow.Abstractions/Granit.Workflow.Abstractions.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Authentication.ApiKeys.BackgroundJobs.Tests/Granit.Authentication.ApiKeys.BackgroundJobs.Tests.csproj",

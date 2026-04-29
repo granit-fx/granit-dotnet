@@ -2725,7 +2725,8 @@
       "deps": [
         "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions",
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Workflow.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2734,6 +2735,13 @@
       "deps": [
         "Granit.AI",
         "Granit.Workflow"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Workflow.Abstractions",
+      "deps": [
+        "Granit"
       ],
       "framework": "net10.0"
     },
@@ -56162,12 +56170,21 @@
       ]
     },
     {
+      "name": "GranitWorkflowAbstractionsModule",
+      "fqn": "Granit.Workflow.GranitWorkflowAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/GranitWorkflowAbstractionsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "GranitWorkflowModule",
       "fqn": "Granit.Workflow.GranitWorkflowModule",
       "kind": "class",
       "project": "Granit.Workflow",
       "file": "src/Granit.Workflow/GranitWorkflowModule.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",
@@ -56181,8 +56198,8 @@
       "name": "IWorkflowDefinition",
       "fqn": "Granit.Workflow.IWorkflowDefinition",
       "kind": "interface",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/IWorkflowDefinition.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/IWorkflowDefinition.cs",
       "line": 8,
       "members": [
         {
@@ -56446,8 +56463,8 @@
       "name": "TransitionBuilder",
       "fqn": "Granit.Workflow.TransitionBuilder",
       "kind": "class",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/TransitionBuilder.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/TransitionBuilder.cs",
       "line": 7,
       "members": []
     },
@@ -56455,8 +56472,8 @@
       "name": "TransitionContext",
       "fqn": "Granit.Workflow.TransitionContext",
       "kind": "record",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/TransitionContext.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/TransitionContext.cs",
       "line": 7,
       "members": []
     },
@@ -56473,8 +56490,8 @@
       "name": "TransitionOutcome",
       "fqn": "Granit.Workflow.TransitionOutcome",
       "kind": "enum",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/TransitionResult.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/TransitionResult.cs",
       "line": 25,
       "members": []
     },
@@ -56482,8 +56499,8 @@
       "name": "TransitionResult",
       "fqn": "Granit.Workflow.TransitionResult",
       "kind": "record",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/TransitionResult.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/TransitionResult.cs",
       "line": 7,
       "members": []
     },
@@ -56491,8 +56508,8 @@
       "name": "WorkflowDefinition",
       "fqn": "Granit.Workflow.WorkflowDefinition",
       "kind": "class",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/WorkflowDefinition.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/WorkflowDefinition.cs",
       "line": 8,
       "members": [
         {
@@ -56507,8 +56524,8 @@
       "name": "WorkflowDefinitionBuilder",
       "fqn": "Granit.Workflow.WorkflowDefinitionBuilder",
       "kind": "class",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/WorkflowDefinitionBuilder.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/WorkflowDefinitionBuilder.cs",
       "line": 10,
       "members": [
         {
@@ -56539,8 +56556,8 @@
       "name": "WorkflowTransition",
       "fqn": "Granit.Workflow.WorkflowTransition",
       "kind": "record",
-      "project": "Granit.Workflow",
-      "file": "src/Granit.Workflow/WorkflowTransition.cs",
+      "project": "Granit.Workflow.Abstractions",
+      "file": "src/Granit.Workflow.Abstractions/WorkflowTransition.cs",
       "line": 9,
       "members": []
     },
