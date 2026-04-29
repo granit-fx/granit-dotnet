@@ -571,6 +571,8 @@
       "name": "Granit.CustomerBalance",
       "deps": [
         "Granit",
+        "Granit.Analytics",
+        "Granit.Localization",
         "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
@@ -12375,7 +12377,7 @@
       "kind": "class",
       "project": "Granit.CustomerBalance",
       "file": "src/Granit.CustomerBalance/Extensions/CustomerBalanceHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitCustomerBalance",
@@ -12588,6 +12590,178 @@
           "kind": "method",
           "signature": "CreditOverpaymentAsync(Guid tenantId, PartyId partyId, string currency, decimal amount, Guid invoiceId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "BalanceAccountCountMetricDefinition",
+      "fqn": "Granit.CustomerBalance.Metrics.BalanceAccountCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Metrics/BalanceAccountCountMetricDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceAccount, int?>>? Selector",
+          "returnType": "Expression<Func<BalanceAccount, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceAccount, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BalanceAccount, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "BalanceAccountTotalMetricDefinition",
+      "fqn": "Granit.CustomerBalance.Metrics.BalanceAccountTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Metrics/BalanceAccountTotalMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceAccount, decimal?>>? Selector",
+          "returnType": "Expression<Func<BalanceAccount, decimal?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceAccount, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BalanceAccount, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "CreditBalanceTransactionTotalMetricDefinition",
+      "fqn": "Granit.CustomerBalance.Metrics.CreditBalanceTransactionTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Metrics/CreditBalanceTransactionTotalMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, decimal?>>? Selector",
+          "returnType": "Expression<Func<BalanceTransaction, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BalanceTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BalanceTransaction, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "DebitBalanceTransactionTotalMetricDefinition",
+      "fqn": "Granit.CustomerBalance.Metrics.DebitBalanceTransactionTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.CustomerBalance",
+      "file": "src/Granit.CustomerBalance/Metrics/DebitBalanceTransactionTotalMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, decimal?>>? Selector",
+          "returnType": "Expression<Func<BalanceTransaction, decimal?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, bool>>? BaseFilter",
+          "returnType": "Expression<Func<BalanceTransaction, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<BalanceTransaction, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<BalanceTransaction, DateTimeOffset>>?"
         }
       ]
     },

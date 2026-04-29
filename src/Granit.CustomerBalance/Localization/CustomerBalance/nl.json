@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Saldo-rekeningen",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Totaal klantsaldo",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Toegekende tegoeden",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Verbruikte tegoeden"
+  }
+}

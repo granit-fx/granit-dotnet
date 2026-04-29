@@ -1,0 +1,9 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "余额账户",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "客户余额总额",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "授予的额度",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "已使用额度"
+  }
+}

@@ -1,7 +1,9 @@
+using Granit.Analytics.Extensions;
 using Granit.CustomerBalance.Diagnostics;
 using Granit.CustomerBalance.Domain;
 using Granit.CustomerBalance.Exports;
 using Granit.CustomerBalance.Internal;
+using Granit.CustomerBalance.Metrics;
 using Granit.CustomerBalance.Options;
 using Granit.CustomerBalance.Queries;
 using Granit.DataExchange.Extensions;
@@ -51,6 +53,11 @@ public static class CustomerBalanceHostApplicationBuilderExtensions
         builder.Services.AddQueryDefinition<BalanceTransaction, BalanceTransactionQueryDefinition>();
         builder.Services.AddExportDefinition<BalanceAccount, BalanceAccountExportDefinition>();
         builder.Services.AddExportDefinition<BalanceTransaction, BalanceTransactionExportDefinition>();
+
+        builder.Services.AddMetricDefinition<BalanceAccount, int, BalanceAccountCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<BalanceAccount, decimal, BalanceAccountTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<BalanceTransaction, decimal, CreditBalanceTransactionTotalMetricDefinition>();
+        builder.Services.AddMetricDefinition<BalanceTransaction, decimal, DebitBalanceTransactionTotalMetricDefinition>();
 
         return builder;
     }

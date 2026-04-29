@@ -1,0 +1,9 @@
+{
+  "culture": "en",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Balance accounts",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Total customer balance",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Credits granted",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Credits consumed"
+  }
+}

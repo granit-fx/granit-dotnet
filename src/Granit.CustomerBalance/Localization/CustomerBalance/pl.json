@@ -1,0 +1,9 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Konta salda",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Łączne saldo klientów",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Przyznane środki",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Wykorzystane środki"
+  }
+}

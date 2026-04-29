@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Účty zůstatku",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Celkový zůstatek zákazníků",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Udělené kredity",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Spotřebované kredity"
+  }
+}

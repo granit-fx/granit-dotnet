@@ -59,8 +59,6 @@ public sealed class QueryMetricPairingTests
     {
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
         "Granit.Catalog.Domain.Product",                                                  // [BACKLOG] catalog count / activation
-        "Granit.CustomerBalance.Domain.BalanceAccount",                                   // [BACKLOG] balance totals
-        "Granit.CustomerBalance.Domain.BalanceTransaction",                               // [BACKLOG] credit / debit volume
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
         "Granit.Notifications.Domain.UserNotification",                                   // [BACKLOG] delivery / read-rate KPIs
         "Granit.Parties.Domain.Party",                                                    // [BACKLOG] active-party count

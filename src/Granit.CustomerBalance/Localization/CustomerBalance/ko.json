@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "잔액 계정",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "고객 잔액 총액",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "지급된 크레딧",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "사용된 크레딧"
+  }
+}

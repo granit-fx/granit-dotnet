@@ -1,0 +1,9 @@
+{
+  "culture": "de",
+  "texts": {
+    "Metric:Granit.CustomerBalance.BalanceAccountCountMetric": "Guthabenkonten",
+    "Metric:Granit.CustomerBalance.BalanceAccountTotalMetric": "Gesamtguthaben Kunden",
+    "Metric:Granit.CustomerBalance.CreditBalanceTransactionTotalMetric": "Gewährte Gutschriften",
+    "Metric:Granit.CustomerBalance.DebitBalanceTransactionTotalMetric": "Verbrauchte Gutschriften"
+  }
+}
