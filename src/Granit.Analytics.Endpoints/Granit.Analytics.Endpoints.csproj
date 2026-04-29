@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests.Integration" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

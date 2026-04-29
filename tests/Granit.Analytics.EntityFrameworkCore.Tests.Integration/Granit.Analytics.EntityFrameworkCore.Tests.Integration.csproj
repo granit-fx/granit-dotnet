@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Analytics\Granit.Analytics.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Analytics.Endpoints\Granit.Analytics.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Analytics.EntityFrameworkCore\Granit.Analytics.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.QueryEngine\Granit.QueryEngine.csproj" />

@@ -13,12 +13,29 @@ internal sealed class Order
     public int LineCount { get; init; }
 }
 
+internal sealed class Customer
+{
+    public Guid Id { get; init; }
+    public string Country { get; init; } = string.Empty;
+    public string Status { get; init; } = string.Empty;
+    public decimal Revenue { get; init; }
+}
+
 internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
     public DbSet<Order> Orders => Set<Order>();
+    public DbSet<Customer> Customers => Set<Customer>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) =>
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Order>(e => e.HasKey(o => o.Id));
+        modelBuilder.Entity<Customer>(e =>
+        {
+            e.HasKey(c => c.Id);
+            e.Property(c => c.Country).HasMaxLength(64).IsRequired();
+            e.Property(c => c.Status).HasMaxLength(64).IsRequired();
+        });
+    }
 }
 
 internal sealed class OrderQueryDefinition : QueryDefinition<Order>
@@ -30,6 +47,24 @@ internal sealed class OrderQueryDefinition : QueryDefinition<Order>
             .Column(o => o.Amount, c => c.Filterable())
             .Column(o => o.LineCount, c => c.Filterable())
             .DefaultPageSize(50);
+}
+
+internal sealed class CustomerQueryDefinition : QueryDefinition<Customer>
+{
+    public override string Name => "Test.Customers";
+
+    protected override void Configure(QueryDefinitionBuilder<Customer> builder) =>
+        builder
+            .Column(c => c.Country, col => col.Filterable())
+            .Column(c => c.Status, col => col.Filterable())
+            .Column(c => c.Revenue, col => col.Filterable())
+            .DefaultPageSize(50);
+}
+
+internal sealed class CustomerSource(TestDbContext db) : IQueryableSource<Customer>
+{
+    private readonly TestDbContext _db = db;
+    public IQueryable<Customer> GetQueryable() => _db.Customers.AsNoTracking();
 }
 
 internal sealed class OrderAmountSumMetricDefinition : MetricDefinition<Order, decimal>
