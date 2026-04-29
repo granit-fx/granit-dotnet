@@ -1,13 +1,21 @@
 {
   "culture": "zh",
   "texts": {
-    "Subscriptions.Columns.Tenant": "租户",
-    "Subscriptions.Columns.Plan": "计划",
-    "Subscriptions.Columns.Status": "状态",
-    "Subscriptions.Columns.Currency": "货币",
-    "Subscriptions.Columns.PeriodStart": "周期开始",
-    "Subscriptions.Columns.PeriodEnd": "周期结束",
+    "Subscriptions.Columns.BillingCycleAnchor": "计费周期锚点",
     "Subscriptions.Columns.CancelAtPeriodEnd": "周期结束时取消",
+    "Subscriptions.Columns.CancellationReason": "取消原因",
+    "Subscriptions.Columns.CancelledAt": "取消时间",
+    "Subscriptions.Columns.CreatedAt": "创建于",
+    "Subscriptions.Columns.Currency": "货币",
+    "Subscriptions.Columns.DunningAttempt": "催收尝试",
+    "Subscriptions.Columns.ModifiedAt": "修改于",
+    "Subscriptions.Columns.Party": "对方",
+    "Subscriptions.Columns.PeriodEnd": "周期结束",
+    "Subscriptions.Columns.PeriodStart": "周期开始",
+    "Subscriptions.Columns.Plan": "计划",
+    "Subscriptions.Columns.PlanPrice": "套餐价格",
+    "Subscriptions.Columns.Status": "状态",
+    "Subscriptions.Columns.Tenant": "租户",
     "Subscriptions.Columns.TrialEndsAt": "试用结束时间"
   }
 }

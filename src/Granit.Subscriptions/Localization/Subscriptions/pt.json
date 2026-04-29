@@ -1,13 +1,21 @@
 {
   "culture": "pt",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Inquilino",
-    "Subscriptions.Columns.Plan": "Plano",
-    "Subscriptions.Columns.Status": "Estado",
-    "Subscriptions.Columns.Currency": "Moeda",
-    "Subscriptions.Columns.PeriodStart": "Início do período",
-    "Subscriptions.Columns.PeriodEnd": "Fim do período",
+    "Subscriptions.Columns.BillingCycleAnchor": "Âncora do ciclo de faturamento",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Cancelar no fim do período",
+    "Subscriptions.Columns.CancellationReason": "Motivo do cancelamento",
+    "Subscriptions.Columns.CancelledAt": "Cancelado em",
+    "Subscriptions.Columns.CreatedAt": "Criado",
+    "Subscriptions.Columns.Currency": "Moeda",
+    "Subscriptions.Columns.DunningAttempt": "Tentativa de cobrança",
+    "Subscriptions.Columns.ModifiedAt": "Modificado",
+    "Subscriptions.Columns.Party": "Parte",
+    "Subscriptions.Columns.PeriodEnd": "Fim do período",
+    "Subscriptions.Columns.PeriodStart": "Início do período",
+    "Subscriptions.Columns.Plan": "Plano",
+    "Subscriptions.Columns.PlanPrice": "Preço do plano",
+    "Subscriptions.Columns.Status": "Estado",
+    "Subscriptions.Columns.Tenant": "Inquilino",
     "Subscriptions.Columns.TrialEndsAt": "Fim do período de teste"
   }
 }

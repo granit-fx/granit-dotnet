@@ -1,13 +1,21 @@
 {
   "culture": "sv",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Hyresgäst",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Valuta",
-    "Subscriptions.Columns.PeriodStart": "Periodstart",
-    "Subscriptions.Columns.PeriodEnd": "Periodslut",
+    "Subscriptions.Columns.BillingCycleAnchor": "Ankarpunkt faktureringscykel",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Avsluta vid periodens slut",
+    "Subscriptions.Columns.CancellationReason": "Avbokningsorsak",
+    "Subscriptions.Columns.CancelledAt": "Avbruten",
+    "Subscriptions.Columns.CreatedAt": "Skapad",
+    "Subscriptions.Columns.Currency": "Valuta",
+    "Subscriptions.Columns.DunningAttempt": "Påminnelseförsök",
+    "Subscriptions.Columns.ModifiedAt": "Ändrad",
+    "Subscriptions.Columns.Party": "Part",
+    "Subscriptions.Columns.PeriodEnd": "Periodslut",
+    "Subscriptions.Columns.PeriodStart": "Periodstart",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.PlanPrice": "Planpris",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Tenant": "Hyresgäst",
     "Subscriptions.Columns.TrialEndsAt": "Provperiod slutar"
   }
 }

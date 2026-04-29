@@ -1,13 +1,21 @@
 {
   "culture": "ja",
   "texts": {
-    "Subscriptions.Columns.Tenant": "テナント",
-    "Subscriptions.Columns.Plan": "プラン",
-    "Subscriptions.Columns.Status": "ステータス",
-    "Subscriptions.Columns.Currency": "通貨",
-    "Subscriptions.Columns.PeriodStart": "期間開始",
-    "Subscriptions.Columns.PeriodEnd": "期間終了",
+    "Subscriptions.Columns.BillingCycleAnchor": "請求サイクル基準日",
     "Subscriptions.Columns.CancelAtPeriodEnd": "期間終了時にキャンセル",
+    "Subscriptions.Columns.CancellationReason": "キャンセル理由",
+    "Subscriptions.Columns.CancelledAt": "キャンセル日時",
+    "Subscriptions.Columns.CreatedAt": "作成日時",
+    "Subscriptions.Columns.Currency": "通貨",
+    "Subscriptions.Columns.DunningAttempt": "督促試行",
+    "Subscriptions.Columns.ModifiedAt": "更新日時",
+    "Subscriptions.Columns.Party": "取引先",
+    "Subscriptions.Columns.PeriodEnd": "期間終了",
+    "Subscriptions.Columns.PeriodStart": "期間開始",
+    "Subscriptions.Columns.Plan": "プラン",
+    "Subscriptions.Columns.PlanPrice": "プラン価格",
+    "Subscriptions.Columns.Status": "ステータス",
+    "Subscriptions.Columns.Tenant": "テナント",
     "Subscriptions.Columns.TrialEndsAt": "トライアル終了日"
   }
 }

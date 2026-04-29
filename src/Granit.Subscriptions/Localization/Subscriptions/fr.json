@@ -1,13 +1,21 @@
 {
   "culture": "fr",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Locataire",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Statut",
-    "Subscriptions.Columns.Currency": "Devise",
-    "Subscriptions.Columns.PeriodStart": "Début de période",
-    "Subscriptions.Columns.PeriodEnd": "Fin de période",
+    "Subscriptions.Columns.BillingCycleAnchor": "Ancrage du cycle de facturation",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Annuler en fin de période",
+    "Subscriptions.Columns.CancellationReason": "Motif d'annulation",
+    "Subscriptions.Columns.CancelledAt": "Annulé le",
+    "Subscriptions.Columns.CreatedAt": "Créé le",
+    "Subscriptions.Columns.Currency": "Devise",
+    "Subscriptions.Columns.DunningAttempt": "Tentative de relance",
+    "Subscriptions.Columns.ModifiedAt": "Modifié le",
+    "Subscriptions.Columns.Party": "Tiers",
+    "Subscriptions.Columns.PeriodEnd": "Fin de période",
+    "Subscriptions.Columns.PeriodStart": "Début de période",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.PlanPrice": "Tarif du plan",
+    "Subscriptions.Columns.Status": "Statut",
+    "Subscriptions.Columns.Tenant": "Locataire",
     "Subscriptions.Columns.TrialEndsAt": "Fin de l'essai"
   }
 }

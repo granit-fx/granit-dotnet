@@ -1,13 +1,21 @@
 {
   "culture": "tr",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Kiracı",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Durum",
-    "Subscriptions.Columns.Currency": "Para birimi",
-    "Subscriptions.Columns.PeriodStart": "Dönem başlangıcı",
-    "Subscriptions.Columns.PeriodEnd": "Dönem sonu",
+    "Subscriptions.Columns.BillingCycleAnchor": "Faturalandırma döngüsü çapası",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Dönem sonunda iptal et",
+    "Subscriptions.Columns.CancellationReason": "İptal nedeni",
+    "Subscriptions.Columns.CancelledAt": "İptal edildi",
+    "Subscriptions.Columns.CreatedAt": "Oluşturuldu",
+    "Subscriptions.Columns.Currency": "Para birimi",
+    "Subscriptions.Columns.DunningAttempt": "Hatırlatma denemesi",
+    "Subscriptions.Columns.ModifiedAt": "Değiştirildi",
+    "Subscriptions.Columns.Party": "Taraf",
+    "Subscriptions.Columns.PeriodEnd": "Dönem sonu",
+    "Subscriptions.Columns.PeriodStart": "Dönem başlangıcı",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.PlanPrice": "Plan fiyatı",
+    "Subscriptions.Columns.Status": "Durum",
+    "Subscriptions.Columns.Tenant": "Kiracı",
     "Subscriptions.Columns.TrialEndsAt": "Deneme bitiş tarihi"
   }
 }

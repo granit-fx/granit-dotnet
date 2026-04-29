@@ -1,13 +1,21 @@
 {
   "culture": "nl",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Tenant",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Valuta",
-    "Subscriptions.Columns.PeriodStart": "Periodestart",
-    "Subscriptions.Columns.PeriodEnd": "Periode-einde",
+    "Subscriptions.Columns.BillingCycleAnchor": "Anker factureringscyclus",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Annuleren aan einde periode",
+    "Subscriptions.Columns.CancellationReason": "Reden van annulering",
+    "Subscriptions.Columns.CancelledAt": "Geannuleerd op",
+    "Subscriptions.Columns.CreatedAt": "Aangemaakt",
+    "Subscriptions.Columns.Currency": "Valuta",
+    "Subscriptions.Columns.DunningAttempt": "Aanmaningspoging",
+    "Subscriptions.Columns.ModifiedAt": "Gewijzigd",
+    "Subscriptions.Columns.Party": "Partij",
+    "Subscriptions.Columns.PeriodEnd": "Periode-einde",
+    "Subscriptions.Columns.PeriodStart": "Periodestart",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.PlanPrice": "Planprijs",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Tenant": "Tenant",
     "Subscriptions.Columns.TrialEndsAt": "Proefperiode eindigt op"
   }
 }

@@ -1,13 +1,21 @@
 {
   "culture": "ko",
   "texts": {
-    "Subscriptions.Columns.Tenant": "테넌트",
-    "Subscriptions.Columns.Plan": "플랜",
-    "Subscriptions.Columns.Status": "상태",
-    "Subscriptions.Columns.Currency": "통화",
-    "Subscriptions.Columns.PeriodStart": "기간 시작",
-    "Subscriptions.Columns.PeriodEnd": "기간 종료",
+    "Subscriptions.Columns.BillingCycleAnchor": "청구 주기 기준일",
     "Subscriptions.Columns.CancelAtPeriodEnd": "기간 종료 시 취소",
+    "Subscriptions.Columns.CancellationReason": "취소 사유",
+    "Subscriptions.Columns.CancelledAt": "취소일",
+    "Subscriptions.Columns.CreatedAt": "생성일",
+    "Subscriptions.Columns.Currency": "통화",
+    "Subscriptions.Columns.DunningAttempt": "독촉 시도",
+    "Subscriptions.Columns.ModifiedAt": "수정일",
+    "Subscriptions.Columns.Party": "거래처",
+    "Subscriptions.Columns.PeriodEnd": "기간 종료",
+    "Subscriptions.Columns.PeriodStart": "기간 시작",
+    "Subscriptions.Columns.Plan": "플랜",
+    "Subscriptions.Columns.PlanPrice": "플랜 가격",
+    "Subscriptions.Columns.Status": "상태",
+    "Subscriptions.Columns.Tenant": "테넌트",
     "Subscriptions.Columns.TrialEndsAt": "체험 종료일"
   }
 }

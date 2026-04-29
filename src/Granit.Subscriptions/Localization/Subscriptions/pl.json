@@ -1,13 +1,21 @@
 {
   "culture": "pl",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Najemca",
-    "Subscriptions.Columns.Plan": "Plan",
-    "Subscriptions.Columns.Status": "Status",
-    "Subscriptions.Columns.Currency": "Waluta",
-    "Subscriptions.Columns.PeriodStart": "Początek okresu",
-    "Subscriptions.Columns.PeriodEnd": "Koniec okresu",
+    "Subscriptions.Columns.BillingCycleAnchor": "Punkt odniesienia cyklu rozliczeniowego",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Anuluj na koniec okresu",
+    "Subscriptions.Columns.CancellationReason": "Powód anulowania",
+    "Subscriptions.Columns.CancelledAt": "Anulowano",
+    "Subscriptions.Columns.CreatedAt": "Utworzono",
+    "Subscriptions.Columns.Currency": "Waluta",
+    "Subscriptions.Columns.DunningAttempt": "Próba windykacji",
+    "Subscriptions.Columns.ModifiedAt": "Zmodyfikowano",
+    "Subscriptions.Columns.Party": "Strona",
+    "Subscriptions.Columns.PeriodEnd": "Koniec okresu",
+    "Subscriptions.Columns.PeriodStart": "Początek okresu",
+    "Subscriptions.Columns.Plan": "Plan",
+    "Subscriptions.Columns.PlanPrice": "Cena planu",
+    "Subscriptions.Columns.Status": "Status",
+    "Subscriptions.Columns.Tenant": "Najemca",
     "Subscriptions.Columns.TrialEndsAt": "Koniec okresu próbnego"
   }
 }

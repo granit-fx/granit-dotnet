@@ -1,13 +1,21 @@
 {
   "culture": "cs",
   "texts": {
-    "Subscriptions.Columns.Tenant": "Nájemce",
-    "Subscriptions.Columns.Plan": "Plán",
-    "Subscriptions.Columns.Status": "Stav",
-    "Subscriptions.Columns.Currency": "Měna",
-    "Subscriptions.Columns.PeriodStart": "Začátek období",
-    "Subscriptions.Columns.PeriodEnd": "Konec období",
+    "Subscriptions.Columns.BillingCycleAnchor": "Ukotvení fakturačního cyklu",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Zrušit na konci období",
+    "Subscriptions.Columns.CancellationReason": "Důvod zrušení",
+    "Subscriptions.Columns.CancelledAt": "Zrušeno",
+    "Subscriptions.Columns.CreatedAt": "Vytvořeno",
+    "Subscriptions.Columns.Currency": "Měna",
+    "Subscriptions.Columns.DunningAttempt": "Pokus o upomínku",
+    "Subscriptions.Columns.ModifiedAt": "Upraveno",
+    "Subscriptions.Columns.Party": "Strana",
+    "Subscriptions.Columns.PeriodEnd": "Konec období",
+    "Subscriptions.Columns.PeriodStart": "Začátek období",
+    "Subscriptions.Columns.Plan": "Plán",
+    "Subscriptions.Columns.PlanPrice": "Cena plánu",
+    "Subscriptions.Columns.Status": "Stav",
+    "Subscriptions.Columns.Tenant": "Nájemce",
     "Subscriptions.Columns.TrialEndsAt": "Konec zkušebního období"
   }
 }
