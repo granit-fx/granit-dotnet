@@ -1,8 +1,12 @@
 using Granit.Analytics.Extensions;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Parties.Diagnostics;
 using Granit.Parties.Domain;
+using Granit.Parties.Exports;
 using Granit.Parties.Metrics;
+using Granit.Parties.Queries;
+using Granit.QueryEngine.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +17,8 @@ namespace Granit.Parties.Extensions;
 public static class PartiesHostApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds the Granit parties module — diagnostics (metrics + ActivitySource), KPI
+    /// Adds the Granit parties module — diagnostics (metrics + ActivitySource), the
+    /// Party admin-grid <c>QueryDefinition</c> + <c>ExportDefinition</c>, the KPI
     /// metric definitions, and any shared singletons. Persistence
     /// (<c>Granit.Parties.EntityFrameworkCore</c>), endpoints, and privacy handlers
     /// register their own services.
@@ -22,6 +27,10 @@ public static class PartiesHostApplicationBuilderExtensions
     {
         builder.Services.TryAddSingleton<PartiesMetrics>();
         GranitActivitySourceRegistry.Register(PartiesActivitySource.Name);
+
+        // ADR-020: declarative definitions live with the domain, not the HTTP layer.
+        builder.Services.AddQueryDefinition<Party, PartyQueryDefinition>();
+        builder.Services.AddExportDefinition<Party, PartyExportDefinition>();
 
         builder.Services.AddMetricDefinition<Party, int, ActivePartyCountMetricDefinition>();
         builder.Services.AddMetricDefinition<Party, int, PartyCountMetricDefinition>();
