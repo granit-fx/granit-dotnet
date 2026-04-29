@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.Notifications.ReadUserNotificationCountMetric": "Přečtená oznámení",
+    "Metric:Granit.Notifications.UnreadUserNotificationCountMetric": "Nepřečtená oznámení",
+    "Metric:Granit.Notifications.UserNotificationCountMetric": "Celkem oznámení"
+  }
+}

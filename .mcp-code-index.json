@@ -1464,9 +1464,11 @@
     {
       "name": "Granit.Notifications",
       "deps": [
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption",
         "Granit.Guids",
+        "Granit.Localization",
         "Granit.Notifications.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
@@ -31633,7 +31635,7 @@
       "kind": "class",
       "project": "Granit.Notifications",
       "file": "src/Granit.Notifications/Extensions/NotificationsHostApplicationBuilderExtensions.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "AddGranitNotifications",
@@ -31744,6 +31746,144 @@
           "kind": "property",
           "signature": "required string NotificationTypeName",
           "returnType": "required string"
+        }
+      ]
+    },
+    {
+      "name": "ReadUserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Metrics.ReadUserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Metrics/ReadUserNotificationCountMetricDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
+          "returnType": "Expression<Func<UserNotification, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "UnreadUserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Metrics.UnreadUserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Metrics/UnreadUserNotificationCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, bool>>? BaseFilter",
+          "returnType": "Expression<Func<UserNotification, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "UserNotificationCountMetricDefinition",
+      "fqn": "Granit.Notifications.Metrics.UserNotificationCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Notifications",
+      "file": "src/Granit.Notifications/Metrics/UserNotificationCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, int?>>? Selector",
+          "returnType": "Expression<Func<UserNotification, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UserNotification, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UserNotification, DateTimeOffset>>?"
         }
       ]
     },
