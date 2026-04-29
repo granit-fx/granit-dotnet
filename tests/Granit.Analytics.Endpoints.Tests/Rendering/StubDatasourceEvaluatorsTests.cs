@@ -14,12 +14,13 @@ namespace Granit.Analytics.Endpoints.Tests.Rendering;
 
 /// <summary>
 /// The framework still ships <see cref="TelemetryDatasourceEvaluator"/> as a
-/// pure stub (replaced by <c>Granit.IoT.Dashboards</c> when shipped) and
-/// <see cref="QueryAggregateDatasourceEvaluator"/> as a partial — Count is
-/// fully wired (B3-2bis), Sum / Avg / Min / Max land in a follow-up slice.
-/// Both contracts: never throw, always surface a localizable
-/// <c>Widget:Unavailable.*</c> reason key when the path is not (yet)
-/// implemented.
+/// pure stub (replaced by <c>Granit.IoT.Dashboards</c> when shipped). The
+/// <see cref="QueryAggregateDatasourceEvaluator"/> is fully wired
+/// (B3-2bis Count + B3-2ter Sum/Avg/Min/Max via field-selector reflection);
+/// these tests pin the no-runner-registered branch and the empty-set semantics
+/// at the evaluator layer, complementing
+/// <see cref="Internal.QueryAggregateRunnerTests"/> which exercises the EF
+/// Core path end-to-end.
 /// </summary>
 public sealed class StubDatasourceEvaluatorsTests
 {
@@ -62,35 +63,10 @@ public sealed class StubDatasourceEvaluatorsTests
         result.RefreshHint.ShouldBe(RefreshHint.Static);
     }
 
-    [Theory]
-    [InlineData(AggregateFunction.Sum)]
-    [InlineData(AggregateFunction.Avg)]
-    [InlineData(AggregateFunction.Min)]
-    [InlineData(AggregateFunction.Max)]
-    public async Task QueryAggregateEvaluator_NonCountAggregation_ReturnsUnavailableOperationNotImplemented(AggregateFunction aggregation)
-    {
-        // Runner is registered but returns null for non-Count aggregations
-        // (Sum / Avg / Min / Max ship in a follow-up slice).
-        StubRunner runner = new("Granit.Test.Query", returnsForCount: 1m);
-        QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
-
-        KpiEvaluation result = await evaluator.EvaluateAsync(
-            new QueryAggregateDatasource(
-                QueryName: "Granit.Test.Query",
-                Aggregation: aggregation,
-                Field: "Amount"),
-            BuildWidget("Kpi"),
-            BuildContext(),
-            TestContext.Current.CancellationToken);
-
-        result.Payload.ShouldBeNull();
-        result.UnavailableReasonLocalizationKey.ShouldBe("Widget:Unavailable.QueryAggregateOperationNotImplemented");
-    }
-
     [Fact]
     public async Task QueryAggregateEvaluator_Count_BuildsCountSnapshot()
     {
-        StubRunner runner = new("Granit.Test.Query", returnsForCount: 7m);
+        StubRunner runner = new("Granit.Test.Query", value: 7m);
         QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
 
         KpiEvaluation result = await evaluator.EvaluateAsync(
@@ -109,7 +85,60 @@ public sealed class StubDatasourceEvaluatorsTests
         result.RefreshHint.ShouldBe(RefreshHint.Dynamic);
     }
 
-    private sealed class StubRunner(string name, decimal? returnsForCount) : IQueryAggregateRunner
+    [Theory]
+    [InlineData(AggregateFunction.Sum)]
+    [InlineData(AggregateFunction.Avg)]
+    [InlineData(AggregateFunction.Min)]
+    [InlineData(AggregateFunction.Max)]
+    public async Task QueryAggregateEvaluator_NumericAggregation_BuildsNumberSnapshot(AggregateFunction aggregation)
+    {
+        StubRunner runner = new("Granit.Test.Query", value: 42m);
+        QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
+
+        KpiEvaluation result = await evaluator.EvaluateAsync(
+            new QueryAggregateDatasource(
+                QueryName: "Granit.Test.Query",
+                Aggregation: aggregation,
+                Field: "Amount"),
+            BuildWidget("Kpi"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        result.Payload.ShouldNotBeNull();
+        result.Payload!.Value.ShouldBe(42m);
+        result.Payload.ValueKind.ShouldBe(MetricValueKind.Number);
+        result.Payload.NoData.ShouldBeFalse();
+    }
+
+    [Theory]
+    [InlineData(AggregateFunction.Avg)]
+    [InlineData(AggregateFunction.Min)]
+    [InlineData(AggregateFunction.Max)]
+    public async Task QueryAggregateEvaluator_AvgMinMaxOnEmptySet_SurfacesNoData(AggregateFunction aggregation)
+    {
+        // Avg / Min / Max over an empty set return null from the runner — the
+        // evaluator must surface that as NoData=true on a Snapshot envelope
+        // (NOT Unavailable). The frontend renders "—"; the widget is still a
+        // first-class result, just with no measurement to display.
+        StubRunner runner = new("Granit.Test.Query", value: null);
+        QueryAggregateDatasourceEvaluator evaluator = new(new QueryAggregateService([runner]));
+
+        KpiEvaluation result = await evaluator.EvaluateAsync(
+            new QueryAggregateDatasource(
+                QueryName: "Granit.Test.Query",
+                Aggregation: aggregation,
+                Field: "Amount"),
+            BuildWidget("Kpi"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        result.Payload.ShouldNotBeNull();
+        result.Payload!.Value.ShouldBeNull();
+        result.Payload.NoData.ShouldBeTrue();
+        result.Payload.ValueKind.ShouldBe(MetricValueKind.Number);
+    }
+
+    private sealed class StubRunner(string name, decimal? value) : IQueryAggregateRunner
     {
         public string Name { get; } = name;
 
@@ -117,7 +146,7 @@ public sealed class StubDatasourceEvaluatorsTests
             AggregateFunction aggregation,
             string? field,
             CancellationToken cancellationToken) =>
-            Task.FromResult(aggregation == AggregateFunction.Count ? returnsForCount : (decimal?)null);
+            Task.FromResult(value);
     }
 
     [Fact]

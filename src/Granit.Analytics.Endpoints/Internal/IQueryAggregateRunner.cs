@@ -11,19 +11,27 @@ namespace Granit.Analytics.Endpoints.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// B3-2bis ships <see cref="AggregateFunction.Count"/> only — the most common
-/// KPI shape ("how many open invoices"). <see cref="AggregateFunction.Sum"/>,
-/// <see cref="AggregateFunction.Avg"/>, <see cref="AggregateFunction.Min"/>,
-/// <see cref="AggregateFunction.Max"/> need a typed selector built from the
-/// runtime field name plus per-primitive-type dispatch (mirrors
-/// <c>MetricExecutor&lt;TEntity, TValue&gt;</c>); they ship in a follow-up
-/// slice. Until then, <see cref="ExecuteAsync"/> returns <see langword="null"/>
-/// for those operations and the caller surfaces a dedicated
-/// <c>Widget:Unavailable.*</c> reason.
+/// All five <see cref="AggregateFunction"/> members are wired (B3-2bis +
+/// B3-2ter): <see cref="AggregateFunction.Count"/> takes no field;
+/// <see cref="AggregateFunction.Sum"/>, <see cref="AggregateFunction.Avg"/>,
+/// <see cref="AggregateFunction.Min"/>, <see cref="AggregateFunction.Max"/>
+/// resolve the field name reflectively against the closed entity type
+/// and dispatch to EF Core's typed aggregator per primitive type
+/// (<c>int</c> / <c>long</c> / <c>decimal</c> / <c>double</c>).
 /// </para>
 /// <para>
 /// Empty-set semantics shared with the metric path (locked by tests #1374):
-/// <c>Count</c> over empty set returns <c>0</c>, never <see langword="null"/>.
+/// </para>
+/// <list type="bullet">
+///   <item><c>Count</c> empty → <c>0</c>.</item>
+///   <item><c>Sum</c> empty → <c>0</c> (sum-of-empty identity).</item>
+///   <item><c>Avg</c> / <c>Min</c> / <c>Max</c> empty → <see langword="null"/> (semantic "no data"; division by zero / empty-set extremum is undefined).</item>
+/// </list>
+/// <para>
+/// Configuration errors (unknown field, unsupported field type) throw —
+/// <c>IDashboardRenderer</c>'s per-widget error isolation surfaces those as
+/// <c>Error</c> envelopes per ADR-039 §3.c. The dashboard render keeps
+/// returning 200; the misconfigured widget is the only one affected.
 /// </para>
 /// </remarks>
 internal interface IQueryAggregateRunner
@@ -33,13 +41,15 @@ internal interface IQueryAggregateRunner
 
     /// <summary>
     /// Executes <paramref name="aggregation"/> over the entity's queryable.
-    /// Returns <see langword="null"/> when the aggregation is not yet implemented
-    /// (Sum / Avg / Min / Max in B3-2bis). The caller maps a null result onto
-    /// an Unavailable envelope.
+    /// Returns the projected <see cref="decimal"/> value, or <see langword="null"/>
+    /// for empty-set Avg / Min / Max. <c>Count</c> and <c>Sum</c> never return
+    /// null (they coerce to <c>0</c>).
     /// </summary>
     /// <param name="aggregation">Aggregation function to run.</param>
-    /// <param name="field">Field name for non-Count aggregations; ignored when <paramref name="aggregation"/> is <see cref="AggregateFunction.Count"/>.</param>
+    /// <param name="field">Field name for non-Count aggregations; required (not validated when <paramref name="aggregation"/> is <see cref="AggregateFunction.Count"/>). Resolved against the closed entity type reflectively (case-insensitive); unknown field throws.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
+    /// <exception cref="ArgumentException">Field is null/empty for a non-Count aggregation, or field is not a property of the entity.</exception>
+    /// <exception cref="NotSupportedException">Field's primitive type is not one of int / long / decimal / double.</exception>
     Task<decimal?> ExecuteAsync(
         AggregateFunction aggregation,
         string? field,
