@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <NoWarn>$(NoWarn);EF1001</NoWarn>
+    <!-- Excluded from CI unit-test job; runs only in the integration-test job. -->
+    <IsTestProject Condition="'$(SkipIntegrationTests)' == 'true'">false</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="coverlet.collector" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
+    <ProjectReference Include="..\..\src\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine\Granit.QueryEngine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.QueryEngine.EntityFrameworkCore\Granit.QueryEngine.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

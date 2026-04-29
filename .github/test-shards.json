@@ -360,6 +360,7 @@
         "tests/Granit.Identity.Federated.Cognito.Tests.Integration",
         "tests/Granit.Identity.Federated.EntraId.Tests.Integration",
         "tests/Granit.Identity.Federated.Keycloak.Tests.Integration",
+        "tests/Granit.Http.ODataExposure.Tests.Integration",
         "tests/Granit.Identity.Local.AspNetIdentity.Tests.Integration",
         "tests/Granit.Invoicing.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.OpenIddict.Tests.Integration",
