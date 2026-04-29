@@ -946,6 +946,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.ODataExposure",
+      "deps": [
+        "Granit",
+        "Granit.Authorization",
+        "Granit.Http.Abstractions",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Http.OutputCaching",
       "deps": [
         "Granit"
@@ -20289,6 +20299,72 @@
       "project": "Granit.Http.Idempotency",
       "file": "src/Granit.Http.Idempotency/Models/IdempotencyTombstoneReason.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "ODataExposureEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Http.ODataExposure.Extensions.ODataExposureEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "MapGranitODataEndpoints",
+          "kind": "method",
+          "signature": "MapGranitODataEndpoints(this IEndpointRouteBuilder endpoints, string prefix, Action<ODataExposureOptions> configure)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "ODataExposureServiceCollectionExtensions",
+      "fqn": "Granit.Http.ODataExposure.Extensions.ODataExposureServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitODataExposure",
+          "kind": "method",
+          "signature": "AddGranitODataExposure(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpODataExposureModule",
+      "fqn": "Granit.Http.ODataExposure.GranitHttpODataExposureModule",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/GranitHttpODataExposureModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ODataEntitySetBuilder",
+      "fqn": "Granit.Http.ODataExposure.Options.ODataEntitySetBuilder",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Options/ODataExposureOptions.cs",
+      "line": 75,
+      "members": []
+    },
+    {
+      "name": "ODataExposureOptions",
+      "fqn": "Granit.Http.ODataExposure.Options.ODataExposureOptions",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Options/ODataExposureOptions.cs",
+      "line": 20,
       "members": []
     },
     {

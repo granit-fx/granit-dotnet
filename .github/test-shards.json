@@ -139,6 +139,7 @@
         "tests/Granit.Http.ExceptionHandling.Tests",
         "tests/Granit.Http.Abstractions.Tests",
         "tests/Granit.Http.Idempotency.Tests",
+        "tests/Granit.Http.ODataExposure.Tests",
         "tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests",
         "tests/Granit.Http.OutputCaching.Tests",
         "tests/Granit.Http.Resilience.Tests",

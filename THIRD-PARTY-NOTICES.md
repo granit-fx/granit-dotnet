@@ -149,6 +149,14 @@ Dernière mise à jour : 2026-04-29
 | ------- | ------- | --------- |
 | NetTopologySuite | 2.6.0 | Copyright (c) NetTopologySuite Team |
 
+### MIT (OData)
+
+| Package | Version | Copyright |
+| ------- | ------- | --------- |
+| Microsoft.AspNetCore.OData | 9.4.1 | Copyright (c) Microsoft Corporation |
+| Microsoft.OData.Core | 8.4.x | Copyright (c) Microsoft Corporation |
+| Microsoft.OData.Edm | 8.4.x | Copyright (c) Microsoft Corporation |
+
 ### PostgreSQL License
 
 | Package | Version | Copyright |

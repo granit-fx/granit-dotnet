@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Http.ODataExposure</PackageId>
+    <Description>Bridges registered Granit.QueryEngine QueryDefinition&lt;T&gt; instances to OData v4 EntitySets so Power BI / Excel / Tableau / Qlik can consume the application's data via the standard "Get Data → OData feed" connector. Every OData request flows through the existing Granit filter pipeline — tenant, soft-delete, and permission filters apply BEFORE any user-supplied $filter, $select, $expand. The framework's column whitelist (QueryDefinition.AllowedColumns) drives the EDM model so the OData schema mirrors the column-level access control. Direct read-replica SQL access to a multi-tenant database is explicitly rejected as a cross-tenant leak vector — OData is the only sanctioned BI bridge.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Http.ODataExposure.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OData" />
+  </ItemGroup>
+
+</Project>
