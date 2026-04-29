@@ -1,6 +1,14 @@
 {
   "culture": "es",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Planes activos",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Precios de plan activos",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Suscripciones activas",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Suscripciones que se cancelarán al final del período",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Suscripciones canceladas",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Suscripciones en reclamación",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Suscripciones vencidas",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Suscripciones en prueba",
     "Subscriptions.Columns.BillingCycleAnchor": "Anclaje del ciclo de facturación",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Cancelar al final del período",
     "Subscriptions.Columns.CancellationReason": "Motivo de cancelación",

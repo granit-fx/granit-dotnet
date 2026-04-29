@@ -1,6 +1,14 @@
 {
   "culture": "de",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktive Pläne",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktive Planpreise",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktive Abonnements",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Abonnements zur Stornierung am Periodenende",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Stornierte Abonnements",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Abonnements im Mahnverfahren",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Überfällige Abonnements",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Test-Abonnements",
     "Subscriptions.Columns.BillingCycleAnchor": "Abrechnungszyklusanker",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Am Periodenende kündigen",
     "Subscriptions.Columns.CancellationReason": "Stornogrund",

@@ -1,6 +1,14 @@
 {
   "culture": "ja",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "有効なプラン",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "有効なプラン価格",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "有効なサブスクリプション",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "期間末にキャンセル予定のサブスクリプション",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "キャンセルされたサブスクリプション",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "督促中のサブスクリプション",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "支払い遅延中のサブスクリプション",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "トライアル中のサブスクリプション",
     "Subscriptions.Columns.BillingCycleAnchor": "請求サイクル基準日",
     "Subscriptions.Columns.CancelAtPeriodEnd": "期間終了時にキャンセル",
     "Subscriptions.Columns.CancellationReason": "キャンセル理由",

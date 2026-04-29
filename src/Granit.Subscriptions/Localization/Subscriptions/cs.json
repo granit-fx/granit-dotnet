@@ -1,6 +1,14 @@
 {
   "culture": "cs",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktivní plány",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktivní ceny plánů",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktivní předplatná",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Předplatná rušená na konci období",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Zrušená předplatná",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Předplatná ve vymáhání",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Předplatná po splatnosti",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Zkušební předplatná",
     "Subscriptions.Columns.BillingCycleAnchor": "Ukotvení fakturačního cyklu",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Zrušit na konci období",
     "Subscriptions.Columns.CancellationReason": "Důvod zrušení",

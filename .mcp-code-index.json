@@ -2287,6 +2287,7 @@
       "name": "Granit.Subscriptions",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
@@ -46729,7 +46730,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
-      "line": 21,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitSubscriptions",
@@ -47256,6 +47257,398 @@
           "kind": "method",
           "signature": "CreateInvoiceAsync(CreateUsageInvoiceRequest request, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActivePlanCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.ActivePlanCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/ActivePlanCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Plan, int?>>? Selector",
+          "returnType": "Expression<Func<Plan, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Plan, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Plan, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Plan, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Plan, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "ActivePlanPriceCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.ActivePlanPriceCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/ActivePlanPriceCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<PlanPrice, int?>>? Selector",
+          "returnType": "Expression<Func<PlanPrice, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<PlanPrice, bool>>? BaseFilter",
+          "returnType": "Expression<Func<PlanPrice, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<PlanPrice, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<PlanPrice, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "ActiveSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.ActiveSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/ActiveSubscriptionCountMetricDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "CancelAtPeriodEndSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.CancelAtPeriodEndSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/CancelAtPeriodEndSubscriptionCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "CancelledSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.CancelledSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/CancelledSubscriptionCountMetricDefinition.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "DunningSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.DunningSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/DunningSubscriptionCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PastDueSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.PastDueSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/PastDueSubscriptionCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "TrialSubscriptionCountMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.TrialSubscriptionCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/TrialSubscriptionCountMetricDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, int?>>? Selector",
+          "returnType": "Expression<Func<Subscription, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Subscription, DateTimeOffset>>?"
         }
       ]
     },

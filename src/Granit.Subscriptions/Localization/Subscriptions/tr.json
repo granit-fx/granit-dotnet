@@ -1,6 +1,14 @@
 {
   "culture": "tr",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktif planlar",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktif plan fiyatları",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktif abonelikler",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Dönem sonunda iptal edilecek abonelikler",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "İptal edilen abonelikler",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Tahsilat sürecindeki abonelikler",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Vadesi geçmiş abonelikler",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Deneme abonelikleri",
     "Subscriptions.Columns.BillingCycleAnchor": "Faturalandırma döngüsü çapası",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Dönem sonunda iptal et",
     "Subscriptions.Columns.CancellationReason": "İptal nedeni",

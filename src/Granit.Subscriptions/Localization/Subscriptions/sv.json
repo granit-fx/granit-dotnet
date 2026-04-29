@@ -1,6 +1,14 @@
 {
   "culture": "sv",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktiva planer",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktiva planpriser",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktiva prenumerationer",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Prenumerationer som avbryts vid periodens slut",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Avbrutna prenumerationer",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Prenumerationer i påminnelseflöde",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Förfallna prenumerationer",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Provprenumerationer",
     "Subscriptions.Columns.BillingCycleAnchor": "Ankarpunkt faktureringscykel",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Avsluta vid periodens slut",
     "Subscriptions.Columns.CancellationReason": "Avbokningsorsak",

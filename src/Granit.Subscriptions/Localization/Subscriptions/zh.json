@@ -1,6 +1,14 @@
 {
   "culture": "zh",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "活跃计划",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "活跃套餐价格",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "活跃订阅",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "周期末取消的订阅",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "已取消的订阅",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "催收中的订阅",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "逾期订阅",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "试用订阅",
     "Subscriptions.Columns.BillingCycleAnchor": "计费周期锚点",
     "Subscriptions.Columns.CancelAtPeriodEnd": "周期结束时取消",
     "Subscriptions.Columns.CancellationReason": "取消原因",

@@ -1,6 +1,14 @@
 {
   "culture": "nl",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Actieve plannen",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Actieve planprijzen",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Actieve abonnementen",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Abonnementen te annuleren bij einde periode",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Geannuleerde abonnementen",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Abonnementen in aanmaning",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Achterstallige abonnementen",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Proefabonnementen",
     "Subscriptions.Columns.BillingCycleAnchor": "Anker factureringscyclus",
     "Subscriptions.Columns.CancelAtPeriodEnd": "Annuleren aan einde periode",
     "Subscriptions.Columns.CancellationReason": "Reden van annulering",

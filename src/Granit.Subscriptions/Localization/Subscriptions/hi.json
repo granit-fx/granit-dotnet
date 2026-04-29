@@ -1,6 +1,14 @@
 {
   "culture": "hi",
   "texts": {
+    "Metric:Granit.Subscriptions.ActivePlanCountMetric": "सक्रिय योजनाएँ",
+    "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "सक्रिय योजना मूल्य",
+    "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "सक्रिय सदस्यताएँ",
+    "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "अवधि के अंत में रद्द होने वाली सदस्यताएँ",
+    "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "रद्द की गई सदस्यताएँ",
+    "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "तकाजे में सदस्यताएँ",
+    "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "बकाया सदस्यताएँ",
+    "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "परीक्षण सदस्यताएँ",
     "Subscriptions.Columns.BillingCycleAnchor": "बिलिंग चक्र एंकर",
     "Subscriptions.Columns.CancelAtPeriodEnd": "अवधि समाप्ति पर रद्द करें",
     "Subscriptions.Columns.CancellationReason": "रद्द करने का कारण",

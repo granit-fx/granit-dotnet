@@ -69,9 +69,6 @@ public sealed class QueryMetricPairingTests
         "Granit.Payments.Domain.PaymentTransaction",                                      // [BACKLOG] success-rate / volume
         "Granit.Payments.Domain.Refund",                                                  // [BACKLOG] refund-volume KPIs
         "Granit.Payments.SepaDirectDebit.Domain.Mandate",                                 // [BACKLOG] active-mandate count
-        "Granit.Subscriptions.Domain.Plan",                                               // [BACKLOG] active-plan count
-        "Granit.Subscriptions.Domain.PlanPrice",                                          // [BACKLOG] active-pricing count
-        "Granit.Subscriptions.Domain.Subscription",                                       // [BACKLOG] MRR / ARR / churn rate
         "Granit.Webhooks.Domain.WebhookDeliveryAttempt",                                  // [BACKLOG] delivery failure rate
         "Granit.Webhooks.Domain.WebhookSubscription",                                     // [BACKLOG] active-subscription count
     };
