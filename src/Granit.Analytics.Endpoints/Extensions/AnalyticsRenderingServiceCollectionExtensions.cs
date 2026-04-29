@@ -1,7 +1,9 @@
+using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
 using Granit.Dashboards;
 using Granit.Dashboards.Rendering;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -51,6 +53,8 @@ public static class AnalyticsRenderingServiceCollectionExtensions
     public static IServiceCollection AddGranitAnalyticsWidgetRenderers(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        services.TryAddSingleton<AnalyticsEndpointsMetrics>();
 
         services.TryAddScoped<IDatasourceEvaluator<MetricDatasource>, MetricDatasourceEvaluator>();
         services.TryAddScoped<IDatasourceEvaluator<QueryAggregateDatasource>, QueryAggregateDatasourceEvaluator>();
@@ -138,9 +142,11 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                AnalyticsEndpointsMetrics metrics = sp.GetRequiredService<AnalyticsEndpointsMetrics>();
+                ICurrentTenant? currentTenant = sp.GetService<ICurrentTenant>();
 
                 return (IMapRunner)Activator.CreateInstance(
-                    runnerType, d.Name, queryableSource, engine)!;
+                    runnerType, d.Name, queryableSource, engine, metrics, currentTenant)!;
             });
         }
 

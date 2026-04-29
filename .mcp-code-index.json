@@ -4241,6 +4241,15 @@
       "members": []
     },
     {
+      "name": "AnalyticsEndpointsMetrics",
+      "fqn": "Granit.Analytics.Endpoints.Diagnostics.AnalyticsEndpointsMetrics",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Diagnostics/AnalyticsEndpointsMetrics.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "MetricPreviousPayload",
       "fqn": "Granit.Analytics.Endpoints.Dtos.MetricPreviousPayload",
       "kind": "record",
@@ -4314,7 +4323,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
-      "line": 18,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitAnalyticsWidgetRenderers",

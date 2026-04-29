@@ -1,8 +1,13 @@
+using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.Analytics.Endpoints.Internal;
+using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Filtering;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.Metrics.Testing;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -29,7 +34,7 @@ public sealed class MapRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "Latitude",
@@ -57,7 +62,7 @@ public sealed class MapRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "LatitudeNullable",
@@ -79,7 +84,7 @@ public sealed class MapRunnerTests
         TestItem[] items = [new() { Id = id, Latitude = 48.85, Longitude = 2.35 }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "Latitude",
@@ -104,7 +109,7 @@ public sealed class MapRunnerTests
         }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "Latitude",
@@ -125,7 +130,7 @@ public sealed class MapRunnerTests
         TestItem[] items = [new() { Id = Guid.NewGuid(), Latitude = 0d, Longitude = 0d }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "Latitude",
@@ -150,7 +155,7 @@ public sealed class MapRunnerTests
         }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             latitudeColumn: "LatitudeDecimal",
@@ -167,7 +172,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_NonNumericCoordinateColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -182,7 +187,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_UnknownLatitudeColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -199,7 +204,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_UnknownPopupColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -216,7 +221,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_DashboardFilter_PassedAsQueryRequestFilter()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
 
         await runner.ExecuteAsync(
             latitudeColumn: "Latitude",
@@ -235,8 +240,107 @@ public sealed class MapRunnerTests
     public void Name_IsSetFromConstructor()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine);
+        MapRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine, BuildMetrics());
         runner.Name.ShouldBe("Granit.Test.Items");
+    }
+
+    [Theory]
+    [InlineData(91d, 0d, "latitude_out_of_range")]
+    [InlineData(-91d, 0d, "latitude_out_of_range")]
+    [InlineData(0d, 181d, "longitude_out_of_range")]
+    [InlineData(0d, -181d, "longitude_out_of_range")]
+    [InlineData(double.NaN, 0d, "non_finite")]
+    [InlineData(0d, double.PositiveInfinity, "non_finite")]
+    public async Task ExecuteAsync_InvalidCoordinates_RowSkipped_AndCounterIncrements(
+        double lat, double lng, string expectedReason)
+    {
+        TestItem[] items =
+        [
+            new() { Id = Guid.NewGuid(), Name = "Bad row", Latitude = lat, Longitude = lng },
+            new() { Id = Guid.NewGuid(), Name = "Good row", Latitude = 48.85, Longitude = 2.35 },
+        ];
+
+        using var scope = new MetricsScope();
+        using MetricCollector<long> collector = new(
+            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
+
+        MapRunnerResult result = await runner.ExecuteAsync(
+            latitudeColumn: "Latitude",
+            longitudeColumn: "Longitude",
+            popupColumns: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        // Bad row dropped, good row kept — the widget keeps rendering.
+        result.Points.Count.ShouldBe(1);
+        result.Points[0].Latitude.ShouldBe(48.85);
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Value.ShouldBe(1);
+        snapshot[0].Tags["reason"].ShouldBe(expectedReason);
+        // No tenant context wired here — falls back to "global".
+        snapshot[0].Tags["tenant_id"].ShouldBe("global");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_ValidCoordinatesAtBoundaries_DoNotIncrementInvalidCounter()
+    {
+        TestItem[] items =
+        [
+            new() { Id = Guid.NewGuid(), Latitude = 0d, Longitude = 0d },           // null island
+            new() { Id = Guid.NewGuid(), Latitude = 90d, Longitude = 180d },        // upper boundary
+            new() { Id = Guid.NewGuid(), Latitude = -90d, Longitude = -180d },      // lower boundary
+        ];
+
+        using var scope = new MetricsScope();
+        using MetricCollector<long> collector = new(
+            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
+
+        MapRunnerResult result = await runner.ExecuteAsync(
+            latitudeColumn: "Latitude",
+            longitudeColumn: "Longitude",
+            popupColumns: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.Points.Count.ShouldBe(3);
+        collector.GetMeasurementSnapshot().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_TenantContextAvailable_TagsCounterWithTenantId()
+    {
+        var tenantId = Guid.NewGuid();
+        TestItem[] items = [new() { Id = Guid.NewGuid(), Latitude = 999d, Longitude = 0d }];
+
+        using var scope = new MetricsScope();
+        using MetricCollector<long> collector = new(
+            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+
+        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
+        currentTenant.IsAvailable.Returns(true);
+        currentTenant.Id.Returns(tenantId);
+
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics, currentTenant);
+
+        await runner.ExecuteAsync(
+            latitudeColumn: "Latitude",
+            longitudeColumn: "Longitude",
+            popupColumns: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Tags["tenant_id"].ShouldBe(tenantId.ToString());
     }
 
     private static IQueryEngine<TestItem> ConfigureStream(IReadOnlyList<TestItem> items)
@@ -260,6 +364,43 @@ public sealed class MapRunnerTests
         }
 
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Builds a throwaway <see cref="AnalyticsEndpointsMetrics"/> for tests that don't
+    /// inspect the counter — keeps the existing happy-path tests focused on projection
+    /// without leaking metric setup boilerplate.
+    /// </summary>
+    private static AnalyticsEndpointsMetrics BuildMetrics()
+    {
+        ServiceCollection services = new();
+        services.AddMetrics();
+        ServiceProvider sp = services.BuildServiceProvider();
+        return new AnalyticsEndpointsMetrics(sp.GetRequiredService<IMeterFactory>());
+    }
+
+    /// <summary>
+    /// Disposable harness — owns a <see cref="ServiceProvider"/> + <see cref="IMeterFactory"/>
+    /// and exposes the matching <see cref="AnalyticsEndpointsMetrics"/>. The metric collector
+    /// must be created from the SAME factory that built the metrics instance, otherwise
+    /// the snapshot will be empty.
+    /// </summary>
+    private sealed class MetricsScope : IDisposable
+    {
+        private readonly ServiceProvider _sp;
+        public IMeterFactory MeterFactory { get; }
+        public AnalyticsEndpointsMetrics Metrics { get; }
+
+        public MetricsScope()
+        {
+            ServiceCollection services = new();
+            services.AddMetrics();
+            _sp = services.BuildServiceProvider();
+            MeterFactory = _sp.GetRequiredService<IMeterFactory>();
+            Metrics = new AnalyticsEndpointsMetrics(MeterFactory);
+        }
+
+        public void Dispose() => _sp.Dispose();
     }
 
     public sealed class TestItem
