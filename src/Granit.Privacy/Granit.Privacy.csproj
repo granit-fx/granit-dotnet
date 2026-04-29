@@ -12,7 +12,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WolverineFx" />
+    <!-- The Wolverine source generator emits
+         `Wolverine.SourceGeneration.GeneratedWolverineTypeLoader` in every
+         assembly it processes. When Granit.Privacy.BlobStorage references
+         Granit.Privacy via ProjectReference, the SG analyzer flows through
+         and runs again in BlobStorage, emitting a SECOND class with the same
+         FQN — CS0436 conflict. PrivateAssets="all" stops the analyzer from
+         propagating to downstream consumers; the SG still runs HERE (the
+         assembly declaring Wolverine handlers + sagas), and Privacy.BlobStorage
+         falls back to Wolverine's runtime reflection-based handler discovery
+         for its own handlers (the SG is a perf optimisation, not a
+         correctness requirement). -->
+    <PackageReference Include="WolverineFx">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

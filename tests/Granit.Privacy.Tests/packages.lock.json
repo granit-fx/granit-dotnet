@@ -793,8 +793,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )",
-          "WolverineFx": "[5.*, )"
+          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "granit.queryengine.abstractions": {

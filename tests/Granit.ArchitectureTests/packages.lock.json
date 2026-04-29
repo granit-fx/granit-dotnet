@@ -3260,8 +3260,7 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
-          "Granit.Workflow": "[0.1.0-dev, )",
-          "WolverineFx": "[5.*, )"
+          "Granit.Workflow": "[0.1.0-dev, )"
         }
       },
       "granit.privacy.ai": {
@@ -4618,8 +4617,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.6",
-        "contentHash": "Q2JlF4FNSa3ooMbelv8WmP0rJCZHuQ6AJIB4tQfubcqbH3pgKIpsYBhXRzVECZ3erOZD8FmussrUpdbyVCNXYw=="
+        "resolved": "2.14.7",
+        "contentHash": "rdLjUXpXp4MExDM07P9iArj/bm49foe+QJm14XCsZs0R51y4r6tIa7O2ILFCnhD7KNWWDQNTkD2T+qx+7NimcQ=="
       },
       "Scriban": {
         "type": "CentralTransitive",
