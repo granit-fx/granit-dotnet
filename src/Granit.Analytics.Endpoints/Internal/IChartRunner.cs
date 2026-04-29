@@ -70,7 +70,10 @@ internal interface IChartRunner
 /// <see cref="ChartRunnerBucket.Value"/> is the projected aggregate value.
 /// </summary>
 /// <param name="Buckets">Group-aggregate results in the order surfaced by the underlying query.</param>
-internal sealed record ChartRunnerResult(IReadOnlyList<ChartRunnerBucket> Buckets);
+/// <param name="CurrencyCode">ISO 4217 alpha-3 code from the value field's column descriptor (declared via <c>ColumnBuilder.Currency</c>); <see langword="null"/> for non-monetary aggregations and for <c>Count</c>. All buckets in the series share the same currency since they aggregate the same value field.</param>
+internal sealed record ChartRunnerResult(
+    IReadOnlyList<ChartRunnerBucket> Buckets,
+    string? CurrencyCode = null);
 
 /// <summary>One group's contribution to the chart series.</summary>
 /// <param name="Label">String-friendly group key. Null group keys surface as <c>"(null)"</c>.</param>

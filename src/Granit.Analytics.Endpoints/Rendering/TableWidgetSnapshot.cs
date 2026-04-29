@@ -21,4 +21,5 @@ public sealed record TableWidgetSnapshot(
 /// <summary>One column header on the wire envelope.</summary>
 /// <param name="Name">Column property name (camelCase — matches the key in every row payload).</param>
 /// <param name="LabelLocalizationKey">Localization key for the header. <see langword="null"/> when the source <c>QueryDefinition</c> declared no localized label — the frontend falls back to the property name.</param>
-public sealed record TableWidgetColumn(string Name, string? LabelLocalizationKey);
+/// <param name="CurrencyCode">ISO 4217 alpha-3 currency code from the column's <c>ColumnBuilder.Currency(...)</c> declaration. When present the frontend formats the column's row values with the matching currency symbol + locale; <see langword="null"/> for non-monetary columns.</param>
+public sealed record TableWidgetColumn(string Name, string? LabelLocalizationKey, string? CurrencyCode = null);

@@ -189,6 +189,30 @@ public sealed class TableRunnerTests
             Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task ExecuteAsync_ColumnsCarryDeclaredCurrencyCode()
+    {
+        // CurrencyAwareQueryDefinition declares Amount with .Currency("EUR").
+        // Surface that on the TableRunnerColumn so the wire snapshot can
+        // render values with the right symbol per column.
+        IQueryEngine<TestItem> engine = Substitute.For<IQueryEngine<TestItem>>();
+        engine.ExecuteAsync(Arg.Any<IQueryable<TestItem>>(), Arg.Any<QueryRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<TestItem>([], TotalCount: 0, HasMore: false));
+
+        TableRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource([]), engine, new CurrencyAwareQueryDefinition());
+
+        TableRunnerResult result = await runner.ExecuteAsync(
+            visibleColumns: null,
+            pageSize: 10,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        var currencyByName = result.Columns.ToDictionary(c => c.Name, c => c.CurrencyCode);
+        currencyByName["amount"].ShouldBe("EUR");
+        currencyByName["name"].ShouldBeNull();
+    }
+
     private static TableRunner<TestItem> BuildRunner(IReadOnlyList<TestItem> entities, int totalCount)
     {
         IQueryEngine<TestItem> engine = Substitute.For<IQueryEngine<TestItem>>();
@@ -218,6 +242,18 @@ public sealed class TableRunnerTests
             builder
                 .Column(x => x.Name, c => c.Label("Name").LabelKey("Column:Name"))
                 .Column(x => x.Amount, c => c.Label("Amount").LabelKey("Column:Amount"));
+        }
+    }
+
+    public sealed class CurrencyAwareQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Name, c => c.Label("Name"))
+                .Column(x => x.Amount, c => c.Label("Amount").Currency("EUR"));
         }
     }
 }

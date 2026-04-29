@@ -55,7 +55,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -75,7 +75,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -94,7 +94,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -116,7 +116,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -140,7 +140,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             new TestItem { Id = Guid.NewGuid(), Status = "Open", Amount = 0m, Bonus = null });
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -164,7 +164,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             new TestItem { Id = Guid.NewGuid(), Status = "Open", Amount = 0m, Bonus = null });
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -185,7 +185,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -205,7 +205,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             new TestItem { Id = Guid.NewGuid(), Status = "Open", Amount = 20m });
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -222,7 +222,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     [Fact]
     public async Task ExecuteAsync_UnknownGroupByField_Throws()
     {
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -237,7 +237,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     [Fact]
     public async Task ExecuteAsync_UnknownAggregateField_Throws()
     {
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -255,7 +255,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         // Aggregating Sum over a string column makes no sense — surface a
         // clear NotSupportedException so the dashboard renderer's per-widget
         // isolation surfaces it as Error (config bug, not data bug).
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<NotSupportedException>(async () =>
             await runner.ExecuteAsync(
@@ -268,7 +268,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     [Fact]
     public async Task ExecuteAsync_NonCountAggregation_WithoutField_Throws()
     {
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -283,7 +283,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     [InlineData("   ")]
     public async Task ExecuteAsync_EmptyGroupBy_Throws(string groupBy)
     {
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -294,9 +294,52 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ExecuteAsync_NumericAggregation_OnCurrencyColumn_PropagatesCurrencyCode()
+    {
+        // CurrencyAwareQueryDefinition declares Amount with .Currency("EUR")
+        // — Sum/Avg/Min/Max over it must surface "EUR" on the result so the
+        // renderer promotes the wire snapshot to Currency.
+        SeedFive();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        ChartRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        ChartRunnerResult result = await runner.ExecuteAsync(
+            groupBy: "Status",
+            aggregation: AggregateFunction.Sum,
+            field: "Amount",
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.CurrencyCode.ShouldBe("EUR");
+        result.Buckets.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Count_DoesNotCarryCurrency()
+    {
+        // Count is a row count regardless of column metadata.
+        SeedFive();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        ChartRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(_db), _engine, new CurrencyAwareQueryDefinition());
+
+        ChartRunnerResult result = await runner.ExecuteAsync(
+            groupBy: "Status",
+            aggregation: AggregateFunction.Count,
+            field: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.CurrencyCode.ShouldBeNull();
+    }
+
+    [Fact]
     public void Name_IsSetFromConstructor()
     {
-        ChartRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
         runner.Name.ShouldBe("Granit.Test.Items");
     }
 
@@ -309,7 +352,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -331,7 +374,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         SeedFive();
         await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine, new TestQueryDefinition());
 
         ChartRunnerResult result = await runner.ExecuteAsync(
             groupBy: "Status",
@@ -404,6 +447,19 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             builder
                 .Column(x => x.Status, c => c.Label("Status").Filterable())
                 .Column(x => x.Amount, c => c.Label("Amount").Filterable())
+                .AllowGroupBy(x => x.Status);
+        }
+    }
+
+    public sealed class CurrencyAwareQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Status, c => c.Label("Status").Filterable())
+                .Column(x => x.Amount, c => c.Label("Amount").Filterable().Currency("EUR"))
                 .AllowGroupBy(x => x.Status);
         }
     }

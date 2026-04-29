@@ -84,7 +84,8 @@ internal sealed class PivotWidgetInstanceRenderer(
             ColumnFields: columnFields,
             ValueField: config.ValueField,
             Aggregation: config.ValueAggregation,
-            Cells: [.. result.Cells.Select(c => new PivotCell(c.RowKeys, c.ColumnKeys, c.Value))]);
+            Cells: [.. result.Cells.Select(c => new PivotCell(c.RowKeys, c.ColumnKeys, c.Value))],
+            Currency: result.CurrencyCode);
 
         return WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,

@@ -82,7 +82,8 @@ internal sealed class ChartWidgetInstanceRenderer(
             GroupBy: config.GroupBy,
             Aggregation: config.Aggregation,
             Field: config.Field,
-            Buckets: [.. result.Buckets.Select(b => new ChartBucket(b.Label, b.Value))]);
+            Buckets: [.. result.Buckets.Select(b => new ChartBucket(b.Label, b.Value))],
+            Currency: result.CurrencyCode);
 
         return WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,

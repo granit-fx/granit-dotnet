@@ -77,7 +77,7 @@ internal sealed class TableWidgetInstanceRenderer(
             .ConfigureAwait(false);
 
         TableWidgetSnapshot snapshot = new(
-            Columns: [.. result.Columns.Select(c => new TableWidgetColumn(c.Name, c.LabelLocalizationKey))],
+            Columns: [.. result.Columns.Select(c => new TableWidgetColumn(c.Name, c.LabelLocalizationKey, c.CurrencyCode))],
             Rows: result.Rows,
             TotalRowCount: result.TotalRowCount);
 

@@ -29,11 +29,13 @@ namespace Granit.Analytics.Endpoints.Internal;
 internal sealed class ChartRunner<TEntity>(
     string name,
     IQueryableSource<TEntity> source,
-    IQueryEngine<TEntity> engine) : IChartRunner
+    IQueryEngine<TEntity> engine,
+    QueryDefinition<TEntity> definition) : IChartRunner
     where TEntity : class
 {
     private readonly IQueryableSource<TEntity> _source = source;
     private readonly IQueryEngine<TEntity> _engine = engine;
+    private readonly QueryDefinition<TEntity> _definition = definition;
 
     public string Name { get; } = name;
 
@@ -110,7 +112,20 @@ internal sealed class ChartRunner<TEntity>(
         IReadOnlyList<ChartRunnerBucket> buckets = [..
             raw.Select(b => new ChartRunnerBucket(LabelOf(b.Key), b.Value))];
 
-        return new ChartRunnerResult(buckets);
+        // All buckets aggregate the same value field — share its declared
+        // currency code (if any). Count never carries a currency (handled
+        // upstream in ExecuteCountAsync, which leaves the result CurrencyCode null).
+        string? currencyCode = ResolveCurrencyCode(valueProp);
+
+        return new ChartRunnerResult(buckets, currencyCode);
+    }
+
+    private string? ResolveCurrencyCode(PropertyInfo prop)
+    {
+        IReadOnlyList<ColumnDescriptor> columns = _definition.GetColumns();
+        ColumnDescriptor? match = columns.FirstOrDefault(c =>
+            string.Equals(c.PropertyName, prop.Name, StringComparison.Ordinal));
+        return match?.CurrencyCode;
     }
 
     private static PropertyInfo ResolveProperty(string fieldName, string paramName)

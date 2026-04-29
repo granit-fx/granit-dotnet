@@ -16,7 +16,8 @@ namespace Granit.Analytics.Endpoints.Internal;
 internal sealed class PivotRunner<TEntity>(
     string name,
     IQueryableSource<TEntity> source,
-    IQueryEngine<TEntity> engine) : IPivotRunner
+    IQueryEngine<TEntity> engine,
+    QueryDefinition<TEntity> definition) : IPivotRunner
     where TEntity : class
 {
     /// <summary>Composite-key delimiter (ASCII unit separator). Unlikely in real entity values; collisions in dashboard tile data are negligible.</summary>
@@ -27,6 +28,7 @@ internal sealed class PivotRunner<TEntity>(
 
     private readonly IQueryableSource<TEntity> _source = source;
     private readonly IQueryEngine<TEntity> _engine = engine;
+    private readonly QueryDefinition<TEntity> _definition = definition;
 
     public string Name { get; } = name;
 
@@ -117,7 +119,21 @@ internal sealed class PivotRunner<TEntity>(
                 ColumnKeys: acc.ColumnKeys,
                 Value: acc.Compute(aggregation)))];
 
-        return new PivotRunnerResult(result);
+        // All cells aggregate the same value field — share its declared
+        // currency code. Count never carries a currency (no value field).
+        string? currencyCode = valueProp is not null
+            ? ResolveCurrencyCode(valueProp)
+            : null;
+
+        return new PivotRunnerResult(result, currencyCode);
+    }
+
+    private string? ResolveCurrencyCode(PropertyInfo prop)
+    {
+        IReadOnlyList<ColumnDescriptor> columns = _definition.GetColumns();
+        ColumnDescriptor? match = columns.FirstOrDefault(c =>
+            string.Equals(c.PropertyName, prop.Name, StringComparison.Ordinal));
+        return match?.CurrencyCode;
     }
 
     private static PropertyInfo[] ResolveProperties(IReadOnlyList<string> fieldNames, string paramName)

@@ -56,7 +56,10 @@ internal interface IPivotRunner
 /// Outcome of an <see cref="IPivotRunner.ExecuteAsync"/> call.
 /// </summary>
 /// <param name="Cells">Per-cell results in stream-arrival order. Each cell carries the row-key tuple and column-key tuple plus the aggregated value.</param>
-internal sealed record PivotRunnerResult(IReadOnlyList<PivotRunnerCell> Cells);
+/// <param name="CurrencyCode">ISO 4217 alpha-3 code from the value field's <c>ColumnBuilder.Currency(...)</c> declaration; <see langword="null"/> when the value field is not monetary or for <c>Count</c>. All cells share this currency since they aggregate the same value field.</param>
+internal sealed record PivotRunnerResult(
+    IReadOnlyList<PivotRunnerCell> Cells,
+    string? CurrencyCode = null);
 
 /// <summary>
 /// One cell of the pivot matrix.

@@ -32,7 +32,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -61,7 +61,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -89,7 +89,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status", "Region"],
@@ -119,7 +119,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -151,7 +151,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -179,7 +179,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -201,7 +201,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -224,7 +224,7 @@ public sealed class PivotRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition());
 
         PivotRunnerResult result = await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -244,7 +244,7 @@ public sealed class PivotRunnerTests
     public async Task ExecuteAsync_EmptyRowFields_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -260,7 +260,7 @@ public sealed class PivotRunnerTests
     public async Task ExecuteAsync_UnknownRowField_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -278,7 +278,7 @@ public sealed class PivotRunnerTests
     public async Task ExecuteAsync_NonCount_WithoutValueField_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -294,7 +294,7 @@ public sealed class PivotRunnerTests
     public async Task ExecuteAsync_UnsupportedValueFieldType_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
 
         await Should.ThrowAsync<NotSupportedException>(async () =>
             await runner.ExecuteAsync(
@@ -310,7 +310,7 @@ public sealed class PivotRunnerTests
     public async Task ExecuteAsync_DashboardFilter_PassedAsQueryRequestFilter()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
 
         await runner.ExecuteAsync(
             rowFields: ["Status"],
@@ -327,10 +327,51 @@ public sealed class PivotRunnerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_NumericAggregation_OnCurrencyColumn_PropagatesCurrencyCode()
+    {
+        // CurrencyAwareQueryDefinition declares Amount with .Currency("EUR").
+        TestItem[] items = [new() { Status = "Open", Region = "EU", Amount = 10m }];
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+
+        PivotRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(items), engine, new CurrencyAwareQueryDefinition());
+
+        PivotRunnerResult result = await runner.ExecuteAsync(
+            rowFields: ["Status"],
+            columnFields: ["Region"],
+            valueField: "Amount",
+            aggregation: AggregateFunction.Sum,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.CurrencyCode.ShouldBe("EUR");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Count_DoesNotCarryCurrency()
+    {
+        TestItem[] items = [new() { Status = "Open", Region = "EU" }];
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+
+        PivotRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(items), engine, new CurrencyAwareQueryDefinition());
+
+        PivotRunnerResult result = await runner.ExecuteAsync(
+            rowFields: ["Status"],
+            columnFields: ["Region"],
+            valueField: null,
+            aggregation: AggregateFunction.Count,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.CurrencyCode.ShouldBeNull();
+    }
+
+    [Fact]
     public void Name_IsSetFromConstructor()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        PivotRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine);
+        PivotRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
         runner.Name.ShouldBe("Granit.Test.Items");
     }
 
@@ -370,5 +411,35 @@ public sealed class PivotRunnerTests
     public sealed class TestItemSource(IReadOnlyList<TestItem> items) : IQueryableSource<TestItem>
     {
         public IQueryable<TestItem> GetQueryable() => items.AsQueryable();
+    }
+
+    public sealed class TestQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Status, c => c.Label("Status"))
+                .Column(x => x.Region, c => c.Label("Region"))
+                .Column(x => x.Year, c => c.Label("Year"))
+                .Column(x => x.Amount, c => c.Label("Amount"))
+                .Column(x => x.BonusNullable, c => c.Label("Bonus"));
+        }
+    }
+
+    public sealed class CurrencyAwareQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Status, c => c.Label("Status"))
+                .Column(x => x.Region, c => c.Label("Region"))
+                .Column(x => x.Year, c => c.Label("Year"))
+                .Column(x => x.Amount, c => c.Label("Amount").Currency("EUR"))
+                .Column(x => x.BonusNullable, c => c.Label("Bonus").Currency("USD"));
+        }
     }
 }

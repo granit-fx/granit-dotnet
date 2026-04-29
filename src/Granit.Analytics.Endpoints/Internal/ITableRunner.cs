@@ -50,4 +50,5 @@ internal sealed record TableRunnerResult(
 /// <summary>Column metadata surfaced on the wire envelope.</summary>
 /// <param name="Name">Column property name (camelCase to match the row payload keys).</param>
 /// <param name="LabelLocalizationKey">Localization key for the header, or <see langword="null"/> when the source <c>QueryDefinition</c> declared no localized label.</param>
-internal sealed record TableRunnerColumn(string Name, string? LabelLocalizationKey);
+/// <param name="CurrencyCode">ISO 4217 alpha-3 code from <c>ColumnBuilder.Currency(...)</c>; <see langword="null"/> for non-monetary columns. Drives per-cell currency formatting on the frontend.</param>
+internal sealed record TableRunnerColumn(string Name, string? LabelLocalizationKey, string? CurrencyCode = null);

@@ -103,9 +103,11 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                object definition = sp.GetRequiredService(
+                    typeof(QueryDefinition<>).MakeGenericType(d.EntityType));
 
                 return (IChartRunner)Activator.CreateInstance(
-                    runnerType, d.Name, queryableSource, engine)!;
+                    runnerType, d.Name, queryableSource, engine, definition)!;
             });
 
             services.AddScoped<IPivotRunner>(sp =>
@@ -116,9 +118,11 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                object definition = sp.GetRequiredService(
+                    typeof(QueryDefinition<>).MakeGenericType(d.EntityType));
 
                 return (IPivotRunner)Activator.CreateInstance(
-                    runnerType, d.Name, queryableSource, engine)!;
+                    runnerType, d.Name, queryableSource, engine, definition)!;
             });
         }
 

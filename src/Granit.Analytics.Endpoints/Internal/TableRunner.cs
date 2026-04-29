@@ -68,7 +68,8 @@ internal sealed class TableRunner<TEntity>(
         IReadOnlyList<TableRunnerColumn> columns = [..
             selectedColumns.Select(c => new TableRunnerColumn(
                 Name: ToCamelCase(c.PropertyName),
-                LabelLocalizationKey: c.LabelKey))];
+                LabelLocalizationKey: c.LabelKey,
+                CurrencyCode: c.CurrencyCode))];
 
         return new TableRunnerResult(columns, rows, page.TotalCount ?? page.Items.Count);
     }

@@ -15,12 +15,14 @@ namespace Granit.Analytics.Endpoints.Rendering;
 /// <param name="ValueField">Aggregated field; <see langword="null"/> for <see cref="AggregateFunction.Count"/>.</param>
 /// <param name="Aggregation">Aggregation applied per cell — drives the value-axis label client-side.</param>
 /// <param name="Cells">Per-cell results. Order is preserved as the underlying stream produces them; the frontend pivots into a row-major matrix.</param>
+/// <param name="Currency">ISO 4217 alpha-3 code from the value field's <c>ColumnBuilder.Currency(...)</c> declaration; <see langword="null"/> when the field is not monetary or for <c>Count</c>. All cells share this currency since they aggregate the same value field.</param>
 public sealed record PivotWidgetSnapshot(
     IReadOnlyList<string> RowFields,
     IReadOnlyList<string> ColumnFields,
     string? ValueField,
     AggregateFunction Aggregation,
-    IReadOnlyList<PivotCell> Cells);
+    IReadOnlyList<PivotCell> Cells,
+    string? Currency = null);
 
 /// <summary>One cell of the pivot matrix.</summary>
 /// <param name="RowKeys">Row-axis key tuple matching <see cref="PivotWidgetSnapshot.RowFields"/>. Null property values surface as <c>"(null)"</c>.</param>

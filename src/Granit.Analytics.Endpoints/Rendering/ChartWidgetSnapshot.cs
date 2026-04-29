@@ -15,12 +15,14 @@ namespace Granit.Analytics.Endpoints.Rendering;
 /// <param name="Aggregation">Aggregation applied per bucket — drives the value-axis label.</param>
 /// <param name="Field">Aggregated field; <see langword="null"/> for <see cref="AggregateFunction.Count"/>.</param>
 /// <param name="Buckets">Group-aggregate series. Order is preserved as the underlying group-by produces it.</param>
+/// <param name="Currency">ISO 4217 alpha-3 currency code from the value field's <c>ColumnBuilder.Currency(...)</c> declaration; <see langword="null"/> when the field is not monetary or for <c>Count</c>. All buckets share this currency since they aggregate the same value field.</param>
 public sealed record ChartWidgetSnapshot(
     ChartType ChartType,
     string GroupBy,
     AggregateFunction Aggregation,
     string? Field,
-    IReadOnlyList<ChartBucket> Buckets);
+    IReadOnlyList<ChartBucket> Buckets,
+    string? Currency = null);
 
 /// <summary>One data point on the chart's category axis.</summary>
 /// <param name="Label">String-friendly group key (e.g. <c>"Open"</c>, <c>"Paid"</c>, <c>"2026-04"</c>). Null group keys surface as <c>"(null)"</c>.</param>
