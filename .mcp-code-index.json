@@ -13599,7 +13599,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 33,
+      "line": 42,
       "members": []
     },
     {
@@ -13608,7 +13608,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderRequest.cs",
-      "line": 29,
+      "line": 38,
       "members": []
     },
     {
@@ -13617,7 +13617,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 19,
+      "line": 27,
       "members": []
     },
     {
@@ -13626,7 +13626,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 60,
+      "line": 69,
       "members": []
     },
     {
@@ -13990,7 +13990,7 @@
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
-      "line": 43,
+      "line": 69,
       "members": []
     },
     {
@@ -14014,6 +14014,12 @@
           "name": "RenderAsync",
           "kind": "method",
           "signature": "RenderAsync(Dashboard dashboard, WidgetRenderContext context, CancellationToken cancellationToken)",
+          "returnType": "Task<DashboardRenderResult>"
+        },
+        {
+          "name": "RenderAsync",
+          "kind": "method",
+          "signature": "RenderAsync(Guid dashboardId, IReadOnlyList<WidgetInstance> widgets, WidgetRenderContext context, CancellationToken cancellationToken)",
           "returnType": "Task<DashboardRenderResult>"
         }
       ]
@@ -14040,7 +14046,7 @@
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
-      "line": 56,
+      "line": 82,
       "members": []
     },
     {
@@ -52544,7 +52550,7 @@
       "kind": "class",
       "project": "Granit.Validation",
       "file": "src/Granit.Validation/GranitValidationModule.cs",
-      "line": 34,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -52562,6 +52568,22 @@
       "file": "src/Granit.Validation/GranitValidator.cs",
       "line": 23,
       "members": []
+    },
+    {
+      "name": "IJsonSchemaWriter",
+      "fqn": "Granit.Validation.JsonSchema.IJsonSchemaWriter",
+      "kind": "interface",
+      "project": "Granit.Validation",
+      "file": "src/Granit.Validation/JsonSchema/IJsonSchemaWriter.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Write",
+          "kind": "method",
+          "signature": "Write(Type type)",
+          "returnType": "JsonObject?"
+        }
+      ]
     },
     {
       "name": "AmericanAddressValidatorExtensions",
