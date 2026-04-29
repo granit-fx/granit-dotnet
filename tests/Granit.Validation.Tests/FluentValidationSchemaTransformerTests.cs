@@ -16,6 +16,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using FluentValidation;
 using Granit.Validation.Extensions;
+using Granit.Validation.JsonSchema;
 using Granit.Validation.OpenApi;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.DependencyInjection;
@@ -172,8 +173,9 @@ public sealed class FluentValidationSchemaTransformerTests
         services.AddScoped<IValidator<TRequest>, TValidator>();
         ServiceProvider provider = services.BuildServiceProvider();
 
-        FluentValidationSchemaTransformer transformer = new(
+        IJsonSchemaWriter writer = new JsonSchemaWriter(
             provider.GetRequiredService<IServiceScopeFactory>());
+        FluentValidationSchemaTransformer transformer = new(writer);
 
         OpenApiSchema schema = CreateSchemaForType<TRequest>();
         OpenApiSchemaTransformerContext context = CreateContext<TRequest>();
@@ -188,8 +190,9 @@ public sealed class FluentValidationSchemaTransformerTests
         ServiceCollection services = new();
         ServiceProvider provider = services.BuildServiceProvider();
 
-        FluentValidationSchemaTransformer transformer = new(
+        IJsonSchemaWriter writer = new JsonSchemaWriter(
             provider.GetRequiredService<IServiceScopeFactory>());
+        FluentValidationSchemaTransformer transformer = new(writer);
 
         OpenApiSchema schema = CreateSchemaForType<TRequest>();
         OpenApiSchemaTransformerContext context = CreateContext<TRequest>();
