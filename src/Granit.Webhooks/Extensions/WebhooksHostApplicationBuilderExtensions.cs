@@ -1,10 +1,12 @@
 using System.Threading.Channels;
 using Granit.Analytics.Extensions;
+using Granit.Dashboards.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Http.Resilience.Extensions;
 using Granit.QueryEngine.Extensions;
 using Granit.Webhooks.Abstractions;
+using Granit.Webhooks.Dashboards;
 using Granit.Webhooks.Definitions;
 using Granit.Webhooks.Diagnostics;
 using Granit.Webhooks.Domain;
@@ -125,6 +127,8 @@ public static class WebhooksHostApplicationBuilderExtensions
         builder.Services.AddMetricDefinition<WebhookDeliveryAttempt, int, FailedWebhookDeliveryAttemptCountMetricDefinition>();
         builder.Services.AddMetricDefinition<WebhookDeliveryAttempt, double, WebhookDeliverySuccessRateMetricDefinition>();
         builder.Services.AddMetricDefinition<WebhookDeliveryAttempt, double, WebhookDeliveryLatencyAverageMetricDefinition>();
+
+        builder.Services.AddDashboardDefinition<WebhookReliabilityDashboardDefinition>();
 
         return builder;
     }

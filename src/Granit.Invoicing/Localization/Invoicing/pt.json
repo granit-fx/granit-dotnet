@@ -1,6 +1,7 @@
 {
   "culture": "pt",
   "texts": {
+    "Dashboard:Granit.Invoicing.FinanceOverview": "Finance overview",
     "Invoicing.Columns.AmountCredited": "Valor creditado",
     "Invoicing.Columns.AmountPaid": "Valor pago",
     "Invoicing.Columns.AmountRemaining": "Amount Remaining",
@@ -32,6 +33,13 @@
     "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Faturas pagas",
     "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Total recebido",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Faturas por pagar",
-    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total das faturas por pagar"
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total das faturas por pagar",
+    "Widget:Granit.Invoicing.FinanceOverview.banner.Body": "## Finance overview\nLive snapshot of your invoicing health: cash you're owed, cash you've collected, and what's overdue.",
+    "Widget:Granit.Invoicing.FinanceOverview.credit-note-total": "Credit notes",
+    "Widget:Granit.Invoicing.FinanceOverview.issued-by-month": "Issued by month",
+    "Widget:Granit.Invoicing.FinanceOverview.overdue-total": "Overdue amount",
+    "Widget:Granit.Invoicing.FinanceOverview.paid-total": "Collected",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-count": "Unpaid invoices",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-total": "Unpaid amount"
   }
 }

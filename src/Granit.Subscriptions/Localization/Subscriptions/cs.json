@@ -1,6 +1,7 @@
 {
   "culture": "cs",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktivní plány",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktivní ceny plánů",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktivní předplatná",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "Cena plánu",
     "Subscriptions.Columns.Status": "Stav",
     "Subscriptions.Columns.Tenant": "Nájemce",
-    "Subscriptions.Columns.TrialEndsAt": "Konec zkušebního období"
+    "Subscriptions.Columns.TrialEndsAt": "Konec zkušebního období",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

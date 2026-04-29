@@ -14,8 +14,14 @@
     "BlobStorage.Columns.VerifiedContentType": "Geverifieerd inhoudstype",
     "BlobStorage:NotFound": "Het gevraagde bestand werd niet gevonden.",
     "BlobStorage:NotValid": "Het bestand is niet beschikbaar om te downloaden.",
+    "Dashboard:Granit.BlobStorage.StorageOperations": "Storage operations",
     "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "Verweesde blobs",
     "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "Geldige blobs",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Totale opslag (bytes)"
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "Totale opslag (bytes)",
+    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Storage operations\nValid blob population, total footprint, and orphans waiting on the validation pipeline.",
+    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Orphan blobs",
+    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Total storage",
+    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads by day",
+    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Valid blobs"
   }
 }

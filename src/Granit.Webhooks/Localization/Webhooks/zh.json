@@ -1,6 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "Dashboard:Granit.Webhooks.WebhookReliability": "Webhook reliability",
     "Metric:Granit.Webhooks.ActiveWebhookSubscriptionCountMetric": "活跃 Webhook 订阅",
     "Metric:Granit.Webhooks.FailedWebhookDeliveryAttemptCountMetric": "失败的 Webhook 投递",
     "Metric:Granit.Webhooks.WebhookDeliveryLatencyAverageMetric": "Webhook 延迟（平均毫秒）",
@@ -18,6 +19,12 @@
     "Webhooks.Columns.SuspendedAt": "Suspended At",
     "Webhooks.Columns.SuspendedBy": "Suspended By",
     "Webhooks.Columns.TargetUrl": "Target URL",
-    "Webhooks.Columns.Tenant": "Tenant"
+    "Webhooks.Columns.Tenant": "Tenant",
+    "Widget:Granit.Webhooks.WebhookReliability.active-subscriptions": "Active subscriptions",
+    "Widget:Granit.Webhooks.WebhookReliability.banner.Body": "## Webhook reliability\nActive subscriptions, delivery success rate, latency, and recent failures.",
+    "Widget:Granit.Webhooks.WebhookReliability.failed-count": "Failed deliveries",
+    "Widget:Granit.Webhooks.WebhookReliability.failures-over-time": "Failures over time",
+    "Widget:Granit.Webhooks.WebhookReliability.latency-average": "Latency (avg ms)",
+    "Widget:Granit.Webhooks.WebhookReliability.success-rate": "Success rate"
   }
 }

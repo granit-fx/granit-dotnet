@@ -1,6 +1,7 @@
 {
   "culture": "zh",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "活跃计划",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "活跃套餐价格",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "活跃订阅",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "套餐价格",
     "Subscriptions.Columns.Status": "状态",
     "Subscriptions.Columns.Tenant": "租户",
-    "Subscriptions.Columns.TrialEndsAt": "试用结束时间"
+    "Subscriptions.Columns.TrialEndsAt": "试用结束时间",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

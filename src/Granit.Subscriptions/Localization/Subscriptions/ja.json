@@ -1,6 +1,7 @@
 {
   "culture": "ja",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "有効なプラン",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "有効なプラン価格",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "有効なサブスクリプション",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "プラン価格",
     "Subscriptions.Columns.Status": "ステータス",
     "Subscriptions.Columns.Tenant": "テナント",
-    "Subscriptions.Columns.TrialEndsAt": "トライアル終了日"
+    "Subscriptions.Columns.TrialEndsAt": "トライアル終了日",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

@@ -1,10 +1,12 @@
 using Granit.Analytics.Extensions;
+using Granit.BlobStorage.Dashboards;
 using Granit.BlobStorage.Diagnostics;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Exports;
 using Granit.BlobStorage.Metrics;
 using Granit.BlobStorage.Queries;
 using Granit.BlobStorage.Validators;
+using Granit.Dashboards.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Guids;
 using Granit.Modularity;
@@ -45,5 +47,7 @@ public sealed class GranitBlobStorageModule : GranitModule
         context.Services.AddMetricDefinition<BlobDescriptor, int, ValidBlobDescriptorCountMetricDefinition>();
         context.Services.AddMetricDefinition<BlobDescriptor, long, ValidBlobDescriptorSizeTotalMetricDefinition>();
         context.Services.AddMetricDefinition<BlobDescriptor, int, OrphanBlobDescriptorCountMetricDefinition>();
+
+        context.Services.AddDashboardDefinition<BlobStorageOperationsDashboardDefinition>();
     }
 }

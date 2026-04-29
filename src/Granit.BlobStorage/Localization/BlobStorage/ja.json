@@ -14,8 +14,14 @@
     "BlobStorage.Columns.VerifiedContentType": "Verified Content Type",
     "BlobStorage:NotFound": "要求されたファイルが見つかりませんでした。",
     "BlobStorage:NotValid": "このファイルはダウンロードできません。",
+    "Dashboard:Granit.BlobStorage.StorageOperations": "Storage operations",
     "Metric:Granit.BlobStorage.OrphanBlobDescriptorCountMetric": "孤立した Blob",
     "Metric:Granit.BlobStorage.ValidBlobDescriptorCountMetric": "有効な Blob",
-    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "合計ストレージ（バイト）"
+    "Metric:Granit.BlobStorage.ValidBlobDescriptorSizeTotalMetric": "合計ストレージ（バイト）",
+    "Widget:Granit.BlobStorage.StorageOperations.banner.Body": "## Storage operations\nValid blob population, total footprint, and orphans waiting on the validation pipeline.",
+    "Widget:Granit.BlobStorage.StorageOperations.orphan-count": "Orphan blobs",
+    "Widget:Granit.BlobStorage.StorageOperations.storage-total": "Total storage",
+    "Widget:Granit.BlobStorage.StorageOperations.uploads-by-day": "Uploads by day",
+    "Widget:Granit.BlobStorage.StorageOperations.valid-count": "Valid blobs"
   }
 }

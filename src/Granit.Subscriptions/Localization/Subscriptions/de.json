@@ -1,6 +1,7 @@
 {
   "culture": "de",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktive Pläne",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktive Planpreise",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktive Abonnements",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "Planpreis",
     "Subscriptions.Columns.Status": "Status",
     "Subscriptions.Columns.Tenant": "Mandant",
-    "Subscriptions.Columns.TrialEndsAt": "Testphase endet am"
+    "Subscriptions.Columns.TrialEndsAt": "Testphase endet am",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

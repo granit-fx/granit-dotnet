@@ -1,6 +1,7 @@
 {
   "culture": "fr",
   "texts": {
+    "Dashboard:Granit.Invoicing.FinanceOverview": "Vue d'ensemble finance",
     "Invoicing.Columns.AmountCredited": "Montant avoir",
     "Invoicing.Columns.AmountPaid": "Montant payé",
     "Invoicing.Columns.AmountRemaining": "Montant restant",
@@ -32,6 +33,13 @@
     "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Factures payées",
     "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Total encaissé",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Factures impayées",
-    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total des factures impayées"
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Total des factures impayées",
+    "Widget:Granit.Invoicing.FinanceOverview.banner.Body": "## Vue d'ensemble finance\nÉtat en direct de la facturation : ce qu'on vous doit, ce qui est encaissé, ce qui est en retard.",
+    "Widget:Granit.Invoicing.FinanceOverview.credit-note-total": "Avoirs",
+    "Widget:Granit.Invoicing.FinanceOverview.issued-by-month": "Facturé par mois",
+    "Widget:Granit.Invoicing.FinanceOverview.overdue-total": "Montant en retard",
+    "Widget:Granit.Invoicing.FinanceOverview.paid-total": "Encaissé",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-count": "Factures impayées",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-total": "Montant impayé"
   }
 }

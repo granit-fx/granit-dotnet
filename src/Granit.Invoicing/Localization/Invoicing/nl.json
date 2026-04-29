@@ -1,6 +1,7 @@
 {
   "culture": "nl",
   "texts": {
+    "Dashboard:Granit.Invoicing.FinanceOverview": "Finance overview",
     "Invoicing.Columns.AmountCredited": "Gecrediteerd bedrag",
     "Invoicing.Columns.AmountPaid": "Betaald bedrag",
     "Invoicing.Columns.AmountRemaining": "Resterend bedrag",
@@ -32,6 +33,13 @@
     "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Betaalde facturen",
     "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Totaal geïnd",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Onbetaalde facturen",
-    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Totaal van onbetaalde facturen"
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Totaal van onbetaalde facturen",
+    "Widget:Granit.Invoicing.FinanceOverview.banner.Body": "## Finance overview\nLive snapshot of your invoicing health: cash you're owed, cash you've collected, and what's overdue.",
+    "Widget:Granit.Invoicing.FinanceOverview.credit-note-total": "Credit notes",
+    "Widget:Granit.Invoicing.FinanceOverview.issued-by-month": "Issued by month",
+    "Widget:Granit.Invoicing.FinanceOverview.overdue-total": "Overdue amount",
+    "Widget:Granit.Invoicing.FinanceOverview.paid-total": "Collected",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-count": "Unpaid invoices",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-total": "Unpaid amount"
   }
 }

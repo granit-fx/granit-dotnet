@@ -10192,6 +10192,34 @@
       ]
     },
     {
+      "name": "BlobStorageOperationsDashboardDefinition",
+      "fqn": "Granit.BlobStorage.Dashboards.BlobStorageOperationsDashboardDefinition",
+      "kind": "class",
+      "project": "Granit.BlobStorage",
+      "file": "src/Granit.BlobStorage/Dashboards/BlobStorageOperationsDashboardDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Category",
+          "kind": "property",
+          "signature": "DashboardCategory Category",
+          "returnType": "DashboardCategory"
+        },
+        {
+          "name": "MarkdownWidgetDefinition",
+          "kind": "method",
+          "signature": "MarkdownWidgetDefinition(Slug: \"banner\", ContentLocalizationKey: \"Widget:Granit.BlobStorage.StorageOperations.banner.Body\", Position: 0)",
+          "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
+        }
+      ]
+    },
+    {
       "name": "DatabaseBlobContent",
       "fqn": "Granit.BlobStorage.Database.Entities.DatabaseBlobContent",
       "kind": "class",
@@ -10764,7 +10792,7 @@
       "kind": "class",
       "project": "Granit.BlobStorage",
       "file": "src/Granit.BlobStorage/GranitBlobStorageModule.cs",
-      "line": 32,
+      "line": 34,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25968,6 +25996,34 @@
       "members": []
     },
     {
+      "name": "InvoicingFinanceOverviewDashboardDefinition",
+      "fqn": "Granit.Invoicing.Dashboards.InvoicingFinanceOverviewDashboardDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Dashboards/InvoicingFinanceOverviewDashboardDefinition.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Category",
+          "kind": "property",
+          "signature": "DashboardCategory Category",
+          "returnType": "DashboardCategory"
+        },
+        {
+          "name": "MarkdownWidgetDefinition",
+          "kind": "method",
+          "signature": "MarkdownWidgetDefinition(Slug: \"banner\", ContentLocalizationKey: \"Widget:Granit.Invoicing.FinanceOverview.banner.Body\", Position: 0)",
+          "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
+        }
+      ]
+    },
+    {
       "name": "InvoiceWorkflows",
       "fqn": "Granit.Invoicing.Definitions.InvoiceWorkflows",
       "kind": "class",
@@ -26541,7 +26597,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "AddGranitInvoicing",
@@ -47759,6 +47815,34 @@
       "members": []
     },
     {
+      "name": "SubscriptionsHealthDashboardDefinition",
+      "fqn": "Granit.Subscriptions.Dashboards.SubscriptionsHealthDashboardDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Dashboards/SubscriptionsHealthDashboardDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Category",
+          "kind": "property",
+          "signature": "DashboardCategory Category",
+          "returnType": "DashboardCategory"
+        },
+        {
+          "name": "MarkdownWidgetDefinition",
+          "kind": "method",
+          "signature": "MarkdownWidgetDefinition(Slug: \"banner\", ContentLocalizationKey: \"Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body\", Position: 0)",
+          "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
+        }
+      ]
+    },
+    {
       "name": "SubscriptionWorkflows",
       "fqn": "Granit.Subscriptions.Definitions.SubscriptionWorkflows",
       "kind": "class",
@@ -48633,7 +48717,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Extensions/SubscriptionsHostApplicationBuilderExtensions.cs",
-      "line": 23,
+      "line": 25,
       "members": [
         {
           "name": "AddGranitSubscriptions",
@@ -54597,6 +54681,34 @@
       ]
     },
     {
+      "name": "WebhookReliabilityDashboardDefinition",
+      "fqn": "Granit.Webhooks.Dashboards.WebhookReliabilityDashboardDefinition",
+      "kind": "class",
+      "project": "Granit.Webhooks",
+      "file": "src/Granit.Webhooks/Dashboards/WebhookReliabilityDashboardDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Category",
+          "kind": "property",
+          "signature": "DashboardCategory Category",
+          "returnType": "DashboardCategory"
+        },
+        {
+          "name": "MarkdownWidgetDefinition",
+          "kind": "method",
+          "signature": "MarkdownWidgetDefinition(Slug: \"banner\", ContentLocalizationKey: \"Widget:Granit.Webhooks.WebhookReliability.banner.Body\", Position: 0)",
+          "returnType": "IReadOnlyList<WidgetDefinition> Widgets { get; } ="
+        }
+      ]
+    },
+    {
       "name": "IWebhookEventTypeDefinitionContext",
       "fqn": "Granit.Webhooks.Definitions.IWebhookEventTypeDefinitionContext",
       "kind": "interface",
@@ -55228,7 +55340,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/Extensions/WebhooksHostApplicationBuilderExtensions.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "AddGranitWebhooks",

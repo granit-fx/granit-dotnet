@@ -1,8 +1,10 @@
 using Granit.Analytics.Extensions;
+using Granit.Dashboards.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Metering;
 using Granit.QueryEngine.Extensions;
+using Granit.Subscriptions.Dashboards;
 using Granit.Subscriptions.Definitions;
 using Granit.Subscriptions.Diagnostics;
 using Granit.Subscriptions.Domain;
@@ -62,6 +64,8 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         builder.Services.AddMetricDefinition<Subscription, int, CancelAtPeriodEndSubscriptionCountMetricDefinition>();
         builder.Services.AddMetricDefinition<Plan, int, ActivePlanCountMetricDefinition>();
         builder.Services.AddMetricDefinition<PlanPrice, int, ActivePlanPriceCountMetricDefinition>();
+
+        builder.Services.AddDashboardDefinition<SubscriptionsHealthDashboardDefinition>();
 
         return builder;
     }

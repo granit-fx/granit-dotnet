@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Dashboard:Granit.Invoicing.FinanceOverview": "Finance overview",
     "Invoicing.Columns.AmountCredited": "İade edilen tutar",
     "Invoicing.Columns.AmountPaid": "Ödenen tutar",
     "Invoicing.Columns.AmountRemaining": "Amount Remaining",
@@ -32,6 +33,13 @@
     "Metric:Granit.Invoicing.PaidInvoiceCountMetric": "Ödenen faturalar",
     "Metric:Granit.Invoicing.PaidInvoiceTotalMetric": "Tahsil edilen toplam",
     "Metric:Granit.Invoicing.UnpaidInvoiceCountMetric": "Ödenmemiş faturalar",
-    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Ödenmemiş faturaların toplamı"
+    "Metric:Granit.Invoicing.UnpaidInvoiceTotalMetric": "Ödenmemiş faturaların toplamı",
+    "Widget:Granit.Invoicing.FinanceOverview.banner.Body": "## Finance overview\nLive snapshot of your invoicing health: cash you're owed, cash you've collected, and what's overdue.",
+    "Widget:Granit.Invoicing.FinanceOverview.credit-note-total": "Credit notes",
+    "Widget:Granit.Invoicing.FinanceOverview.issued-by-month": "Issued by month",
+    "Widget:Granit.Invoicing.FinanceOverview.overdue-total": "Overdue amount",
+    "Widget:Granit.Invoicing.FinanceOverview.paid-total": "Collected",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-count": "Unpaid invoices",
+    "Widget:Granit.Invoicing.FinanceOverview.unpaid-total": "Unpaid amount"
   }
 }

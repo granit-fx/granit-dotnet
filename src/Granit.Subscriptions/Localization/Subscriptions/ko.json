@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "활성 플랜",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "활성 플랜 가격",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "활성 구독",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "플랜 가격",
     "Subscriptions.Columns.Status": "상태",
     "Subscriptions.Columns.Tenant": "테넌트",
-    "Subscriptions.Columns.TrialEndsAt": "체험 종료일"
+    "Subscriptions.Columns.TrialEndsAt": "체험 종료일",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

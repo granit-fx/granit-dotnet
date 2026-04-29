@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Dashboard:Granit.Subscriptions.SubscriptionsHealth": "Subscriptions health",
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktif planlar",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktif plan fiyatları",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktif abonelikler",
@@ -24,6 +25,12 @@
     "Subscriptions.Columns.PlanPrice": "Plan fiyatı",
     "Subscriptions.Columns.Status": "Durum",
     "Subscriptions.Columns.Tenant": "Kiracı",
-    "Subscriptions.Columns.TrialEndsAt": "Deneme bitiş tarihi"
+    "Subscriptions.Columns.TrialEndsAt": "Deneme bitiş tarihi",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
 }

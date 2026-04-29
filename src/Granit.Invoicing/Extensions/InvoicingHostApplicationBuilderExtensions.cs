@@ -1,6 +1,8 @@
 using Granit.Analytics.Extensions;
+using Granit.Dashboards.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Invoicing.Dashboards;
 using Granit.Invoicing.Definitions;
 using Granit.Invoicing.Diagnostics;
 using Granit.Invoicing.Domain;
@@ -38,6 +40,7 @@ public static class InvoicingHostApplicationBuilderExtensions
         builder.Services.AddMetricDefinition<Invoice, decimal, PaidInvoiceTotalMetricDefinition>();
         builder.Services.AddMetricDefinition<Invoice, decimal, CreditNoteTotalMetricDefinition>();
         builder.Services.AddMetricDefinition<Invoice, int, OverpaidInvoiceCountMetricDefinition>();
+        builder.Services.AddDashboardDefinition<InvoicingFinanceOverviewDashboardDefinition>();
         GranitActivitySourceRegistry.Register(InvoicingActivitySource.Name);
         return builder;
     }
