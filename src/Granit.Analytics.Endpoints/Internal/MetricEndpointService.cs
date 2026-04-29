@@ -114,12 +114,13 @@ internal sealed class MetricEndpointService(
         long startTimestamp = Stopwatch.GetTimestamp();
         if (ttl <= TimeSpan.Zero)
         {
-            return await runner.ExecuteAsync(period, cancellationToken).ConfigureAwait(false);
+            // Inline /metrics/{name} path — no dashboard filter context.
+            return await runner.ExecuteAsync(period, dashboardFilters: null, cancellationToken).ConfigureAwait(false);
         }
 
         decimal? value = await _cache.GetOrSetAsync<decimal?>(
             key,
-            async (_, ct) => await runner.ExecuteAsync(period, ct).ConfigureAwait(false),
+            async (_, ct) => await runner.ExecuteAsync(period, dashboardFilters: null, ct).ConfigureAwait(false),
             new FusionCacheEntryOptions { Duration = ttl },
             token: cancellationToken).ConfigureAwait(false);
 

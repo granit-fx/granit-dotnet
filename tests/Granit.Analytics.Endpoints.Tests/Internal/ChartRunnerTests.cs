@@ -61,7 +61,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Count,
             field: null,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel["Open"].ShouldBe(3m);
@@ -81,7 +81,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Sum,
             field: "Amount",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel["Open"].ShouldBe(60m);
@@ -100,7 +100,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Avg,
             field: "Amount",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel["Open"].ShouldBe(20m);  // (10 + 20 + 30) / 3
@@ -122,7 +122,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: aggregation,
             field: "Amount",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel["Open"].ShouldBe(openExpected);
@@ -146,7 +146,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Sum,
             field: "Bonus",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Buckets.Single().Value.ShouldBe(0m);
     }
@@ -170,7 +170,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: aggregation,
             field: "Bonus",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Buckets.Single().Value.ShouldBeNull();
     }
@@ -191,7 +191,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Sum,
             field: field,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel["Open"].ShouldBe(expectedOpenSum);
@@ -211,7 +211,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             groupBy: "Status",
             aggregation: AggregateFunction.Sum,
             field: "Amount",
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
         byLabel.ShouldContainKey("(null)");
@@ -229,7 +229,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
                 groupBy: "NotAField",
                 aggregation: AggregateFunction.Sum,
                 field: "Amount",
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("NotAField");
     }
@@ -244,7 +244,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
                 groupBy: "Status",
                 aggregation: AggregateFunction.Sum,
                 field: "NotAColumn",
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("NotAColumn");
     }
@@ -262,7 +262,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
                 groupBy: "Amount",
                 aggregation: AggregateFunction.Sum,
                 field: "Status",
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -275,7 +275,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
                 groupBy: "Status",
                 aggregation: AggregateFunction.Sum,
                 field: null,
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
     }
 
     [Theory]
@@ -290,7 +290,7 @@ public sealed class ChartRunnerTests : IAsyncLifetime
                 groupBy: groupBy,
                 aggregation: AggregateFunction.Count,
                 field: null,
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
     }
 
     [Fact]
@@ -298,6 +298,56 @@ public sealed class ChartRunnerTests : IAsyncLifetime
     {
         ChartRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource(_db), _engine);
         runner.Name.ShouldBe("Granit.Test.Items");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Count_DashboardFilter_NarrowsTheGroupedResult()
+    {
+        // SeedFive yields three Open + two Paid. A dashboard filter
+        // { "Amount.gte": "30" } narrows to one Open (30) and two Paid
+        // (50 + 100) — Count per group reflects the filtered set.
+        SeedFive();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+
+        ChartRunnerResult result = await runner.ExecuteAsync(
+            groupBy: "Status",
+            aggregation: AggregateFunction.Count,
+            field: null,
+            dashboardFilters: new Dictionary<string, string> { ["Amount.gte"] = "30" },
+            TestContext.Current.CancellationToken);
+
+        var byLabel = result.Buckets.ToDictionary(b => b.Label, b => b.Value);
+        byLabel["Open"].ShouldBe(1m);
+        byLabel["Paid"].ShouldBe(2m);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_Sum_DashboardFilter_NarrowsTheNumericAggregation()
+    {
+        // Same five rows. Filter Status=Open + Amount.gte=20 narrows to two
+        // Open rows (20 + 30). Sum = 50.
+        SeedFive();
+        await _db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        ChartRunner<TestItem> runner = new("Test.Items", new TestItemSource(_db), _engine);
+
+        ChartRunnerResult result = await runner.ExecuteAsync(
+            groupBy: "Status",
+            aggregation: AggregateFunction.Sum,
+            field: "Amount",
+            dashboardFilters: new Dictionary<string, string>
+            {
+                ["Status"] = "Open",       // bare key -> Status.eq=Open
+                ["Amount.gte"] = "20",
+            },
+            TestContext.Current.CancellationToken);
+
+        // Only the Open group survives; Paid is filtered out entirely.
+        result.Buckets.Count.ShouldBe(1);
+        result.Buckets[0].Label.ShouldBe("Open");
+        result.Buckets[0].Value.ShouldBe(50m);  // 20 + 30
     }
 
     private void SeedFive()
@@ -352,8 +402,8 @@ public sealed class ChartRunnerTests : IAsyncLifetime
         protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
         {
             builder
-                .Column(x => x.Status, c => c.Label("Status"))
-                .Column(x => x.Amount, c => c.Label("Amount"))
+                .Column(x => x.Status, c => c.Label("Status").Filterable())
+                .Column(x => x.Amount, c => c.Label("Amount").Filterable())
                 .AllowGroupBy(x => x.Status);
         }
     }

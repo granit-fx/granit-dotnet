@@ -53,7 +53,9 @@ internal sealed class MetricDatasourceEvaluator(MetricEndpointService metricServ
 
         ResolvedPeriod? period = runner.SupportsPeriod ? context.Period : null;
 
-        decimal? value = await runner.ExecuteAsync(period, cancellationToken).ConfigureAwait(false);
+        decimal? value = await runner
+            .ExecuteAsync(period, context.DashboardFilters, cancellationToken)
+            .ConfigureAwait(false);
 
         MetricSnapshotPayload payload = new(
             value,

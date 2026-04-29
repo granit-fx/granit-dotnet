@@ -44,7 +44,7 @@ internal sealed class QueryAggregateDatasourceEvaluator(QueryAggregateService qu
         // (ADR-039 §3.c). The dashboard render still returns 200; the
         // misconfigured widget alone is surfaced as Error.
         decimal? value = await runner
-            .ExecuteAsync(datasource.Aggregation, datasource.Field, cancellationToken)
+            .ExecuteAsync(datasource.Aggregation, datasource.Field, context.DashboardFilters, cancellationToken)
             .ConfigureAwait(false);
 
         // Empty-set semantics (locked by tests #1374):

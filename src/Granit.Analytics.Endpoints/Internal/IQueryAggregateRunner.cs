@@ -47,11 +47,13 @@ internal interface IQueryAggregateRunner
     /// </summary>
     /// <param name="aggregation">Aggregation function to run.</param>
     /// <param name="field">Field name for non-Count aggregations; required (not validated when <paramref name="aggregation"/> is <see cref="AggregateFunction.Count"/>). Resolved against the closed entity type reflectively (case-insensitive); unknown field throws.</param>
+    /// <param name="dashboardFilters">Dashboard-level filter spec layered on top of the underlying QueryDefinition's filter pipeline — see <see cref="DashboardFilterTranslator"/>. <see langword="null"/> when called outside a dashboard render.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="ArgumentException">Field is null/empty for a non-Count aggregation, or field is not a property of the entity.</exception>
     /// <exception cref="NotSupportedException">Field's primitive type is not one of int / long / decimal / double.</exception>
     Task<decimal?> ExecuteAsync(
         AggregateFunction aggregation,
         string? field,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken);
 }

@@ -169,14 +169,17 @@ public sealed class TableWidgetInstanceRendererTests
 
         public IReadOnlyList<string>? LastVisibleColumns { get; private set; }
         public int LastPageSize { get; private set; }
+        public IReadOnlyDictionary<string, string>? LastDashboardFilters { get; private set; }
 
         public Task<TableRunnerResult> ExecuteAsync(
             IReadOnlyList<string>? visibleColumns,
             int pageSize,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
             CancellationToken cancellationToken)
         {
             LastVisibleColumns = visibleColumns;
             LastPageSize = pageSize;
+            LastDashboardFilters = dashboardFilters;
             return Task.FromResult(new TableRunnerResult(columns, rows, totalRowCount));
         }
 

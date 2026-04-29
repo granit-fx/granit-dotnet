@@ -40,13 +40,14 @@ internal sealed class ChartRunner<TEntity>(
         string groupBy,
         AggregateFunction aggregation,
         string? field,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(groupBy);
 
         if (aggregation == AggregateFunction.Count)
         {
-            return await ExecuteCountAsync(groupBy, cancellationToken).ConfigureAwait(false);
+            return await ExecuteCountAsync(groupBy, dashboardFilters, cancellationToken).ConfigureAwait(false);
         }
 
         if (string.IsNullOrWhiteSpace(field))
@@ -56,12 +57,17 @@ internal sealed class ChartRunner<TEntity>(
                 nameof(field));
         }
 
-        return await ExecuteNumericAsync(groupBy, aggregation, field, cancellationToken).ConfigureAwait(false);
+        return await ExecuteNumericAsync(groupBy, aggregation, field, dashboardFilters, cancellationToken).ConfigureAwait(false);
     }
 
-    private async Task<ChartRunnerResult> ExecuteCountAsync(string groupBy, CancellationToken ct)
+    private async Task<ChartRunnerResult> ExecuteCountAsync(
+        string groupBy, IReadOnlyDictionary<string, string>? dashboardFilters, CancellationToken ct)
     {
-        QueryRequest request = new() { GroupBy = groupBy };
+        QueryRequest request = new()
+        {
+            GroupBy = groupBy,
+            Filter = DashboardFilterTranslator.ToQueryRequestFilter(dashboardFilters),
+        };
 
         GroupedResult<TEntity> result = await _engine
             .ExecuteGroupedAsync(_source.GetQueryable(), request, ct)
@@ -74,7 +80,8 @@ internal sealed class ChartRunner<TEntity>(
     }
 
     private async Task<ChartRunnerResult> ExecuteNumericAsync(
-        string groupBy, AggregateFunction aggregation, string field, CancellationToken ct)
+        string groupBy, AggregateFunction aggregation, string field,
+        IReadOnlyDictionary<string, string>? dashboardFilters, CancellationToken ct)
     {
         PropertyInfo groupProp = ResolveProperty(groupBy, nameof(groupBy));
         PropertyInfo valueProp = ResolveProperty(field, nameof(field));
@@ -87,9 +94,12 @@ internal sealed class ChartRunner<TEntity>(
                 $"Aggregation '{aggregation}' on field '{valueProp.Name}' (type '{valueUnderlying.Name}') is not supported. Supported types: int, long, decimal, double."));
         }
 
-        // Apply filter pipeline (multi-tenancy, soft-delete, dashboard filters once
-        // they wire through). Same set of rows the admin grid would see.
-        QueryRequest request = new();
+        // Apply filter pipeline (multi-tenancy, soft-delete, dashboard filters).
+        // Same set of rows the admin grid would see.
+        QueryRequest request = new()
+        {
+            Filter = DashboardFilterTranslator.ToQueryRequestFilter(dashboardFilters),
+        };
         IQueryable<TEntity> filtered = _engine.BuildFilteredQuery(_source.GetQueryable(), request);
 
         List<GroupAggregateExecutor.GroupBucket> raw = await GroupAggregateExecutor

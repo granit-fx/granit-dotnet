@@ -74,7 +74,7 @@ internal sealed class ChartWidgetInstanceRenderer(
         }
 
         ChartRunnerResult result = await runner
-            .ExecuteAsync(config.GroupBy, config.Aggregation, config.Field, cancellationToken)
+            .ExecuteAsync(config.GroupBy, config.Aggregation, config.Field, context.DashboardFilters, cancellationToken)
             .ConfigureAwait(false);
 
         ChartWidgetSnapshot snapshot = new(

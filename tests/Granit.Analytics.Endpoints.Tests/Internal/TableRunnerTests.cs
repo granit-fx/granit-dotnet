@@ -27,7 +27,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: null,
             pageSize: 10,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Columns.Select(c => c.Name).ShouldBe(["name", "amount"]);
         result.Columns[0].LabelLocalizationKey.ShouldBe("Column:Name");
@@ -46,7 +46,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: ["Amount", "Name"],
             pageSize: 10,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Columns.Select(c => c.Name).ShouldBe(["amount", "name"]);
     }
@@ -60,7 +60,7 @@ public sealed class TableRunnerTests
             await runner.ExecuteAsync(
                 visibleColumns: ["NotAColumn"],
                 pageSize: 10,
-                TestContext.Current.CancellationToken));
+                dashboardFilters: null, TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("NotAColumn");
         ex.Message.ShouldContain("Test.Items");
@@ -74,7 +74,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: null,
             pageSize: 10,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Rows.ShouldBeEmpty();
         result.TotalRowCount.ShouldBe(0);
@@ -93,7 +93,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: null,
             pageSize: 5,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         result.Rows.Count.ShouldBe(1);
         result.TotalRowCount.ShouldBe(142);
@@ -111,7 +111,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: null,
             pageSize: 10,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         string raw = result.Rows[0].GetRawText();
         raw.Contains("\"name\":\"Alice\"", StringComparison.Ordinal).ShouldBeTrue(raw);
@@ -129,7 +129,7 @@ public sealed class TableRunnerTests
         TableRunnerResult result = await runner.ExecuteAsync(
             visibleColumns: ["Name"],
             pageSize: 10,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         JsonElement nameValue = result.Rows[0].GetProperty("name");
         nameValue.ValueKind.ShouldBe(JsonValueKind.Null);
@@ -148,11 +148,44 @@ public sealed class TableRunnerTests
         await runner.ExecuteAsync(
             visibleColumns: null,
             pageSize: 7,
-            TestContext.Current.CancellationToken);
+            dashboardFilters: null, TestContext.Current.CancellationToken);
 
         await engine.Received(1).ExecuteAsync(
             Arg.Any<IQueryable<TestItem>>(),
             Arg.Is<QueryRequest>(r => r.PageSize == 7 && r.Page == 1),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_DashboardFilters_AreTranslatedAndPassedOnTheRequest()
+    {
+        // Bare-key filters default to .eq; encoded keys pass through.
+        // The runner forwards the translated dictionary to the QueryEngine
+        // unchanged — actual narrowing happens inside the QueryEngine pipeline
+        // (its own SQLite suite covers that).
+        IQueryEngine<TestItem> engine = Substitute.For<IQueryEngine<TestItem>>();
+        engine.ExecuteAsync(Arg.Any<IQueryable<TestItem>>(), Arg.Any<QueryRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new PagedResult<TestItem>([], TotalCount: 0, HasMore: false));
+
+        TableRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource([]), engine, new TestQueryDefinition());
+
+        await runner.ExecuteAsync(
+            visibleColumns: null,
+            pageSize: 10,
+            dashboardFilters: new Dictionary<string, string>
+            {
+                ["Name"] = "Alice",        // bare -> Name.eq
+                ["Amount.gte"] = "100",
+            },
+            TestContext.Current.CancellationToken);
+
+        await engine.Received(1).ExecuteAsync(
+            Arg.Any<IQueryable<TestItem>>(),
+            Arg.Is<QueryRequest>(r =>
+                r.Filter != null
+                && r.Filter["Name.eq"] == "Alice"
+                && r.Filter["Amount.gte"] == "100"),
             Arg.Any<CancellationToken>());
     }
 

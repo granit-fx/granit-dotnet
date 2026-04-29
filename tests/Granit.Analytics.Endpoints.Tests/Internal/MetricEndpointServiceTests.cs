@@ -192,7 +192,10 @@ public sealed class MetricEndpointServiceTests
         public string? CurrencyCode => null;
         public bool IsHigherBetter => true;
 
-        public Task<decimal?> ExecuteAsync(ResolvedPeriod? period, CancellationToken cancellationToken) =>
+        public Task<decimal?> ExecuteAsync(
+            ResolvedPeriod? period,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
+            CancellationToken cancellationToken) =>
             Task.FromResult(returns);
     }
 
@@ -210,7 +213,10 @@ public sealed class MetricEndpointServiceTests
 
         public void Enqueue(decimal? value) => _values.Enqueue(value);
 
-        public Task<decimal?> ExecuteAsync(ResolvedPeriod? period, CancellationToken cancellationToken)
+        public Task<decimal?> ExecuteAsync(
+            ResolvedPeriod? period,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
+            CancellationToken cancellationToken)
         {
             CallCount++;
             return Task.FromResult(_values.Dequeue());

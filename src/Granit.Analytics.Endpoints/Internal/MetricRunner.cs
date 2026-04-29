@@ -33,7 +33,10 @@ internal sealed class MetricRunner<TEntity, TValue>(
 
     public bool IsHigherBetter => _definition.IsHigherBetter;
 
-    public async Task<decimal?> ExecuteAsync(ResolvedPeriod? period, CancellationToken cancellationToken)
+    public async Task<decimal?> ExecuteAsync(
+        ResolvedPeriod? period,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
+        CancellationToken cancellationToken)
     {
         IQueryable<TEntity> queryable = _source.GetQueryable();
 
@@ -42,7 +45,15 @@ internal sealed class MetricRunner<TEntity, TValue>(
             queryable = PeriodFilterBuilder.ApplyPeriod(queryable, _definition.PeriodSelector, resolved);
         }
 
-        TValue? raw = await _executor.ExecuteAsync(_definition, queryable, new QueryRequest(), cancellationToken)
+        // Dashboard filters layer on top of the metric's BaseFilter via the
+        // QueryEngine pipeline — so a "Status=Open" dashboard filter narrows
+        // the SAME way the admin grid does, no duplicate predicate logic.
+        QueryRequest request = new()
+        {
+            Filter = DashboardFilterTranslator.ToQueryRequestFilter(dashboardFilters),
+        };
+
+        TValue? raw = await _executor.ExecuteAsync(_definition, queryable, request, cancellationToken)
             .ConfigureAwait(false);
 
         return raw.HasValue

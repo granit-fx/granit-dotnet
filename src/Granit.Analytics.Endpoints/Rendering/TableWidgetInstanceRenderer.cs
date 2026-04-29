@@ -73,7 +73,7 @@ internal sealed class TableWidgetInstanceRenderer(
             : DefaultPageSize;
 
         TableRunnerResult result = await runner
-            .ExecuteAsync(config.VisibleColumns, pageSize, cancellationToken)
+            .ExecuteAsync(config.VisibleColumns, pageSize, context.DashboardFilters, cancellationToken)
             .ConfigureAwait(false);
 
         TableWidgetSnapshot snapshot = new(

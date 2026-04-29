@@ -16,28 +16,40 @@ namespace Granit.Analytics.Endpoints.Internal;
 /// without further runtime branching).
 /// </summary>
 /// <remarks>
-/// Wraps the entity's <see cref="IQueryableSource{TEntity}"/> directly. The
-/// dashboard render path does <b>not</b> push the dashboard's filter spec
-/// through the QueryEngine pipeline yet — KPIs that need filtering should
-/// bind to a <c>MetricDatasource</c> with a <c>BaseFilter</c> declared
-/// (well-tested empty-set semantics). Filter-spec composition for query
-/// aggregates is a follow-up slice.
+/// Wraps the entity's <see cref="IQueryableSource{TEntity}"/>. Dashboard
+/// filters layer on top via <see cref="IQueryEngine{TEntity}.BuildFilteredQuery"/>
+/// — same filter pipeline as the admin grid, so a <c>"Status=Open"</c>
+/// dashboard filter narrows the KPI tile the same way it narrows the table
+/// next to it.
 /// </remarks>
 internal sealed class QueryAggregateRunner<TEntity>(
     string name,
-    IQueryableSource<TEntity> source) : IQueryAggregateRunner
+    IQueryableSource<TEntity> source,
+    IQueryEngine<TEntity> engine) : IQueryAggregateRunner
     where TEntity : class
 {
     private readonly IQueryableSource<TEntity> _source = source;
+    private readonly IQueryEngine<TEntity> _engine = engine;
 
     public string Name { get; } = name;
 
     public async Task<decimal?> ExecuteAsync(
         AggregateFunction aggregation,
         string? field,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken)
     {
-        IQueryable<TEntity> queryable = _source.GetQueryable();
+        IQueryable<TEntity> rawQueryable = _source.GetQueryable();
+
+        // Layer dashboard filters via the QueryEngine pipeline so a "Status=Open"
+        // dashboard filter narrows the KPI tile the same way the admin grid does.
+        QueryRequest filterRequest = new()
+        {
+            Filter = DashboardFilterTranslator.ToQueryRequestFilter(dashboardFilters),
+        };
+        IQueryable<TEntity> queryable = filterRequest.Filter is { Count: > 0 }
+            ? _engine.BuildFilteredQuery(rawQueryable, filterRequest)
+            : rawQueryable;
 
         if (aggregation == AggregateFunction.Count)
         {

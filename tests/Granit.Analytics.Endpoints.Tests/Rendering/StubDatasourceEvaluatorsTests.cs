@@ -145,6 +145,7 @@ public sealed class StubDatasourceEvaluatorsTests
         public Task<decimal?> ExecuteAsync(
             AggregateFunction aggregation,
             string? field,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
             CancellationToken cancellationToken) =>
             Task.FromResult(value);
     }

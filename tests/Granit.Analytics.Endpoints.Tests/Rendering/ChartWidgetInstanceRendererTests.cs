@@ -203,16 +203,19 @@ public sealed class ChartWidgetInstanceRendererTests
         public string? LastGroupBy { get; private set; }
         public AggregateFunction LastAggregation { get; private set; }
         public string? LastField { get; private set; }
+        public IReadOnlyDictionary<string, string>? LastDashboardFilters { get; private set; }
 
         public Task<ChartRunnerResult> ExecuteAsync(
             string groupBy,
             AggregateFunction aggregation,
             string? field,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
             CancellationToken cancellationToken)
         {
             LastGroupBy = groupBy;
             LastAggregation = aggregation;
             LastField = field;
+            LastDashboardFilters = dashboardFilters;
             return Task.FromResult(new ChartRunnerResult(buckets));
         }
     }

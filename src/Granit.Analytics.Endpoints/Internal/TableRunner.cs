@@ -48,6 +48,7 @@ internal sealed class TableRunner<TEntity>(
     public async Task<TableRunnerResult> ExecuteAsync(
         IReadOnlyList<string>? visibleColumns,
         int pageSize,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<ColumnDescriptor> selectedColumns = ResolveColumns(visibleColumns);
@@ -56,6 +57,7 @@ internal sealed class TableRunner<TEntity>(
         {
             Page = 1,
             PageSize = pageSize,
+            Filter = DashboardFilterTranslator.ToQueryRequestFilter(dashboardFilters),
         };
 
         PagedResult<TEntity> page = await _engine

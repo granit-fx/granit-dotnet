@@ -208,10 +208,15 @@ public sealed class MetricDatasourceEvaluatorTests
         public string? CurrencyCode { get; }
         public bool IsHigherBetter { get; }
         public ResolvedPeriod? LastPeriod { get; private set; }
+        public IReadOnlyDictionary<string, string>? LastDashboardFilters { get; private set; }
 
-        public Task<decimal?> ExecuteAsync(ResolvedPeriod? period, CancellationToken cancellationToken)
+        public Task<decimal?> ExecuteAsync(
+            ResolvedPeriod? period,
+            IReadOnlyDictionary<string, string>? dashboardFilters,
+            CancellationToken cancellationToken)
         {
             LastPeriod = period;
+            LastDashboardFilters = dashboardFilters;
             return Task.FromResult(_value);
         }
     }

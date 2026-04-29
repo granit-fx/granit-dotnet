@@ -52,6 +52,7 @@ internal interface IChartRunner
     /// <param name="groupBy">Group-by field name (case-insensitive).</param>
     /// <param name="aggregation">Aggregation function applied per group.</param>
     /// <param name="field">Field aggregated; required for non-Count aggregations, ignored for <see cref="AggregateFunction.Count"/>.</param>
+    /// <param name="dashboardFilters">Dashboard-level filter spec layered on top of the QueryDefinition's filter pipeline — see <see cref="DashboardFilterTranslator"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="ArgumentException">Group-by is null/empty, or non-Count aggregation is missing a field, or the field is not a property of the entity.</exception>
     /// <exception cref="NotSupportedException">Field's primitive type is not one of int / long / decimal / double.</exception>
@@ -59,6 +60,7 @@ internal interface IChartRunner
         string groupBy,
         AggregateFunction aggregation,
         string? field,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken);
 }
 

@@ -26,7 +26,18 @@ internal interface IMetricRunner
     /// runner takes care of applying the period filter through
     /// <see cref="PeriodFilterBuilder"/> when <see cref="SupportsPeriod"/> is true.
     /// </summary>
-    Task<decimal?> ExecuteAsync(ResolvedPeriod? period, CancellationToken cancellationToken);
+    /// <param name="period">Resolved period window, or <see langword="null"/> for non-period metrics.</param>
+    /// <param name="dashboardFilters">
+    /// Dashboard-level filter spec layered on top of the metric's <c>BaseFilter</c>.
+    /// Keyed by field name (or <c>field.operator</c>) — see <see cref="DashboardFilterTranslator"/>.
+    /// <see langword="null"/> for the inline <c>POST /metrics/{name}</c> path which has no
+    /// dashboard context.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<decimal?> ExecuteAsync(
+        ResolvedPeriod? period,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
+        CancellationToken cancellationToken);
 
     /// <summary>The metric's value kind (count, currency, percentage, ...).</summary>
     MetricValueKind ValueKind { get; }

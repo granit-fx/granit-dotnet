@@ -60,14 +60,16 @@ public static class AnalyticsRenderingServiceCollectionExtensions
             .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
             .ToList())
         {
-            services.AddSingleton<IQueryAggregateRunner>(sp =>
+            services.AddScoped<IQueryAggregateRunner>(sp =>
             {
                 IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
                 Type runnerType = typeof(QueryAggregateRunner<>).MakeGenericType(d.EntityType);
                 object queryableSource = sp.GetRequiredService(
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+                object engine = sp.GetRequiredService(
+                    typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
 
-                return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource)!;
+                return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource, engine)!;
             });
 
             services.AddScoped<ITableRunner>(sp =>

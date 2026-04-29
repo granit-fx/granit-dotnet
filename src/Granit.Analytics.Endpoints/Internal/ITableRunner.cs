@@ -22,11 +22,13 @@ internal interface ITableRunner
     /// </summary>
     /// <param name="visibleColumns">Subset of column property names to surface; <see langword="null"/> = every visible column declared on the <c>QueryDefinition</c>.</param>
     /// <param name="pageSize">Maximum rows to return. Clamped against the QueryDefinition's <c>MaxPageSize</c>.</param>
+    /// <param name="dashboardFilters">Dashboard-level filter spec layered on top of the QueryDefinition's filter pipeline — see <see cref="DashboardFilterTranslator"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <exception cref="ArgumentException">A column name in <paramref name="visibleColumns"/> is not declared by the <c>QueryDefinition</c>.</exception>
     Task<TableRunnerResult> ExecuteAsync(
         IReadOnlyList<string>? visibleColumns,
         int pageSize,
+        IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken);
 }
 
