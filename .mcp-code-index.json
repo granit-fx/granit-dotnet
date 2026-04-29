@@ -120,6 +120,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Analytics.PostGIS",
+      "deps": [
+        "Granit.Analytics"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Auditing",
       "deps": [
         "Granit",
@@ -4142,6 +4149,15 @@
       "members": []
     },
     {
+      "name": "IGeographyPointProjector",
+      "fqn": "Granit.Analytics.Dashboards.Widgets.IGeographyPointProjector",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Dashboards/Widgets/IGeographyPointProjector.cs",
+      "line": 26,
+      "members": []
+    },
+    {
       "name": "KpiWidgetDefinition",
       "fqn": "Granit.Analytics.Dashboards.Widgets.KpiWidgetDefinition",
       "kind": "record",
@@ -4323,7 +4339,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitAnalyticsWidgetRenderers",
@@ -4683,6 +4699,38 @@
           "kind": "method",
           "signature": "FromToken(string token)",
           "returnType": "PeriodSpec"
+        }
+      ]
+    },
+    {
+      "name": "GranitAnalyticsPostGISServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.PostGIS.Extensions.GranitAnalyticsPostGISServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.PostGIS",
+      "file": "src/Granit.Analytics.PostGIS/Extensions/GranitAnalyticsPostGISServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitAnalyticsPostGIS",
+          "kind": "method",
+          "signature": "AddGranitAnalyticsPostGIS(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitAnalyticsPostGISModule",
+      "fqn": "Granit.Analytics.PostGIS.GranitAnalyticsPostGISModule",
+      "kind": "class",
+      "project": "Granit.Analytics.PostGIS",
+      "file": "src/Granit.Analytics.PostGIS/GranitAnalyticsPostGISModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

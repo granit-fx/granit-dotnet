@@ -54,8 +54,12 @@
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.*" />
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.*" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.*" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.*" />
+  </ItemGroup>
+  <ItemGroup Label="Geospatial">
+    <PackageVersion Include="NetTopologySuite" Version="2.*" />
   </ItemGroup>
   <ItemGroup Label="Background Jobs">
     <PackageVersion Include="Cronos" Version="0.12.*" />

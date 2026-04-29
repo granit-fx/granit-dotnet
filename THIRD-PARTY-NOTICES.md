@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-28
+Dernière mise à jour : 2026-04-29
 
 ---
 
@@ -143,11 +143,18 @@ Dernière mise à jour : 2026-04-28
 | ------- | ------- | --------- |
 | Scriban | 7.1.0 | Copyright (c) Alexandre Mutel |
 
+### BSD-3-Clause
+
+| Package | Version | Copyright |
+| ------- | ------- | --------- |
+| NetTopologySuite | 2.6.0 | Copyright (c) NetTopologySuite Team |
+
 ### PostgreSQL License
 
 | Package | Version | Copyright |
 | ------- | ------- | --------- |
 | Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | Copyright 2025 The Npgsql Development Team |
+| Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 
 ---
 

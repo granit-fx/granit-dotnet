@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
+using Granit.Analytics.Dashboards.Widgets;
 using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
@@ -28,7 +29,8 @@ internal sealed class MapRunner<TEntity>(
     IQueryableSource<TEntity> source,
     IQueryEngine<TEntity> engine,
     AnalyticsEndpointsMetrics metrics,
-    ICurrentTenant? currentTenant = null) : IMapRunner
+    ICurrentTenant? currentTenant = null,
+    IGeographyPointProjector<TEntity>? geographyProjector = null) : IMapRunner
     where TEntity : class
 {
     private const double LatitudeMin = -90d;
@@ -50,21 +52,33 @@ internal sealed class MapRunner<TEntity>(
     private readonly IQueryEngine<TEntity> _engine = engine;
     private readonly AnalyticsEndpointsMetrics _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
+    private readonly IGeographyPointProjector<TEntity>? _geographyProjector = geographyProjector;
 
     public string Name { get; } = name;
 
+    public bool SupportsGeography => _geographyProjector is not null;
+
     public async Task<MapRunnerResult> ExecuteAsync(
-        string latitudeColumn,
-        string longitudeColumn,
+        MapPointSource pointSource,
         IReadOnlyList<string>? popupColumns,
         IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(latitudeColumn);
-        ArgumentException.ThrowIfNullOrWhiteSpace(longitudeColumn);
+        ArgumentNullException.ThrowIfNull(pointSource);
 
-        PropertyInfo latProp = ResolveCoordinateProperty(latitudeColumn, nameof(latitudeColumn));
-        PropertyInfo lngProp = ResolveCoordinateProperty(longitudeColumn, nameof(longitudeColumn));
+        // Resolve the per-row coordinate extractor once, before streaming.
+        // LatLng path = reflect on two double/decimal columns; Geography path
+        // = delegate to the registered IGeographyPointProjector. Throwing
+        // NotSupportedException on Geography-without-projector is a safety
+        // net — renderers MUST pre-check SupportsGeography to surface the
+        // localised Unavailable instead.
+        Func<TEntity, (double Latitude, double Longitude)?> extractor = pointSource switch
+        {
+            MapPointSource.LatLng latLng => BuildLatLngExtractor(latLng),
+            MapPointSource.Geography geography => BuildGeographyExtractor(geography),
+            _ => throw new NotSupportedException(
+                $"MapPointSource '{pointSource.GetType().Name}' is not supported by MapRunner<{typeof(TEntity).Name}>."),
+        };
 
         PropertyInfo? idProp = typeof(TEntity).GetProperty(
             "Id",
@@ -92,20 +106,16 @@ internal sealed class MapRunner<TEntity>(
             .ExecuteStreamAsync(_source.GetQueryable(), request, cancellationToken)
             .ConfigureAwait(false))
         {
-            object? latRaw = latProp.GetValue(entity);
-            object? lngRaw = lngProp.GetValue(entity);
-
-            // Skip rows missing coordinates entirely — the marker would be
-            // pinned to (0, 0) which is misleading. Frontend never sees them.
-            if (latRaw is null || lngRaw is null)
+            // Skip rows whose coordinate source yields nothing — null lat/lng
+            // pair on LatLng path, or null Point on Geography path. The marker
+            // would be pinned to (0, 0) which is misleading. Frontend never
+            // sees them.
+            if (extractor(entity) is not { } coords)
             {
                 continue;
             }
 
-            double latitude = Convert.ToDouble(latRaw, CultureInfo.InvariantCulture);
-            double longitude = Convert.ToDouble(lngRaw, CultureInfo.InvariantCulture);
-
-            if (TryGetInvalidReason(latitude, longitude) is { } reason)
+            if (TryGetInvalidReason(coords.Latitude, coords.Longitude) is { } reason)
             {
                 _metrics.RecordMapInvalidCoordinate(ResolveTenantTag(), reason);
                 continue;
@@ -119,10 +129,52 @@ internal sealed class MapRunner<TEntity>(
                 ? BuildPopup(entity, popupProps)
                 : null;
 
-            points.Add(new MapRunnerPoint(id, latitude, longitude, popup));
+            points.Add(new MapRunnerPoint(id, coords.Latitude, coords.Longitude, popup));
         }
 
         return new MapRunnerResult(points);
+    }
+
+    /// <summary>Builds the LatLng-path coordinate extractor — reflects two double/decimal columns and converts via invariant culture.</summary>
+    private static Func<TEntity, (double Latitude, double Longitude)?> BuildLatLngExtractor(MapPointSource.LatLng latLng)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(latLng.LatitudeColumn);
+        ArgumentException.ThrowIfNullOrWhiteSpace(latLng.LongitudeColumn);
+
+        PropertyInfo latProp = ResolveCoordinateProperty(latLng.LatitudeColumn, nameof(latLng.LatitudeColumn));
+        PropertyInfo lngProp = ResolveCoordinateProperty(latLng.LongitudeColumn, nameof(latLng.LongitudeColumn));
+
+        return entity =>
+        {
+            object? latRaw = latProp.GetValue(entity);
+            object? lngRaw = lngProp.GetValue(entity);
+
+            if (latRaw is null || lngRaw is null)
+            {
+                return null;
+            }
+
+            double latitude = Convert.ToDouble(latRaw, CultureInfo.InvariantCulture);
+            double longitude = Convert.ToDouble(lngRaw, CultureInfo.InvariantCulture);
+            return (latitude, longitude);
+        };
+    }
+
+    /// <summary>Builds the Geography-path coordinate extractor — delegates to the registered <see cref="IGeographyPointProjector{TEntity}"/>.</summary>
+    private Func<TEntity, (double Latitude, double Longitude)?> BuildGeographyExtractor(MapPointSource.Geography geography)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(geography.GeographyColumn);
+
+        if (_geographyProjector is null)
+        {
+            throw new NotSupportedException(
+                $"MapRunner<{typeof(TEntity).Name}> received a Geography PointSource but no IGeographyPointProjector<{typeof(TEntity).Name}> is registered. " +
+                "Renderers should pre-check IMapRunner.SupportsGeography and surface 'Widget:Unavailable.MapGeographyNotImplemented' instead.");
+        }
+
+        IGeographyPointProjector<TEntity> projector = _geographyProjector;
+        string column = geography.GeographyColumn;
+        return entity => projector.TryProject(entity, column);
     }
 
     private static PropertyInfo ResolveCoordinateProperty(string fieldName, string paramName)

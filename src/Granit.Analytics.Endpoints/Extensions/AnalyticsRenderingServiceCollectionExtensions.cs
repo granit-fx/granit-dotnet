@@ -1,3 +1,4 @@
+using Granit.Analytics.Dashboards.Widgets;
 using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
@@ -144,9 +145,14 @@ public static class AnalyticsRenderingServiceCollectionExtensions
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
                 AnalyticsEndpointsMetrics metrics = sp.GetRequiredService<AnalyticsEndpointsMetrics>();
                 ICurrentTenant? currentTenant = sp.GetService<ICurrentTenant>();
+                // Optional Geography projector — registered by Granit.Analytics.PostGIS
+                // (or any other geography provider) per entity type. Absent on hosts
+                // that don't pull a provider; runner falls back to LatLng-only.
+                Type projectorType = typeof(IGeographyPointProjector<>).MakeGenericType(d.EntityType);
+                object? geographyProjector = sp.GetService(projectorType);
 
                 return (IMapRunner)Activator.CreateInstance(
-                    runnerType, d.Name, queryableSource, engine, metrics, currentTenant)!;
+                    runnerType, d.Name, queryableSource, engine, metrics, currentTenant, geographyProjector)!;
             });
         }
 

@@ -67,6 +67,7 @@
         "tests/Granit.Analytics.Abstractions.Tests",
         "tests/Granit.Analytics.EntityFrameworkCore.Tests",
         "tests/Granit.Analytics.Endpoints.Tests",
+        "tests/Granit.Analytics.PostGIS.Tests",
         "tests/Granit.Dashboards.Tests",
         "tests/Granit.Dashboards.Abstractions.Tests",
         "tests/Granit.Dashboards.EntityFrameworkCore.Tests",

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Analytics.Dashboards.Widgets;
 
 namespace Granit.Analytics.Endpoints.Internal;
 
@@ -10,17 +11,22 @@ namespace Granit.Analytics.Endpoints.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// B7-2 ships the <c>MapPointSource.LatLng</c> path (decimal latitude /
-/// longitude columns) — works on any database. The PostGIS
-/// <c>MapPointSource.Geography</c> path is deferred (handled by the renderer
-/// returning <c>Unavailable</c>) until <c>granit-iot</c> ships the
-/// NetTopologySuite plumbing.
+/// Two coordinate flavours are dispatched internally based on the
+/// <see cref="MapPointSource"/> argument: <see cref="MapPointSource.LatLng"/>
+/// reflects two decimal columns (works on any database); the opt-in
+/// <see cref="MapPointSource.Geography"/> path resolves a registered
+/// <see cref="IGeographyPointProjector{TEntity}"/> to project a single PostGIS
+/// <c>geography(Point)</c> column. <see cref="SupportsGeography"/> tells the
+/// renderer whether the Geography path is wired up — when <see langword="false"/>,
+/// the renderer surfaces <c>Widget:Unavailable.MapGeographyNotImplemented</c>
+/// without invoking the runner.
 /// </para>
 /// <para>
 /// Streams the filtered entity set through
 /// <c>IQueryEngine.ExecuteStreamAsync</c> (multi-tenancy + soft-delete +
-/// dashboard filters apply, cap at <c>MaxStreamSize</c>). Acceptable for
-/// dashboard tile contexts which are bounded data products.
+/// dashboard filters apply, cap at <c>MaxStreamSize</c>). Coordinate validation
+/// is shared across both paths — invalid rows are dropped and counted on
+/// <c>granit.analytics.map.invalid_coordinates</c>.
 /// </para>
 /// </remarks>
 internal interface IMapRunner
@@ -29,20 +35,27 @@ internal interface IMapRunner
     string Name { get; }
 
     /// <summary>
+    /// <see langword="true"/> when an <see cref="IGeographyPointProjector{TEntity}"/>
+    /// is registered for the runner's entity type — the
+    /// <see cref="MapPointSource.Geography"/> path is honoured. <see langword="false"/>
+    /// when the runner is LatLng-only.
+    /// </summary>
+    bool SupportsGeography { get; }
+
+    /// <summary>
     /// Loads geocoded rows as map markers. Each marker carries lat/lng
     /// coordinates, an optional entity id (read from a <c>Guid Id</c>
     /// property when present), and an optional popup payload restricted to
     /// the whitelisted <paramref name="popupColumns"/>.
     /// </summary>
-    /// <param name="latitudeColumn">Property name of the latitude column on the entity.</param>
-    /// <param name="longitudeColumn">Property name of the longitude column on the entity.</param>
+    /// <param name="pointSource">Coordinate source — column pair (<see cref="MapPointSource.LatLng"/>) or PostGIS geography column (<see cref="MapPointSource.Geography"/>).</param>
     /// <param name="popupColumns">Whitelisted columns surfaced in the marker popup. <see langword="null"/> = no popup payload (only id + coords).</param>
     /// <param name="dashboardFilters">Dashboard-level filter spec layered on top of the QueryDefinition's filter pipeline — see <see cref="DashboardFilterTranslator"/>.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <exception cref="ArgumentException">Latitude/longitude/popup column not declared on the entity, or coordinate column type is not <c>double</c> or <c>decimal</c>.</exception>
+    /// <exception cref="ArgumentException">Column not declared on the entity or wrong primitive type.</exception>
+    /// <exception cref="NotSupportedException"><paramref name="pointSource"/> is <see cref="MapPointSource.Geography"/> but <see cref="SupportsGeography"/> is <see langword="false"/>. Renderers should pre-check and surface <c>Unavailable</c> instead of letting this throw.</exception>
     Task<MapRunnerResult> ExecuteAsync(
-        string latitudeColumn,
-        string longitudeColumn,
+        MapPointSource pointSource,
         IReadOnlyList<string>? popupColumns,
         IReadOnlyDictionary<string, string>? dashboardFilters,
         CancellationToken cancellationToken);

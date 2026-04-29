@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using Granit.Analytics;
+using Granit.Analytics.Dashboards.Widgets;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Rendering;
 using Granit.Analytics.Metrics;
@@ -52,11 +53,12 @@ public sealed class MapWidgetInstanceRendererTests
     }
 
     [Fact]
-    public async Task RenderAsync_GeographyPointSource_ReturnsUnavailableUntilFollowUp()
+    public async Task RenderAsync_GeographyPointSource_NoProvider_ReturnsUnavailable()
     {
-        // PostGIS path is deferred — surface a typed Unavailable so the
-        // dashboard renders the rest of its widgets normally.
-        StubRunner runner = new("Granit.Test.Items", points: []);
+        // No host pulled Granit.Analytics.PostGIS — the runner reports
+        // SupportsGeography = false. The renderer surfaces a typed Unavailable
+        // so the dashboard renders the rest of its widgets normally.
+        StubRunner runner = new("Granit.Test.Items", points: [], supportsGeography: false);
         MapWidgetInstanceRenderer renderer = new(new MapService([runner]), _clock);
 
         WidgetSnapshotEnvelope envelope = await renderer.RenderAsync(
@@ -68,6 +70,31 @@ public sealed class MapWidgetInstanceRendererTests
 
         envelope.Status.ShouldBe(WidgetSnapshotStatus.Unavailable);
         envelope.ReasonLocalizationKey.ShouldBe("Widget:Unavailable.MapGeographyNotImplemented");
+    }
+
+    [Fact]
+    public async Task RenderAsync_GeographyPointSource_WithProvider_DispatchesToRunner()
+    {
+        // Host pulled a geography provider — the runner reports
+        // SupportsGeography = true. The renderer hands off the PointSource
+        // unchanged; runner-side projection is exercised in MapRunnerTests.
+        var id = Guid.NewGuid();
+        StubRunner runner = new(
+            "Granit.Test.Items",
+            points: [new MapRunnerPoint(id, 48.85, 2.35, null)],
+            supportsGeography: true);
+        MapWidgetInstanceRenderer renderer = new(new MapService([runner]), _clock);
+
+        WidgetSnapshotEnvelope envelope = await renderer.RenderAsync(
+            BuildWidget(
+                "Granit.Test.Items",
+                @"{""pointSource"":{""kind"":""geography"",""geographyColumn"":""Position""},""popupColumns"":null,""defaultZoom"":5,""defaultCenter"":null,""clusterThreshold"":200,""detailRoute"":null,""tileUrlTemplate"":null}"),
+            BuildContext(),
+            TestContext.Current.CancellationToken);
+
+        envelope.Status.ShouldBe(WidgetSnapshotStatus.Snapshot);
+        runner.LastPointSource.ShouldBeOfType<MapPointSource.Geography>();
+        ((MapPointSource.Geography)runner.LastPointSource!).GeographyColumn.ShouldBe("Position");
     }
 
     [Fact]
@@ -122,7 +149,7 @@ public sealed class MapWidgetInstanceRendererTests
     }
 
     [Fact]
-    public async Task RenderAsync_PassesPopupColumnsAndCoordinatesToRunner()
+    public async Task RenderAsync_PassesPopupColumnsAndPointSourceToRunner()
     {
         StubRunner runner = new("Granit.Test.Items", points: []);
         MapWidgetInstanceRenderer renderer = new(new MapService([runner]), _clock);
@@ -134,8 +161,10 @@ public sealed class MapWidgetInstanceRendererTests
             BuildContext(),
             TestContext.Current.CancellationToken);
 
-        runner.LastLatitudeColumn.ShouldBe("Lat");
-        runner.LastLongitudeColumn.ShouldBe("Lng");
+        runner.LastPointSource.ShouldBeOfType<MapPointSource.LatLng>();
+        var latLng = (MapPointSource.LatLng)runner.LastPointSource!;
+        latLng.LatitudeColumn.ShouldBe("Lat");
+        latLng.LongitudeColumn.ShouldBe("Lng");
         runner.LastPopupColumns.ShouldBe(["Name", "Country"]);
     }
 
@@ -160,23 +189,25 @@ public sealed class MapWidgetInstanceRendererTests
             DashboardFilters: new Dictionary<string, string>(),
             ResolvedEntityAliases: new Dictionary<string, EntityAliasBinding>());
 
-    private sealed class StubRunner(string name, IReadOnlyList<MapRunnerPoint> points) : IMapRunner
+    private sealed class StubRunner(
+        string name,
+        IReadOnlyList<MapRunnerPoint> points,
+        bool supportsGeography = false) : IMapRunner
     {
         public string Name { get; } = name;
 
-        public string? LastLatitudeColumn { get; private set; }
-        public string? LastLongitudeColumn { get; private set; }
+        public bool SupportsGeography { get; } = supportsGeography;
+
+        public MapPointSource? LastPointSource { get; private set; }
         public IReadOnlyList<string>? LastPopupColumns { get; private set; }
 
         public Task<MapRunnerResult> ExecuteAsync(
-            string latitudeColumn,
-            string longitudeColumn,
+            MapPointSource pointSource,
             IReadOnlyList<string>? popupColumns,
             IReadOnlyDictionary<string, string>? dashboardFilters,
             CancellationToken cancellationToken)
         {
-            LastLatitudeColumn = latitudeColumn;
-            LastLongitudeColumn = longitudeColumn;
+            LastPointSource = pointSource;
             LastPopupColumns = popupColumns;
             return Task.FromResult(new MapRunnerResult(points));
         }

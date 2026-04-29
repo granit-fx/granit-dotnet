@@ -65,20 +65,6 @@ internal sealed class MapWidgetInstanceRenderer(
 
         DateTimeOffset emittedAt = _clock.Now;
 
-        // PostGIS path is deferred until granit-iot ships NetTopologySuite
-        // plumbing — the renderer never throws on the Geography pointSource;
-        // it surfaces a typed Unavailable so the dashboard renders the rest
-        // of its widgets normally.
-        if (config.PointSource is not MapPointSource.LatLng latLng)
-        {
-            return WidgetSnapshotEnvelope.Unavailable(
-                widgetType: WidgetType,
-                sequence: 1,
-                emittedAt: emittedAt,
-                refreshHint: RefreshHint.Static,
-                reasonLocalizationKey: "Widget:Unavailable.MapGeographyNotImplemented");
-        }
-
         if (!_mapService.TryGetRunner(widget.QueryName, out IMapRunner runner))
         {
             return WidgetSnapshotEnvelope.Unavailable(
@@ -89,9 +75,22 @@ internal sealed class MapWidgetInstanceRenderer(
                 reasonLocalizationKey: "Widget:Unavailable.QueryNotFound");
         }
 
+        // PostGIS path requires the host to pull `Granit.Analytics.PostGIS` —
+        // the runner reports SupportsGeography only when an
+        // IGeographyPointProjector<TEntity> is registered. Without it, surface
+        // the typed Unavailable so the dashboard keeps rendering the rest.
+        if (config.PointSource is MapPointSource.Geography && !runner.SupportsGeography)
+        {
+            return WidgetSnapshotEnvelope.Unavailable(
+                widgetType: WidgetType,
+                sequence: 1,
+                emittedAt: emittedAt,
+                refreshHint: RefreshHint.Static,
+                reasonLocalizationKey: "Widget:Unavailable.MapGeographyNotImplemented");
+        }
+
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: latLng.LatitudeColumn,
-            longitudeColumn: latLng.LongitudeColumn,
+            pointSource: config.PointSource,
             popupColumns: config.PopupColumns,
             dashboardFilters: context.DashboardFilters,
             cancellationToken).ConfigureAwait(false);

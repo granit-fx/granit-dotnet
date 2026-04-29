@@ -1,6 +1,7 @@
 using System.Diagnostics.Metrics;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using Granit.Analytics.Dashboards.Widgets;
 using Granit.Analytics.Endpoints.Diagnostics;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.MultiTenancy;
@@ -37,8 +38,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -65,8 +65,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "LatitudeNullable",
-            longitudeColumn: "LongitudeNullable",
+            pointSource: new MapPointSource.LatLng("LatitudeNullable", "LongitudeNullable"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -87,8 +86,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -112,8 +110,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: ["Name", "Country"],
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -133,8 +130,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -158,8 +154,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "LatitudeDecimal",
-            longitudeColumn: "LongitudeDecimal",
+            pointSource: new MapPointSource.LatLng("LatitudeDecimal", "LongitudeDecimal"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -176,8 +171,7 @@ public sealed class MapRunnerTests
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
-                latitudeColumn: "Name", // string column
-                longitudeColumn: "Longitude",
+                pointSource: new MapPointSource.LatLng("Name", "Longitude"), // "Name" is a string column
                 popupColumns: null,
                 dashboardFilters: null,
                 TestContext.Current.CancellationToken));
@@ -191,8 +185,7 @@ public sealed class MapRunnerTests
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
-                latitudeColumn: "NotAColumn",
-                longitudeColumn: "Longitude",
+                pointSource: new MapPointSource.LatLng("NotAColumn", "Longitude"),
                 popupColumns: null,
                 dashboardFilters: null,
                 TestContext.Current.CancellationToken));
@@ -208,8 +201,7 @@ public sealed class MapRunnerTests
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
-                latitudeColumn: "Latitude",
-                longitudeColumn: "Longitude",
+                pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
                 popupColumns: ["NotAColumn"],
                 dashboardFilters: null,
                 TestContext.Current.CancellationToken));
@@ -224,8 +216,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
 
         await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: new Dictionary<string, string> { ["Country"] = "FR" },
             TestContext.Current.CancellationToken);
@@ -268,8 +259,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
@@ -304,14 +294,108 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
 
         MapRunnerResult result = await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);
 
         result.Points.Count.ShouldBe(3);
         collector.GetMeasurementSnapshot().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task SupportsGeography_FalseWhenNoProjector_TrueWhenInjected()
+    {
+        IQueryEngine<TestItem> engine = ConfigureStream([]);
+        MapRunner<TestItem> runnerLatLngOnly = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        runnerLatLngOnly.SupportsGeography.ShouldBeFalse();
+
+        IGeographyPointProjector<TestItem> projector = Substitute.For<IGeographyPointProjector<TestItem>>();
+        MapRunner<TestItem> runnerWithGeography = new(
+            "Test.Items", new TestItemSource([]), engine, BuildMetrics(),
+            currentTenant: null, geographyProjector: projector);
+        runnerWithGeography.SupportsGeography.ShouldBeTrue();
+
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_GeographyPointSource_DelegatesToProjector()
+    {
+        TestItem[] items =
+        [
+            new() { Id = Guid.NewGuid(), Name = "Has point" },
+            new() { Id = Guid.NewGuid(), Name = "Null point" },
+        ];
+
+        IGeographyPointProjector<TestItem> projector = Substitute.For<IGeographyPointProjector<TestItem>>();
+        projector.TryProject(items[0], "Position").Returns((Latitude: 48.85, Longitude: 2.35));
+        projector.TryProject(items[1], "Position").Returns((null as (double, double)?));
+
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+        MapRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(items), engine, BuildMetrics(),
+            currentTenant: null, geographyProjector: projector);
+
+        MapRunnerResult result = await runner.ExecuteAsync(
+            pointSource: new MapPointSource.Geography("Position"),
+            popupColumns: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        // Null-point row dropped silently (mirrors null lat/lng behaviour).
+        result.Points.Count.ShouldBe(1);
+        result.Points[0].Latitude.ShouldBe(48.85);
+        result.Points[0].Longitude.ShouldBe(2.35);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_GeographyPointSource_NoProjector_Throws()
+    {
+        // Renderer is supposed to pre-check SupportsGeography — this throw is
+        // a safety net for misconfigured callers, not the user-facing path.
+        IQueryEngine<TestItem> engine = ConfigureStream([]);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+
+        await Should.ThrowAsync<NotSupportedException>(async () =>
+            await runner.ExecuteAsync(
+                pointSource: new MapPointSource.Geography("Position"),
+                popupColumns: null,
+                dashboardFilters: null,
+                TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_GeographyPointSource_InvalidCoordinates_DroppedAndCounted()
+    {
+        // Coordinate validation runs uniformly across both paths — the
+        // projector returns the (lat, lng) and the runner applies WGS84
+        // bounds + finiteness checks. Counter increments with the same
+        // reason tags as the LatLng path.
+        TestItem[] items = [new() { Id = Guid.NewGuid(), Name = "OutOfRange" }];
+
+        IGeographyPointProjector<TestItem> projector = Substitute.For<IGeographyPointProjector<TestItem>>();
+        projector.TryProject(items[0], "Position").Returns((Latitude: 999d, Longitude: 0d));
+
+        using var scope = new MetricsScope();
+        using MetricCollector<long> collector = new(
+            scope.MeterFactory, AnalyticsEndpointsMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
+
+        IQueryEngine<TestItem> engine = ConfigureStream(items);
+        MapRunner<TestItem> runner = new(
+            "Test.Items", new TestItemSource(items), engine, scope.Metrics,
+            currentTenant: null, geographyProjector: projector);
+
+        MapRunnerResult result = await runner.ExecuteAsync(
+            pointSource: new MapPointSource.Geography("Position"),
+            popupColumns: null,
+            dashboardFilters: null,
+            TestContext.Current.CancellationToken);
+
+        result.Points.ShouldBeEmpty();
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Tags["reason"].ShouldBe("latitude_out_of_range");
     }
 
     [Fact]
@@ -332,8 +416,7 @@ public sealed class MapRunnerTests
         MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics, currentTenant);
 
         await runner.ExecuteAsync(
-            latitudeColumn: "Latitude",
-            longitudeColumn: "Longitude",
+            pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
             popupColumns: null,
             dashboardFilters: null,
             TestContext.Current.CancellationToken);

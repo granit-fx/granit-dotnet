@@ -21,10 +21,18 @@ internal sealed class Customer
     public decimal Revenue { get; init; }
 }
 
+internal sealed class Branch
+{
+    public Guid Id { get; init; }
+    public string Name { get; init; } = string.Empty;
+    public NetTopologySuite.Geometries.Point? Location { get; init; }
+}
+
 internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : DbContext(options)
 {
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Customer> Customers => Set<Customer>();
+    public DbSet<Branch> Branches => Set<Branch>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -34,6 +42,14 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : D
             e.HasKey(c => c.Id);
             e.Property(c => c.Country).HasMaxLength(64).IsRequired();
             e.Property(c => c.Status).HasMaxLength(64).IsRequired();
+        });
+        modelBuilder.Entity<Branch>(e =>
+        {
+            e.HasKey(b => b.Id);
+            e.Property(b => b.Name).HasMaxLength(128).IsRequired();
+            // Location uses Npgsql's NetTopologySuite plugin (UseNetTopologySuite()) —
+            // when the plugin is wired the column is mapped to geography(Point) by default.
+            // Property-level config beyond that is the host's responsibility.
         });
     }
 }
@@ -65,6 +81,22 @@ internal sealed class CustomerSource(TestDbContext db) : IQueryableSource<Custom
 {
     private readonly TestDbContext _db = db;
     public IQueryable<Customer> GetQueryable() => _db.Customers.AsNoTracking();
+}
+
+internal sealed class BranchQueryDefinition : QueryDefinition<Branch>
+{
+    public override string Name => "Test.Branches";
+
+    protected override void Configure(QueryDefinitionBuilder<Branch> builder) =>
+        builder
+            .Column(b => b.Name, c => c.Filterable())
+            .DefaultPageSize(50);
+}
+
+internal sealed class BranchSource(TestDbContext db) : IQueryableSource<Branch>
+{
+    private readonly TestDbContext _db = db;
+    public IQueryable<Branch> GetQueryable() => _db.Branches.AsNoTracking();
 }
 
 internal sealed class OrderAmountSumMetricDefinition : MetricDefinition<Order, decimal>

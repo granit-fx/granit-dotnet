@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Analytics.PostGIS</PackageId>
+    <Description>NetTopologySuite-based geography point projector for Granit.Analytics MapWidget. Opt-in provider package — hosts that pull it unlock the MapPointSource.Geography path so a single PostGIS geography(Point) column can feed dashboard map widgets without duplicating coordinates into surface lat/lng columns. The base framework stays geospatial-free; consumers without PostGIS pay zero overhead.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Analytics.PostGIS.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Analytics\Granit.Analytics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetTopologySuite" />
+  </ItemGroup>
+
+</Project>
