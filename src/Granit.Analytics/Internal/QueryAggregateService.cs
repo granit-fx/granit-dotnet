@@ -1,6 +1,4 @@
-using Granit.Analytics.Internal;
-
-namespace Granit.Analytics.EntityFrameworkCore.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Registry of <see cref="IQueryAggregateRunner"/>s keyed by query name. Mirrors

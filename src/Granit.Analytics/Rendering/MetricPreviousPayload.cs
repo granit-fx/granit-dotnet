@@ -1,4 +1,4 @@
-namespace Granit.Analytics.Endpoints.Dtos;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Comparison-period side of a metric response.

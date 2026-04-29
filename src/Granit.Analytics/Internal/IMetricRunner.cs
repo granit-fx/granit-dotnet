@@ -1,7 +1,7 @@
-using Granit.Analytics.Endpoints.Dtos;
 using Granit.Analytics.Metrics;
+using Granit.Analytics.Rendering;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Non-generic façade over a typed <c>MetricDefinition&lt;TEntity, TValue&gt;</c> that

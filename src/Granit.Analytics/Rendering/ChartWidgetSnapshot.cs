@@ -1,7 +1,7 @@
 using Granit.Analytics.Dashboards.Widgets;
 using Granit.QueryEngine.Filtering;
 
-namespace Granit.Analytics.Endpoints.Rendering;
+namespace Granit.Analytics.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Chart"</c> widget kind. Echoes the

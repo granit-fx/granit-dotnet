@@ -51,12 +51,23 @@ Each module follows a consistent layered split:
 
 | Layer | Project suffix | Contains |
 | ----- | -------------- | -------- |
-| Abstractions | `Granit.{Module}` | Interfaces, options, DI extension, `*Module` class, **declarative definitions** (`*QueryDefinition`, `*ExportDefinition`) |
+| Abstractions | `Granit.{Module}` | Interfaces, options, DI extension, `*Module` class, **declarative definitions** (`*QueryDefinition`, `*ExportDefinition`, `*MetricDefinition`), **domain orchestration** (registries, runners, evaluators, snapshots, period resolvers, delta calculators), diagnostics (`*Metrics`, `*ActivitySource`) |
 | Background Jobs | `.BackgroundJobs` | `IBackgroundJob` records, handlers, module class |
-| Endpoints | `.Endpoints` | Minimal API route groups, request/response DTOs, validators, permission providers |
-| Persistence | `.EntityFrameworkCore` | Isolated `DbContext`, entity configs, migrations |
+| Endpoints | `.Endpoints` | **HTTP-only**: Minimal API route groups, wire-shape `*Request`/`*Response` DTOs, FluentValidation validators, permission providers, HTTP options (route prefix, FusionCache TTL), HTTP cache key composers, FusionCache-backed orchestrators |
+| Persistence | `.EntityFrameworkCore` | **Data-only**: Isolated `DbContext`, entity type configs, EF Core migrations, EF Core interceptors, value converters, `IQueryable<T>` consumers (typed `*Runner<TEntity>` / `*Executor<,>` impls), DI extension that wires the executors |
 | Provider | `.{Provider}` | External service implementation (S3, Keycloak, SMTP...) |
 | Messaging | `.Wolverine` | Wolverine handlers, saga state machines |
+
+**Layer purity — STRICT.** `.Endpoints` and `.EntityFrameworkCore` are **single-purpose**.
+Domain orchestration (name → runner registries, snapshots, value-shape DTOs consumed by
+domain renderers, pure helpers like `PeriodResolver` / `DeltaCalculator` /
+`*FilterBuilder`, non-generic interfaces like `IMetricRunner`, datasource evaluators
+without HTTP coupling) lives in **`Granit.{Module}`** — never in `.Endpoints` and never
+in `.EntityFrameworkCore`. A type belongs in `.EntityFrameworkCore` only if it touches
+`Microsoft.EntityFrameworkCore` (`DbSet`, `SumAsync`, `ExecuteUpdate`, …); it belongs
+in `.Endpoints` only if it touches `Microsoft.AspNetCore.*`, `FluentValidation`,
+`ZiggyCreatures.Caching.Fusion`, or HTTP-bound options. Anything else leaks the layer.
+Enforced by the `/audit --scope layer-purity` check.
 
 ## Commands
 

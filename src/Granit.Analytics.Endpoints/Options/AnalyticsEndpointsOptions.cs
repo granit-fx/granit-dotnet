@@ -1,7 +1,12 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Granit.Analytics.Endpoints.Options;
 
 /// <summary>
-/// Configuration options for the Granit.Analytics endpoint surface.
+/// Configuration options for the Granit.Analytics endpoint surface. Bound from the
+/// <c>AnalyticsEndpoints</c> section of <c>appsettings.json</c> by
+/// <c>AddGranitAnalyticsEndpoints</c>; data-annotation constraints are validated on
+/// startup via <c>ValidateDataAnnotations</c> + <c>ValidateOnStart</c>.
 /// </summary>
 public sealed class AnalyticsEndpointsOptions
 {
@@ -12,12 +17,16 @@ public sealed class AnalyticsEndpointsOptions
     /// Route prefix for analytics endpoints. Default: <c>"analytics"</c>
     /// → final route <c>/analytics/metrics/{name}</c>.
     /// </summary>
+    [Required]
+    [MinLength(1)]
     public string RoutePrefix { get; set; } = "analytics";
 
     /// <summary>
     /// OpenAPI tag for metric endpoints. Default: <c>"Analytics - Metrics"</c>
     /// (per CLAUDE.md sub-tag convention <c>&lt;Module&gt; - &lt;SubGroup&gt;</c>).
     /// </summary>
+    [Required]
+    [MinLength(1)]
     public string MetricsTagName { get; set; } = "Analytics - Metrics";
 
     /// <summary>

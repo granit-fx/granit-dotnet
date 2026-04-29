@@ -1,5 +1,5 @@
-using Granit.Analytics.Endpoints.Dtos;
-using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.Internal;
+using Granit.Analytics.Rendering;
 using Shouldly;
 using Xunit;
 

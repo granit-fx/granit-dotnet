@@ -1,6 +1,7 @@
-using Granit.Analytics.Endpoints.Dtos;
 using Granit.Analytics.Endpoints.Internal;
+using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
+using Granit.Analytics.Rendering;
 using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;

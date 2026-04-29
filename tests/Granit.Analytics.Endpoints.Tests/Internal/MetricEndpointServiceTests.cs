@@ -1,7 +1,9 @@
 using Granit.Analytics.Endpoints.Dtos;
 using Granit.Analytics.Endpoints.Internal;
 using Granit.Analytics.Endpoints.Options;
+using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
+using Granit.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Caching.Memory;
@@ -92,7 +94,7 @@ public sealed class MetricEndpointServiceTests
         StubRunner runner = new("Test.Count", returns: 42m, supportsPeriod: false);
         MetricEndpointService service = BuildService([runner]);
 
-        await Should.ThrowAsync<InvalidOperationException>(async () =>
+        await Should.ThrowAsync<BusinessRuleViolationException>(async () =>
             await service.EvaluateAsync(
                 runner,
                 new MetricRequest(

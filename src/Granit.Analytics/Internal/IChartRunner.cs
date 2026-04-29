@@ -6,7 +6,7 @@ namespace Granit.Analytics.Internal;
 /// Non-generic façade over a typed <c>QueryDefinition&lt;TEntity&gt;</c> that
 /// runs a group-by aggregation against the entity's queryable. One runner is
 /// registered per query definition by
-/// <c>AddGranitAnalyticsWidgetRenderers</c> at startup; the dashboard render
+/// <c>AddGranitAnalyticsRunners</c> at startup; the dashboard render
 /// path resolves it by query name.
 /// </summary>
 /// <remarks>

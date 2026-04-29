@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Builds an EF Core-translatable <c>Where</c> predicate constraining a queryable

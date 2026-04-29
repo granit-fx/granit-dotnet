@@ -2,7 +2,10 @@ using System.Diagnostics;
 using Granit.Analytics.Diagnostics;
 using Granit.Analytics.Endpoints.Dtos;
 using Granit.Analytics.Endpoints.Options;
+using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
+using Granit.Analytics.Rendering;
+using Granit.Exceptions;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Options;
@@ -53,7 +56,8 @@ internal sealed class MetricEndpointService(
         {
             if (!runner.SupportsPeriod)
             {
-                throw new InvalidOperationException(
+                throw new BusinessRuleViolationException(
+                    "Granit.Analytics:ComparisonWithoutPeriodSelector",
                     $"Metric '{runner.Name}' does not declare a PeriodSelector — comparison windows are not supported.");
             }
 

@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text.Json;
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.EntityFrameworkCore.Diagnostics;
+using Granit.Analytics.Diagnostics;
 using Granit.Analytics.Internal;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;

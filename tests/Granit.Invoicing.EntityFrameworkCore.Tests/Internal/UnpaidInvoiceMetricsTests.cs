@@ -1,6 +1,6 @@
-using Granit.Analytics.EntityFrameworkCore;
 using Granit.Analytics.EntityFrameworkCore.Extensions;
 using Granit.Analytics.Extensions;
+using Granit.Analytics.Metrics;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Domain.ValueObjects;
 using Granit.Invoicing.EntityFrameworkCore.Internal;

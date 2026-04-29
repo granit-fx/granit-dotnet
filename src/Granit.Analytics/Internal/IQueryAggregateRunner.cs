@@ -6,7 +6,7 @@ namespace Granit.Analytics.Internal;
 /// Non-generic façade over a typed <c>QueryDefinition&lt;TEntity&gt;</c> that runs
 /// an <see cref="AggregateFunction"/> against the entity's
 /// <c>IQueryableSource&lt;TEntity&gt;</c>. One runner is registered per query
-/// definition by <c>AddGranitAnalyticsWidgetRenderers</c> at startup, so the
+/// definition by <c>AddGranitAnalyticsRunners</c> at startup, so the
 /// dashboard render path resolves it by query name without reflection.
 /// </summary>
 /// <remarks>

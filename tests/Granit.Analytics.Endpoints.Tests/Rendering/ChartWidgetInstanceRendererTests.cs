@@ -1,10 +1,10 @@
 using System.Security.Claims;
 using Granit.Analytics;
 using Granit.Analytics.Dashboards.Widgets;
-using Granit.Analytics.Endpoints.Rendering;
 using Granit.Analytics.EntityFrameworkCore.Internal;
 using Granit.Analytics.Internal;
 using Granit.Analytics.Metrics;
+using Granit.Analytics.Rendering;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
 using Granit.QueryEngine.Filtering;

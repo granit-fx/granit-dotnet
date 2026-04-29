@@ -27,6 +27,95 @@ Convention references point to:
 
 Ref: `docs-site/…/concepts/module-system.mdx`
 
+### 1a-bis. Layer purity — `.Endpoints` and `.EntityFrameworkCore` are NOT bins for domain code (STRICT)
+
+The `.Endpoints` and `.EntityFrameworkCore` packages are **single-purpose** layers.
+Domain code — orchestration, registries, value-shape DTOs that are not wire envelopes,
+diagnostics meters, generic interfaces, pure functions — belongs in the **base module**
+`Granit.{Module}`. Detect any leakage and flag with severity `ARCHITECTURE`.
+
+**`.EntityFrameworkCore` MUST contain ONLY data-layer code:**
+
+- Isolated `DbContext` and entity type configurations
+- EF Core migrations
+- EF Core interceptors and value converters
+- `IQueryable<T>` consumers (anything calling `SumAsync` / `AverageAsync` /
+  `ExecuteUpdate` / `ExecuteDelete` / `Include` / `AsNoTracking` etc.)
+- Implementations of contracts where the runtime touches `Microsoft.EntityFrameworkCore`
+- The `Add{Module}EntityFrameworkCore` DI extension and module class
+
+Anything else is a domain leak — flag and recommend moving to `Granit.{Module}`. Common offenders:
+
+- `*Service` registry classes (`IEnumerable<I*Runner>` → name dictionary) — pure
+  orchestration, no EF Core; **belongs in `Granit.{Module}/Internal/`**
+- Diagnostic meter wrappers (`*RuntimeMetrics` using `IMeterFactory`) — no EF Core;
+  **belongs in `Granit.{Module}/Diagnostics/`**
+- Pure interfaces (`I*Executor`, `I*Runner`, `I*Reader`) without EF Core types in
+  signatures — **belongs in `Granit.{Module}/`** (often in `Internal/` or a domain
+  subfolder like `Metrics/`)
+- Pure helpers / translators (`DashboardFilterTranslator`, `*Translator`) operating on
+  primitives + abstractions only — **belongs in `Granit.{Module}/Internal/`**
+- Snapshot / DTO records consumed by the domain (not by the wire) — **belongs in the
+  base module**
+
+**`.Endpoints` MUST contain ONLY HTTP-layer code:**
+
+- Minimal API route handlers (`Map*` methods)
+- HTTP wire DTOs (`*Request`, `*Response` envelopes that round-trip via JSON)
+- FluentValidation validators (`AbstractValidator<TRequest>`)
+- `IPermissionDefinitionProvider` and `*Permissions` constants
+- HTTP-specific options (`*EndpointsOptions`, route prefix, tag name, FusionCache TTL)
+- `Add{Module}Endpoints` / `MapGranit{Module}` DI + route extensions
+- HTTP localization resources (permission strings, error messages)
+- HTTP cache key composers (FusionCache, response cache)
+- Orchestrators that depend on FusionCache, `IFluentValidator`, ASP.NET Core types,
+  or HTTP options
+
+Anything else is a domain leak — flag and recommend moving to `Granit.{Module}`. Common offenders:
+
+- Widget instance renderers (`*WidgetInstanceRenderer`), datasource evaluators
+  (`I*Evaluator`, non-HTTP `*Evaluator`) — produce snapshots consumed by both HTTP
+  and non-HTTP renderers; **belong in `Granit.{Module}/Rendering/`**
+- Snapshot records (`*WidgetSnapshot`, `*Payload`) consumed by renderers — domain
+  shape; **belong in `Granit.{Module}/Rendering/`** (only the wire envelope record
+  that wraps them stays in `.Endpoints/Dtos/`)
+- Pure helpers (`PeriodResolver`, `*FilterBuilder`, `DeltaCalculator`) using only
+  `IClock` / `Expression<>` / framework primitives — **belong in
+  `Granit.{Module}/Internal/`**
+- Non-generic dispatch interfaces (`IMetricRunner`) and their typed implementations
+  (`MetricRunner<,>`) — domain contracts; **belong in `Granit.{Module}/Internal/`**
+
+**Detection strategy:**
+
+1. List every `.cs` file in `src/Granit.{Module}.Endpoints/` and
+   `src/Granit.{Module}.EntityFrameworkCore/` (excluding the module class and the
+   DI extension classes).
+2. For each file, list its top-level imports (`using` directives) excluding `System.*`.
+3. Flag any file whose imports are **all** in this set:
+   - For `.EntityFrameworkCore`: any file with NO `using Microsoft.EntityFrameworkCore`
+     and NO direct EF Core API call (`DbSet<>`, `SumAsync`, `ExecuteUpdate`, etc.) is
+     a candidate for `Granit.{Module}/`. Confirm by reading the type body.
+   - For `.Endpoints`: any file with NO `using Microsoft.AspNetCore.*`, NO
+     `using FluentValidation`, NO `using ZiggyCreatures.Caching.Fusion`, and no other
+     HTTP/validator dependency is a candidate for `Granit.{Module}/`. Confirm by
+     reading the type body — files referencing types from `Granit.{Module}.Endpoints.Options`
+     or HTTP-bound services (e.g. `MetricEndpointService`) legitimately stay.
+4. Cross-check by grepping consumers in non-HTTP / non-data hosts (background jobs,
+   future push transports, IoT workers). A type that consumers _outside_ the HTTP
+   pipeline need is a strong signal that it belongs in the base module.
+
+**Severity guidance:**
+
+| Finding | Severity |
+| ------- | -------- |
+| Pure orchestration class (no EF Core / no HTTP) in `.EntityFrameworkCore` or `.Endpoints` | ARCHITECTURE |
+| Public interface without layer-specific types in `.EntityFrameworkCore` or `.Endpoints` | ARCHITECTURE |
+| Snapshot / payload record consumed by domain renderers placed in `.Endpoints/Dtos/` | CONVENTION |
+| DI registration of domain types living in `.Endpoints` or `.EntityFrameworkCore` extension methods | ARCHITECTURE (move to base module's `Add{Module}()`) |
+| Non-HTTP datasource evaluator (`I*DatasourceEvaluator`, `*DatasourceEvaluator`) in `.Endpoints/Rendering/` when it has no HTTP dependency | ARCHITECTURE |
+
+Ref: `CLAUDE.md §Architecture`, `CLAUDE.md §Module anatomy`
+
 ### 1b. Project structure
 
 - [ ] File-scoped namespaces (`namespace X;`) — no brace-wrapped namespaces

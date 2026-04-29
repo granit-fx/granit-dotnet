@@ -6,7 +6,7 @@ namespace Granit.Analytics.Internal;
 /// Non-generic façade over a typed <c>QueryDefinition&lt;TEntity&gt;</c> that
 /// materialises the first <c>pageSize</c> rows for a Table widget. One runner
 /// is registered per query definition by
-/// <c>AddGranitAnalyticsWidgetRenderers</c> at startup, so the dashboard
+/// <c>AddGranitAnalyticsRunners</c> at startup, so the dashboard
 /// render path resolves it by query name without reflection.
 /// </summary>
 internal interface ITableRunner

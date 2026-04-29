@@ -1,6 +1,6 @@
-using Granit.Analytics.Endpoints.Dtos;
+using Granit.Analytics.Rendering;
 
-namespace Granit.Analytics.Endpoints.Internal;
+namespace Granit.Analytics.Internal;
 
 /// <summary>
 /// Computes the comparison-period payload (<see cref="MetricPreviousPayload"/>) given

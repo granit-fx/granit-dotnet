@@ -17,8 +17,9 @@ namespace Granit.Analytics.EntityFrameworkCore;
 /// dependency — keeps the EF Core ecosystem coherent even when this package
 /// does not own a DbContext (it only consumes one through <c>IQueryEngine</c>).
 /// </remarks>
-[DependsOn(typeof(GranitAnalyticsModule))]
-[DependsOn(typeof(GranitPersistenceEntityFrameworkCoreModule))]
+[DependsOn(
+    typeof(GranitAnalyticsModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitAnalyticsEntityFrameworkCoreModule : GranitModule
 {
     /// <inheritdoc/>

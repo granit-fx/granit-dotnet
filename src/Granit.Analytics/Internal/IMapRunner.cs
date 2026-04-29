@@ -6,7 +6,7 @@ namespace Granit.Analytics.Internal;
 /// <summary>
 /// Non-generic façade over a typed <c>QueryDefinition&lt;TEntity&gt;</c> that
 /// materialises geocoded query rows into map markers. One runner is registered
-/// per query definition by <c>AddGranitAnalyticsWidgetRenderers</c> at startup;
+/// per query definition by <c>AddGranitAnalyticsRunners</c> at startup;
 /// the dashboard render path resolves it by query name.
 /// </summary>
 /// <remarks>
