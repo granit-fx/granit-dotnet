@@ -4425,6 +4425,24 @@
       ]
     },
     {
+      "name": "TableWidgetColumn",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.TableWidgetColumn",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/TableWidgetSnapshot.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "TableWidgetSnapshot",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.TableWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/TableWidgetSnapshot.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "fqn": "Granit.Analytics.EntityFrameworkCore.Extensions.AnalyticsEntityFrameworkCoreServiceCollectionExtensions",
       "kind": "class",

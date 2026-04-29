@@ -18,12 +18,16 @@ namespace Granit.Analytics.Endpoints.Extensions;
 public static class AnalyticsRenderingServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the <c>"Kpi"</c> widget renderer plus the bundled
-    /// <see cref="IDatasourceEvaluator{TDatasource}"/> implementations for
-    /// <see cref="MetricDatasource"/> (full), <see cref="QueryAggregateDatasource"/>
-    /// (stub — returns Unavailable until the query-aggregate path lands), and
-    /// <see cref="TelemetryDatasource"/> (stub — replaced by
-    /// <c>Granit.IoT.Dashboards</c> when shipped).
+    /// Registers the data-bound widget renderers shipped by
+    /// <c>Granit.Analytics.Endpoints</c>:
+    /// <list type="bullet">
+    ///   <item><c>"Kpi"</c> — dispatches on <c>Datasource.Kind</c> via the
+    ///         per-source <see cref="IDatasourceEvaluator{TDatasource}"/>
+    ///         registry (Metric / QueryAggregate / Telemetry).</item>
+    ///   <item><c>"Table"</c> — runs the named <c>QueryDefinition</c>
+    ///         through the QueryEngine pipeline, projects the first
+    ///         <c>pageSize</c> rows.</item>
+    /// </list>
     /// </summary>
     /// <remarks>
     /// Call AFTER <c>AddGranitAnalyticsEndpoints()</c> — the
@@ -40,11 +44,13 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         services.TryAddScoped<IDatasourceEvaluator<QueryAggregateDatasource>, QueryAggregateDatasourceEvaluator>();
         services.TryAddSingleton<IDatasourceEvaluator<TelemetryDatasource>, TelemetryDatasourceEvaluator>();
 
-        // Query-aggregate runner registry — built once at startup. Iterates every
-        // registered IQueryDefinitionDescriptor and closes QueryAggregateRunner<T>
-        // over each entity type, mirroring how AnalyticsEndpointsServiceCollectionExtensions
-        // builds metric runners. Keeps request-time dispatch reflection-free.
+        // Per-QueryDefinition runner registries — built once at startup. Iterates
+        // every registered IQueryDefinitionDescriptor and closes the runner
+        // generics over each entity type, mirroring how
+        // AnalyticsEndpointsServiceCollectionExtensions builds metric runners.
+        // Keeps request-time dispatch reflection-free.
         services.TryAddScoped<QueryAggregateService>();
+        services.TryAddScoped<TableService>();
 
         foreach (ServiceDescriptor descriptor in services
             .Where(d => d.ServiceType == typeof(IQueryDefinitionDescriptor))
@@ -52,21 +58,38 @@ public static class AnalyticsRenderingServiceCollectionExtensions
         {
             services.AddSingleton<IQueryAggregateRunner>(sp =>
             {
-                var d = (IQueryDefinitionDescriptor)
-                    (descriptor.ImplementationFactory?.Invoke(sp)
-                     ?? throw new InvalidOperationException(
-                         "IQueryDefinitionDescriptor must be registered with an implementation factory."));
-
+                IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
                 Type runnerType = typeof(QueryAggregateRunner<>).MakeGenericType(d.EntityType);
                 object queryableSource = sp.GetRequiredService(
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
 
                 return (IQueryAggregateRunner)Activator.CreateInstance(runnerType, d.Name, queryableSource)!;
             });
+
+            services.AddScoped<ITableRunner>(sp =>
+            {
+                IQueryDefinitionDescriptor d = ResolveDescriptor(sp, descriptor);
+                Type runnerType = typeof(TableRunner<>).MakeGenericType(d.EntityType);
+                object queryableSource = sp.GetRequiredService(
+                    typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
+                object engine = sp.GetRequiredService(
+                    typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                object definition = sp.GetRequiredService(
+                    typeof(QueryDefinition<>).MakeGenericType(d.EntityType));
+
+                return (ITableRunner)Activator.CreateInstance(
+                    runnerType, d.Name, queryableSource, engine, definition)!;
+            });
         }
 
         services.AddScoped<IWidgetInstanceRenderer, KpiWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, TableWidgetInstanceRenderer>();
 
         return services;
     }
+
+    private static IQueryDefinitionDescriptor ResolveDescriptor(IServiceProvider sp, ServiceDescriptor descriptor) =>
+        (IQueryDefinitionDescriptor)(descriptor.ImplementationFactory?.Invoke(sp)
+            ?? throw new InvalidOperationException(
+                "IQueryDefinitionDescriptor must be registered with an implementation factory."));
 }
