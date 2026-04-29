@@ -1,13 +1,15 @@
 {
   "culture": "cs",
   "texts": {
-    "Catalog.Columns.Sku": "SKU",
-    "Catalog.Columns.Name": "Název",
+    "Catalog.Columns.CreatedAt": "Vytvořeno",
     "Catalog.Columns.Description": "Popis",
+    "Catalog.Columns.LifecycleStatus": "Stav",
+    "Catalog.Columns.ModifiedAt": "Změněno",
+    "Catalog.Columns.Name": "Název",
+    "Catalog.Columns.Sku": "SKU",
     "Catalog.Columns.Type": "Typ",
     "Catalog.Columns.Unit": "Jednotka",
-    "Catalog.Columns.LifecycleStatus": "Stav",
-    "Catalog.Columns.CreatedAt": "Vytvořeno",
-    "Catalog.Columns.ModifiedAt": "Změněno"
+    "Metric:Granit.Catalog.ActiveProductCountMetric": "Aktivní produkty",
+    "Metric:Granit.Catalog.ProductCountMetric": "Celkem produktů"
   }
 }

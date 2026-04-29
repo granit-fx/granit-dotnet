@@ -1,6 +1,8 @@
+using Granit.Analytics.Extensions;
 using Granit.Catalog.Diagnostics;
 using Granit.Catalog.Domain;
 using Granit.Catalog.Exports;
+using Granit.Catalog.Metrics;
 using Granit.Catalog.Queries;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
@@ -32,6 +34,9 @@ public static class CatalogHostApplicationBuilderExtensions
 
         builder.Services.AddQueryDefinition<Product, ProductQueryDefinition>();
         builder.Services.AddExportDefinition<Product, ProductExportDefinition>();
+
+        builder.Services.AddMetricDefinition<Product, int, ActiveProductCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<Product, int, ProductCountMetricDefinition>();
 
         return builder;
     }

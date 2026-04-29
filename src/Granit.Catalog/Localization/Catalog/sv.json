@@ -1,13 +1,15 @@
 {
   "culture": "sv",
   "texts": {
-    "Catalog.Columns.Sku": "SKU",
-    "Catalog.Columns.Name": "Namn",
+    "Catalog.Columns.CreatedAt": "Skapad",
     "Catalog.Columns.Description": "Beskrivning",
+    "Catalog.Columns.LifecycleStatus": "Status",
+    "Catalog.Columns.ModifiedAt": "Ändrad",
+    "Catalog.Columns.Name": "Namn",
+    "Catalog.Columns.Sku": "SKU",
     "Catalog.Columns.Type": "Typ",
     "Catalog.Columns.Unit": "Enhet",
-    "Catalog.Columns.LifecycleStatus": "Status",
-    "Catalog.Columns.CreatedAt": "Skapad",
-    "Catalog.Columns.ModifiedAt": "Ändrad"
+    "Metric:Granit.Catalog.ActiveProductCountMetric": "Aktiva produkter",
+    "Metric:Granit.Catalog.ProductCountMetric": "Totalt produkter"
   }
 }

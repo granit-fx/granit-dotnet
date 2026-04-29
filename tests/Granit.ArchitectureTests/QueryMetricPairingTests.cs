@@ -58,7 +58,6 @@ public sealed class QueryMetricPairingTests
     private static readonly HashSet<string> MetricBacklog = new(StringComparer.Ordinal)
     {
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
-        "Granit.Catalog.Domain.Product",                                                  // [BACKLOG] catalog count / activation
         "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
         "Granit.Notifications.Domain.UserNotification",                                   // [BACKLOG] delivery / read-rate KPIs
         "Granit.Parties.Domain.Party",                                                    // [BACKLOG] active-party count

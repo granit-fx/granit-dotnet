@@ -1,13 +1,15 @@
 {
   "culture": "ko",
   "texts": {
-    "Catalog.Columns.Sku": "SKU",
-    "Catalog.Columns.Name": "이름",
+    "Catalog.Columns.CreatedAt": "생성일",
     "Catalog.Columns.Description": "설명",
+    "Catalog.Columns.LifecycleStatus": "상태",
+    "Catalog.Columns.ModifiedAt": "수정일",
+    "Catalog.Columns.Name": "이름",
+    "Catalog.Columns.Sku": "SKU",
     "Catalog.Columns.Type": "유형",
     "Catalog.Columns.Unit": "단위",
-    "Catalog.Columns.LifecycleStatus": "상태",
-    "Catalog.Columns.CreatedAt": "생성일",
-    "Catalog.Columns.ModifiedAt": "수정일"
+    "Metric:Granit.Catalog.ActiveProductCountMetric": "활성 제품",
+    "Metric:Granit.Catalog.ProductCountMetric": "총 제품 수"
   }
 }

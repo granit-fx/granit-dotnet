@@ -539,6 +539,7 @@
       "name": "Granit.Catalog",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Localization",
@@ -11810,7 +11811,7 @@
       "kind": "class",
       "project": "Granit.Catalog",
       "file": "src/Granit.Catalog/Extensions/CatalogHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitCatalog",
@@ -11889,6 +11890,92 @@
           "kind": "method",
           "signature": "UpdateAsync(Product product, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActiveProductCountMetricDefinition",
+      "fqn": "Granit.Catalog.Metrics.ActiveProductCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Metrics/ActiveProductCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Product, int?>>? Selector",
+          "returnType": "Expression<Func<Product, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Product, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Product, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Product, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Product, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "ProductCountMetricDefinition",
+      "fqn": "Granit.Catalog.Metrics.ProductCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Catalog",
+      "file": "src/Granit.Catalog/Metrics/ProductCountMetricDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Product, int?>>? Selector",
+          "returnType": "Expression<Func<Product, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<Product, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<Product, DateTimeOffset>>?"
         }
       ]
     },

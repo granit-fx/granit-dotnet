@@ -1,13 +1,15 @@
 {
   "culture": "hi",
   "texts": {
-    "Catalog.Columns.Sku": "SKU",
-    "Catalog.Columns.Name": "नाम",
+    "Catalog.Columns.CreatedAt": "बनाया गया",
     "Catalog.Columns.Description": "विवरण",
+    "Catalog.Columns.LifecycleStatus": "स्थिति",
+    "Catalog.Columns.ModifiedAt": "संशोधित",
+    "Catalog.Columns.Name": "नाम",
+    "Catalog.Columns.Sku": "SKU",
     "Catalog.Columns.Type": "प्रकार",
     "Catalog.Columns.Unit": "इकाई",
-    "Catalog.Columns.LifecycleStatus": "स्थिति",
-    "Catalog.Columns.CreatedAt": "बनाया गया",
-    "Catalog.Columns.ModifiedAt": "संशोधित"
+    "Metric:Granit.Catalog.ActiveProductCountMetric": "सक्रिय उत्पाद",
+    "Metric:Granit.Catalog.ProductCountMetric": "कुल उत्पाद"
   }
 }

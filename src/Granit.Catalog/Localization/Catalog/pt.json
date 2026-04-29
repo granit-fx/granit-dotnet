@@ -1,13 +1,15 @@
 {
   "culture": "pt",
   "texts": {
-    "Catalog.Columns.Sku": "SKU",
-    "Catalog.Columns.Name": "Nome",
+    "Catalog.Columns.CreatedAt": "Criado em",
     "Catalog.Columns.Description": "Descrição",
+    "Catalog.Columns.LifecycleStatus": "Estado",
+    "Catalog.Columns.ModifiedAt": "Modificado em",
+    "Catalog.Columns.Name": "Nome",
+    "Catalog.Columns.Sku": "SKU",
     "Catalog.Columns.Type": "Tipo",
     "Catalog.Columns.Unit": "Unidade",
-    "Catalog.Columns.LifecycleStatus": "Estado",
-    "Catalog.Columns.CreatedAt": "Criado em",
-    "Catalog.Columns.ModifiedAt": "Modificado em"
+    "Metric:Granit.Catalog.ActiveProductCountMetric": "Produtos ativos",
+    "Metric:Granit.Catalog.ProductCountMetric": "Total de produtos"
   }
 }
