@@ -74,6 +74,14 @@
           "ZiggyCreatures.FusionCache.Serialization.SystemTextJson": "[2.*, )"
         }
       },
+      "granit.dashboards": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.dashboards.abstractions": {
         "type": "Project",
         "dependencies": {

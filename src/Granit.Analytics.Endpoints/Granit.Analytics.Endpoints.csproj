@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Granit.Analytics.EntityFrameworkCore\Granit.Analytics.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Caching\Granit.Caching.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards\Granit.Dashboards.csproj" />
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

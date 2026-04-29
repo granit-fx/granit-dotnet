@@ -102,6 +102,7 @@
         "Granit.Analytics.EntityFrameworkCore",
         "Granit.Authorization",
         "Granit.Caching",
+        "Granit.Dashboards",
         "Granit.Http.Abstractions",
         "Granit.MultiTenancy",
         "Granit.Timing",
@@ -4307,6 +4308,22 @@
       ]
     },
     {
+      "name": "AnalyticsRenderingServiceCollectionExtensions",
+      "fqn": "Granit.Analytics.Endpoints.Extensions.AnalyticsRenderingServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Extensions/AnalyticsRenderingServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitAnalyticsWidgetRenderers",
+          "kind": "method",
+          "signature": "AddGranitAnalyticsWidgetRenderers(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitAnalyticsEndpointsModule",
       "fqn": "Granit.Analytics.Endpoints.GranitAnalyticsEndpointsModule",
       "kind": "class",
@@ -4373,6 +4390,38 @@
       "file": "src/Granit.Analytics.Endpoints/Permissions/AnalyticsPermissions.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "IDatasourceEvaluator",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.IDatasourceEvaluator",
+      "kind": "interface",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/IDatasourceEvaluator.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "EvaluateAsync",
+          "kind": "method",
+          "signature": "EvaluateAsync(TDatasource datasource, WidgetInstance widget, WidgetRenderContext context, CancellationToken cancellationToken)",
+          "returnType": "Task<KpiEvaluation>"
+        }
+      ]
+    },
+    {
+      "name": "KpiEvaluation",
+      "fqn": "Granit.Analytics.Endpoints.Rendering.KpiEvaluation",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Rendering/KpiEvaluation.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Snapshot",
+          "kind": "method",
+          "signature": "Snapshot(MetricSnapshotPayload payload, RefreshHint refreshHint)",
+          "returnType": "KpiEvaluation"
+        }
+      ]
     },
     {
       "name": "AnalyticsEntityFrameworkCoreServiceCollectionExtensions",

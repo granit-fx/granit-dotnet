@@ -1505,6 +1505,7 @@
           "Granit.Analytics.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Dashboards": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
