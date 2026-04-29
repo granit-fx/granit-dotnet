@@ -104,6 +104,8 @@
         "Granit.Authorization",
         "Granit.Caching",
         "Granit.Dashboards",
+        "Granit.Dashboards.EntityFrameworkCore",
+        "Granit.Dashboards.Endpoints",
         "Granit.Http.Abstractions",
         "Granit.MultiTenancy",
         "Granit.Timing",
@@ -4315,6 +4317,60 @@
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Dtos/MetricResponse.cs",
       "line": 20,
+      "members": []
+    },
+    {
+      "name": "ChartWidgetRenderRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.ChartWidgetRenderRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderRequests.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "KpiWidgetRenderRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.KpiWidgetRenderRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderRequests.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "MapWidgetRenderRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.MapWidgetRenderRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderRequests.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "PivotWidgetRenderRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.PivotWidgetRenderRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderRequests.cs",
+      "line": 34,
+      "members": []
+    },
+    {
+      "name": "TableWidgetRenderRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.TableWidgetRenderRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderRequests.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "WidgetRenderContextRequest",
+      "fqn": "Granit.Analytics.Endpoints.Dtos.Widgets.WidgetRenderContextRequest",
+      "kind": "record",
+      "project": "Granit.Analytics.Endpoints",
+      "file": "src/Granit.Analytics.Endpoints/Dtos/Widgets/WidgetRenderContextRequest.cs",
+      "line": 28,
       "members": []
     },
     {

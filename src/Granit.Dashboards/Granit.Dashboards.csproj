@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Dashboards.Tests" />
+    <InternalsVisibleTo Include="Granit.Analytics.Endpoints" />
     <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Dashboards.Endpoints" />
     <InternalsVisibleTo Include="Granit.Dashboards.Endpoints.Tests" />

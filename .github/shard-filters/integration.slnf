@@ -18,6 +18,7 @@
       "src/Granit.CustomerBalance.EntityFrameworkCore/Granit.CustomerBalance.EntityFrameworkCore.csproj",
       "src/Granit.CustomerBalance/Granit.CustomerBalance.csproj",
       "src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj",
+      "src/Granit.Dashboards.Endpoints/Granit.Dashboards.Endpoints.csproj",
       "src/Granit.Dashboards.EntityFrameworkCore/Granit.Dashboards.EntityFrameworkCore.csproj",
       "src/Granit.Dashboards/Granit.Dashboards.csproj",
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",

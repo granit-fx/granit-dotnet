@@ -40,6 +40,12 @@ public static class AnalyticsEndpointRouteBuilderExtensions
             .WithTags(options.MetricsTagName);
 
         group.RequireAuthorization(AnalyticsPermissions.Metrics.Read).MapMetricEndpoints();
+        // Per-widget render endpoints (P3 / option B) — single widget rendered
+        // ad-hoc from a typed WidgetDefinition body, returning the same
+        // DashboardRenderedWidgetResponse shape the bundle path emits. Gated
+        // by the same Metrics.Read permission since the snapshot semantics
+        // mirror the bundle path's per-widget envelope.
+        group.RequireAuthorization(AnalyticsPermissions.Metrics.Read).MapWidgetRenderEndpoints();
 
         return group;
     }
