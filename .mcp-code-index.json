@@ -36230,7 +36230,7 @@
       "kind": "class",
       "project": "Granit.Parties.Endpoints",
       "file": "src/Granit.Parties.Endpoints/GranitPartiesEndpointsModule.cs",
-      "line": 20,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -36704,7 +36704,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Extensions/PartiesHostApplicationBuilderExtensions.cs",
-      "line": 13,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitParties",
