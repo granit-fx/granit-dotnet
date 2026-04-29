@@ -1,0 +1,7 @@
+{
+  "culture": "it",
+  "texts": {
+    "Metric:Granit.Metering.UsageAggregateCountMetric": "Righe di aggregazione consumo",
+    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Utilizzo misurato totale"
+  }
+}

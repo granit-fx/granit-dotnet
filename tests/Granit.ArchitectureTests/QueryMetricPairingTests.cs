@@ -58,7 +58,6 @@ public sealed class QueryMetricPairingTests
     private static readonly HashSet<string> MetricBacklog = new(StringComparer.Ordinal)
     {
         "Granit.BlobStorage.Domain.BlobDescriptor",                                       // [BACKLOG] storage-usage KPIs
-        "Granit.Metering.Domain.UsageAggregate",                                          // [BACKLOG] usage trends
     };
 
     private static bool IsExempt(string fullName) =>

@@ -1,0 +1,7 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Metering.UsageAggregateCountMetric": "Kullanım toplama satırları",
+    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Toplam ölçülen kullanım"
+  }
+}

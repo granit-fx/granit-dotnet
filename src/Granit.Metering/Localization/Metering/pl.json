@@ -1,0 +1,7 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Metric:Granit.Metering.UsageAggregateCountMetric": "Wiersze zestawienia użycia",
+    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Łączne mierzone użycie"
+  }
+}

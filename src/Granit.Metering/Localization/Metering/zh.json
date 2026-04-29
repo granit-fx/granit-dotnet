@@ -1,0 +1,7 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Metric:Granit.Metering.UsageAggregateCountMetric": "用量汇总行",
+    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "计量用量总计"
+  }
+}

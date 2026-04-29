@@ -1,0 +1,7 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Metering.UsageAggregateCountMetric": "Verbruiksaggregatierijen",
+    "Metric:Granit.Metering.UsageAggregateValueTotalMetric": "Totaal gemeten verbruik"
+  }
+}

@@ -1367,7 +1367,9 @@
       "name": "Granit.Metering",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
+        "Granit.Localization",
         "Granit.Metering.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing",
@@ -28868,7 +28870,7 @@
       "kind": "class",
       "project": "Granit.Metering",
       "file": "src/Granit.Metering/Extensions/MeteringHostApplicationBuilderExtensions.cs",
-      "line": 19,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitMetering",
@@ -29055,6 +29057,86 @@
           "kind": "method",
           "signature": "GetAllForPeriodAsync(Guid tenantId, DateTimeOffset periodStart, DateTimeOffset periodEnd, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<UsageAggregate>>"
+        }
+      ]
+    },
+    {
+      "name": "UsageAggregateCountMetricDefinition",
+      "fqn": "Granit.Metering.Metrics.UsageAggregateCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Metrics/UsageAggregateCountMetricDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UsageAggregate, int?>>? Selector",
+          "returnType": "Expression<Func<UsageAggregate, int?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UsageAggregate, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UsageAggregate, DateTimeOffset>>?"
+        }
+      ]
+    },
+    {
+      "name": "UsageAggregateValueTotalMetricDefinition",
+      "fqn": "Granit.Metering.Metrics.UsageAggregateValueTotalMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Metering",
+      "file": "src/Granit.Metering/Metrics/UsageAggregateValueTotalMetricDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<UsageAggregate, decimal?>>? Selector",
+          "returnType": "Expression<Func<UsageAggregate, decimal?>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "Expression<Func<UsageAggregate, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<UsageAggregate, DateTimeOffset>>?"
         }
       ]
     },

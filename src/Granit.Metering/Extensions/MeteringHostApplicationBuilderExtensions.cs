@@ -1,9 +1,11 @@
+using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Metering.Diagnostics;
 using Granit.Metering.Domain;
 using Granit.Metering.Exports;
 using Granit.Metering.Internal;
+using Granit.Metering.Metrics;
 using Granit.Metering.Options;
 using Granit.Metering.Queries;
 using Granit.QueryEngine.Extensions;
@@ -37,6 +39,9 @@ public static class MeteringHostApplicationBuilderExtensions
         builder.Services.AddQueryDefinition<UsageAggregate, UsageAggregateQueryDefinition>();
         builder.Services.AddExportDefinition<MeterDefinition, MeterDefinitionExportDefinition>();
         builder.Services.AddExportDefinition<UsageAggregate, UsageAggregateExportDefinition>();
+
+        builder.Services.AddMetricDefinition<UsageAggregate, int, UsageAggregateCountMetricDefinition>();
+        builder.Services.AddMetricDefinition<UsageAggregate, decimal, UsageAggregateValueTotalMetricDefinition>();
 
         return builder;
     }
