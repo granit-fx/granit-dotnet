@@ -35,6 +35,9 @@ public enum EntityFacets
     /// <summary>EntityView references owned by or shared with the requesting user (per ADR-047).</summary>
     Views = 1 << 7,
 
+    /// <summary>Relations declared on the entity (intra-module + cross-module contributions per ADR-048).</summary>
+    Relations = 1 << 8,
+
     /// <summary>All facets — the default when <c>?facets=</c> is absent.</summary>
-    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views,
+    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views | Relations,
 }

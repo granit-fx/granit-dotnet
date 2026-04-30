@@ -11,10 +11,12 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="Forms">Form variants the user is allowed to see (already permission-filtered).</param>
 /// <param name="Details">Detail-view variants the user is allowed to see (already permission-filtered).</param>
 /// <param name="Collections">Query / Export / Metric / Dashboard references + resolved default view.</param>
+/// <param name="Relations">Relations surfaced on the source entity (Tab / SmartButton / Sidebar / InlineChips per ADR-048). Already permission-filtered server-side.</param>
 public sealed record EntityManifestResponse(
     int SchemaVersion,
     EntityIdentitySection? Identity,
     EntityPermissionsSection? Permissions,
     IReadOnlyList<EntityFormManifest>? Forms,
     IReadOnlyList<EntityDetailManifest>? Details,
-    EntityCollectionsSection? Collections);
+    EntityCollectionsSection? Collections,
+    IReadOnlyList<EntityRelationManifest>? Relations);

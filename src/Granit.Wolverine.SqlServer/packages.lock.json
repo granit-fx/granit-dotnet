@@ -73,11 +73,11 @@
       "WolverineFx.SqlServer": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.35.1",
-        "contentHash": "CObA0koFb5dnYBDgvYj7lrG1n2DASzv3g5pI8cR040PYH/kXVH93SNtXxtSktmjw7kG9oHYDZVCRmOKokMJHgQ==",
+        "resolved": "5.35.2",
+        "contentHash": "6z/n4RQpHD8nDJwmw+XZ+SV8hKZJMYgf7nguSZTiKOsPHncdF+6fvIJ0TfPBbK/D63aKhjGh9JL6/TH8nf4rKQ==",
         "dependencies": {
           "Weasel.SqlServer": "8.14.1",
-          "WolverineFx.RDBMS": "5.35.1"
+          "WolverineFx.RDBMS": "5.35.2"
         }
       },
       "Azure.Core": {
@@ -107,8 +107,8 @@
       },
       "JasperFx": {
         "type": "Transitive",
-        "resolved": "1.28.0",
-        "contentHash": "kWkJcHbbzh7dE/rlP659ju2fQ0+mkgCGND+pABMUqnRm2OIULw/iTbqLImEIlxqYyiJltGk2lYvqY6lDMBN9tw==",
+        "resolved": "1.28.2",
+        "contentHash": "PqiJQrZ02ytH+BBNkKm2mc+CD5OSIcx8HIElQuI8KNkqHgBQ3LRQ07wmeniHvOVkXmiEIH2CAhksA3wj0n+aeQ==",
         "dependencies": {
           "FastExpressionCompiler": "5.3.0",
           "ImTools": "4.0.0",
@@ -123,10 +123,10 @@
       },
       "JasperFx.Events": {
         "type": "Transitive",
-        "resolved": "1.29.0",
-        "contentHash": "WFsuQXsnh77U40PwBAtMxwls3AdBZRVlkWaNbwNrMbBbu4UrFTwlMjbu2+I9xDWrdrlnbEa0Bt5kQCeHHX2QVQ==",
+        "resolved": "1.31.1",
+        "contentHash": "VTiVkFYgQFixA1KupIcOCAQUxfczhPrYLB6Qi9KKsdygfk4yEGyK+qQN81uoARz8TSOrEgjpCz9dx1wnQVUYHQ==",
         "dependencies": {
-          "JasperFx": "1.26.0"
+          "JasperFx": "1.28.2"
         }
       },
       "JasperFx.RuntimeCompiler": {
@@ -1123,11 +1123,11 @@
       "WolverineFx": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.35.1",
-        "contentHash": "FonrLjA4lIcvM29KRDxFyA+LOY0lOLTBj9Z5TnwoKFDeCyoqAn+mHExNOmlICGjyNiLKQ4jyZk2SfQloJNgSWw==",
+        "resolved": "5.35.2",
+        "contentHash": "Ckgt5A2gG42GGE4KB6LZaYiAKbZJnFwPUOQ2I7AOq8Jo9//Sma966AQFUvAFRTutw7PdyPDK2aq6XSvhhlIxwQ==",
         "dependencies": {
-          "JasperFx": "1.28.0",
-          "JasperFx.Events": "1.29.0",
+          "JasperFx": "1.28.2",
+          "JasperFx.Events": "1.31.1",
           "JasperFx.RuntimeCompiler": "4.5.0",
           "JasperFx.SourceGeneration": "1.1.0",
           "Microsoft.Extensions.Caching.Memory": "10.0.0",

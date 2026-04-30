@@ -18932,7 +18932,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityManifestResponse.cs",
-      "line": 14,
+      "line": 15,
       "members": []
     },
     {
@@ -18951,6 +18951,24 @@
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityPermissionsSection.cs",
       "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntityRelationAggregateManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationAggregateManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "EntityRelationManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
+      "line": 18,
       "members": []
     },
     {
@@ -19044,7 +19062,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionBuilder.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "DisplayKey",
@@ -19060,8 +19078,15 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionDescriptor.cs",
-      "line": 21,
-      "members": []
+      "line": 22,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "required string Name",
+          "returnType": "required string"
+        }
+      ]
     },
     {
       "name": "EntitiesServiceCollectionExtensions",
@@ -19221,6 +19246,153 @@
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Options/IntegrityCheckMode.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityRelationContributionContext",
+      "fqn": "Granit.Entities.Relations.EntityRelationContributionContext",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/EntityRelationContributionContext.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Contributions",
+          "kind": "property",
+          "signature": "IReadOnlyDictionary<Type, IReadOnlyList<RelationDescriptor>> Contributions",
+          "returnType": "IReadOnlyDictionary<Type, IReadOnlyList<RelationDescriptor>>"
+        }
+      ]
+    },
+    {
+      "name": "EntityRelationServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Relations.EntityRelationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/EntityRelationServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "IEntityRelationContribution",
+      "fqn": "Granit.Entities.Relations.IEntityRelationContribution",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/IEntityRelationContributor.cs",
+      "line": 56,
+      "members": []
+    },
+    {
+      "name": "IEntityRelationContributionContext",
+      "fqn": "Granit.Entities.Relations.IEntityRelationContributionContext",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/IEntityRelationContributor.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "IEntityRelationContributor",
+      "fqn": "Granit.Entities.Relations.IEntityRelationContributor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/IEntityRelationContributor.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Contribute",
+          "kind": "method",
+          "signature": "Contribute(IEntityRelationContributionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "RelationAggregateBuilder",
+      "fqn": "Granit.Entities.Relations.RelationAggregateBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationAggregateBuilder.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Count",
+          "kind": "method",
+          "signature": "Count(string? labelKey = null, string? format = null)",
+          "returnType": "RelationAggregateBuilder<TRelated>"
+        },
+        {
+          "name": "labelKey",
+          "kind": "property",
+          "signature": "RelationAggregateBuilder<TRelated> Avg<TProperty>( Expression<Func<TRelated, TProperty>> property, string? labelKey",
+          "returnType": "RelationAggregateBuilder<TRelated> Avg<TProperty>( Expression<Func<TRelated, TProperty>> property, string?"
+        },
+        {
+          "name": "labelKey",
+          "kind": "property",
+          "signature": "RelationAggregateBuilder<TRelated> Min<TProperty>( Expression<Func<TRelated, TProperty>> property, string? labelKey",
+          "returnType": "RelationAggregateBuilder<TRelated> Min<TProperty>( Expression<Func<TRelated, TProperty>> property, string?"
+        },
+        {
+          "name": "labelKey",
+          "kind": "property",
+          "signature": "RelationAggregateBuilder<TRelated> Max<TProperty>( Expression<Func<TRelated, TProperty>> property, string? labelKey",
+          "returnType": "RelationAggregateBuilder<TRelated> Max<TProperty>( Expression<Func<TRelated, TProperty>> property, string?"
+        }
+      ]
+    },
+    {
+      "name": "RelationAggregateDescriptor",
+      "fqn": "Granit.Entities.Relations.RelationAggregateDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationAggregateDescriptor.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "RelationAggregateKind",
+      "fqn": "Granit.Entities.Relations.RelationAggregateKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationAggregateKind.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RelationBuilder",
+      "fqn": "Granit.Entities.Relations.RelationBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationBuilder.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "RelationCardinality",
+      "fqn": "Granit.Entities.Relations.RelationCardinality",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationCardinality.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RelationDescriptor",
+      "fqn": "Granit.Entities.Relations.RelationDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationDescriptor.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "RelationDisplay",
+      "fqn": "Granit.Entities.Relations.RelationDisplay",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationDisplay.cs",
+      "line": 8,
       "members": []
     },
     {

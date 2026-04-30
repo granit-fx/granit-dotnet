@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
+using Granit.Entities.Relations;
 
 namespace Granit.Entities;
 
@@ -25,6 +26,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
 
     private readonly List<Func<FormDescriptor>> _formFactories = [];
     private readonly List<Func<DetailDescriptor>> _detailFactories = [];
+    private readonly List<RelationDescriptor> _relations = [];
 
     /// <summary>Sets the i18n key for the entity's display name (singular).</summary>
     public EntityDefinitionBuilder<TEntity> DisplayKey(string displayKey)
@@ -148,6 +150,52 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         return this;
     }
 
+    /// <summary>
+    /// Declares a 1:N relation from this entity to <typeparamref name="TRelated"/>
+    /// via a navigation collection on the source CLR type. The
+    /// <paramref name="collectionSelector"/> must be a direct property access
+    /// expression (e.g. <c>p =&gt; p.Addresses</c>); otherwise the call throws.
+    /// </summary>
+    /// <typeparam name="TRelated">The related entity type.</typeparam>
+    /// <param name="collectionSelector">Lambda pointing at the navigation collection on the source.</param>
+    /// <param name="configure">Optional fluent configuration delegate.</param>
+    public EntityDefinitionBuilder<TEntity> HasMany<TRelated>(
+        Expression<Func<TEntity, IEnumerable<TRelated>>> collectionSelector,
+        Action<RelationBuilder<TEntity, TRelated>>? configure = null)
+        where TRelated : class
+    {
+        (string propertyName, string foreignKeyExpression) =
+            RelationBuilder<TEntity, TRelated>.ParseCollectionSelector(collectionSelector);
+
+        RelationBuilder<TEntity, TRelated> builder = new(propertyName, RelationCardinality.Many, foreignKeyExpression);
+        configure?.Invoke(builder);
+
+        string targetEntityName = RelationBuilder<TEntity, TRelated>.ResolveTargetEntityName(null);
+        _relations.Add(builder.Build(targetEntityName));
+        return this;
+    }
+
+    /// <summary>
+    /// Declares a 1:1 relation from this entity to <typeparamref name="TRelated"/>
+    /// via a navigation property on the source CLR type. The
+    /// <paramref name="selector"/> must be a direct property access expression.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> HasOne<TRelated>(
+        Expression<Func<TEntity, TRelated?>> selector,
+        Action<RelationBuilder<TEntity, TRelated>>? configure = null)
+        where TRelated : class
+    {
+        (string propertyName, string foreignKeyExpression) =
+            RelationBuilder<TEntity, TRelated>.ParseSingleSelector(selector);
+
+        RelationBuilder<TEntity, TRelated> builder = new(propertyName, RelationCardinality.One, foreignKeyExpression);
+        configure?.Invoke(builder);
+
+        string targetEntityName = RelationBuilder<TEntity, TRelated>.ResolveTargetEntityName(null);
+        _relations.Add(builder.Build(targetEntityName));
+        return this;
+    }
+
     internal EntityDefinitionDescriptor Build(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -157,6 +205,11 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
 
         AssertUniqueVariantNames(forms.Select(f => f.Name).ToList(), nameof(Form));
         AssertUniqueVariantNames(details.Select(d => d.Name).ToList(), nameof(Detail));
+        AssertUniqueRelationNames(_relations);
+
+        IReadOnlyList<RelationDescriptor> relations = [.. _relations
+            .OrderBy(r => r.Order)
+            .ThenBy(r => r.Name, StringComparer.Ordinal)];
 
         return new EntityDefinitionDescriptor
         {
@@ -173,7 +226,21 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
             WorkflowDefinitionType = _workflowDefinitionType,
             Forms = forms,
             Details = details,
+            Relations = relations,
         };
+    }
+
+    private static void AssertUniqueRelationNames(IReadOnlyList<RelationDescriptor> relations)
+    {
+        HashSet<string> seen = new(StringComparer.Ordinal);
+        foreach (RelationDescriptor relation in relations)
+        {
+            if (!seen.Add(relation.Name))
+            {
+                throw new InvalidOperationException(
+                    $"Duplicate relation name '{relation.Name}' on entity '{typeof(TEntity).FullName}'. Names must be unique per entity.");
+            }
+        }
     }
 
     private static void AssertUniqueVariantNames(IReadOnlyList<string> names, string variantKind)

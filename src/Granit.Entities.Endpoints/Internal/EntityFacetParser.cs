@@ -29,6 +29,7 @@ internal static class EntityFacetParser
                 "dashboard" or "dashboards" => EntityFacets.Dashboards,
                 "export" or "exports" => EntityFacets.Exports,
                 "view" or "views" or "saved-views" => EntityFacets.Views,
+                "relation" or "relations" => EntityFacets.Relations,
                 _ => EntityFacets.None,
             };
         }

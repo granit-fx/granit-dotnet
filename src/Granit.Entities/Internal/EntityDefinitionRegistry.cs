@@ -1,23 +1,36 @@
+using Granit.Entities.Relations;
+using Microsoft.Extensions.Logging;
+
 namespace Granit.Entities.Internal;
 
 /// <summary>
 /// Default <see cref="IEntityDefinitionRegistry"/> built from the DI-injected
 /// enumerable of <see cref="IEntityDefinitionDescriptor"/>. Detects duplicate
-/// names + duplicate entity types at construction (fails fast).
+/// names + duplicate entity types at construction (fails fast). Folds
+/// cross-module relation contributions into the matching descriptors via
+/// <see cref="EntityRelationMerger"/> before indexing.
 /// </summary>
 internal sealed class EntityDefinitionRegistry : IEntityDefinitionRegistry
 {
     private readonly Dictionary<string, IEntityDefinitionDescriptor> _byName;
     private readonly Dictionary<Type, IEntityDefinitionDescriptor> _byEntityType;
 
-    public EntityDefinitionRegistry(IEnumerable<IEntityDefinitionDescriptor> definitions)
+    public EntityDefinitionRegistry(
+        IEnumerable<IEntityDefinitionDescriptor> definitions,
+        IEnumerable<IEntityRelationContributor> relationContributors,
+        ILogger<EntityDefinitionRegistry> logger)
     {
         ArgumentNullException.ThrowIfNull(definitions);
+        ArgumentNullException.ThrowIfNull(relationContributors);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        IReadOnlyList<IEntityDefinitionDescriptor> merged =
+            EntityRelationMerger.Merge(definitions, relationContributors, logger);
 
         _byName = new Dictionary<string, IEntityDefinitionDescriptor>(StringComparer.Ordinal);
         _byEntityType = [];
 
-        foreach (IEntityDefinitionDescriptor definition in definitions)
+        foreach (IEntityDefinitionDescriptor definition in merged)
         {
             if (!_byName.TryAdd(definition.Name, definition))
             {

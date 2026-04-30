@@ -1,6 +1,7 @@
 using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Forms;
+using Granit.Entities.Relations;
 
 namespace Granit.Entities.Endpoints.Internal;
 
@@ -50,13 +51,58 @@ internal static class EntityManifestComposer
                 ? ComposeCollections(definition, defaultViewId)
                 : null;
 
+        IReadOnlyList<EntityRelationManifest>? relations = facets.HasFlag(EntityFacets.Relations)
+            ? ComposeRelations(definition, grantedPermissions)
+            : null;
+
         return new EntityManifestResponse(
             SchemaVersion,
             identity,
             perms,
             forms,
             details,
-            collections);
+            collections,
+            relations);
+    }
+
+    private static List<EntityRelationManifest> ComposeRelations(
+        EntityDefinitionDescriptor d, IReadOnlySet<string> granted)
+    {
+        if (d.Relations.Count == 0)
+        {
+            return [];
+        }
+
+        List<EntityRelationManifest> relations = new(d.Relations.Count);
+        foreach (RelationDescriptor relation in d.Relations)
+        {
+            if (relation.RequiresPermission is { } perm && !granted.Contains(perm))
+            {
+                // Drop entirely — defense in depth (story #1562).
+                continue;
+            }
+
+            List<EntityRelationAggregateManifest> aggregates = new(relation.Aggregates.Count);
+            foreach (RelationAggregateDescriptor agg in relation.Aggregates)
+            {
+                aggregates.Add(new EntityRelationAggregateManifest(
+                    agg.Kind, agg.PropertyName, agg.LabelKey, agg.Format));
+            }
+
+            relations.Add(new EntityRelationManifest(
+                relation.Name,
+                relation.Cardinality,
+                relation.Display,
+                relation.TargetEntityName,
+                relation.DisplayKey,
+                relation.Icon,
+                relation.Order,
+                relation.QueryDefinitionName,
+                aggregates,
+                relation.ContributorAssemblyName));
+        }
+
+        return relations;
     }
 
     private static EntityIdentitySection ComposeIdentity(EntityDefinitionDescriptor d) =>

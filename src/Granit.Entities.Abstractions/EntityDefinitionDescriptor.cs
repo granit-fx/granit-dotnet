@@ -1,5 +1,6 @@
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
+using Granit.Entities.Relations;
 
 namespace Granit.Entities;
 
@@ -80,4 +81,14 @@ public sealed record EntityDefinitionDescriptor
 
     /// <summary>Detail variants declared via <c>b.Detail("name", ...)</c>. Empty when no detail view is exposed.</summary>
     public required IReadOnlyList<DetailDescriptor> Details { get; init; }
+
+    /// <summary>
+    /// Relations declared on this entity — both intra-module via
+    /// <c>HasMany&lt;T&gt;</c> / <c>HasOne&lt;T&gt;</c> on the builder and
+    /// cross-module via <see cref="IEntityRelationContributor"/> grafts.
+    /// Sorted by <see cref="RelationDescriptor.Order"/> then
+    /// <see cref="RelationDescriptor.Name"/>; intra-module declarations take
+    /// precedence on conflicts (same <see cref="RelationDescriptor.Name"/>).
+    /// </summary>
+    public IReadOnlyList<RelationDescriptor> Relations { get; init; } = [];
 }

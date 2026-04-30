@@ -3,6 +3,8 @@
 // =============================================================================
 
 using Granit.Entities.Internal;
+using Granit.Entities.Relations;
+using Microsoft.Extensions.Logging.Abstractions;
 using Shouldly;
 using Xunit;
 
@@ -13,7 +15,7 @@ public sealed class EntityDefinitionRegistryTests
     [Fact]
     public void All_IsSortedByName()
     {
-        EntityDefinitionRegistry registry = new([
+        EntityDefinitionRegistry registry = Build([
             new FakeDescriptor("Zeta.Z", typeof(EntityZ)),
             new FakeDescriptor("Alpha.A", typeof(EntityA)),
             new FakeDescriptor("Mu.M", typeof(EntityM)),
@@ -25,7 +27,7 @@ public sealed class EntityDefinitionRegistryTests
     [Fact]
     public void GetByName_ReturnsMatchingDefinition()
     {
-        EntityDefinitionRegistry registry = new([
+        EntityDefinitionRegistry registry = Build([
             new FakeDescriptor("Granit.X.X", typeof(EntityA)),
         ]);
 
@@ -36,7 +38,7 @@ public sealed class EntityDefinitionRegistryTests
     [Fact]
     public void GetByEntityType_ReturnsMatchingDefinition()
     {
-        EntityDefinitionRegistry registry = new([
+        EntityDefinitionRegistry registry = Build([
             new FakeDescriptor("Granit.X.X", typeof(EntityA)),
         ]);
 
@@ -48,7 +50,7 @@ public sealed class EntityDefinitionRegistryTests
     public void Constructor_RejectsDuplicateName()
     {
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
-            new EntityDefinitionRegistry([
+            Build([
                 new FakeDescriptor("Granit.X.Same", typeof(EntityA)),
                 new FakeDescriptor("Granit.X.Same", typeof(EntityM)),
             ]));
@@ -60,13 +62,16 @@ public sealed class EntityDefinitionRegistryTests
     public void Constructor_RejectsDuplicateEntityType()
     {
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
-            new EntityDefinitionRegistry([
+            Build([
                 new FakeDescriptor("Granit.X.A", typeof(EntityA)),
                 new FakeDescriptor("Granit.X.B", typeof(EntityA)),
             ]));
 
         ex.Message.ShouldContain($"Duplicate EntityDefinition for CLR type '{typeof(EntityA).FullName}'");
     }
+
+    private static EntityDefinitionRegistry Build(IEnumerable<IEntityDefinitionDescriptor> definitions) =>
+        new(definitions, [], NullLogger<EntityDefinitionRegistry>.Instance);
 
     private sealed record FakeDescriptor(string Name, Type EntityType) : IEntityDefinitionDescriptor
     {
