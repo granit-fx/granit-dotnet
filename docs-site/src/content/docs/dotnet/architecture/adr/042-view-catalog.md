@@ -93,7 +93,7 @@ Each is addressable by `(kind, name)` from the front: `<EntityList name="task" v
 
 ### 5. Saved views are bound to a compiled collection's kind
 
-Per [ADR-046](./046-entity-view), a saved `EntityView` carries a `basedOn` reference to a compiled collection (e.g., `basedOn: "by-status"`). The view's `kind` is **inherited from the base collection and immutable**. To switch kind, the user creates a new view based on a different compiled collection.
+Per [ADR-047](./047-entity-view), a saved `EntityView` carries a `basedOn` reference to a compiled collection (e.g., `basedOn: "by-status"`). The view's `kind` is **inherited from the base collection and immutable**. To switch kind, the user creates a new view based on a different compiled collection.
 
 This rule has two consequences:
 
@@ -112,7 +112,7 @@ This rule has two consequences:
 
 ### Negative / accepted trade-offs
 
-- Tenant admins (Tier B Layer 1, ADR-040) cannot add a new view kind. They can promote saved views (`EntityView`, ADR-046) and override layout, but the catalog of available kinds is locked at compile time. Right boundary for the SaaS audit story; restrictive for "let me design a custom view from the UI" expectations (Notion-grade dynamism — out of scope per ADR-040 Tier C).
+- Tenant admins (Tier B Layer 1, ADR-040) cannot add a new view kind. They can promote saved views (`EntityView`, ADR-047) and override layout, but the catalog of available kinds is locked at compile time. Right boundary for the SaaS audit story; restrictive for "let me design a custom view from the UI" expectations (Notion-grade dynamism — out of scope per ADR-040 Tier C).
 - Phase 1 ships only `list` + `kanban`; the showcase Phase 1 cobaye (Party + Invoice — see #1530, #1564, #1565) doesn't exercise calendar / gallery. Those land in Phase 1.5 with their range-query endpoint and image-field bindings.
 - Phase 3 niche kinds (timeline / map / tree / gantt) ship on demand, not preemptively. The catalog reserves the names so apps can plan around them, but ADRs amending the spec land when there's a concrete consumer.
 
@@ -128,10 +128,10 @@ This rule has two consequences:
 
 - [ADR-040](./040-three-tier-metadata-architecture) — Three-tier metadata. The kind catalog is Tier A (compiled); user-saved views (`EntityView`) are an additive layer that cannot mutate the kind.
 - [ADR-041](./041-widget-catalog) — Widget catalog. Same closed-set + `custom:<prefix>-<name>` namespace pattern, applied to field renderers.
-- [ADR-046](./046-entity-view) — `EntityView` supersedes `Granit.QueryEngine.SavedViews`. Documents the immutable `basedOn` rule referenced in §5 above.
+- [ADR-047](./047-entity-view) — `EntityView` supersedes `Granit.QueryEngine.SavedViews`. Documents the immutable `basedOn` rule referenced in §5 above.
 
 ## References
 
 - Frappe view types — research compiled in PR #1599 conversation. Convention-driven (Calendar reads `start`/`end` from a sibling JS file), no schema validation, errors surface at click time.
 - Notion view types — closed (~6 in v1: Table, Board, Calendar, Gallery, Timeline, List), each with a typed config UI. Same ergonomic dividend Granit targets.
-- Odoo view types — XML-based, open-ended, view inheritance via XPath. Granit deliberately rejects this approach (see [ADR-044](./044-contributor-pattern) for the typed-contribution alternative).
+- Odoo view types — XML-based, open-ended, view inheritance via XPath. Granit deliberately rejects this approach (see [ADR-045](./045-contributor-pattern) for the typed-contribution alternative).

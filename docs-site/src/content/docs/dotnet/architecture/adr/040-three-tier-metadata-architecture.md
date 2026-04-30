@@ -81,7 +81,7 @@ When the React shell loads a screen, the manifest is composed top-down. The comp
 5. Compiled defaults     (EntityDefinition + EntityView + WorkspaceDefinition — Tier A)
 ```
 
-The defense-in-depth filter (per ADR-044 — IoC contributor pattern, and the upcoming Phase 1 `Granit.Entities.Endpoints` story #1549) runs **after** the merge and **before** the response leaves the server. A field the user lacks `RequiresPermission` for is absent from the payload — never just hidden.
+The defense-in-depth filter (per ADR-045 — IoC contributor pattern, and the upcoming Phase 1 `Granit.Entities.Endpoints` story #1549) runs **after** the merge and **before** the response leaves the server. A field the user lacks `RequiresPermission` for is absent from the payload — never just hidden.
 
 ## Consequences
 
@@ -112,11 +112,11 @@ These are direct inversions of pain points documented in our research (see [`PR 
 
 - [ADR-041](./041-widget-catalog) — Widget catalog and naming convention (the visual primitives Tier A declares; consumed by all three tiers' renderers).
 - [ADR-042](./042-view-catalog) — View catalog (List / Kanban / Calendar / Gallery / …) for collections, declared at Tier A; user views (Tier-A-style `EntityView` deltas) layer on top.
-- [ADR-046](./046-entity-view) — `EntityView` supersedes `Granit.QueryEngine.SavedViews`; Personal / Shared / Tenant promotion model is a clean Layer 1.5 (per-user runtime delta) that sits between Tier A and Tier B without compromising the Golden Rule.
-- [ADR-044](./044-contributor-pattern) — Inversion-of-control contributors; how cross-module modules graft onto a Tier A entity without coupling.
+- [ADR-047](./047-entity-view) — `EntityView` supersedes `Granit.QueryEngine.SavedViews`; Personal / Shared / Tenant promotion model is a clean Layer 1.5 (per-user runtime delta) that sits between Tier A and Tier B without compromising the Golden Rule.
+- [ADR-045](./045-contributor-pattern) — Inversion-of-control contributors; how cross-module modules graft onto a Tier A entity without coupling.
 
 ## References
 
 - Frappe Customize Form anatomy and pain points — research compiled in PR #1599 conversation. Highlights: `tabPropertySetter` row-as-column-override design is brilliant for ergonomics, devastating for type safety; Server / Client Scripts disabled by default in v15 is an admission of failure.
-- Notion database / view separation — `database = schema, view = projection` mental model adopted as-is. Notion's "Save for everyone" promotion UX is replicated by the EntityView visibility model (ADR-046).
+- Notion database / view separation — `database = schema, view = projection` mental model adopted as-is. Notion's "Save for everyone" promotion UX is replicated by the EntityView visibility model (ADR-047).
 - ISO 27001 A.12.1.2 (Change management) — the boundary between Tier A and Tier B is precisely what enables compliance: compiled schema = reviewable change history; tenant overrides = audited runtime data.
