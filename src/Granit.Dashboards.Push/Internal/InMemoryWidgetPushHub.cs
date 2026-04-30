@@ -41,6 +41,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         Guid dashboardId,
         Guid widgetInstanceId,
         string widgetType,
+        string? requiredPermission,
         JsonElement snapshot,
         DateTimeOffset emittedAt,
         RefreshHint refreshHint,
@@ -50,7 +51,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         var envelope = WidgetSnapshotEnvelope.ForSnapshot(
             widgetType, snapshot, sequence, emittedAt, refreshHint);
 
-        Dispatch(tenantId, dashboardId, widgetInstanceId, envelope);
+        Dispatch(tenantId, dashboardId, widgetInstanceId, requiredPermission, envelope);
         return Task.CompletedTask;
     }
 
@@ -60,6 +61,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         Guid dashboardId,
         Guid widgetInstanceId,
         string widgetType,
+        string? requiredPermission,
         DateTimeOffset emittedAt,
         RefreshHint refreshHint,
         string reasonLocalizationKey,
@@ -71,7 +73,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         var envelope = WidgetSnapshotEnvelope.Unavailable(
             widgetType, sequence, emittedAt, refreshHint, reasonLocalizationKey);
 
-        Dispatch(tenantId, dashboardId, widgetInstanceId, envelope);
+        Dispatch(tenantId, dashboardId, widgetInstanceId, requiredPermission, envelope);
         return Task.CompletedTask;
     }
 
@@ -99,6 +101,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         Guid? tenantId,
         Guid dashboardId,
         Guid widgetInstanceId,
+        string? requiredPermission,
         WidgetSnapshotEnvelope envelope)
     {
         StreamKey key = new(tenantId, dashboardId);
@@ -107,7 +110,7 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
             return;
         }
 
-        WidgetPushMessage message = new(tenantId, dashboardId, widgetInstanceId, envelope);
+        WidgetPushMessage message = new(tenantId, dashboardId, widgetInstanceId, requiredPermission, envelope);
         foreach (ChannelWriter<WidgetPushMessage> writer in subs.Values)
         {
             // TryWrite is non-blocking. Slow / closed subscribers silently drop —

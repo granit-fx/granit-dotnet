@@ -33,6 +33,7 @@ public sealed class InMemoryWidgetPushHubTests
         await hub.PublishSnapshotAsync(
             tenant, dashboard, widget,
             widgetType: "Kpi",
+            requiredPermission: null,
             snapshot: SamplePayload,
             emittedAt: EmittedAt,
             refreshHint: RefreshHint.Realtime,
@@ -64,7 +65,7 @@ public sealed class InMemoryWidgetPushHubTests
 
         await hub.PublishSnapshotAsync(
             tenant, dashboard, Guid.NewGuid(),
-            "Kpi", SamplePayload, EmittedAt, RefreshHint.Realtime,
+            "Kpi", requiredPermission: null, SamplePayload, EmittedAt, RefreshHint.Realtime,
             cancellationToken: TestContext.Current.CancellationToken);
 
         a.Reader.TryRead(out WidgetPushMessage? _).ShouldBeTrue();
@@ -84,7 +85,7 @@ public sealed class InMemoryWidgetPushHubTests
 
         await hub.PublishSnapshotAsync(
             tenant, dashboardB, Guid.NewGuid(),
-            "Kpi", SamplePayload, EmittedAt, RefreshHint.Realtime,
+            "Kpi", requiredPermission: null, SamplePayload, EmittedAt, RefreshHint.Realtime,
             cancellationToken: TestContext.Current.CancellationToken);
 
         subscribedToA.Reader.TryRead(out WidgetPushMessage? _).ShouldBeFalse(); // wrong dashboard
@@ -105,7 +106,7 @@ public sealed class InMemoryWidgetPushHubTests
         // is enforced at the stream-key level, ADR-043 §6.
         await hub.PublishSnapshotAsync(
             tenantB, dashboard, Guid.NewGuid(),
-            "Kpi", SamplePayload, EmittedAt, RefreshHint.Realtime,
+            "Kpi", requiredPermission: null, SamplePayload, EmittedAt, RefreshHint.Realtime,
             cancellationToken: TestContext.Current.CancellationToken);
 
         subscribedToA.Reader.TryRead(out WidgetPushMessage? _).ShouldBeFalse();
@@ -125,7 +126,7 @@ public sealed class InMemoryWidgetPushHubTests
 
         await hub.PublishSnapshotAsync(
             tenant, dashboard, Guid.NewGuid(),
-            "Kpi", SamplePayload, EmittedAt, RefreshHint.Realtime,
+            "Kpi", requiredPermission: null, SamplePayload, EmittedAt, RefreshHint.Realtime,
             cancellationToken: TestContext.Current.CancellationToken);
 
         channel.Reader.TryRead(out WidgetPushMessage? _).ShouldBeFalse();
@@ -143,7 +144,7 @@ public sealed class InMemoryWidgetPushHubTests
 
         await hub.PublishUnavailableAsync(
             tenant, dashboard, Guid.NewGuid(),
-            "Kpi", EmittedAt, RefreshHint.Realtime,
+            "Kpi", requiredPermission: null, EmittedAt, RefreshHint.Realtime,
             reasonLocalizationKey: "Widget:Unavailable.MetricNotFound",
             cancellationToken: TestContext.Current.CancellationToken);
 
@@ -168,7 +169,7 @@ public sealed class InMemoryWidgetPushHubTests
         {
             await hub.PublishSnapshotAsync(
                 tenant, dashboard, widget,
-                "Kpi", SamplePayload, EmittedAt, RefreshHint.Realtime,
+                "Kpi", requiredPermission: null, SamplePayload, EmittedAt, RefreshHint.Realtime,
             cancellationToken: TestContext.Current.CancellationToken);
         }
 
