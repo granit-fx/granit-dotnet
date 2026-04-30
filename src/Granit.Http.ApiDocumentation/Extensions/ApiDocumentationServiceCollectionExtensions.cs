@@ -71,6 +71,7 @@ public static class ApiDocumentationServiceCollectionExtensions
         services.AddTransient<ParameterDescriptionOperationTransformer>();
         services.AddTransient<SchemaExampleSchemaTransformer>();
         services.AddTransient<JsonElementSchemaTransformer>();
+        services.AddTransient<Int32SchemaTransformer>();
 
         DiscoverSchemaExampleProviders(services);
 
@@ -120,6 +121,7 @@ public static class ApiDocumentationServiceCollectionExtensions
                 openApiOptions.AddOperationTransformer<ParameterDescriptionOperationTransformer>();
                 openApiOptions.AddSchemaTransformer<SchemaExampleSchemaTransformer>();
                 openApiOptions.AddSchemaTransformer<JsonElementSchemaTransformer>();
+                openApiOptions.AddSchemaTransformer<Int32SchemaTransformer>();
             });
         }
     }

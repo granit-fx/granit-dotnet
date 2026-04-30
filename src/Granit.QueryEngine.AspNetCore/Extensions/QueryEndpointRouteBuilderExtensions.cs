@@ -278,15 +278,41 @@ public static class QueryEndpointRouteBuilderExtensions
             && concrete.Content is not null
             && concrete.Content.TryGetValue("application/json", out OpenApiMediaType? media))
         {
-            IOpenApiSchema pagedSchema = await context.GetOrCreateSchemaAsync(pagedResultType, null, cancellationToken).ConfigureAwait(false);
-            IOpenApiSchema groupedSchema = await context.GetOrCreateSchemaAsync(groupedResultType, null, cancellationToken).ConfigureAwait(false);
+            // Trigger registration in components.schemas. The returned IOpenApiSchema is the
+            // concrete schema (not a reference) — for OneOf to serialize as $ref we must
+            // construct OpenApiSchemaReference explicitly. Without this, both PagedResult and
+            // GroupedResult are inlined in the response, duplicating ~5KB per query endpoint
+            // and leaving 16 orphan *Of* schemas in components.
+            await context.GetOrCreateSchemaAsync(pagedResultType, null, cancellationToken).ConfigureAwait(false);
+            await context.GetOrCreateSchemaAsync(groupedResultType, null, cancellationToken).ConfigureAwait(false);
 
             media.Schema = new OpenApiSchema
             {
-                OneOf = [pagedSchema, groupedSchema],
+                OneOf =
+                [
+                    new OpenApiSchemaReference(GetSchemaReferenceId(pagedResultType), null),
+                    new OpenApiSchemaReference(GetSchemaReferenceId(groupedResultType), null),
+                ],
                 Description = "PagedResult when groupBy is absent; GroupedResult otherwise.",
             };
         }
+    }
+
+    /// <summary>
+    /// Mirrors the default schema reference id convention used by ASP.NET Core's OpenAPI
+    /// generator for closed generic types: <c>{TypeName}Of{Arg1}And{Arg2}...</c>.
+    /// E.g. <c>PagedResult&lt;AuditEntryResponse&gt;</c> → <c>PagedResultOfAuditEntryResponse</c>.
+    /// </summary>
+    private static string GetSchemaReferenceId(Type type)
+    {
+        if (!type.IsGenericType)
+        {
+            return type.Name;
+        }
+
+        string name = type.Name[..type.Name.IndexOf('`')];
+        string args = string.Join("And", type.GetGenericArguments().Select(GetSchemaReferenceId));
+        return $"{name}Of{args}";
     }
 
     private static void AddParam(
