@@ -1,3 +1,4 @@
+using Granit.Entities.Endpoints.Diagnostics;
 using Granit.Entities.Endpoints.Endpoints;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
@@ -58,7 +59,13 @@ public static class EntitiesEndpointRouteBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
         services.TryAddScoped<EntityPermissionResolver>();
+        // Default null-object service — hosts wanting real aggregate values
+        // plug in an EF Core (or other) implementation over this. Per-relation
+        // parallelism is the implementation's responsibility (story #1561).
+        services.TryAddSingleton<Granit.Entities.Relations.IRelationAggregateService,
+            Granit.Entities.Relations.NullRelationAggregateService>();
         services.AddOptions<EntitiesEndpointsOptions>();
+        Granit.Diagnostics.GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
         return services;
     }
 }

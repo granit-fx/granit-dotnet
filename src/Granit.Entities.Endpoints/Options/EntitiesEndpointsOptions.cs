@@ -21,4 +21,13 @@ public sealed class EntitiesEndpointsOptions
     /// <see cref="ManifestCacheTtl"/>. Default 5 minutes.
     /// </summary>
     public TimeSpan DiscoveryCacheTtl { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// FusionCache TTL for relation aggregates returned by
+    /// <c>POST /relations/aggregates</c>. Counts and sums change frequently —
+    /// keep this short. Default 30 seconds. Per-(sourceEntity, sourceId)
+    /// invalidation tags are emitted so future event-driven evictions can
+    /// burst-clear all relation aggregates for a row in one call.
+    /// </summary>
+    public TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan.FromSeconds(30);
 }

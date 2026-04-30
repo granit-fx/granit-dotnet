@@ -19007,6 +19007,24 @@
       "members": []
     },
     {
+      "name": "RelationAggregatesRequest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.RelationAggregatesRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/RelationAggregatesDtos.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "RelationAggregatesResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.RelationAggregatesResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/RelationAggregatesDtos.cs",
+      "line": 22,
+      "members": []
+    },
+    {
       "name": "EntitiesEndpointsLocalizationResource",
       "fqn": "Granit.Entities.Endpoints.EntitiesEndpointsLocalizationResource",
       "kind": "class",
@@ -19021,7 +19039,7 @@
       "kind": "class",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Extensions/EntitiesEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitEntitiesEndpoints",
@@ -19072,6 +19090,12 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan DiscoveryCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan."
         }
       ]
     },
@@ -19343,6 +19367,38 @@
       ]
     },
     {
+      "name": "IRelationAggregateService",
+      "fqn": "Granit.Entities.Relations.IRelationAggregateService",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/IRelationAggregateService.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ComputeAsync",
+          "kind": "method",
+          "signature": "ComputeAsync(string sourceEntityName, string sourceId, IReadOnlyList<string> relationNames, ClaimsPrincipal user, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, RelationAggregateValue>>"
+        }
+      ]
+    },
+    {
+      "name": "NullRelationAggregateService",
+      "fqn": "Granit.Entities.Relations.NullRelationAggregateService",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/IRelationAggregateService.cs",
+      "line": 54,
+      "members": [
+        {
+          "name": "ComputeAsync",
+          "kind": "method",
+          "signature": "ComputeAsync(string sourceEntityName, string sourceId, IReadOnlyList<string> relationNames, ClaimsPrincipal user, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<string, RelationAggregateValue>>"
+        }
+      ]
+    },
+    {
       "name": "RelationAggregateBuilder",
       "fqn": "Granit.Entities.Relations.RelationAggregateBuilder",
       "kind": "class",
@@ -19392,6 +19448,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Relations/RelationAggregateKind.cs",
       "line": 7,
+      "members": []
+    },
+    {
+      "name": "RelationAggregateValue",
+      "fqn": "Granit.Entities.Relations.RelationAggregateValue",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Relations/RelationAggregateValue.cs",
+      "line": 16,
       "members": []
     },
     {

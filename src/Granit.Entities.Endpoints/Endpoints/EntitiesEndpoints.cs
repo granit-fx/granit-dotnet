@@ -39,6 +39,8 @@ internal static class EntitiesEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapRelationAggregatesEndpoint();
+
         return group;
     }
 
