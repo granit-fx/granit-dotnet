@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' is geen geldig e-mailadres.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' moet leeg zijn.",
+    "Granit:Validation:EntityViewShareEmptyAudience": "Het publiek moet ten minste één rol of gebruiker bevatten.",
     "Granit:Validation:EqualValidator": "'{PropertyName}' moet gelijk zijn aan '{ComparisonValue}'.",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' moet exact {MaxLength} tekens bevatten. U hebt {TotalLength} tekens ingevoerd.",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' moet strikt tussen {From} en {To} liggen. U hebt {Value} ingevoerd.",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "Maximaal 50 CIDR-bereiken toegestaan.",
     "Granit:Validation:MaxCustomAttributes": "Het maximale aantal aangepaste attributen is overschreden.",
     "Granit:Validation:MaxEmbeddingInputs": "Maximaal aantal embedding-invoeren overschreden.",
-    "Granit:Validation:MaxMetadataKeys": "Maximaal 50 metadata-sleutels toegestaan.",
     "Granit:Validation:MaxFilterEntries": "Maximaal 50 filteritems zijn toegestaan.",
+    "Granit:Validation:MaxMetadataKeys": "Maximaal 50 metadata-sleutels toegestaan.",
     "Granit:Validation:MaxPermissions": "Maximaal 100 machtigingen toegestaan.",
     "Granit:Validation:MaxPresetEntries": "Maximaal 20 voorinstellingen zijn toegestaan.",
     "Granit:Validation:MaxQuickFilterEntries": "Maximaal 20 snelfilters zijn toegestaan.",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' mag niet leeg zijn.",
     "Granit:Validation:NullValidator": "'{PropertyName}' moet leeg zijn.",
     "Granit:Validation:PaymentAmountOutOfRange": "Het betalingsbedrag valt buiten het toegestane bereik.",
+    "Granit:Validation:PeriodSpecBoundsCode": "Periode moet ofwel een benoemd token zijn (bijv. 'last_30d') ofwel From en To bevatten — niet beide, niet geen van beide.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From moet strikt vóór Period.To liggen.",
     "Granit:Validation:PredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' heeft niet het juiste formaat.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
     "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
     "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen.",
-    "Granit:Validation:PeriodSpecBoundsCode": "Periode moet ofwel een benoemd token zijn (bijv. 'last_30d') ofwel From en To bevatten — niet beide, niet geen van beide.",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From moet strikt vóór Period.To liggen."
+    "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
   }
 }

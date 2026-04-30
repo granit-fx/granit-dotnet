@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' och 'Page' kan inte användas samtidigt.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' är inte en giltig e-postadress.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' måste vara tomt.",
+    "Granit:Validation:EntityViewShareEmptyAudience": "Målgruppen måste innehålla minst en roll eller användare.",
     "Granit:Validation:EqualValidator": "'{PropertyName}' måste vara lika med '{ComparisonValue}'.",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' måste vara {MaxLength} tecken långt. Du angav {TotalLength} tecken.",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' måste vara exklusivt mellan {From} och {To}. Du angav {Value}.",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "Högst 50 CIDR-intervall är tillåtna.",
     "Granit:Validation:MaxCustomAttributes": "Det maximala antalet anpassade attribut har överskridits.",
     "Granit:Validation:MaxEmbeddingInputs": "Maximalt antal embedding-indata har överskridits.",
-    "Granit:Validation:MaxMetadataKeys": "Maximalt 50 metadata-nycklar tillåtna.",
     "Granit:Validation:MaxFilterEntries": "Högst 50 filterposter är tillåtna.",
+    "Granit:Validation:MaxMetadataKeys": "Maximalt 50 metadata-nycklar tillåtna.",
     "Granit:Validation:MaxPermissions": "Högst 100 behörigheter är tillåtna.",
     "Granit:Validation:MaxPresetEntries": "Högst 20 förinställningar är tillåtna.",
     "Granit:Validation:MaxQuickFilterEntries": "Högst 20 snabbfilter är tillåtna.",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' får inte vara tomt.",
     "Granit:Validation:NullValidator": "'{PropertyName}' måste vara tomt.",
     "Granit:Validation:PaymentAmountOutOfRange": "Betalningsbeloppet ligger utanför det tillåtna intervallet.",
+    "Granit:Validation:PeriodSpecBoundsCode": "Perioden måste vara antingen en namngiven token (t.ex. 'last_30d') eller både From och To — inte båda, inte ingen.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From måste ligga strikt före Period.To.",
     "Granit:Validation:PredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' har inte korrekt format.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' får inte ha fler än {ExpectedPrecision} siffror totalt, varav {ExpectedScale} decimaler.",
     "Granit:Validation:ScheduledAction:FutureDate": "Schemalagt datum måste vara i framtiden.",
     "Granit:Validation:UrlMustBeHttps": "URL:en måste använda HTTPS.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'.",
-    "Granit:Validation:PeriodSpecBoundsCode": "Perioden måste vara antingen en namngiven token (t.ex. 'last_30d') eller både From och To — inte båda, inte ingen.",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From måste ligga strikt före Period.To."
+    "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'."
   }
 }

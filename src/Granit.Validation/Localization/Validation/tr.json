@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' geçerli bir e-posta adresi değil.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' boş olmalıdır.",
+    "Granit:Validation:EntityViewShareEmptyAudience": "Hedef kitle en az bir rol veya kullanıcı içermelidir.",
     "Granit:Validation:EqualValidator": "'{PropertyName}', '{ComparisonValue}' değerine eşit olmalıdır.",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' {MaxLength} karakter uzunluğunda olmalıdır. {TotalLength} karakter girdiniz.",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' yalnızca {From} ile {To} arasında olmalıdır. {Value} girdiniz.",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "En fazla 50 CIDR aralığına izin verilir.",
     "Granit:Validation:MaxCustomAttributes": "Maksimum özel öznitelik sayısı aşıldı.",
     "Granit:Validation:MaxEmbeddingInputs": "Maksimum gömme girişi sayısı aşıldı.",
-    "Granit:Validation:MaxMetadataKeys": "En fazla 50 meta veri anahtarına izin verilmektedir.",
     "Granit:Validation:MaxFilterEntries": "En fazla 50 filtre girişine izin verilir.",
+    "Granit:Validation:MaxMetadataKeys": "En fazla 50 meta veri anahtarına izin verilmektedir.",
     "Granit:Validation:MaxPermissions": "En fazla 100 izne izin verilir.",
     "Granit:Validation:MaxPresetEntries": "En fazla 20 ön ayara izin verilir.",
     "Granit:Validation:MaxQuickFilterEntries": "En fazla 20 hızlı filtreye izin verilir.",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' boş olmamalıdır.",
     "Granit:Validation:NullValidator": "'{PropertyName}' boş olmalıdır.",
     "Granit:Validation:PaymentAmountOutOfRange": "Ödeme tutarı izin verilen aralığın dışında.",
+    "Granit:Validation:PeriodSpecBoundsCode": "Dönem ya bir adlandırılmış jeton (ör. 'last_30d') ya da hem From hem To olmalıdır — ikisi birden ya da hiçbiri olmaz.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To'dan kesinlikle önce olmalıdır.",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' doğru biçimde değil.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' toplamda {ExpectedPrecision} basamaktan fazla olmamalı ve {ExpectedScale} ondalık basamağa izin verilmelidir.",
     "Granit:Validation:ScheduledAction:FutureDate": "Planlanan tarih gelecekte olmalıdır.",
     "Granit:Validation:UrlMustBeHttps": "URL, HTTPS kullanmalıdır.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır.",
-    "Granit:Validation:PeriodSpecBoundsCode": "Dönem ya bir adlandırılmış jeton (ör. 'last_30d') ya da hem From hem To olmalıdır — ikisi birden ya da hiçbiri olmaz.",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To'dan kesinlikle önce olmalıdır."
+    "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır."
   }
 }

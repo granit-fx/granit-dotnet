@@ -9,8 +9,8 @@ namespace Granit.Entities.Views.EntityFrameworkCore.Extensions;
 /// <see cref="IEntityViewReader"/> + <see cref="IEntityViewWriter"/> implementations.
 /// </summary>
 /// <remarks>
-/// The host wires its own <see cref="EntityViewDbContext"/> via
-/// <c>AddDbContextFactory&lt;EntityViewDbContext&gt;(...)</c> with the chosen provider
+/// The host wires its own <see cref="EntityViewDbContext"/> via the standard
+/// EF Core DbContextFactory registration with the chosen provider
 /// (PostgreSQL / SQL Server / SQLite) — this module does not bind a provider so that
 /// consumers stay portable.
 /// </remarks>

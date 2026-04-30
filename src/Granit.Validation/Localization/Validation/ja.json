@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",
     "Granit:Validation:EmailValidator": "'{PropertyName}' は有効なメールアドレスではありません。",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' は空である必要があります。",
+    "Granit:Validation:EntityViewShareEmptyAudience": "対象には少なくとも 1 つのロールまたはユーザーを含める必要があります。",
     "Granit:Validation:EqualValidator": "'{PropertyName}' は '{ComparisonValue}' と等しい必要があります。",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' は {MaxLength} 文字である必要があります。{TotalLength} 文字入力されました。",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' は {From} から {To} の間（境界値を含まない）である必要があります。{Value} が入力されました。",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "CIDR 範囲は最大50件までです。",
     "Granit:Validation:MaxCustomAttributes": "カスタム属性の最大数を超えました。",
     "Granit:Validation:MaxEmbeddingInputs": "エンベディング入力の最大数を超えました。",
-    "Granit:Validation:MaxMetadataKeys": "メタデータキーは最大50個まで許可されています。",
     "Granit:Validation:MaxFilterEntries": "フィルター項目は最大50件までです。",
+    "Granit:Validation:MaxMetadataKeys": "メタデータキーは最大50個まで許可されています。",
     "Granit:Validation:MaxPermissions": "権限は最大100件までです。",
     "Granit:Validation:MaxPresetEntries": "プリセット項目は最大20件までです。",
     "Granit:Validation:MaxQuickFilterEntries": "クイックフィルターは最大20件までです。",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' を空にすることはできません。",
     "Granit:Validation:NullValidator": "'{PropertyName}' は空である必要があります。",
     "Granit:Validation:PaymentAmountOutOfRange": "支払い金額が許容範囲外です。",
+    "Granit:Validation:PeriodSpecBoundsCode": "期間は名前付きトークン(例: 'last_30d')または From と To の両方である必要があります — 両方や両方なしは不可。",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From は Period.To より厳密に前である必要があります。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
     "Granit:Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
     "Granit:Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。",
-    "Granit:Validation:PeriodSpecBoundsCode": "期間は名前付きトークン(例: 'last_30d')または From と To の両方である必要があります — 両方や両方なしは不可。",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From は Period.To より厳密に前である必要があります。"
+    "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
   }
 }

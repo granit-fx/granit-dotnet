@@ -898,6 +898,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Views.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Entities.Views",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Entities.Views.EntityFrameworkCore",
       "deps": [
         "Granit.Authorization",
@@ -19051,6 +19061,117 @@
           "kind": "method",
           "signature": "SetSortOrder(int sortOrder)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EntityViewCreateBodyRequest",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewCreateBodyRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewCreateBodyRequest.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "EntityViewResponse",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewResponse.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "FromDescriptor",
+          "kind": "method",
+          "signature": "FromDescriptor(EntityViewDescriptor descriptor)",
+          "returnType": "EntityViewResponse"
+        }
+      ]
+    },
+    {
+      "name": "EntityViewShareBodyRequest",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewShareBodyRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewShareBodyRequest.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "EntityViewSharedWithDto",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithDto",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithDto.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "EntityViewToggleFlagRequest",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewToggleFlagRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewToggleFlagRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "EntityViewUpdateBodyRequest",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewUpdateBodyRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewUpdateBodyRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityViewsEndpointsLocalizationResource",
+      "fqn": "Granit.Entities.Views.Endpoints.EntityViewsEndpointsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/EntityViewsEndpointsLocalizationResource.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "EntityViewsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Entities.Views.Endpoints.Extensions.EntityViewsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Extensions/EntityViewsEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitEntityViewsEndpoints",
+          "kind": "method",
+          "signature": "MapGranitEntityViewsEndpoints(this IEndpointRouteBuilder endpoints, string prefix, Action<EntityViewsEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesViewsEndpointsModule",
+      "fqn": "Granit.Entities.Views.Endpoints.GranitEntitiesViewsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/GranitEntitiesViewsEndpointsModule.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "EntityViewsEndpointsOptions",
+      "fqn": "Granit.Entities.Views.Endpoints.Options.EntityViewsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Endpoints",
+      "file": "src/Granit.Entities.Views.Endpoints/Options/EntityViewsEndpointsOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },

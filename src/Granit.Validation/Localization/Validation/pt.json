@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' e 'Page' são mutuamente exclusivos.",
     "Granit:Validation:EmailValidator": "'{PropertyName}' não é um endereço de e-mail válido.",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' deve estar vazio.",
+    "Granit:Validation:EntityViewShareEmptyAudience": "O público deve incluir pelo menos uma função ou utilizador.",
     "Granit:Validation:EqualValidator": "'{PropertyName}' deve ser igual a '{ComparisonValue}'.",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' deve ter exatamente {MaxLength} caracteres. Foram introduzidos {TotalLength} caracteres.",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' deve estar estritamente entre {From} e {To}. Foi introduzido {Value}.",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "São permitidos no máximo 50 intervalos CIDR.",
     "Granit:Validation:MaxCustomAttributes": "O número máximo de atributos personalizados foi excedido.",
     "Granit:Validation:MaxEmbeddingInputs": "Número máximo de entradas de embedding excedido.",
-    "Granit:Validation:MaxMetadataKeys": "Máximo de 50 chaves de metadados permitidas.",
     "Granit:Validation:MaxFilterEntries": "São permitidas no máximo 50 entradas de filtro.",
+    "Granit:Validation:MaxMetadataKeys": "Máximo de 50 chaves de metadados permitidas.",
     "Granit:Validation:MaxPermissions": "São permitidas no máximo 100 permissões.",
     "Granit:Validation:MaxPresetEntries": "São permitidas no máximo 20 predefinições.",
     "Granit:Validation:MaxQuickFilterEntries": "São permitidos no máximo 20 filtros rápidos.",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' não pode estar vazio.",
     "Granit:Validation:NullValidator": "'{PropertyName}' deve estar vazio.",
     "Granit:Validation:PaymentAmountOutOfRange": "O valor do pagamento está fora do intervalo permitido.",
+    "Granit:Validation:PeriodSpecBoundsCode": "O período deve ser um token nomeado (ex.: 'last_30d') ou ambos From e To — não ambos, não nenhum.",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From deve ser estritamente anterior a Period.To.",
     "Granit:Validation:PredicateValidator": "A condição especificada para '{PropertyName}' não foi cumprida.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' não está no formato correto.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' não deve ter mais de {ExpectedPrecision} dígitos no total, dos quais {ExpectedScale} decimais.",
     "Granit:Validation:ScheduledAction:FutureDate": "A data agendada deve ser no futuro.",
     "Granit:Validation:UrlMustBeHttps": "A URL deve usar HTTPS.",
-    "Granit:Validation:ValidToAfterValidFrom": "'Válido até' deve ser posterior a 'Válido desde'.",
-    "Granit:Validation:PeriodSpecBoundsCode": "O período deve ser um token nomeado (ex.: 'last_30d') ou ambos From e To — não ambos, não nenhum.",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From deve ser estritamente anterior a Period.To."
+    "Granit:Validation:ValidToAfterValidFrom": "'Válido até' deve ser posterior a 'Válido desde'."
   }
 }

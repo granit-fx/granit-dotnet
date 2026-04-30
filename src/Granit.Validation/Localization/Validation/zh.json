@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' 和 'Page' 不能同时使用。",
     "Granit:Validation:EmailValidator": "'{PropertyName}' 不是有效的电子邮件地址。",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' 必须为空。",
+    "Granit:Validation:EntityViewShareEmptyAudience": "受众必须至少包含一个角色或用户。",
     "Granit:Validation:EqualValidator": "'{PropertyName}' 必须等于 '{ComparisonValue}'。",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' 必须为 {MaxLength} 个字符。您输入了 {TotalLength} 个字符。",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' 必须在 {From} 和 {To} 之间（不含边界）。您输入了 {Value}。",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "最多允许 50 个 CIDR 范围。",
     "Granit:Validation:MaxCustomAttributes": "已超过自定义属性的最大数量。",
     "Granit:Validation:MaxEmbeddingInputs": "嵌入输入数量已超过上限。",
-    "Granit:Validation:MaxMetadataKeys": "最多允许 50 个元数据键。",
     "Granit:Validation:MaxFilterEntries": "最多允许 50 个筛选条目。",
+    "Granit:Validation:MaxMetadataKeys": "最多允许 50 个元数据键。",
     "Granit:Validation:MaxPermissions": "最多允许 100 个权限。",
     "Granit:Validation:MaxPresetEntries": "最多允许 20 个预设条目。",
     "Granit:Validation:MaxQuickFilterEntries": "最多允许 20 个快速筛选。",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' 不能为空。",
     "Granit:Validation:NullValidator": "'{PropertyName}' 必须为空。",
     "Granit:Validation:PaymentAmountOutOfRange": "付款金额超出允许范围。",
+    "Granit:Validation:PeriodSpecBoundsCode": "周期必须是命名令牌(如 'last_30d')或同时包含 From 和 To,不能两者皆是或都为空。",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From 必须严格早于 Period.To。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' 的指定条件未满足。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' 的格式不正确。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' 总共不能超过 {ExpectedPrecision} 位数字，其中允许 {ExpectedScale} 位小数。",
     "Granit:Validation:ScheduledAction:FutureDate": "计划日期必须是将来的日期。",
     "Granit:Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。",
-    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。",
-    "Granit:Validation:PeriodSpecBoundsCode": "周期必须是命名令牌(如 'last_30d')或同时包含 From 和 To,不能两者皆是或都为空。",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From 必须严格早于 Period.To。"
+    "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。"
   }
 }

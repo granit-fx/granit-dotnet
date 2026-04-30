@@ -10,6 +10,7 @@
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' और 'Page' परस्पर अनन्य हैं।",
     "Granit:Validation:EmailValidator": "'{PropertyName}' एक मान्य ईमेल पता नहीं है।",
     "Granit:Validation:EmptyValidator": "'{PropertyName}' खाली होना चाहिए।",
+    "Granit:Validation:EntityViewShareEmptyAudience": "ऑडियंस में कम से कम एक भूमिका या उपयोगकर्ता शामिल होना चाहिए।",
     "Granit:Validation:EqualValidator": "'{PropertyName}' '{ComparisonValue}' के बराबर होना चाहिए।",
     "Granit:Validation:ExactLengthValidator": "'{PropertyName}' की लंबाई {MaxLength} अक्षर होनी चाहिए। आपने {TotalLength} अक्षर दर्ज किए।",
     "Granit:Validation:ExclusiveBetweenValidator": "'{PropertyName}' {From} और {To} के बीच होना चाहिए (सीमा मान शामिल नहीं)। आपने {Value} दर्ज किया।",
@@ -56,8 +57,8 @@
     "Granit:Validation:MaxCidrRanges": "अधिकतम 50 CIDR श्रेणियाँ अनुमत हैं।",
     "Granit:Validation:MaxCustomAttributes": "कस्टम विशेषताओं की अधिकतम संख्या पार हो गई।",
     "Granit:Validation:MaxEmbeddingInputs": "एम्बेडिंग इनपुट की अधिकतम संख्या पार हो गई।",
-    "Granit:Validation:MaxMetadataKeys": "अधिकतम 50 मेटाडेटा कीज़ अनुमत हैं।",
     "Granit:Validation:MaxFilterEntries": "अधिकतम 50 फ़िल्टर प्रविष्टियाँ अनुमत हैं।",
+    "Granit:Validation:MaxMetadataKeys": "अधिकतम 50 मेटाडेटा कीज़ अनुमत हैं।",
     "Granit:Validation:MaxPermissions": "अधिकतम 100 अनुमतियाँ अनुमत हैं।",
     "Granit:Validation:MaxPresetEntries": "अधिकतम 20 प्रीसेट प्रविष्टियाँ अनुमत हैं।",
     "Granit:Validation:MaxQuickFilterEntries": "अधिकतम 20 त्वरित फ़िल्टर अनुमत हैं।",
@@ -71,13 +72,13 @@
     "Granit:Validation:NotNullValidator": "'{PropertyName}' खाली नहीं होना चाहिए।",
     "Granit:Validation:NullValidator": "'{PropertyName}' खाली होना चाहिए।",
     "Granit:Validation:PaymentAmountOutOfRange": "भुगतान राशि अनुमत सीमा से बाहर है।",
+    "Granit:Validation:PeriodSpecBoundsCode": "अवधि या तो एक नामित टोकन (जैसे 'last_30d') होनी चाहिए या From और To दोनों — दोनों नहीं, कोई नहीं नहीं।",
+    "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To से सख्ती से पहले होना चाहिए।",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' के लिए निर्दिष्ट शर्त पूरी नहीं हुई।",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' सही प्रारूप में नहीं है।",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' कुल {ExpectedPrecision} अंकों से अधिक नहीं होना चाहिए, {ExpectedScale} दशमलव की अनुमति के साथ।",
     "Granit:Validation:ScheduledAction:FutureDate": "निर्धारित तिथि भविष्य में होनी चाहिए।",
     "Granit:Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।",
-    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।",
-    "Granit:Validation:PeriodSpecBoundsCode": "अवधि या तो एक नामित टोकन (जैसे 'last_30d') होनी चाहिए या From और To दोनों — दोनों नहीं, कोई नहीं नहीं।",
-    "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To से सख्ती से पहले होना चाहिए।"
+    "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।"
   }
 }

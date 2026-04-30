@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Entities.Views.Endpoints</PackageId>
+    <Description>Minimal API endpoints for the Granit EntityView surface (ADR-047): list / create / read / update / delete plus the four state-transition routes (pin / star / set-default / share). Permissions follow the closed `EntityViewPermissions` set; FluentValidation gates request DTOs; localisation across the 18 cultures.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Entities.Views.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Entities.Views\Granit.Entities.Views.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+    <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+</Project>

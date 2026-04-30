@@ -111,6 +111,7 @@
     <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
     <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
     <Project Path="src/Granit.Entities.Views.Abstractions/Granit.Entities.Views.Abstractions.csproj" />
+    <Project Path="src/Granit.Entities.Views.Endpoints/Granit.Entities.Views.Endpoints.csproj" />
     <Project Path="src/Granit.Entities.Views.EntityFrameworkCore/Granit.Entities.Views.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Entities.Views/Granit.Entities.Views.csproj" />
     <Project Path="src/Granit.Entities/Granit.Entities.csproj" />
@@ -462,6 +463,7 @@
     <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Tests/Granit.Entities.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.Abstractions.Tests/Granit.Entities.Views.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Entities.Views.Endpoints.Tests/Granit.Entities.Views.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.EntityFrameworkCore.Tests/Granit.Entities.Views.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.Tests/Granit.Entities.Views.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />

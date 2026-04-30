@@ -113,6 +113,7 @@
         "tests/Granit.Entities.Abstractions.Tests",
         "tests/Granit.Entities.Tests",
         "tests/Granit.Entities.Views.Abstractions.Tests",
+        "tests/Granit.Entities.Views.Endpoints.Tests",
         "tests/Granit.Entities.Views.EntityFrameworkCore.Tests",
         "tests/Granit.Entities.Views.Tests"
       ]
