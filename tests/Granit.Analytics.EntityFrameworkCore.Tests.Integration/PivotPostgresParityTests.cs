@@ -30,7 +30,7 @@ public sealed class PivotPostgresParityTests(PostgresFixture postgres)
     public async ValueTask InitializeAsync()
     {
         DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
-            .UseNpgsql(_postgres.ConnectionString)
+            .UseNpgsql(_postgres.ConnectionString, o => o.UseNetTopologySuite())
             .Options;
 
         _db = new TestDbContext(options);
