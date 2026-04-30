@@ -30,9 +30,27 @@ public sealed class DashboardStateMachineTests
         dashboard.TenantId.ShouldBe(tenantId);
         dashboard.SourceDefinitionName.ShouldBe("Granit.Invoicing.FinanceOverview");
 
+        // Default push policy — admin opts widgets in via RefreshHint, never the
+        // whole board (ADR-043 §2). Verticals override on the descriptor.
+        dashboard.PushPolicy.ShouldBe(DashboardPushPolicy.WhenWidgetsRequest);
+
         DashboardCreatedEvent created = dashboard.DomainEvents.OfType<DashboardCreatedEvent>().Single();
         created.DashboardId.ShouldBe(id);
         created.TenantId.ShouldBe(tenantId);
+    }
+
+    [Fact]
+    public void Create_CapturesPushPolicy_FromCallerOverride()
+    {
+        var dashboard = Dashboard.Create(
+            id: Guid.NewGuid(),
+            name: "Cockpit",
+            category: DashboardCategory.Operations,
+            sourceDefinitionName: "Sample.Cockpit",
+            sourceDefinitionVersion: "1.0.0",
+            pushPolicy: DashboardPushPolicy.Force);
+
+        dashboard.PushPolicy.ShouldBe(DashboardPushPolicy.Force);
     }
 
     [Fact]

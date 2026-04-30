@@ -63,6 +63,16 @@ public abstract class DashboardDefinition : IDashboardDefinitionDescriptor
     public virtual DashboardLayout Layout => DashboardLayout.Default;
 
     /// <summary>
+    /// Per-dashboard transport switch — ADR-043 §2. Defaults to
+    /// <see cref="DashboardPushPolicy.WhenWidgetsRequest"/> so the framework opens a
+    /// live channel only for widgets that explicitly declare
+    /// <c>RefreshHint.Realtime</c>. Cockpit-style boards override to
+    /// <see cref="DashboardPushPolicy.Force"/>; verticals that prefer a predictable
+    /// cost ceiling override to <see cref="DashboardPushPolicy.PullOnly"/>.
+    /// </summary>
+    public virtual DashboardPushPolicy PushPolicy => DashboardPushPolicy.WhenWidgetsRequest;
+
+    /// <summary>
     /// Default time window applied to every data-bound widget that does not carry
     /// its own <see cref="WidgetDefinition.TimeWindowOverride"/>. <c>null</c> means
     /// "let the frontend pick its global default" — typical for a dashboard whose

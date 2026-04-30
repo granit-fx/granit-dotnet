@@ -13451,6 +13451,12 @@
           "returnType": "DashboardLayout"
         },
         {
+          "name": "PushPolicy",
+          "kind": "property",
+          "signature": "DashboardPushPolicy PushPolicy",
+          "returnType": "DashboardPushPolicy"
+        },
+        {
           "name": "DefaultTimeWindow",
           "kind": "property",
           "signature": "DashboardTimeWindow? DefaultTimeWindow",
@@ -13542,6 +13548,31 @@
       "file": "src/Granit.Dashboards.Abstractions/DashboardLayout.cs",
       "line": 71,
       "members": []
+    },
+    {
+      "name": "DashboardPushPolicy",
+      "fqn": "Granit.Dashboards.DashboardPushPolicy",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardPushPolicy.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "DashboardPushPolicyComposer",
+      "fqn": "Granit.Dashboards.DashboardPushPolicyComposer",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardPushPolicyComposer.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "Compose",
+          "kind": "method",
+          "signature": "Compose(DashboardPushPolicy dashboardPolicy, RefreshHint widgetHint)",
+          "returnType": "WidgetTransport"
+        }
+      ]
     },
     {
       "name": "DashboardTimeWindow",
@@ -13662,9 +13693,15 @@
           "returnType": "DashboardCategory"
         },
         {
+          "name": "Widgets",
+          "kind": "property",
+          "signature": "IReadOnlyList<WidgetInstance> Widgets",
+          "returnType": "IReadOnlyList<WidgetInstance>"
+        },
+        {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string name, DashboardCategory category, int layoutColumns = 12, int layoutRowHeight = 80, Guid? tenantId = null, string? sourceDefinitionName = null, string? sourceDefinitionVersion = null, bool isSystem = false)",
+          "signature": "Create(Guid id, string name, DashboardCategory category, int layoutColumns = 12, int layoutRowHeight = 80, Guid? tenantId = null, string? sourceDefinitionName = null, string? sourceDefinitionVersion = null, bool isSystem = false, DashboardPushPolicy pushPolicy = DashboardPushPolicy.WhenWidgetsRequest)",
           "returnType": "Dashboard"
         }
       ]
@@ -13939,7 +13976,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 92,
+      "line": 98,
       "members": []
     },
     {
@@ -14574,6 +14611,15 @@
           "returnType": "WidgetSize MediaTile =>"
         }
       ]
+    },
+    {
+      "name": "WidgetTransport",
+      "fqn": "Granit.Dashboards.WidgetTransport",
+      "kind": "enum",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/WidgetTransport.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "ImageFit",

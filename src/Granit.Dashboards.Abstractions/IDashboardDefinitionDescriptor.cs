@@ -38,6 +38,13 @@ public interface IDashboardDefinitionDescriptor
     DashboardLayout Layout { get; }
 
     /// <summary>
+    /// Per-dashboard transport switch. Composed at render time with each widget's
+    /// <c>RefreshHint</c> via <see cref="DashboardPushPolicyComposer.Compose"/> to
+    /// produce the effective <see cref="WidgetTransport"/>. ADR-043 §2.
+    /// </summary>
+    DashboardPushPolicy PushPolicy { get; }
+
+    /// <summary>
     /// Default time window applied to every data-bound widget that does not carry its
     /// own <see cref="WidgetDefinition.TimeWindowOverride"/>. <c>null</c> means the
     /// frontend falls back to its global default (typically <c>last_30d</c>) — useful

@@ -116,6 +116,12 @@ internal static class WidgetRenderHelper
             Sequence: rendered.Envelope.Sequence,
             EmittedAt: rendered.Envelope.EmittedAt,
             RefreshHint: rendered.Envelope.RefreshHint,
+            // Single-widget render path has no parent dashboard policy — fall back to
+            // the default WhenWidgetsRequest semantics so a Realtime widget rendered
+            // standalone still reports Transport=Push to the caller (ADR-043 §2.3).
+            Transport: DashboardPushPolicyComposer.Compose(
+                DashboardPushPolicy.WhenWidgetsRequest,
+                rendered.Envelope.RefreshHint),
             Snapshot: rendered.Envelope.Snapshot,
             ReasonLocalizationKey: rendered.Envelope.ReasonLocalizationKey));
     }

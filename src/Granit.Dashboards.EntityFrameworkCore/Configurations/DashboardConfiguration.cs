@@ -39,6 +39,9 @@ internal sealed class DashboardConfiguration : IEntityTypeConfiguration<Dashboar
         builder.Property(d => d.IsSystem).IsRequired();
         builder.Property(d => d.LayoutColumns).IsRequired();
         builder.Property(d => d.LayoutRowHeight).IsRequired();
+        builder.Property(d => d.PushPolicy)
+            .HasConversion<int>()
+            .IsRequired();
         builder.Property(d => d.TenantId);
 
         // Aggregate child collection — cascade delete keeps widgets tied to their dashboard.

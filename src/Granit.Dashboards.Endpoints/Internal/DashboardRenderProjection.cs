@@ -74,6 +74,14 @@ internal static partial class DashboardRenderProjection
             string slug = ExtractSlug(instance.TitleLocalizationKey, dashboard.SourceDefinitionName);
             actionsBySlug.TryGetValue(slug, out IReadOnlyList<WidgetAction>? actions);
 
+            // ADR-043 §2.3 — effective transport is the composition of the
+            // dashboard's policy and this widget's RefreshHint. Composer is
+            // shared with the future push hub so both ends agree on which
+            // widgets are live.
+            WidgetTransport transport = DashboardPushPolicyComposer.Compose(
+                dashboard.PushPolicy,
+                rw.Envelope.RefreshHint);
+
             return new DashboardRenderedWidgetResponse(
                 Id: rw.WidgetId,
                 WidgetType: rw.Envelope.WidgetType,
@@ -88,6 +96,7 @@ internal static partial class DashboardRenderProjection
                 Sequence: rw.Envelope.Sequence,
                 EmittedAt: rw.Envelope.EmittedAt,
                 RefreshHint: rw.Envelope.RefreshHint,
+                Transport: transport,
                 Snapshot: rw.Envelope.Snapshot,
                 ReasonLocalizationKey: rw.Envelope.ReasonLocalizationKey);
         })];

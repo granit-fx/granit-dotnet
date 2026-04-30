@@ -55,6 +55,7 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 12,
             newLayoutRowHeight: 80,
             newIsSystem: false,
+            newPushPolicy: DashboardPushPolicy.WhenWidgetsRequest,
             incomingWidgets: inputs);
 
         summary.PreviousSourceDefinitionVersion.ShouldBe("1.0.0");
@@ -89,6 +90,7 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 12,
             newLayoutRowHeight: 80,
             newIsSystem: false,
+            newPushPolicy: DashboardPushPolicy.WhenWidgetsRequest,
             incomingWidgets:
             [
                 new ResyncWidgetInput(
@@ -109,12 +111,14 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 24,
             newLayoutRowHeight: 60,
             newIsSystem: true,
+            newPushPolicy: DashboardPushPolicy.Force,
             incomingWidgets: []);
 
         dashboard.SourceDefinitionVersion.ShouldBe("1.5.0");
         dashboard.LayoutColumns.ShouldBe(24);
         dashboard.LayoutRowHeight.ShouldBe(60);
         dashboard.IsSystem.ShouldBeTrue();
+        dashboard.PushPolicy.ShouldBe(DashboardPushPolicy.Force);            // refreshed from descriptor
     }
 
     [Fact]
@@ -131,6 +135,7 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 12,
             newLayoutRowHeight: 80,
             newIsSystem: false,
+            newPushPolicy: DashboardPushPolicy.WhenWidgetsRequest,
             incomingWidgets:
             [
                 new ResyncWidgetInput(
@@ -159,6 +164,7 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 12,
             newLayoutRowHeight: 80,
             newIsSystem: false,
+            newPushPolicy: DashboardPushPolicy.WhenWidgetsRequest,
             incomingWidgets: []));
     }
 
@@ -174,6 +180,7 @@ public sealed class DashboardResyncTests
             newLayoutColumns: 12,
             newLayoutRowHeight: 80,
             newIsSystem: false,
+            newPushPolicy: DashboardPushPolicy.WhenWidgetsRequest,
             incomingWidgets: []));
     }
 

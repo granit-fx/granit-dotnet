@@ -73,6 +73,7 @@ internal sealed class DashboardResyncer(
             newLayoutColumns: descriptor.Layout.Columns,
             newLayoutRowHeight: descriptor.Layout.RowHeight,
             newIsSystem: descriptor.IsSystem,
+            newPushPolicy: descriptor.PushPolicy,
             incomingWidgets: inputs);
 
         // EF Core's change tracker classifies a new entity added to a tracked

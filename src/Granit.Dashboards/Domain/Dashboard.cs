@@ -72,6 +72,14 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
     /// <summary>Grid row height in CSS pixels — typically 80.</summary>
     public int LayoutRowHeight { get; private set; }
 
+    /// <summary>
+    /// Per-dashboard transport switch — captured from the source definition at
+    /// import time and refreshed on resync. Composed at render time with each
+    /// widget's <c>RefreshHint</c> via <see cref="DashboardPushPolicyComposer.Compose"/>
+    /// to produce the effective <see cref="WidgetTransport"/>. ADR-043 §2.
+    /// </summary>
+    public DashboardPushPolicy PushPolicy { get; private set; } = DashboardPushPolicy.WhenWidgetsRequest;
+
     /// <summary>Widgets pinned on the dashboard, in declared <see cref="WidgetInstance.Position"/> order.</summary>
     public IReadOnlyList<WidgetInstance> Widgets => _widgets;
 
@@ -87,7 +95,8 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
         Guid? tenantId = null,
         string? sourceDefinitionName = null,
         string? sourceDefinitionVersion = null,
-        bool isSystem = false)
+        bool isSystem = false,
+        DashboardPushPolicy pushPolicy = DashboardPushPolicy.WhenWidgetsRequest)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
@@ -113,6 +122,7 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
             IsSystem = isSystem,
             LayoutColumns = layoutColumns,
             LayoutRowHeight = layoutRowHeight,
+            PushPolicy = pushPolicy,
         };
 
         dashboard.AddDomainEvent(new DashboardCreatedEvent(id, tenantId, name, sourceDefinitionName));
@@ -296,6 +306,7 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
         int newLayoutColumns,
         int newLayoutRowHeight,
         bool newIsSystem,
+        DashboardPushPolicy newPushPolicy,
         IReadOnlyList<ResyncWidgetInput> incomingWidgets)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(newSourceDefinitionVersion);
@@ -373,6 +384,7 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
         LayoutColumns = newLayoutColumns;
         LayoutRowHeight = newLayoutRowHeight;
         IsSystem = newIsSystem;
+        PushPolicy = newPushPolicy;
 
         DashboardResyncSummary summary = new(
             PreviousSourceDefinitionVersion: previousVersion,

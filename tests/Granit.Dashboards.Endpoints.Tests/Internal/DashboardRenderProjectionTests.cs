@@ -82,6 +82,7 @@ public sealed class DashboardRenderProjectionTests
         w.Status.ShouldBe(WidgetSnapshotStatus.Snapshot);
         w.Sequence.ShouldBe(1);
         w.RefreshHint.ShouldBe(RefreshHint.Dynamic);
+        w.Transport.ShouldBe(WidgetTransport.Pull);                          // default push policy + Dynamic hint = pull
         w.Snapshot.ShouldNotBeNull();
         w.Snapshot!.Value.GetProperty("value").GetInt32().ShouldBe(42);
         w.ReasonLocalizationKey.ShouldBeNull();
@@ -262,12 +263,56 @@ public sealed class DashboardRenderProjectionTests
         }
     }
 
-    private static Dashboard NewDashboard() => Dashboard.Create(
+    private static Dashboard NewDashboard(
+        DashboardPushPolicy pushPolicy = DashboardPushPolicy.WhenWidgetsRequest) => Dashboard.Create(
         id: Guid.NewGuid(),
         name: "SampleDashboard",
         category: DashboardCategory.Finance,
         sourceDefinitionName: SourceDefinitionName,
-        sourceDefinitionVersion: "1.0.0");
+        sourceDefinitionVersion: "1.0.0",
+        pushPolicy: pushPolicy);
+
+    [Theory]
+    [InlineData(DashboardPushPolicy.PullOnly, RefreshHint.Realtime, WidgetTransport.Pull)]
+    [InlineData(DashboardPushPolicy.WhenWidgetsRequest, RefreshHint.Dynamic, WidgetTransport.Pull)]
+    [InlineData(DashboardPushPolicy.WhenWidgetsRequest, RefreshHint.Realtime, WidgetTransport.Push)]
+    [InlineData(DashboardPushPolicy.Force, RefreshHint.Static, WidgetTransport.Pull)]
+    [InlineData(DashboardPushPolicy.Force, RefreshHint.Dynamic, WidgetTransport.Push)]
+    public void ToResponse_ComputesEffectiveTransportPerWidget(
+        DashboardPushPolicy policy,
+        RefreshHint hint,
+        WidgetTransport expected)
+    {
+        Dashboard dashboard = NewDashboard(policy);
+        WidgetInstance widget = dashboard.AddWidget(
+            widgetId: Guid.NewGuid(),
+            widgetType: "Kpi",
+            position: 0,
+            width: 4,
+            height: 2,
+            titleLocalizationKey: $"Widget:{SourceDefinitionName}.live",
+            configJson: "{}");
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id,
+            RenderedAt: RenderedAt,
+            Period: null,
+            Widgets:
+            [
+                new RenderedWidget(widget.Id, WidgetSnapshotEnvelope.ForSnapshot(
+                    widgetType: "Kpi",
+                    snapshot: JsonSerializer.SerializeToElement(new { value = 1 }),
+                    sequence: 1,
+                    emittedAt: RenderedAt,
+                    refreshHint: hint)),
+            ]);
+
+        ResolvedRenderTarget target = new(dashboard.Widgets, ActiveViewName: null);
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard, target, EmptyRegistry(), periodToken: null);
+
+        response.Widgets[0].Transport.ShouldBe(expected);
+    }
 
     [Fact]
     public void ToResponse_DriftStatus_NotApplicable_WhenNoSourceDefinition()

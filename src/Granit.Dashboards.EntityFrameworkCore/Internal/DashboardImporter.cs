@@ -44,7 +44,8 @@ internal sealed class DashboardImporter(
             tenantId: currentTenant?.Id,
             sourceDefinitionName: def.Name,
             sourceDefinitionVersion: def.Version,
-            isSystem: def.IsSystem);
+            isSystem: def.IsSystem,
+            pushPolicy: def.PushPolicy);
 
         foreach (WidgetDefinition widget in widgets)
         {

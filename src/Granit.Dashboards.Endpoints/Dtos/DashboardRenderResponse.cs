@@ -87,6 +87,12 @@ public sealed record DashboardRenderPeriodResponse(DateTimeOffset From, DateTime
 /// <param name="Sequence">Always <c>1</c> in pull mode; future push transport increments per (widget, tenant). EPIC #1366 invariant #2.</param>
 /// <param name="EmittedAt">Server-side timestamp of the widget's computation.</param>
 /// <param name="RefreshHint">Pull / push transport hint — drives the frontend's per-widget cache TTL.</param>
+/// <param name="Transport">
+/// Effective transport selected for this widget — composition of the dashboard's
+/// <c>PushPolicy</c> and the widget's <see cref="RefreshHint"/> per ADR-043 §2.3.
+/// <see cref="WidgetTransport.Push"/> tells the frontend to subscribe to the live channel and stop pulling;
+/// <see cref="WidgetTransport.Pull"/> means the widget honors <see cref="RefreshHint"/> on the pull endpoint.
+/// </param>
 /// <param name="Snapshot">Pre-serialised typed payload. <see langword="null"/> when <see cref="Status"/> is not <see cref="WidgetSnapshotStatus.Snapshot"/>.</param>
 /// <param name="ReasonLocalizationKey">Localization key for the user-facing reason — set on <see cref="WidgetSnapshotStatus.Unavailable"/> and <see cref="WidgetSnapshotStatus.Error"/>; <see langword="null"/> on <see cref="WidgetSnapshotStatus.Snapshot"/>. Resolved client-side so the same envelope can be cached across user locales.</param>
 public sealed record DashboardRenderedWidgetResponse(
@@ -103,5 +109,6 @@ public sealed record DashboardRenderedWidgetResponse(
     long Sequence,
     DateTimeOffset EmittedAt,
     RefreshHint RefreshHint,
+    WidgetTransport Transport,
     JsonElement? Snapshot,
     string? ReasonLocalizationKey = null);
