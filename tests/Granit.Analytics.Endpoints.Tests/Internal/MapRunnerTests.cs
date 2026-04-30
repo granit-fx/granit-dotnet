@@ -36,7 +36,7 @@ public sealed class MapRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -63,7 +63,7 @@ public sealed class MapRunnerTests
         ];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("LatitudeNullable", "LongitudeNullable"),
@@ -84,7 +84,7 @@ public sealed class MapRunnerTests
         TestItem[] items = [new() { Id = id, Latitude = 48.85, Longitude = 2.35 }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -108,7 +108,7 @@ public sealed class MapRunnerTests
         }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -128,7 +128,7 @@ public sealed class MapRunnerTests
         TestItem[] items = [new() { Id = Guid.NewGuid(), Latitude = 0d, Longitude = 0d }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -152,7 +152,7 @@ public sealed class MapRunnerTests
         }];
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics());
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("LatitudeDecimal", "LongitudeDecimal"),
@@ -168,7 +168,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_NonNumericCoordinateColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
 
         await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -182,7 +182,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_UnknownLatitudeColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -198,7 +198,7 @@ public sealed class MapRunnerTests
     public async Task ExecuteAsync_UnknownPopupColumn_Throws()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
 
         ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
             await runner.ExecuteAsync(
@@ -211,10 +211,53 @@ public sealed class MapRunnerTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_PopupColumn_NotDeclaredOnQueryDefinition_Throws()
+    {
+        // Whitelist enforcement: InternalNote is a public property of TestItem
+        // but is intentionally NOT declared on TestQueryDefinition. The runner
+        // must reject popup references to it instead of leaking its raw value.
+        IQueryEngine<TestItem> engine = ConfigureStream([]);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
+
+        ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
+            await runner.ExecuteAsync(
+                pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
+                popupColumns: ["InternalNote"],
+                dashboardFilters: null,
+                TestContext.Current.CancellationToken));
+
+        ex.Message.ShouldContain("InternalNote");
+        ex.Message.ShouldContain("Test.Items");
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_CoordinateColumn_NotDeclaredOnQueryDefinition_Throws()
+    {
+        // Whitelist enforcement applies to coordinate columns too — even
+        // numeric columns must be declared on the QueryDefinition before the
+        // map widget can read them.
+        IQueryEngine<TestItem> engine = ConfigureStream([]);
+
+        // Build a QueryDefinition that declares Longitude but NOT Latitude.
+        ArgumentException ex = await Should.ThrowAsync<ArgumentException>(async () =>
+        {
+            MapRunner<TestItem> runner = new(
+                "Test.Items", new TestItemSource([]), engine, new LongitudeOnlyQueryDefinition(), BuildMetrics());
+            await runner.ExecuteAsync(
+                pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
+                popupColumns: null,
+                dashboardFilters: null,
+                TestContext.Current.CancellationToken);
+        });
+
+        ex.Message.ShouldContain("Latitude");
+    }
+
+    [Fact]
     public async Task ExecuteAsync_DashboardFilter_PassedAsQueryRequestFilter()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
 
         await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -232,7 +275,7 @@ public sealed class MapRunnerTests
     public void Name_IsSetFromConstructor()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Granit.Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
         runner.Name.ShouldBe("Granit.Test.Items");
     }
 
@@ -257,7 +300,7 @@ public sealed class MapRunnerTests
             scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), scope.Metrics);
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -292,7 +335,7 @@ public sealed class MapRunnerTests
             scope.MeterFactory, AnalyticsRuntimeMetrics.MeterName, "granit.analytics.map.invalid_coordinates");
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), scope.Metrics);
 
         MapRunnerResult result = await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -308,12 +351,12 @@ public sealed class MapRunnerTests
     public async Task SupportsGeography_FalseWhenNoProjector_TrueWhenInjected()
     {
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runnerLatLngOnly = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runnerLatLngOnly = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
         runnerLatLngOnly.SupportsGeography.ShouldBeFalse();
 
         IGeographyPointProjector<TestItem> projector = Substitute.For<IGeographyPointProjector<TestItem>>();
         MapRunner<TestItem> runnerWithGeography = new(
-            "Test.Items", new TestItemSource([]), engine, BuildMetrics(),
+            "Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics(),
             currentTenant: null, geographyProjector: projector);
         runnerWithGeography.SupportsGeography.ShouldBeTrue();
 
@@ -335,7 +378,7 @@ public sealed class MapRunnerTests
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
         MapRunner<TestItem> runner = new(
-            "Test.Items", new TestItemSource(items), engine, BuildMetrics(),
+            "Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), BuildMetrics(),
             currentTenant: null, geographyProjector: projector);
 
         MapRunnerResult result = await runner.ExecuteAsync(
@@ -356,7 +399,7 @@ public sealed class MapRunnerTests
         // Renderer is supposed to pre-check SupportsGeography — this throw is
         // a safety net for misconfigured callers, not the user-facing path.
         IQueryEngine<TestItem> engine = ConfigureStream([]);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, BuildMetrics());
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource([]), engine, new TestQueryDefinition(), BuildMetrics());
 
         await Should.ThrowAsync<NotSupportedException>(async () =>
             await runner.ExecuteAsync(
@@ -384,7 +427,7 @@ public sealed class MapRunnerTests
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
         MapRunner<TestItem> runner = new(
-            "Test.Items", new TestItemSource(items), engine, scope.Metrics,
+            "Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), scope.Metrics,
             currentTenant: null, geographyProjector: projector);
 
         MapRunnerResult result = await runner.ExecuteAsync(
@@ -414,7 +457,7 @@ public sealed class MapRunnerTests
         currentTenant.Id.Returns(tenantId);
 
         IQueryEngine<TestItem> engine = ConfigureStream(items);
-        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, scope.Metrics, currentTenant);
+        MapRunner<TestItem> runner = new("Test.Items", new TestItemSource(items), engine, new TestQueryDefinition(), scope.Metrics, currentTenant);
 
         await runner.ExecuteAsync(
             pointSource: new MapPointSource.LatLng("Latitude", "Longitude"),
@@ -498,10 +541,58 @@ public sealed class MapRunnerTests
         public double? LongitudeNullable { get; set; }
         public decimal LatitudeDecimal { get; set; }
         public decimal LongitudeDecimal { get; set; }
+
+        // Deliberately undeclared on TestQueryDefinition — the whitelist must
+        // reject popup / coordinate references to this column.
+        public string InternalNote { get; set; } = string.Empty;
+
+        // Custom geography column name — exercised by the geography path tests.
+        public string Position { get; set; } = string.Empty;
     }
 
     public sealed class TestItemSource(IReadOnlyList<TestItem> items) : IQueryableSource<TestItem>
     {
         public IQueryable<TestItem> GetQueryable() => items.AsQueryable();
+    }
+
+    /// <summary>
+    /// Negative-control definition that declares only the longitude column.
+    /// Used by the whitelist test that pins coordinate-column rejection — the
+    /// runner must refuse to read <c>Latitude</c> even though it exists as a
+    /// public property on <see cref="TestItem"/>.
+    /// </summary>
+    public sealed class LongitudeOnlyQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder.Column(x => x.Longitude, c => c.Label("Longitude"));
+        }
+    }
+
+    /// <summary>
+    /// Whitelist for <see cref="TestItem"/> — declares every field the runner
+    /// is allowed to read (coordinate columns + popup columns + geography
+    /// column). Any property not listed here is rejected by the runner per
+    /// the <c>AnalyticsColumnWhitelist</c> rule.
+    /// </summary>
+    public sealed class TestQueryDefinition : QueryDefinition<TestItem>
+    {
+        public override string Name => "Test.Items";
+
+        protected override void Configure(QueryDefinitionBuilder<TestItem> builder)
+        {
+            builder
+                .Column(x => x.Name, c => c.Label("Name"))
+                .Column(x => x.Country, c => c.Label("Country"))
+                .Column(x => x.Latitude, c => c.Label("Latitude"))
+                .Column(x => x.Longitude, c => c.Label("Longitude"))
+                .Column(x => x.LatitudeNullable, c => c.Label("LatitudeNullable"))
+                .Column(x => x.LongitudeNullable, c => c.Label("LongitudeNullable"))
+                .Column(x => x.LatitudeDecimal, c => c.Label("LatitudeDecimal"))
+                .Column(x => x.LongitudeDecimal, c => c.Label("LongitudeDecimal"))
+                .Column(x => x.Position, c => c.Label("Position"));
+        }
     }
 }

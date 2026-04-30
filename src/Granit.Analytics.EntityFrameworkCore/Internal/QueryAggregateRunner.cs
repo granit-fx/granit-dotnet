@@ -71,12 +71,12 @@ internal sealed class QueryAggregateRunner<TEntity>(
                 nameof(field));
         }
 
-        PropertyInfo prop = typeof(TEntity).GetProperty(
-            field,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase)
-            ?? throw new ArgumentException(
-                $"Field '{field}' not found on entity '{typeof(TEntity).Name}' for query '{Name}'.",
-                nameof(field));
+        // Whitelist enforcement — only columns declared on the QueryDefinition
+        // are aggregatable (same set the admin grid exposes). Without this
+        // gate, dashboard authors could aggregate undeclared fields such as
+        // audit notes, internal scores, or password timestamps.
+        (PropertyInfo prop, _) = AnalyticsColumnWhitelist.ResolveProperty(
+            _definition, Name, field, nameof(field));
 
         Type underlying = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
 

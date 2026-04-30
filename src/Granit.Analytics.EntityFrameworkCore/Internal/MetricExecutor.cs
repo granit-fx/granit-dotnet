@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq.Expressions;
 using Granit.Analytics.Diagnostics;
 using Granit.Analytics.Metrics;
@@ -170,9 +169,32 @@ internal sealed class MetricExecutor<TEntity, TValue>(
 
     private static async Task<TValue?> ExecuteCountAsync(IQueryable<TEntity> filtered, CancellationToken ct)
     {
-        int count = await filtered.CountAsync(ct).ConfigureAwait(false);
-        // TValue is a value type that can hold an int (caller declared MetricDefinition<TEntity, int|long|decimal|double>).
-        return (TValue)Convert.ChangeType(count, typeof(TValue), CultureInfo.InvariantCulture);
+        // Use LongCountAsync — CountAsync returns int and overflows past
+        // int.MaxValue (≈ 2.1B rows). On event-stream-scale tables (audit log,
+        // telemetry, webhook delivery attempts) this is reachable by an
+        // authenticated caller widening the filter, which would surface as a
+        // 500. Long handles it; the per-TValue dispatch then uses a `checked`
+        // cast so a metric typed MetricDefinition<TEntity, int> fails fast on
+        // overflow instead of silently truncating.
+        long count = await filtered.LongCountAsync(ct).ConfigureAwait(false);
+
+        if (typeof(TValue) == typeof(int))
+        {
+            return (TValue?)(object?)checked((int)count);
+        }
+        if (typeof(TValue) == typeof(long))
+        {
+            return (TValue?)(object?)count;
+        }
+        if (typeof(TValue) == typeof(decimal))
+        {
+            return (TValue?)(object?)(decimal)count;
+        }
+        if (typeof(TValue) == typeof(double))
+        {
+            return (TValue?)(object?)(double)count;
+        }
+        throw NotSupported(nameof(AggregateFunction.Count));
     }
 
     private static async Task<TValue?> ExecuteSumAsync(

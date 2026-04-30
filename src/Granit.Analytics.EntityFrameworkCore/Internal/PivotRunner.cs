@@ -51,8 +51,12 @@ internal sealed class PivotRunner<TEntity>(
                 nameof(rowFields));
         }
 
-        PropertyInfo[] rowProps = ResolveProperties(rowFields, nameof(rowFields));
-        PropertyInfo[] colProps = ResolveProperties(columnFields, nameof(columnFields));
+        // Whitelist enforcement — every row, column, and value field must be
+        // declared on the QueryDefinition (the same set the admin grid honours).
+        // Without this gate, a dashboard author could pivot any aggregate by
+        // an undeclared categorical column or aggregate undeclared numerics.
+        PropertyInfo[] rowProps = ResolveWhitelistedProperties(rowFields, nameof(rowFields));
+        PropertyInfo[] colProps = ResolveWhitelistedProperties(columnFields, nameof(columnFields));
 
         PropertyInfo? valueProp = null;
         Type? valueUnderlying = null;
@@ -65,7 +69,8 @@ internal sealed class PivotRunner<TEntity>(
                     nameof(valueField));
             }
 
-            valueProp = ResolveProperty(valueField, nameof(valueField));
+            (valueProp, _) = AnalyticsColumnWhitelist.ResolveProperty(
+                _definition, Name, valueField, nameof(valueField));
             valueUnderlying = Nullable.GetUnderlyingType(valueProp.PropertyType) ?? valueProp.PropertyType;
 
             if (!IsSupportedNumericType(valueUnderlying))
@@ -137,25 +142,15 @@ internal sealed class PivotRunner<TEntity>(
         return match?.CurrencyCode;
     }
 
-    private static PropertyInfo[] ResolveProperties(IReadOnlyList<string> fieldNames, string paramName)
+    private PropertyInfo[] ResolveWhitelistedProperties(IReadOnlyList<string> fieldNames, string paramName)
     {
         var resolved = new PropertyInfo[fieldNames.Count];
         for (int i = 0; i < fieldNames.Count; i++)
         {
-            resolved[i] = ResolveProperty(fieldNames[i], paramName);
+            (resolved[i], _) = AnalyticsColumnWhitelist.ResolveProperty(
+                _definition, Name, fieldNames[i], paramName);
         }
         return resolved;
-    }
-
-    private static PropertyInfo ResolveProperty(string fieldName, string paramName)
-    {
-        PropertyInfo? prop = typeof(TEntity).GetProperty(
-            fieldName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-        return prop ?? throw new ArgumentException(
-            $"Field '{fieldName}' not found on entity '{typeof(TEntity).Name}'.",
-            paramName);
     }
 
     private static bool IsSupportedNumericType(Type underlying) =>

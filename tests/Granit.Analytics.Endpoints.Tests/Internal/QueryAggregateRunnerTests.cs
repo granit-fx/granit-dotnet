@@ -204,7 +204,7 @@ public sealed class QueryAggregateRunnerTests : IAsyncLifetime
                 AggregateFunction.Sum, field: "NotAColumn", dashboardFilters: null, TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("NotAColumn");
-        ex.Message.ShouldContain(nameof(TestItem));
+        ex.Message.ShouldContain("Test.Items");
     }
 
     [Fact]

@@ -51,6 +51,11 @@ internal sealed class MetricEndpointService(
             ? _periodResolver.Resolve(request.Period)
             : null;
 
+        if (mainPeriod is { } main)
+        {
+            EnforceMaxPeriodLength(main);
+        }
+
         ResolvedPeriod? comparePeriod = null;
         if (request.CompareTo is not null)
         {
@@ -62,6 +67,7 @@ internal sealed class MetricEndpointService(
             }
 
             comparePeriod = _periodResolver.ResolveComparison(request.CompareTo, mainPeriod!.Value);
+            EnforceMaxPeriodLength(comparePeriod.Value);
         }
 
         string tenantId = _currentTenant is { IsAvailable: true, Id: { } id } ? id.ToString() : "global";
@@ -131,5 +137,22 @@ internal sealed class MetricEndpointService(
         _ = Stopwatch.GetElapsedTime(startTimestamp); // observed via metrics in a future story
 
         return value;
+    }
+
+    /// <summary>
+    /// Caps the resolved <c>[from, to)</c> window at <see cref="AnalyticsEndpointsOptions.MaxPeriodLength"/>.
+    /// Without this guard, an authenticated caller could submit
+    /// <c>{ from: 0001-01-01, to: 9999-12-31 }</c> and force a full-table aggregate scan
+    /// per request — a cheap-input/expensive-DB amplification.
+    /// </summary>
+    private void EnforceMaxPeriodLength(ResolvedPeriod period)
+    {
+        TimeSpan length = period.To - period.From;
+        if (length > _options.MaxPeriodLength)
+        {
+            throw new BusinessRuleViolationException(
+                "Granit.Analytics:PeriodSpecOutOfRange",
+                $"Period length {length} exceeds the configured maximum {_options.MaxPeriodLength}.");
+        }
     }
 }

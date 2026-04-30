@@ -87,8 +87,15 @@ internal sealed class ChartRunner<TEntity>(
         string groupBy, AggregateFunction aggregation, string field,
         IReadOnlyDictionary<string, string>? dashboardFilters, CancellationToken ct)
     {
-        PropertyInfo groupProp = ResolveProperty(groupBy, nameof(groupBy));
-        PropertyInfo valueProp = ResolveProperty(field, nameof(field));
+        // Whitelist enforcement — both the group-by axis and the aggregated
+        // value field must be declared on the QueryDefinition. Without this
+        // gate, dashboard authors could pivot any aggregate by an undeclared
+        // categorical column (leaking distribution statistics) or aggregate
+        // an undeclared numeric (binary-search inference attack with Min/Max).
+        (PropertyInfo groupProp, _) = AnalyticsColumnWhitelist.ResolveProperty(
+            _definition, Name, groupBy, nameof(groupBy));
+        (PropertyInfo valueProp, _) = AnalyticsColumnWhitelist.ResolveProperty(
+            _definition, Name, field, nameof(field));
 
         Type valueUnderlying = Nullable.GetUnderlyingType(valueProp.PropertyType) ?? valueProp.PropertyType;
 
@@ -127,17 +134,6 @@ internal sealed class ChartRunner<TEntity>(
         ColumnDescriptor? match = columns.FirstOrDefault(c =>
             string.Equals(c.PropertyName, prop.Name, StringComparison.Ordinal));
         return match?.CurrencyCode;
-    }
-
-    private static PropertyInfo ResolveProperty(string fieldName, string paramName)
-    {
-        PropertyInfo? prop = typeof(TEntity).GetProperty(
-            fieldName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-        return prop ?? throw new ArgumentException(
-            $"Field '{fieldName}' not found on entity '{typeof(TEntity).Name}'.",
-            paramName);
     }
 
     private static string LabelOf(object? key) =>
