@@ -10,6 +10,8 @@
     "WorkspacesFramework:Workspace.Integrations": "Integrations",
     "WorkspacesFramework:Workspace.Monitoring": "Monitoring",
     "WorkspacesFramework:Workspace.Privacy": "Privacy",
-    "WorkspacesFramework:Section.Framework": "Sections"
+    "WorkspacesFramework:Section.Framework": "Sections",
+    "WorkspacesFramework:PermissionGroup:Workspace.Granit": "Granit Çalışma Alanları",
+    "WorkspacesFramework:Permission:Workspace.Granit.Framework.Read": "Çerçeve çalışma alanını görüntüle"
   }
 }

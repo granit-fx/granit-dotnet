@@ -10,6 +10,8 @@
     "WorkspacesFramework:Workspace.Integrations": "Integrations",
     "WorkspacesFramework:Workspace.Monitoring": "Monitoring",
     "WorkspacesFramework:Workspace.Privacy": "Privacy",
-    "WorkspacesFramework:Section.Framework": "Sections"
+    "WorkspacesFramework:Section.Framework": "Sections",
+    "WorkspacesFramework:PermissionGroup:Workspace.Granit": "Granit-werkruimtes",
+    "WorkspacesFramework:Permission:Workspace.Granit.Framework.Read": "Frameworkwerkruimte bekijken"
   }
 }

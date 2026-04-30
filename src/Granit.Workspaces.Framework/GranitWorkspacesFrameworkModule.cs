@@ -1,3 +1,4 @@
+using Granit.Authorization;
 using Granit.Modularity;
 using Granit.Workspaces.Extensions;
 using Granit.Workspaces.Framework.Internal;
@@ -12,7 +13,9 @@ namespace Granit.Workspaces.Framework;
 /// / Monitoring / Privacy). Other modules graft their admin entries onto a
 /// shell via <see cref="IWorkspaceContributor"/>.
 /// </summary>
-[DependsOn(typeof(GranitWorkspacesAbstractionsModule))]
+[DependsOn(
+    typeof(GranitAuthorizationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
 public sealed class GranitWorkspacesFrameworkModule : GranitModule
 {
     /// <inheritdoc />

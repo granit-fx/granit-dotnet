@@ -10,6 +10,8 @@
     "WorkspacesFramework:Workspace.Integrations": "Integrations",
     "WorkspacesFramework:Workspace.Monitoring": "Monitoring",
     "WorkspacesFramework:Workspace.Privacy": "Privacy",
-    "WorkspacesFramework:Section.Framework": "Sections"
+    "WorkspacesFramework:Section.Framework": "Sections",
+    "WorkspacesFramework:PermissionGroup:Workspace.Granit": "Granit 工作区",
+    "WorkspacesFramework:Permission:Workspace.Granit.Framework.Read": "查看框架工作区"
   }
 }

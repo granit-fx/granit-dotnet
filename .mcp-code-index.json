@@ -2919,6 +2919,7 @@
     {
       "name": "Granit.Workspaces.Framework",
       "deps": [
+        "Granit.Authorization",
         "Granit.Localization",
         "Granit.Workspaces.Abstractions"
       ],
@@ -19730,18 +19731,18 @@
       ]
     },
     {
-      "name": "EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions",
-      "fqn": "Granit.Entities.Views.EntityFrameworkCore.Extensions.EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions",
+      "name": "EntitiesViewsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Entities.Views.EntityFrameworkCore.Extensions.EntitiesViewsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Entities.Views.EntityFrameworkCore",
-      "file": "src/Granit.Entities.Views.EntityFrameworkCore/Extensions/EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "file": "src/Granit.Entities.Views.EntityFrameworkCore/Extensions/EntitiesViewsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
       "members": [
         {
           "name": "AddGranitEntitiesViewsEntityFrameworkCore",
           "kind": "method",
-          "signature": "AddGranitEntitiesViewsEntityFrameworkCore(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
+          "signature": "AddGranitEntitiesViewsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
         }
       ]
     },
@@ -19776,15 +19777,8 @@
       "kind": "class",
       "project": "Granit.Entities.Views.EntityFrameworkCore",
       "file": "src/Granit.Entities.Views.EntityFrameworkCore/GranitEntitiesViewsEntityFrameworkCoreModule.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 21,
+      "members": []
     },
     {
       "name": "EntityViewCreateRequest",
@@ -59097,7 +59091,7 @@
       "kind": "class",
       "project": "Granit.Workspaces.Framework",
       "file": "src/Granit.Workspaces.Framework/GranitWorkspacesFrameworkModule.cs",
-      "line": 16,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
