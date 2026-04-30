@@ -109,6 +109,8 @@
     <Project Path="src/Granit.Dashboards.Push/Granit.Dashboards.Push.csproj" />
     <Project Path="src/Granit.Dashboards.Push.WebSockets/Granit.Dashboards.Push.WebSockets.csproj" />
     <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
+    <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
+    <Project Path="src/Granit.Entities/Granit.Entities.csproj" />
     <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
     <Project Path="src/Granit.DataExchange.BlobStorage/Granit.DataExchange.BlobStorage.csproj" />
@@ -454,6 +456,8 @@
     <Project Path="tests/Granit.Dashboards.Push.WebSockets.Tests/Granit.Dashboards.Push.WebSockets.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests.Integration/Granit.Dashboards.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Dashboards.Tests/Granit.Dashboards.Tests.csproj" />
+    <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Entities.Tests/Granit.Entities.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.AI.Tests/Granit.DataExchange.AI.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Csv.Tests/Granit.DataExchange.Csv.Tests.csproj" />

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Entities.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Entities: declarative EntityDefinition&lt;T&gt; base class, fluent builder, form / detail / side-panel descriptors, the closed-enum visibility DSL (FieldOp), and the typed reference helpers used by base modules to declare an entity's UI surface (form layout, detail layout, dashboards, workflows, queries, exports, metrics) without taking a runtime dependency on Granit.Entities. Pull this package from any base module that declares an EntityDefinition; pull Granit.Entities only from hosts that resolve and serve the manifest.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Entities" />
+    <InternalsVisibleTo Include="Granit.Entities.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Entities.Tests" />
+    <InternalsVisibleTo Include="Granit.Entities.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Entities.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Analytics.Abstractions\Granit.Analytics.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Workflow.Abstractions\Granit.Workflow.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

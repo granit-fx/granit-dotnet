@@ -860,6 +860,25 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities",
+      "deps": [
+        "Granit.Entities.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Entities.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.Analytics.Abstractions",
+        "Granit.Dashboards.Abstractions",
+        "Granit.DataExchange.Abstractions",
+        "Granit.QueryEngine.Abstractions",
+        "Granit.Workflow.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Events",
       "deps": [
         "Granit"
@@ -18666,6 +18685,319 @@
       "project": "Granit",
       "file": "src/Granit/Endpoints/ModuleConfigEndpointExtensions.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "DetailBuilder",
+      "fqn": "Granit.Entities.Details.DetailBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/DetailBuilder.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DetailDescriptor",
+      "fqn": "Granit.Entities.Details.DetailDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/DetailDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DetailSectionBuilder",
+      "fqn": "Granit.Entities.Details.DetailSectionBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/DetailSectionBuilder.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "DetailSectionDescriptor",
+      "fqn": "Granit.Entities.Details.DetailSectionDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/DetailSectionDescriptor.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "SidePanelBuilder",
+      "fqn": "Granit.Entities.Details.SidePanelBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/SidePanelBuilder.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Audit",
+          "kind": "method",
+          "signature": "Audit(string? requiresPermission = null)",
+          "returnType": "SidePanelBuilder"
+        },
+        {
+          "name": "Timeline",
+          "kind": "method",
+          "signature": "Timeline(string? requiresPermission = null)",
+          "returnType": "SidePanelBuilder"
+        },
+        {
+          "name": "Comments",
+          "kind": "method",
+          "signature": "Comments(string? requiresPermission = null)",
+          "returnType": "SidePanelBuilder"
+        },
+        {
+          "name": "Documents",
+          "kind": "method",
+          "signature": "Documents(string? requiresPermission = null)",
+          "returnType": "SidePanelBuilder"
+        },
+        {
+          "name": "Activities",
+          "kind": "method",
+          "signature": "Activities(string? requiresPermission = null)",
+          "returnType": "SidePanelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "SidePanelDescriptor",
+      "fqn": "Granit.Entities.Details.SidePanelDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/SidePanelDescriptor.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "SidePanelKind",
+      "fqn": "Granit.Entities.Details.SidePanelKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Details/SidePanelKind.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "EntityDefinition",
+      "fqn": "Granit.Entities.EntityDefinition",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/EntityDefinition.cs",
+      "line": 45,
+      "members": [
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(TEntity)",
+          "returnType": "string Name { get; } public Type EntityType =>"
+        }
+      ]
+    },
+    {
+      "name": "EntityDefinitionBuilder",
+      "fqn": "Granit.Entities.EntityDefinitionBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/EntityDefinitionBuilder.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "DisplayKey",
+          "kind": "method",
+          "signature": "DisplayKey(string displayKey)",
+          "returnType": "EntityDefinitionBuilder<TEntity>"
+        }
+      ]
+    },
+    {
+      "name": "EntityDefinitionDescriptor",
+      "fqn": "Granit.Entities.EntityDefinitionDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/EntityDefinitionDescriptor.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "EntitiesServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Extensions.EntitiesServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitEntities",
+          "kind": "method",
+          "signature": "AddGranitEntities(this IServiceCollection services, Action<EntitiesOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "EntityDefinitionServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Extensions.EntityDefinitionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Extensions/EntityDefinitionServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "FieldBuilder",
+      "fqn": "Granit.Entities.Forms.FieldBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/FieldBuilder.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "FieldDescriptor",
+      "fqn": "Granit.Entities.Forms.FieldDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/FieldDescriptor.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "FormBuilder",
+      "fqn": "Granit.Entities.Forms.FormBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/FormBuilder.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "FormDescriptor",
+      "fqn": "Granit.Entities.Forms.FormDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/FormDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "SectionBuilder",
+      "fqn": "Granit.Entities.Forms.SectionBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/SectionBuilder.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "SectionDescriptor",
+      "fqn": "Granit.Entities.Forms.SectionDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/SectionDescriptor.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitEntitiesAbstractionsModule",
+      "fqn": "Granit.Entities.GranitEntitiesAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/GranitEntitiesAbstractionsModule.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "GranitEntitiesModule",
+      "fqn": "Granit.Entities.GranitEntitiesModule",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/GranitEntitiesModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IEntityDefinitionDescriptor",
+      "fqn": "Granit.Entities.IEntityDefinitionDescriptor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/IEntityDefinitionDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "IEntityDefinitionRegistry",
+      "fqn": "Granit.Entities.Internal.IEntityDefinitionRegistry",
+      "kind": "interface",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Internal/IEntityDefinitionRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetByName",
+          "kind": "method",
+          "signature": "GetByName(string name)",
+          "returnType": "IReadOnlyList<IEntityDefinitionDescriptor> All { get; } IEntityDefinitionDescriptor?"
+        },
+        {
+          "name": "GetByEntityType",
+          "kind": "method",
+          "signature": "GetByEntityType(Type entityType)",
+          "returnType": "IEntityDefinitionDescriptor?"
+        }
+      ]
+    },
+    {
+      "name": "EntitiesOptions",
+      "fqn": "Granit.Entities.Options.EntitiesOptions",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Options/EntitiesOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "IntegrityCheck",
+          "kind": "property",
+          "signature": "IntegrityCheckMode IntegrityCheck",
+          "returnType": "IntegrityCheckMode"
+        }
+      ]
+    },
+    {
+      "name": "IntegrityCheckMode",
+      "fqn": "Granit.Entities.Options.IntegrityCheckMode",
+      "kind": "enum",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Options/IntegrityCheckMode.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "FieldOp",
+      "fqn": "Granit.Entities.Visibility.FieldOp",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Visibility/FieldOp.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "VisibilityCondition",
+      "fqn": "Granit.Entities.Visibility.VisibilityCondition",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Visibility/VisibilityCondition.cs",
+      "line": 32,
       "members": []
     },
     {

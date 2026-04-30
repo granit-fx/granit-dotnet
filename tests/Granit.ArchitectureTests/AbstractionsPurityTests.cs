@@ -19,6 +19,7 @@ public sealed partial class AbstractionsPurityTests
     [Theory]
     [InlineData("Granit.Workflow.Abstractions")]
     [InlineData("Granit.Dashboards.Abstractions")]
+    [InlineData("Granit.Entities.Abstractions")]
     public void Abstractions_csproj_should_only_reference_other_abstractions_or_Granit_root(string packageName)
     {
         string csproj = Path.Join(RepoRoot, "src", packageName, $"{packageName}.csproj");
@@ -51,6 +52,7 @@ public sealed partial class AbstractionsPurityTests
     [Theory]
     [InlineData("Granit.Workflow.Abstractions")]
     [InlineData("Granit.Dashboards.Abstractions")]
+    [InlineData("Granit.Entities.Abstractions")]
     public void Abstractions_csproj_should_not_reference_aspnetcore_efcore_or_hosting(string packageName)
     {
         string csproj = Path.Join(RepoRoot, "src", packageName, $"{packageName}.csproj");
@@ -99,7 +101,9 @@ public sealed partial class AbstractionsPurityTests
         while (dir is not null)
         {
             string gitPath = Path.Join(dir, ".git");
-            if (Directory.Exists(gitPath))
+            // .git is a directory in the main checkout, but a file in a git worktree
+            // (the file points to the gitdir of the parent). Accept either to support both.
+            if (Directory.Exists(gitPath) || File.Exists(gitPath))
             {
                 return dir;
             }
@@ -107,6 +111,6 @@ public sealed partial class AbstractionsPurityTests
             dir = Path.GetDirectoryName(dir);
         }
 
-        throw new InvalidOperationException("Could not locate repository root (no .git folder found).");
+        throw new InvalidOperationException("Could not locate repository root (no .git found).");
     }
 }
