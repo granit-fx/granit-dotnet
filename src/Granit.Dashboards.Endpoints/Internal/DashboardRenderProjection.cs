@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Granit.Analytics;
 using Granit.Dashboards;
 using Granit.Dashboards.Domain;
@@ -12,8 +13,17 @@ namespace Granit.Dashboards.Endpoints.Internal;
 /// other projection helpers so the endpoint handler stays reflection-free and
 /// the wire shape can be unit-tested without an HTTP harness.
 /// </summary>
-internal static class DashboardRenderProjection
+internal static partial class DashboardRenderProjection
 {
+    /// <summary>
+    /// Semver shape accepted by drift detection: <c>MAJOR.MINOR.PATCH</c> with an
+    /// optional pre-release (<c>-alpha.1</c>) or build-metadata (<c>+build.7</c>)
+    /// suffix. Strings outside this shape collapse to
+    /// <see cref="DashboardDriftStatus.Unknown"/> (cautious default).
+    /// </summary>
+    [GeneratedRegex(@"^(\d+)\.(\d+)\.(\d+)([-+].*)?$", RegexOptions.CultureInvariant, matchTimeoutMilliseconds: 200)]
+    private static partial Regex SemverRegex();
+
     /// <summary>
     /// Composes the wire response from the renderer's pipeline result, the
     /// persisted <see cref="Dashboard"/> aggregate (source of structural metadata
@@ -99,14 +109,19 @@ internal static class DashboardRenderProjection
     /// <summary>
     /// ADR-038 §3 drift detection. Compares the persisted dashboard's
     /// <see cref="Dashboard.SourceDefinitionVersion"/> against the currently-registered
-    /// descriptor's <see cref="IDashboardDefinitionDescriptor.Version"/>.
+    /// descriptor's <see cref="IDashboardDefinitionDescriptor.Version"/> using a
+    /// semver-aware ordering (MAJOR.MINOR.PATCH numeric tuple, suffix string-equal).
     /// </summary>
     /// <remarks>
-    /// Pure string equality on the Version field (semver values are not parsed
-    /// — the framework treats <c>"1.0.0"</c> and <c>"1.0.0.0"</c> as different,
-    /// which is the cautious default; module authors should keep the version
-    /// format stable across releases). A semver-aware variant can land in a
-    /// follow-up if the cautious string compare proves too noisy in practice.
+    /// Mirrors the frontend's <c>compareVersions</c> helper in
+    /// <c>granit-front/@granit/dashboards</c>: numeric tuple drives
+    /// <see cref="DashboardDriftStatus.Behind"/> / <see cref="DashboardDriftStatus.Ahead"/>;
+    /// matching tuples with identical suffixes report
+    /// <see cref="DashboardDriftStatus.Aligned"/>; matching tuples with mismatched
+    /// suffixes (or strings outside the semver shape) report
+    /// <see cref="DashboardDriftStatus.Unknown"/>. Keeping both ends in lock-step
+    /// avoids a UI banner that disagrees with the wire response on what "drift"
+    /// means.
     /// </remarks>
     private static (DashboardDriftStatus Status, string? RegisteredVersion) ResolveDriftStatus(
         Dashboard dashboard,
@@ -123,14 +138,66 @@ internal static class DashboardRenderProjection
             return (DashboardDriftStatus.SourceUnregistered, null);
         }
 
-        DashboardDriftStatus status = string.Equals(
-            dashboard.SourceDefinitionVersion,
-            descriptor.Version,
-            StringComparison.Ordinal)
-                ? DashboardDriftStatus.InSync
-                : DashboardDriftStatus.Drift;
-
+        DashboardDriftStatus status = CompareSemver(dashboard.SourceDefinitionVersion, descriptor.Version);
         return (status, descriptor.Version);
+    }
+
+    /// <summary>
+    /// Pure semver compare; returns one of <see cref="DashboardDriftStatus.Aligned"/>
+    /// / <see cref="DashboardDriftStatus.Behind"/> / <see cref="DashboardDriftStatus.Ahead"/>
+    /// / <see cref="DashboardDriftStatus.Unknown"/>. Marked <see langword="internal"/>
+    /// so the projection unit tests can pin every branch of the matrix without
+    /// reaching for a full <c>Dashboard</c> aggregate.
+    /// </summary>
+    internal static DashboardDriftStatus CompareSemver(string? persisted, string? registered)
+    {
+        if (persisted is not { Length: > 0 } || registered is not { Length: > 0 })
+        {
+            return DashboardDriftStatus.Unknown;
+        }
+
+        Match persistedMatch = SemverRegex().Match(persisted);
+        Match registeredMatch = SemverRegex().Match(registered);
+        if (!persistedMatch.Success || !registeredMatch.Success)
+        {
+            return DashboardDriftStatus.Unknown;
+        }
+
+        int persistedMajor = int.Parse(persistedMatch.Groups[1].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        int persistedMinor = int.Parse(persistedMatch.Groups[2].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        int persistedPatch = int.Parse(persistedMatch.Groups[3].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        string persistedSuffix = persistedMatch.Groups[4].Value;
+
+        int registeredMajor = int.Parse(registeredMatch.Groups[1].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        int registeredMinor = int.Parse(registeredMatch.Groups[2].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        int registeredPatch = int.Parse(registeredMatch.Groups[3].ValueSpan, System.Globalization.CultureInfo.InvariantCulture);
+        string registeredSuffix = registeredMatch.Groups[4].Value;
+
+        int majorCmp = persistedMajor.CompareTo(registeredMajor);
+        if (majorCmp != 0)
+        {
+            return majorCmp < 0 ? DashboardDriftStatus.Behind : DashboardDriftStatus.Ahead;
+        }
+
+        int minorCmp = persistedMinor.CompareTo(registeredMinor);
+        if (minorCmp != 0)
+        {
+            return minorCmp < 0 ? DashboardDriftStatus.Behind : DashboardDriftStatus.Ahead;
+        }
+
+        int patchCmp = persistedPatch.CompareTo(registeredPatch);
+        if (patchCmp != 0)
+        {
+            return patchCmp < 0 ? DashboardDriftStatus.Behind : DashboardDriftStatus.Ahead;
+        }
+
+        // Numeric tuple matches — suffix must agree byte-for-byte to claim alignment.
+        // Pre-release ordering per semver §11 is intentionally not implemented: cautious
+        // default of Unknown lets the frontend show both raw strings instead of guessing
+        // whether "1.0.0-rc.1" precedes or follows "1.0.0-beta.2".
+        return string.Equals(persistedSuffix, registeredSuffix, StringComparison.Ordinal)
+            ? DashboardDriftStatus.Aligned
+            : DashboardDriftStatus.Unknown;
     }
 
     public static ResolvedPeriod? TryBuildResolvedPeriod(DashboardRenderRequest request)

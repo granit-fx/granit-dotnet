@@ -316,7 +316,7 @@ public sealed class DashboardRenderProjectionTests
     }
 
     [Fact]
-    public void ToResponse_DriftStatus_InSync_WhenVersionsMatch()
+    public void ToResponse_DriftStatus_Aligned_WhenVersionsMatch()
     {
         Dashboard dashboard = NewDashboard();
 
@@ -337,13 +337,13 @@ public sealed class DashboardRenderProjectionTests
             registry,
             periodToken: null);
 
-        response.DriftStatus.ShouldBe(DashboardDriftStatus.InSync);
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.Aligned);
         response.SourceDefinitionVersion.ShouldBe("1.0.0");
         response.RegisteredVersion.ShouldBe("1.0.0");
     }
 
     [Fact]
-    public void ToResponse_DriftStatus_Drift_WhenVersionsDiffer()
+    public void ToResponse_DriftStatus_Behind_WhenRegisteredVersionIsNewer()
     {
         Dashboard dashboard = NewDashboard();                        // imported at v1.0.0
 
@@ -364,9 +364,55 @@ public sealed class DashboardRenderProjectionTests
             registry,
             periodToken: null);
 
-        response.DriftStatus.ShouldBe(DashboardDriftStatus.Drift);
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.Behind);
         response.SourceDefinitionVersion.ShouldBe("1.0.0");
         response.RegisteredVersion.ShouldBe("1.1.0");
+    }
+
+    [Fact]
+    public void ToResponse_DriftStatus_Ahead_WhenRegisteredVersionIsOlder()
+    {
+        Dashboard dashboard = NewDashboard();                        // imported at v1.0.0
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id, RenderedAt: RenderedAt, Period: null, Widgets: []);
+
+        IDashboardDefinitionDescriptor descriptor = Substitute.For<IDashboardDefinitionDescriptor>();
+        descriptor.Name.Returns(SourceDefinitionName);
+        descriptor.Version.Returns("0.9.0");                         // host loaded an older module
+        descriptor.Widgets.Returns(Array.Empty<WidgetDefinition>());
+
+        IDashboardDefinitionRegistry registry = Substitute.For<IDashboardDefinitionRegistry>();
+        registry.Find(SourceDefinitionName).Returns(descriptor);
+
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard,
+            new ResolvedRenderTarget(dashboard.Widgets, ActiveViewName: null),
+            registry,
+            periodToken: null);
+
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.Ahead);
+        response.SourceDefinitionVersion.ShouldBe("1.0.0");
+        response.RegisteredVersion.ShouldBe("0.9.0");
+    }
+
+    [Theory]
+    [InlineData("1.0.0", "1.0.0", DashboardDriftStatus.Aligned)]
+    [InlineData("1.0.0", "1.0.1", DashboardDriftStatus.Behind)]                  // patch bump
+    [InlineData("1.0.0", "1.1.0", DashboardDriftStatus.Behind)]                  // minor bump
+    [InlineData("1.0.0", "2.0.0", DashboardDriftStatus.Behind)]                  // major bump
+    [InlineData("1.10.0", "1.9.0", DashboardDriftStatus.Ahead)]                  // numeric (not lexicographic) compare
+    [InlineData("2.0.0", "1.99.99", DashboardDriftStatus.Ahead)]                 // major dominates
+    [InlineData("1.0.0-alpha", "1.0.0-alpha", DashboardDriftStatus.Aligned)]     // identical pre-release suffix
+    [InlineData("1.0.0-alpha", "1.0.0-beta", DashboardDriftStatus.Unknown)]      // mismatched pre-release suffix
+    [InlineData("1.0.0", "1.0.0-rc.1", DashboardDriftStatus.Unknown)]            // suffix vs no suffix on equal tuple
+    [InlineData("1.0.0+build.7", "1.0.0+build.8", DashboardDriftStatus.Unknown)] // build metadata differs
+    [InlineData("not-a-version", "1.0.0", DashboardDriftStatus.Unknown)]         // unparseable persisted
+    [InlineData("1.0.0", "v1.0.0", DashboardDriftStatus.Unknown)]                // 'v' prefix not part of semver shape
+    [InlineData("", "1.0.0", DashboardDriftStatus.Unknown)]                      // empty persisted
+    public void CompareSemver_PinsTheMatrix(string persisted, string registered, DashboardDriftStatus expected)
+    {
+        DashboardRenderProjection.CompareSemver(persisted, registered).ShouldBe(expected);
     }
 
     private static IDashboardDefinitionRegistry EmptyRegistry()

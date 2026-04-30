@@ -13858,7 +13858,7 @@
       "kind": "enum",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardDriftStatus.cs",
-      "line": 10,
+      "line": 19,
       "members": []
     },
     {
@@ -13885,7 +13885,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 61,
+      "line": 65,
       "members": []
     },
     {
@@ -13903,7 +13903,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 43,
+      "line": 47,
       "members": []
     },
     {
@@ -13912,7 +13912,7 @@
       "kind": "record",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
-      "line": 88,
+      "line": 92,
       "members": []
     },
     {

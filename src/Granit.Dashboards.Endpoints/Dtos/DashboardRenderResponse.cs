@@ -24,11 +24,15 @@ namespace Granit.Dashboards.Endpoints.Dtos;
 /// <c>(dashboardId, ActiveViewName)</c> tuple so view switches invalidate cleanly.
 /// </param>
 /// <param name="DriftStatus">
-/// ADR-038 §3 drift detection. Reports whether the persisted dashboard's
-/// <c>SourceDefinitionVersion</c> still matches the currently-registered
-/// descriptor's <see cref="DashboardDefinition.Version"/>. Frontend uses this to
-/// surface a "Dashboard outdated, click to resync" banner without an extra
-/// round-trip.
+/// ADR-038 §3 drift detection. Reports the semver-aware ordering between the
+/// persisted dashboard's <c>SourceDefinitionVersion</c> and the currently-registered
+/// descriptor's <see cref="DashboardDefinition.Version"/>:
+/// <see cref="DashboardDriftStatus.Aligned"/> (equal),
+/// <see cref="DashboardDriftStatus.Behind"/> (module shipped a newer version since import),
+/// <see cref="DashboardDriftStatus.Ahead"/> (host loaded an older module than at import),
+/// <see cref="DashboardDriftStatus.Unknown"/> (unparseable / mismatched pre-release suffixes).
+/// Frontend uses this to surface a "Dashboard outdated, click to resync" banner without
+/// an extra round-trip.
 /// </param>
 /// <param name="SourceDefinitionVersion">
 /// Persisted version captured at import time. <see langword="null"/> when the
@@ -36,8 +40,8 @@ namespace Granit.Dashboards.Endpoints.Dtos;
 /// </param>
 /// <param name="RegisteredVersion">
 /// Currently-registered descriptor version. <see langword="null"/> when the source
-/// definition is no longer registered (<c>DriftStatus</c> = <c>SourceUnregistered</c>)
-/// or the dashboard has no source (<c>DriftStatus</c> = <c>NotApplicable</c>).
+/// definition is no longer registered (<c>DriftStatus</c> = <see cref="DashboardDriftStatus.SourceUnregistered"/>)
+/// or the dashboard has no source (<c>DriftStatus</c> = <see cref="DashboardDriftStatus.NotApplicable"/>).
 /// </param>
 /// <param name="Widgets">One flat record per widget, in <c>WidgetInstance.Position</c> order. Reflects the active view only.</param>
 public sealed record DashboardRenderResponse(
