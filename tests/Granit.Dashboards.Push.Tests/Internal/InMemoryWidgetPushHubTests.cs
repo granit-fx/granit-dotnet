@@ -2,7 +2,9 @@ using System.Text.Json;
 using System.Threading.Channels;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Push.Internal;
+using Granit.Dashboards.Push.Options;
 using Granit.Dashboards.Rendering;
+using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
@@ -28,7 +30,7 @@ public sealed class InMemoryWidgetPushHubTests
         var widget = Guid.NewGuid();
 
         var channel = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenant, dashboard, channel.Writer);
+        using IDisposable _ = hub.Subscribe(tenant, dashboard, lastEventId: null, channel.Writer).Handle;
 
         await hub.PublishSnapshotAsync(
             tenant, dashboard, widget,
@@ -60,8 +62,8 @@ public sealed class InMemoryWidgetPushHubTests
 
         var a = Channel.CreateUnbounded<WidgetPushMessage>();
         var b = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenant, dashboard, a.Writer);
-        using IDisposable __ = hub.Subscribe(tenant, dashboard, b.Writer);
+        using IDisposable _ = hub.Subscribe(tenant, dashboard, lastEventId: null, a.Writer).Handle;
+        using IDisposable __ = hub.Subscribe(tenant, dashboard, lastEventId: null, b.Writer).Handle;
 
         await hub.PublishSnapshotAsync(
             tenant, dashboard, Guid.NewGuid(),
@@ -81,7 +83,7 @@ public sealed class InMemoryWidgetPushHubTests
         var dashboardB = Guid.NewGuid();
 
         var subscribedToA = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenant, dashboardA, subscribedToA.Writer);
+        using IDisposable _ = hub.Subscribe(tenant, dashboardA, lastEventId: null, subscribedToA.Writer).Handle;
 
         await hub.PublishSnapshotAsync(
             tenant, dashboardB, Guid.NewGuid(),
@@ -100,7 +102,7 @@ public sealed class InMemoryWidgetPushHubTests
         var tenantB = Guid.NewGuid();
 
         var subscribedToA = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenantA, dashboard, subscribedToA.Writer);
+        using IDisposable _ = hub.Subscribe(tenantA, dashboard, lastEventId: null, subscribedToA.Writer).Handle;
 
         // Same dashboard id, different tenant — must not leak. Multi-tenant isolation
         // is enforced at the stream-key level, ADR-043 §6.
@@ -120,7 +122,7 @@ public sealed class InMemoryWidgetPushHubTests
         var dashboard = Guid.NewGuid();
 
         var channel = Channel.CreateUnbounded<WidgetPushMessage>();
-        IDisposable handle = hub.Subscribe(tenant, dashboard, channel.Writer);
+        IDisposable handle = hub.Subscribe(tenant, dashboard, lastEventId: null, channel.Writer).Handle;
 
         handle.Dispose();
 
@@ -140,7 +142,7 @@ public sealed class InMemoryWidgetPushHubTests
         var dashboard = Guid.NewGuid();
 
         var channel = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenant, dashboard, channel.Writer);
+        using IDisposable _ = hub.Subscribe(tenant, dashboard, lastEventId: null, channel.Writer).Handle;
 
         await hub.PublishUnavailableAsync(
             tenant, dashboard, Guid.NewGuid(),
@@ -163,7 +165,7 @@ public sealed class InMemoryWidgetPushHubTests
         var widget = Guid.NewGuid();
 
         var channel = Channel.CreateUnbounded<WidgetPushMessage>();
-        using IDisposable _ = hub.Subscribe(tenant, dashboard, channel.Writer);
+        using IDisposable _ = hub.Subscribe(tenant, dashboard, lastEventId: null, channel.Writer).Handle;
 
         for (int i = 0; i < 3; i++)
         {
@@ -189,5 +191,12 @@ public sealed class InMemoryWidgetPushHubTests
         return message!;
     }
 
-    private static InMemoryWidgetPushHub NewHub() => new(new WidgetPushSequenceAllocator());
+    private static InMemoryWidgetPushHub NewHub(int ringCapacity = 100)
+    {
+        IOptions<DashboardsPushOptions> options = Microsoft.Extensions.Options.Options.Create(new DashboardsPushOptions
+        {
+            RingBufferCapacity = ringCapacity,
+        });
+        return new InMemoryWidgetPushHub(new WidgetPushSequenceAllocator(), options);
+    }
 }

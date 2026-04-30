@@ -316,11 +316,13 @@ break down as:
      the SSE handler downgrades envelopes to `Unavailable` for
      subscribers that lack the grant (mirrors the render-time gate in
      `DashboardRenderer`). Per-stream permission cache.
-5. **P2.4-C2 — `Last-Event-ID` resume + ring buffer** *(reliability)*
+5. **P2.4-C2 — `Last-Event-ID` resume + ring buffer** *(shipped)*
    - Per-`(tenantId, dashboardId)` ring buffer of recent envelopes
      (default 100) + stream-level monotonic cursor on the SSE `id:`
      field. Reconnects with `Last-Event-ID` get the missed envelopes
-     replayed before going live.
+     replayed before going live; clients behind the ring's oldest entry
+     receive an `event: resume-failed` frame and re-fetch the seed via
+     the pull endpoint.
 6. **P2.4-D — `Granit.Dashboards.Push.WebSockets`** *(opt-in)*
    - WebSocket consumer over the same producer contract.
 7. **P2.4-E — Frontend `usePushedDashboard`** *(`granit-front`)*
