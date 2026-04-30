@@ -232,14 +232,14 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
 
     private static void AssertUniqueRelationNames(IReadOnlyList<RelationDescriptor> relations)
     {
-        HashSet<string> seen = new(StringComparer.Ordinal);
-        foreach (RelationDescriptor relation in relations)
+        IGrouping<string, RelationDescriptor>? duplicate = relations
+            .GroupBy(r => r.Name, StringComparer.Ordinal)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicate is not null)
         {
-            if (!seen.Add(relation.Name))
-            {
-                throw new InvalidOperationException(
-                    $"Duplicate relation name '{relation.Name}' on entity '{typeof(TEntity).FullName}'. Names must be unique per entity.");
-            }
+            throw new InvalidOperationException(
+                $"Duplicate relation name '{duplicate.Key}' on entity '{typeof(TEntity).FullName}'. Names must be unique per entity.");
         }
     }
 

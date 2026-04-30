@@ -216,12 +216,10 @@ internal static class EntitiesEndpoints
             }
         }
 
-        foreach (Granit.Entities.Relations.RelationDescriptor relation in descriptor.Relations)
+        foreach (Granit.Entities.Relations.RelationDescriptor relation in descriptor.Relations
+            .Where(static r => r.RequiresPermission is not null))
         {
-            if (relation.RequiresPermission is { } perm)
-            {
-                referenced.Add(perm);
-            }
+            referenced.Add(relation.RequiresPermission!);
         }
 
         if (referenced.Count == 0)
