@@ -106,6 +106,7 @@
     <Project Path="src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj" />
     <Project Path="src/Granit.Dashboards.Endpoints/Granit.Dashboards.Endpoints.csproj" />
     <Project Path="src/Granit.Dashboards.EntityFrameworkCore/Granit.Dashboards.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Dashboards.Push/Granit.Dashboards.Push.csproj" />
     <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
     <Project Path="src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj" />
     <Project Path="src/Granit.DataExchange.AI/Granit.DataExchange.AI.csproj" />
@@ -448,6 +449,7 @@
     <Project Path="tests/Granit.Dashboards.Abstractions.Tests/Granit.Dashboards.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.Endpoints.Tests/Granit.Dashboards.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests/Granit.Dashboards.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Dashboards.Push.Tests/Granit.Dashboards.Push.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests.Integration/Granit.Dashboards.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Dashboards.Tests/Granit.Dashboards.Tests.csproj" />
     <Project Path="tests/Granit.DataExchange.Abstractions.Tests/Granit.DataExchange.Abstractions.Tests.csproj" />
