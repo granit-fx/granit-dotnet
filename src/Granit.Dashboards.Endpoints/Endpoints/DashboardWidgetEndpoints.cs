@@ -23,7 +23,7 @@ internal static class DashboardWidgetEndpoints
     public static RouteGroupBuilder MapWidgetEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{id:guid}/widgets", AddWidgetAsync)
-            .WithName("AddGranitDashboardWidget")
+            .WithName("AddDashboardWidget")
             .WithSummary("Adds a widget instance to the dashboard.")
             .WithDescription(
                 "Pins a new widget into the dashboard's widget pool. The widget id is "
@@ -38,7 +38,7 @@ internal static class DashboardWidgetEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPut("/{id:guid}/widgets/{widgetId:guid}", UpdateWidgetAsync)
-            .WithName("UpdateGranitDashboardWidget")
+            .WithName("UpdateDashboardWidget")
             .WithSummary("Updates a widget's layout, title and config.")
             .WithDescription(
                 "Full replacement of the widget's editable fields: Position, Width, "
@@ -54,7 +54,7 @@ internal static class DashboardWidgetEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}/widgets/{widgetId:guid}", RemoveWidgetAsync)
-            .WithName("RemoveGranitDashboardWidget")
+            .WithName("RemoveDashboardWidget")
             .WithSummary("Removes a widget instance from the dashboard.")
             .WithDescription(
                 "Removes the named widget from the dashboard's pool. Returns 204 on "

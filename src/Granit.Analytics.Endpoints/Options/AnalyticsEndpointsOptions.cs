@@ -36,12 +36,13 @@ public sealed class AnalyticsEndpointsOptions : IValidatableObject
     public string RoutePrefix { get; set; } = "analytics";
 
     /// <summary>
-    /// OpenAPI tag for metric endpoints. Default: <c>"Analytics - Metrics"</c>
-    /// (per CLAUDE.md sub-tag convention <c>&lt;Module&gt; - &lt;SubGroup&gt;</c>).
+    /// OpenAPI tag for metric endpoints. Default: <c>"Analytics"</c>.
+    /// Per CLAUDE.md, modules with a single tag use the module's user-facing name directly;
+    /// promote to a sub-tag (<c>"Analytics - Metrics"</c>) only once a second sibling tag exists.
     /// </summary>
     [Required]
     [MinLength(1)]
-    public string MetricsTagName { get; set; } = "Analytics - Metrics";
+    public string MetricsTagName { get; set; } = "Analytics";
 
     /// <summary>
     /// FusionCache TTL applied to <see cref="Metrics.RefreshHint.Dynamic"/> metrics.

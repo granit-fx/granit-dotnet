@@ -23,7 +23,7 @@ internal static class DashboardStateTransitionEndpoints
     public static RouteGroupBuilder MapStateTransitionEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{id:guid}/publish", PublishAsync)
-            .WithName("PublishGranitDashboard")
+            .WithName("PublishDashboard")
             .WithSummary("Transitions the dashboard from Draft to Published.")
             .WithDescription(
                 "Publishes a Draft dashboard, making it visible to consumers. "
@@ -36,7 +36,7 @@ internal static class DashboardStateTransitionEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/{id:guid}/archive", ArchiveAsync)
-            .WithName("ArchiveGranitDashboard")
+            .WithName("ArchiveDashboard")
             .WithSummary("Archives the dashboard.")
             .WithDescription(
                 "Archives the dashboard regardless of its current status. Idempotent — "
@@ -48,7 +48,7 @@ internal static class DashboardStateTransitionEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/{id:guid}/restore", RestoreAsync)
-            .WithName("RestoreGranitDashboard")
+            .WithName("RestoreDashboard")
             .WithSummary("Restores an archived dashboard to Draft.")
             .WithDescription(
                 "Transitions an Archived dashboard back to Draft. Returns 409 Conflict "

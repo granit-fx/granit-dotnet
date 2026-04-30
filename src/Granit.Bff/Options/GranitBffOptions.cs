@@ -95,6 +95,16 @@ public sealed class BffFrontendOptions
     /// <summary>Unique name for this frontend (e.g., <c>"admin"</c>, <c>"patient"</c>).</summary>
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// PascalCase suffix derived from <see cref="Name"/> for OpenAPI operation IDs.
+    /// Splits on <c>-</c> and <c>_</c>, capitalizing each segment so a single-word name like
+    /// <c>"app"</c> becomes <c>"App"</c> and a kebab name like <c>"my-frontend"</c> becomes
+    /// <c>"MyFrontend"</c>. Operation IDs must be PascalCase per CLAUDE.md.
+    /// </summary>
+    internal string OperationIdSuffix => string.Concat(
+        Name.Split(['-', '_'], StringSplitOptions.RemoveEmptyEntries)
+            .Select(p => char.ToUpperInvariant(p[0]) + p[1..]));
+
     /// <summary>OIDC client ID (confidential client).</summary>
     public string ClientId { get; set; } = string.Empty;
 

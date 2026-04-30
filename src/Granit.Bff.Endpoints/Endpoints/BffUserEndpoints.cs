@@ -22,7 +22,7 @@ internal static class BffUserEndpoints
                 [FromServices] IBffTokenStore tokenStore,
                 CancellationToken cancellationToken) =>
                 HandleGetUserAsync(httpContext, frontend, tokenStore, cancellationToken))
-            .WithName($"BffGetUser_{frontend.Name}")
+            .WithName($"BffGetUser{frontend.OperationIdSuffix}")
             .WithSummary("Returns the current user's claims for the SPA.")
             .WithDescription(
                 "Reads the session cookie, loads the ID token from the token store, decodes "

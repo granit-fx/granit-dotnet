@@ -16,7 +16,7 @@ internal static class MetricEndpoints
     internal static RouteGroupBuilder MapMetricEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/metrics/{name}", EvaluateAsync)
-            .WithName("EvaluateGranitMetric")
+            .WithName("EvaluateMetric")
             .WithSummary("Evaluates a registered Granit.Analytics MetricDefinition.")
             .WithDescription(
                 "Resolves the metric by name, applies the period (and optional comparison window) "

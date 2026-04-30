@@ -26,7 +26,7 @@ internal static class DashboardStreamEndpoint
     public static RouteGroupBuilder MapDashboardStreamEndpoint(this RouteGroupBuilder group)
     {
         group.MapGet("/{id:guid}/stream", StreamAsync)
-            .WithName("StreamGranitDashboard")
+            .WithName("StreamDashboard")
             .WithSummary("Subscribes to live widget updates for a dashboard via Server-Sent Events.")
             .WithDescription(
                 "Long-lived HTTP/1.1 (or HTTP/2) connection that stays open and emits one "
