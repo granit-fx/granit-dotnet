@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "Visa globala inställningar",
     "Permission:Settings.Tenant.Manage": "Hantera klientinställningar (visa, skapa, redigera)",
     "Permission:Settings.Tenant.Read": "Visa klientinställningar",
-    "PermissionGroup:Settings": "Inställningar"
+    "PermissionGroup:Settings": "Inställningar",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

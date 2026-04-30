@@ -1,8 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Authorization": "Yetkilendirme Yönetimi",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Tüm kayıtlı izin tanımlarını ve grupları görüntüle",
-    "Permission:Authorization.Grants.Manage": "Roller için izinleri görüntüle, ver ve iptal et"
+    "Permission:Authorization.Grants.Manage": "Roller için izinleri görüntüle, ver ve iptal et",
+    "PermissionGroup:Authorization": "Yetkilendirme Yönetimi"
   }
 }

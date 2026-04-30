@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "AuditingEndpoints:Workspace.Item": "Journal d'audit",
+    "AuditingEndpoints:Workspace.Section": "Audit"
+  }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Features": "Funktionen",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Funktionsüberschreibungen verwalten (setzen, löschen)",
     "Permission:Features.Flags.Read": "Funktionsdefinitionen lesen",
-    "Permission:Features.Flags.Manage": "Funktionsüberschreibungen verwalten (setzen, löschen)"
+    "PermissionGroup:Features": "Funktionen"
   }
 }

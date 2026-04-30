@@ -1,8 +1,10 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Features": "기능 관리",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "기능 재정의 관리 (설정, 삭제)",
     "Permission:Features.Flags.Read": "기능 정의 읽기",
-    "Permission:Features.Flags.Manage": "기능 재정의 관리 (설정, 삭제)"
+    "PermissionGroup:Features": "기능 관리"
   }
 }

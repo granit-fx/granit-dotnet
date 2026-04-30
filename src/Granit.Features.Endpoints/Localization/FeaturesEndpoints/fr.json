@@ -1,8 +1,10 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Features": "Fonctionnalités",
+    "FeaturesEndpoints:Workspace.Item": "Indicateurs",
+    "FeaturesEndpoints:Workspace.Section": "Indicateurs de fonctionnalités",
+    "Permission:Features.Flags.Manage": "Gérer les substitutions de fonctionnalités (définir, supprimer)",
     "Permission:Features.Flags.Read": "Consulter les définitions de fonctionnalités",
-    "Permission:Features.Flags.Manage": "Gérer les substitutions de fonctionnalités (définir, supprimer)"
+    "PermissionGroup:Features": "Fonctionnalités"
   }
 }

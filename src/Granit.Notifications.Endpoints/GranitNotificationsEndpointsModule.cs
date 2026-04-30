@@ -1,8 +1,11 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
+using Granit.Notifications.Endpoints.Workspaces;
 using Granit.Notifications.MobilePush;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Notifications.Endpoints;
 
@@ -19,6 +22,11 @@ namespace Granit.Notifications.Endpoints;
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitNotificationsMobilePushModule),
     typeof(GranitNotificationsModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitNotificationsEndpointsModule : GranitModule;
-
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitNotificationsEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<NotificationsWorkspaceContribution>();
+}

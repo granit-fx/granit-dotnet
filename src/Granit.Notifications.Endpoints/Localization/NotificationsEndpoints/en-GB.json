@@ -1,4 +1,7 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications"
+  }
 }

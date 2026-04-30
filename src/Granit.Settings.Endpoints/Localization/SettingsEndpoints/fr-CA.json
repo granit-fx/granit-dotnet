@@ -3,6 +3,9 @@
   "texts": {
     "Granit:Settings:NotFound": "Paramètre non déclaré.",
     "Granit:Settings:ProviderNotAllowed": "Ce scope n'est pas autorisé pour ce paramètre.",
-    "Granit:Settings:ValidationFailed": "La valeur ne correspond pas au format attendu ou à la liste autorisée."
+    "Granit:Settings:ValidationFailed": "La valeur ne correspond pas au format attendu ou à la liste autorisée.",
+    "SettingsEndpoints:Workspace.Global": "Paramètres globaux",
+    "SettingsEndpoints:Workspace.Section": "Paramètres",
+    "SettingsEndpoints:Workspace.Tenant": "Paramètres de tenant"
   }
 }

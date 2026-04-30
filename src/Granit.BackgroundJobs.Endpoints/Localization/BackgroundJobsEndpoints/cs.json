@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Úlohy na pozadí",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Správa úloh na pozadí (seznam, pozastavení, obnovení, ruční spuštění)",
     "Permission:BackgroundJobs.Jobs.Read": "Zobrazit úlohy na pozadí (seznam, detail)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Správa úloh na pozadí (seznam, pozastavení, obnovení, ruční spuštění)"
+    "PermissionGroup:BackgroundJobs": "Úlohy na pozadí"
   }
 }

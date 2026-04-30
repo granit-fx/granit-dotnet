@@ -3,6 +3,9 @@
   "texts": {
     "Granit:Settings:NotFound": "Configuração não declarada.",
     "Granit:Settings:ProviderNotAllowed": "Este escopo não é permitido para esta configuração.",
-    "Granit:Settings:ValidationFailed": "O valor não corresponde ao formato esperado ou à lista permitida."
+    "Granit:Settings:ValidationFailed": "O valor não corresponde ao formato esperado ou à lista permitida.",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

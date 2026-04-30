@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "Wyświetlanie ustawień globalnych",
     "Permission:Settings.Tenant.Manage": "Zarządzanie ustawieniami najemcy (wyświetlanie, tworzenie, edycja)",
     "Permission:Settings.Tenant.Read": "Wyświetlanie ustawień najemcy",
-    "PermissionGroup:Settings": "Ustawienia"
+    "PermissionGroup:Settings": "Ustawienia",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

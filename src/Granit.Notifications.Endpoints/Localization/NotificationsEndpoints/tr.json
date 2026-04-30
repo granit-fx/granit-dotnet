@@ -1,8 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Notifications": "Bildirimler",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)",
     "Permission:Notifications.UserNotifications.Read": "Bildirimleri görüntüle (gelen kutusu, etkinlik akışı)",
-    "Permission:Notifications.UserNotifications.Manage": "Bildirimleri yönet (tercihler, abonelikler, push tokenları)"
+    "PermissionGroup:Notifications": "Bildirimler"
   }
 }

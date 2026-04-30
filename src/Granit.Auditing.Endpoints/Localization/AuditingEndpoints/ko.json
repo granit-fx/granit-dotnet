@@ -1,8 +1,10 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Auditing": "감사 로그",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "감사 로그 항목 관리 (가명처리, GDPR 제17조)",
     "Permission:Auditing.AuditEntries.Read": "감사 로그 항목 조회 (ISO 27001 감사 추적)",
-    "Permission:Auditing.AuditEntries.Manage": "감사 로그 항목 관리 (가명처리, GDPR 제17조)"
+    "PermissionGroup:Auditing": "감사 로그"
   }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Auditing": "Dziennik audytu",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Zarządzanie wpisami dziennika audytu (pseudonimizacja, RODO art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Wyświetlanie wpisów dziennika audytu (ścieżka audytu ISO 27001)",
-    "Permission:Auditing.AuditEntries.Manage": "Zarządzanie wpisami dziennika audytu (pseudonimizacja, RODO art. 17)"
+    "PermissionGroup:Auditing": "Dziennik audytu"
   }
 }

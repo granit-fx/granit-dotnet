@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Auditing": "監査ログ",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "監査ログエントリを管理（仮名化、GDPR 第17条）",
     "Permission:Auditing.AuditEntries.Read": "監査ログエントリを表示（ISO 27001 監査証跡）",
-    "Permission:Auditing.AuditEntries.Manage": "監査ログエントリを管理（仮名化、GDPR 第17条）"
+    "PermissionGroup:Auditing": "監査ログ"
   }
 }

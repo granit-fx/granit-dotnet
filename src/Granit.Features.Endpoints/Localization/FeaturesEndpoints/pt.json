@@ -1,8 +1,10 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:Features": "Funcionalidades",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Gerir substituições de funcionalidades (definir, eliminar)",
     "Permission:Features.Flags.Read": "Consultar definições de funcionalidades",
-    "Permission:Features.Flags.Manage": "Gerir substituições de funcionalidades (definir, eliminar)"
+    "PermissionGroup:Features": "Funcionalidades"
   }
 }

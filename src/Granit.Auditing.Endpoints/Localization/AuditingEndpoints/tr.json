@@ -1,8 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Auditing": "Denetim günlüğü",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Denetim günlüğü kayıtlarını yönet (takma adlandırma, KVKK md. 17)",
     "Permission:Auditing.AuditEntries.Read": "Denetim günlüğü kayıtlarını görüntüle (ISO 27001 denetim izi)",
-    "Permission:Auditing.AuditEntries.Manage": "Denetim günlüğü kayıtlarını yönet (takma adlandırma, KVKK md. 17)"
+    "PermissionGroup:Auditing": "Denetim günlüğü"
   }
 }

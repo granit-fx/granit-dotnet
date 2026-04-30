@@ -1,4 +1,7 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "WebhooksEndpoints:Workspace.Item": "Subscriptions",
+    "WebhooksEndpoints:Workspace.Section": "Webhooks"
+  }
 }

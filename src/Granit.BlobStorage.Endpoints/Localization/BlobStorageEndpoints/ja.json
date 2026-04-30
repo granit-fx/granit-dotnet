@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:BlobStorage": "ファイルストレージ",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）",
     "Permission:BlobStorage.Administration.Read": "ファイルストレージ管理を表示（一覧、記述子、クエリ）",
-    "Permission:BlobStorage.Administration.Manage": "ファイルストレージを管理（アップロード、ダウンロード、削除、確認、クリーンアップ）"
+    "PermissionGroup:BlobStorage": "ファイルストレージ"
   }
 }

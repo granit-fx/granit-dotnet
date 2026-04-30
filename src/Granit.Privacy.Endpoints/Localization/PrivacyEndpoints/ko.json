@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "법적 문서 편집, 게시 및 보관",
     "Permission:Privacy.LegalDocuments.Read": "법적 문서 버전 및 이력 조회",
     "Permission:Privacy.Purposes.Read": "등록된 처리 목적 조회",
-    "PermissionGroup:Privacy": "개인정보 (GDPR)"
+    "PermissionGroup:Privacy": "개인정보 (GDPR)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

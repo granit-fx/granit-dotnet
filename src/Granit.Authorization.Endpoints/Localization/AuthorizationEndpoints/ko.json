@@ -1,8 +1,10 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:Authorization": "인가 관리",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "등록된 모든 권한 정의 및 그룹 보기",
-    "Permission:Authorization.Grants.Manage": "역할에 대한 권한 보기, 부여 및 해지"
+    "Permission:Authorization.Grants.Manage": "역할에 대한 권한 보기, 부여 및 해지",
+    "PermissionGroup:Authorization": "인가 관리"
   }
 }

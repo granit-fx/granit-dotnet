@@ -1,11 +1,13 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API-nycklar",
-    "Permission:AuthenticationApiKeys.Keys.Read": "Visa API-nycklar (lista, detaljer)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "Skapa nya API-nycklar",
+    "Permission:AuthenticationApiKeys.Keys.Read": "Visa API-nycklar (lista, detaljer)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Återkalla API-nycklar",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "Rotera API-nycklar (återkalla och ersätt)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Uppdatera API-nyckelbehörigheter och CIDR-omfång"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Uppdatera API-nyckelbehörigheter och CIDR-omfång",
+    "PermissionGroup:AuthenticationApiKeys": "API-nycklar"
   }
 }

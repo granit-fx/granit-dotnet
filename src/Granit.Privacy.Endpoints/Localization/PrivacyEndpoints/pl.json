@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Edytowanie, publikowanie i archiwizowanie dokumentów prawnych",
     "Permission:Privacy.LegalDocuments.Read": "Wyświetlanie wersji i historii dokumentów prawnych",
     "Permission:Privacy.Purposes.Read": "Przeglądaj zarejestrowane cele przetwarzania",
-    "PermissionGroup:Privacy": "Prywatność (RODO)"
+    "PermissionGroup:Privacy": "Prywatność (RODO)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

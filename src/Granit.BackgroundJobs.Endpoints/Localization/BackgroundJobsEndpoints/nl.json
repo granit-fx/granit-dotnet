@@ -1,8 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Achtergrondtaken",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Achtergrondtaken beheren (lijst, pauzeren, hervatten, handmatig starten)",
     "Permission:BackgroundJobs.Jobs.Read": "Achtergrondtaken bekijken (lijst, detail)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Achtergrondtaken beheren (lijst, pauzeren, hervatten, handmatig starten)"
+    "PermissionGroup:BackgroundJobs": "Achtergrondtaken"
   }
 }

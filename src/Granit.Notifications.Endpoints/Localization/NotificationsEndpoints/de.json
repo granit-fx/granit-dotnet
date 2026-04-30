@@ -1,8 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:Notifications": "Benachrichtigungen",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Benachrichtigungen verwalten (Einstellungen, Abonnements, Push-Token)",
     "Permission:Notifications.UserNotifications.Read": "Benachrichtigungen anzeigen (Posteingang, Aktivitätsfeed)",
-    "Permission:Notifications.UserNotifications.Manage": "Benachrichtigungen verwalten (Einstellungen, Abonnements, Push-Token)"
+    "PermissionGroup:Notifications": "Benachrichtigungen"
   }
 }

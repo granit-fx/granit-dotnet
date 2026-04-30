@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Upravit, publikovat a archivovat právní dokumenty",
     "Permission:Privacy.LegalDocuments.Read": "Zobrazit verze a historii právních dokumentů",
     "Permission:Privacy.Purposes.Read": "Zobrazit registrované účely zpracování",
-    "PermissionGroup:Privacy": "Soukromí (GDPR)"
+    "PermissionGroup:Privacy": "Soukromí (GDPR)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

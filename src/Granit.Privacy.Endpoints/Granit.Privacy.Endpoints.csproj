@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Granit.Privacy\Granit.Privacy.csproj" />
     <ProjectReference Include="..\Granit.Privacy.Regulations\Granit.Privacy.Regulations.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+      <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

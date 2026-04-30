@@ -92,6 +92,7 @@
       "src/Granit.Encryption.BackgroundJobs/Granit.Encryption.BackgroundJobs.csproj",
       "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
+      "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj",
       "src/Granit.Events/Granit.Events.csproj",
       "src/Granit.Features.Endpoints/Granit.Features.Endpoints.csproj",
@@ -299,6 +300,7 @@
       "src/Granit.Workflow.EntityFrameworkCore/Granit.Workflow.EntityFrameworkCore.csproj",
       "src/Granit.Workflow.Notifications/Granit.Workflow.Notifications.csproj",
       "src/Granit.Workflow/Granit.Workflow.csproj",
+      "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.ArchitectureTests.Abstractions/Granit.ArchitectureTests.Abstractions.csproj",
       "tests/Granit.ArchitectureTests/Granit.ArchitectureTests.csproj"

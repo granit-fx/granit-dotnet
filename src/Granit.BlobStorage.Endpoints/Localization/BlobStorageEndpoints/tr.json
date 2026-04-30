@@ -1,8 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:BlobStorage": "Dosya depolama",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Dosya depolamayı yönet (yükle, indir, sil, onayla, temizle)",
     "Permission:BlobStorage.Administration.Read": "Dosya depolama yönetimini görüntüle (liste, tanımlayıcılar, sorgu)",
-    "Permission:BlobStorage.Administration.Manage": "Dosya depolamayı yönet (yükle, indir, sil, onayla, temizle)"
+    "PermissionGroup:BlobStorage": "Dosya depolama"
   }
 }

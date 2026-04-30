@@ -1,8 +1,10 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Background Jobs",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Manage background jobs (list, pause, resume, manual trigger)",
     "Permission:BackgroundJobs.Jobs.Read": "View background jobs (list, detail)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Manage background jobs (list, pause, resume, manual trigger)"
+    "PermissionGroup:BackgroundJobs": "Background Jobs"
   }
 }

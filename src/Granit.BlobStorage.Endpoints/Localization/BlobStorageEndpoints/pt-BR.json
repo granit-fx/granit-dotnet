@@ -1,8 +1,10 @@
 {
   "culture": "pt-BR",
   "texts": {
-    "PermissionGroup:BlobStorage": "Armazenamento de arquivos",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Gerenciar armazenamento de arquivos (enviar, baixar, excluir, confirmar, limpar)",
     "Permission:BlobStorage.Administration.Read": "Ver administração do armazenamento de arquivos (lista, descritores, consulta)",
-    "Permission:BlobStorage.Administration.Manage": "Gerenciar armazenamento de arquivos (enviar, baixar, excluir, confirmar, limpar)"
+    "PermissionGroup:BlobStorage": "Armazenamento de arquivos"
   }
 }

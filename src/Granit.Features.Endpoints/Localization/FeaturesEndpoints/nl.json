@@ -1,8 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Features": "Functionaliteiten",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Functie-overschrijvingen beheren (instellen, verwijderen)",
     "Permission:Features.Flags.Read": "Functiedefinities lezen",
-    "Permission:Features.Flags.Manage": "Functie-overschrijvingen beheren (instellen, verwijderen)"
+    "PermissionGroup:Features": "Functionaliteiten"
   }
 }

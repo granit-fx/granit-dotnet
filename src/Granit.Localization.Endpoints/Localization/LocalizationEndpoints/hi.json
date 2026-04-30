@@ -1,8 +1,10 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Localization": "स्थानीयकरण",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "अनुवाद ओवरराइड प्रबंधित करें (देखें, बनाएँ, संपादित करें, हटाएँ)",
     "Permission:Localization.Overrides.Read": "अनुवाद ओवरराइड देखें",
-    "Permission:Localization.Overrides.Manage": "अनुवाद ओवरराइड प्रबंधित करें (देखें, बनाएँ, संपादित करें, हटाएँ)"
+    "PermissionGroup:Localization": "स्थानीयकरण"
   }
 }

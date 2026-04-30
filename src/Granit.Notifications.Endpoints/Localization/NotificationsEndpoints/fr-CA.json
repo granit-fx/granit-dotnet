@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "NotificationsEndpoints:Workspace.Item": "Boîte de réception et abonnements",
+    "NotificationsEndpoints:Workspace.Section": "Notifications"
+  }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Localization": "Localización",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "Gestionar las sobrecargas de traducción (ver, crear, editar, eliminar)",
     "Permission:Localization.Overrides.Read": "Ver las sobrecargas de traducción",
-    "Permission:Localization.Overrides.Manage": "Gestionar las sobrecargas de traducción (ver, crear, editar, eliminar)"
+    "PermissionGroup:Localization": "Localización"
   }
 }

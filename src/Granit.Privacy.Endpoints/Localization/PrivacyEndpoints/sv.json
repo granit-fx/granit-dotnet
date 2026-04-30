@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Redigera, publicera och arkivera juridiska dokument",
     "Permission:Privacy.LegalDocuments.Read": "Visa versioner och historik för juridiska dokument",
     "Permission:Privacy.Purposes.Read": "Visa registrerade behandlingsändamål",
-    "PermissionGroup:Privacy": "Integritet (GDPR)"
+    "PermissionGroup:Privacy": "Integritet (GDPR)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

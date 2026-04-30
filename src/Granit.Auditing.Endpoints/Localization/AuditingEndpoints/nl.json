@@ -1,8 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:Auditing": "Auditlogboek",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Auditlogboekregistraties beheren (pseudonimisering, AVG art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Auditlogboekregistraties bekijken (ISO 27001-auditspoor)",
-    "Permission:Auditing.AuditEntries.Manage": "Auditlogboekregistraties beheren (pseudonimisering, AVG art. 17)"
+    "PermissionGroup:Auditing": "Auditlogboek"
   }
 }

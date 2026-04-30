@@ -1,12 +1,14 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Webhooks": "वेबहुक",
-    "Permission:Webhooks.Subscriptions.Read": "वेबहुक सब्सक्रिप्शन देखें",
-    "Permission:Webhooks.Subscriptions.Manage": "वेबहुक प्रबंधित करें (जीवनचक्र, सीक्रेट रोटेशन, टेस्ट पिंग, सांख्यिकी)",
     "Granit:Validation:InvalidWebhookUrl": "लक्ष्य URL एक मान्य HTTPS URL होना चाहिए",
-    "Granit:Validation:WebhookUrlPrivateAddress": "निजी, स्थानीय या आरक्षित IP पते अनुमत नहीं हैं",
+    "Granit:Validation:UnknownWebhookEventType": "निर्दिष्ट इवेंट प्रकार पंजीकृत नहीं है। उपलब्ध प्रकारों के लिए GET /event-types का उपयोग करें।",
     "Granit:Validation:WebhookUrlBlockedTld": "आंतरिक डोमेन नाम (.local, .internal, .localhost, .onion) अनुमत नहीं हैं",
-    "Granit:Validation:UnknownWebhookEventType": "निर्दिष्ट इवेंट प्रकार पंजीकृत नहीं है। उपलब्ध प्रकारों के लिए GET /event-types का उपयोग करें।"
+    "Granit:Validation:WebhookUrlPrivateAddress": "निजी, स्थानीय या आरक्षित IP पते अनुमत नहीं हैं",
+    "Permission:Webhooks.Subscriptions.Manage": "वेबहुक प्रबंधित करें (जीवनचक्र, सीक्रेट रोटेशन, टेस्ट पिंग, सांख्यिकी)",
+    "Permission:Webhooks.Subscriptions.Read": "वेबहुक सब्सक्रिप्शन देखें",
+    "PermissionGroup:Webhooks": "वेबहुक",
+    "WebhooksEndpoints:Workspace.Item": "Subscriptions",
+    "WebhooksEndpoints:Workspace.Section": "Webhooks"
   }
 }

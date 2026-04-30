@@ -157,7 +157,8 @@
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
         "Granit.QueryEngine.AspNetCore",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -224,7 +225,8 @@
         "Granit.Authorization",
         "Granit.QueryEngine",
         "Granit.Timing",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -322,7 +324,8 @@
       "deps": [
         "Granit.Authorization",
         "Granit.Http.ApiDocumentation",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -353,7 +356,8 @@
         "Granit.Authorization",
         "Granit.BackgroundJobs",
         "Granit.QueryEngine.Abstractions",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -482,7 +486,8 @@
         "Granit.Http.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.RateLimiting",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -957,7 +962,8 @@
         "Granit.Authorization",
         "Granit.Features",
         "Granit.Http.ApiDocumentation",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1402,7 +1408,8 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
         "Granit.Localization",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -1663,7 +1670,8 @@
         "Granit.Guids",
         "Granit.Notifications",
         "Granit.Notifications.MobilePush",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2184,7 +2192,8 @@
         "Granit.Http.Cookies",
         "Granit.Privacy",
         "Granit.Privacy.Regulations",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2381,7 +2390,8 @@
         "Granit.Http.ApiDocumentation",
         "Granit.Settings",
         "Granit.Timing",
-        "Granit.Validation"
+        "Granit.Validation",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -2761,7 +2771,8 @@
         "Granit.Http.Abstractions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation",
-        "Granit.Webhooks"
+        "Granit.Webhooks",
+        "Granit.Workspaces.Abstractions"
       ],
       "framework": "net10.0"
     },
@@ -5683,8 +5694,15 @@
       "kind": "class",
       "project": "Granit.Auditing.Endpoints",
       "file": "src/Granit.Auditing.Endpoints/GranitAuditingEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AuditingEndpointsOptions",
@@ -6599,8 +6617,15 @@
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Endpoints",
       "file": "src/Granit.Authentication.ApiKeys.Endpoints/GranitAuthenticationApiKeysEndpointsModule.cs",
-      "line": 17,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ApiKeysEndpointsOptions",
@@ -8233,8 +8258,15 @@
       "kind": "class",
       "project": "Granit.Authorization.Endpoints",
       "file": "src/Granit.Authorization.Endpoints/GranitAuthorizationEndpointsModule.cs",
-      "line": 24,
-      "members": []
+      "line": 28,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "AuthorizationEndpointsOptions",
@@ -9097,8 +9129,15 @@
       "kind": "class",
       "project": "Granit.BackgroundJobs.Endpoints",
       "file": "src/Granit.BackgroundJobs.Endpoints/GranitBackgroundJobsEndpointsModule.cs",
-      "line": 23,
-      "members": []
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "BackgroundJobsEndpointsOptions",
@@ -10671,8 +10710,15 @@
       "kind": "class",
       "project": "Granit.BlobStorage.Endpoints",
       "file": "src/Granit.BlobStorage.Endpoints/GranitBlobStorageEndpointsModule.cs",
-      "line": 18,
-      "members": []
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "BlobStorageEndpointsOptions",
@@ -20532,8 +20578,15 @@
       "kind": "class",
       "project": "Granit.Features.Endpoints",
       "file": "src/Granit.Features.Endpoints/GranitFeaturesEndpointsModule.cs",
-      "line": 26,
-      "members": []
+      "line": 30,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "FeaturesEndpointsOptions",
@@ -29380,8 +29433,15 @@
       "kind": "class",
       "project": "Granit.Localization.Endpoints",
       "file": "src/Granit.Localization.Endpoints/GranitLocalizationEndpointsModule.cs",
-      "line": 27,
-      "members": []
+      "line": 31,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "LocalizationEndpointsOptions",
@@ -33851,8 +33911,15 @@
       "kind": "class",
       "project": "Granit.Notifications.Endpoints",
       "file": "src/Granit.Notifications.Endpoints/GranitNotificationsEndpointsModule.cs",
-      "line": 23,
-      "members": []
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "NotificationEndpointsOptions",
@@ -44468,8 +44535,15 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
-      "line": 37,
-      "members": []
+      "line": 41,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PrivacyEndpointsOptions",
@@ -48456,8 +48530,15 @@
       "kind": "class",
       "project": "Granit.Settings.Endpoints",
       "file": "src/Granit.Settings.Endpoints/GranitSettingsEndpointsModule.cs",
-      "line": 32,
-      "members": []
+      "line": 36,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "WellKnownSettingNames",
@@ -56569,8 +56650,15 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/GranitWebhooksEndpointsModule.cs",
-      "line": 15,
-      "members": []
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "WebhooksEndpointsOptions",
@@ -58925,7 +59013,7 @@
       "kind": "class",
       "project": "Granit.Workspaces.Framework",
       "file": "src/Granit.Workspaces.Framework/FrameworkWorkspaceDefinition.cs",
-      "line": 47,
+      "line": 9,
       "members": [
         {
           "name": "Name",
@@ -58939,9 +59027,9 @@
       "name": "FrameworkWorkspaceNames",
       "fqn": "Granit.Workspaces.Framework.FrameworkWorkspaceNames",
       "kind": "class",
-      "project": "Granit.Workspaces.Framework",
-      "file": "src/Granit.Workspaces.Framework/FrameworkWorkspaceDefinition.cs",
-      "line": 8,
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/Framework/FrameworkWorkspaceNames.cs",
+      "line": 10,
       "members": []
     },
     {

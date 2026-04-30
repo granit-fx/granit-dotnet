@@ -1,7 +1,10 @@
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
+using Granit.Localization.Endpoints.Workspaces;
 using Granit.Modularity;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Localization.Endpoints;
 
@@ -23,5 +26,11 @@ namespace Granit.Localization.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitLocalizationModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitLocalizationEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitLocalizationEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<LocalizationWorkspaceContribution>();
+}

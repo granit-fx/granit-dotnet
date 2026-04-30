@@ -1,8 +1,10 @@
 {
   "culture": "fr",
   "texts": {
-    "PermissionGroup:Notifications": "Notifications",
+    "NotificationsEndpoints:Workspace.Item": "Boîte de réception et abonnements",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)",
     "Permission:Notifications.UserNotifications.Read": "Consulter les notifications (boîte de réception, fil d'activité)",
-    "Permission:Notifications.UserNotifications.Manage": "Gérer les notifications (préférences, abonnements, jetons push)"
+    "PermissionGroup:Notifications": "Notifications"
   }
 }

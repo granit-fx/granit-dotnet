@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+      <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

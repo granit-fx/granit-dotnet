@@ -1,8 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:BlobStorage": "Dateispeicher",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Dateispeicher verwalten (hochladen, herunterladen, löschen, bestätigen, bereinigen)",
     "Permission:BlobStorage.Administration.Read": "Dateispeicherverwaltung anzeigen (Liste, Deskriptoren, Abfrage)",
-    "Permission:BlobStorage.Administration.Manage": "Dateispeicher verwalten (hochladen, herunterladen, löschen, bestätigen, bereinigen)"
+    "PermissionGroup:BlobStorage": "Dateispeicher"
   }
 }

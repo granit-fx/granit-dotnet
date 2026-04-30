@@ -1,11 +1,13 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "Chaves API",
-    "Permission:AuthenticationApiKeys.Keys.Read": "Consultar chaves API (lista, detalhes)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "Criar novas chaves API",
+    "Permission:AuthenticationApiKeys.Keys.Read": "Consultar chaves API (lista, detalhes)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Revogar chaves API",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "Rodar chaves API (revogar e substituir)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Atualizar permissões e intervalos CIDR das chaves API"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Atualizar permissões e intervalos CIDR das chaves API",
+    "PermissionGroup:AuthenticationApiKeys": "Chaves API"
   }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Authorization": "認可管理",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "登録済みの権限定義とグループをすべて表示",
-    "Permission:Authorization.Grants.Manage": "ロールの権限を表示、付与、取消"
+    "Permission:Authorization.Grants.Manage": "ロールの権限を表示、付与、取消",
+    "PermissionGroup:Authorization": "認可管理"
   }
 }

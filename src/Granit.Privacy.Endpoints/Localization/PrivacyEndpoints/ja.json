@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "法的文書を編集、公開、アーカイブ",
     "Permission:Privacy.LegalDocuments.Read": "法的文書のバージョンと履歴を表示",
     "Permission:Privacy.Purposes.Read": "登録済みの処理目的を表示",
-    "PermissionGroup:Privacy": "プライバシー (GDPR)"
+    "PermissionGroup:Privacy": "プライバシー (GDPR)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

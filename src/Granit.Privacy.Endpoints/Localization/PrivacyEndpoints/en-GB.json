@@ -1,4 +1,8 @@
 {
   "culture": "en-GB",
-  "texts": {}
+  "texts": {
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
+  }
 }

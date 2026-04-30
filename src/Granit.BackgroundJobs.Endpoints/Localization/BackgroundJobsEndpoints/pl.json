@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Zadania w tle",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Zarządzanie zadaniami w tle (lista, wstrzymanie, wznowienie, ręczne uruchomienie)",
     "Permission:BackgroundJobs.Jobs.Read": "Przeglądanie zadań w tle (lista, szczegóły)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Zarządzanie zadaniami w tle (lista, wstrzymanie, wznowienie, ręczne uruchomienie)"
+    "PermissionGroup:BackgroundJobs": "Zadania w tle"
   }
 }

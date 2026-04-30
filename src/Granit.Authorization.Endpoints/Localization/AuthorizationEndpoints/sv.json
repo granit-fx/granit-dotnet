@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Authorization": "Behörighetshantering",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Visa alla registrerade behörighetsdefinitioner och grupper",
-    "Permission:Authorization.Grants.Manage": "Visa, bevilja och återkalla behörigheter för roller"
+    "Permission:Authorization.Grants.Manage": "Visa, bevilja och återkalla behörigheter för roller",
+    "PermissionGroup:Authorization": "Behörighetshantering"
   }
 }

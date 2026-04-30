@@ -1,11 +1,13 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API 키",
-    "Permission:AuthenticationApiKeys.Keys.Read": "API 키 보기 (목록, 상세)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "새 API 키 생성",
+    "Permission:AuthenticationApiKeys.Keys.Read": "API 키 보기 (목록, 상세)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API 키 해지",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "API 키 교체 (해지 후 대체)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API 키 권한 및 CIDR 범위 업데이트"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API 키 권한 및 CIDR 범위 업데이트",
+    "PermissionGroup:AuthenticationApiKeys": "API 키"
   }
 }

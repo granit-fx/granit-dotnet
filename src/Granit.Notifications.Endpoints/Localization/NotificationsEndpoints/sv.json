@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Notifications": "Aviseringar",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)",
     "Permission:Notifications.UserNotifications.Read": "Visa aviseringar (inkorg, aktivitetsflöde)",
-    "Permission:Notifications.UserNotifications.Manage": "Hantera aviseringar (inställningar, prenumerationer, pushtoken)"
+    "PermissionGroup:Notifications": "Aviseringar"
   }
 }

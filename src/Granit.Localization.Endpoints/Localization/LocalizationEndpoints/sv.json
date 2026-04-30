@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Localization": "Lokalisering",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "Hantera översättningsåsidosättningar (visa, skapa, redigera, radera)",
     "Permission:Localization.Overrides.Read": "Visa översättningsöverskridanden",
-    "Permission:Localization.Overrides.Manage": "Hantera översättningsåsidosättningar (visa, skapa, redigera, radera)"
+    "PermissionGroup:Localization": "Lokalisering"
   }
 }

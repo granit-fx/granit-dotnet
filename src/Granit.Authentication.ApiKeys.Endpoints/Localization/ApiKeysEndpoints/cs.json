@@ -1,11 +1,13 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API klíče",
-    "Permission:AuthenticationApiKeys.Keys.Read": "Zobrazit API klíče (seznam, podrobnosti)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "Vytvořit nové API klíče",
+    "Permission:AuthenticationApiKeys.Keys.Read": "Zobrazit API klíče (seznam, podrobnosti)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Odvolat API klíče",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "Rotovat API klíče (odvolat a nahradit)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Aktualizovat oprávnění a CIDR rozsahy API klíčů"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Aktualizovat oprávnění a CIDR rozsahy API klíčů",
+    "PermissionGroup:AuthenticationApiKeys": "API klíče"
   }
 }

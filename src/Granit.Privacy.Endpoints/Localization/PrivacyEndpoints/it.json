@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Modificare, pubblicare e archiviare documenti legali",
     "Permission:Privacy.LegalDocuments.Read": "Visualizzare versioni e cronologia dei documenti legali",
     "Permission:Privacy.Purposes.Read": "Consultare le finalità del trattamento",
-    "PermissionGroup:Privacy": "Privacy (GDPR)"
+    "PermissionGroup:Privacy": "Privacy (GDPR)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

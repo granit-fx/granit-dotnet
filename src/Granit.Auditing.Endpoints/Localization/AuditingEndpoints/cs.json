@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Auditing": "Protokol auditu",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Spravovat položky protokolu auditu (pseudonymizace, GDPR čl. 17)",
     "Permission:Auditing.AuditEntries.Read": "Zobrazit položky protokolu auditu (auditní stopa ISO 27001)",
-    "Permission:Auditing.AuditEntries.Manage": "Spravovat položky protokolu auditu (pseudonymizace, GDPR čl. 17)"
+    "PermissionGroup:Auditing": "Protokol auditu"
   }
 }

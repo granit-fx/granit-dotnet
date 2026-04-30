@@ -1,8 +1,10 @@
 {
   "culture": "es",
   "texts": {
-    "PermissionGroup:Authorization": "Gestión de autorizaciones",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "Ver todas las definiciones y grupos de permisos registrados",
-    "Permission:Authorization.Grants.Manage": "Ver, conceder y revocar permisos para roles"
+    "Permission:Authorization.Grants.Manage": "Ver, conceder y revocar permisos para roles",
+    "PermissionGroup:Authorization": "Gestión de autorizaciones"
   }
 }

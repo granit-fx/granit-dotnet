@@ -1,4 +1,7 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization"
+  }
 }

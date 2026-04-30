@@ -1,8 +1,10 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Auditing": "Registro di audit",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Gestire le voci del registro di audit (pseudonimizzazione, GDPR art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Visualizzare le voci del registro di audit (traccia di audit ISO 27001)",
-    "Permission:Auditing.AuditEntries.Manage": "Gestire le voci del registro di audit (pseudonimizzazione, GDPR art. 17)"
+    "PermissionGroup:Auditing": "Registro di audit"
   }
 }

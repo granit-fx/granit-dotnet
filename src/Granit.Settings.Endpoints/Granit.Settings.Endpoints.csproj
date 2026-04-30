@@ -21,6 +21,7 @@
     <ProjectReference Include="..\Granit.Settings\Granit.Settings.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
+      <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup>

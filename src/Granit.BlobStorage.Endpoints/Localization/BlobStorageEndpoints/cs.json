@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:BlobStorage": "Úložiště souborů",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)",
     "Permission:BlobStorage.Administration.Read": "Zobrazit správu úložiště souborů (seznam, popisovače, dotaz)",
-    "Permission:BlobStorage.Administration.Manage": "Spravovat úložiště souborů (nahrát, stáhnout, smazat, potvrdit, vyčistit)"
+    "PermissionGroup:BlobStorage": "Úložiště souborů"
   }
 }

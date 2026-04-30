@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "WebhooksEndpoints:Workspace.Item": "Abonnements",
+    "WebhooksEndpoints:Workspace.Section": "Webhooks"
+  }
 }

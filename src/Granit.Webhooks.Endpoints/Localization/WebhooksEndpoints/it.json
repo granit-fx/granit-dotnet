@@ -1,12 +1,14 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:Webhooks": "Webhooks",
-    "Permission:Webhooks.Subscriptions.Read": "Visualizzare le sottoscrizioni webhook",
-    "Permission:Webhooks.Subscriptions.Manage": "Gestire i webhooks (ciclo di vita, rotazione dei segreti, ping di test, statistiche)",
     "Granit:Validation:InvalidWebhookUrl": "L'URL di destinazione deve essere un URL HTTPS valido",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Gli indirizzi IP privati, locali o riservati non sono consentiti",
+    "Granit:Validation:UnknownWebhookEventType": "Il tipo di evento specificato non è registrato. Usare GET /event-types per i tipi disponibili.",
     "Granit:Validation:WebhookUrlBlockedTld": "I nomi di dominio interni (.local, .internal, .localhost, .onion) non sono consentiti",
-    "Granit:Validation:UnknownWebhookEventType": "Il tipo di evento specificato non è registrato. Usare GET /event-types per i tipi disponibili."
+    "Granit:Validation:WebhookUrlPrivateAddress": "Gli indirizzi IP privati, locali o riservati non sono consentiti",
+    "Permission:Webhooks.Subscriptions.Manage": "Gestire i webhooks (ciclo di vita, rotazione dei segreti, ping di test, statistiche)",
+    "Permission:Webhooks.Subscriptions.Read": "Visualizzare le sottoscrizioni webhook",
+    "PermissionGroup:Webhooks": "Webhooks",
+    "WebhooksEndpoints:Workspace.Item": "Subscriptions",
+    "WebhooksEndpoints:Workspace.Section": "Webhooks"
   }
 }

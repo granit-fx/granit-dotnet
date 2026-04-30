@@ -1,8 +1,10 @@
 {
   "culture": "pt",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Tarefas em segundo plano",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Gerir tarefas em segundo plano (lista, pausa, retoma, execução manual)",
     "Permission:BackgroundJobs.Jobs.Read": "Ver tarefas em segundo plano (lista, detalhe)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Gerir tarefas em segundo plano (lista, pausa, retoma, execução manual)"
+    "PermissionGroup:BackgroundJobs": "Tarefas em segundo plano"
   }
 }

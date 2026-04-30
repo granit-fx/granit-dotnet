@@ -1,8 +1,10 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Authorization": "प्राधिकरण प्रबंधन",
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "Permission:Authorization.Definitions.Read": "सभी पंजीकृत अनुमति परिभाषाएँ और समूह देखें",
-    "Permission:Authorization.Grants.Manage": "भूमिकाओं के लिए अनुमतियाँ देखें, प्रदान करें और निरस्त करें"
+    "Permission:Authorization.Grants.Manage": "भूमिकाओं के लिए अनुमतियाँ देखें, प्रदान करें और निरस्त करें",
+    "PermissionGroup:Authorization": "प्राधिकरण प्रबंधन"
   }
 }

@@ -1,11 +1,13 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API キー",
-    "Permission:AuthenticationApiKeys.Keys.Read": "API キーの表示（一覧、詳細）",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "新しい API キーの作成",
+    "Permission:AuthenticationApiKeys.Keys.Read": "API キーの表示（一覧、詳細）",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API キーの失効",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "API キーのローテーション（失効して置換）",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API キーの権限と CIDR スコープの更新"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API キーの権限と CIDR スコープの更新",
+    "PermissionGroup:AuthenticationApiKeys": "API キー"
   }
 }

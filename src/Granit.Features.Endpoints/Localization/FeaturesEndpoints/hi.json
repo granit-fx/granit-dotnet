@@ -1,8 +1,10 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Features": "सुविधाएँ",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "सुविधा ओवरराइड प्रबंधित करें (सेट करें, हटाएँ)",
     "Permission:Features.Flags.Read": "सुविधा परिभाषाएँ पढ़ें",
-    "Permission:Features.Flags.Manage": "सुविधा ओवरराइड प्रबंधित करें (सेट करें, हटाएँ)"
+    "PermissionGroup:Features": "सुविधाएँ"
   }
 }

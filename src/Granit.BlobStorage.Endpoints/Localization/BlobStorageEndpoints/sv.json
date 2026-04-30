@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:BlobStorage": "Fillagring",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Hantera fillagring (ladda upp, ladda ner, ta bort, bekräfta, rensa)",
     "Permission:BlobStorage.Administration.Read": "Visa fillagringsadministration (lista, beskrivningar, fråga)",
-    "Permission:BlobStorage.Administration.Manage": "Hantera fillagring (ladda upp, ladda ner, ta bort, bekräfta, rensa)"
+    "PermissionGroup:BlobStorage": "Fillagring"
   }
 }

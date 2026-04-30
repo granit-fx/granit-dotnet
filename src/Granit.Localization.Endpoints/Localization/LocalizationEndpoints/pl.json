@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Localization": "Lokalizacja",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "Zarządzanie nadpisaniami tłumaczeń (wyświetlanie, tworzenie, edycja, usuwanie)",
     "Permission:Localization.Overrides.Read": "Przeglądanie nadpisań tłumaczeń",
-    "Permission:Localization.Overrides.Manage": "Zarządzanie nadpisaniami tłumaczeń (wyświetlanie, tworzenie, edycja, usuwanie)"
+    "PermissionGroup:Localization": "Lokalizacja"
   }
 }

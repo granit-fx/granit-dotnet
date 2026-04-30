@@ -1,8 +1,10 @@
 {
   "culture": "it",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Attività in background",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Gestire le attività in background (elenco, pausa, ripresa, avvio manuale)",
     "Permission:BackgroundJobs.Jobs.Read": "Visualizzare le attività in background (elenco, dettaglio)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Gestire le attività in background (elenco, pausa, ripresa, avvio manuale)"
+    "PermissionGroup:BackgroundJobs": "Attività in background"
   }
 }

@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "Visualizzare le impostazioni globali",
     "Permission:Settings.Tenant.Manage": "Gestire le impostazioni del tenant (visualizzare, creare, modificare)",
     "Permission:Settings.Tenant.Read": "Visualizzare le impostazioni del tenant",
-    "PermissionGroup:Settings": "Impostazioni"
+    "PermissionGroup:Settings": "Impostazioni",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

@@ -1,8 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:BlobStorage": "文件存储",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）",
     "Permission:BlobStorage.Administration.Read": "查看文件存储管理（列表、描述符、查询）",
-    "Permission:BlobStorage.Administration.Manage": "管理文件存储（上传、下载、删除、确认、清理）"
+    "PermissionGroup:BlobStorage": "文件存储"
   }
 }

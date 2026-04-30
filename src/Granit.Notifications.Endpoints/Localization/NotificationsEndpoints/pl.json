@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Notifications": "Powiadomienia",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)",
     "Permission:Notifications.UserNotifications.Read": "Przeglądanie powiadomień (skrzynka odbiorcza, aktywność)",
-    "Permission:Notifications.UserNotifications.Manage": "Zarządzanie powiadomieniami (preferencje, subskrypcje, tokeny push)"
+    "PermissionGroup:Notifications": "Powiadomienia"
   }
 }

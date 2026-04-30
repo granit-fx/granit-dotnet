@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Features": "Funkce",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Spravovat přepsání funkcí (nastavit, smazat)",
     "Permission:Features.Flags.Read": "Číst definice funkcí",
-    "Permission:Features.Flags.Manage": "Spravovat přepsání funkcí (nastavit, smazat)"
+    "PermissionGroup:Features": "Funkce"
   }
 }

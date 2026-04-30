@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Bakgrundsjobb",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Hantera bakgrundsjobb (lista, pausa, återuppta, manuell körning)",
     "Permission:BackgroundJobs.Jobs.Read": "Visa bakgrundsjobb (lista, detalj)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Hantera bakgrundsjobb (lista, pausa, återuppta, manuell körning)"
+    "PermissionGroup:BackgroundJobs": "Bakgrundsjobb"
   }
 }

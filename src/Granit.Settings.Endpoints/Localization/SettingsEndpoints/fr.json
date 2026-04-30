@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "Consulter les paramètres globaux",
     "Permission:Settings.Tenant.Manage": "Gérer les paramètres du tenant (consulter, créer, modifier)",
     "Permission:Settings.Tenant.Read": "Consulter les paramètres du tenant",
-    "PermissionGroup:Settings": "Paramètres"
+    "PermissionGroup:Settings": "Paramètres",
+    "SettingsEndpoints:Workspace.Global": "Paramètres globaux",
+    "SettingsEndpoints:Workspace.Section": "Paramètres",
+    "SettingsEndpoints:Workspace.Tenant": "Paramètres de tenant"
   }
 }

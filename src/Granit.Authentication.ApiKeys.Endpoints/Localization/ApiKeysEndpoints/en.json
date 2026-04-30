@@ -1,11 +1,13 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API Keys",
-    "Permission:AuthenticationApiKeys.Keys.Read": "View API keys (list, details)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "Create new API keys",
+    "Permission:AuthenticationApiKeys.Keys.Read": "View API keys (list, details)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "Revoke API keys",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "Rotate API keys (revoke and replace)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Update API key permissions and CIDR scopes"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "Update API key permissions and CIDR scopes",
+    "PermissionGroup:AuthenticationApiKeys": "API Keys"
   }
 }

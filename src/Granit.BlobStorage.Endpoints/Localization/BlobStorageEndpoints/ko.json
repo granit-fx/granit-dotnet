@@ -1,8 +1,10 @@
 {
   "culture": "ko",
   "texts": {
-    "PermissionGroup:BlobStorage": "파일 저장소",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "파일 저장소 관리 (업로드, 다운로드, 삭제, 확인, 정리)",
     "Permission:BlobStorage.Administration.Read": "파일 저장소 관리 조회 (목록, 설명자, 쿼리)",
-    "Permission:BlobStorage.Administration.Manage": "파일 저장소 관리 (업로드, 다운로드, 삭제, 확인, 정리)"
+    "PermissionGroup:BlobStorage": "파일 저장소"
   }
 }

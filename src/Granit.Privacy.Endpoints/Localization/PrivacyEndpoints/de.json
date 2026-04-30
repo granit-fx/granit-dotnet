@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Rechtliche Dokumente bearbeiten, veröffentlichen und archivieren",
     "Permission:Privacy.LegalDocuments.Read": "Versionen und Historie rechtlicher Dokumente anzeigen",
     "Permission:Privacy.Purposes.Read": "Registrierte Verarbeitungszwecke anzeigen",
-    "PermissionGroup:Privacy": "Datenschutz (DSGVO)"
+    "PermissionGroup:Privacy": "Datenschutz (DSGVO)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

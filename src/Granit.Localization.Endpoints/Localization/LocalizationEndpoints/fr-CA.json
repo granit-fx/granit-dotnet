@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "LocalizationEndpoints:Workspace.Item": "Surcharges de traduction",
+    "LocalizationEndpoints:Workspace.Section": "Localisation"
+  }
 }

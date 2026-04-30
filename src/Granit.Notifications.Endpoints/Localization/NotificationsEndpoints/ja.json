@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:Notifications": "通知",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "通知の管理（設定、サブスクリプション、プッシュトークン）",
     "Permission:Notifications.UserNotifications.Read": "通知の閲覧（受信トレイ、アクティビティフィード）",
-    "Permission:Notifications.UserNotifications.Manage": "通知の管理（設定、サブスクリプション、プッシュトークン）"
+    "PermissionGroup:Notifications": "通知"
   }
 }

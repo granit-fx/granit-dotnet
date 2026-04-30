@@ -1,8 +1,10 @@
 {
   "culture": "hi",
   "texts": {
-    "PermissionGroup:Notifications": "सूचनाएँ",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "सूचनाएँ प्रबंधित करें (प्राथमिकताएँ, सब्सक्रिप्शन, पुश टोकन)",
     "Permission:Notifications.UserNotifications.Read": "सूचनाएँ देखें (इनबॉक्स, गतिविधि फ़ीड)",
-    "Permission:Notifications.UserNotifications.Manage": "सूचनाएँ प्रबंधित करें (प्राथमिकताएँ, सब्सक्रिप्शन, पुश टोकन)"
+    "PermissionGroup:Notifications": "सूचनाएँ"
   }
 }

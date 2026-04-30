@@ -3,8 +3,11 @@ using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.Cookies;
 using Granit.Modularity;
+using Granit.Privacy.Endpoints.Workspaces;
 using Granit.Privacy.Regulations;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Privacy.Endpoints;
 
@@ -33,5 +36,11 @@ namespace Granit.Privacy.Endpoints;
     typeof(GranitHttpCookiesModule),
     typeof(GranitPrivacyModule),
     typeof(GranitPrivacyRegulationsModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitPrivacyEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitPrivacyEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<PrivacyWorkspaceContribution>();
+}

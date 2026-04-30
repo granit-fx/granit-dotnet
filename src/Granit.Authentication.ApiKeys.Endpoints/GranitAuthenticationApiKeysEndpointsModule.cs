@@ -1,7 +1,10 @@
+using Granit.Authentication.ApiKeys.Endpoints.Workspaces;
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Authentication.ApiKeys.Endpoints;
 
@@ -10,8 +13,14 @@ namespace Granit.Authentication.ApiKeys.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitHttpApiDocumentationModule),
     typeof(GranitAuthenticationApiKeysModule),
     typeof(GranitAuthorizationModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitAuthenticationApiKeysEndpointsModule : GranitModule;
+    typeof(GranitHttpApiDocumentationModule),
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitAuthenticationApiKeysEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<ApiKeysWorkspaceContribution>();
+}

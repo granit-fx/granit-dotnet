@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "Ver definições globais",
     "Permission:Settings.Tenant.Manage": "Gerir definições do inquilino (ver, criar, editar)",
     "Permission:Settings.Tenant.Read": "Ver definições do inquilino",
-    "PermissionGroup:Settings": "Definições"
+    "PermissionGroup:Settings": "Definições",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

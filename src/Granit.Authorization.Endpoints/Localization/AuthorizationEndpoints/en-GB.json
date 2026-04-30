@@ -1,6 +1,8 @@
 {
   "culture": "en-GB",
   "texts": {
+    "AuthorizationEndpoints:Workspace.Definitions": "Permissions catalogue",
+    "AuthorizationEndpoints:Workspace.Section": "Authorization",
     "PermissionGroup:Authorization": "Authorisation Management"
   }
 }

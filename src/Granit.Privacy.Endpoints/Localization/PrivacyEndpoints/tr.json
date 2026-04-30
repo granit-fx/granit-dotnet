@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Yasal belgeleri düzenle, yayınla ve arşivle",
     "Permission:Privacy.LegalDocuments.Read": "Yasal belgelerin sürümlerini ve geçmişini görüntüle",
     "Permission:Privacy.Purposes.Read": "Kayıtlı işleme amaçlarını görüntüle",
-    "PermissionGroup:Privacy": "Gizlilik (KVKK)"
+    "PermissionGroup:Privacy": "Gizlilik (KVKK)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

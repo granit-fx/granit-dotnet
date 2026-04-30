@@ -1,11 +1,13 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:AuthenticationApiKeys": "API Anahtarları",
-    "Permission:AuthenticationApiKeys.Keys.Read": "API anahtarlarını görüntüle (liste, ayrıntılar)",
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys",
     "Permission:AuthenticationApiKeys.Keys.Create": "Yeni API anahtarları oluştur",
+    "Permission:AuthenticationApiKeys.Keys.Read": "API anahtarlarını görüntüle (liste, ayrıntılar)",
     "Permission:AuthenticationApiKeys.Keys.Revoke": "API anahtarlarını iptal et",
     "Permission:AuthenticationApiKeys.Keys.Rotate": "API anahtarlarını döndür (iptal et ve değiştir)",
-    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API anahtarı izinlerini ve CIDR kapsamlarını güncelle"
+    "Permission:AuthenticationApiKeys.Keys.UpdateScopes": "API anahtarı izinlerini ve CIDR kapsamlarını güncelle",
+    "PermissionGroup:AuthenticationApiKeys": "API Anahtarları"
   }
 }

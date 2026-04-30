@@ -1,8 +1,10 @@
 {
   "culture": "cs",
   "texts": {
-    "PermissionGroup:Localization": "Lokalizace",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "Správa přepisů překladů (zobrazení, vytvoření, úprava, smazání)",
     "Permission:Localization.Overrides.Read": "Zobrazit přepisy překladů",
-    "Permission:Localization.Overrides.Manage": "Správa přepisů překladů (zobrazení, vytvoření, úprava, smazání)"
+    "PermissionGroup:Localization": "Lokalizace"
   }
 }

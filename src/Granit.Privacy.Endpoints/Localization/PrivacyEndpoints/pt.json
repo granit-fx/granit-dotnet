@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Editar, publicar e arquivar documentos legais",
     "Permission:Privacy.LegalDocuments.Read": "Ver versões e histórico de documentos legais",
     "Permission:Privacy.Purposes.Read": "Consultar as finalidades do tratamento",
-    "PermissionGroup:Privacy": "Privacidade (RGPD)"
+    "PermissionGroup:Privacy": "Privacidade (RGPD)",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

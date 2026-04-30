@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "AuthorizationEndpoints:Workspace.Definitions": "Catalogue des permissions",
+    "AuthorizationEndpoints:Workspace.Section": "Autorisations"
+  }
 }

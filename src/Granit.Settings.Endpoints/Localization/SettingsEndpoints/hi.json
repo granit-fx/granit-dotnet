@@ -8,6 +8,9 @@
     "Permission:Settings.Global.Read": "वैश्विक सेटिंग्स देखें",
     "Permission:Settings.Tenant.Manage": "टेनेंट सेटिंग्स प्रबंधित करें (देखें, बनाएँ, संपादित करें)",
     "Permission:Settings.Tenant.Read": "टेनेंट सेटिंग्स देखें",
-    "PermissionGroup:Settings": "सेटिंग्स"
+    "PermissionGroup:Settings": "सेटिंग्स",
+    "SettingsEndpoints:Workspace.Global": "Global settings",
+    "SettingsEndpoints:Workspace.Section": "Settings",
+    "SettingsEndpoints:Workspace.Tenant": "Tenant settings"
   }
 }

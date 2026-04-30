@@ -1,8 +1,10 @@
 {
   "culture": "de",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "Hintergrundaufgaben",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "Hintergrundaufgaben verwalten (Liste, Pause, Fortsetzen, manuelles Auslösen)",
     "Permission:BackgroundJobs.Jobs.Read": "Hintergrundaufgaben anzeigen (Liste, Detail)",
-    "Permission:BackgroundJobs.Jobs.Manage": "Hintergrundaufgaben verwalten (Liste, Pause, Fortsetzen, manuelles Auslösen)"
+    "PermissionGroup:BackgroundJobs": "Hintergrundaufgaben"
   }
 }

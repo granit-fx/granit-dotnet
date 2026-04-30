@@ -1,8 +1,10 @@
 {
   "culture": "tr",
   "texts": {
-    "PermissionGroup:Features": "Özellikler",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Özellik geçersiz kılmalarını yönet (ayarla, sil)",
     "Permission:Features.Flags.Read": "Özellik tanımlarını oku",
-    "Permission:Features.Flags.Manage": "Özellik geçersiz kılmalarını yönet (ayarla, sil)"
+    "PermissionGroup:Features": "Özellikler"
   }
 }

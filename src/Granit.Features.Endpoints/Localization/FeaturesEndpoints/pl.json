@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:Features": "Funkcjonalności",
+    "FeaturesEndpoints:Workspace.Item": "Flags",
+    "FeaturesEndpoints:Workspace.Section": "Feature flags",
+    "Permission:Features.Flags.Manage": "Zarządzaj nadpisaniami funkcjonalności (ustawiaj, usuwaj)",
     "Permission:Features.Flags.Read": "Odczytaj definicje funkcjonalności",
-    "Permission:Features.Flags.Manage": "Zarządzaj nadpisaniami funkcjonalności (ustawiaj, usuwaj)"
+    "PermissionGroup:Features": "Funkcjonalności"
   }
 }

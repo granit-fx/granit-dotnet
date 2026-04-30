@@ -1,7 +1,10 @@
 using Granit.Auditing;
+using Granit.Auditing.Endpoints.Workspaces;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Auditing.Endpoints;
 
@@ -17,5 +20,11 @@ namespace Granit.Auditing.Endpoints;
 [DependsOn(
     typeof(GranitAuditingModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitAuditingEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitAuditingEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<AuditingWorkspaceContribution>();
+}

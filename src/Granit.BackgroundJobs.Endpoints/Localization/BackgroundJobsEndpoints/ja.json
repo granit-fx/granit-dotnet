@@ -1,8 +1,10 @@
 {
   "culture": "ja",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "バックグラウンドジョブ",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "バックグラウンドジョブの管理（一覧、一時停止、再開、手動実行）",
     "Permission:BackgroundJobs.Jobs.Read": "バックグラウンドジョブの閲覧（一覧、詳細）",
-    "Permission:BackgroundJobs.Jobs.Manage": "バックグラウンドジョブの管理（一覧、一時停止、再開、手動実行）"
+    "PermissionGroup:BackgroundJobs": "バックグラウンドジョブ"
   }
 }

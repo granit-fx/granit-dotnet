@@ -1,8 +1,10 @@
 {
   "culture": "nl",
   "texts": {
-    "PermissionGroup:BlobStorage": "Bestandsopslag",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)",
     "Permission:BlobStorage.Administration.Read": "Bestandsopslagbeheer bekijken (lijst, descriptors, query)",
-    "Permission:BlobStorage.Administration.Manage": "Bestandsopslag beheren (uploaden, downloaden, verwijderen, bevestigen, opruimen)"
+    "PermissionGroup:BlobStorage": "Bestandsopslag"
   }
 }

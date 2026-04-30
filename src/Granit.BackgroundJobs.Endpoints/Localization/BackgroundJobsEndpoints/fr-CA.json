@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "BackgroundJobsEndpoints:Workspace.Item": "Exécutions de tâches",
+    "BackgroundJobsEndpoints:Workspace.Section": "Tâches d'arrière-plan"
+  }
 }

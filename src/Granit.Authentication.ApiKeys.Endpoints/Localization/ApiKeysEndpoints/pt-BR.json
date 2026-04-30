@@ -1,4 +1,7 @@
 {
   "culture": "pt-BR",
-  "texts": {}
+  "texts": {
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "API keys",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "API keys"
+  }
 }

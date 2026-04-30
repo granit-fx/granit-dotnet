@@ -1,8 +1,10 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Auditing": "Granskningslogg",
+    "AuditingEndpoints:Workspace.Item": "Audit log",
+    "AuditingEndpoints:Workspace.Section": "Auditing",
+    "Permission:Auditing.AuditEntries.Manage": "Hantera granskningslogginlägg (pseudonymisering, GDPR art. 17)",
     "Permission:Auditing.AuditEntries.Read": "Visa granskningslogginlägg (ISO 27001-revisionsspår)",
-    "Permission:Auditing.AuditEntries.Manage": "Hantera granskningslogginlägg (pseudonymisering, GDPR art. 17)"
+    "PermissionGroup:Auditing": "Granskningslogg"
   }
 }

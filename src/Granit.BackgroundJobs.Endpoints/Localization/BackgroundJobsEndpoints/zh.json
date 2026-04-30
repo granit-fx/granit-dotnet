@@ -1,8 +1,10 @@
 {
   "culture": "zh",
   "texts": {
-    "PermissionGroup:BackgroundJobs": "后台任务",
+    "BackgroundJobsEndpoints:Workspace.Item": "Job runs",
+    "BackgroundJobsEndpoints:Workspace.Section": "Background jobs",
+    "Permission:BackgroundJobs.Jobs.Manage": "管理后台任务（列表、暂停、恢复、手动触发）",
     "Permission:BackgroundJobs.Jobs.Read": "查看后台任务（列表、详情）",
-    "Permission:BackgroundJobs.Jobs.Manage": "管理后台任务（列表、暂停、恢复、手动触发）"
+    "PermissionGroup:BackgroundJobs": "后台任务"
   }
 }

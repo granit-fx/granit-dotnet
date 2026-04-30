@@ -1,12 +1,14 @@
 {
   "culture": "sv",
   "texts": {
-    "PermissionGroup:Webhooks": "Webhooks",
-    "Permission:Webhooks.Subscriptions.Read": "Visa webhook-prenumerationer",
-    "Permission:Webhooks.Subscriptions.Manage": "Hantera webhooks (livscykel, hemlighetsrotation, testping, statistik)",
     "Granit:Validation:InvalidWebhookUrl": "Mål-URL måste vara en giltig HTTPS-URL",
-    "Granit:Validation:WebhookUrlPrivateAddress": "Privata, lokala eller reserverade IP-adresser är inte tillåtna",
+    "Granit:Validation:UnknownWebhookEventType": "Den angivna händelsetypen är inte registrerad. Använd GET /event-types för tillgängliga typer.",
     "Granit:Validation:WebhookUrlBlockedTld": "Interna domännamn (.local, .internal, .localhost, .onion) är inte tillåtna",
-    "Granit:Validation:UnknownWebhookEventType": "Den angivna händelsetypen är inte registrerad. Använd GET /event-types för tillgängliga typer."
+    "Granit:Validation:WebhookUrlPrivateAddress": "Privata, lokala eller reserverade IP-adresser är inte tillåtna",
+    "Permission:Webhooks.Subscriptions.Manage": "Hantera webhooks (livscykel, hemlighetsrotation, testping, statistik)",
+    "Permission:Webhooks.Subscriptions.Read": "Visa webhook-prenumerationer",
+    "PermissionGroup:Webhooks": "Webhooks",
+    "WebhooksEndpoints:Workspace.Item": "Subscriptions",
+    "WebhooksEndpoints:Workspace.Section": "Webhooks"
   }
 }

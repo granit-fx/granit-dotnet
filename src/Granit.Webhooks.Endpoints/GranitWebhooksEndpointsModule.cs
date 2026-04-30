@@ -2,6 +2,9 @@ using Granit.Authorization;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
 using Granit.Webhooks;
+using Granit.Webhooks.Endpoints.Workspaces;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.Webhooks.Endpoints;
 
@@ -11,5 +14,11 @@ namespace Granit.Webhooks.Endpoints;
 [DependsOn(
     typeof(GranitAuthorizationModule),
     typeof(GranitQueryEngineAspNetCoreModule),
-    typeof(GranitWebhooksModule))]
-public sealed class GranitWebhooksEndpointsModule : GranitModule;
+    typeof(GranitWebhooksModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitWebhooksEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<WebhooksWorkspaceContribution>();
+}

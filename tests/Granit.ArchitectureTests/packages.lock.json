@@ -1554,7 +1554,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.auditing.entityframeworkcore": {
@@ -1598,7 +1599,8 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.authentication.apikeys.entityframeworkcore": {
@@ -1685,7 +1687,8 @@
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.authorization.entityframeworkcore": {
@@ -1716,7 +1719,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.BackgroundJobs": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.backgroundjobs.entityframeworkcore": {
@@ -1831,7 +1835,8 @@
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.RateLimiting": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.blobstorage.entityframeworkcore": {
@@ -2184,6 +2189,17 @@
           "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
+      "granit.entities.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.events": {
         "type": "Project",
         "dependencies": {
@@ -2211,7 +2227,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Features": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.features.entityframeworkcore": {
@@ -2605,7 +2622,8 @@
           "Granit.Authorization": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.localization.entityframeworkcore": {
@@ -2844,7 +2862,8 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Notifications": "[0.1.0-dev, )",
           "Granit.Notifications.MobilePush": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.notifications.entityframeworkcore": {
@@ -3342,7 +3361,8 @@
           "Granit.Http.Cookies": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )",
           "Granit.Privacy.Regulations": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.privacy.entityframeworkcore": {
@@ -3516,7 +3536,8 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Settings": "[0.1.0-dev, )",
           "Granit.Timing": "[0.1.0-dev, )",
-          "Granit.Validation": "[0.1.0-dev, )"
+          "Granit.Validation": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.settings.entityframeworkcore": {
@@ -3877,7 +3898,8 @@
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )",
-          "Granit.Webhooks": "[0.1.0-dev, )"
+          "Granit.Webhooks": "[0.1.0-dev, )",
+          "Granit.Workspaces.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.webhooks.entityframeworkcore": {
@@ -3972,6 +3994,13 @@
           "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
           "Granit.Templating": "[0.1.0-dev, )",
           "Granit.Workflow": "[0.1.0-dev, )"
+        }
+      },
+      "granit.workspaces.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )"
         }
       },
       "AngleSharp": {

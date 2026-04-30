@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "FeaturesEndpoints:Workspace.Item": "Indicateurs",
+    "FeaturesEndpoints:Workspace.Section": "Indicateurs de fonctionnalités"
+  }
 }

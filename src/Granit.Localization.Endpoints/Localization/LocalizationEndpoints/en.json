@@ -1,8 +1,10 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Localization": "Localization",
+    "LocalizationEndpoints:Workspace.Item": "Translation overrides",
+    "LocalizationEndpoints:Workspace.Section": "Localization",
+    "Permission:Localization.Overrides.Manage": "Manage translation overrides (view, create, edit, delete)",
     "Permission:Localization.Overrides.Read": "View translation overrides",
-    "Permission:Localization.Overrides.Manage": "Manage translation overrides (view, create, edit, delete)"
+    "PermissionGroup:Localization": "Localization"
   }
 }

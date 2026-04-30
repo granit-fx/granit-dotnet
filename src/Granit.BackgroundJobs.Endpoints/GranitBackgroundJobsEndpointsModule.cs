@@ -1,7 +1,10 @@
 using Granit.Authorization;
+using Granit.BackgroundJobs.Endpoints.Workspaces;
 using Granit.Modularity;
 using Granit.QueryEngine;
 using Granit.Validation;
+using Granit.Workspaces;
+using Granit.Workspaces.Extensions;
 
 namespace Granit.BackgroundJobs.Endpoints;
 
@@ -19,5 +22,11 @@ namespace Granit.BackgroundJobs.Endpoints;
     typeof(GranitAuthorizationModule),
     typeof(GranitBackgroundJobsModule),
     typeof(GranitQueryEngineAbstractionsModule),
-    typeof(GranitValidationModule))]
-public sealed class GranitBackgroundJobsEndpointsModule : GranitModule;
+    typeof(GranitValidationModule),
+    typeof(GranitWorkspacesAbstractionsModule))]
+public sealed class GranitBackgroundJobsEndpointsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddWorkspaceContribution<BackgroundJobsWorkspaceContribution>();
+}

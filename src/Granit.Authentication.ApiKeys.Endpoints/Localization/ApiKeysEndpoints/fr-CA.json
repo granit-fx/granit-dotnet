@@ -1,4 +1,7 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "AuthenticationApiKeysEndpoints:Workspace.Item": "Clés API",
+    "AuthenticationApiKeysEndpoints:Workspace.Section": "Clés API"
+  }
 }

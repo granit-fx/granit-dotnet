@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "कानूनी दस्तावेज़ों को संपादित करें, प्रकाशित करें और संग्रहीत करें",
     "Permission:Privacy.LegalDocuments.Read": "कानूनी दस्तावेज़ संस्करण और इतिहास देखें",
     "Permission:Privacy.Purposes.Read": "पंजीकृत प्रसंस्करण उद्देश्य पढ़ें",
-    "PermissionGroup:Privacy": "गोपनीयता"
+    "PermissionGroup:Privacy": "गोपनीयता",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }

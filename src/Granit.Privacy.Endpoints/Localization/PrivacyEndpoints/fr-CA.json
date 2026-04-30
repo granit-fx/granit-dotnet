@@ -1,4 +1,8 @@
 {
   "culture": "fr-CA",
-  "texts": {}
+  "texts": {
+    "PrivacyEndpoints:Workspace.Agreements": "Consentements",
+    "PrivacyEndpoints:Workspace.Purposes": "Finalités",
+    "PrivacyEndpoints:Workspace.Section": "Confidentialité"
+  }
 }

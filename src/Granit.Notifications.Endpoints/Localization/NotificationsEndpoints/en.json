@@ -1,8 +1,10 @@
 {
   "culture": "en",
   "texts": {
-    "PermissionGroup:Notifications": "Notifications",
+    "NotificationsEndpoints:Workspace.Item": "Inbox & subscriptions",
+    "NotificationsEndpoints:Workspace.Section": "Notifications",
+    "Permission:Notifications.UserNotifications.Manage": "Manage notifications (preferences, subscriptions, push tokens)",
     "Permission:Notifications.UserNotifications.Read": "View notifications (inbox, activity feed)",
-    "Permission:Notifications.UserNotifications.Manage": "Manage notifications (preferences, subscriptions, push tokens)"
+    "PermissionGroup:Notifications": "Notifications"
   }
 }

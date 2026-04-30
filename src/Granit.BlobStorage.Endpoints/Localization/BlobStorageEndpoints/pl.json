@@ -1,8 +1,10 @@
 {
   "culture": "pl",
   "texts": {
-    "PermissionGroup:BlobStorage": "Magazyn plików",
+    "BlobStorageEndpoints:Workspace.Item": "Blob administration",
+    "BlobStorageEndpoints:Workspace.Section": "Blob storage",
+    "Permission:BlobStorage.Administration.Manage": "Zarządzanie magazynem plików (przesyłanie, pobieranie, usuwanie, potwierdzanie, czyszczenie)",
     "Permission:BlobStorage.Administration.Read": "Wyświetlanie administracji magazynu plików (lista, deskryptory, zapytania)",
-    "Permission:BlobStorage.Administration.Manage": "Zarządzanie magazynem plików (przesyłanie, pobieranie, usuwanie, potwierdzanie, czyszczenie)"
+    "PermissionGroup:BlobStorage": "Magazyn plików"
   }
 }

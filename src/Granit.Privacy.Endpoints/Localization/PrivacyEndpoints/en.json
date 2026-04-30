@@ -9,6 +9,9 @@
     "Permission:Privacy.LegalDocuments.Manage": "Edit, publish, and archive legal documents",
     "Permission:Privacy.LegalDocuments.Read": "View legal document versions and history",
     "Permission:Privacy.Purposes.Read": "Read registered processing purposes",
-    "PermissionGroup:Privacy": "Privacy"
+    "PermissionGroup:Privacy": "Privacy",
+    "PrivacyEndpoints:Workspace.Agreements": "Agreements",
+    "PrivacyEndpoints:Workspace.Purposes": "Purposes",
+    "PrivacyEndpoints:Workspace.Section": "Privacy"
   }
 }
