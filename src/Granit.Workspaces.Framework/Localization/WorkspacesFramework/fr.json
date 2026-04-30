@@ -1,0 +1,15 @@
+{
+  "culture": "fr",
+  "texts": {
+    "WorkspacesFramework:Workspace.Framework": "Framework",
+    "WorkspacesFramework:Workspace.System": "Système",
+    "WorkspacesFramework:Workspace.Users": "Utilisateurs",
+    "WorkspacesFramework:Workspace.Automation": "Automatisation",
+    "WorkspacesFramework:Workspace.Data": "Données",
+    "WorkspacesFramework:Workspace.Email": "E-mail",
+    "WorkspacesFramework:Workspace.Integrations": "Intégrations",
+    "WorkspacesFramework:Workspace.Monitoring": "Supervision",
+    "WorkspacesFramework:Workspace.Privacy": "Confidentialité",
+    "WorkspacesFramework:Section.Framework": "Sections"
+  }
+}

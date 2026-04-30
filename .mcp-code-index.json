@@ -2898,6 +2898,14 @@
         "Granit.Workspaces"
       ],
       "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Workspaces.Framework",
+      "deps": [
+        "Granit.Localization",
+        "Granit.Workspaces.Abstractions"
+      ],
+      "framework": "net10.0"
     }
   ],
   "symbols": [
@@ -58583,6 +58591,24 @@
       ]
     },
     {
+      "name": "LandingRouteResponse",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.LandingRouteResponse",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/LandingRouteResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "SetPinnedLandingRouteRequest",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.SetPinnedLandingRouteRequest",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/LandingRouteResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "WorkspaceItemResponse",
       "fqn": "Granit.Workspaces.Endpoints.Dtos.WorkspaceItemResponse",
       "kind": "record",
@@ -58624,7 +58650,7 @@
       "kind": "class",
       "project": "Granit.Workspaces.Endpoints",
       "file": "src/Granit.Workspaces.Endpoints/Extensions/WorkspacesEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitWorkspacesEndpoints",
@@ -58651,6 +58677,116 @@
       ]
     },
     {
+      "name": "ILandingRouteAccessGuard",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.ILandingRouteAccessGuard",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/LandingRouteResolver.cs",
+      "line": 125,
+      "members": [
+        {
+          "name": "CanAccessAsync",
+          "kind": "method",
+          "signature": "CanAccessAsync(string route, ClaimsPrincipal user, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ILandingRouteStore",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.ILandingRouteStore",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/ILandingRouteStore.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetStickyAsync",
+          "kind": "method",
+          "signature": "GetStickyAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        },
+        {
+          "name": "GetPinnedAsync",
+          "kind": "method",
+          "signature": "GetPinnedAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        },
+        {
+          "name": "SetPinnedAsync",
+          "kind": "method",
+          "signature": "SetPinnedAsync(string userId, Guid? tenantId, string? route, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRoleLandingRouteProvider",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.IRoleLandingRouteProvider",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/IRoleLandingRouteProvider.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetRoleDefaultAsync",
+          "kind": "method",
+          "signature": "GetRoleDefaultAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "ITenantLandingRouteProvider",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.ITenantLandingRouteProvider",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/IRoleLandingRouteProvider.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "GetTenantDefaultAsync",
+          "kind": "method",
+          "signature": "GetTenantDefaultAsync(Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string?>"
+        }
+      ]
+    },
+    {
+      "name": "LandingRouteResolver",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.LandingRouteResolver",
+      "kind": "class",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/LandingRouteResolver.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "ResolveAsync",
+          "kind": "method",
+          "signature": "ResolveAsync(ClaimsPrincipal user, CancellationToken cancellationToken)",
+          "returnType": "Task<LandingRouteResult>"
+        }
+      ]
+    },
+    {
+      "name": "LandingRouteResult",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.LandingRouteResult",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/LandingRouteResolver.cs",
+      "line": 117,
+      "members": []
+    },
+    {
+      "name": "LandingRouteSource",
+      "fqn": "Granit.Workspaces.Endpoints.Landing.LandingRouteSource",
+      "kind": "enum",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Landing/LandingRouteSource.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "WorkspacesEndpointsOptions",
       "fqn": "Granit.Workspaces.Endpoints.Options.WorkspacesEndpointsOptions",
       "kind": "class",
@@ -58669,6 +58805,18 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan TreeCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FrameworkLandingRoute",
+          "kind": "property",
+          "signature": "string FrameworkLandingRoute",
+          "returnType": "string"
+        },
+        {
+          "name": "LandingRouteAllowedPrefixes",
+          "kind": "property",
+          "signature": "IList<string> LandingRouteAllowedPrefixes",
+          "returnType": "IList<string>"
         }
       ]
     },
@@ -58705,6 +58853,56 @@
           "returnType": "IServiceCollection"
         }
       ]
+    },
+    {
+      "name": "FrameworkWorkspaceDefinition",
+      "fqn": "Granit.Workspaces.Framework.FrameworkWorkspaceDefinition",
+      "kind": "class",
+      "project": "Granit.Workspaces.Framework",
+      "file": "src/Granit.Workspaces.Framework/FrameworkWorkspaceDefinition.cs",
+      "line": 47,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "FrameworkWorkspaceNames",
+      "fqn": "Granit.Workspaces.Framework.FrameworkWorkspaceNames",
+      "kind": "class",
+      "project": "Granit.Workspaces.Framework",
+      "file": "src/Granit.Workspaces.Framework/FrameworkWorkspaceDefinition.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GranitWorkspacesFrameworkModule",
+      "fqn": "Granit.Workspaces.Framework.GranitWorkspacesFrameworkModule",
+      "kind": "class",
+      "project": "Granit.Workspaces.Framework",
+      "file": "src/Granit.Workspaces.Framework/GranitWorkspacesFrameworkModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "WorkspacesFrameworkLocalizationResource",
+      "fqn": "Granit.Workspaces.Framework.WorkspacesFrameworkLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Workspaces.Framework",
+      "file": "src/Granit.Workspaces.Framework/WorkspacesFrameworkLocalizationResource.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "GranitWorkspacesAbstractionsModule",

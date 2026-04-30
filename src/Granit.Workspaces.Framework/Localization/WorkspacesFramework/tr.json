@@ -1,0 +1,15 @@
+{
+  "culture": "tr",
+  "texts": {
+    "WorkspacesFramework:Workspace.Framework": "Framework",
+    "WorkspacesFramework:Workspace.System": "System",
+    "WorkspacesFramework:Workspace.Users": "Users",
+    "WorkspacesFramework:Workspace.Automation": "Automation",
+    "WorkspacesFramework:Workspace.Data": "Data",
+    "WorkspacesFramework:Workspace.Email": "Email",
+    "WorkspacesFramework:Workspace.Integrations": "Integrations",
+    "WorkspacesFramework:Workspace.Monitoring": "Monitoring",
+    "WorkspacesFramework:Workspace.Privacy": "Privacy",
+    "WorkspacesFramework:Section.Framework": "Sections"
+  }
+}

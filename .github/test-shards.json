@@ -119,6 +119,7 @@
         "tests/Granit.Entities.Views.Tests",
         "tests/Granit.Workspaces.Abstractions.Tests",
         "tests/Granit.Workspaces.Endpoints.Tests",
+        "tests/Granit.Workspaces.Framework.Tests",
         "tests/Granit.Workspaces.Tests"
       ]
     },

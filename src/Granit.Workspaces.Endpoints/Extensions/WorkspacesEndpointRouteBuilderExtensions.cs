@@ -1,6 +1,7 @@
 using Granit.Validation.AspNetCore;
 using Granit.Workspaces.Endpoints.Endpoints;
 using Granit.Workspaces.Endpoints.Internal;
+using Granit.Workspaces.Endpoints.Landing;
 using Granit.Workspaces.Endpoints.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -46,14 +47,46 @@ public static class WorkspacesEndpointRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Registers the <see cref="WorkspaceFilter"/> service required by the
-    /// workspace tree handler. Called once from the framework's
-    /// service-collection extension.
+    /// Mounts <c>GET /api/me/landing-route</c> + <c>PUT /api/me/landing-route/pinned</c>
+    /// under the supplied prefix (typically <c>"/api/{version}/me"</c>).
+    /// Uses the same options bag as the workspace tree endpoint — the
+    /// framework fallback / URL whitelist live on
+    /// <see cref="WorkspacesEndpointsOptions"/>.
+    /// </summary>
+    public static RouteGroupBuilder MapGranitLandingRouteEndpoints(
+        this IEndpointRouteBuilder endpoints,
+        string prefix,
+        Action<WorkspacesEndpointsOptions>? configure = null)
+    {
+        ArgumentNullException.ThrowIfNull(endpoints);
+        ArgumentException.ThrowIfNullOrWhiteSpace(prefix);
+
+        WorkspacesEndpointsOptions options = new();
+        configure?.Invoke(options);
+
+        RouteGroupBuilder group = endpoints
+            .MapGranitGroup(prefix + "/landing-route")
+            .WithTags(options.TagName)
+            .RequireAuthorization();
+
+        group.MapLandingRouteEndpoints();
+        return group;
+    }
+
+    /// <summary>
+    /// Registers the <see cref="WorkspaceFilter"/> + landing-route services
+    /// required by the workspace HTTP surface. Called once from the framework's
+    /// module class.
     /// </summary>
     public static IServiceCollection AddGranitWorkspacesEndpoints(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
         services.TryAddScoped<WorkspaceFilter>();
+        services.TryAddScoped<LandingRouteResolver>();
+        services.TryAddSingleton<ILandingRouteStore, NullLandingRouteStore>();
+        services.TryAddSingleton<IRoleLandingRouteProvider, NullRoleLandingRouteProvider>();
+        services.TryAddSingleton<ITenantLandingRouteProvider, NullTenantLandingRouteProvider>();
+        services.TryAddSingleton<ILandingRouteAccessGuard, AllowAllLandingRouteAccessGuard>();
         services.AddOptions<WorkspacesEndpointsOptions>();
         return services;
     }
