@@ -32,7 +32,6 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : D
 {
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<Customer> Customers => Set<Customer>();
-    public DbSet<Branch> Branches => Set<Branch>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -43,13 +42,25 @@ internal sealed class TestDbContext(DbContextOptions<TestDbContext> options) : D
             e.Property(c => c.Country).HasMaxLength(64).IsRequired();
             e.Property(c => c.Status).HasMaxLength(64).IsRequired();
         });
+    }
+}
+
+// Branch lives in its own context: its geography(Point) column requires the
+// PostGIS extension at the server level. Keeping it apart lets the empty-set
+// and pivot parity fixtures run on plain Postgres images, without paying the
+// PostGIS image weight or hitting "extension postgis is not available".
+internal sealed class BranchDbContext(DbContextOptions<BranchDbContext> options) : DbContext(options)
+{
+    public DbSet<Branch> Branches => Set<Branch>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Branch>(e =>
         {
             e.HasKey(b => b.Id);
             e.Property(b => b.Name).HasMaxLength(128).IsRequired();
             // Location uses Npgsql's NetTopologySuite plugin (UseNetTopologySuite()) —
             // when the plugin is wired the column is mapped to geography(Point) by default.
-            // Property-level config beyond that is the host's responsibility.
         });
     }
 }
@@ -90,12 +101,16 @@ internal sealed class BranchQueryDefinition : QueryDefinition<Branch>
     protected override void Configure(QueryDefinitionBuilder<Branch> builder) =>
         builder
             .Column(b => b.Name, c => c.Filterable())
+            // Declared so the analytics column whitelist accepts it as a
+            // geography source on the Map widget. Not filterable / not sortable —
+            // a Point column is not meaningful in either role.
+            .Column(b => b.Location)
             .DefaultPageSize(50);
 }
 
-internal sealed class BranchSource(TestDbContext db) : IQueryableSource<Branch>
+internal sealed class BranchSource(BranchDbContext db) : IQueryableSource<Branch>
 {
-    private readonly TestDbContext _db = db;
+    private readonly BranchDbContext _db = db;
     public IQueryable<Branch> GetQueryable() => _db.Branches.AsNoTracking();
 }
 

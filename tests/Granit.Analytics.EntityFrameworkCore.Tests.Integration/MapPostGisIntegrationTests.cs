@@ -24,17 +24,17 @@ public sealed class MapPostGisIntegrationTests(PostGisFixture postgis)
     : IClassFixture<PostGisFixture>, IAsyncLifetime
 {
     private readonly PostGisFixture _postgis = postgis;
-    private TestDbContext _db = null!;
+    private BranchDbContext _db = null!;
     private ServiceProvider _provider = null!;
     private MapRunner<Branch> _runner = null!;
 
     public async ValueTask InitializeAsync()
     {
-        DbContextOptions<TestDbContext> options = new DbContextOptionsBuilder<TestDbContext>()
+        DbContextOptions<BranchDbContext> options = new DbContextOptionsBuilder<BranchDbContext>()
             .UseNpgsql(_postgis.ConnectionString, o => o.UseNetTopologySuite())
             .Options;
 
-        _db = new TestDbContext(options);
+        _db = new BranchDbContext(options);
         await _db.Database.EnsureCreatedAsync(TestContext.Current.CancellationToken);
         await _db.Branches.ExecuteDeleteAsync(TestContext.Current.CancellationToken);
 
