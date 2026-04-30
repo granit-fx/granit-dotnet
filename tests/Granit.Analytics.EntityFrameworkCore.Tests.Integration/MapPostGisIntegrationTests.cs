@@ -61,6 +61,7 @@ public sealed class MapPostGisIntegrationTests(PostGisFixture postgis)
             name: "Test.Branches",
             source: new BranchSource(_db),
             engine: engine,
+            definition: new BranchQueryDefinition(),
             metrics: metrics,
             currentTenant: null,
             geographyProjector: new NtsGeographyPointProjector<Branch>());
