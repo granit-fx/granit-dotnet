@@ -41,6 +41,7 @@ public static class DashboardsEndpointRouteBuilderExtensions
         RouteGroupBuilder instancesGroup = group.MapGranitGroup("")
             .WithTags(options.InstancesTagName);
         instancesGroup.MapImportEndpoints();
+        instancesGroup.MapResyncEndpoints();
         instancesGroup.MapInstanceEndpoints();
         instancesGroup.MapMetadataEditEndpoints();
         instancesGroup.MapStateTransitionEndpoints();

@@ -51,6 +51,7 @@ public sealed class MapGranitDashboardsTests
         AssertTag(tagsByPath, "/dashboards/{id:guid}/publish", "Dashboards - Instances");
         AssertTag(tagsByPath, "/dashboards/{id:guid}/archive", "Dashboards - Instances");
         AssertTag(tagsByPath, "/dashboards/{id:guid}/restore", "Dashboards - Instances");
+        AssertTag(tagsByPath, "/dashboards/{id:guid}/resync", "Dashboards - Instances");
 
         // Widgets sub-tag scopes the widget pool.
         AssertTag(tagsByPath, "/dashboards/{id:guid}/widgets", "Dashboards - Widgets");

@@ -22,6 +22,7 @@ public static class DashboardsEndpointsServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.TryAddScoped<DashboardImporter>();
+        services.TryAddScoped<DashboardResyncer>();
         services.TryAddScoped<DashboardReader>();
         services.TryAddScoped<DashboardEditor>();
         services.TryAddScoped<DashboardStateTransitionService>();

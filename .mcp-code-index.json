@@ -13670,6 +13670,15 @@
       ]
     },
     {
+      "name": "DashboardResyncSummary",
+      "fqn": "Granit.Dashboards.Domain.DashboardResyncSummary",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/DashboardResyncSummary.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "DashboardStatus",
       "fqn": "Granit.Dashboards.Domain.DashboardStatus",
       "kind": "enum",
@@ -13712,6 +13721,24 @@
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "DashboardResyncedEvent",
+      "fqn": "Granit.Dashboards.Domain.Events.DashboardResyncedEvent",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/Events/DashboardEvents.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "ResyncWidgetInput",
+      "fqn": "Granit.Dashboards.Domain.ResyncWidgetInput",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Domain/ResyncWidgetInput.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -13913,6 +13940,15 @@
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardRenderResponse.cs",
       "line": 92,
+      "members": []
+    },
+    {
+      "name": "DashboardResyncResponse",
+      "fqn": "Granit.Dashboards.Endpoints.Dtos.DashboardResyncResponse",
+      "kind": "record",
+      "project": "Granit.Dashboards.Endpoints",
+      "file": "src/Granit.Dashboards.Endpoints/Dtos/DashboardResyncResponse.cs",
+      "line": 17,
       "members": []
     },
     {

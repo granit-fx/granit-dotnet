@@ -261,6 +261,138 @@ public sealed class Dashboard : FullAuditedAggregateRoot, IMultiTenant
         AddDomainEvent(new DashboardArchivedEvent(Id, TenantId));
     }
 
+    /// <summary>
+    /// Re-imports the source definition into this aggregate (ADR-038 §3). Replaces the
+    /// widget pool with <paramref name="incomingWidgets"/>, refreshes the structural
+    /// metadata (<see cref="LayoutColumns"/>, <see cref="LayoutRowHeight"/>,
+    /// <see cref="IsSystem"/>, <see cref="SourceDefinitionVersion"/>) from the new descriptor,
+    /// and best-effort preserves per-instance <see cref="WidgetInstance.Overrides"/> via
+    /// <see cref="WidgetInstance.TitleLocalizationKey"/> match.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The dashboard's <see cref="Name"/> and <see cref="Status"/> are intentionally not
+    /// touched — admins rename dashboards and resync should not silently revert that, nor
+    /// should it republish a dashboard the admin previously archived. The
+    /// <see cref="Status"/> stays in its current state; if the resync was triggered on a
+    /// <see cref="DashboardStatus.Published"/> dashboard, the new widget pool is live
+    /// immediately on the next render.
+    /// </para>
+    /// <para>
+    /// Override carry-over uses <see cref="WidgetInstance.TitleLocalizationKey"/> as the
+    /// slug equivalent: it encodes <c>"Widget:{SourceDefinitionName}.{Slug}"</c> and
+    /// <see cref="SourceDefinitionName"/> is invariant across a resync, so an exact-match
+    /// dictionary lookup is the same as matching on the bare slug. Slugs the descriptor
+    /// author renamed silently lose their overrides — by design (cautious default; a
+    /// surprise is better than silently mis-attaching an override to a different widget).
+    /// </para>
+    /// </remarks>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when the dashboard has no <see cref="SourceDefinitionName"/> — ad-hoc
+    /// dashboards have nothing to resync against.
+    /// </exception>
+    public DashboardResyncSummary Resync(
+        string newSourceDefinitionVersion,
+        int newLayoutColumns,
+        int newLayoutRowHeight,
+        bool newIsSystem,
+        IReadOnlyList<ResyncWidgetInput> incomingWidgets)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(newSourceDefinitionVersion);
+        ArgumentNullException.ThrowIfNull(incomingWidgets);
+
+        if (newLayoutColumns <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newLayoutColumns), "Layout columns must be > 0.");
+        }
+
+        if (newLayoutRowHeight <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newLayoutRowHeight), "Layout row height must be > 0.");
+        }
+
+        if (string.IsNullOrEmpty(SourceDefinitionName))
+        {
+            throw new InvalidOperationException(
+                "Cannot resync a dashboard that has no SourceDefinitionName (ad-hoc dashboards never drift).");
+        }
+
+        var carriedOverrides = _widgets
+            .Where(w => w.Overrides is not null)
+            .ToDictionary(w => w.TitleLocalizationKey, w => w.Overrides!, StringComparer.Ordinal);
+
+        HashSet<string> previousTitles = new(_widgets.Select(w => w.TitleLocalizationKey), StringComparer.Ordinal);
+        HashSet<string> incomingTitles = new(incomingWidgets.Select(w => w.TitleLocalizationKey), StringComparer.Ordinal);
+
+        int widgetsAdded = 0;
+        foreach (string title in incomingTitles)
+        {
+            if (!previousTitles.Contains(title))
+            {
+                widgetsAdded++;
+            }
+        }
+
+        int widgetsRemoved = 0;
+        foreach (string title in previousTitles)
+        {
+            if (!incomingTitles.Contains(title))
+            {
+                widgetsRemoved++;
+            }
+        }
+
+        _widgets.Clear();
+        int overridesCarriedOver = 0;
+        foreach (ResyncWidgetInput input in incomingWidgets)
+        {
+            var widget = WidgetInstance.Create(
+                input.WidgetId,
+                Id,
+                input.WidgetType,
+                input.Position,
+                input.Width,
+                input.Height,
+                input.TitleLocalizationKey,
+                input.ConfigJson,
+                input.MetricName,
+                input.QueryName,
+                input.RequiredPermission);
+
+            if (carriedOverrides.TryGetValue(input.TitleLocalizationKey, out WidgetInstanceConfig? overrides))
+            {
+                widget.ApplyOverrides(overrides);
+                overridesCarriedOver++;
+            }
+
+            _widgets.Add(widget);
+        }
+
+        string? previousVersion = SourceDefinitionVersion;
+        SourceDefinitionVersion = newSourceDefinitionVersion;
+        LayoutColumns = newLayoutColumns;
+        LayoutRowHeight = newLayoutRowHeight;
+        IsSystem = newIsSystem;
+
+        DashboardResyncSummary summary = new(
+            PreviousSourceDefinitionVersion: previousVersion,
+            NewSourceDefinitionVersion: newSourceDefinitionVersion,
+            WidgetsAdded: widgetsAdded,
+            WidgetsRemoved: widgetsRemoved,
+            OverridesCarriedOver: overridesCarriedOver);
+
+        AddDomainEvent(new DashboardResyncedEvent(
+            Id,
+            TenantId,
+            previousVersion,
+            newSourceDefinitionVersion,
+            widgetsAdded,
+            widgetsRemoved,
+            overridesCarriedOver));
+
+        return summary;
+    }
+
     /// <summary>Transitions <see cref="DashboardStatus.Archived"/> → <see cref="DashboardStatus.Draft"/>.</summary>
     public void Restore()
     {
