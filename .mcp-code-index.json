@@ -4574,6 +4574,22 @@
       ]
     },
     {
+      "name": "IJoinedMetricProjector",
+      "fqn": "Granit.Analytics.Metrics.IJoinedMetricProjector",
+      "kind": "interface",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/JoinedMetricDefinition.cs",
+      "line": 103,
+      "members": [
+        {
+          "name": "ProjectFromServiceProvider",
+          "kind": "method",
+          "signature": "ProjectFromServiceProvider(IQueryable<TEntity> filteredSource, IServiceProvider serviceProvider)",
+          "returnType": "IQueryable<TValue?>"
+        }
+      ]
+    },
+    {
       "name": "IMetricDefinitionDescriptor",
       "fqn": "Granit.Analytics.Metrics.IMetricDefinitionDescriptor",
       "kind": "interface",
@@ -4595,6 +4611,28 @@
           "kind": "method",
           "signature": "ExecuteAsync(MetricDefinition<TEntity, TValue> metric, IQueryable<TEntity> source, QueryRequest request, CancellationToken cancellationToken = default)",
           "returnType": "Task<TValue?>"
+        }
+      ]
+    },
+    {
+      "name": "JoinedMetricDefinition",
+      "fqn": "Granit.Analytics.Metrics.JoinedMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Analytics",
+      "file": "src/Granit.Analytics/Metrics/JoinedMetricDefinition.cs",
+      "line": 37,
+      "members": [
+        {
+          "name": "Project",
+          "kind": "method",
+          "signature": "Project(IQueryable<TEntity> filteredSource, IQueryable<TJoined> joinedSource)",
+          "returnType": "IQueryable<TValue?>"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "sealed Expression<Func<TEntity, TValue?>>? Selector",
+          "returnType": "sealed Expression<Func<TEntity, TValue?>>?"
         }
       ]
     },
@@ -47820,7 +47858,7 @@
       "kind": "class",
       "project": "Granit.Subscriptions",
       "file": "src/Granit.Subscriptions/Dashboards/SubscriptionsHealthDashboardDefinition.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "Name",
@@ -47833,6 +47871,12 @@
           "kind": "property",
           "signature": "DashboardCategory Category",
           "returnType": "DashboardCategory"
+        },
+        {
+          "name": "Version",
+          "kind": "property",
+          "signature": "string Version",
+          "returnType": "string"
         },
         {
           "name": "MarkdownWidgetDefinition",
@@ -49386,6 +49430,52 @@
       ]
     },
     {
+      "name": "AnnualRecurringRevenueMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.AnnualRecurringRevenueMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/AnnualRecurringRevenueMetricDefinition.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "System.Linq.Expressions.Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "System.Linq.Expressions.Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "System.Linq.Expressions.Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "System.Linq.Expressions.Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "Project",
+          "kind": "method",
+          "signature": "Project(IQueryable<Subscription> filteredSource, IQueryable<PlanPrice> joinedSource)",
+          "returnType": "IQueryable<decimal?>"
+        }
+      ]
+    },
+    {
       "name": "CancelAtPeriodEndSubscriptionCountMetricDefinition",
       "fqn": "Granit.Subscriptions.Metrics.CancelAtPeriodEndSubscriptionCountMetricDefinition",
       "kind": "class",
@@ -49538,6 +49628,52 @@
           "kind": "property",
           "signature": "bool IsHigherBetter",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "MonthlyRecurringRevenueMetricDefinition",
+      "fqn": "Granit.Subscriptions.Metrics.MonthlyRecurringRevenueMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Subscriptions",
+      "file": "src/Granit.Subscriptions/Metrics/MonthlyRecurringRevenueMetricDefinition.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "System.Linq.Expressions.Expression<Func<Subscription, bool>>? BaseFilter",
+          "returnType": "System.Linq.Expressions.Expression<Func<Subscription, bool>>?"
+        },
+        {
+          "name": "PeriodSelector",
+          "kind": "property",
+          "signature": "System.Linq.Expressions.Expression<Func<Subscription, DateTimeOffset>>? PeriodSelector",
+          "returnType": "System.Linq.Expressions.Expression<Func<Subscription, DateTimeOffset>>?"
+        },
+        {
+          "name": "Project",
+          "kind": "method",
+          "signature": "Project(IQueryable<Subscription> filteredSource, IQueryable<PlanPrice> joinedSource)",
+          "returnType": "IQueryable<decimal?>"
         }
       ]
     },

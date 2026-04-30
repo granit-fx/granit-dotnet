@@ -26,11 +26,13 @@ namespace Granit.Analytics.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class MetricExecutor<TEntity, TValue>(
     IQueryEngine<TEntity> queryEngine,
+    IServiceProvider? serviceProvider = null,
     AnalyticsMetrics? metrics = null,
     ICurrentTenant? currentTenant = null) : IMetricExecutor<TEntity, TValue>
     where TEntity : class
     where TValue : struct
 {
+    private readonly IServiceProvider? _serviceProvider = serviceProvider;
     public async Task<TValue?> ExecuteAsync(
         MetricDefinition<TEntity, TValue> metric,
         IQueryable<TEntity> source,
@@ -57,19 +59,108 @@ internal sealed class MetricExecutor<TEntity, TValue>(
             filtered = filtered.Where(metric.BaseFilter);
         }
 
-        TValue? result = metric.Aggregation switch
+        // Joined-metric dispatch — metrics deriving from JoinedMetricDefinition<,,>
+        // surface IJoinedMetricProjector<TEntity, TValue>. The executor resolves the
+        // joined source from DI via the metric's Project method, then aggregates the
+        // resulting IQueryable<TValue?> with the same per-type EF Core dispatch and
+        // empty-set semantics as the single-table path. Count is unsupported because
+        // the projection is the unit of aggregation — counting joined rows requires
+        // a regular MetricDefinition.
+        TValue? result;
+        if (metric is IJoinedMetricProjector<TEntity, TValue> projector)
         {
-            AggregateFunction.Count => await ExecuteCountAsync(filtered, cancellationToken).ConfigureAwait(false),
-            AggregateFunction.Sum => await ExecuteSumAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
-            AggregateFunction.Avg => await ExecuteAvgAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
-            AggregateFunction.Min => await ExecuteMinAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
-            AggregateFunction.Max => await ExecuteMaxAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
-            _ => throw new NotSupportedException(
-                FormattableString.Invariant($"Aggregation '{metric.Aggregation}' is not supported.")),
-        };
+            if (_serviceProvider is null)
+            {
+                throw new InvalidOperationException(
+                    FormattableString.Invariant(
+                        $"Joined metric '{metric.Name}' requires the MetricExecutor to be constructed with an IServiceProvider so the joined source can be resolved at request time. The DI registration in AddGranitAnalyticsEntityFrameworkCore() supplies one automatically; tests that build the executor directly must pass an IServiceProvider too."));
+            }
+
+            IQueryable<TValue?> projection = projector.ProjectFromServiceProvider(filtered, _serviceProvider);
+            result = metric.Aggregation switch
+            {
+                AggregateFunction.Sum => await SumProjectionAsync(projection, cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Avg => await AvgProjectionAsync(projection, cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Min => await projection.MinAsync(cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Max => await projection.MaxAsync(cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Count => throw new NotSupportedException(
+                    FormattableString.Invariant(
+                        $"Joined metric '{metric.Name}' uses Aggregation = Count, which is not supported on JoinedMetricDefinition. ")
+                    + "Counting joined rows is meaningful as a regular MetricDefinition over the base entity instead."),
+                _ => throw new NotSupportedException(
+                    FormattableString.Invariant($"Aggregation '{metric.Aggregation}' is not supported.")),
+            };
+        }
+        else
+        {
+            result = metric.Aggregation switch
+            {
+                AggregateFunction.Count => await ExecuteCountAsync(filtered, cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Sum => await ExecuteSumAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Avg => await ExecuteAvgAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Min => await ExecuteMinAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
+                AggregateFunction.Max => await ExecuteMaxAsync(filtered, RequireSelector(metric), cancellationToken).ConfigureAwait(false),
+                _ => throw new NotSupportedException(
+                    FormattableString.Invariant($"Aggregation '{metric.Aggregation}' is not supported.")),
+            };
+        }
 
         RecordMetrics(metric, result.HasValue, Stopwatch.GetElapsedTime(startTimestamp).TotalSeconds);
         return result;
+    }
+
+    private static async Task<TValue?> SumProjectionAsync(IQueryable<TValue?> projection, CancellationToken ct)
+    {
+        // Sum semantics on the projected IQueryable<TValue?> — same per-type dispatch
+        // and empty-set defaults as the single-table path.
+        if (typeof(TValue) == typeof(decimal))
+        {
+            decimal? r = await projection.Cast<decimal?>().SumAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)(r ?? 0m);
+        }
+        if (typeof(TValue) == typeof(int))
+        {
+            int? r = await projection.Cast<int?>().SumAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)(r ?? 0);
+        }
+        if (typeof(TValue) == typeof(long))
+        {
+            long? r = await projection.Cast<long?>().SumAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)(r ?? 0L);
+        }
+        if (typeof(TValue) == typeof(double))
+        {
+            double? r = await projection.Cast<double?>().SumAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)(r ?? 0.0);
+        }
+        throw NotSupported(nameof(AggregateFunction.Sum));
+    }
+
+    private static async Task<TValue?> AvgProjectionAsync(IQueryable<TValue?> projection, CancellationToken ct)
+    {
+        // Avg over a projected IQueryable<TValue?> — empty-set returns null per
+        // the framework contract.
+        if (typeof(TValue) == typeof(decimal))
+        {
+            decimal? r = await projection.Cast<decimal?>().AverageAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)r;
+        }
+        if (typeof(TValue) == typeof(int))
+        {
+            double? r = await projection.Cast<int?>().AverageAsync(ct).ConfigureAwait(false);
+            return r.HasValue ? (TValue?)(object?)(int)Math.Round(r.Value) : null;
+        }
+        if (typeof(TValue) == typeof(long))
+        {
+            double? r = await projection.Cast<long?>().AverageAsync(ct).ConfigureAwait(false);
+            return r.HasValue ? (TValue?)(object?)(long)Math.Round(r.Value) : null;
+        }
+        if (typeof(TValue) == typeof(double))
+        {
+            double? r = await projection.Cast<double?>().AverageAsync(ct).ConfigureAwait(false);
+            return (TValue?)(object?)r;
+        }
+        throw NotSupported(nameof(AggregateFunction.Avg));
     }
 
     private static Expression<Func<TEntity, TValue?>> RequireSelector(MetricDefinition<TEntity, TValue> metric) =>

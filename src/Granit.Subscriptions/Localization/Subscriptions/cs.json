@@ -5,9 +5,11 @@
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktivní plány",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktivní ceny plánů",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktivní předplatná",
+    "Metric:Granit.Subscriptions.AnnualRecurringRevenueMetric": "Annual Recurring Revenue",
     "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Předplatná rušená na konci období",
     "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Zrušená předplatná",
     "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Předplatná ve vymáhání",
+    "Metric:Granit.Subscriptions.MonthlyRecurringRevenueMetric": "Monthly Recurring Revenue",
     "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Předplatná po splatnosti",
     "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Zkušební předplatná",
     "Subscriptions.Columns.BillingCycleAnchor": "Ukotvení fakturačního cyklu",
@@ -27,9 +29,11 @@
     "Subscriptions.Columns.Tenant": "Nájemce",
     "Subscriptions.Columns.TrialEndsAt": "Konec zkušebního období",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.arr": "ARR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.mrr": "MRR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }
