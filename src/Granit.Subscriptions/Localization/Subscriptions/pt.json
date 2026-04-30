@@ -5,9 +5,11 @@
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Planos ativos",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Preços de plano ativos",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Assinaturas ativas",
+    "Metric:Granit.Subscriptions.AnnualRecurringRevenueMetric": "Annual Recurring Revenue",
     "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Assinaturas a cancelar no fim do período",
     "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Assinaturas canceladas",
     "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Assinaturas em cobrança",
+    "Metric:Granit.Subscriptions.MonthlyRecurringRevenueMetric": "Monthly Recurring Revenue",
     "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Assinaturas em atraso",
     "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Assinaturas em avaliação",
     "Subscriptions.Columns.BillingCycleAnchor": "Âncora do ciclo de faturamento",
@@ -27,9 +29,11 @@
     "Subscriptions.Columns.Tenant": "Inquilino",
     "Subscriptions.Columns.TrialEndsAt": "Fim do período de teste",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.arr": "ARR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.mrr": "MRR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }

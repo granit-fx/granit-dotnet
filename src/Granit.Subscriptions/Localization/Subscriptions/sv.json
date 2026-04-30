@@ -5,9 +5,11 @@
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "Aktiva planer",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "Aktiva planpriser",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "Aktiva prenumerationer",
+    "Metric:Granit.Subscriptions.AnnualRecurringRevenueMetric": "Annual Recurring Revenue",
     "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "Prenumerationer som avbryts vid periodens slut",
     "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "Avbrutna prenumerationer",
     "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "Prenumerationer i påminnelseflöde",
+    "Metric:Granit.Subscriptions.MonthlyRecurringRevenueMetric": "Monthly Recurring Revenue",
     "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "Förfallna prenumerationer",
     "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "Provprenumerationer",
     "Subscriptions.Columns.BillingCycleAnchor": "Ankarpunkt faktureringscykel",
@@ -27,9 +29,11 @@
     "Subscriptions.Columns.Tenant": "Hyresgäst",
     "Subscriptions.Columns.TrialEndsAt": "Provperiod slutar",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.arr": "ARR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.mrr": "MRR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }

@@ -6,10 +6,11 @@ using Granit.QueryEngine.Filtering;
 namespace Granit.Subscriptions.Dashboards;
 
 /// <summary>
-/// Subscriptions health dashboard — KPIs for active / trial / past-due /
-/// dunning subscriptions plus a chart of cancellations over time. First-wave
-/// reference for the <see cref="DashboardDefinition"/> pattern in the
-/// Subscriptions module.
+/// Subscriptions health dashboard — top-row SaaS canonical measures
+/// (MRR / ARR), then operational status KPIs (active / trial / past-due /
+/// dunning), then a chart of cancellations over time. First-wave reference
+/// for the <see cref="DashboardDefinition"/> pattern in the Subscriptions
+/// module.
 /// </summary>
 public sealed class SubscriptionsHealthDashboardDefinition : DashboardDefinition
 {
@@ -20,6 +21,16 @@ public sealed class SubscriptionsHealthDashboardDefinition : DashboardDefinition
     public override DashboardCategory Category => DashboardCategory.Finance;
 
     /// <inheritdoc />
+    /// <remarks>
+    /// 1.1.0 — added the MRR + ARR widgets at the top of the grid (existing
+    /// widgets shifted down). Tenants that imported v1.0.0 will see the
+    /// drift surfaced through ADR-038 §3 once that detection lands; for now
+    /// the gap is acceptable since the dashboard is shipped first-wave and
+    /// few hosts are running off it in production.
+    /// </remarks>
+    public override string Version => "1.1.0";
+
+    /// <inheritdoc />
     public override IReadOnlyList<WidgetDefinition> Widgets { get; } =
     [
         new MarkdownWidgetDefinition(
@@ -28,24 +39,34 @@ public sealed class SubscriptionsHealthDashboardDefinition : DashboardDefinition
             Position: 0),
 
         new KpiWidgetDefinition(
+            Slug: "mrr",
+            Datasource: Datasource.Metric("Granit.Subscriptions.MonthlyRecurringRevenueMetric"),
+            Position: 1),
+
+        new KpiWidgetDefinition(
+            Slug: "arr",
+            Datasource: Datasource.Metric("Granit.Subscriptions.AnnualRecurringRevenueMetric"),
+            Position: 2),
+
+        new KpiWidgetDefinition(
             Slug: "active-count",
             Datasource: Datasource.Metric("Granit.Subscriptions.ActiveSubscriptionCountMetric"),
-            Position: 1),
+            Position: 3),
 
         new KpiWidgetDefinition(
             Slug: "trial-count",
             Datasource: Datasource.Metric("Granit.Subscriptions.TrialSubscriptionCountMetric"),
-            Position: 2),
+            Position: 4),
 
         new KpiWidgetDefinition(
             Slug: "past-due-count",
             Datasource: Datasource.Metric("Granit.Subscriptions.PastDueSubscriptionCountMetric"),
-            Position: 3),
+            Position: 5),
 
         new KpiWidgetDefinition(
             Slug: "dunning-count",
             Datasource: Datasource.Metric("Granit.Subscriptions.DunningSubscriptionCountMetric"),
-            Position: 4),
+            Position: 6),
 
         new ChartWidgetDefinition(
             Slug: "cancellations-over-time",
@@ -54,6 +75,6 @@ public sealed class SubscriptionsHealthDashboardDefinition : DashboardDefinition
             Aggregation: AggregateFunction.Count,
             Field: null,
             ChartType: ChartType.Line,
-            Position: 5),
+            Position: 7),
     ];
 }

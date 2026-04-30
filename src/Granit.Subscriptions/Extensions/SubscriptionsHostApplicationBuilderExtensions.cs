@@ -65,6 +65,14 @@ public static class SubscriptionsHostApplicationBuilderExtensions
         builder.Services.AddMetricDefinition<Plan, int, ActivePlanCountMetricDefinition>();
         builder.Services.AddMetricDefinition<PlanPrice, int, ActivePlanPriceCountMetricDefinition>();
 
+        // Joined metrics — MRR / ARR project across Subscription → PlanPrice via the
+        // JoinedMetricDefinition extension. The MetricExecutor resolves an
+        // IQueryableSource<PlanPrice> from DI at request time; that source is wired
+        // by the EFC adapter, so a host using only the in-memory provider gets a
+        // clear startup-time error rather than a silent fallback.
+        builder.Services.AddMetricDefinition<Subscription, decimal, MonthlyRecurringRevenueMetricDefinition>();
+        builder.Services.AddMetricDefinition<Subscription, decimal, AnnualRecurringRevenueMetricDefinition>();
+
         builder.Services.AddDashboardDefinition<SubscriptionsHealthDashboardDefinition>();
 
         return builder;

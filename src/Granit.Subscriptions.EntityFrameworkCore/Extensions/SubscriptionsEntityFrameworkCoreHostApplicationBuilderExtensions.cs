@@ -35,6 +35,7 @@ public static class SubscriptionsEntityFrameworkCoreHostApplicationBuilderExtens
         builder.Services.TryAddScoped<IPricingResolver, EfPricingResolver>();
 
         builder.Services.AddScoped<IQueryableSource<Subscription>, EfSubscriptionQueryableSource>();
+        builder.Services.AddScoped<IQueryableSource<PlanPrice>, EfPlanPriceQueryableSource>();
 
         // Plugs Subscriptions into the Party merge orchestrator. Unconditional registration:
         // when no IMergeService<Party> is wired up by the host (e.g. an app without merging),

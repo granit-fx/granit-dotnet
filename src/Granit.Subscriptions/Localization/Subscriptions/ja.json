@@ -5,9 +5,11 @@
     "Metric:Granit.Subscriptions.ActivePlanCountMetric": "有効なプラン",
     "Metric:Granit.Subscriptions.ActivePlanPriceCountMetric": "有効なプラン価格",
     "Metric:Granit.Subscriptions.ActiveSubscriptionCountMetric": "有効なサブスクリプション",
+    "Metric:Granit.Subscriptions.AnnualRecurringRevenueMetric": "Annual Recurring Revenue",
     "Metric:Granit.Subscriptions.CancelAtPeriodEndSubscriptionCountMetric": "期間末にキャンセル予定のサブスクリプション",
     "Metric:Granit.Subscriptions.CancelledSubscriptionCountMetric": "キャンセルされたサブスクリプション",
     "Metric:Granit.Subscriptions.DunningSubscriptionCountMetric": "督促中のサブスクリプション",
+    "Metric:Granit.Subscriptions.MonthlyRecurringRevenueMetric": "Monthly Recurring Revenue",
     "Metric:Granit.Subscriptions.PastDueSubscriptionCountMetric": "支払い遅延中のサブスクリプション",
     "Metric:Granit.Subscriptions.TrialSubscriptionCountMetric": "トライアル中のサブスクリプション",
     "Subscriptions.Columns.BillingCycleAnchor": "請求サイクル基準日",
@@ -27,9 +29,11 @@
     "Subscriptions.Columns.Tenant": "テナント",
     "Subscriptions.Columns.TrialEndsAt": "トライアル終了日",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.active-count": "Active subscriptions",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.arr": "ARR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.banner.Body": "## Subscriptions health\nActive subscribers, trials, dunning workload, and churn signals at a glance.",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.cancellations-over-time": "Cancellations over time",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.dunning-count": "In dunning",
+    "Widget:Granit.Subscriptions.SubscriptionsHealth.mrr": "MRR",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.past-due-count": "Past-due",
     "Widget:Granit.Subscriptions.SubscriptionsHealth.trial-count": "Trial subscriptions"
   }

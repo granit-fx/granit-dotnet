@@ -141,7 +141,12 @@ public static class LayerDependencyRules
     /// Types whose namespace contains a default-allowed fragment (EntityFrameworkCore,
     /// QueryEngine, Persistence) are exempt, as are types following the
     /// <c>*QueryableSource</c> convention — the standard bridge for exposing
-    /// IQueryable to the QueryEngine endpoints layer.
+    /// IQueryable to the QueryEngine endpoints layer — and concrete
+    /// <c>*MetricDefinition</c> types deriving from
+    /// <c>JoinedMetricDefinition&lt;TEntity, TJoined, TValue&gt;</c>, whose
+    /// <c>Project</c> method intrinsically takes <c>IQueryable</c> on both sides
+    /// of the join (the projection is the unit of aggregation; running it
+    /// elsewhere would force materialisation in memory).
     /// </summary>
     public static void IQueryableShouldNotEscapePersistenceLayer(
         ArchUnitNET.Domain.Architecture architecture)
@@ -154,12 +159,13 @@ public static class LayerDependencyRules
             .Where(t => !t.Name.EndsWith("QueryableSource", StringComparison.Ordinal))
             .Where(t => !t.Name.EndsWith("EndpointRouteBuilderExtensions", StringComparison.Ordinal))
             .Where(t => !t.Name.EndsWith("DataSource", StringComparison.Ordinal))
+            .Where(t => !t.Name.EndsWith("MetricDefinition", StringComparison.Ordinal))
             .Where(t => t.Dependencies
                 .Any(d => d.Target.FullName.StartsWith("System.Linq.IQueryable", StringComparison.Ordinal)));
 
         violators.ShouldBeEmpty(
             "IQueryable<T> must not escape the persistence layer. " +
-            "Types following the *QueryableSource convention are exempt. " +
+            "Types following the *QueryableSource convention or *MetricDefinition (joined-metric Project hook) are exempt. " +
             $"Violators: {string.Join(", ", violators.Select(t => t.FullName))}");
     }
 }
