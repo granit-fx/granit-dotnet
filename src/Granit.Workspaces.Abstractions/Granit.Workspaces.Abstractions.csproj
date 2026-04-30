@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Workspaces.Abstractions</PackageId>
+    <Description>Inter-module contracts for Granit.Workspaces (ADR-040 navigation tree): declarative WorkspaceDefinition base class, fluent builder, section / item descriptors, IWorkspaceContributor for cross-module grafting, and the typed reference helpers used by base modules to declare a workspace's section / item layout without taking a runtime dependency on Granit.Workspaces. Pull this package from any base module that declares a WorkspaceDefinition or contributes to one; pull Granit.Workspaces only from hosts that resolve and serve the tree.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Workspaces" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Abstractions.Tests" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Tests" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

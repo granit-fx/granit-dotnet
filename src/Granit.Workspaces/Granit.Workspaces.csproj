@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Workspaces</PackageId>
+    <Description>Granit workspace runtime (ADR-040 navigation tree). Hosts the IWorkspaceRegistry, the boot-time tree composer that merges WorkspaceDefinitions with cross-module IWorkspaceContributor grafts, and the depth-≤-4 hierarchy enforcer. Pull this package from a host that resolves the workspace tree; pull Granit.Workspaces.Abstractions alone from any base module that only declares a workspace.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Workspaces.Tests" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Workspaces.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Workspaces.Abstractions\Granit.Workspaces.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

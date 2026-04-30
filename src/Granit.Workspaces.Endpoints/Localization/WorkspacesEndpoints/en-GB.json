@@ -1,0 +1,7 @@
+{
+  "culture": "en-GB",
+  "texts": {
+    "WorkspacesEndpoints:DiscoverySection": "Workspaces",
+    "WorkspacesEndpoints:NoWorkspacesAvailable": "No workspaces are available for your account."
+  }
+}
