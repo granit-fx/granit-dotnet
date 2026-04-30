@@ -898,6 +898,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Views.EntityFrameworkCore",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Entities.Views",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Events",
       "deps": [
         "Granit"
@@ -19041,6 +19050,63 @@
           "name": "SetSortOrder",
           "kind": "method",
           "signature": "SetSortOrder(int sortOrder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Views.EntityFrameworkCore.Extensions.EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Views.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Views.EntityFrameworkCore/Extensions/EntitiesViewsEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "AddGranitEntitiesViewsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitEntitiesViewsEntityFrameworkCore(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "EntityViewsModelBuilderExtensions",
+      "fqn": "Granit.Entities.Views.EntityFrameworkCore.Extensions.EntityViewsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Views.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Views.EntityFrameworkCore/Extensions/EntityViewsModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureEntityViewsModule",
+          "kind": "method",
+          "signature": "ConfigureEntityViewsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesViewsDbProperties",
+      "fqn": "Granit.Entities.Views.EntityFrameworkCore.GranitEntitiesViewsDbProperties",
+      "kind": "class",
+      "project": "Granit.Entities.Views.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Views.EntityFrameworkCore/GranitEntitiesViewsDbProperties.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "GranitEntitiesViewsEntityFrameworkCoreModule",
+      "fqn": "Granit.Entities.Views.EntityFrameworkCore.GranitEntitiesViewsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Entities.Views.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Views.EntityFrameworkCore/GranitEntitiesViewsEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
         }
       ]
