@@ -666,6 +666,20 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Dashboards.Push",
+      "deps": [
+        "Granit",
+        "Granit.Analytics.Abstractions",
+        "Granit.Dashboards",
+        "Granit.Dashboards.Abstractions",
+        "Granit.Authorization",
+        "Granit.Http.Abstractions",
+        "Granit.MultiTenancy",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -14333,6 +14347,120 @@
       "file": "src/Granit.Dashboards.Abstractions/Datasource.cs",
       "line": 54,
       "members": []
+    },
+    {
+      "name": "DashboardsPushEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Dashboards.Push.Extensions.DashboardsPushEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/Extensions/DashboardsPushEndpointRouteBuilderExtensions.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "MapGranitDashboardsPush",
+          "kind": "method",
+          "signature": "MapGranitDashboardsPush(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsPushServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Push.Extensions.DashboardsPushServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/Extensions/DashboardsPushServiceCollectionExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "AddGranitDashboardsPush",
+          "kind": "method",
+          "signature": "AddGranitDashboardsPush(this IServiceCollection services, Action<DashboardsPushOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDashboardsPushModule",
+      "fqn": "Granit.Dashboards.Push.GranitDashboardsPushModule",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/GranitDashboardsPushModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IWidgetPushPublisher",
+      "fqn": "Granit.Dashboards.Push.IWidgetPushPublisher",
+      "kind": "interface",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/IWidgetPushPublisher.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "PublishSnapshotAsync",
+          "kind": "method",
+          "signature": "PublishSnapshotAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, JsonElement snapshot, DateTimeOffset emittedAt, RefreshHint refreshHint, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "PublishUnavailableAsync",
+          "kind": "method",
+          "signature": "PublishUnavailableAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, DateTimeOffset emittedAt, RefreshHint refreshHint, string reasonLocalizationKey, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "WidgetPushSequenceAllocator",
+      "fqn": "Granit.Dashboards.Push.Internal.WidgetPushSequenceAllocator",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/Internal/WidgetPushSequenceAllocator.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Next",
+          "kind": "method",
+          "signature": "Next(Guid? tenantId, Guid widgetInstanceId)",
+          "returnType": "long"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsPushOptions",
+      "fqn": "Granit.Dashboards.Push.Options.DashboardsPushOptions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push",
+      "file": "src/Granit.Dashboards.Push/Options/DashboardsPushOptions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(15)",
+          "returnType": "TimeSpan HeartbeatInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "QueryAggregateDatasource",
