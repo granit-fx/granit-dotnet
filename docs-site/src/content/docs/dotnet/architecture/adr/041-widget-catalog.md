@@ -130,7 +130,7 @@ Both are sourced from the same `EntityDefinition`; the manifest emits them in pa
 
 - [ADR-040](./040-three-tier-metadata-architecture) — Three-tier metadata architecture. Establishes that widget choice is a Tier A concern (compiled), not Tier B (runtime customization).
 - [ADR-042](./042-view-catalog) — View catalog. Same closed-set + namespaced-extension pattern, applied to collection display strategies (List, Kanban, Calendar, …).
-- [ADR-046](./046-entity-view) — `EntityView`. User-saved views may not change a collection's `kind`, mirroring the rule that user-saved field state may not change a widget.
+- [ADR-047](./047-entity-view) — `EntityView`. User-saved views may not change a collection's `kind`, mirroring the rule that user-saved field state may not change a widget.
 
 ## References
 
