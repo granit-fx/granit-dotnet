@@ -111,7 +111,9 @@
         "tests/Granit.Workflow.Notifications.Tests",
         "tests/Granit.Workflow.Tests",
         "tests/Granit.Entities.Abstractions.Tests",
-        "tests/Granit.Entities.Tests"
+        "tests/Granit.Entities.Tests",
+        "tests/Granit.Entities.Views.Abstractions.Tests",
+        "tests/Granit.Entities.Views.Tests"
       ]
     },
     {

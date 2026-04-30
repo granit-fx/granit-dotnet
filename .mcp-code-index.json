@@ -883,6 +883,21 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Views",
+      "deps": [
+        "Granit.Entities.Views.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Entities.Views.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.Entities.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Events",
       "deps": [
         "Granit"
@@ -18953,6 +18968,229 @@
       "file": "src/Granit.Entities/Options/IntegrityCheckMode.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "EntityView",
+      "fqn": "Granit.Entities.Views.Domain.EntityView",
+      "kind": "class",
+      "project": "Granit.Entities.Views",
+      "file": "src/Granit.Entities.Views/Domain/EntityView.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "EntityName",
+          "kind": "property",
+          "signature": "string EntityName",
+          "returnType": "string"
+        },
+        {
+          "name": "BasedOn",
+          "kind": "property",
+          "signature": "string BasedOn",
+          "returnType": "string"
+        },
+        {
+          "name": "Kind",
+          "kind": "property",
+          "signature": "string Kind",
+          "returnType": "string"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Description",
+          "kind": "property",
+          "signature": "string? Description",
+          "returnType": "string?"
+        },
+        {
+          "name": "CreatePersonal",
+          "kind": "method",
+          "signature": "CreatePersonal(string entityName, string basedOn, string kind, string name, string? description, string? icon, JsonObject state, Guid ownerId, int sortOrder = 0)",
+          "returnType": "EntityView"
+        },
+        {
+          "name": "SetTenantDefault",
+          "kind": "method",
+          "signature": "SetTenantDefault(bool isDefault)",
+          "returnType": "void"
+        },
+        {
+          "name": "SetPersonalDefault",
+          "kind": "method",
+          "signature": "SetPersonalDefault(bool isPersonalDefault)",
+          "returnType": "void"
+        },
+        {
+          "name": "SetSortOrder",
+          "kind": "method",
+          "signature": "SetSortOrder(int sortOrder)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EntityViewCreateRequest",
+      "fqn": "Granit.Entities.Views.EntityViewCreateRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/IEntityViewWriter.cs",
+      "line": 64,
+      "members": []
+    },
+    {
+      "name": "EntityViewDescriptor",
+      "fqn": "Granit.Entities.Views.EntityViewDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewDescriptor.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "EntityViewPermissions",
+      "fqn": "Granit.Entities.Views.EntityViewPermissions",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewPermissions.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "EntityViewSharedWith",
+      "fqn": "Granit.Entities.Views.EntityViewSharedWith",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewSharedWith.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new([], [])",
+          "returnType": "EntityViewSharedWith Empty { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "EntityViewUpdateRequest",
+      "fqn": "Granit.Entities.Views.EntityViewUpdateRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/IEntityViewWriter.cs",
+      "line": 78,
+      "members": []
+    },
+    {
+      "name": "EntityViewVisibility",
+      "fqn": "Granit.Entities.Views.EntityViewVisibility",
+      "kind": "enum",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewVisibility.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "GranitEntitiesViewsAbstractionsModule",
+      "fqn": "Granit.Entities.Views.GranitEntitiesViewsAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/GranitEntitiesViewsAbstractionsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "GranitEntitiesViewsModule",
+      "fqn": "Granit.Entities.Views.GranitEntitiesViewsModule",
+      "kind": "class",
+      "project": "Granit.Entities.Views",
+      "file": "src/Granit.Entities.Views/GranitEntitiesViewsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "IEntityViewReader",
+      "fqn": "Granit.Entities.Views.IEntityViewReader",
+      "kind": "interface",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/IEntityViewReader.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(string entityName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<EntityViewDescriptor>>"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string entityName, Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor?>"
+        },
+        {
+          "name": "GetDefaultViewAsync",
+          "kind": "method",
+          "signature": "GetDefaultViewAsync(string entityName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor?>"
+        }
+      ]
+    },
+    {
+      "name": "IEntityViewWriter",
+      "fqn": "Granit.Entities.Views.IEntityViewWriter",
+      "kind": "interface",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/IEntityViewWriter.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(EntityViewCreateRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(Guid id, EntityViewUpdateRequest request, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "SetPinnedAsync",
+          "kind": "method",
+          "signature": "SetPinnedAsync(Guid id, bool isPinned, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        },
+        {
+          "name": "SetTenantDefaultAsync",
+          "kind": "method",
+          "signature": "SetTenantDefaultAsync(Guid id, bool isDefault, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        },
+        {
+          "name": "SetPersonalDefaultAsync",
+          "kind": "method",
+          "signature": "SetPersonalDefaultAsync(Guid id, bool isPersonalDefault, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        },
+        {
+          "name": "ShareAsync",
+          "kind": "method",
+          "signature": "ShareAsync(Guid id, EntityViewSharedWith audience, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityViewDescriptor>"
+        }
+      ]
     },
     {
       "name": "FieldOp",
