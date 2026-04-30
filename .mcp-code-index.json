@@ -14434,22 +14434,6 @@
       ]
     },
     {
-      "name": "WidgetPushSequenceAllocator",
-      "fqn": "Granit.Dashboards.Push.Internal.WidgetPushSequenceAllocator",
-      "kind": "class",
-      "project": "Granit.Dashboards.Push",
-      "file": "src/Granit.Dashboards.Push/Internal/WidgetPushSequenceAllocator.cs",
-      "line": 24,
-      "members": [
-        {
-          "name": "Next",
-          "kind": "method",
-          "signature": "Next(Guid? tenantId, Guid widgetInstanceId)",
-          "returnType": "long"
-        }
-      ]
-    },
-    {
       "name": "DashboardsPushOptions",
       "fqn": "Granit.Dashboards.Push.Options.DashboardsPushOptions",
       "kind": "class",
