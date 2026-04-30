@@ -1,4 +1,5 @@
 using Granit.Analytics.EntityFrameworkCore;
+using Granit.Analytics.Metrics;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
