@@ -269,6 +269,106 @@ public sealed class DashboardRenderProjectionTests
         sourceDefinitionName: SourceDefinitionName,
         sourceDefinitionVersion: "1.0.0");
 
+    [Fact]
+    public void ToResponse_DriftStatus_NotApplicable_WhenNoSourceDefinition()
+    {
+        // Custom-built dashboard — no SourceDefinitionName.
+        var dashboard = Dashboard.Create(
+            id: Guid.NewGuid(),
+            name: "Adhoc",
+            category: DashboardCategory.General);
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id, RenderedAt: RenderedAt, Period: null, Widgets: []);
+
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard,
+            new ResolvedRenderTarget(dashboard.Widgets, ActiveViewName: null),
+            EmptyRegistry(),
+            periodToken: null);
+
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.NotApplicable);
+        response.SourceDefinitionVersion.ShouldBeNull();
+        response.RegisteredVersion.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ToResponse_DriftStatus_SourceUnregistered_WhenDescriptorMissing()
+    {
+        // Imported dashboard whose source module is no longer loaded.
+        Dashboard dashboard = NewDashboard();
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id, RenderedAt: RenderedAt, Period: null, Widgets: []);
+
+        IDashboardDefinitionRegistry registry = Substitute.For<IDashboardDefinitionRegistry>();
+        registry.Find(SourceDefinitionName).Returns((IDashboardDefinitionDescriptor?)null);
+
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard,
+            new ResolvedRenderTarget(dashboard.Widgets, ActiveViewName: null),
+            registry,
+            periodToken: null);
+
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.SourceUnregistered);
+        response.SourceDefinitionVersion.ShouldBe("1.0.0");
+        response.RegisteredVersion.ShouldBeNull();
+    }
+
+    [Fact]
+    public void ToResponse_DriftStatus_InSync_WhenVersionsMatch()
+    {
+        Dashboard dashboard = NewDashboard();
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id, RenderedAt: RenderedAt, Period: null, Widgets: []);
+
+        IDashboardDefinitionDescriptor descriptor = Substitute.For<IDashboardDefinitionDescriptor>();
+        descriptor.Name.Returns(SourceDefinitionName);
+        descriptor.Version.Returns("1.0.0");
+        descriptor.Widgets.Returns(Array.Empty<WidgetDefinition>());
+
+        IDashboardDefinitionRegistry registry = Substitute.For<IDashboardDefinitionRegistry>();
+        registry.Find(SourceDefinitionName).Returns(descriptor);
+
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard,
+            new ResolvedRenderTarget(dashboard.Widgets, ActiveViewName: null),
+            registry,
+            periodToken: null);
+
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.InSync);
+        response.SourceDefinitionVersion.ShouldBe("1.0.0");
+        response.RegisteredVersion.ShouldBe("1.0.0");
+    }
+
+    [Fact]
+    public void ToResponse_DriftStatus_Drift_WhenVersionsDiffer()
+    {
+        Dashboard dashboard = NewDashboard();                        // imported at v1.0.0
+
+        DashboardRenderResult result = new(
+            DashboardId: dashboard.Id, RenderedAt: RenderedAt, Period: null, Widgets: []);
+
+        IDashboardDefinitionDescriptor descriptor = Substitute.For<IDashboardDefinitionDescriptor>();
+        descriptor.Name.Returns(SourceDefinitionName);
+        descriptor.Version.Returns("1.1.0");                         // module shipped a newer version
+        descriptor.Widgets.Returns(Array.Empty<WidgetDefinition>());
+
+        IDashboardDefinitionRegistry registry = Substitute.For<IDashboardDefinitionRegistry>();
+        registry.Find(SourceDefinitionName).Returns(descriptor);
+
+        DashboardRenderResponse response = DashboardRenderProjection.ToResponse(
+            result, dashboard,
+            new ResolvedRenderTarget(dashboard.Widgets, ActiveViewName: null),
+            registry,
+            periodToken: null);
+
+        response.DriftStatus.ShouldBe(DashboardDriftStatus.Drift);
+        response.SourceDefinitionVersion.ShouldBe("1.0.0");
+        response.RegisteredVersion.ShouldBe("1.1.0");
+    }
+
     private static IDashboardDefinitionRegistry EmptyRegistry()
     {
         IDashboardDefinitionRegistry registry = Substitute.For<IDashboardDefinitionRegistry>();

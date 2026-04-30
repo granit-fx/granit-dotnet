@@ -23,12 +23,31 @@ namespace Granit.Dashboards.Endpoints.Dtos;
 /// registered source definition. The frontend's TanStack cache partitions per
 /// <c>(dashboardId, ActiveViewName)</c> tuple so view switches invalidate cleanly.
 /// </param>
+/// <param name="DriftStatus">
+/// ADR-038 §3 drift detection. Reports whether the persisted dashboard's
+/// <c>SourceDefinitionVersion</c> still matches the currently-registered
+/// descriptor's <see cref="DashboardDefinition.Version"/>. Frontend uses this to
+/// surface a "Dashboard outdated, click to resync" banner without an extra
+/// round-trip.
+/// </param>
+/// <param name="SourceDefinitionVersion">
+/// Persisted version captured at import time. <see langword="null"/> when the
+/// dashboard was custom-built (no source definition).
+/// </param>
+/// <param name="RegisteredVersion">
+/// Currently-registered descriptor version. <see langword="null"/> when the source
+/// definition is no longer registered (<c>DriftStatus</c> = <c>SourceUnregistered</c>)
+/// or the dashboard has no source (<c>DriftStatus</c> = <c>NotApplicable</c>).
+/// </param>
 /// <param name="Widgets">One flat record per widget, in <c>WidgetInstance.Position</c> order. Reflects the active view only.</param>
 public sealed record DashboardRenderResponse(
     Guid DashboardId,
     DateTimeOffset RenderedAt,
     DashboardRenderPeriodResponse? Period,
     string? ActiveViewName,
+    DashboardDriftStatus DriftStatus,
+    string? SourceDefinitionVersion,
+    string? RegisteredVersion,
     IReadOnlyList<DashboardRenderedWidgetResponse> Widgets);
 
 /// <summary>

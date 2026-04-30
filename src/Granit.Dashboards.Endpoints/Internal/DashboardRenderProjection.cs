@@ -82,12 +82,55 @@ internal static class DashboardRenderProjection
                 ReasonLocalizationKey: rw.Envelope.ReasonLocalizationKey);
         })];
 
+        (DashboardDriftStatus drift, string? registeredVersion) =
+            ResolveDriftStatus(dashboard, definitionRegistry);
+
         return new DashboardRenderResponse(
             DashboardId: result.DashboardId,
             RenderedAt: result.RenderedAt,
             Period: period,
             ActiveViewName: target.ActiveViewName,
+            DriftStatus: drift,
+            SourceDefinitionVersion: dashboard.SourceDefinitionVersion,
+            RegisteredVersion: registeredVersion,
             Widgets: widgets);
+    }
+
+    /// <summary>
+    /// ADR-038 §3 drift detection. Compares the persisted dashboard's
+    /// <see cref="Dashboard.SourceDefinitionVersion"/> against the currently-registered
+    /// descriptor's <see cref="IDashboardDefinitionDescriptor.Version"/>.
+    /// </summary>
+    /// <remarks>
+    /// Pure string equality on the Version field (semver values are not parsed
+    /// — the framework treats <c>"1.0.0"</c> and <c>"1.0.0.0"</c> as different,
+    /// which is the cautious default; module authors should keep the version
+    /// format stable across releases). A semver-aware variant can land in a
+    /// follow-up if the cautious string compare proves too noisy in practice.
+    /// </remarks>
+    private static (DashboardDriftStatus Status, string? RegisteredVersion) ResolveDriftStatus(
+        Dashboard dashboard,
+        IDashboardDefinitionRegistry registry)
+    {
+        if (dashboard.SourceDefinitionName is not { Length: > 0 } sourceName)
+        {
+            return (DashboardDriftStatus.NotApplicable, null);
+        }
+
+        IDashboardDefinitionDescriptor? descriptor = registry.Find(sourceName);
+        if (descriptor is null)
+        {
+            return (DashboardDriftStatus.SourceUnregistered, null);
+        }
+
+        DashboardDriftStatus status = string.Equals(
+            dashboard.SourceDefinitionVersion,
+            descriptor.Version,
+            StringComparison.Ordinal)
+                ? DashboardDriftStatus.InSync
+                : DashboardDriftStatus.Drift;
+
+        return (status, descriptor.Version);
     }
 
     public static ResolvedPeriod? TryBuildResolvedPeriod(DashboardRenderRequest request)
