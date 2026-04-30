@@ -1,7 +1,10 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Threading.Channels;
+using Granit.Authorization;
 using Granit.Dashboards.Push.Internal;
 using Granit.Dashboards.Push.Options;
+using Granit.Dashboards.Rendering;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +56,7 @@ internal static class DashboardStreamEndpoint
         IWidgetPushHub hub = context.RequestServices.GetRequiredService<IWidgetPushHub>();
         IOptions<DashboardsPushOptions> options = context.RequestServices.GetRequiredService<IOptions<DashboardsPushOptions>>();
         IClock clock = context.RequestServices.GetRequiredService<IClock>();
+        IPermissionChecker permissionChecker = context.RequestServices.GetRequiredService<IPermissionChecker>();
         ICurrentTenant? currentTenant = context.RequestServices.GetService<ICurrentTenant>();
 
         Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
@@ -79,6 +83,12 @@ internal static class DashboardStreamEndpoint
             });
 
         using IDisposable subscription = hub.Subscribe(tenantId, id, channel.Writer);
+
+        // Per-stream permission cache — populated lazily on the first envelope
+        // that declares a RequiredPermission. Stays scoped to this connection
+        // (permission changes mid-stream only take effect on reconnect, matching
+        // the pull endpoint's snapshot-at-render-time semantics).
+        ConcurrentDictionary<string, bool> permissionCache = new(StringComparer.Ordinal);
 
         TimeSpan heartbeat = options.Value.HeartbeatInterval;
         DateTimeOffset nextHeartbeat = clock.Now + heartbeat;
@@ -115,20 +125,28 @@ internal static class DashboardStreamEndpoint
                     continue;
                 }
 
+                // Per-widget permission gate — mirrors the render-time check in
+                // DashboardRenderer. Snapshots for widgets the subscriber lacks
+                // permission to read get rewritten to Unavailable before they
+                // touch the wire.
+                WidgetSnapshotEnvelope effective = await WidgetPushPermissionFilter
+                    .ResolveEffectiveAsync(message, permissionChecker, permissionCache, cancellationToken)
+                    .ConfigureAwait(false);
+
                 string payload = JsonSerializer.Serialize(new
                 {
                     widgetId = message.WidgetInstanceId,
-                    widgetType = message.Envelope.WidgetType,
-                    status = message.Envelope.Status,
-                    sequence = message.Envelope.Sequence,
-                    emittedAt = message.Envelope.EmittedAt,
-                    refreshHint = message.Envelope.RefreshHint,
-                    snapshot = message.Envelope.Snapshot,
-                    reasonLocalizationKey = message.Envelope.ReasonLocalizationKey,
+                    widgetType = effective.WidgetType,
+                    status = effective.Status,
+                    sequence = effective.Sequence,
+                    emittedAt = effective.EmittedAt,
+                    refreshHint = effective.RefreshHint,
+                    snapshot = effective.Snapshot,
+                    reasonLocalizationKey = effective.ReasonLocalizationKey,
                 });
 
                 await context.Response.WriteAsync(
-                    $"event: snapshot\nid: {message.Envelope.Sequence}\ndata: {payload}\n\n",
+                    $"event: snapshot\nid: {effective.Sequence}\ndata: {payload}\n\n",
                     cancellationToken).ConfigureAwait(false);
                 await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
 

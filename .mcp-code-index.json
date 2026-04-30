@@ -14407,13 +14407,13 @@
         {
           "name": "PublishSnapshotAsync",
           "kind": "method",
-          "signature": "PublishSnapshotAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, JsonElement snapshot, DateTimeOffset emittedAt, RefreshHint refreshHint, CancellationToken cancellationToken = default)",
+          "signature": "PublishSnapshotAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, string? requiredPermission, JsonElement snapshot, DateTimeOffset emittedAt, RefreshHint refreshHint, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
           "name": "PublishUnavailableAsync",
           "kind": "method",
-          "signature": "PublishUnavailableAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, DateTimeOffset emittedAt, RefreshHint refreshHint, string reasonLocalizationKey, CancellationToken cancellationToken = default)",
+          "signature": "PublishUnavailableAsync(Guid? tenantId, Guid dashboardId, Guid widgetInstanceId, string widgetType, string? requiredPermission, DateTimeOffset emittedAt, RefreshHint refreshHint, string reasonLocalizationKey, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]

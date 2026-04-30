@@ -308,14 +308,25 @@ break down as:
      `Dashboard` aggregate, surface `Transport` on the render bundle.
    - Architecture test: dashboard renderers must compute the effective
      transport per widget per the matrix in §2.3.
-3. **P2.4-C — `Granit.Dashboards.Push` SSE transport**
+3. **P2.4-C — `Granit.Dashboards.Push` SSE transport** *(happy path)*
    - `IWidgetPushPublisher`, `GET /dashboards/{id}/stream`, sequence
-     allocator, fan-out hub, `Last-Event-ID` resume.
-4. **P2.4-D — `Granit.Dashboards.Push.WebSockets`** *(opt-in)*
+     allocator, fan-out hub.
+4. **P2.4-C-Auth — Per-widget permission filter on push**
+   - `IWidgetPushPublisher` carries the widget's `RequiredPermission`;
+     the SSE handler downgrades envelopes to `Unavailable` for
+     subscribers that lack the grant (mirrors the render-time gate in
+     `DashboardRenderer`). Per-stream permission cache.
+5. **P2.4-C2 — `Last-Event-ID` resume + ring buffer** *(reliability)*
+   - Per-`(tenantId, dashboardId)` ring buffer of recent envelopes
+     (default 100) + stream-level monotonic cursor on the SSE `id:`
+     field. Reconnects with `Last-Event-ID` get the missed envelopes
+     replayed before going live.
+6. **P2.4-D — `Granit.Dashboards.Push.WebSockets`** *(opt-in)*
    - WebSocket consumer over the same producer contract.
-5. **P2.4-E — Frontend `usePushedDashboard`** *(`granit-front`)*
+7. **P2.4-E — Frontend `usePushedDashboard`** *(`granit-front`)*
    - Reads the `Transport` field, opens streams selectively, falls back
      to TanStack pull when `Transport = "pull"`.
 
-P2.4-A through P2.4-C are the load-bearing minimum. D and E are
-incremental.
+P2.4-A through P2.4-C-Auth are the load-bearing minimum. C2, D, E are
+incremental — C2 closes the reconnect-resume reliability gap, D ships
+an alternate transport, E lights the front up.

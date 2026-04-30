@@ -14,4 +14,5 @@ internal sealed record WidgetPushMessage(
     Guid? TenantId,
     Guid DashboardId,
     Guid WidgetInstanceId,
+    string? RequiredPermission,
     WidgetSnapshotEnvelope Envelope);
