@@ -20,20 +20,27 @@ public static class QueryDefinitionServiceCollectionExtensions
     /// <typeparam name="TDefinition">The query definition implementation.</typeparam>
     /// <param name="services">The service collection.</param>
     /// <returns>The service collection for chaining.</returns>
+    /// <remarks>
+    /// The concrete <typeparamref name="TDefinition"/> is registered as a resolvable
+    /// singleton so callers (and the <c>Granit.Entities</c> integrity check) can locate
+    /// it through DI — both the base <see cref="QueryDefinition{TEntity}"/> service and
+    /// the non-generic <see cref="IQueryDefinitionDescriptor"/> resolve to the same
+    /// instance.
+    /// </remarks>
     public static IServiceCollection AddQueryDefinition<TEntity, TDefinition>(
         this IServiceCollection services)
         where TEntity : class
         where TDefinition : QueryDefinition<TEntity>, new()
     {
-        services.AddSingleton<QueryDefinition<TEntity>>(sp =>
+        services.AddSingleton<TDefinition>(sp =>
         {
             TDefinition definition = new();
             QueryEngineOptions options = sp.GetService<QueryEngineOptions>() ?? new();
             definition.Initialize(options);
             return definition;
         });
-        services.AddSingleton<IQueryDefinitionDescriptor>(sp =>
-            sp.GetRequiredService<QueryDefinition<TEntity>>());
+        services.AddSingleton<QueryDefinition<TEntity>>(sp => sp.GetRequiredService<TDefinition>());
+        services.AddSingleton<IQueryDefinitionDescriptor>(sp => sp.GetRequiredService<TDefinition>());
         return services;
     }
 }

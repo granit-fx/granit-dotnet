@@ -41,6 +41,30 @@ public sealed class MetricDefinitionRegistrationTests
         ReferenceEquals(definition, descriptor).ShouldBeTrue();
     }
 
+    [Fact]
+    public void AddMetricDefinition_resolves_concrete_type_through_DI()
+    {
+        ServiceCollection services = new();
+
+        services.AddMetricDefinition<Order, int, OrderCountMetricDefinition>();
+
+        using ServiceProvider provider = services.BuildServiceProvider();
+        OrderCountMetricDefinition concrete = provider.GetRequiredService<OrderCountMetricDefinition>();
+        MetricDefinition<Order, int> @base = provider.GetRequiredService<MetricDefinition<Order, int>>();
+
+        @base.ShouldBeSameAs(concrete);
+    }
+
+    [Fact]
+    public void AddMetricDefinition_concrete_appears_in_ServiceCollection_descriptors()
+    {
+        ServiceCollection services = new();
+
+        services.AddMetricDefinition<Order, int, OrderCountMetricDefinition>();
+
+        services.ShouldContain(d => d.ServiceType == typeof(OrderCountMetricDefinition));
+    }
+
     private sealed class Order
     {
         public int Id { get; init; }

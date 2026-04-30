@@ -311,8 +311,8 @@
       "Scalar.AspNetCore": {
         "type": "CentralTransitive",
         "requested": "[2.*, )",
-        "resolved": "2.14.8",
-        "contentHash": "v9afCyheCy+t5zXQvAF5JMqXt6BMCEQuqxtBl/52eGiwan3xGeDKpuUNH+DdKyY+LrSjIecCwCCUGaPbdtiuwg=="
+        "resolved": "2.14.9",
+        "contentHash": "bDc8NjI2JSIAX0C1+02WO11zCJ1SJQhWdMC0s7yi2Nh2atoNRpNRPiYeyIhWSerkc1SkDdJVOeU9QSY6jb0/zQ=="
       },
       "SmartFormat": {
         "type": "CentralTransitive",
