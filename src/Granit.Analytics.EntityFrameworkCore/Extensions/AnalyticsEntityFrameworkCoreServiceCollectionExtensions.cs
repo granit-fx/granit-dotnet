@@ -62,11 +62,17 @@ public static class AnalyticsEntityFrameworkCoreServiceCollectionExtensions
         // One closed-generic MetricRunner<TEntity, TValue> per registered metric definition.
         // The runner wraps IMetricExecutor<,> (this package) so request-time dispatch from
         // MetricEndpointService stays reflection-free.
+        //
+        // Lifetime MUST be Scoped: the runner transitively depends on IQueryableSource<TEntity>
+        // (DbContext-bound) and IMetricExecutor<,> (Scoped), both of which capture the request's
+        // ICurrentTenant. A singleton would resolve those dependencies once from the root scope
+        // and freeze the first request's tenant context, producing a cross-tenant data leak on
+        // every subsequent call.
         foreach (ServiceDescriptor metricDescriptor in services
             .Where(d => d.ServiceType == typeof(IMetricDefinitionDescriptor))
             .ToList())
         {
-            services.AddSingleton<IMetricRunner>(sp =>
+            services.AddScoped<IMetricRunner>(sp =>
             {
                 var d = (IMetricDefinitionDescriptor)
                     (metricDescriptor.ImplementationFactory?.Invoke(sp)
@@ -158,6 +164,8 @@ public static class AnalyticsEntityFrameworkCoreServiceCollectionExtensions
                     typeof(IQueryableSource<>).MakeGenericType(d.EntityType));
                 object engine = sp.GetRequiredService(
                     typeof(IQueryEngine<>).MakeGenericType(d.EntityType));
+                object definition = sp.GetRequiredService(
+                    typeof(QueryDefinition<>).MakeGenericType(d.EntityType));
                 AnalyticsRuntimeMetrics metrics = sp.GetRequiredService<AnalyticsRuntimeMetrics>();
                 ICurrentTenant? currentTenant = sp.GetService<ICurrentTenant>();
                 // Optional Geography projector — registered by Granit.Analytics.PostGIS
@@ -167,7 +175,7 @@ public static class AnalyticsEntityFrameworkCoreServiceCollectionExtensions
                 object? geographyProjector = sp.GetService(projectorType);
 
                 return (IMapRunner)Activator.CreateInstance(
-                    runnerType, d.Name, queryableSource, engine, metrics, currentTenant, geographyProjector)!;
+                    runnerType, d.Name, queryableSource, engine, definition, metrics, currentTenant, geographyProjector)!;
             });
         }
 

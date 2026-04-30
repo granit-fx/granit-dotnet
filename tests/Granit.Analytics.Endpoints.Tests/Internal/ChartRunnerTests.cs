@@ -448,6 +448,10 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             builder
                 .Column(x => x.Status, c => c.Label("Status").Filterable())
                 .Column(x => x.Amount, c => c.Label("Amount").Filterable())
+                .Column(x => x.Quantity, c => c.Label("Quantity"))
+                .Column(x => x.BigQuantity, c => c.Label("BigQuantity"))
+                .Column(x => x.Score, c => c.Label("Score"))
+                .Column(x => x.Bonus, c => c.Label("Bonus"))
                 .AllowGroupBy(x => x.Status);
         }
     }
@@ -461,6 +465,10 @@ public sealed class ChartRunnerTests : IAsyncLifetime
             builder
                 .Column(x => x.Status, c => c.Label("Status").Filterable())
                 .Column(x => x.Amount, c => c.Label("Amount").Filterable().Currency("EUR"))
+                .Column(x => x.Quantity, c => c.Label("Quantity"))
+                .Column(x => x.BigQuantity, c => c.Label("BigQuantity"))
+                .Column(x => x.Score, c => c.Label("Score"))
+                .Column(x => x.Bonus, c => c.Label("Bonus"))
                 .AllowGroupBy(x => x.Status);
         }
     }

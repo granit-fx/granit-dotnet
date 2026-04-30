@@ -4506,7 +4506,7 @@
       "kind": "class",
       "project": "Granit.Analytics.Endpoints",
       "file": "src/Granit.Analytics.Endpoints/Options/AnalyticsEndpointsOptions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "RoutePrefix",
@@ -4531,6 +4531,18 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan StaticTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromDays",
+          "kind": "method",
+          "signature": "FromDays(365 * 5)",
+          "returnType": "TimeSpan MaxPeriodLength { get; set; } = TimeSpan."
+        },
+        {
+          "name": "Validate",
+          "kind": "method",
+          "signature": "Validate(ValidationContext validationContext)",
+          "returnType": "IEnumerable<ValidationResult>"
         }
       ]
     },

@@ -29,6 +29,7 @@ internal sealed class MapRunner<TEntity>(
     string name,
     IQueryableSource<TEntity> source,
     IQueryEngine<TEntity> engine,
+    QueryDefinition<TEntity> definition,
     AnalyticsRuntimeMetrics metrics,
     ICurrentTenant? currentTenant = null,
     IGeographyPointProjector<TEntity>? geographyProjector = null) : IMapRunner
@@ -51,6 +52,7 @@ internal sealed class MapRunner<TEntity>(
 
     private readonly IQueryableSource<TEntity> _source = source;
     private readonly IQueryEngine<TEntity> _engine = engine;
+    private readonly QueryDefinition<TEntity> _definition = definition;
     private readonly AnalyticsRuntimeMetrics _metrics = metrics;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
     private readonly IGeographyPointProjector<TEntity>? _geographyProjector = geographyProjector;
@@ -78,7 +80,7 @@ internal sealed class MapRunner<TEntity>(
             MapPointSource.LatLng latLng => BuildLatLngExtractor(latLng),
             MapPointSource.Geography geography => BuildGeographyExtractor(geography),
             _ => throw new NotSupportedException(
-                $"MapPointSource '{pointSource.GetType().Name}' is not supported by MapRunner<{typeof(TEntity).Name}>."),
+                $"MapPointSource '{pointSource.GetType().Name}' is not supported on map widget for query '{Name}'."),
         };
 
         PropertyInfo? idProp = typeof(TEntity).GetProperty(
@@ -137,7 +139,7 @@ internal sealed class MapRunner<TEntity>(
     }
 
     /// <summary>Builds the LatLng-path coordinate extractor — reflects two double/decimal columns and converts via invariant culture.</summary>
-    private static Func<TEntity, (double Latitude, double Longitude)?> BuildLatLngExtractor(MapPointSource.LatLng latLng)
+    private Func<TEntity, (double Latitude, double Longitude)?> BuildLatLngExtractor(MapPointSource.LatLng latLng)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(latLng.LatitudeColumn);
         ArgumentException.ThrowIfNullOrWhiteSpace(latLng.LongitudeColumn);
@@ -169,48 +171,54 @@ internal sealed class MapRunner<TEntity>(
         if (_geographyProjector is null)
         {
             throw new NotSupportedException(
-                $"MapRunner<{typeof(TEntity).Name}> received a Geography PointSource but no IGeographyPointProjector<{typeof(TEntity).Name}> is registered. " +
+                $"Map widget for query '{Name}' received a Geography PointSource but no IGeographyPointProjector is registered. " +
                 "Renderers should pre-check IMapRunner.SupportsGeography and surface 'Widget:Unavailable.MapGeographyNotImplemented' instead.");
         }
 
+        // Whitelist enforcement on the geography column — the projector
+        // internally reflects on TEntity to read the column, so the same gate
+        // that guards the LatLng path must apply here. Use the declared
+        // PropertyName so we hand the projector the canonical name regardless
+        // of the dashboard config's casing.
+        (PropertyInfo prop, _) = AnalyticsColumnWhitelist.ResolveProperty(
+            _definition, Name, geography.GeographyColumn, nameof(geography.GeographyColumn));
+
         IGeographyPointProjector<TEntity> projector = _geographyProjector;
-        string column = geography.GeographyColumn;
+        string column = prop.Name;
         return entity => projector.TryProject(entity, column);
     }
 
-    private static PropertyInfo ResolveCoordinateProperty(string fieldName, string paramName)
+    private PropertyInfo ResolveCoordinateProperty(string fieldName, string paramName)
     {
-        PropertyInfo prop = ResolveProperty(fieldName, paramName);
+        // Whitelist enforcement — coordinate columns must be declared on the
+        // QueryDefinition (the same set the admin grid honours). This blocks
+        // map widgets from reading undeclared properties of TEntity.
+        (PropertyInfo prop, _) = AnalyticsColumnWhitelist.ResolveProperty(
+            _definition, Name, fieldName, paramName);
+
         Type underlying = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
         if (underlying != typeof(double) && underlying != typeof(decimal))
         {
             throw new ArgumentException(
                 FormattableString.Invariant(
-                    $"Coordinate column '{prop.Name}' on entity '{typeof(TEntity).Name}' is of type '{underlying.Name}'. Map widgets require double or decimal latitude/longitude columns."),
+                    $"Coordinate column '{prop.Name}' on query '{Name}' is of type '{underlying.Name}'. Map widgets require double or decimal latitude/longitude columns."),
                 paramName);
         }
         return prop;
     }
 
-    private static PropertyInfo[] ResolvePopupProperties(IReadOnlyList<string> popupColumns)
+    private PropertyInfo[] ResolvePopupProperties(IReadOnlyList<string> popupColumns)
     {
+        // Whitelist enforcement — popup columns must be declared on the
+        // QueryDefinition. Without this gate, dashboard authors could leak
+        // raw values of any public property of TEntity through the popup.
         var resolved = new PropertyInfo[popupColumns.Count];
         for (int i = 0; i < popupColumns.Count; i++)
         {
-            resolved[i] = ResolveProperty(popupColumns[i], nameof(popupColumns));
+            (resolved[i], _) = AnalyticsColumnWhitelist.ResolveProperty(
+                _definition, Name, popupColumns[i], nameof(popupColumns));
         }
         return resolved;
-    }
-
-    private static PropertyInfo ResolveProperty(string fieldName, string paramName)
-    {
-        PropertyInfo? prop = typeof(TEntity).GetProperty(
-            fieldName,
-            BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-        return prop ?? throw new ArgumentException(
-            $"Field '{fieldName}' not found on entity '{typeof(TEntity).Name}'.",
-            paramName);
     }
 
     /// <summary>
