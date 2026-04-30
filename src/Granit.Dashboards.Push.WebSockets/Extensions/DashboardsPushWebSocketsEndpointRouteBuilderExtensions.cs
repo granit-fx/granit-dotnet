@@ -1,5 +1,6 @@
 using Granit.Dashboards.Push.WebSockets.Endpoints;
 using Granit.Dashboards.Push.WebSockets.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -27,7 +28,7 @@ public static class DashboardsPushWebSocketsEndpointRouteBuilderExtensions
         DashboardsPushWebSocketsOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<DashboardsPushWebSocketsOptions>>().Value;
 
-        RouteGroupBuilder group = endpoints.MapGroup(options.RoutePrefix);
+        RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
         group.WithTags(options.TagName);
         group.MapDashboardWebSocketStreamEndpoint();
         return group;

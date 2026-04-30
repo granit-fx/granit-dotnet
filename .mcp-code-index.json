@@ -629,7 +629,9 @@
       "deps": [
         "Granit",
         "Granit.Analytics.Abstractions",
-        "Granit.Dashboards.Abstractions"
+        "Granit.Authorization",
+        "Granit.Dashboards.Abstractions",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -675,7 +677,8 @@
         "Granit.Authorization",
         "Granit.Http.Abstractions",
         "Granit.MultiTenancy",
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -690,7 +693,8 @@
         "Granit.Dashboards.Push",
         "Granit.Http.Abstractions",
         "Granit.MultiTenancy",
-        "Granit.Timing"
+        "Granit.Timing",
+        "Granit.Validation"
       ],
       "framework": "net10.0"
     },
@@ -13436,6 +13440,15 @@
       ]
     },
     {
+      "name": "Catalog",
+      "fqn": "Granit.Dashboards.Catalog",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardsPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "DashboardBreakpoint",
       "fqn": "Granit.Dashboards.DashboardBreakpoint",
       "kind": "enum",
@@ -13656,6 +13669,15 @@
       "project": "Granit.Dashboards.Abstractions",
       "file": "src/Granit.Dashboards.Abstractions/DashboardView.cs",
       "line": 43,
+      "members": []
+    },
+    {
+      "name": "DashboardsPermissions",
+      "fqn": "Granit.Dashboards.DashboardsPermissions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardsPermissions.cs",
+      "line": 6,
       "members": []
     },
     {
@@ -14075,28 +14097,12 @@
       "kind": "class",
       "project": "Granit.Dashboards.Endpoints",
       "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsEndpointsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 11,
       "members": [
         {
           "name": "AddGranitDashboardsEndpoints",
           "kind": "method",
           "signature": "AddGranitDashboardsEndpoints(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
-      "name": "DashboardsRenderingServiceCollectionExtensions",
-      "fqn": "Granit.Dashboards.Endpoints.Extensions.DashboardsRenderingServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Extensions/DashboardsRenderingServiceCollectionExtensions.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "AddGranitDashboardsContentWidgetRenderers",
-          "kind": "method",
-          "signature": "AddGranitDashboardsContentWidgetRenderers(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -14150,60 +14156,6 @@
           "returnType": "string"
         }
       ]
-    },
-    {
-      "name": "Catalog",
-      "fqn": "Granit.Dashboards.Endpoints.Permissions.Catalog",
-      "kind": "class",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "DashboardsPermissions",
-      "fqn": "Granit.Dashboards.Endpoints.Permissions.DashboardsPermissions",
-      "kind": "class",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "Instances",
-      "fqn": "Granit.Dashboards.Endpoints.Permissions.Instances",
-      "kind": "class",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Permissions/DashboardsPermissions.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "ImageWidgetSnapshot",
-      "fqn": "Granit.Dashboards.Endpoints.Rendering.ImageWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Rendering/ImageWidgetSnapshot.cs",
-      "line": 15,
-      "members": []
-    },
-    {
-      "name": "MarkdownWidgetSnapshot",
-      "fqn": "Granit.Dashboards.Endpoints.Rendering.MarkdownWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Rendering/MarkdownWidgetSnapshot.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "TextWidgetSnapshot",
-      "fqn": "Granit.Dashboards.Endpoints.Rendering.TextWidgetSnapshot",
-      "kind": "record",
-      "project": "Granit.Dashboards.Endpoints",
-      "file": "src/Granit.Dashboards.Endpoints/Rendering/TextWidgetSnapshot.cs",
-      "line": 13,
-      "members": []
     },
     {
       "name": "EntityAlias",
@@ -14270,7 +14222,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.EntityFrameworkCore",
       "file": "src/Granit.Dashboards.EntityFrameworkCore/GranitDashboardsEntityFrameworkCoreModule.cs",
-      "line": 19,
+      "line": 25,
       "members": []
     },
     {
@@ -14279,7 +14231,7 @@
       "kind": "class",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Extensions/DashboardsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitDashboards",
@@ -14304,7 +14256,7 @@
       "kind": "class",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/GranitDashboardsModule.cs",
-      "line": 20,
+      "line": 27,
       "members": [
         {
           "name": "ConfigureServices",
@@ -14346,6 +14298,15 @@
       ]
     },
     {
+      "name": "Instances",
+      "fqn": "Granit.Dashboards.Instances",
+      "kind": "class",
+      "project": "Granit.Dashboards.Abstractions",
+      "file": "src/Granit.Dashboards.Abstractions/DashboardsPermissions.cs",
+      "line": 19,
+      "members": []
+    },
+    {
       "name": "WidgetDefinitionPolymorphism",
       "fqn": "Granit.Dashboards.Json.WidgetDefinitionPolymorphism",
       "kind": "class",
@@ -14369,7 +14330,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.Push",
       "file": "src/Granit.Dashboards.Push/Extensions/DashboardsPushEndpointRouteBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "MapGranitDashboardsPush",
@@ -14401,7 +14362,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.Push",
       "file": "src/Granit.Dashboards.Push/GranitDashboardsPushModule.cs",
-      "line": 18,
+      "line": 23,
       "members": [
         {
           "name": "ConfigureServices",
@@ -14489,7 +14450,7 @@
       "kind": "class",
       "project": "Granit.Dashboards.Push.WebSockets",
       "file": "src/Granit.Dashboards.Push.WebSockets/Extensions/DashboardsPushWebSocketsEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitDashboardsPushWebSockets",
@@ -14625,12 +14586,39 @@
       ]
     },
     {
+      "name": "ImageWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Rendering.ImageWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/ImageWidgetSnapshot.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "MarkdownWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Rendering.MarkdownWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/MarkdownWidgetSnapshot.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "RenderedWidget",
       "fqn": "Granit.Dashboards.Rendering.RenderedWidget",
       "kind": "record",
       "project": "Granit.Dashboards",
       "file": "src/Granit.Dashboards/Rendering/IDashboardRenderer.cs",
       "line": 82,
+      "members": []
+    },
+    {
+      "name": "TextWidgetSnapshot",
+      "fqn": "Granit.Dashboards.Rendering.TextWidgetSnapshot",
+      "kind": "record",
+      "project": "Granit.Dashboards",
+      "file": "src/Granit.Dashboards/Rendering/TextWidgetSnapshot.cs",
+      "line": 13,
       "members": []
     },
     {

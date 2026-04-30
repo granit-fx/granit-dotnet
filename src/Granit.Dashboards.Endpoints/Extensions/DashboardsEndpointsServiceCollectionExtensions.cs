@@ -1,6 +1,4 @@
-using Granit.Dashboards.Endpoints.Internal;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
-using Granit.Dashboards.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -27,7 +25,6 @@ public static class DashboardsEndpointsServiceCollectionExtensions
         services.TryAddScoped<DashboardEditor>();
         services.TryAddScoped<DashboardStateTransitionService>();
         services.TryAddScoped<DashboardWidgetService>();
-        services.TryAddScoped<IDashboardRenderer, DashboardRenderer>();
 
         return services;
     }

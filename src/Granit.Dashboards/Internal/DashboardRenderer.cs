@@ -5,7 +5,7 @@ using Granit.Dashboards.Rendering;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
-namespace Granit.Dashboards.Endpoints.Internal;
+namespace Granit.Dashboards.Internal;
 
 /// <summary>
 /// Default <see cref="IDashboardRenderer"/> — keys registered

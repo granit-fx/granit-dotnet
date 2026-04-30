@@ -1,6 +1,6 @@
 using Granit.Dashboards.Widgets;
 
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Image"</c> widget kind — a static image

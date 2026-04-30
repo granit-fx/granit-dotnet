@@ -412,7 +412,10 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )"
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
         }
       },
       "granit.dashboards.abstractions": {

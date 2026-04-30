@@ -1,5 +1,6 @@
 using Granit.Dashboards.Push.Endpoints;
 using Granit.Dashboards.Push.Options;
+using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -29,7 +30,7 @@ public static class DashboardsPushEndpointRouteBuilderExtensions
         DashboardsPushOptions options = endpoints.ServiceProvider
             .GetRequiredService<IOptions<DashboardsPushOptions>>().Value;
 
-        RouteGroupBuilder group = endpoints.MapGroup(options.RoutePrefix);
+        RouteGroupBuilder group = endpoints.MapGranitGroup(options.RoutePrefix);
         group.WithTags(options.TagName);
         group.MapDashboardStreamEndpoint();
         return group;

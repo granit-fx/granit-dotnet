@@ -1,4 +1,4 @@
-using Granit.Dashboards.Endpoints.Permissions;
+using Granit.Dashboards;
 using Shouldly;
 using Xunit;
 

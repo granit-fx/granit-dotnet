@@ -1,6 +1,6 @@
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
-using Granit.Dashboards.Endpoints.Permissions;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

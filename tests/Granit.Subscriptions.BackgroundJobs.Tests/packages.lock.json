@@ -331,6 +331,14 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.authorization": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.backgroundjobs": {
         "type": "Project",
         "dependencies": {
@@ -367,7 +375,10 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
-          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )"
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.Timing": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )"
         }
       },
       "granit.dashboards.abstractions": {

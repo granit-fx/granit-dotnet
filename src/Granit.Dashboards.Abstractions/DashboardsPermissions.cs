@@ -1,4 +1,4 @@
-namespace Granit.Dashboards.Endpoints.Permissions;
+namespace Granit.Dashboards;
 
 /// <summary>
 /// Permission constants for Granit.Dashboards endpoints.

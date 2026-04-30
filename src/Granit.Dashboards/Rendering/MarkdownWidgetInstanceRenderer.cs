@@ -3,24 +3,22 @@ using System.Text.Json.Serialization;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
-using Granit.Dashboards.Widgets;
 using Granit.Timing;
 
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
-/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Image"</c> widget kind —
-/// static image tile (logo, illustration, banner). The renderer surfaces the
-/// declarative source / alt key / fit mode unchanged; the frontend resolves
-/// blob references and the alt-text localization key against the active
-/// session and culture.
+/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Markdown"</c> widget kind.
+/// Static content tile — does not query the data layer. The renderer parses
+/// <see cref="WidgetInstance.ConfigJson"/> into a <see cref="MarkdownWidgetSnapshot"/>
+/// and surfaces <see cref="RefreshHint.Static"/> so the frontend can drop the
+/// widget out of its refresh loop.
 /// </summary>
-internal sealed class ImageWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
+internal sealed class MarkdownWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
 {
     private static readonly JsonSerializerOptions ConfigJsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        Converters = { new JsonStringEnumConverter() },
     };
 
     private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
@@ -31,7 +29,7 @@ internal sealed class ImageWidgetInstanceRenderer(IClock clock) : IWidgetInstanc
 
     private readonly IClock _clock = clock;
 
-    public string WidgetType => "Image";
+    public string WidgetType => "Markdown";
 
     public Task<WidgetSnapshotEnvelope> RenderAsync(
         WidgetInstance widget,
@@ -40,11 +38,11 @@ internal sealed class ImageWidgetInstanceRenderer(IClock clock) : IWidgetInstanc
     {
         ArgumentNullException.ThrowIfNull(widget);
 
-        ImageConfig config = JsonSerializer.Deserialize<ImageConfig>(widget.ConfigJson, ConfigJsonOptions)
+        MarkdownConfig config = JsonSerializer.Deserialize<MarkdownConfig>(widget.ConfigJson, ConfigJsonOptions)
             ?? throw new InvalidOperationException(
-                $"Widget {widget.Id} ('Image') has empty ConfigJson — image source cannot be resolved.");
+                $"Widget {widget.Id} ('Markdown') has empty ConfigJson — content key cannot be resolved.");
 
-        ImageWidgetSnapshot snapshot = new(config.Source, config.AltLocalizationKey, config.Fit);
+        MarkdownWidgetSnapshot snapshot = new(config.ContentLocalizationKey);
 
         return Task.FromResult(WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,
@@ -54,5 +52,5 @@ internal sealed class ImageWidgetInstanceRenderer(IClock clock) : IWidgetInstanc
             refreshHint: RefreshHint.Static));
     }
 
-    private sealed record ImageConfig(string Source, string AltLocalizationKey, ImageFit Fit);
+    private sealed record MarkdownConfig(string ContentLocalizationKey);
 }

@@ -1,7 +1,7 @@
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Endpoints.Internal;
-using Granit.Dashboards.Endpoints.Permissions;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -44,7 +44,8 @@ internal static class DashboardStateTransitionEndpoints
                 + "/{id}/restore to bring it back to Draft.")
             .RequireAuthorization(DashboardsPermissions.Instances.Manage)
             .Produces<DashboardSummaryResponse>()
-            .ProducesProblem(StatusCodes.Status404NotFound);
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPost("/{id:guid}/restore", RestoreAsync)
             .WithName("RestoreGranitDashboard")

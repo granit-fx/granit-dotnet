@@ -4,9 +4,9 @@ using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Endpoints.Internal;
-using Granit.Dashboards.Endpoints.Permissions;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Granit.Dashboards.Rendering;
+using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -52,6 +52,7 @@ internal static class DashboardRenderEndpoints
         [FromServices] DashboardReader reader,
         [FromServices] IDashboardRenderer renderer,
         [FromServices] IDashboardDefinitionRegistry definitionRegistry,
+        [FromServices] ICurrentTenant? currentTenant,
         ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
@@ -71,8 +72,10 @@ internal static class DashboardRenderEndpoints
 
         ResolvedPeriod? period = DashboardRenderProjection.TryBuildResolvedPeriod(body);
 
+        Guid? tenantId = currentTenant is { IsAvailable: true } ? currentTenant.Id : null;
+
         WidgetRenderContext context = new(
-            TenantId: null,                                          // populated upstream via ICurrentTenant when wired into the host
+            TenantId: tenantId,
             User: user,
             Period: period,
             Locale: body.Locale ?? "en",

@@ -1,5 +1,7 @@
 using Granit.Dashboards.Push.Extensions;
 using Granit.Modularity;
+using Granit.MultiTenancy;
+using Granit.Validation;
 
 namespace Granit.Dashboards.Push;
 
@@ -14,7 +16,10 @@ namespace Granit.Dashboards.Push;
 /// — the framework degrades <c>Realtime</c> widgets to <c>Dynamic</c> cadence
 /// with no runtime breakage.
 /// </remarks>
-[DependsOn(typeof(GranitDashboardsModule))]
+[DependsOn(
+    typeof(GranitDashboardsModule),
+    typeof(GranitMultiTenancyModule),
+    typeof(GranitValidationModule))]
 public sealed class GranitDashboardsPushModule : GranitModule
 {
     /// <inheritdoc/>

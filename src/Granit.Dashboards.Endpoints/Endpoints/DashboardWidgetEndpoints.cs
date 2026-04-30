@@ -1,7 +1,7 @@
+using Granit.Dashboards;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Endpoints.Dtos;
 using Granit.Dashboards.Endpoints.Internal;
-using Granit.Dashboards.Endpoints.Permissions;
 using Granit.Dashboards.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -35,8 +35,7 @@ internal static class DashboardWidgetEndpoints
             .RequireAuthorization(DashboardsPermissions.Instances.Manage)
             .Produces<WidgetInstanceResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPut("/{id:guid}/widgets/{widgetId:guid}", UpdateWidgetAsync)
             .WithName("UpdateGranitDashboardWidget")
@@ -52,8 +51,7 @@ internal static class DashboardWidgetEndpoints
             .RequireAuthorization(DashboardsPermissions.Instances.Manage)
             .Produces<WidgetInstanceResponse>()
             .ProducesValidationProblem()
-            .ProducesProblem(StatusCodes.Status404NotFound)
-            .ProducesProblem(StatusCodes.Status422UnprocessableEntity);
+            .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}/widgets/{widgetId:guid}", RemoveWidgetAsync)
             .WithName("RemoveGranitDashboardWidget")

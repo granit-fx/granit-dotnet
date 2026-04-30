@@ -1,4 +1,7 @@
+using Granit.Analytics;
+using Granit.Guids;
 using Granit.Modularity;
+using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore;
 
 namespace Granit.Dashboards.EntityFrameworkCore;
@@ -14,6 +17,9 @@ namespace Granit.Dashboards.EntityFrameworkCore;
 /// (per Granit conventions).
 /// </remarks>
 [DependsOn(
+    typeof(GranitAnalyticsModule),
     typeof(GranitDashboardsModule),
+    typeof(GranitGuidsModule),
+    typeof(GranitMultiTenancyModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitDashboardsEntityFrameworkCoreModule : GranitModule;

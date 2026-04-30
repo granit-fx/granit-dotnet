@@ -26,9 +26,6 @@ namespace Granit.Dashboards.Push.WebSockets.Endpoints;
 /// </summary>
 internal static class DashboardWebSocketStreamEndpoint
 {
-    /// <summary>Permission constant — duplicated from <c>Granit.Dashboards.Endpoints.DashboardsPermissions.Instances.Read</c> so the WebSocket package doesn't depend on Endpoints just for one literal. Kept in sync by convention; the literal is also documented in CLAUDE.md.</summary>
-    private const string ReadPermission = "Dashboards.Instances.Read";
-
     public static RouteGroupBuilder MapDashboardWebSocketStreamEndpoint(this RouteGroupBuilder group)
     {
         group.MapGet("/{id:guid}/stream-ws", StreamAsync)
@@ -42,7 +39,7 @@ internal static class DashboardWebSocketStreamEndpoint
                 + "(WebSockets don't support the SSE Last-Event-ID header post-upgrade, so the "
                 + "framework reads it from the first inbound text frame within OpeningFrameTimeout). "
                 + "The opening frame is optional — clients that omit it get a fresh subscription.")
-            .RequireAuthorization(ReadPermission)
+            .RequireAuthorization(DashboardsPermissions.Instances.Read)
             .Produces(StatusCodes.Status101SwitchingProtocols)
             .ProducesProblem(StatusCodes.Status400BadRequest);
 

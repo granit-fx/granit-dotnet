@@ -6,18 +6,17 @@ using Granit.Dashboards.Rendering;
 using Granit.Dashboards.Widgets;
 using Granit.Timing;
 
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
-/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Text"</c> widget kind —
-/// plain-text tile (heading, subheading, caption) without markdown rendering.
-/// Static; does not touch the data layer.
+/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Image"</c> widget kind —
+/// static image tile (logo, illustration, banner). The renderer surfaces the
+/// declarative source / alt key / fit mode unchanged; the frontend resolves
+/// blob references and the alt-text localization key against the active
+/// session and culture.
 /// </summary>
-internal sealed class TextWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
+internal sealed class ImageWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
 {
-    // ConfigJson was written by WidgetDefinitionToInstanceMapper with
-    // PropertyNamingPolicy = CamelCase + Style as a PascalCase string —
-    // JsonStringEnumConverter accepts both string and integer enum values.
     private static readonly JsonSerializerOptions ConfigJsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -32,7 +31,7 @@ internal sealed class TextWidgetInstanceRenderer(IClock clock) : IWidgetInstance
 
     private readonly IClock _clock = clock;
 
-    public string WidgetType => "Text";
+    public string WidgetType => "Image";
 
     public Task<WidgetSnapshotEnvelope> RenderAsync(
         WidgetInstance widget,
@@ -41,11 +40,11 @@ internal sealed class TextWidgetInstanceRenderer(IClock clock) : IWidgetInstance
     {
         ArgumentNullException.ThrowIfNull(widget);
 
-        TextConfig config = JsonSerializer.Deserialize<TextConfig>(widget.ConfigJson, ConfigJsonOptions)
+        ImageConfig config = JsonSerializer.Deserialize<ImageConfig>(widget.ConfigJson, ConfigJsonOptions)
             ?? throw new InvalidOperationException(
-                $"Widget {widget.Id} ('Text') has empty ConfigJson — content key cannot be resolved.");
+                $"Widget {widget.Id} ('Image') has empty ConfigJson — image source cannot be resolved.");
 
-        TextWidgetSnapshot snapshot = new(config.ContentLocalizationKey, config.Style);
+        ImageWidgetSnapshot snapshot = new(config.Source, config.AltLocalizationKey, config.Fit);
 
         return Task.FromResult(WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,
@@ -55,5 +54,5 @@ internal sealed class TextWidgetInstanceRenderer(IClock clock) : IWidgetInstance
             refreshHint: RefreshHint.Static));
     }
 
-    private sealed record TextConfig(string ContentLocalizationKey, TextStyle Style);
+    private sealed record ImageConfig(string Source, string AltLocalizationKey, ImageFit Fit);
 }

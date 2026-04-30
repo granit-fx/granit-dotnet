@@ -1,4 +1,4 @@
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Markdown"</c> widget kind. Carries the
