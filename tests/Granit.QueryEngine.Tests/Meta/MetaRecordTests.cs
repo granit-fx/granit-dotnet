@@ -11,12 +11,10 @@
 //   - ColumnDefinition record equality
 //   - FilterableField record equality
 //   - DateFilterMeta record equality
-//   - SavedViewSummary record equality
 // =============================================================================
 
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
-using Granit.QueryEngine.SavedViews;
 using Shouldly;
 using Xunit;
 
@@ -324,58 +322,6 @@ public sealed class DateFilterMetaEqualityTests
         IReadOnlyList<DatePeriod> periods = [DatePeriod.Today, DatePeriod.ThisMonth];
         DateFilterMeta a = new("CreatedAt", DatePeriod.ThisMonth, periods);
         DateFilterMeta b = new("CreatedAt", DatePeriod.ThisYear, periods);
-
-        a.ShouldNotBe(b);
-    }
-}
-
-public sealed class SavedViewSummaryEqualityTests
-{
-    [Fact]
-    public void Equality_SameValues_AreEqual()
-    {
-        var id = Guid.NewGuid();
-        SavedViewSummary a = new(id, "My view", true, false);
-        SavedViewSummary b = new(id, "My view", true, false);
-
-        a.ShouldBe(b);
-    }
-
-    [Fact]
-    public void Equality_DifferentId_AreNotEqual()
-    {
-        SavedViewSummary a = new(Guid.NewGuid(), "My view", true, false);
-        SavedViewSummary b = new(Guid.NewGuid(), "My view", true, false);
-
-        a.ShouldNotBe(b);
-    }
-
-    [Fact]
-    public void Equality_DifferentName_AreNotEqual()
-    {
-        var id = Guid.NewGuid();
-        SavedViewSummary a = new(id, "View A", true, false);
-        SavedViewSummary b = new(id, "View B", true, false);
-
-        a.ShouldNotBe(b);
-    }
-
-    [Fact]
-    public void Equality_DifferentIsShared_AreNotEqual()
-    {
-        var id = Guid.NewGuid();
-        SavedViewSummary a = new(id, "My view", true, false);
-        SavedViewSummary b = new(id, "My view", false, false);
-
-        a.ShouldNotBe(b);
-    }
-
-    [Fact]
-    public void Equality_DifferentIsDefault_AreNotEqual()
-    {
-        var id = Guid.NewGuid();
-        SavedViewSummary a = new(id, "My view", true, true);
-        SavedViewSummary b = new(id, "My view", true, false);
 
         a.ShouldNotBe(b);
     }

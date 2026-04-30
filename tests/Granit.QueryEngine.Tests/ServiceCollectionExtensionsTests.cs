@@ -1,6 +1,6 @@
+using Granit.QueryEngine.Diagnostics;
 using Granit.QueryEngine.Extensions;
-using Granit.QueryEngine.SavedViews;
-using Granit.QueryEngine.SavedViews.Domain;
+using Granit.QueryEngine.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -10,55 +10,28 @@ namespace Granit.QueryEngine.Tests;
 public sealed class ServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddGranitQueryEngine_registers_null_saved_view_store_reader()
+    public void AddGranitQueryEngine_registers_options_singleton()
+    {
+        ServiceCollection services = new();
+        services.AddOptions<QueryEngineOptions>();
+
+        services.AddGranitQueryEngine();
+
+        services.ShouldContain(d =>
+            d.ServiceType == typeof(QueryEngineOptions) &&
+            d.Lifetime == ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddGranitQueryEngine_registers_metrics_singleton()
     {
         ServiceCollection services = new();
 
         services.AddGranitQueryEngine();
 
         services.ShouldContain(d =>
-            d.ServiceType == typeof(ISavedViewStoreReader) &&
-            d.Lifetime == ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void AddGranitQueryEngine_registers_null_saved_view_store_writer()
-    {
-        ServiceCollection services = new();
-
-        services.AddGranitQueryEngine();
-
-        services.ShouldContain(d =>
-            d.ServiceType == typeof(ISavedViewStoreWriter) &&
-            d.Lifetime == ServiceLifetime.Scoped);
-    }
-
-    [Fact]
-    public void AddGranitQueryEngine_does_not_replace_existing_reader()
-    {
-        ServiceCollection services = new();
-        services.AddScoped<ISavedViewStoreReader, FakeSavedViewStoreReader>();
-
-        services.AddGranitQueryEngine();
-
-        ServiceProvider provider = services.BuildServiceProvider();
-        using IServiceScope scope = provider.CreateScope();
-        ISavedViewStoreReader store = scope.ServiceProvider.GetRequiredService<ISavedViewStoreReader>();
-        store.ShouldBeOfType<FakeSavedViewStoreReader>();
-    }
-
-    [Fact]
-    public void AddGranitQueryEngine_does_not_replace_existing_writer()
-    {
-        ServiceCollection services = new();
-        services.AddScoped<ISavedViewStoreWriter, FakeSavedViewStoreWriter>();
-
-        services.AddGranitQueryEngine();
-
-        ServiceProvider provider = services.BuildServiceProvider();
-        using IServiceScope scope = provider.CreateScope();
-        ISavedViewStoreWriter store = scope.ServiceProvider.GetRequiredService<ISavedViewStoreWriter>();
-        store.ShouldBeOfType<FakeSavedViewStoreWriter>();
+            d.ServiceType == typeof(QueryEngineMetrics) &&
+            d.Lifetime == ServiceLifetime.Singleton);
     }
 
     [Fact]
@@ -124,34 +97,5 @@ public sealed class ServiceCollectionExtensionsTests
 
         protected override void Configure(QueryDefinitionBuilder<TestEntity> builder) =>
             builder.Column(e => e.Name);
-    }
-
-    private sealed class FakeSavedViewStoreReader : ISavedViewStoreReader
-    {
-        public Task<IReadOnlyList<SavedView>> GetListAsync(
-            string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-            Task.FromResult<IReadOnlyList<SavedView>>([]);
-
-        public Task<SavedView?> GetAsync(Guid id, CancellationToken cancellationToken = default) =>
-            Task.FromResult<SavedView?>(null);
-
-        public Task<int> GetCountAsync(
-            string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-            Task.FromResult(0);
-    }
-
-    private sealed class FakeSavedViewStoreWriter : ISavedViewStoreWriter
-    {
-        public Task CreateAsync(SavedView view, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-
-        public Task UpdateAsync(SavedView view, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-
-        public Task DeleteAsync(Guid id, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
-
-        public Task SetDefaultAsync(Guid id, string userId, string entityType, CancellationToken cancellationToken = default) =>
-            Task.CompletedTask;
     }
 }

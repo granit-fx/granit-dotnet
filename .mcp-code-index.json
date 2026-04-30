@@ -1487,6 +1487,7 @@
       "name": "Granit.Metering.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Guids",
         "Granit.Http.Abstractions",
         "Granit.Metering",
         "Granit.QueryEngine.AspNetCore",
@@ -2213,7 +2214,6 @@
       "name": "Granit.QueryEngine",
       "deps": [
         "Granit",
-        "Granit.DataExchange.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -2240,9 +2240,7 @@
       "deps": [
         "Granit.Http.ApiDocumentation",
         "Granit.Authorization",
-        "Granit.Guids",
         "Granit.QueryEngine",
-        "Granit.Timing",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -30533,7 +30531,7 @@
       "kind": "class",
       "project": "Granit.Metering.Endpoints",
       "file": "src/Granit.Metering.Endpoints/GranitMeteringEndpointsModule.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -45654,21 +45652,12 @@
       ]
     },
     {
-      "name": "SavedViewResponse",
-      "fqn": "Granit.QueryEngine.AspNetCore.Dtos.SavedViewResponse",
-      "kind": "record",
-      "project": "Granit.QueryEngine.AspNetCore",
-      "file": "src/Granit.QueryEngine.AspNetCore/Dtos/SavedViewResponse.cs",
-      "line": 6,
-      "members": []
-    },
-    {
       "name": "QueryEndpointRouteBuilderExtensions",
       "fqn": "Granit.QueryEngine.AspNetCore.Extensions.QueryEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/Extensions/QueryEndpointRouteBuilderExtensions.cs",
-      "line": 23,
+      "line": 22,
       "members": []
     },
     {
@@ -45677,7 +45666,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine.AspNetCore",
       "file": "src/Granit.QueryEngine.AspNetCore/GranitQueryEngineAspNetCoreModule.cs",
-      "line": 28,
+      "line": 22,
       "members": []
     },
     {
@@ -45693,12 +45682,6 @@
           "kind": "property",
           "signature": "string? TagName",
           "returnType": "string?"
-        },
-        {
-          "name": "IncludeSavedViewEndpoints",
-          "kind": "property",
-          "signature": "bool IncludeSavedViewEndpoints",
-          "returnType": "bool"
         }
       ]
     },
@@ -45746,54 +45729,6 @@
       "members": []
     },
     {
-      "name": "QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.EntityFrameworkCore",
-      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "AddGranitQueryEngineEntityFrameworkCore",
-          "kind": "method",
-          "signature": "AddGranitQueryEngineEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
-          "returnType": "IHostApplicationBuilder"
-        }
-      ]
-    },
-    {
-      "name": "QueryEngineModelBuilderExtensions",
-      "fqn": "Granit.QueryEngine.EntityFrameworkCore.Extensions.QueryEngineModelBuilderExtensions",
-      "kind": "class",
-      "project": "Granit.QueryEngine.EntityFrameworkCore",
-      "file": "src/Granit.QueryEngine.EntityFrameworkCore/Extensions/QueryEngineModelBuilderExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "ConfigureQueryEngineModule",
-          "kind": "method",
-          "signature": "ConfigureQueryEngineModule(this ModelBuilder modelBuilder)",
-          "returnType": "ModelBuilder"
-        }
-      ]
-    },
-    {
-      "name": "GranitQueryEngineDbProperties",
-      "fqn": "Granit.QueryEngine.EntityFrameworkCore.GranitQueryEngineDbProperties",
-      "kind": "class",
-      "project": "Granit.QueryEngine.EntityFrameworkCore",
-      "file": "src/Granit.QueryEngine.EntityFrameworkCore/GranitQueryEngineDbProperties.cs",
-      "line": 13,
-      "members": [
-        {
-          "name": "DbTablePrefix",
-          "kind": "property",
-          "signature": "string DbTablePrefix",
-          "returnType": "string"
-        }
-      ]
-    },
-    {
       "name": "GranitQueryEngineEntityFrameworkCoreModule",
       "fqn": "Granit.QueryEngine.EntityFrameworkCore.GranitQueryEngineEntityFrameworkCoreModule",
       "kind": "class",
@@ -45806,22 +45741,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "SavedViewExportDefinition",
-      "fqn": "Granit.QueryEngine.Exports.SavedViewExportDefinition",
-      "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Exports/SavedViewExportDefinition.cs",
-      "line": 6,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
         }
       ]
     },
@@ -45840,7 +45759,7 @@
       "kind": "class",
       "project": "Granit.QueryEngine",
       "file": "src/Granit.QueryEngine/Extensions/ServiceCollectionExtensions.cs",
-      "line": 24,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitQueryEngine",
@@ -46037,7 +45956,7 @@
       "kind": "interface",
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/IQueryEngine.cs",
-      "line": 12,
+      "line": 11,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -46060,7 +45979,7 @@
         {
           "name": "GetMetadata",
           "kind": "method",
-          "signature": "GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null)",
+          "signature": "GetMetadata()",
           "returnType": "QueryMetadata"
         },
         {
@@ -46208,12 +46127,6 @@
           "kind": "property",
           "signature": "int MaxGroupCount",
           "returnType": "int"
-        },
-        {
-          "name": "MaxSavedViewsPerUser",
-          "kind": "property",
-          "signature": "int MaxSavedViewsPerUser",
-          "returnType": "int"
         }
       ]
     },
@@ -46225,22 +46138,6 @@
       "file": "src/Granit.QueryEngine.Abstractions/PagedResult.cs",
       "line": 22,
       "members": []
-    },
-    {
-      "name": "SavedViewQueryDefinition",
-      "fqn": "Granit.QueryEngine.Queries.SavedViewQueryDefinition",
-      "kind": "class",
-      "project": "Granit.QueryEngine",
-      "file": "src/Granit.QueryEngine/Queries/SavedViewQueryDefinition.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "Name",
-          "kind": "property",
-          "signature": "string Name",
-          "returnType": "string"
-        }
-      ]
     },
     {
       "name": "QueryDefinition",
@@ -46361,113 +46258,6 @@
       "project": "Granit.QueryEngine.Abstractions",
       "file": "src/Granit.QueryEngine.Abstractions/QueryRequest.cs",
       "line": 16,
-      "members": []
-    },
-    {
-      "name": "CreateSavedViewRequest",
-      "fqn": "Granit.QueryEngine.SavedViews.CreateSavedViewRequest",
-      "kind": "record",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/CreateSavedViewRequest.cs",
-      "line": 6,
-      "members": []
-    },
-    {
-      "name": "SavedView",
-      "fqn": "Granit.QueryEngine.SavedViews.Domain.SavedView",
-      "kind": "class",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/Domain/SavedView.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "ISavedViewRequest",
-      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewRequest",
-      "kind": "interface",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewRequest.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "ISavedViewStoreReader",
-      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreReader",
-      "kind": "interface",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewStoreReader.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "GetListAsync",
-          "kind": "method",
-          "signature": "GetListAsync(string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<SavedView>>"
-        },
-        {
-          "name": "GetAsync",
-          "kind": "method",
-          "signature": "GetAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<SavedView?>"
-        },
-        {
-          "name": "GetCountAsync",
-          "kind": "method",
-          "signature": "GetCountAsync(string entityType, string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        }
-      ]
-    },
-    {
-      "name": "ISavedViewStoreWriter",
-      "fqn": "Granit.QueryEngine.SavedViews.ISavedViewStoreWriter",
-      "kind": "interface",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/ISavedViewStoreWriter.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "CreateAsync",
-          "kind": "method",
-          "signature": "CreateAsync(SavedView view, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "UpdateAsync",
-          "kind": "method",
-          "signature": "UpdateAsync(SavedView view, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "DeleteAsync",
-          "kind": "method",
-          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "SetDefaultAsync",
-          "kind": "method",
-          "signature": "SetDefaultAsync(Guid id, string userId, string entityType, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "SavedViewSummary",
-      "fqn": "Granit.QueryEngine.SavedViews.SavedViewSummary",
-      "kind": "record",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/SavedViewSummary.cs",
-      "line": 10,
-      "members": []
-    },
-    {
-      "name": "UpdateSavedViewRequest",
-      "fqn": "Granit.QueryEngine.SavedViews.UpdateSavedViewRequest",
-      "kind": "record",
-      "project": "Granit.QueryEngine.Abstractions",
-      "file": "src/Granit.QueryEngine.Abstractions/SavedViews/UpdateSavedViewRequest.cs",
-      "line": 6,
       "members": []
     },
     {

@@ -33,12 +33,6 @@ public sealed class QueryEngineOptions
     public int MaxGroupCount { get; set; } = 1000;
 
     /// <summary>
-    /// Maximum number of saved views per user per entity type. Default: <c>100</c>.
-    /// Prevents storage exhaustion attacks.
-    /// </summary>
-    public int MaxSavedViewsPerUser { get; set; } = 100;
-
-    /// <summary>
     /// Base64-encoded HMAC-SHA256 key for signing cursor tokens (CWE-565 mitigation).
     /// When <c>null</c>, cursors are unsigned (backward compatible). Configure a 256-bit
     /// (32-byte) key for production use.

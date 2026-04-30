@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Guids;
 using Granit.Modularity;
 using Granit.QueryEngine.AspNetCore;
 using Granit.Validation;
@@ -10,6 +11,7 @@ namespace Granit.Metering.Endpoints;
 /// </summary>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitGuidsModule),
     typeof(GranitMeteringModule),
     typeof(GranitQueryEngineAspNetCoreModule),
     typeof(GranitValidationModule))]

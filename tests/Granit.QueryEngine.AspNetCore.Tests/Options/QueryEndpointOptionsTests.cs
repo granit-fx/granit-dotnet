@@ -31,14 +31,6 @@ public sealed class QueryEndpointOptionsTests
     }
 
     [Fact]
-    public void IncludeSavedViewEndpoints_defaults_to_true()
-    {
-        QueryEndpointOptions options = new();
-
-        options.IncludeSavedViewEndpoints.ShouldBeTrue();
-    }
-
-    [Fact]
     public void TagName_can_be_set()
     {
         QueryEndpointOptions options = new() { TagName = "Products" };
@@ -60,13 +52,5 @@ public sealed class QueryEndpointOptionsTests
         QueryEndpointOptions options = new() { IncludeMetaEndpoint = false };
 
         options.IncludeMetaEndpoint.ShouldBeFalse();
-    }
-
-    [Fact]
-    public void IncludeSavedViewEndpoints_can_be_disabled()
-    {
-        QueryEndpointOptions options = new() { IncludeSavedViewEndpoints = false };
-
-        options.IncludeSavedViewEndpoints.ShouldBeFalse();
     }
 }

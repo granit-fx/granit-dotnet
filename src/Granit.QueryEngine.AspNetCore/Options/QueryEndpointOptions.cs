@@ -30,10 +30,4 @@ public sealed class QueryEndpointOptions
     /// Defaults to <c>true</c>.
     /// </summary>
     public bool IncludeMetaEndpoint { get; set; } = true;
-
-    /// <summary>
-    /// Whether to register the saved views CRUD endpoints.
-    /// Defaults to <c>true</c>.
-    /// </summary>
-    public bool IncludeSavedViewEndpoints { get; set; } = true;
 }

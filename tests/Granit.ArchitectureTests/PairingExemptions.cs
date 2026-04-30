@@ -58,7 +58,6 @@ internal static class PairingExemptions
         "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",              // [INFRA] OAuth client config
         "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictScope",                    // [INFRA] OAuth scope config
         "Granit.Parties.EntityFrameworkCore.Entities.PartyDuplicateCandidate",            // [INFRA] deduplication queue
-        "Granit.QueryEngine.SavedViews.Domain.SavedView",                                 // [INFRA] grid tooling
         "Granit.ReferenceData.Domain.DynamicReferenceDataEntity",                         // [INFRA] reference-data config
         "Granit.Scheduling.Domain.ScheduledAction",                                       // [INFRA] scheduling state
         "Granit.Settings.Domain.SettingRecord",                                           // [INFRA] settings config

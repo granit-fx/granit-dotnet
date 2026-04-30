@@ -612,7 +612,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -629,7 +628,6 @@
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Localization.Abstractions": "[10.*, )"
         }
       },

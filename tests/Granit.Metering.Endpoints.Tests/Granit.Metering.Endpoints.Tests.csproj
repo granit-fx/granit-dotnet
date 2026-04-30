@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\..\src\Granit.Metering.Endpoints\Granit.Metering.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.Idempotency\Granit.Http.Idempotency.csproj" />
   </ItemGroup>

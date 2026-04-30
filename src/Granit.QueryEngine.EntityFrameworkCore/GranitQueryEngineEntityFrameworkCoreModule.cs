@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 namespace Granit.QueryEngine.EntityFrameworkCore;
 
 /// <summary>
-/// Module for the EF Core persistence layer of <c>Granit.QueryEngine</c>.
-/// Provides <c>QueryEngineDbContext</c>, <c>IQueryEngine&lt;T&gt;</c>,
-/// and <c>EfCoreSavedViewStore</c>.
+/// Module for the EF Core runtime of <c>Granit.QueryEngine</c>.
+/// Registers the open-generic <see cref="IQueryEngine{TEntity}"/> implementation
+/// that hosts use to execute queries against any <see cref="IQueryable{T}"/> source.
 /// </summary>
 [DependsOn(
     typeof(GranitPersistenceEntityFrameworkCoreModule),

@@ -1,10 +1,5 @@
-using Granit.DataExchange.Extensions;
 using Granit.QueryEngine.Diagnostics;
-using Granit.QueryEngine.Exports;
 using Granit.QueryEngine.Options;
-using Granit.QueryEngine.Queries;
-using Granit.QueryEngine.SavedViews;
-using Granit.QueryEngine.SavedViews.Domain;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -29,7 +24,6 @@ public static class ServiceCollectionExtensions
     /// <remarks>
     /// Registers the following services:
     /// <list type="bullet">
-    ///   <item><see cref="ISavedViewStoreReader"/> / <see cref="ISavedViewStoreWriter"/> (scoped) — null-object default.</item>
     ///   <item><see cref="QueryEngineOptions"/> singleton (resolved from <see cref="IOptions{T}"/>).</item>
     ///   <item><see cref="QueryEngineMetrics"/> singleton.</item>
     /// </list>
@@ -42,19 +36,10 @@ public static class ServiceCollectionExtensions
     /// <returns>The service collection for chaining.</returns>
     public static IServiceCollection AddGranitQueryEngine(this IServiceCollection services)
     {
-        // Default in-memory store — register concrete type, then forward both interfaces to same instance.
-        services.TryAddScoped<NullSavedViewStore>();
-        services.TryAddScoped<ISavedViewStoreReader>(sp => sp.GetRequiredService<NullSavedViewStore>());
-        services.TryAddScoped<ISavedViewStoreWriter>(sp => sp.GetRequiredService<NullSavedViewStore>());
-
         services.TryAddSingleton(sp =>
             sp.GetRequiredService<IOptions<QueryEngineOptions>>().Value);
 
         services.TryAddSingleton<QueryEngineMetrics>();
-
-        // Query + Export definitions (ADR-020: owned by the base module).
-        services.AddQueryDefinition<SavedView, SavedViewQueryDefinition>();
-        services.AddExportDefinition<SavedView, SavedViewExportDefinition>();
 
         return services;
     }

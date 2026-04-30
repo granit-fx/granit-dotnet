@@ -20,19 +20,6 @@
           "Microsoft.Extensions.Logging": "10.0.7"
         }
       },
-      "Microsoft.Extensions.Hosting.Abstractions": {
-        "type": "Direct",
-        "requested": "[10.*, )",
-        "resolved": "10.0.7",
-        "contentHash": "5s8d6qC6EA8UOI4wR/+zlsq7SXttJMRb9d7zvVZ7+bE3CQEfVtC9ITUDCommm87R1zzj6WJBbCnztuIJXnP3DA==",
-        "dependencies": {
-          "Microsoft.Extensions.Configuration.Abstractions": "10.0.7",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.7",
-          "Microsoft.Extensions.Diagnostics.Abstractions": "10.0.7",
-          "Microsoft.Extensions.FileProviders.Abstractions": "10.0.7",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.7"
-        }
-      },
       "Microsoft.Extensions.Localization.Abstractions": {
         "type": "Direct",
         "requested": "[10.*, )",
@@ -105,12 +92,6 @@
       "granit": {
         "type": "Project"
       },
-      "granit.dataexchange.abstractions": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )"
-        }
-      },
       "granit.datalookup.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -156,7 +137,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -236,6 +216,19 @@
           "Microsoft.EntityFrameworkCore.Relational": "10.0.7",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "10.0.7",
           "Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions": "10.0.7"
+        }
+      },
+      "Microsoft.Extensions.Hosting.Abstractions": {
+        "type": "CentralTransitive",
+        "requested": "[10.*, )",
+        "resolved": "10.0.7",
+        "contentHash": "5s8d6qC6EA8UOI4wR/+zlsq7SXttJMRb9d7zvVZ7+bE3CQEfVtC9ITUDCommm87R1zzj6WJBbCnztuIJXnP3DA==",
+        "dependencies": {
+          "Microsoft.Extensions.Configuration.Abstractions": "10.0.7",
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.7",
+          "Microsoft.Extensions.Diagnostics.Abstractions": "10.0.7",
+          "Microsoft.Extensions.FileProviders.Abstractions": "10.0.7",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.7"
         }
       },
       "Microsoft.Extensions.Logging.Abstractions": {

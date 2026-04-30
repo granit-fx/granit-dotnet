@@ -5,7 +5,6 @@ using Granit.QueryEngine.AspNetCore.Dtos;
 using Granit.QueryEngine.AspNetCore.Internal;
 using Granit.QueryEngine.AspNetCore.Options;
 using Granit.QueryEngine.Meta;
-using Granit.QueryEngine.SavedViews;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -61,12 +60,12 @@ public static class QueryEndpointRouteBuilderExtensions
     /// <list type="bullet">
     ///   <item><c>GET /</c> — paginated or grouped query</item>
     ///   <item><c>GET /meta</c> — query metadata (columns, filters, sorts, etc.)</item>
-    ///   <item><c>GET /saved-views</c> — list saved views</item>
-    ///   <item><c>POST /saved-views</c> — create saved view</item>
-    ///   <item><c>PUT /saved-views/{id}</c> — update saved view</item>
-    ///   <item><c>DELETE /saved-views/{id}</c> — delete saved view</item>
-    ///   <item><c>POST /saved-views/{id}/set-default</c> — set default saved view</item>
     /// </list>
+    /// <para>
+    /// Saved-view persistence has moved to <c>Granit.Entities.Views.Endpoints</c> /
+    /// <c>Granit.Entities.Views</c> (see ADR-047). Mount <c>MapGranitEntityViewsEndpoints</c>
+    /// to expose the EntityView surface (list / share / pin / set-default).
+    /// </para>
     /// </remarks>
     [SuppressMessage("Major Code Smell", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Setup-time reflection over an internal helper to dispatch to a generic projection-typed overload; private accessor used precisely so consumers cannot bypass the public API.")]
     public static RouteGroupBuilder MapGranitQuery<TEntity>(
@@ -126,32 +125,13 @@ public static class QueryEndpointRouteBuilderExtensions
         // GET /meta — query metadata
         if (options.IncludeMetaEndpoint)
         {
-            group.MapGet("/meta", async (
-                [FromServices] IQueryEngine<TEntity> engine,
-                [FromServices] ISavedViewStoreReader savedViewStore,
-                [FromServices] QueryDefinition<TEntity> definition,
-                Granit.MultiTenancy.ICurrentTenant tenant,
-                System.Security.Claims.ClaimsPrincipal user,
-                CancellationToken cancellationToken) =>
-            {
-                return await QueryEndpointHandler.GetMetadataAsync(
-                    engine, savedViewStore, definition, tenant, user, cancellationToken)
-                    .ConfigureAwait(false);
-            })
+            group.MapGet("/meta", (
+                [FromServices] IQueryEngine<TEntity> engine) =>
+                QueryEndpointHandler.GetMetadata(engine))
             .WithName($"Get{entityName}Meta")
             .WithSummary($"Returns query metadata for {entityName} (columns, filters, sorts, presets).")
-            .WithDescription($"Returns the query definition metadata for {entityName}: available columns with display labels and data types, supported filter operators, default sort order, and the current user's saved views. Use this to dynamically build query UIs without hardcoding column definitions.")
+            .WithDescription($"Returns the query definition metadata for {entityName}: available columns with display labels and data types, supported filter operators, default sort order, presets, and quick filters. Use this to dynamically build query UIs without hardcoding column definitions.")
             .Produces<QueryMetadata>();
-        }
-
-        // Saved views CRUD
-        if (options.IncludeSavedViewEndpoints)
-        {
-            QueryDefinition<TEntity>? definition = endpoints.ServiceProvider
-                .GetService<QueryDefinition<TEntity>>();
-
-            string entityType = definition?.Name ?? entityName;
-            group.MapSavedViewEndpoints(entityType, entityName);
         }
 
         return group;

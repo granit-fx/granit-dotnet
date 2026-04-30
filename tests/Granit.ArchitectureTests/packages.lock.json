@@ -2696,6 +2696,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.Abstractions": "[0.1.0-dev, )",
           "Granit.Metering": "[0.1.0-dev, )",
           "Granit.QueryEngine.AspNetCore": "[0.1.0-dev, )",
@@ -3379,7 +3380,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -3402,10 +3402,8 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authorization": "[0.1.0-dev, )",
-          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.QueryEngine": "[0.1.0-dev, )",
-          "Granit.Timing": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },

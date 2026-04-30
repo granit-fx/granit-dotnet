@@ -1,8 +1,8 @@
 # Granit.QueryEngine.Abstractions
 
 Inter-module contracts for Granit.QueryEngine: `PagedResult<T>`, `QueryRequest`,
-`FilterOperator`, `QueryMetadata`, `SavedView` abstractions. Reference this package
-instead of `Granit.QueryEngine` when you only need query contracts without the engine
+`FilterOperator`, and `QueryMetadata`. Reference this package instead of
+`Granit.QueryEngine` when you only need query contracts without the engine
 implementation.
 
 Part of the [granit](https://granit-fx.dev) framework.

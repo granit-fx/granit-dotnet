@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.Abstractions</PackageId>
-    <Description>Inter-module contracts for Granit.QueryEngine: declarative QueryDefinition base class, builders, descriptors (Column/Filter/Group/Quick/Date), DTOs (PagedResult, QueryRequest, QueryMetadata) and SavedView abstractions. Reference this package from any module that declares queries; reference Granit.QueryEngine only from hosts that execute them.</Description>
+    <Description>Inter-module contracts for Granit.QueryEngine: declarative QueryDefinition base class, builders, descriptors (Column/Filter/Group/Quick/Date), and DTOs (PagedResult, QueryRequest, QueryMetadata). Reference this package from any module that declares queries; reference Granit.QueryEngine only from hosts that execute them.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

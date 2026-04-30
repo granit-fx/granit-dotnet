@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine.AspNetCore.Extensions;
-using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.TestHost;
@@ -34,12 +32,8 @@ public sealed class QueryEndpointProjectionTests : IAsyncDisposable
         builder.Services.AddAuthorization();
 
         builder.Services.AddSingleton(_engine);
-        builder.Services.AddSingleton(Substitute.For<SavedViews.ISavedViewStoreReader>());
-        builder.Services.AddSingleton(Substitute.For<SavedViews.ISavedViewStoreWriter>());
         builder.Services.AddSingleton<QueryDefinition<TestProduct>, ProjectedTestProductQueryDefinition>();
         builder.Services.AddSingleton<ICurrentTenant>(Substitute.For<ICurrentTenant>());
-        builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
-        builder.Services.AddSingleton(Substitute.For<IClock>());
 
         _app = builder.Build();
 

@@ -12,7 +12,6 @@ using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
 using Granit.QueryEngine.Meta;
-using Granit.QueryEngine.SavedViews;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -801,7 +800,7 @@ public sealed class ExportOrchestratorTests
             IQueryable<TestEntity> source, QueryRequest request, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
-        public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null) =>
+        public QueryMetadata GetMetadata() =>
             throw new NotSupportedException();
 
         public IQueryable<TestEntity> BuildFilteredQuery(IQueryable<TestEntity> source, QueryRequest request) =>

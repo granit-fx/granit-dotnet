@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.AspNetCore</PackageId>
-    <Description>ASP.NET Core integration for Granit.QueryEngine. MapGranitQuery fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, CRUD SavedViews endpoints, and OpenAPI conventions.</Description>
+    <Description>ASP.NET Core integration for Granit.QueryEngine. MapGranitQuery fluent API, filter[field.op]=value query string binding, GET /meta metadata endpoint, and OpenAPI conventions.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -18,9 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
-    <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine\Granit.QueryEngine.csproj" />
-    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
   </ItemGroup>
 

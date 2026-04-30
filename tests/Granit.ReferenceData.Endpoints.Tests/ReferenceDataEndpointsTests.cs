@@ -6,7 +6,6 @@ using System.Text.Encodings.Web;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
-using Granit.QueryEngine.SavedViews;
 using Granit.ReferenceData.Domain;
 using Granit.ReferenceData.Endpoints.Dtos;
 using Granit.ReferenceData.Endpoints.Extensions;
@@ -69,7 +68,6 @@ public sealed class ReferenceDataEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton<IGuidGenerator>(new SimpleGuidGenerator());
 
         // QueryEngine dependencies
-        builder.Services.AddSingleton<ISavedViewStoreReader>(Substitute.For<ISavedViewStoreReader>());
         builder.Services.AddSingleton<QueryDefinition<TestRefEntity>>(
             new TestRefEntityQueryDefinition());
 

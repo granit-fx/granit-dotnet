@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.QueryEngine.EntityFrameworkCore</PackageId>
-    <Description>EF Core query engine for Granit.QueryEngine. Expression tree-based filtering, sorting, offset/keyset pagination, single-level GroupBy with aggregates, and EfCoreSavedViewStore persistence.</Description>
+    <Description>EF Core query engine for Granit.QueryEngine. Expression tree-based filtering, sorting, offset/keyset pagination, and single-level GroupBy with aggregates.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" />
   </ItemGroup>
 

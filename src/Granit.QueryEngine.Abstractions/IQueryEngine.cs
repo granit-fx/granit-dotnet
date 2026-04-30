@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using Granit.QueryEngine.Meta;
-using Granit.QueryEngine.SavedViews;
 
 namespace Granit.QueryEngine;
 
@@ -72,9 +71,8 @@ public interface IQueryEngine<TEntity> where TEntity : class
     /// <summary>
     /// Generates query metadata from the definition for the <c>GET /meta</c> endpoint.
     /// </summary>
-    /// <param name="savedViews">Optional saved views to include in the metadata.</param>
     /// <returns>The query metadata.</returns>
-    QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null);
+    QueryMetadata GetMetadata();
 
     /// <summary>
     /// Applies the <see cref="QueryDefinition{TEntity}"/>'s filter pipeline (filters, presets,

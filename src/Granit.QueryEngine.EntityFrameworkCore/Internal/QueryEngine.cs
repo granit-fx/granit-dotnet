@@ -8,7 +8,6 @@ using Granit.QueryEngine.EntityFrameworkCore.Diagnostics;
 using Granit.QueryEngine.Filtering;
 using Granit.QueryEngine.Meta;
 using Granit.QueryEngine.Options;
-using Granit.QueryEngine.SavedViews;
 using Granit.QueryEngine.Search;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -257,7 +256,7 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <inheritdoc/>
-    public QueryMetadata GetMetadata(IReadOnlyList<SavedViewSummary>? savedViews = null)
+    public QueryMetadata GetMetadata()
     {
         IStringLocalizer? localizer = ResolveLocalizer();
 
