@@ -73,6 +73,7 @@
         "tests/Granit.Dashboards.EntityFrameworkCore.Tests",
         "tests/Granit.Dashboards.Endpoints.Tests",
         "tests/Granit.Dashboards.Push.Tests",
+        "tests/Granit.Dashboards.Push.WebSockets.Tests",
         "tests/Granit.DataExchange.Abstractions.Tests",
         "tests/Granit.DataExchange.BlobStorage.Tests",
         "tests/Granit.DataExchange.Csv.Tests",

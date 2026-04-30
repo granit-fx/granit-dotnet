@@ -680,6 +680,21 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Dashboards.Push.WebSockets",
+      "deps": [
+        "Granit",
+        "Granit.Analytics.Abstractions",
+        "Granit.Authorization",
+        "Granit.Dashboards",
+        "Granit.Dashboards.Abstractions",
+        "Granit.Dashboards.Push",
+        "Granit.Http.Abstractions",
+        "Granit.MultiTenancy",
+        "Granit.Timing"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.DataExchange",
       "deps": [
         "Granit.DataExchange.Abstractions",
@@ -14465,6 +14480,82 @@
           "kind": "property",
           "signature": "int RingBufferCapacity",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsPushWebSocketsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Dashboards.Push.WebSockets.Extensions.DashboardsPushWebSocketsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push.WebSockets",
+      "file": "src/Granit.Dashboards.Push.WebSockets/Extensions/DashboardsPushWebSocketsEndpointRouteBuilderExtensions.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "MapGranitDashboardsPushWebSockets",
+          "kind": "method",
+          "signature": "MapGranitDashboardsPushWebSockets(this IEndpointRouteBuilder endpoints)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsPushWebSocketsServiceCollectionExtensions",
+      "fqn": "Granit.Dashboards.Push.WebSockets.Extensions.DashboardsPushWebSocketsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push.WebSockets",
+      "file": "src/Granit.Dashboards.Push.WebSockets/Extensions/DashboardsPushWebSocketsServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDashboardsPushWebSockets",
+          "kind": "method",
+          "signature": "AddGranitDashboardsPushWebSockets(this IServiceCollection services, Action<DashboardsPushWebSocketsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDashboardsPushWebSocketsModule",
+      "fqn": "Granit.Dashboards.Push.WebSockets.GranitDashboardsPushWebSocketsModule",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push.WebSockets",
+      "file": "src/Granit.Dashboards.Push.WebSockets/GranitDashboardsPushWebSocketsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DashboardsPushWebSocketsOptions",
+      "fqn": "Granit.Dashboards.Push.WebSockets.Options.DashboardsPushWebSocketsOptions",
+      "kind": "class",
+      "project": "Granit.Dashboards.Push.WebSockets",
+      "file": "src/Granit.Dashboards.Push.WebSockets/Options/DashboardsPushWebSocketsOptions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "Stream",
+          "kind": "method",
+          "signature": "Stream(WebSocket)",
+          "returnType": "string TagName { get; set; } = \"Dashboards -"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(1)",
+          "returnType": "TimeSpan OpeningFrameTimeout { get; set; } = TimeSpan."
         }
       ]
     },

@@ -323,8 +323,12 @@ break down as:
      replayed before going live; clients behind the ring's oldest entry
      receive an `event: resume-failed` frame and re-fetch the seed via
      the pull endpoint.
-6. **P2.4-D — `Granit.Dashboards.Push.WebSockets`** *(opt-in)*
-   - WebSocket consumer over the same producer contract.
+6. **P2.4-D — `Granit.Dashboards.Push.WebSockets`** *(shipped, opt-in)*
+   - WebSocket consumer over the same producer contract. Optional opening
+     frame `{ "lastEventId": N }` carries the resume cursor (WebSockets
+     don't support the SSE `Last-Event-ID` header post-upgrade). Frame
+     shape: `{ type: "snapshot" | "resume-failed", id?, data? }` with
+     `data` mirroring the SSE payload field-for-field.
 7. **P2.4-E — Frontend `usePushedDashboard`** *(`granit-front`)*
    - Reads the `Transport` field, opens streams selectively, falls back
      to TanStack pull when `Transport = "pull"`.

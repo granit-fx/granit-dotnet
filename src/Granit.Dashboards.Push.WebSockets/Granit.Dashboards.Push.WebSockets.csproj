@@ -1,14 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>Granit.Dashboards.Push</PackageId>
-    <Description>SSE-based push transport for Granit dashboards. Wires GET /dashboards/{id}/stream to a per-tenant fan-out hub and exposes IWidgetPushPublisher so producer modules emit live updates without binding to a specific transport. ADR-043. Reference this package from hosts that need live dashboard channels; pull-only hosts skip it and degrade Realtime widgets to Dynamic cadence with no runtime breakage.</Description>
+    <PackageId>Granit.Dashboards.Push.WebSockets</PackageId>
+    <Description>WebSocket consumer for the Granit dashboards push transport. Sibling of Granit.Dashboards.Push (which ships the SSE consumer); both reuse the same IWidgetPushPublisher producer contract and the same in-memory hub. Opt-in — most hosts ship SSE only. ADR-043 §1.</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="Granit.Dashboards.Push.Tests" />
-    <InternalsVisibleTo Include="Granit.Dashboards.Push.WebSockets" />
     <InternalsVisibleTo Include="Granit.Dashboards.Push.WebSockets.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
@@ -16,9 +14,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Analytics.Abstractions\Granit.Analytics.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Dashboards\Granit.Dashboards.csproj" />
     <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
-    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Dashboards.Push\Granit.Dashboards.Push.csproj" />
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
