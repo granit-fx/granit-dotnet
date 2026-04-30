@@ -1,5 +1,8 @@
+using Granit.Analytics;
+using Granit.Authorization;
 using Granit.Dashboards.Extensions;
 using Granit.Modularity;
+using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Dashboards;
@@ -16,7 +19,11 @@ namespace Granit.Dashboards;
 /// HTTP endpoints will land in <c>Granit.Dashboards.EntityFrameworkCore</c> /
 /// <c>Granit.Dashboards.Endpoints</c> in subsequent stories.
 /// </remarks>
-[DependsOn(typeof(GranitDashboardsAbstractionsModule))]
+[DependsOn(
+    typeof(GranitAnalyticsAbstractionsModule),
+    typeof(GranitAuthorizationModule),
+    typeof(GranitDashboardsAbstractionsModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitDashboardsModule : GranitModule
 {
     /// <inheritdoc/>

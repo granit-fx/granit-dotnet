@@ -4,7 +4,7 @@ using Granit.Analytics;
 using Granit.Analytics.Metrics;
 using Granit.Authorization;
 using Granit.Dashboards.Domain;
-using Granit.Dashboards.Endpoints.Internal;
+using Granit.Dashboards.Internal;
 using Granit.Dashboards.Rendering;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;

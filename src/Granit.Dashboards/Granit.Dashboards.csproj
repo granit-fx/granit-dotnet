@@ -12,13 +12,21 @@
     <InternalsVisibleTo Include="Granit.Analytics.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Dashboards.Endpoints" />
     <InternalsVisibleTo Include="Granit.Dashboards.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Dashboards.Push" />
+    <InternalsVisibleTo Include="Granit.Dashboards.Push.WebSockets" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
     <ProjectReference Include="..\Granit.Analytics.Abstractions\Granit.Analytics.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
     <ProjectReference Include="..\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />
   </ItemGroup>
 
 </Project>

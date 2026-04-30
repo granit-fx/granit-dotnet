@@ -24,6 +24,7 @@ public static class DashboardsPushWebSocketsServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddOptions<DashboardsPushWebSocketsOptions>()
+            .BindConfiguration(DashboardsPushWebSocketsOptions.SectionName)
             .Configure(opt =>
             {
                 configure?.Invoke(opt);

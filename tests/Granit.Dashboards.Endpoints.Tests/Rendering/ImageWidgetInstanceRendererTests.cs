@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Granit.Analytics;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Domain;
-using Granit.Dashboards.Endpoints.Rendering;
 using Granit.Dashboards.Rendering;
 using Granit.Dashboards.Widgets;
 using Granit.Timing;

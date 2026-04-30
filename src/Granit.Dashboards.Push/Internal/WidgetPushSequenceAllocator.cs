@@ -21,7 +21,7 @@ namespace Granit.Dashboards.Push.Internal;
 /// the same so the SSE endpoint never sees the difference.
 /// </para>
 /// </remarks>
-public sealed class WidgetPushSequenceAllocator
+internal sealed class WidgetPushSequenceAllocator
 {
     private readonly ConcurrentDictionary<SequenceKey, Counter> _counters = new();
 

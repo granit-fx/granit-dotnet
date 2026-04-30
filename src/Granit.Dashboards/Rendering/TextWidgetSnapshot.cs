@@ -1,6 +1,6 @@
 using Granit.Dashboards.Widgets;
 
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
 /// Wire-shape snapshot for the <c>"Text"</c> widget kind — a plain-text tile

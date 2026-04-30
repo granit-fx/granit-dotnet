@@ -49,6 +49,8 @@
     <ProjectReference Include="..\..\src\Granit.Dashboards.Abstractions\Granit.Dashboards.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Dashboards.Endpoints\Granit.Dashboards.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Dashboards.EntityFrameworkCore\Granit.Dashboards.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Dashboards.Push\Granit.Dashboards.Push.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Dashboards.Push.WebSockets\Granit.Dashboards.Push.WebSockets.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.ConfigurationChanges\Granit.Auditing.ConfigurationChanges.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.Endpoints\Granit.Auditing.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Auditing.EntityFrameworkCore\Granit.Auditing.EntityFrameworkCore.csproj" />

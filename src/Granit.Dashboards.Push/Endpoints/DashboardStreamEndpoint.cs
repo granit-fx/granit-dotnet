@@ -23,9 +23,6 @@ namespace Granit.Dashboards.Push.Endpoints;
 /// </summary>
 internal static class DashboardStreamEndpoint
 {
-    /// <summary>Permission constant — duplicated from <c>Granit.Dashboards.Endpoints.DashboardsPermissions.Instances.Read</c> so the push package doesn't depend on Endpoints just for one literal. Kept in sync by convention; the literal is also documented in CLAUDE.md.</summary>
-    private const string ReadPermission = "Dashboards.Instances.Read";
-
     public static RouteGroupBuilder MapDashboardStreamEndpoint(this RouteGroupBuilder group)
     {
         group.MapGet("/{id:guid}/stream", StreamAsync)
@@ -41,7 +38,7 @@ internal static class DashboardStreamEndpoint
                 + "Frontend clients open this stream after the seed pull renders, then route "
                 + "envelopes whose Transport=Push (computed by the render bundle, ADR-043 §2.3) "
                 + "into their TanStack cache instead of polling.")
-            .RequireAuthorization(ReadPermission)
+            .RequireAuthorization(DashboardsPermissions.Instances.Read)
             .Produces(StatusCodes.Status200OK, contentType: "text/event-stream")
             .ProducesProblem(StatusCodes.Status404NotFound);
 

@@ -1,5 +1,6 @@
 using Granit.Dashboards.Internal;
 using Granit.Dashboards.Internal.Templating;
+using Granit.Dashboards.Rendering;
 using Granit.Dashboards.Templating;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,6 +25,11 @@ public static class DashboardsServiceCollectionExtensions
 
         services.TryAddSingleton<IDashboardDefinitionRegistry, DashboardDefinitionRegistry>();
         services.TryAddSingleton<IVariableSubstituter, DefaultVariableSubstituter>();
+        services.TryAddScoped<IDashboardRenderer, DashboardRenderer>();
+
+        services.AddScoped<IWidgetInstanceRenderer, MarkdownWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, TextWidgetInstanceRenderer>();
+        services.AddScoped<IWidgetInstanceRenderer, ImageWidgetInstanceRenderer>();
 
         return services;
     }

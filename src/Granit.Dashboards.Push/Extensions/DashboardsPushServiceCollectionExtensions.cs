@@ -28,6 +28,7 @@ public static class DashboardsPushServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddOptions<DashboardsPushOptions>()
+            .BindConfiguration(DashboardsPushOptions.SectionName)
             .Configure(opt =>
             {
                 configure?.Invoke(opt);

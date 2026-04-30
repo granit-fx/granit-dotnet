@@ -3,22 +3,25 @@ using System.Text.Json.Serialization;
 using Granit.Analytics.Metrics;
 using Granit.Dashboards.Domain;
 using Granit.Dashboards.Rendering;
+using Granit.Dashboards.Widgets;
 using Granit.Timing;
 
-namespace Granit.Dashboards.Endpoints.Rendering;
+namespace Granit.Dashboards.Rendering;
 
 /// <summary>
-/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Markdown"</c> widget kind.
-/// Static content tile — does not query the data layer. The renderer parses
-/// <see cref="WidgetInstance.ConfigJson"/> into a <see cref="MarkdownWidgetSnapshot"/>
-/// and surfaces <see cref="RefreshHint.Static"/> so the frontend can drop the
-/// widget out of its refresh loop.
+/// <see cref="IWidgetInstanceRenderer"/> for the <c>"Text"</c> widget kind —
+/// plain-text tile (heading, subheading, caption) without markdown rendering.
+/// Static; does not touch the data layer.
 /// </summary>
-internal sealed class MarkdownWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
+internal sealed class TextWidgetInstanceRenderer(IClock clock) : IWidgetInstanceRenderer
 {
+    // ConfigJson was written by WidgetDefinitionToInstanceMapper with
+    // PropertyNamingPolicy = CamelCase + Style as a PascalCase string —
+    // JsonStringEnumConverter accepts both string and integer enum values.
     private static readonly JsonSerializerOptions ConfigJsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter() },
     };
 
     private static readonly JsonSerializerOptions SnapshotJsonOptions = new()
@@ -29,7 +32,7 @@ internal sealed class MarkdownWidgetInstanceRenderer(IClock clock) : IWidgetInst
 
     private readonly IClock _clock = clock;
 
-    public string WidgetType => "Markdown";
+    public string WidgetType => "Text";
 
     public Task<WidgetSnapshotEnvelope> RenderAsync(
         WidgetInstance widget,
@@ -38,11 +41,11 @@ internal sealed class MarkdownWidgetInstanceRenderer(IClock clock) : IWidgetInst
     {
         ArgumentNullException.ThrowIfNull(widget);
 
-        MarkdownConfig config = JsonSerializer.Deserialize<MarkdownConfig>(widget.ConfigJson, ConfigJsonOptions)
+        TextConfig config = JsonSerializer.Deserialize<TextConfig>(widget.ConfigJson, ConfigJsonOptions)
             ?? throw new InvalidOperationException(
-                $"Widget {widget.Id} ('Markdown') has empty ConfigJson — content key cannot be resolved.");
+                $"Widget {widget.Id} ('Text') has empty ConfigJson — content key cannot be resolved.");
 
-        MarkdownWidgetSnapshot snapshot = new(config.ContentLocalizationKey);
+        TextWidgetSnapshot snapshot = new(config.ContentLocalizationKey, config.Style);
 
         return Task.FromResult(WidgetSnapshotEnvelope.ForSnapshot(
             widgetType: WidgetType,
@@ -52,5 +55,5 @@ internal sealed class MarkdownWidgetInstanceRenderer(IClock clock) : IWidgetInst
             refreshHint: RefreshHint.Static));
     }
 
-    private sealed record MarkdownConfig(string ContentLocalizationKey);
+    private sealed record TextConfig(string ContentLocalizationKey, TextStyle Style);
 }
