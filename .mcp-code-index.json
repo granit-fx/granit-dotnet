@@ -883,6 +883,18 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Caching",
+        "Granit.Entities",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Localization",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Entities.Views",
       "deps": [
         "Granit.Entities.Views.Abstractions"
@@ -18796,6 +18808,219 @@
       "file": "src/Granit.Entities.Abstractions/Details/SidePanelKind.cs",
       "line": 13,
       "members": []
+    },
+    {
+      "name": "EntityCollectionReference",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionReference",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "EntityCollectionsSection",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionsSection",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "EntityDetailManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSectionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSidePanelManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSidePanelManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "EntityDiscoveryItemResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDiscoveryItemResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "EntityDiscoveryLinks",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDiscoveryLinks",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "EntityDiscoveryResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDiscoveryResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "EntityFacets",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFacets",
+      "kind": "enum",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFacets.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityFormFieldManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormFieldManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
+      "line": 37,
+      "members": []
+    },
+    {
+      "name": "EntityFormManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityFormSectionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EntityIdentitySection",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityIdentitySection",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityIdentitySection.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityManifestResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityManifestResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityManifestResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "EntityModuleGroupResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityModuleGroupResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "EntityPermissionsSection",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityPermissionsSection",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityPermissionsSection.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntitiesEndpointsLocalizationResource",
+      "fqn": "Granit.Entities.Endpoints.EntitiesEndpointsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/EntitiesEndpointsLocalizationResource.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "EntitiesEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Entities.Endpoints.Extensions.EntitiesEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Extensions/EntitiesEndpointRouteBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "MapGranitEntitiesEndpoints",
+          "kind": "method",
+          "signature": "MapGranitEntitiesEndpoints(this IEndpointRouteBuilder endpoints, string prefix, Action<EntitiesEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesEndpointsModule",
+      "fqn": "Granit.Entities.Endpoints.GranitEntitiesEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/GranitEntitiesEndpointsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EntitiesEndpointsOptions",
+      "fqn": "Granit.Entities.Endpoints.Options.EntitiesEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Options/EntitiesEndpointsOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan ManifestCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan DiscoveryCacheTtl { get; set; } = TimeSpan."
+        }
+      ]
     },
     {
       "name": "EntityDefinition",

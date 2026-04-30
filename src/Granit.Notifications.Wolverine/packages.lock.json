@@ -849,11 +849,11 @@
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.35.1",
-        "contentHash": "7/oEVWPYqsD+n9+0Uk6xg9jYna/7yR/1xrFwvYGwY+sqyzjeD2w5xHoVGusLOD6vXNIem7qoYoCUiz5KLEBWjw==",
+        "resolved": "5.35.2",
+        "contentHash": "20srWDLuoD6odJvu7NOZC2sNRUBYErWMS5DzvnYesKZRX5IasXkhkSDmAMkVqE402mYPxtD6f+6TXyRhseCZng==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.35.1"
+          "WolverineFx": "5.35.2"
         }
       },
       "ZiggyCreatures.FusionCache": {

@@ -1,0 +1,211 @@
+using Granit.Entities.Details;
+using Granit.Entities.Endpoints.Dtos;
+using Granit.Entities.Forms;
+
+namespace Granit.Entities.Endpoints.Internal;
+
+/// <summary>
+/// Pure projection from <see cref="EntityDefinitionDescriptor"/> + the resolved
+/// permission snapshot to the wire-shape <see cref="EntityManifestResponse"/>.
+/// Defense-in-depth: fields, side panels, and form sections gated by a
+/// permission the caller does NOT hold are dropped from the payload entirely
+/// (per ADR-040 §6 and story #1549) — never just hidden.
+/// </summary>
+internal static class EntityManifestComposer
+{
+    /// <summary>Manifest schema version. Bump on breaking shape changes.</summary>
+    public const int SchemaVersion = 1;
+
+    public static EntityManifestResponse Compose(
+        EntityDefinitionDescriptor definition,
+        EntityPermissionSnapshot permissions,
+        IReadOnlySet<string> grantedPermissions,
+        EntityFacets facets,
+        Guid? defaultViewId)
+    {
+        ArgumentNullException.ThrowIfNull(definition);
+        ArgumentNullException.ThrowIfNull(permissions);
+        ArgumentNullException.ThrowIfNull(grantedPermissions);
+
+        EntityIdentitySection? identity = facets.HasFlag(EntityFacets.Identity)
+            ? ComposeIdentity(definition)
+            : null;
+
+        EntityPermissionsSection? perms = facets.HasFlag(EntityFacets.Permissions)
+            ? ComposePermissions(permissions)
+            : null;
+
+        IReadOnlyList<EntityFormManifest>? forms = facets.HasFlag(EntityFacets.Forms)
+            ? ComposeForms(definition, grantedPermissions)
+            : null;
+
+        IReadOnlyList<EntityDetailManifest>? details = facets.HasFlag(EntityFacets.Details)
+            ? ComposeDetails(definition, grantedPermissions)
+            : null;
+
+        EntityCollectionsSection? collections =
+            facets.HasFlag(EntityFacets.Collections)
+            || facets.HasFlag(EntityFacets.Exports)
+            || facets.HasFlag(EntityFacets.Dashboards)
+                ? ComposeCollections(definition, defaultViewId)
+                : null;
+
+        return new EntityManifestResponse(
+            SchemaVersion,
+            identity,
+            perms,
+            forms,
+            details,
+            collections);
+    }
+
+    private static EntityIdentitySection ComposeIdentity(EntityDefinitionDescriptor d) =>
+        new(
+            d.Name,
+            d.EntityType.FullName ?? d.EntityType.Name,
+            d.DisplayKey,
+            d.Icon,
+            d.PermissionGroup,
+            d.DisplayProperty);
+
+    private static EntityPermissionsSection ComposePermissions(EntityPermissionSnapshot s) =>
+        new(s.CanRead, s.CanCreate, s.CanUpdate, s.CanDelete, s.CanManage, s.CanExecute);
+
+    private static List<EntityFormManifest> ComposeForms(
+        EntityDefinitionDescriptor d, IReadOnlySet<string> granted)
+    {
+        if (d.Forms.Count == 0)
+        {
+            return [];
+        }
+
+        List<EntityFormManifest> forms = new(d.Forms.Count);
+        foreach (FormDescriptor form in d.Forms)
+        {
+            List<EntityFormSectionManifest> sections = new(form.Sections.Count);
+            foreach (SectionDescriptor section in form.Sections)
+            {
+                List<EntityFormFieldManifest> fields = new(section.Fields.Count);
+                foreach (FieldDescriptor field in section.Fields)
+                {
+                    if (field.RequiresPermission is { } perm
+                        && !granted.Contains(perm))
+                    {
+                        // Drop entirely — defense in depth.
+                        continue;
+                    }
+
+                    fields.Add(new EntityFormFieldManifest(
+                        field.PropertyName,
+                        field.ClrType.Name,
+                        field.Widget,
+                        field.Config,
+                        field.LabelKey,
+                        field.HelpKey,
+                        field.Order,
+                        field.ReadOnly,
+                        field.VisibleIf));
+                }
+
+                // A section with no surviving fields is dropped too — avoids
+                // empty section headers when the user lacks permission for
+                // every field in it.
+                if (fields.Count == 0)
+                {
+                    continue;
+                }
+
+                sections.Add(new EntityFormSectionManifest(
+                    section.Key,
+                    section.LabelKey,
+                    section.Order,
+                    section.CollapsedByDefault,
+                    fields));
+            }
+
+            forms.Add(new EntityFormManifest(form.Name, form.Customizable, sections));
+        }
+
+        return forms;
+    }
+
+    private static List<EntityDetailManifest> ComposeDetails(
+        EntityDefinitionDescriptor d, IReadOnlySet<string> granted)
+    {
+        if (d.Details.Count == 0)
+        {
+            return [];
+        }
+
+        List<EntityDetailManifest> details = new(d.Details.Count);
+        foreach (DetailDescriptor detail in d.Details)
+        {
+            List<EntityDetailSectionManifest> sections = new(detail.Sections.Count);
+            foreach (DetailSectionDescriptor s in detail.Sections)
+            {
+                sections.Add(new EntityDetailSectionManifest(
+                    s.Key,
+                    s.LabelKey,
+                    s.Order,
+                    s.InheritsFromFormVariant,
+                    s.Fields));
+            }
+
+            List<EntityDetailSidePanelManifest> sidePanels = new(detail.SidePanels.Count);
+            foreach (SidePanelDescriptor panel in detail.SidePanels)
+            {
+                if (panel.RequiresPermission is { } perm
+                    && !granted.Contains(perm))
+                {
+                    continue;
+                }
+
+                sidePanels.Add(new EntityDetailSidePanelManifest(panel.Kind, panel.Order));
+            }
+
+            details.Add(new EntityDetailManifest(detail.Name, sections, sidePanels));
+        }
+
+        return details;
+    }
+
+    private static EntityCollectionsSection ComposeCollections(
+        EntityDefinitionDescriptor d, Guid? defaultViewId)
+    {
+        EntityCollectionReference? query = d.QueryDefinitionType is { } q
+            ? new EntityCollectionReference(InferDefinitionName(q), q.Name)
+            : null;
+
+        EntityCollectionReference? export = d.ExportDefinitionType is { } e
+            ? new EntityCollectionReference(InferDefinitionName(e), e.Name)
+            : null;
+
+        IReadOnlyList<EntityCollectionReference> metrics = d.MetricDefinitionTypes
+            .Select(t => new EntityCollectionReference(InferDefinitionName(t), t.Name))
+            .ToList();
+
+        IReadOnlyList<EntityCollectionReference> dashboards = d.DashboardDefinitionTypes
+            .Select(t => new EntityCollectionReference(InferDefinitionName(t), t.Name))
+            .ToList();
+
+        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId);
+    }
+
+    /// <summary>
+    /// Strips the conventional <c>Definition</c> suffix from a CLR type name to
+    /// surface the wire identifier that the matching <c>Granit.{Module}</c>
+    /// module declares (e.g. <c>InvoiceQueryDefinition</c> →
+    /// <c>"Granit.Invoicing.InvoiceQuery"</c>). When a definition is registered
+    /// with a different wire <c>Name</c> than its CLR type implies, the
+    /// renderer reconciles via the registry — this is a hint, not a contract.
+    /// </summary>
+    private static string InferDefinitionName(Type t)
+    {
+        string fullName = t.FullName ?? t.Name;
+        const string Suffix = "Definition";
+
+        return fullName.EndsWith(Suffix, StringComparison.Ordinal)
+            ? fullName[..^Suffix.Length]
+            : fullName;
+    }
+}

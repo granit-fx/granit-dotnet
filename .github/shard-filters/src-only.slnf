@@ -98,6 +98,7 @@
       "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
+      "src/Granit.Entities.Endpoints/Granit.Entities.Endpoints.csproj",
       "src/Granit.Entities.Views.Abstractions/Granit.Entities.Views.Abstractions.csproj",
       "src/Granit.Entities.Views.Endpoints/Granit.Entities.Views.Endpoints.csproj",
       "src/Granit.Entities.Views.EntityFrameworkCore/Granit.Entities.Views.EntityFrameworkCore.csproj",
