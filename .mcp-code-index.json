@@ -603,6 +603,7 @@
       "name": "Granit.CustomerBalance.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Entities.Abstractions",
         "Granit.Parties",
         "Granit.CustomerBalance",
         "Granit.QueryEngine.AspNetCore",
@@ -1349,6 +1350,7 @@
       "name": "Granit.Invoicing.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Entities.Abstractions",
         "Granit.Http.Abstractions",
         "Granit.Invoicing",
         "Granit.QueryEngine.AspNetCore",
@@ -2018,6 +2020,7 @@
       "name": "Granit.Payments.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Entities.Abstractions",
         "Granit.Parties",
         "Granit.Guids",
         "Granit.Http.Abstractions",
@@ -2444,7 +2447,9 @@
       "name": "Granit.Subscriptions.Endpoints",
       "deps": [
         "Granit.Authorization",
+        "Granit.Entities.Abstractions",
         "Granit.Http.Abstractions",
+        "Granit.Parties",
         "Granit.Subscriptions",
         "Granit.QueryEngine.AspNetCore",
         "Granit.Validation"
@@ -12728,8 +12733,15 @@
       "kind": "class",
       "project": "Granit.CustomerBalance.Endpoints",
       "file": "src/Granit.CustomerBalance.Endpoints/GranitCustomerBalanceEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "CustomerBalanceEndpointsOptions",
@@ -28031,7 +28043,7 @@
       "kind": "class",
       "project": "Granit.Invoicing.Endpoints",
       "file": "src/Granit.Invoicing.Endpoints/GranitInvoicingEndpointsModule.cs",
-      "line": 18,
+      "line": 22,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40092,8 +40104,15 @@
       "kind": "class",
       "project": "Granit.Payments.Endpoints",
       "file": "src/Granit.Payments.Endpoints/GranitPaymentsEndpointsModule.cs",
-      "line": 14,
-      "members": []
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "PaymentsEndpointsOptions",
@@ -49912,8 +49931,15 @@
       "kind": "class",
       "project": "Granit.Subscriptions.Endpoints",
       "file": "src/Granit.Subscriptions.Endpoints/GranitSubscriptionsEndpointsModule.cs",
-      "line": 16,
-      "members": []
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "SubscriptionsEndpointsOptions",

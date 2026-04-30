@@ -17,7 +17,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Http.Abstractions\Granit.Http.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Parties\Granit.Parties.csproj" />
     <ProjectReference Include="..\Granit.Subscriptions\Granit.Subscriptions.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.AspNetCore\Granit.QueryEngine.AspNetCore.csproj" />
     <ProjectReference Include="..\Granit.Validation\Granit.Validation.csproj" />
