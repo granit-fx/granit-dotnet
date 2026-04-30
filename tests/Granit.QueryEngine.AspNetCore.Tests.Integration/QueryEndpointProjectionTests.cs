@@ -89,10 +89,10 @@ public sealed class QueryEndpointProjectionTests : IAsyncDisposable
     }
 
     [Fact]
-    public async Task Query_with_projection_and_groupBy_returns_entity_grouped_result()
+    public async Task Query_with_projection_and_groupBy_returns_projected_grouped_result()
     {
-        GroupedResult<TestProduct> expected = new(
-            [new GroupEntry<TestProduct>
+        GroupedResult<TestProductDto> expected = new(
+            [new GroupEntry<TestProductDto>
             {
                 Field = "Category",
                 Value = "Electronics",
@@ -104,6 +104,7 @@ public sealed class QueryEndpointProjectionTests : IAsyncDisposable
         _engine.ExecuteGroupedAsync(
             Arg.Any<IQueryable<TestProduct>>(),
             Arg.Any<QueryRequest>(),
+            Arg.Any<System.Linq.Expressions.Expression<Func<TestProduct, TestProductDto>>>(),
             Arg.Any<CancellationToken>())
             .Returns(expected);
 
@@ -115,6 +116,13 @@ public sealed class QueryEndpointProjectionTests : IAsyncDisposable
         await _engine.Received(1).ExecuteGroupedAsync(
             Arg.Any<IQueryable<TestProduct>>(),
             Arg.Is<QueryRequest>(r => r.GroupBy == "Category"),
+            Arg.Any<System.Linq.Expressions.Expression<Func<TestProduct, TestProductDto>>>(),
+            Arg.Any<CancellationToken>());
+
+        // Entity-typed grouped overload must NOT be called when a projection is declared.
+        await _engine.DidNotReceive().ExecuteGroupedAsync(
+            Arg.Any<IQueryable<TestProduct>>(),
+            Arg.Any<QueryRequest>(),
             Arg.Any<CancellationToken>());
 
         await _engine.DidNotReceive().ExecuteAsync(

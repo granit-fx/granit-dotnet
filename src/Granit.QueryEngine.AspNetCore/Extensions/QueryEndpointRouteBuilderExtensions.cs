@@ -188,9 +188,9 @@ public static class QueryEndpointRouteBuilderExtensions
         var projection = (Expression<Func<TEntity, TDto>>)projectionLambda;
         string dtoName = typeof(TDto).Name;
 
-        // groupBy is incompatible with per-row projection: grouping operates on entity columns
-        // and returns aggregated rows, not entity rows — the declarative projection is ignored
-        // for the grouped branch and GroupedResult<TEntity> is returned unchanged.
+        // The projection applies to BOTH branches: paged uses SQL-level projection (typed
+        // ExecuteAsync<TDto>); grouped applies the same projection in-memory after entity
+        // materialization so GroupedResult.Items[] surfaces TDto, never the raw entity.
 #pragma warning disable GRAPI001 // Results.Ok is needed here for polymorphic return
         group.MapGet("/", async (
             [FromServices] IQueryEngine<TEntity> engine,
@@ -202,8 +202,8 @@ public static class QueryEndpointRouteBuilderExtensions
 
             if (!string.IsNullOrWhiteSpace(request.Value.GroupBy))
             {
-                GroupedResult<TEntity> grouped = await engine
-                    .ExecuteGroupedAsync(source, request.Value, cancellationToken)
+                GroupedResult<TDto> grouped = await engine
+                    .ExecuteGroupedAsync(source, request.Value, projection, cancellationToken)
                     .ConfigureAwait(false);
                 return Results.Ok(grouped);
             }
@@ -216,12 +216,12 @@ public static class QueryEndpointRouteBuilderExtensions
 #pragma warning restore GRAPI001
         .WithName($"Query{entityName}")
         .WithSummary($"Returns a filtered, sorted, and paginated list of {dtoName} entries projected from {entityName}.")
-        .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{entityName}> instead (projection is not applied to grouped queries).")
+        .WithDescription($"Executes a dynamic query against {entityName} using the Granit query engine and projects each row to {dtoName}. Accepts filter expressions, sort directives, column selection, pagination, and free-text search via query parameters. Returns a PagedResult<{dtoName}> by default. When the groupBy query parameter is specified, returns a GroupedResult<{dtoName}> with the same projection applied to the items inside each group.")
         .Produces<PagedResult<TDto>>()
-        .Produces<GroupedResult<TEntity>>(StatusCodes.Status200OK)
+        .Produces<GroupedResult<TDto>>(StatusCodes.Status200OK)
         .ProducesValidationProblem()
         .AddOpenApiOperationTransformer((op, ctx, ct) =>
-            DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TDto>), typeof(GroupedResult<TEntity>), ct));
+            DescribeQueryEndpointAsync(op, ctx, typeof(PagedResult<TDto>), typeof(GroupedResult<TDto>), ct));
     }
 
     /// <summary>

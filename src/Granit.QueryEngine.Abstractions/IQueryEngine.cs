@@ -55,6 +55,28 @@ public interface IQueryEngine<TEntity> where TEntity : class
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Executes a grouped query and projects each materialized item to <typeparamref name="TProjection"/>
+    /// before assembling the <see cref="GroupedResult{T}"/>. The grouping is computed on the entity
+    /// columns (the <see cref="QueryRequest.GroupBy"/> property must exist on <typeparamref name="TEntity"/>),
+    /// then items inside each group are projected so the response contract exposes the projected shape
+    /// instead of the raw entity.
+    /// </summary>
+    /// <typeparam name="TProjection">The projected item type returned in <c>GroupedResult&lt;TProjection&gt;.Groups[].Items</c>.</typeparam>
+    /// <param name="source">The base queryable.</param>
+    /// <param name="request">The query parameters (must include <see cref="QueryRequest.GroupBy"/>).</param>
+    /// <param name="projection">
+    /// A projection expression applied to each materialized entity. Compiled and applied in-memory
+    /// after materialization (the group-by property must remain on the entity for key extraction).
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A grouped result whose items are projected.</returns>
+    Task<GroupedResult<TProjection>> ExecuteGroupedAsync<TProjection>(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        Expression<Func<TEntity, TProjection>> projection,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Executes a query and streams all matching entities without pagination.
     /// Applies filtering and sorting from the <paramref name="request"/> but returns
     /// every matching row as an async stream — used by the export pipeline.

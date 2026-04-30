@@ -165,10 +165,35 @@ internal sealed class QueryEngine<TEntity>(
     }
 
     /// <inheritdoc/>
-    public async Task<GroupedResult<TEntity>> ExecuteGroupedAsync(
+    public Task<GroupedResult<TEntity>> ExecuteGroupedAsync(
         IQueryable<TEntity> source,
         QueryRequest request,
+        CancellationToken cancellationToken = default) =>
+        ExecuteGroupedCoreAsync<TEntity>(source, request, projector: null, cancellationToken);
+
+    /// <inheritdoc/>
+    public Task<GroupedResult<TProjection>> ExecuteGroupedAsync<TProjection>(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        Expression<Func<TEntity, TProjection>> projection,
         CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(projection);
+        Func<TEntity, TProjection> projector = projection.Compile();
+        return ExecuteGroupedCoreAsync(source, request, projector, cancellationToken);
+    }
+
+    /// <summary>
+    /// Common grouped execution. When <paramref name="projector"/> is <see langword="null"/>,
+    /// the items inside each group are returned as <typeparamref name="TItem"/> = <typeparamref name="TEntity"/>.
+    /// When supplied, the projector is applied in-memory after materialization so the result
+    /// surfaces the projected shape (matches the contract exposed by <c>MapGranitQuery</c>).
+    /// </summary>
+    private async Task<GroupedResult<TItem>> ExecuteGroupedCoreAsync<TItem>(
+        IQueryable<TEntity> source,
+        QueryRequest request,
+        Func<TEntity, TItem>? projector,
+        CancellationToken cancellationToken)
     {
         using Activity? activity = QueryEngineEfCoreActivitySource.Source.StartActivity(QueryEngineEfCoreActivitySource.ExecuteGrouped);
         activity?.SetTag("entity_type", EntityTypeName);
@@ -176,21 +201,22 @@ internal sealed class QueryEngine<TEntity>(
 
         if (string.IsNullOrWhiteSpace(request.GroupBy))
         {
-            return new GroupedResult<TEntity>([], 0);
+            return new GroupedResult<TItem>([], 0);
         }
 
         IQueryable<TEntity> query = ApplyCommonFilters(source.AsNoTracking(), request);
 
-        GroupedResult<TEntity> result = await query.ApplyGroupByAsync(
+        GroupedResult<TEntity> entityResult = await query.ApplyGroupByAsync(
             request.GroupBy, _builder, engineOptions.Value.MaxGroupCount, cancellationToken)
             .ConfigureAwait(false);
 
-        // Populate items per group: sort the filtered set, materialize, then distribute by group key
-        if (result.Groups.Count > 0)
+        List<GroupEntry<TItem>> groups = new(entityResult.Groups.Count);
+
+        if (entityResult.Groups.Count > 0)
         {
             IQueryable<TEntity> sorted = query.ApplySort(request.Sort, _builder);
             List<TEntity> allItems = await sorted
-                .Take(_builder.MaxPageSizeValue * result.Groups.Count)
+                .Take(_builder.MaxPageSizeValue * entityResult.Groups.Count)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
@@ -198,21 +224,32 @@ internal sealed class QueryEngine<TEntity>(
                 request.GroupBy,
                 BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-            if (groupProp is not null)
+            ILookup<string, TItem>? itemsByKey = groupProp is null
+                ? null
+                : allItems.ToLookup(
+                    e => groupProp.GetValue(e)?.ToString() ?? "(null)",
+                    e => projector is null ? (TItem)(object)e : projector(e));
+
+            foreach (GroupEntry<TEntity> group in entityResult.Groups)
             {
-                ILookup<string, TEntity> itemsByKey = allItems
-                    .ToLookup(e => groupProp.GetValue(e)?.ToString() ?? "(null)");
+                IReadOnlyList<TItem>? items = itemsByKey is null
+                    ? null
+                    : itemsByKey[group.Value?.ToString() ?? "(null)"].ToList();
 
-                var populated = result.Groups
-                    .Select(g => g with { Items = itemsByKey[g.Value?.ToString() ?? "(null)"].ToList() })
-                    .ToList();
-
-                result = new GroupedResult<TEntity>(populated, result.TotalCount);
+                groups.Add(new GroupEntry<TItem>
+                {
+                    Field = group.Field,
+                    Value = group.Value,
+                    Label = group.Label,
+                    Count = group.Count,
+                    Aggregates = group.Aggregates,
+                    Items = items,
+                });
             }
         }
 
         RecordMetrics("grouped", startTimestamp);
-        return result;
+        return new GroupedResult<TItem>(groups, entityResult.TotalCount);
     }
 
     /// <inheritdoc/>

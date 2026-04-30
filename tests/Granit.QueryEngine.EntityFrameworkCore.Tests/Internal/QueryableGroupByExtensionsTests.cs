@@ -124,4 +124,43 @@ public sealed class QueryableGroupByExtensionsTests : IAsyncLifetime
         result.Groups.ShouldBeEmpty();
         result.TotalCount.ShouldBe(0);
     }
+
+    [Fact]
+    public async Task GroupBy_with_projection_returns_projected_items()
+    {
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        GroupedResult<ProductSummary> result = await engine.ExecuteGroupedAsync(
+            _db.Products.AsQueryable(),
+            new QueryRequest { GroupBy = "Category" },
+            p => new ProductSummary(p.Name, p.Price),
+            TestContext.Current.CancellationToken);
+
+        result.Groups.Count.ShouldBe(3);
+        result.TotalCount.ShouldBe(5);
+
+        GroupEntry<ProductSummary> electronics = result.Groups.First(g => g.Label == "Electronics");
+        electronics.Count.ShouldBe(3);
+        electronics.Items.ShouldNotBeNull();
+        electronics.Items!.Count.ShouldBe(3);
+        electronics.Items.ShouldAllBe(item => item is ProductSummary);
+        electronics.Items.Select(i => i.Name).ShouldContain("Laptop");
+    }
+
+    [Fact]
+    public async Task GroupBy_with_projection_and_empty_groupBy_returns_empty()
+    {
+        QueryEngine<TestProduct> engine = new(new GroupByDefinition(), NullLogger<QueryEngine<TestProduct>>.Instance, Microsoft.Extensions.Options.Options.Create(new Granit.QueryEngine.Options.QueryEngineOptions()));
+
+        GroupedResult<ProductSummary> result = await engine.ExecuteGroupedAsync(
+            _db.Products.AsQueryable(),
+            new QueryRequest { GroupBy = null },
+            p => new ProductSummary(p.Name, p.Price),
+            TestContext.Current.CancellationToken);
+
+        result.Groups.ShouldBeEmpty();
+        result.TotalCount.ShouldBe(0);
+    }
+
+    private sealed record ProductSummary(string Name, decimal Price);
 }

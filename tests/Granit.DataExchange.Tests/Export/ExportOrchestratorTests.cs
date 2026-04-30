@@ -800,6 +800,12 @@ public sealed class ExportOrchestratorTests
             IQueryable<TestEntity> source, QueryRequest request, CancellationToken cancellationToken = default) =>
             throw new NotSupportedException();
 
+        public Task<GroupedResult<TProjection>> ExecuteGroupedAsync<TProjection>(
+            IQueryable<TestEntity> source, QueryRequest request,
+            System.Linq.Expressions.Expression<Func<TestEntity, TProjection>> projection,
+            CancellationToken cancellationToken = default) =>
+            throw new NotSupportedException();
+
         public QueryMetadata GetMetadata() =>
             throw new NotSupportedException();
 
