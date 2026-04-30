@@ -29,7 +29,7 @@ internal static class DashboardWebSocketStreamEndpoint
     public static RouteGroupBuilder MapDashboardWebSocketStreamEndpoint(this RouteGroupBuilder group)
     {
         group.MapGet("/{id:guid}/stream-ws", StreamAsync)
-            .WithName("StreamGranitDashboardWebSocket")
+            .WithName("StreamDashboardWebSocket")
             .WithSummary("Subscribes to live widget updates for a dashboard via WebSocket.")
             .WithDescription(
                 "Long-lived WebSocket connection emitting one JSON frame per envelope. "

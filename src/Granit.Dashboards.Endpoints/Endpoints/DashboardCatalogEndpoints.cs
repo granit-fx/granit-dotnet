@@ -24,7 +24,7 @@ internal static class DashboardCatalogEndpoints
     public static RouteGroupBuilder MapCatalogEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/catalog", ListCatalog)
-            .WithName("ListGranitDashboardCatalog")
+            .WithName("ListDashboardCatalog")
             .WithSummary("Lists every registered DashboardDefinition.")
             .WithDescription(
                 "Returns the full dashboard catalogue surfaced by IDashboardDefinitionRegistry. "

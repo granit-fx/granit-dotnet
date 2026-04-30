@@ -39,7 +39,7 @@ internal static class WidgetRenderEndpoints
     internal static RouteGroupBuilder MapWidgetRenderEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/widgets/kpi/render", RenderKpiAsync)
-            .WithName("RenderGranitKpiWidget")
+            .WithName("RenderKpiWidget")
             .WithSummary("Renders a single KPI widget definition.")
             .WithDescription(
                 "Used by the dashboard composer / catalogue / preview paths to fetch a "
@@ -51,7 +51,7 @@ internal static class WidgetRenderEndpoints
             .ProducesValidationProblem();
 
         group.MapPost("/widgets/chart/render", RenderChartAsync)
-            .WithName("RenderGranitChartWidget")
+            .WithName("RenderChartWidget")
             .WithSummary("Renders a single chart widget definition.")
             .WithDescription(
                 "Used by the dashboard composer / catalogue / preview paths to fetch a "
@@ -62,7 +62,7 @@ internal static class WidgetRenderEndpoints
             .ProducesValidationProblem();
 
         group.MapPost("/widgets/table/render", RenderTableAsync)
-            .WithName("RenderGranitTableWidget")
+            .WithName("RenderTableWidget")
             .WithSummary("Renders a single table widget definition.")
             .WithDescription(
                 "Used by the dashboard composer / catalogue / preview paths to fetch a "
@@ -72,7 +72,7 @@ internal static class WidgetRenderEndpoints
             .ProducesValidationProblem();
 
         group.MapPost("/widgets/pivot/render", RenderPivotAsync)
-            .WithName("RenderGranitPivotWidget")
+            .WithName("RenderPivotWidget")
             .WithSummary("Renders a single pivot widget definition.")
             .WithDescription(
                 "Used by the dashboard composer / catalogue / preview paths to fetch a "
@@ -82,7 +82,7 @@ internal static class WidgetRenderEndpoints
             .ProducesValidationProblem();
 
         group.MapPost("/widgets/map/render", RenderMapAsync)
-            .WithName("RenderGranitMapWidget")
+            .WithName("RenderMapWidget")
             .WithSummary("Renders a single map widget definition.")
             .WithDescription(
                 "Used by the dashboard composer / catalogue / preview paths to fetch a "

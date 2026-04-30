@@ -19,7 +19,7 @@ internal static class BffCsrfEndpoints
         group.MapPost("/csrf-token", (HttpContext httpContext,
                 [FromServices] IBffCsrfTokenGenerator csrfGenerator) =>
                 HandleGenerateCsrfTokenAsync(httpContext, frontend, csrfGenerator))
-            .WithName($"BffGenerateCsrfToken_{frontend.Name}")
+            .WithName($"BffGenerateCsrfToken{frontend.OperationIdSuffix}")
             .WithSummary("Generates a CSRF token for the current BFF session.")
             .WithDescription(
                 "Reads the session cookie to identify the session, generates an HMAC-SHA256 based "

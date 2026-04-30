@@ -28,7 +28,7 @@ internal static class DashboardRenderEndpoints
     public static RouteGroupBuilder MapRenderEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{id:guid}/render", RenderAsync)
-            .WithName("RenderGranitDashboard")
+            .WithName("RenderDashboard")
             .WithSummary("Renders a dashboard's widget pool into one bundle response.")
             .WithDescription(
                 "Loads the persisted dashboard, builds the per-render context "

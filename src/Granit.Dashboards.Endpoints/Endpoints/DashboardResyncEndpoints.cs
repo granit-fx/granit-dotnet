@@ -25,7 +25,7 @@ internal static class DashboardResyncEndpoints
     public static RouteGroupBuilder MapResyncEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/{id:guid}/resync", ResyncAsync)
-            .WithName("ResyncGranitDashboard")
+            .WithName("ResyncDashboard")
             .WithSummary("Resyncs a persisted dashboard with its currently-registered DashboardDefinition.")
             .WithDescription(
                 "Replaces the widget pool with the descriptor's current entry-view widgets, "

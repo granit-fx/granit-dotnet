@@ -45,6 +45,7 @@ public static class ModuleConfigEndpointExtensions
             .WithName(endpointName)
             .WithTags(tag)
             .WithSummary($"Returns the current {tag} module configuration.")
+            .WithDescription($"Returns the runtime configuration of the {tag} module — the same shape used by SPAs to render module-specific UI without hardcoding values. The payload is module-defined and stable; clients should not assume new fields are absent.")
             .Produces<TResponse>();
 
         configureEndpoint?.Invoke(builder);
@@ -88,6 +89,7 @@ public static class ModuleConfigEndpointExtensions
             .WithName(endpointName)
             .WithTags(tag)
             .WithSummary($"Returns the current {tag} module configuration.")
+            .WithDescription($"Returns the runtime configuration of the {tag} module — the same shape used by SPAs to render module-specific UI without hardcoding values. The payload is module-defined and stable; clients should not assume new fields are absent.")
             .Produces<TResponse>();
 
         configureEndpoint?.Invoke(builder);

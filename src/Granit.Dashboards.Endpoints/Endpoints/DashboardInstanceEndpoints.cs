@@ -23,7 +23,7 @@ internal static class DashboardInstanceEndpoints
     public static RouteGroupBuilder MapInstanceEndpoints(this RouteGroupBuilder group)
     {
         group.MapGet("/", ListAsync)
-            .WithName("ListGranitDashboards")
+            .WithName("ListDashboards")
             .WithSummary("Lists the current tenant's persisted dashboards (paged).")
             .WithDescription(
                 "Returns the tenant's dashboards as a paged summary list, optionally "
@@ -36,7 +36,7 @@ internal static class DashboardInstanceEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapGet("/{id:guid}", ReadByIdAsync)
-            .WithName("ReadGranitDashboardById")
+            .WithName("ReadDashboardById")
             .WithSummary("Reads a single persisted dashboard with its widget tree.")
             .WithDescription(
                 "Returns the full dashboard payload including the layout values and "

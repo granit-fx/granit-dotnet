@@ -21,7 +21,7 @@ internal static class DashboardImportEndpoints
     public static RouteGroupBuilder MapImportEndpoints(this RouteGroupBuilder group)
     {
         group.MapPost("/from-definition/{name}", ImportAsync)
-            .WithName("ImportGranitDashboardFromDefinition")
+            .WithName("ImportDashboardFromDefinition")
             .WithSummary("Imports a registered DashboardDefinition into a persisted Dashboard.")
             .WithDescription(
                 "Deep-copies the named DashboardDefinition into a fresh tenant-scoped "

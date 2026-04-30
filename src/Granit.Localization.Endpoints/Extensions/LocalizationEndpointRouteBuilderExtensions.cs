@@ -65,7 +65,7 @@ public static partial class LocalizationEndpointRouteBuilderExtensions
         endpoints
             .MapGet(options.RoutePrefix, HandleGetLocalization)
             .AllowAnonymous()
-            .WithName("GetGranitLocalization")
+            .WithName("GetLocalization")
             .WithTags(options.TagName)
             .WithSummary("Returns all localization resources for the requested culture.")
             .WithDescription("Returns all localization resources (key-value pairs) for the requested culture, grouped by resource name. Accepts an optional cultureName query parameter (BCP 47 format); defaults to the Accept-Language header culture. Also returns the list of supported languages. Response is cached for 1 hour (Cache-Control: public, max-age=3600, Vary: Accept-Language). Anonymous — no authentication required.")

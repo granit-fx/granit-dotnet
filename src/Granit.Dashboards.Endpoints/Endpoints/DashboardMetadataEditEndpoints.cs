@@ -23,7 +23,7 @@ internal static class DashboardMetadataEditEndpoints
     public static RouteGroupBuilder MapMetadataEditEndpoints(this RouteGroupBuilder group)
     {
         group.MapPut("/{id:guid}", UpdateMetadataAsync)
-            .WithName("UpdateGranitDashboardMetadata")
+            .WithName("UpdateDashboardMetadata")
             .WithSummary("Updates the dashboard's name and grid layout.")
             .WithDescription(
                 "Full replacement of the editable metadata: Name, LayoutColumns and "
