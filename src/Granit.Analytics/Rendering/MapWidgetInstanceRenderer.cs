@@ -22,8 +22,9 @@ namespace Granit.Analytics.Rendering;
 /// B7-2 ships <see cref="MapPointSource.LatLng"/> (decimal lat/lng columns,
 /// works on any database). The PostGIS <see cref="MapPointSource.Geography"/>
 /// path is deferred — the renderer surfaces
-/// <c>Widget:Unavailable.MapGeographyNotImplemented</c> until
-/// <c>granit-iot</c> ships the NetTopologySuite plumbing.
+/// <c>Widget:Unavailable.MapGeographyNotImplemented</c> until the NetTopologySuite
+/// adapter ships in a future <c>granit-iot</c> package (the spatial column type
+/// is the IoT-specific dependency, not the rendering itself).
 /// </remarks>
 internal sealed class MapWidgetInstanceRenderer(
     MapService mapService,

@@ -2,14 +2,18 @@ namespace Granit.Analytics.Metrics;
 
 /// <summary>
 /// Indicates how often a metric's underlying data is expected to change. Drives the
-/// caching layer's TTL and signals to the frontend which transport to use (pull vs push).
+/// caching layer's TTL and signals to the dashboards transport layer whether the
+/// widget is push-eligible.
 /// </summary>
 /// <remarks>
 /// <para>
-/// Pure pull-based widgets (the v1 reality) honor <see cref="Static"/> and <see cref="Dynamic"/>
-/// to pick a TTL. <see cref="Realtime"/> is reserved for future push-based transport delivered
-/// by the <c>granit-iot</c> repository (WebSocket / SSE) — pull-based renderers should reject
-/// metrics declaring it (architecture-test enforced) until that transport ships.
+/// <see cref="Static"/> and <see cref="Dynamic"/> drive FusionCache TTL on the pull
+/// path. <see cref="Realtime"/> declares the metric as push-eligible — the framework
+/// transport (<c>Granit.Dashboards.Push</c>, ADR-043) wires a live channel for the
+/// widget when its dashboard's effective <c>DashboardPushPolicy</c> opts in. Hosts
+/// that haven't loaded the push transport package fall back to the
+/// <see cref="Dynamic"/> pull cadence — no widget breaks at runtime when the
+/// transport is absent.
 /// </para>
 /// </remarks>
 public enum RefreshHint
@@ -17,9 +21,13 @@ public enum RefreshHint
     /// <summary>Long-lived data (5+ min cache acceptable). E.g. tenant settings, role catalog.</summary>
     Static,
 
-    /// <summary>Short-lived but pull-friendly (60–120 s cache). v1 default for most KPIs.</summary>
+    /// <summary>Short-lived but pull-friendly (60–120 s cache). Default for most KPIs.</summary>
     Dynamic,
 
-    /// <summary>Push-only, sub-second updates. Reserved — requires <c>granit-iot</c> transport.</summary>
+    /// <summary>
+    /// Push-eligible — sub-second updates. Wired to the live channel by
+    /// <c>Granit.Dashboards.Push</c> (ADR-043). Falls back to <see cref="Dynamic"/>
+    /// pull cadence when the host hasn't loaded the push transport package.
+    /// </summary>
     Realtime,
 }

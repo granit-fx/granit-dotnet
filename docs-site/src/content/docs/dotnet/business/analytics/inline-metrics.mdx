@@ -159,7 +159,9 @@ yourself:
   `analytics:metric:{name}:{tenantId|global}:{period.from}:{period.to}[:cmp:...]`.
   The tenant is the first security boundary; cross-tenant cache contamination
   is impossible by construction. TTL is 60 s for `Dynamic` metrics, 5 min for
-  `Static`. `Realtime` is reserved for the future push transport (granit-iot).
+  `Static`. `Realtime` metrics bypass the cache and route through the
+  framework push transport (`Granit.Dashboards.Push`, ADR-043) when the host
+  has loaded it; otherwise they degrade to `Dynamic` cadence.
 
 ## `BaseFilter` vs `Selector` — which is which
 

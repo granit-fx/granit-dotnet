@@ -110,15 +110,21 @@ would either mislead with "Average invoice amount: 0 €" (because EF Core could
 coalesce) or throw `InvalidOperationException`. Locked by integration tests against both
 SQLite and PostgreSQL.
 
-## Future-proofing for real-time
+## Real-time push transport
 
-Layer 1 is intentionally pull-based (FusionCache TTL 60–120 s). Real-time push (WebSocket
-delta updates, ThingsBoard-style for IoT) is deferred to the
-[`granit-iot`](https://github.com/granit-fx/granit-iot) repo, where the ingestion
-pipeline (MQTT bridge, AWS IoT, TimescaleDB) already lives. The wire-format envelope
-`{ Snapshot, Sequence, EmittedAt, RefreshHint }` and the `IWidgetSource<T>` contract
-(with stub `SubscribeAsync`) are locked v1 so push transport can be added later without
-breaking pull consumers.
+Layer 1 ships pull-based (FusionCache TTL 60–120 s). Real-time push (SSE by default,
+WebSocket as an opt-in sibling) is owned by the framework — `Granit.Dashboards.Push`
+under [ADR-043](/dotnet/architecture/adr/043-dashboard-push-transport/). Hosts that
+need live channels load that package; hosts that don't keep pull-only and degrade
+`Realtime` widgets to `Dynamic` cadence with no runtime breakage. IoT-specific
+producers (MQTT bridge, OPC-UA adapter) and IoT-specific widget definitions (sensor
+gauge, camera feed) live in [`granit-iot`](https://github.com/granit-fx/granit-iot)
+and consume the same framework `IWidgetPushPublisher` contract — the transport
+itself is not IoT-specific.
+
+The wire-format envelope `{ Snapshot, Sequence, EmittedAt, RefreshHint }` and the
+`IWidgetSource<T>` contract are locked v1 so the same source code serves both pull
+and push consumers.
 
 ## Read next
 

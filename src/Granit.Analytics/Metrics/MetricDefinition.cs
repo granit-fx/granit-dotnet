@@ -82,10 +82,13 @@ public abstract class MetricDefinition<TEntity, TValue> : IMetricDefinitionDescr
     public virtual bool IsHigherBetter => true;
 
     /// <summary>
-    /// How fresh the metric is expected to be. Pull-based renderers (v1) honor
+    /// How fresh the metric is expected to be. Pull renderers honor
     /// <see cref="RefreshHint.Static"/> and <see cref="RefreshHint.Dynamic"/> to pick a
-    /// FusionCache TTL. <see cref="RefreshHint.Realtime"/> is reserved — it requires the
-    /// push transport scheduled in the <c>granit-iot</c> repo.
+    /// FusionCache TTL. <see cref="RefreshHint.Realtime"/> declares the metric as
+    /// push-eligible; the framework transport (<c>Granit.Dashboards.Push</c>, ADR-043)
+    /// wires the live channel when the host has loaded it. Hosts without the push
+    /// package degrade <c>Realtime</c> widgets to <c>Dynamic</c> cadence — no runtime
+    /// breakage when the transport is absent.
     /// </summary>
     public virtual RefreshHint RefreshHint => RefreshHint.Dynamic;
 

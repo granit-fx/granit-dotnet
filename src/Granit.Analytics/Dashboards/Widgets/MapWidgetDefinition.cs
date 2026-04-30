@@ -33,8 +33,9 @@ public abstract record MapPointSource
 /// <summary>
 /// Map widget — renders geocoded query rows as markers on an interactive map.
 /// Useful for any tenant with location data: customer addresses, branch offices,
-/// delivery routes, sales-by-region. Orthogonal to IoT real-time tracking
-/// (a future <c>granit-iot</c> dashboard module owns live device traces).
+/// delivery routes, sales-by-region. The widget itself is pull-friendly; live
+/// device traces (with NetTopologySuite plumbing) are owned by future
+/// <c>granit-iot</c> widget definitions, not by this widget.
 /// </summary>
 /// <remarks>
 /// <para>

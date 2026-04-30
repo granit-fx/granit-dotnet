@@ -4219,7 +4219,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
-      "line": 90,
+      "line": 91,
       "members": [
         {
           "name": "MapCenter",
@@ -4266,7 +4266,7 @@
       "kind": "record",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Dashboards/Widgets/MapWidgetDefinition.cs",
-      "line": 68,
+      "line": 69,
       "members": [
         {
           "name": "MapCenter",
@@ -4691,7 +4691,7 @@
       "kind": "enum",
       "project": "Granit.Analytics.Abstractions",
       "file": "src/Granit.Analytics.Abstractions/Metrics/RefreshHint.cs",
-      "line": 15,
+      "line": 19,
       "members": []
     },
     {
@@ -4879,7 +4879,7 @@
       "kind": "interface",
       "project": "Granit.Analytics",
       "file": "src/Granit.Analytics/Widgets/IWidgetSource.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "RenderAsync",

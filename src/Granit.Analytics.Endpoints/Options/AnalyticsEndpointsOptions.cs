@@ -32,7 +32,9 @@ public sealed class AnalyticsEndpointsOptions
     /// <summary>
     /// FusionCache TTL applied to <see cref="Metrics.RefreshHint.Dynamic"/> metrics.
     /// Default: 60 seconds. Static metrics use <see cref="StaticTtl"/>; realtime metrics
-    /// bypass the cache entirely (push transport — see <c>granit-iot</c> roadmap).
+    /// bypass the cache entirely — they are routed through the framework push transport
+    /// (<c>Granit.Dashboards.Push</c>, ADR-043) when the host has loaded it, and
+    /// degrade to <see cref="DynamicTtl"/> when it isn't loaded.
     /// </summary>
     public TimeSpan DynamicTtl { get; set; } = TimeSpan.FromSeconds(60);
 
