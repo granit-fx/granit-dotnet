@@ -1,0 +1,7 @@
+{
+  "culture": "tr",
+  "texts": {
+    "WorkspacesEndpoints:DiscoverySection": "Workspaces",
+    "WorkspacesEndpoints:NoWorkspacesAvailable": "No workspaces are available for your account."
+  }
+}

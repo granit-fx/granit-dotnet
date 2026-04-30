@@ -2871,6 +2871,33 @@
         "Granit.Templating"
       ],
       "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Workspaces",
+      "deps": [
+        "Granit.Workspaces.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Workspaces.Abstractions",
+      "deps": [
+        "Granit",
+        "Granit.Entities.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Workspaces.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Caching",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Localization",
+        "Granit.Validation",
+        "Granit.Workspaces"
+      ],
+      "framework": "net10.0"
     }
   ],
   "symbols": [
@@ -58382,6 +58409,314 @@
           "returnType": "IDisposable"
         }
       ]
+    },
+    {
+      "name": "WorkspaceItemResponse",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.WorkspaceItemResponse",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/WorkspaceTreeResponse.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "WorkspaceResponse",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.WorkspaceResponse",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/WorkspaceTreeResponse.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "WorkspaceSectionResponse",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.WorkspaceSectionResponse",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/WorkspaceTreeResponse.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "WorkspaceTreeResponse",
+      "fqn": "Granit.Workspaces.Endpoints.Dtos.WorkspaceTreeResponse",
+      "kind": "record",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Dtos/WorkspaceTreeResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "WorkspacesEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Workspaces.Endpoints.Extensions.WorkspacesEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Extensions/WorkspacesEndpointRouteBuilderExtensions.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "MapGranitWorkspacesEndpoints",
+          "kind": "method",
+          "signature": "MapGranitWorkspacesEndpoints(this IEndpointRouteBuilder endpoints, string prefix, Action<WorkspacesEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitWorkspacesEndpointsModule",
+      "fqn": "Granit.Workspaces.Endpoints.GranitWorkspacesEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/GranitWorkspacesEndpointsModule.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "WorkspacesEndpointsOptions",
+      "fqn": "Granit.Workspaces.Endpoints.Options.WorkspacesEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/Options/WorkspacesEndpointsOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan TreeCacheTtl { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "WorkspacesEndpointsLocalizationResource",
+      "fqn": "Granit.Workspaces.Endpoints.WorkspacesEndpointsLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Workspaces.Endpoints",
+      "file": "src/Granit.Workspaces.Endpoints/WorkspacesEndpointsLocalizationResource.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "WorkspaceServiceCollectionExtensions",
+      "fqn": "Granit.Workspaces.Extensions.WorkspaceServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/Extensions/WorkspaceServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "WorkspacesServiceCollectionExtensions",
+      "fqn": "Granit.Workspaces.Extensions.WorkspacesServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Workspaces",
+      "file": "src/Granit.Workspaces/Extensions/WorkspacesServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitWorkspaces",
+          "kind": "method",
+          "signature": "AddGranitWorkspaces(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitWorkspacesAbstractionsModule",
+      "fqn": "Granit.Workspaces.GranitWorkspacesAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/GranitWorkspacesAbstractionsModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "GranitWorkspacesModule",
+      "fqn": "Granit.Workspaces.GranitWorkspacesModule",
+      "kind": "class",
+      "project": "Granit.Workspaces",
+      "file": "src/Granit.Workspaces/GranitWorkspacesModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IWorkspaceContributionBuilder",
+      "fqn": "Granit.Workspaces.IWorkspaceContributionBuilder",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
+      "line": 45,
+      "members": [
+        {
+          "name": "Section",
+          "kind": "method",
+          "signature": "Section(string key, Action<WorkspaceSectionBuilder> configure)",
+          "returnType": "IWorkspaceContributionBuilder"
+        }
+      ]
+    },
+    {
+      "name": "IWorkspaceContributionContext",
+      "fqn": "Granit.Workspaces.IWorkspaceContributionContext",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "ForWorkspace",
+          "kind": "method",
+          "signature": "ForWorkspace(string workspaceName)",
+          "returnType": "IWorkspaceContributionBuilder"
+        }
+      ]
+    },
+    {
+      "name": "IWorkspaceContributor",
+      "fqn": "Granit.Workspaces.IWorkspaceContributor",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/IWorkspaceContributor.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Contribute",
+          "kind": "method",
+          "signature": "Contribute(IWorkspaceContributionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IWorkspaceDescriptor",
+      "fqn": "Granit.Workspaces.IWorkspaceDescriptor",
+      "kind": "interface",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceDescriptor.cs",
+      "line": 46,
+      "members": []
+    },
+    {
+      "name": "IWorkspaceRegistry",
+      "fqn": "Granit.Workspaces.IWorkspaceRegistry",
+      "kind": "interface",
+      "project": "Granit.Workspaces",
+      "file": "src/Granit.Workspaces/IWorkspaceRegistry.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "GetByName",
+          "kind": "method",
+          "signature": "GetByName(string name)",
+          "returnType": "IReadOnlyList<WorkspaceDescriptor> All { get; } WorkspaceDescriptor?"
+        }
+      ]
+    },
+    {
+      "name": "WorkspaceBuilder",
+      "fqn": "Granit.Workspaces.WorkspaceBuilder",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceBuilder.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "DisplayKey",
+          "kind": "method",
+          "signature": "DisplayKey(string key)",
+          "returnType": "WorkspaceBuilder"
+        }
+      ]
+    },
+    {
+      "name": "WorkspaceDefinition",
+      "fqn": "Granit.Workspaces.WorkspaceDefinition",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceDefinition.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "WorkspaceDescriptor",
+      "fqn": "Granit.Workspaces.WorkspaceDescriptor",
+      "kind": "record",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "WorkspaceItemBuilder",
+      "fqn": "Granit.Workspaces.WorkspaceItemBuilder",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceItemBuilder.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "WorkspaceItemDescriptor",
+      "fqn": "Granit.Workspaces.WorkspaceItemDescriptor",
+      "kind": "record",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceItemDescriptor.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "WorkspaceItemKind",
+      "fqn": "Granit.Workspaces.WorkspaceItemKind",
+      "kind": "enum",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceItemDescriptor.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "WorkspaceSectionBuilder",
+      "fqn": "Granit.Workspaces.WorkspaceSectionBuilder",
+      "kind": "class",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceSectionBuilder.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Dashboard",
+          "kind": "method",
+          "signature": "Dashboard(string dashboardName, Action<WorkspaceItemBuilder>? configure = null)",
+          "returnType": "WorkspaceSectionBuilder"
+        }
+      ]
+    },
+    {
+      "name": "WorkspaceSectionDescriptor",
+      "fqn": "Granit.Workspaces.WorkspaceSectionDescriptor",
+      "kind": "record",
+      "project": "Granit.Workspaces.Abstractions",
+      "file": "src/Granit.Workspaces.Abstractions/WorkspaceSectionDescriptor.cs",
+      "line": 12,
+      "members": []
     }
   ]
 }
