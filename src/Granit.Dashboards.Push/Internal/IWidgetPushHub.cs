@@ -17,13 +17,22 @@ internal interface IWidgetPushHub : IWidgetPushPublisher
 {
     /// <summary>
     /// Registers <paramref name="writer"/> as a subscriber for the given
-    /// <c>(tenantId, dashboardId)</c> stream. Returns an
-    /// <see cref="IDisposable"/> that unregisters and (optionally) completes
-    /// the writer on disposal — the caller (SSE endpoint) disposes when the
-    /// HTTP connection closes or cancellation fires.
+    /// <c>(tenantId, dashboardId)</c> stream. Atomic with the ring snapshot so
+    /// no envelope is lost between the replay and the live drain. ADR-043 §5.
     /// </summary>
-    IDisposable Subscribe(
+    /// <param name="tenantId">Tenant scope (matches the publisher's tenantId on the same stream).</param>
+    /// <param name="dashboardId">Dashboard the subscriber is following.</param>
+    /// <param name="lastEventId">
+    /// SSE <c>Last-Event-ID</c> sent by reconnecting clients. <see langword="null"/> for
+    /// fresh subscribers — they get no replay. When non-null, the hub returns the
+    /// buffered messages with <c>StreamCursor &gt; lastEventId</c>; if the client is
+    /// behind the oldest ring entry, <see cref="SubscriptionResult.ResumeFailed"/>
+    /// is set and replay is empty.
+    /// </param>
+    /// <param name="writer">Channel writer that receives live envelopes after the replay.</param>
+    SubscriptionResult Subscribe(
         Guid? tenantId,
         Guid dashboardId,
+        long? lastEventId,
         ChannelWriter<WidgetPushMessage> writer);
 }

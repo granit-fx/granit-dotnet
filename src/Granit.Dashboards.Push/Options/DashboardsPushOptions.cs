@@ -36,4 +36,15 @@ public sealed class DashboardsPushOptions
     [Required]
     [MinLength(1)]
     public string TagName { get; set; } = "Dashboards - Stream";
+
+    /// <summary>
+    /// Per-stream ring-buffer capacity used by the in-memory hub for
+    /// <c>Last-Event-ID</c> resume (ADR-043 §5). When a reconnecting client
+    /// requests envelopes older than the ring's oldest entry, the SSE handler
+    /// emits <c>event: resume-failed</c> and the frontend hook re-fetches the
+    /// seed via the pull endpoint. Default: 100 — sized so a 30 s reconnect
+    /// gap on a busy 3-Hz dashboard still resumes cleanly.
+    /// </summary>
+    [Range(1, 100_000)]
+    public int RingBufferCapacity { get; set; } = 100;
 }

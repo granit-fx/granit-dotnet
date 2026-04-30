@@ -82,7 +82,25 @@ internal static class DashboardStreamEndpoint
                 SingleWriter = false,
             });
 
-        using IDisposable subscription = hub.Subscribe(tenantId, id, channel.Writer);
+        // Parse the SSE Last-Event-ID header — sent by the EventSource client on
+        // automatic reconnect (HTML5 spec) — to drive the per-stream replay
+        // window. Bad / missing headers gracefully fall back to a fresh
+        // subscription with no replay.
+        long? lastEventId = TryParseLastEventId(context.Request.Headers["Last-Event-ID"]);
+
+        SubscriptionResult subscriptionResult = hub.Subscribe(tenantId, id, lastEventId, channel.Writer);
+        using IDisposable subscription = subscriptionResult.Handle;
+
+        // Resume failed — the client is behind the oldest ring entry. Tell it
+        // to fall back to the pull endpoint for a fresh seed before proceeding.
+        // The frontend hook recognises `event: resume-failed` and re-fetches.
+        if (subscriptionResult.ResumeFailed)
+        {
+            await context.Response.WriteAsync(
+                "event: resume-failed\ndata: {}\n\n",
+                cancellationToken).ConfigureAwait(false);
+            await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
 
         // Per-stream permission cache — populated lazily on the first envelope
         // that declares a RequiredPermission. Stays scoped to this connection
@@ -95,6 +113,17 @@ internal static class DashboardStreamEndpoint
 
         try
         {
+            // Replay phase — flush any buffered envelopes the client missed
+            // during its disconnect window. The hub returned them under the
+            // same lock that registered the subscription, so live envelopes
+            // arriving in the channel are always strictly newer than the last
+            // replay item.
+            foreach (WidgetPushMessage replay in subscriptionResult.Replay)
+            {
+                await WriteEnvelopeAsync(replay).ConfigureAwait(false);
+                nextHeartbeat = clock.Now + heartbeat;
+            }
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 using var readCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -125,30 +154,7 @@ internal static class DashboardStreamEndpoint
                     continue;
                 }
 
-                // Per-widget permission gate — mirrors the render-time check in
-                // DashboardRenderer. Snapshots for widgets the subscriber lacks
-                // permission to read get rewritten to Unavailable before they
-                // touch the wire.
-                WidgetSnapshotEnvelope effective = await WidgetPushPermissionFilter
-                    .ResolveEffectiveAsync(message, permissionChecker, permissionCache, cancellationToken)
-                    .ConfigureAwait(false);
-
-                string payload = JsonSerializer.Serialize(new
-                {
-                    widgetId = message.WidgetInstanceId,
-                    widgetType = effective.WidgetType,
-                    status = effective.Status,
-                    sequence = effective.Sequence,
-                    emittedAt = effective.EmittedAt,
-                    refreshHint = effective.RefreshHint,
-                    snapshot = effective.Snapshot,
-                    reasonLocalizationKey = effective.ReasonLocalizationKey,
-                });
-
-                await context.Response.WriteAsync(
-                    $"event: snapshot\nid: {effective.Sequence}\ndata: {payload}\n\n",
-                    cancellationToken).ConfigureAwait(false);
-                await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+                await WriteEnvelopeAsync(message).ConfigureAwait(false);
 
                 // Reset the heartbeat deadline — we just wrote a real message.
                 nextHeartbeat = clock.Now + heartbeat;
@@ -158,5 +164,55 @@ internal static class DashboardStreamEndpoint
         {
             // Client disconnected — graceful exit. Subscription disposes via the using block.
         }
+
+        async Task WriteEnvelopeAsync(WidgetPushMessage message)
+        {
+            // Per-widget permission gate — mirrors the render-time check in
+            // DashboardRenderer. Snapshots for widgets the subscriber lacks
+            // permission to read get rewritten to Unavailable before they
+            // touch the wire.
+            WidgetSnapshotEnvelope effective = await WidgetPushPermissionFilter
+                .ResolveEffectiveAsync(message, permissionChecker, permissionCache, cancellationToken)
+                .ConfigureAwait(false);
+
+            string payload = JsonSerializer.Serialize(new
+            {
+                widgetId = message.WidgetInstanceId,
+                widgetType = effective.WidgetType,
+                status = effective.Status,
+                sequence = effective.Sequence,
+                emittedAt = effective.EmittedAt,
+                refreshHint = effective.RefreshHint,
+                snapshot = effective.Snapshot,
+                reasonLocalizationKey = effective.ReasonLocalizationKey,
+            });
+
+            // SSE `id:` carries the per-stream cursor (used by the client's
+            // EventSource for Last-Event-ID resume). The per-widget envelope
+            // sequence stays inside the payload — distinct ordering, distinct
+            // purpose (ADR-043 §5).
+            await context.Response.WriteAsync(
+                $"event: snapshot\nid: {message.StreamCursor}\ndata: {payload}\n\n",
+                cancellationToken).ConfigureAwait(false);
+            await context.Response.Body.FlushAsync(cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Parses the SSE <c>Last-Event-ID</c> header. Returns <see langword="null"/>
+    /// for missing, blank, or non-numeric headers — bad headers fall back to a
+    /// fresh subscription so a malformed reconnect never breaks the stream.
+    /// </summary>
+    private static long? TryParseLastEventId(Microsoft.Extensions.Primitives.StringValues headerValue)
+    {
+        string? raw = headerValue.ToString();
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return null;
+        }
+
+        return long.TryParse(raw, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out long parsed)
+            ? parsed
+            : null;
     }
 }

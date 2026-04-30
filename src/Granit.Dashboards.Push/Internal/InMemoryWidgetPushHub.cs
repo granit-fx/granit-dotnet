@@ -2,7 +2,9 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Threading.Channels;
 using Granit.Analytics.Metrics;
+using Granit.Dashboards.Push.Options;
 using Granit.Dashboards.Rendering;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Dashboards.Push.Internal;
 
@@ -10,7 +12,8 @@ namespace Granit.Dashboards.Push.Internal;
 /// In-process implementation of <see cref="IWidgetPushHub"/>. Producers call
 /// <see cref="PublishSnapshotAsync"/> / <see cref="PublishUnavailableAsync"/>;
 /// the SSE endpoint subscribes via <see cref="Subscribe"/>; the hub fans out
-/// inside the same process.
+/// inside the same process and keeps a per-stream ring buffer for
+/// <c>Last-Event-ID</c> resume (ADR-043 §5).
 /// </summary>
 /// <remarks>
 /// <para>
@@ -21,19 +24,25 @@ namespace Granit.Dashboards.Push.Internal;
 /// <para>
 /// Slow subscribers are dropped silently (<c>TryWrite</c>) instead of
 /// backpressuring the publisher. A subscriber whose channel is bounded and full
-/// loses the in-flight message; the SSE endpoint shapes its channel as
-/// unbounded with <see cref="BoundedChannelFullMode.DropOldest"/> on the
-/// rendering side, so practical loss only happens when the client has
-/// disconnected and is about to be unregistered.
+/// loses the in-flight message; the SSE handler shapes its channel as bounded
+/// with <see cref="BoundedChannelFullMode.DropOldest"/> on the rendering side,
+/// so practical loss only happens when the client has disconnected and is
+/// about to be unregistered.
+/// </para>
+/// <para>
+/// Per-stream state (cursor + ring + subscriber set) is guarded by a
+/// <see cref="System.Threading.Lock"/> so dispatch (cursor allocation +
+/// ring append + fan-out) and subscribe-with-replay are mutually atomic —
+/// no envelope can land in both the replay snapshot and the live channel.
 /// </para>
 /// </remarks>
-internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequenceAllocator) : IWidgetPushHub
+internal sealed class InMemoryWidgetPushHub(
+    WidgetPushSequenceAllocator sequenceAllocator,
+    IOptions<DashboardsPushOptions> options) : IWidgetPushHub
 {
     private readonly WidgetPushSequenceAllocator _sequenceAllocator = sequenceAllocator;
-
-    // ConcurrentDictionary<StreamKey, ConcurrentDictionary<SubscriptionId, ChannelWriter>>.
-    // Outer key partitions per (tenant, dashboard); inner per active subscription.
-    private readonly ConcurrentDictionary<StreamKey, ConcurrentDictionary<Guid, ChannelWriter<WidgetPushMessage>>> _streams = new();
+    private readonly int _ringCapacity = options.Value.RingBufferCapacity;
+    private readonly ConcurrentDictionary<StreamKey, StreamState> _streams = new();
 
     /// <inheritdoc/>
     public Task PublishSnapshotAsync(
@@ -78,23 +87,57 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
     }
 
     /// <inheritdoc/>
-    public IDisposable Subscribe(
+    public SubscriptionResult Subscribe(
         Guid? tenantId,
         Guid dashboardId,
+        long? lastEventId,
         ChannelWriter<WidgetPushMessage> writer)
     {
         ArgumentNullException.ThrowIfNull(writer);
 
         var key = new StreamKey(tenantId, dashboardId);
-        ConcurrentDictionary<Guid, ChannelWriter<WidgetPushMessage>> subs = _streams.GetOrAdd(
-            key, _ => new ConcurrentDictionary<Guid, ChannelWriter<WidgetPushMessage>>());
+        StreamState state = _streams.GetOrAdd(key, _ => new StreamState(_ringCapacity));
 
 #pragma warning disable GRSEC002 // In-process subscription id, opaque, never persisted — sequential UUID would buy nothing.
         var subscriptionId = Guid.NewGuid();
 #pragma warning restore GRSEC002
-        subs[subscriptionId] = writer;
 
-        return new SubscriptionHandle(this, key, subscriptionId);
+        lock (state.Mutex)
+        {
+            state.Subscribers[subscriptionId] = writer;
+
+            if (lastEventId is null)
+            {
+                return new SubscriptionResult(
+                    ResumeFailed: false,
+                    ServerCursor: state.Cursor,
+                    Replay: [],
+                    Handle: new SubscriptionHandle(this, key, subscriptionId));
+            }
+
+            long requestedFrom = lastEventId.Value + 1;
+
+            // Resume failed when the client is behind the oldest ring entry —
+            // we can't replay envelopes that have aged out.
+            if (state.Ring.Count > 0 && state.Ring.Peek().StreamCursor > requestedFrom)
+            {
+                return new SubscriptionResult(
+                    ResumeFailed: true,
+                    ServerCursor: state.Cursor,
+                    Replay: [],
+                    Handle: new SubscriptionHandle(this, key, subscriptionId));
+            }
+
+            // Caught up or in-range — collect everything strictly newer than the
+            // client's last seen cursor. Empty list when fully caught up.
+            WidgetPushMessage[] replay = [.. state.Ring.Where(m => m.StreamCursor >= requestedFrom)];
+
+            return new SubscriptionResult(
+                ResumeFailed: false,
+                ServerCursor: state.Cursor,
+                Replay: replay,
+                Handle: new SubscriptionHandle(this, key, subscriptionId));
+        }
     }
 
     private void Dispatch(
@@ -104,14 +147,33 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
         string? requiredPermission,
         WidgetSnapshotEnvelope envelope)
     {
-        StreamKey key = new(tenantId, dashboardId);
-        if (!_streams.TryGetValue(key, out ConcurrentDictionary<Guid, ChannelWriter<WidgetPushMessage>>? subs))
+        var key = new StreamKey(tenantId, dashboardId);
+        StreamState state = _streams.GetOrAdd(key, _ => new StreamState(_ringCapacity));
+
+        WidgetPushMessage message;
+        ChannelWriter<WidgetPushMessage>[] writers;
+
+        lock (state.Mutex)
         {
-            return;
+            long cursor = ++state.Cursor;
+            message = new WidgetPushMessage(
+                tenantId, dashboardId, widgetInstanceId, requiredPermission, cursor, envelope);
+
+            // Append to ring + evict oldest when over capacity. Bounded under
+            // the same lock as Subscribe so no race between an envelope landing
+            // in the ring and a new subscriber's replay snapshot.
+            state.Ring.Enqueue(message);
+            while (state.Ring.Count > _ringCapacity)
+            {
+                state.Ring.Dequeue();
+            }
+
+            // Snapshot the writer list under the lock; TryWrite outside to keep
+            // the critical section as short as possible.
+            writers = [.. state.Subscribers.Values];
         }
 
-        WidgetPushMessage message = new(tenantId, dashboardId, widgetInstanceId, requiredPermission, envelope);
-        foreach (ChannelWriter<WidgetPushMessage> writer in subs.Values)
+        foreach (ChannelWriter<WidgetPushMessage> writer in writers)
         {
             // TryWrite is non-blocking. Slow / closed subscribers silently drop —
             // the SSE handler unregisters on disconnect via the SubscriptionHandle.
@@ -121,13 +183,32 @@ internal sealed class InMemoryWidgetPushHub(WidgetPushSequenceAllocator sequence
 
     private void Unregister(StreamKey key, Guid subscriptionId)
     {
-        if (_streams.TryGetValue(key, out ConcurrentDictionary<Guid, ChannelWriter<WidgetPushMessage>>? subs))
+        if (!_streams.TryGetValue(key, out StreamState? state))
         {
-            subs.TryRemove(subscriptionId, out _);
+            return;
+        }
+
+        lock (state.Mutex)
+        {
+            state.Subscribers.Remove(subscriptionId, out _);
         }
     }
 
     private readonly record struct StreamKey(Guid? TenantId, Guid DashboardId);
+
+    /// <summary>
+    /// Per-stream state guarded by <see cref="Mutex"/>. <see cref="Cursor"/>
+    /// is the monotonic per-<c>(tenant, dashboard)</c> stream counter;
+    /// <see cref="Ring"/> is the bounded replay buffer; <see cref="Subscribers"/>
+    /// is the active fan-out set.
+    /// </summary>
+    private sealed class StreamState(int ringCapacity)
+    {
+        public long Cursor;
+        public Queue<WidgetPushMessage> Ring { get; } = new(ringCapacity);
+        public Dictionary<Guid, ChannelWriter<WidgetPushMessage>> Subscribers { get; } = [];
+        public Lock Mutex { get; } = new();
+    }
 
     private sealed class SubscriptionHandle(
         InMemoryWidgetPushHub hub,

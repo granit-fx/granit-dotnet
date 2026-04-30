@@ -89,6 +89,7 @@ public sealed class WidgetPushPermissionFilterTests
             DashboardId: Guid.NewGuid(),
             WidgetInstanceId: Guid.NewGuid(),
             RequiredPermission: "Invoicing.Invoices.Read",
+            StreamCursor: 1,
             Envelope: unavailableEnvelope);
 
         IPermissionChecker checker = Substitute.For<IPermissionChecker>();
@@ -131,6 +132,7 @@ public sealed class WidgetPushPermissionFilterTests
             DashboardId: Guid.NewGuid(),
             WidgetInstanceId: Guid.NewGuid(),
             RequiredPermission: requiredPermission,
+            StreamCursor: 1,
             Envelope: envelope);
     }
 }

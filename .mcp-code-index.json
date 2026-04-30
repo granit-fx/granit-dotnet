@@ -14459,6 +14459,12 @@
           "kind": "property",
           "signature": "string TagName",
           "returnType": "string"
+        },
+        {
+          "name": "RingBufferCapacity",
+          "kind": "property",
+          "signature": "int RingBufferCapacity",
+          "returnType": "int"
         }
       ]
     },
