@@ -26,6 +26,7 @@
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
       "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
+      "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Events/Granit.Events.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",

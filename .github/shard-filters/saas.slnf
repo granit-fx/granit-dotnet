@@ -25,6 +25,7 @@
       "src/Granit.DataLookup.EntityFrameworkCore/Granit.DataLookup.EntityFrameworkCore.csproj",
       "src/Granit.DataLookup/Granit.DataLookup.csproj",
       "src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj",
+      "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Features/Granit.Features.csproj",
       "src/Granit.Guids/Granit.Guids.csproj",
       "src/Granit.Http.Abstractions/Granit.Http.Abstractions.csproj",

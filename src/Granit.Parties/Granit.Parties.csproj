@@ -22,6 +22,7 @@
     <ProjectReference Include="..\Granit.Mergeable\Granit.Mergeable.csproj" />
     <ProjectReference Include="..\Granit.Parties.Abstractions\Granit.Parties.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Guids\Granit.Guids.csproj" />
     <ProjectReference Include="..\Granit.QueryEngine.Abstractions\Granit.QueryEngine.Abstractions.csproj" />
     <ProjectReference Include="..\Granit.Timing\Granit.Timing.csproj" />

@@ -1898,6 +1898,7 @@
         "Granit.Mergeable",
         "Granit.Parties.Abstractions",
         "Granit.DataExchange.Abstractions",
+        "Granit.Entities.Abstractions",
         "Granit.Guids",
         "Granit.QueryEngine.Abstractions",
         "Granit.Timing"
@@ -28090,6 +28091,22 @@
       "members": []
     },
     {
+      "name": "InvoiceEntityDefinition",
+      "fqn": "Granit.Invoicing.Entities.InvoiceEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Invoicing",
+      "file": "src/Granit.Invoicing/Entities/InvoiceEntityDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Invoicing.EntityFrameworkCore.Extensions.InvoicingEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -28240,7 +28257,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Extensions/InvoicingHostApplicationBuilderExtensions.cs",
-      "line": 22,
+      "line": 24,
       "members": [
         {
           "name": "AddGranitInvoicing",
@@ -38498,6 +38515,22 @@
       "members": []
     },
     {
+      "name": "PartyEntityDefinition",
+      "fqn": "Granit.Parties.Entities.PartyEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Parties",
+      "file": "src/Granit.Parties/Entities/PartyEntityDefinition.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "EmailCanonicaliser",
       "fqn": "Granit.Parties.EntityFrameworkCore.Canonicalisation.EmailCanonicaliser",
       "kind": "class",
@@ -38897,7 +38930,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Extensions/PartiesHostApplicationBuilderExtensions.cs",
-      "line": 17,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitParties",
