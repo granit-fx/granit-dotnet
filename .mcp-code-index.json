@@ -18841,7 +18841,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {
@@ -19117,12 +19117,21 @@
       "members": []
     },
     {
+      "name": "EntityKanbanCardActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 101,
+      "members": []
+    },
+    {
       "name": "EntityKanbanCardManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardManifest",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 68,
+      "line": 69,
       "members": []
     },
     {
@@ -19131,7 +19140,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 83,
+      "line": 85,
       "members": []
     },
     {
@@ -19140,7 +19149,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 93,
+      "line": 111,
       "members": []
     },
     {

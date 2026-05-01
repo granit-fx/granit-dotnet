@@ -171,4 +171,15 @@ public sealed class InvoiceEntityDefinitionTests
         pdf.ConfirmationKey.ShouldBeNull();
         pdf.RequiresPermission.ShouldBe("Invoicing.Invoices.Read");
     }
+
+    [Fact]
+    public void Descriptor_pins_finalize_and_download_pdf_on_kanban_card_only()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        d.Actions.Single(a => a.Name == "finalize").ShowOnKanbanCard.ShouldBeTrue();
+        d.Actions.Single(a => a.Name == "download-pdf").ShowOnKanbanCard.ShouldBeTrue();
+        d.Actions.Single(a => a.Name == "void").ShowOnKanbanCard.ShouldBeFalse();
+        d.Actions.Single(a => a.Name == "mark-uncollectible").ShowOnKanbanCard.ShouldBeFalse();
+    }
 }
