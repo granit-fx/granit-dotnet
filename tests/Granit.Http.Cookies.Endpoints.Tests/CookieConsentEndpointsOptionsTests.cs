@@ -11,6 +11,6 @@ public sealed class CookieConsentEndpointsOptionsTests
         new CookieConsentEndpointsOptions().RoutePrefix.ShouldBe("cookies");
 
     [Fact]
-    public void TagName_Default_ShouldBeCookies() =>
-        new CookieConsentEndpointsOptions().TagName.ShouldBe("Cookies");
+    public void TagName_Default_ShouldBeCookieConsent() =>
+        new CookieConsentEndpointsOptions().TagName.ShouldBe("Cookie Consent");
 }
