@@ -135,7 +135,7 @@ public sealed class GpcDiscoveryEndpointTests
             WebApplication app = builder.Build();
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapGranitGpcDiscovery();
+            app.MapGranitPrivacyGpcDiscovery();
             await app.StartAsync(cancellationToken).ConfigureAwait(false);
 
             return new TestApp(app, app.GetTestClient());

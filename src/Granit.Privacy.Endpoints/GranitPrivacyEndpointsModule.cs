@@ -24,7 +24,7 @@ namespace Granit.Privacy.Endpoints;
 /// <para>Exposes the following endpoint groups:</para>
 /// <list type="bullet">
 /// <item><see cref="Extensions.PrivacyEndpointRouteBuilderExtensions.MapGranitPrivacy"/> — regulation, export, deletion, agreements (authenticated, under the privacy prefix).</item>
-/// <item><see cref="GpcDiscoveryEndpointRouteBuilderExtensions.MapGranitGpcDiscovery"/> — opt-in <c>/.well-known/gpc.json</c> at the host root (anonymous, excluded from OpenAPI).</item>
+/// <item><see cref="GpcDiscoveryEndpointRouteBuilderExtensions.MapGranitPrivacyGpcDiscovery"/> — opt-in <c>/.well-known/gpc.json</c> at the host root (anonymous, excluded from OpenAPI).</item>
 /// </list>
 /// <para>
 /// <b>Reverse proxy note:</b> The consent acceptance endpoint reads the client IP address

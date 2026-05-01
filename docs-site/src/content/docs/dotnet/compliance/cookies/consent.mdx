@@ -84,7 +84,7 @@ the document at the host root.
 ```csharp
 // Program.cs
 app.MapGranitPrivacy();        // existing privacy endpoints
-app.MapGranitGpcDiscovery();   // /.well-known/gpc.json — no-op when disabled
+app.MapGranitPrivacyGpcDiscovery();   // /.well-known/gpc.json — no-op when disabled
 ```
 
 ```jsonc
