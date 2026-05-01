@@ -61,7 +61,28 @@ public static class RateLimitingServiceCollectionExtensions
         // Options validation
         services.AddSingleton<IValidateOptions<GranitRateLimitingOptions>, GranitRateLimitingOptionsValidator>();
 
-        // Counter store: Redis if IConnectionMultiplexer is available, otherwise in-memory
+        // Counter store: Redis if IConnectionMultiplexer is available, otherwise in-memory.
+        //
+        // The in-memory store MUST be a singleton — its ConcurrentDictionary state is the
+        // counter; a per-scope instance gets a fresh empty dictionary on every request and
+        // never enforces the cap (sliding-window 5-permit policy looks like 1-permit-per-request
+        // because each request sees an empty timestamp list). The Redis store is stateless
+        // (state lives in Redis) so its lifetime doesn't matter functionally; we keep both
+        // resolutions through the same scoped polymorphic factory so swapping Redis<->in-memory
+        // doesn't change call sites.
+        services.TryAddSingleton<InMemoryRateLimitCounterStore>(sp =>
+        {
+            if (!s_inMemoryWarningLogged)
+            {
+                s_inMemoryWarningLogged = true;
+                RateLimitingLog.LogInMemoryFallback(
+                    sp.GetRequiredService<ILogger<InMemoryRateLimitCounterStore>>());
+            }
+
+            return new InMemoryRateLimitCounterStore(
+                sp.GetRequiredService<TimeProvider>());
+        });
+
         services.TryAddScoped<IRateLimitCounterStore>(sp =>
         {
             StackExchange.Redis.IConnectionMultiplexer? redis =
@@ -75,15 +96,7 @@ public static class RateLimitingServiceCollectionExtensions
                     sp.GetRequiredService<ILogger<RedisRateLimitCounterStore>>());
             }
 
-            if (!s_inMemoryWarningLogged)
-            {
-                s_inMemoryWarningLogged = true;
-                RateLimitingLog.LogInMemoryFallback(
-                    sp.GetRequiredService<ILogger<InMemoryRateLimitCounterStore>>());
-            }
-
-            return new InMemoryRateLimitCounterStore(
-                sp.GetRequiredService<TimeProvider>());
+            return sp.GetRequiredService<InMemoryRateLimitCounterStore>();
         });
 
         // Quota provider: feature-based or static options
