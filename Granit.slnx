@@ -15,6 +15,7 @@
     <Project Path="src/Granit.Http.Cors/Granit.Http.Cors.csproj" />
     <Project Path="src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj" />
     <Project Path="src/Granit.Http.Idempotency/Granit.Http.Idempotency.csproj" />
+    <Project Path="src/Granit.Http.ODataExposure/Granit.Http.ODataExposure.csproj" />
     <Project Path="src/Granit.Http.OutputCaching.StackExchangeRedis/Granit.Http.OutputCaching.StackExchangeRedis.csproj" />
     <Project Path="src/Granit.Http.OutputCaching/Granit.Http.OutputCaching.csproj" />
     <Project Path="src/Granit.Http.Resilience/Granit.Http.Resilience.csproj" />
@@ -102,6 +103,7 @@
     <Project Path="src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj" />
     <Project Path="src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj" />
     <Project Path="src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Analytics.PostGIS/Granit.Analytics.PostGIS.csproj" />
     <Project Path="src/Granit.Analytics/Granit.Analytics.csproj" />
     <Project Path="src/Granit.Dashboards.Abstractions/Granit.Dashboards.Abstractions.csproj" />
     <Project Path="src/Granit.Dashboards.Endpoints/Granit.Dashboards.Endpoints.csproj" />
@@ -364,6 +366,8 @@
     <Project Path="tests/Granit.Http.Cors.Tests/Granit.Http.Cors.Tests.csproj" />
     <Project Path="tests/Granit.Http.ExceptionHandling.Tests/Granit.Http.ExceptionHandling.Tests.csproj" />
     <Project Path="tests/Granit.Http.Idempotency.Tests/Granit.Http.Idempotency.Tests.csproj" />
+    <Project Path="tests/Granit.Http.ODataExposure.Tests/Granit.Http.ODataExposure.Tests.csproj" />
+    <Project Path="tests/Granit.Http.ODataExposure.Tests.Integration/Granit.Http.ODataExposure.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests/Granit.Http.OutputCaching.StackExchangeRedis.Tests.csproj" />
     <Project Path="tests/Granit.Http.OutputCaching.Tests/Granit.Http.OutputCaching.Tests.csproj" />
     <Project Path="tests/Granit.Http.Resilience.Tests/Granit.Http.Resilience.Tests.csproj" />
@@ -457,6 +461,7 @@
     <Project Path="tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests.Integration/Granit.Analytics.EntityFrameworkCore.Tests.Integration.csproj" />
+    <Project Path="tests/Granit.Analytics.PostGIS.Tests/Granit.Analytics.PostGIS.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Tests/Granit.Analytics.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.Abstractions.Tests/Granit.Dashboards.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Dashboards.Endpoints.Tests/Granit.Dashboards.Endpoints.Tests.csproj" />

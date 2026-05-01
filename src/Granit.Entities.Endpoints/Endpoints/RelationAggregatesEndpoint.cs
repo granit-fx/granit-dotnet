@@ -5,7 +5,6 @@ using Granit.Entities.Endpoints.Diagnostics;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
-using Granit.Entities.Internal;
 using Granit.Entities.Relations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;

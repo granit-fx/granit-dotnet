@@ -26,7 +26,7 @@ internal sealed class EntityViewWriter(
         Guid ownerId = RequireUserId();
         await RequirePermissionAsync(EntityViewPermissions.Create, cancellationToken).ConfigureAwait(false);
 
-        var view = EntityView.CreatePersonal(
+        var view = EntityView.Create(
             entityName: request.EntityName,
             basedOn: request.BasedOn,
             kind: request.Kind,

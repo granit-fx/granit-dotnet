@@ -81,11 +81,12 @@ public sealed class EntityView : AuditedAggregateRoot, IMultiTenant
     private EntityView() { }
 
     /// <summary>
-    /// Factory: create a Personal view for the given owner. Promotion to Shared / Tenant
-    /// happens through <see cref="ShareWith"/> / <see cref="PromoteToTenant"/>.
+    /// Factory: create a Personal view for the given owner. Personal is the only valid
+    /// initial visibility — promotion to Shared / Tenant happens through
+    /// <see cref="ShareWith"/> / <see cref="PromoteToTenant"/>.
     /// </summary>
     /// <exception cref="ArgumentException">Thrown when any required string is empty / whitespace.</exception>
-    public static EntityView CreatePersonal(
+    public static EntityView Create(
         string entityName,
         string basedOn,
         string kind,

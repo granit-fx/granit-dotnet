@@ -1,4 +1,4 @@
-namespace Granit.Entities.Internal;
+namespace Granit.Entities;
 
 /// <summary>
 /// Read-side registry that exposes every registered

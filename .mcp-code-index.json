@@ -19322,10 +19322,10 @@
     },
     {
       "name": "IEntityDefinitionRegistry",
-      "fqn": "Granit.Entities.Internal.IEntityDefinitionRegistry",
+      "fqn": "Granit.Entities.IEntityDefinitionRegistry",
       "kind": "interface",
       "project": "Granit.Entities",
-      "file": "src/Granit.Entities/Internal/IEntityDefinitionRegistry.cs",
+      "file": "src/Granit.Entities/IEntityDefinitionRegistry.cs",
       "line": 8,
       "members": [
         {
@@ -19594,9 +19594,9 @@
           "returnType": "string?"
         },
         {
-          "name": "CreatePersonal",
+          "name": "Create",
           "kind": "method",
-          "signature": "CreatePersonal(string entityName, string basedOn, string kind, string name, string? description, string? icon, JsonObject state, Guid ownerId, int sortOrder = 0)",
+          "signature": "Create(string entityName, string basedOn, string kind, string name, string? description, string? icon, JsonObject state, Guid ownerId, int sortOrder = 0)",
           "returnType": "EntityView"
         },
         {

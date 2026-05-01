@@ -15,9 +15,9 @@ public sealed class EntityViewTests
     private static readonly JsonObject EmptyState = new();
 
     [Fact]
-    public void CreatePersonal_BuildsAggregate_WithExpectedDefaults()
+    public void Create_BuildsAggregate_WithExpectedDefaults()
     {
-        var view = EntityView.CreatePersonal(
+        var view = EntityView.Create(
             entityName: "Granit.Sample.Item",
             basedOn: "default",
             kind: "list",
@@ -42,29 +42,29 @@ public sealed class EntityViewTests
     }
 
     [Fact]
-    public void CreatePersonal_RejectsEmptyOwnerId()
+    public void Create_RejectsEmptyOwnerId()
     {
         Should.Throw<ArgumentException>(() =>
-            EntityView.CreatePersonal("e", "default", "list", "n", null, null, EmptyState, Guid.Empty));
+            EntityView.Create("e", "default", "list", "n", null, null, EmptyState, Guid.Empty));
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void CreatePersonal_RejectsBlankRequiredStrings(string? blank)
+    public void Create_RejectsBlankRequiredStrings(string? blank)
     {
         Should.Throw<ArgumentException>(() =>
-            EntityView.CreatePersonal(blank!, "default", "list", "n", null, null, EmptyState, OwnerId));
+            EntityView.Create(blank!, "default", "list", "n", null, null, EmptyState, OwnerId));
 
         Should.Throw<ArgumentException>(() =>
-            EntityView.CreatePersonal("e", blank!, "list", "n", null, null, EmptyState, OwnerId));
+            EntityView.Create("e", blank!, "list", "n", null, null, EmptyState, OwnerId));
 
         Should.Throw<ArgumentException>(() =>
-            EntityView.CreatePersonal("e", "default", blank!, "n", null, null, EmptyState, OwnerId));
+            EntityView.Create("e", "default", blank!, "n", null, null, EmptyState, OwnerId));
 
         Should.Throw<ArgumentException>(() =>
-            EntityView.CreatePersonal("e", "default", "list", blank!, null, null, EmptyState, OwnerId));
+            EntityView.Create("e", "default", "list", blank!, null, null, EmptyState, OwnerId));
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public sealed class EntityViewTests
     }
 
     private static EntityView NewPersonal() =>
-        EntityView.CreatePersonal(
+        EntityView.Create(
             "Granit.Sample.Item", "default", "list",
             "Initial", null, null, new JsonObject(), OwnerId);
 }
