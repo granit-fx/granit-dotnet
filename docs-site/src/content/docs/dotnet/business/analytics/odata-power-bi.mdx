@@ -121,6 +121,23 @@ and rate limiting.
   with Organizational account*. Same end result.
 </Aside>
 
+## Power BI auth methods — picking the right one
+
+Power BI Desktop's auth picker for an OData source offers five labels.
+The right one depends on the Granit identity stack you've wired:
+
+| Granit auth | Power BI method | When to use |
+| ----------- | --------------- | ----------- |
+| OIDC / OAuth2 — Entra ID, Keycloak, OpenIddict, Cognito, Google… | **Organizational account** | Interactive analyst sessions (Power BI Desktop). The "Organizational account" label is OAuth2 / OIDC under the hood — Authorization Code + PKCE, browser redirect to your IdP, refresh-token persistence. Works against any standards-compliant IdP, not just Microsoft Entra ID. |
+| API key (`Granit.Authentication.ApiKeys`) | **Web API** | Power BI Service refresh jobs, scheduled imports, headless integrations. The analyst pastes the API key value; Power BI sets the `Authorization: Bearer <key>` header on every request. Use a dedicated service-principal API key, never a personal one. |
+| Anonymous | **Anonymous** | Public reference-data feeds — only when an EntitySet has called `.AllowAnonymousAccess()` on the framework side. |
+
+<Aside type="caution" title="Avoid Basic / Windows for OData">
+  Granit's OData layer does NOT accept HTTP Basic or Windows
+  authentication. Pick those in Power BI Desktop and the request fails
+  with `401 Unauthorized` regardless of the credentials supplied.
+</Aside>
+
 ## Refresh schedules and rate-limit awareness
 
 Power BI Service refresh jobs hit the OData feed periodically — every 30

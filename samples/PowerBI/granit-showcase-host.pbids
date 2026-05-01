@@ -1,0 +1,15 @@
+{
+  "version": "0.1",
+  "connections": [
+    {
+      "details": {
+        "protocol": "odata",
+        "address": {
+          "url": "https://your-app.example.com/api/v1/odata/host"
+        }
+      },
+      "options": {},
+      "mode": "DirectQuery"
+    }
+  ]
+}

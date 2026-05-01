@@ -210,9 +210,14 @@ as-is. Two configuration changes worth highlighting:
 
 <Steps>
 
-1. **Edit the `.pbids` URL** to point at `/api/v1/odata/host` instead of
-   `/api/v1/odata`. The container name in the discovered `$metadata` is
-   `HostContainer`; Power BI discovers EntitySets identically.
+1. **Use the host-feed `.pbids` template.** The repo ships
+   [`samples/PowerBI/granit-showcase-host.pbids`](https://github.com/granit-fx/granit-dotnet/blob/develop/samples/PowerBI/granit-showcase-host.pbids)
+   pointing at `/api/v1/odata/host`; replace
+   `https://your-app.example.com` with your deployment's host. The
+   container name in the discovered `$metadata` is `HostContainer`,
+   distinct from the tenant-feed's `Container` — Power BI discovers
+   EntitySets identically; the distinct name surfaces an immediate
+   schema mismatch if the wrong file is used against the wrong URL.
 
 2. **Sign in with a host SuperAdmin account.** A tenant user's bearer
    token will not carry the `OData.Host.*` permissions, so the Navigator
@@ -221,6 +226,16 @@ as-is. Two configuration changes worth highlighting:
    Service refresh jobs.
 
 </Steps>
+
+<Aside type="tip" title="Auth methods on the host-feed">
+  The same [auth-method mapping table](/dotnet/business/analytics/odata-power-bi/#power-bi-auth-methods--picking-the-right-one)
+  applies. For interactive host operators, *Organizational account*
+  (OAuth2 / OIDC). For Power BI Service refresh jobs, an API key issued
+  by `Granit.Authentication.ApiKeys` and pasted into Power BI's *Web API*
+  method — the API key holder's identity must carry an
+  `OData.Host.{Module}.{Entity}.Read` permission with
+  `MultiTenancySides.Host`.
+</Aside>
 
 ## See also
 
