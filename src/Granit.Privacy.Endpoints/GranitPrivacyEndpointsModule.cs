@@ -3,25 +3,28 @@ using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Http.Cookies;
 using Granit.Modularity;
+using Granit.Privacy.Endpoints.Discovery;
+using Granit.Privacy.Endpoints.Internal;
 using Granit.Privacy.Endpoints.Workspaces;
 using Granit.Privacy.Regulations;
 using Granit.Validation;
 using Granit.Workspaces;
 using Granit.Workspaces.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Privacy.Endpoints;
 
 /// <summary>
 /// Granit module for privacy endpoints: personal data export, data deletion,
-/// legal agreement consent management, and regulation profile resolution.
+/// legal agreement consent management, regulation profile resolution, and the
+/// optional Global Privacy Control (GPC) public discovery resource.
 /// </summary>
 /// <remarks>
-/// <para>Exposes four endpoint groups via <see cref="Extensions.PrivacyEndpointRouteBuilderExtensions.MapGranitPrivacy"/>:</para>
+/// <para>Exposes the following endpoint groups:</para>
 /// <list type="bullet">
-/// <item>Regulation — returns the applicable regulation profile for the current tenant.</item>
-/// <item>Export — triggers the scatter-gather saga and reports export status.</item>
-/// <item>Deletion — publishes the distributed deletion event.</item>
-/// <item>Agreements — lists legal documents, records consent, checks user status.</item>
+/// <item><see cref="Extensions.PrivacyEndpointRouteBuilderExtensions.MapGranitPrivacy"/> — regulation, export, deletion, agreements (authenticated, under the privacy prefix).</item>
+/// <item><see cref="GpcDiscoveryEndpointRouteBuilderExtensions.MapGranitGpcDiscovery"/> — opt-in <c>/.well-known/gpc.json</c> at the host root (anonymous, excluded from OpenAPI).</item>
 /// </list>
 /// <para>
 /// <b>Reverse proxy note:</b> The consent acceptance endpoint reads the client IP address
@@ -41,6 +44,14 @@ namespace Granit.Privacy.Endpoints;
 public sealed class GranitPrivacyEndpointsModule : GranitModule
 {
     /// <inheritdoc />
-    public override void ConfigureServices(ServiceConfigurationContext context) =>
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
         context.Services.AddWorkspaceContribution<PrivacyWorkspaceContribution>();
+
+        context.Services
+            .AddOptions<GpcDiscoveryOptions>()
+            .BindConfiguration(GpcDiscoveryOptions.SectionName)
+            .ValidateOnStart();
+        context.Services.AddSingleton<IValidateOptions<GpcDiscoveryOptions>, GpcDiscoveryOptionsValidator>();
+    }
 }

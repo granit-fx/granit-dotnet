@@ -65,3 +65,92 @@ First-party `Analytics` cookies are preserved — GPC means "Do Not Sell", not
 | `NullConsentResolver` | Denies consent for all non-essential categories (default) |
 | `NullCookieConsentModelProvider` | Returns `null` — no GPC suppression (default) |
 | `GlobalPrivacyControlHeaderSignal` | Reads `Sec-GPC: 1` header (always registered) |
+
+## Publishing the GPC discovery document
+
+Honoring the `Sec-GPC` header is the *inbound* half of GPC support. The
+[GPC spec](https://w3c.github.io/gpc/#the-well-known-resource) also defines an
+*outbound* declaration: a public JSON document at `/.well-known/gpc.json`
+through which the operator publicly attests that the site honors GPC. Several
+US state privacy laws — CPRA (Cal. Civ. Code §1798.135(b)(1)), Colorado CPA,
+Connecticut CTDPA — recognize this as the canonical way to opt into honoring
+the signal.
+
+Granit ships an opt-in endpoint in `Granit.Privacy.Endpoints` that publishes
+the document at the host root.
+
+### Wiring
+
+```csharp
+// Program.cs
+app.MapGranitPrivacy();        // existing privacy endpoints
+app.MapGranitGpcDiscovery();   // /.well-known/gpc.json — no-op when disabled
+```
+
+```jsonc
+// appsettings.json
+{
+  "Privacy": {
+    "GpcDiscovery": {
+      "Enabled": true,
+      "LastUpdate": "2026-01-15"   // see below — this is a legal anchor
+    }
+  }
+}
+```
+
+When `Enabled` is `false` (the default), no route is mapped and the path
+returns 404 — which is the spec-prescribed behavior for non-publishers.
+
+### `LastUpdate` is a legal anchor, not a build timestamp
+
+Per the GPC spec, `lastUpdate` is *"the time at which the statement of support
+was made, such that later changes to the meaning of the GPC standard should
+not affect the interpretation of the resource for legal purposes."* It pins
+the interpretation of your declaration to the version of the GPC standard in
+force at that date.
+
+<Aside type="caution">
+**Do not auto-default `LastUpdate`** to today's date, the build date, or the
+deployment date. Doing so would silently move the legal anchor on every
+deploy and defeat its purpose. Set it deliberately and only bump it when
+materially restating the commitment — broadened scope, revised privacy
+policy, alignment with a new GPC version. The framework refuses to start if
+`Enabled = true` and `LastUpdate` is not set (`IValidateOptions` fail-fast).
+</Aside>
+
+### Host scoping — split-host deployments
+
+The `.well-known` URI scheme (RFC 8615) is host-rooted: the discovery
+document covers **the host that responds to the request**, not your
+organization. If your front-end is served from a host distinct from the BFF
+(e.g. `app.example.com` for a SPA, `api.example.com` for the .NET host), then
+this endpoint only declares GPC support for the BFF host. Browsers, crawlers,
+and regulators looking up `app.example.com/.well-known/gpc.json` will see a
+404 unless you also publish the document there.
+
+Two options for the front-end host:
+
+1. **Static publication** — drop a matching `public/.well-known/gpc.json` in
+   your Vite / Next / static-site build. Both `LastUpdate` values must stay
+   in lock-step with the BFF declaration.
+2. **Reverse-proxy routing** — configure your edge (Cloudflare, Azure Front
+   Door, Nginx) so that requests to `<front-host>/.well-known/*` are routed
+   to the BFF host. The single .NET endpoint then covers both hosts.
+
+### What opting in actually commits you to
+
+Publishing `gpc: true` is a public, opposable declaration that your operation
+honors GPC across the *entire processing surface* of the host — not only the
+cookie layer Granit enforces. Before flipping the switch, audit:
+
+- Third-party SDKs (analytics, marketing pixels, A/B testing, session replay)
+  loaded by the front-end — many do not respect `Sec-GPC` by default and need
+  configuration or replacement.
+- Server-side processing pipelines that share data with vendors (CDP,
+  affiliate networks, retargeting partners) — they must read your inbound
+  GPC state and adjust accordingly.
+- Privacy policy text — should explicitly reference your GPC commitment.
+
+If any of these don't currently honor the signal, fix them first. A
+declaration backed by non-conforming behavior is worse than no declaration.
