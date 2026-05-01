@@ -1,0 +1,100 @@
+---
+title: Entity View
+description: User-saved view configurations — filters, sort, columns, kanban overlays — with Personal / Shared / Tenant visibility, pin / star / set-default behaviours, and audit trail. Supersedes Granit.QueryEngine.SavedViews.
+sidebar:
+  label: Entity View
+  order: 6
+  badge:
+    text: New
+    variant: tip
+---
+
+`EntityView` is the saved-view aggregate that lets a user pin a configured browse
+(filter set + sort + columns + per-layout overlay like the kanban groupBy) on top
+of a compiled `QueryDefinition`. It supersedes the legacy
+`Granit.QueryEngine.SavedViews` (clean-broken in PR #1639) per
+[ADR-047](/dotnet/architecture/adr/047-entity-view/).
+
+The aggregate enforces the three-visibility model at write time and exposes a
+sorted list at read time, with per-user permission filtering and audit trails on
+every mutation.
+
+## Visibility scopes
+
+Per [ADR-047 §4](/dotnet/architecture/adr/047-entity-view/):
+
+| Scope | Owner | Audience | Created via |
+| ----- | ----- | -------- | ----------- |
+| **Personal** | The current user | Owner only | `Create(...)` — only valid initial visibility |
+| **Shared** | The original creator | Roles + user IDs declared in `EntityViewSharedWith` | `ShareWith(...)` from a Personal view |
+| **Tenant** | Tenant admin | Every user in the tenant | `PromoteToTenant(...)` from a Shared view |
+
+Promotion is one-way (`Personal → Shared → Tenant`); a Tenant view can never demote
+back to Personal.
+
+## Wire shape
+
+```jsonc
+{
+  "id": "9c8f0d20-…",
+  "entityName": "Granit.Parties.Party",
+  "basedOn": "Granit.Parties.PartyQuery",
+  "kind": "list",                          // or "kanban", "calendar", … (per ADR-042)
+  "name": "Active customers — APAC",
+  "description": null,
+  "icon": "globe",
+  "state": {                               // JSONB delta over the base collection
+    "filters": [ { "field": "Region", "op": "eq", "value": "APAC" } ],
+    "sort": [ "-Revenue" ],
+    "columns": [ "Name", "Region", "Revenue", "Status" ]
+  },
+  "visibility": "Personal",
+  "ownerId": "…",
+  "isPersonalDefault": true,               // user's landing view
+  "sortOrder": 0
+}
+```
+
+The `state` field is intentionally opaque on the wire — its shape depends on
+`kind`. For `kind: "kanban"` it carries overlay fields like `groupBy` and
+per-column `state` (Open / Collapsed / Hidden) overrides on top of the framework
+defaults declared via [`KanbanView<TGroupBy>`](/dotnet/data/entity-definition/).
+
+## Endpoints
+
+`MapGranitEntityViewsEndpoints("/api/entities/{name}/views")` mounts the full
+CRUD surface on the host:
+
+| Method | Route | Permission | Notes |
+| ------ | ----- | ---------- | ----- |
+| `GET` | `/` | (any authenticated user) | Returns Personal owned by user + Shared targeted to user + Tenant |
+| `GET` | `/{id:guid}` | Same as list | 404 when inaccessible (no scope leak) |
+| `GET` | `/_default` | Same as list | Resolves the user's effective default per ADR-047 §4 |
+| `POST` | `/` | `Entities.Views.Create` | Returns 201 |
+| `PUT` | `/{id:guid}` | Owner-only for Personal/Shared, `Entities.Views.Manage` for Tenant | `BasedOn` and `Kind` immutable |
+| `DELETE` | `/{id:guid}` | Owner, or `Entities.Views.Delete.Any` | Returns 204 |
+| `POST` | `/{id:guid}/pin` | `Entities.Views.Manage` | Admin promotes a Tenant view to a workspace-tab pin |
+| `POST` | `/{id:guid}/set-default` | `Entities.Views.Manage` | Replaces the compiled default for the tenant |
+| `POST` | `/{id:guid}/star` | (any authenticated user) | Per-user — sets `IsPersonalDefault` |
+| `POST` | `/{id:guid}/share` | Owner | Personal → Shared promotion |
+
+Every write goes through `IEntityViewWriter`, which persists via the standard
+`AuditedEntityInterceptor` pipeline — `CreatedAt` / `CreatedBy` / `ModifiedAt` /
+`ModifiedBy` are recorded on every mutation, and the framework's audit
+infrastructure ([`Granit.Auditing`](/dotnet/security/identity/)) captures the
+before/after diff.
+
+## Validation
+
+`EntityViewCreateBodyRequest`, `EntityViewUpdateBodyRequest` and
+`EntityViewShareBodyRequest` ship FluentValidation validators discovered
+automatically by `GranitValidationModule`. Localized error codes resolve to the
+host's locale via `Granit:Validation:*` keys (auto-mapped from FluentValidation's
+`PropertyValidator` rule sets).
+
+## Related
+
+- [Entity Definition](/dotnet/data/entity-definition/) — the compiled layer that `EntityView` overlays
+- [ADR-042](/dotnet/architecture/adr/042-view-catalog/) — view kinds + state schema per kind
+- [ADR-047](/dotnet/architecture/adr/047-entity-view/) — supersedes legacy SavedViews
+- [ADR-049](/dotnet/architecture/adr/049-default-landing-route/) — 5-tier landing route resolver (uses `EntityView` defaults)

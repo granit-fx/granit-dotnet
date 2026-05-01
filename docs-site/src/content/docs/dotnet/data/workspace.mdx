@@ -1,0 +1,136 @@
+---
+title: Workspace
+description: Navigation tree exposed by GET /api/workspaces — hierarchical sub-workspaces (depth ≤ 4), per-item permission gating, cross-workspace entity sharing with additive preset overlays, framework shells (System / Users / Automation / Data / Email / Integrations / Monitoring / Privacy), and the 5-tier landing route resolver.
+sidebar:
+  label: Workspace
+  order: 7
+  badge:
+    text: New
+    variant: tip
+---
+
+A `WorkspaceDefinition` declares one branch of the navigation tree the SPA renders
+in its left rail. Workspaces nest up to four levels deep
+([ADR-044](/dotnet/architecture/adr/044-workspace-navigation/)) and host two kinds
+of items: links to entities (rendered through their
+[`EntityDefinition`](/dotnet/data/entity-definition/)) and links to dashboards.
+The composer filters the tree per-user using the same defense-in-depth rule as
+the entity manifest — items the user lacks permission for are dropped from the
+payload, never just hidden.
+
+## Quick example
+
+```csharp
+using Granit.Workspaces;
+
+public sealed class CrmWorkspaceDefinition : WorkspaceDefinition
+{
+    public override string Name => "Showcase.Crm";
+
+    protected override void Configure(WorkspaceBuilder builder) =>
+        builder
+            .DisplayKey("Showcase:Workspace.Crm")
+            .Icon("users")
+            .Order(10)
+            .RequiresPermission("Showcase.Crm.Read")
+            .Section("identities", section => section
+                .DisplayKey("Showcase:Workspace.Crm.Section.Identities")
+                .Entity<Party>(item => item
+                    .DisplayKey("Showcase:Workspace.Crm.Item.Customers")
+                    .Icon("user-circle")
+                    .Order(0))
+                .Entity<Lead>(item => item
+                    .DisplayKey("Showcase:Workspace.Crm.Item.Leads")
+                    .Order(10)));
+}
+```
+
+Register via `services.AddWorkspaceDefinition<CrmWorkspaceDefinition>()`. The host
+mounts the composed tree with
+`endpoints.MapGranitWorkspacesEndpoints("/api/workspaces")`. A
+`?includeShells=false` query parameter strips the framework shells from the
+response when the SPA already renders them separately.
+
+## Cross-workspace entity sharing
+
+The same entity may be referenced by multiple workspaces; each can carry an
+**additive preset overlay** that constrains the default list (extra filters,
+fixed sort, predefined columns). Two workspaces can both expose `Party` with
+different presets — the CRM workspace shows the full list, the Accounting
+workspace shows the same `Party` with an "outstanding balance > 0" preset.
+
+```csharp
+.Entity<Party>(item => item
+    .DisplayKey("Showcase:Workspace.Accounting.Item.OverdueParties")
+    .Preset(new Dictionary<string, object?>
+    {
+        ["filters"] = new[] { new { field = "OutstandingBalance", op = "gt", value = 0 } },
+        ["sort"] = new[] { "-OverdueAt" },
+    }))
+```
+
+The overlay must be **additive only** — the framework rejects presets that try
+to relax filters baked into the entity's `EntityDefinition` /
+`QueryDefinition`. The validation surface lives in
+[ADR-048 §4](/dotnet/architecture/adr/048-cross-module-entity-relations/).
+
+## IoC contributor pattern
+
+Other modules graft items onto a workspace they don't own through
+`IWorkspaceContributor` ([ADR-045](/dotnet/architecture/adr/045-contributor-pattern/)):
+
+```csharp
+internal sealed class FeatureFlagsOnFrameworkWorkspaceContribution : IWorkspaceContributor
+{
+    public void Contribute(IWorkspaceContributionContext context) =>
+        context.ForWorkspace(FrameworkWorkspaceNames.System)
+            .Section("automation", section => section
+                .Link(item => item
+                    .DisplayKey("Features:Workspace.FeatureFlags")
+                    .Icon("flag")
+                    .Url("/admin/feature-flags")
+                    .RequiresPermission("Features.Flags.Read")));
+}
+```
+
+Register with `services.AddWorkspaceContribution<FeatureFlagsOnFrameworkWorkspaceContribution>()`.
+The composer folds contributions into the matching workspace at boot — empty
+shells (a sub-workspace nobody contributed items to) are auto-omitted from the
+rendered tree.
+
+## Framework shells
+
+`Granit.Workspaces.Framework` ships eight pre-declared shell sub-workspaces under
+the root `Granit.Framework` workspace:
+
+`System`, `Users`, `Automation`, `Data`, `Email`, `Integrations`, `Monitoring`,
+`Privacy`.
+
+Modules graft their admin pages onto the appropriate shell — `BlobStorage` and
+`BackgroundJobs` land in `Data` and `Automation` respectively, `Notifications`
+in `Email`, and so on. Hosts that don't load `Granit.Workspaces.Framework`
+simply don't see the shells.
+
+## Landing route resolver
+
+`MapGranitLandingRouteEndpoints` exposes `GET /api/me/landing-route` — a 5-tier
+precedence resolver that picks the user's effective landing URL on app start
+([ADR-049](/dotnet/architecture/adr/049-default-landing-route/)):
+
+1. **Personal sticky** — last-visited route persisted via `PUT /api/me/landing-route/pinned`.
+2. **Personal pinned** — explicit user choice.
+3. **Role default** — admin-configured per role.
+4. **Tenant default** — tenant-wide override.
+5. **Framework default** — `/w/{first-workspace}` from the composed tree.
+
+The route URL is gated by `LandingRouteAllowedPrefixes` (default `["/w/", "/e/"]`)
+to prevent open-redirect attacks via a poisoned saved-route value.
+
+## Related
+
+- [Entity Definition](/dotnet/data/entity-definition/) — the entities a workspace links to
+- [Entity View](/dotnet/data/entity-view/) — saved views the workspace tab strip pins
+- [ADR-040](/dotnet/architecture/adr/040-three-tier-metadata-architecture/) — three-tier metadata
+- [ADR-044](/dotnet/architecture/adr/044-workspace-navigation/) — workspace navigation
+- [ADR-045](/dotnet/architecture/adr/045-contributor-pattern/) — IoC contributor pattern
+- [ADR-049](/dotnet/architecture/adr/049-default-landing-route/) — landing route resolver

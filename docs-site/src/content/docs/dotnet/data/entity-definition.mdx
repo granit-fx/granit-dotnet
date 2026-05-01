@@ -1,0 +1,122 @@
+---
+title: Entity Definition
+description: Declarative manifest for an entity's UI surface — identity, forms, detail view, list collection, kanban layout, relations, and actions. The frontend renders everything from the manifest with no per-entity React.
+sidebar:
+  label: Entity Definition
+  order: 5
+  badge:
+    text: New
+    variant: tip
+---
+
+import { Aside } from "@astrojs/starlight/components";
+
+`EntityDefinition<T>` declares the UI surface of one aggregate. The manifest aggregator
+serves it to the frontend, which renders forms, detail views, lists, kanban boards,
+smart-button relations, and action buttons — all from the same descriptor, with no
+per-entity React code. One source of truth for the structure of a CRUD-style admin
+screen.
+
+The primitive sits at the heart of the three-tier metadata architecture
+([ADR-040](/dotnet/architecture/adr/040-three-tier-metadata-architecture/)): the
+framework declares the compiled layer here, tenants overlay tier-B customizations
+(layout reordering), and users save tier-C personal views via [`EntityView`](/dotnet/data/entity-view/).
+
+## Quick example
+
+```csharp
+using Granit.Entities;
+using Granit.Entities.Layouts;
+using Granit.Parties.Domain;
+
+public sealed class PartyEntityDefinition : EntityDefinition<Party>
+{
+    public override string Name => "Granit.Parties.Party";
+
+    protected override void Configure(EntityDefinitionBuilder<Party> builder) =>
+        builder
+            .DisplayKey("Parties:Entity.Party")
+            .Icon("users")
+            .PermissionGroup("Parties.Parties")
+            .DisplayProperty(p => p.Name)
+            .Query<PartyQueryDefinition>()        // list/grid backing
+            .Export<PartyExportDefinition>()      // CSV/XLSX
+            .Metric<PartyCountMetricDefinition>() // KPI on detail header
+            .Form("default", f => f
+                .Section("identity", s => s
+                    .Field(p => p.Name)
+                    .Field(p => p.Status))
+                .OwnedCollectionSection<PartyEmail>("emails", p => p.Emails, s => s
+                    .ItemDisplayProperty(e => e.Address)
+                    .ItemField(e => e.Address)
+                    .ItemField(e => e.IsPrimary)))
+            .Detail("default", d =>
+            {
+                d.Section("overview", s => s.InheritsFromForm("default"));
+                d.SidePanel.Audit().Timeline();
+            })
+            .KanbanView<PartyStatus>(k => k
+                .GroupBy(p => p.Status)
+                .Card(c => c.Title(p => p.Name).Field(p => p.Kind))
+                .Column(PartyStatus.Active, c => c.Color(KanbanColor.Green))
+                .Column(PartyStatus.Archived, c => c.Color(KanbanColor.Neutral).Hidden()));
+}
+```
+
+Register via `services.AddEntityDefinition<Party, PartyEntityDefinition>()`. The boot-time
+integrity check (`IntegrityCheckRunner`) walks every `EntityDefinitionDescriptor` and
+asserts each cited `QueryDefinition` / `ExportDefinition` / `MetricDefinition` is
+resolvable through DI — host startup fails fast on a typo or missing registration.
+
+## Primitives
+
+| Primitive | Surfaces as | DSL |
+| --------- | ----------- | --- |
+| `Form("name", ...)` | Edit form variant (multiple per entity — `default`, `quick`, …) | `.Section(...).Field(...)`, `.OwnedCollectionSection<TItem>(...)` |
+| `Detail("name", ...)` | Read-only detail view (variants like Form) | `.Section(...).InheritsFromForm("default")`, `.SidePanel.Audit().Timeline()` |
+| `Query<T>` / `Export<T>` / `Metric<T>` / `Dashboard<T>` | Wire references to declarative collection primitives | `.Query<MyQueryDef>()`, `.Metric<MyMetricDef>()` |
+| `HasMany<TRelated>` / `HasOne<TRelated>` | Smart-button / tab / sidebar / inline-chips relation on detail | `.HasMany(p => p.Invoices, r => r.DisplayAs(RelationDisplay.SmartButton).Aggregate(a => a.Count()))` |
+| `KanbanView<TGroupBy>(...)` | Kanban board grouped by an enum | `.GroupBy(p => p.Status).Card(...).Column(...)` |
+| `Action("name", ...)` | Detail-header / row / kanban-tile button | `.ApiCall("POST", "/api/.../finalize").RequiresPermission("...")` |
+
+Per-field defense in depth: `RequiresPermission(...)` drops the field from the manifest
+payload when the user does not hold the permission ([ADR-040 §6](/dotnet/architecture/adr/040-three-tier-metadata-architecture/)
+and story #1549) — never just hidden, always absent. Same rule applies to sections,
+side panels, relations, and actions.
+
+## Cross-module contributions
+
+Other modules graft relations and actions onto an entity they don't own through the
+contributor pattern ([ADR-045](/dotnet/architecture/adr/045-contributor-pattern/),
+[ADR-048](/dotnet/architecture/adr/048-cross-module-entity-relations/)):
+
+```csharp
+// Granit.Invoicing.Endpoints/Relations/InvoicesOnPartyRelationContribution.cs
+internal sealed class InvoicesOnPartyRelationContribution : IEntityRelationContributor
+{
+    public void Contribute(IEntityRelationContributionContext context) =>
+        context.AddRelation<Party, Invoice>(
+            name: "invoices",
+            targetEntityName: "Granit.Invoicing.Invoice",
+            r => r.DisplayAs(RelationDisplay.SmartButton)
+                .RequiresPermission(InvoicingPermissions.Invoices.Read)
+                .Aggregate(a => a.Count().Sum(i => i.Total))
+                .OnKanbanCard());
+}
+```
+
+Register with `services.AddEntityRelationContribution<InvoicesOnPartyRelationContribution>()`.
+The merger (`EntityRelationMerger`) folds contributions into the matching descriptor at
+boot — name conflicts resolve in favour of the entity's intra-module declarations.
+
+`IEntityActionContributor` follows the symmetric pattern for cross-module action grafts.
+
+## Related
+
+- [Entity View](/dotnet/data/entity-view/) — user-saved view configurations (filters, sort, columns, kanban overlays)
+- [Workspace](/dotnet/data/workspace/) — navigation tree that hosts entities
+- [ADR-040](/dotnet/architecture/adr/040-three-tier-metadata-architecture/) — three-tier metadata architecture
+- [ADR-041](/dotnet/architecture/adr/041-widget-catalog/) — widget catalog
+- [ADR-042](/dotnet/architecture/adr/042-view-catalog/) — view catalog
+- [ADR-045](/dotnet/architecture/adr/045-contributor-pattern/) — IoC contributor pattern
+- [ADR-048](/dotnet/architecture/adr/048-cross-module-entity-relations/) — cross-module relations
