@@ -19608,6 +19608,15 @@
       "members": []
     },
     {
+      "name": "CalendarRangeFilterBuilder",
+      "fqn": "Granit.Entities.Layouts.CalendarRangeFilterBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/CalendarRangeFilterBuilder.cs",
+      "line": 47,
+      "members": []
+    },
+    {
       "name": "EntityListLayoutDescriptor",
       "fqn": "Granit.Entities.Layouts.EntityListLayoutDescriptor",
       "kind": "record",
@@ -19716,6 +19725,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Layouts/KanbanLayoutDescriptor.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.Layouts.struct",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/CalendarRangeFilterBuilder.cs",
+      "line": 10,
       "members": []
     },
     {
