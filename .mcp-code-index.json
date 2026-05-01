@@ -18811,6 +18811,83 @@
       "members": []
     },
     {
+      "name": "EntityActionBuilder",
+      "fqn": "Granit.Entities.Actions.EntityActionBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/EntityActionBuilder.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "EntityActionContributionContext",
+      "fqn": "Granit.Entities.Actions.EntityActionContributionContext",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/EntityActionContributionContext.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Contributions",
+          "kind": "property",
+          "signature": "IReadOnlyDictionary<Type, IReadOnlyList<EntityActionDescriptor>> Contributions",
+          "returnType": "IReadOnlyDictionary<Type, IReadOnlyList<EntityActionDescriptor>>"
+        }
+      ]
+    },
+    {
+      "name": "EntityActionDescriptor",
+      "fqn": "Granit.Entities.Actions.EntityActionDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EntityActionKind",
+      "fqn": "Granit.Entities.Actions.EntityActionKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/EntityActionKind.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "EntityActionServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Actions.EntityActionServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/EntityActionServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "IEntityActionContributionContext",
+      "fqn": "Granit.Entities.Actions.IEntityActionContributionContext",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/IEntityActionContributor.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "IEntityActionContributor",
+      "fqn": "Granit.Entities.Actions.IEntityActionContributor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/IEntityActionContributor.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Contribute",
+          "kind": "method",
+          "signature": "Contribute(IEntityActionContributionContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "DetailBuilder",
       "fqn": "Granit.Entities.Details.DetailBuilder",
       "kind": "class",
@@ -18902,6 +18979,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Details/SidePanelKind.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "EntityActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityActionManifest.cs",
+      "line": 21,
       "members": []
     },
     {
@@ -19072,7 +19158,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityManifestResponse.cs",
-      "line": 15,
+      "line": 16,
       "members": []
     },
     {
@@ -19226,7 +19312,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionBuilder.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "DisplayKey",
@@ -19242,7 +19328,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionDescriptor.cs",
-      "line": 23,
+      "line": 24,
       "members": [
         {
           "name": "Name",
@@ -19255,6 +19341,12 @@
           "kind": "property",
           "signature": "IReadOnlyList<EntityListLayoutDescriptor> ListLayouts",
           "returnType": "IReadOnlyList<EntityListLayoutDescriptor>"
+        },
+        {
+          "name": "Actions",
+          "kind": "property",
+          "signature": "IReadOnlyList<EntityActionDescriptor> Actions",
+          "returnType": "IReadOnlyList<EntityActionDescriptor>"
         }
       ]
     },

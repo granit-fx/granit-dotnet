@@ -1,3 +1,4 @@
+using Granit.Entities.Actions;
 using Granit.Entities.Relations;
 using Microsoft.Extensions.Logging;
 
@@ -8,7 +9,8 @@ namespace Granit.Entities.Internal;
 /// enumerable of <see cref="IEntityDefinitionDescriptor"/>. Detects duplicate
 /// names + duplicate entity types at construction (fails fast). Folds
 /// cross-module relation contributions into the matching descriptors via
-/// <see cref="EntityRelationMerger"/> before indexing.
+/// <see cref="EntityRelationMerger"/>, then folds action contributions via
+/// <see cref="EntityActionMerger"/>, before indexing.
 /// </summary>
 internal sealed class EntityDefinitionRegistry : IEntityDefinitionRegistry
 {
@@ -18,14 +20,18 @@ internal sealed class EntityDefinitionRegistry : IEntityDefinitionRegistry
     public EntityDefinitionRegistry(
         IEnumerable<IEntityDefinitionDescriptor> definitions,
         IEnumerable<IEntityRelationContributor> relationContributors,
+        IEnumerable<IEntityActionContributor> actionContributors,
         ILogger<EntityDefinitionRegistry> logger)
     {
         ArgumentNullException.ThrowIfNull(definitions);
         ArgumentNullException.ThrowIfNull(relationContributors);
+        ArgumentNullException.ThrowIfNull(actionContributors);
         ArgumentNullException.ThrowIfNull(logger);
 
-        IReadOnlyList<IEntityDefinitionDescriptor> merged =
+        IReadOnlyList<IEntityDefinitionDescriptor> withRelations =
             EntityRelationMerger.Merge(definitions, relationContributors, logger);
+        IReadOnlyList<IEntityDefinitionDescriptor> merged =
+            EntityActionMerger.Merge(withRelations, actionContributors, logger);
 
         _byName = new Dictionary<string, IEntityDefinitionDescriptor>(StringComparer.Ordinal);
         _byEntityType = [];

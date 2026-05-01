@@ -452,4 +452,74 @@ public sealed class EntityManifestComposerTests
     }
 
     private enum SampleStatus { Open, Done }
+
+    [Fact]
+    public void Compose_emits_actions_when_facet_requested()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor finalize = new(
+            Name: "finalize",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: "Test:Action.Finalize",
+            Icon: "check",
+            Order: 10,
+            RequiresPermission: null,
+            UrlTemplate: "/api/{id}/finalize",
+            HttpMethod: "POST",
+            ConfirmationKey: "Test:Action.Finalize.Confirm",
+            WorkflowTransitionName: null,
+            ContributorAssemblyName: null);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor() with { Actions = [finalize] },
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Actions,
+            defaultViewId: null);
+
+        EntityActionManifest only = manifest.Actions!.ShouldHaveSingleItem();
+        only.Name.ShouldBe("finalize");
+        only.Kind.ShouldBe(Granit.Entities.Actions.EntityActionKind.ApiCall);
+        only.HttpMethod.ShouldBe("POST");
+        only.UrlTemplate.ShouldBe("/api/{id}/finalize");
+        only.ConfirmationKey.ShouldBe("Test:Action.Finalize.Confirm");
+    }
+
+    [Fact]
+    public void Compose_drops_action_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor gated = new(
+            Name: "void",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: null, Icon: null, Order: 0,
+            RequiresPermission: "Invoicing.Invoices.Manage",
+            UrlTemplate: "/api/{id}/void", HttpMethod: "POST",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor() with { Actions = [gated] },
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Actions,
+            defaultViewId: null);
+
+        manifest.Actions!.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compose_omits_actions_when_facet_not_requested()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor finalize = new(
+            "finalize", Granit.Entities.Actions.EntityActionKind.ApiCall,
+            null, null, 0, null, "/x", "POST", null, null, null);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor() with { Actions = [finalize] },
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Identity,
+            defaultViewId: null);
+
+        manifest.Actions.ShouldBeNull();
+    }
 }

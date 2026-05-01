@@ -30,6 +30,7 @@ internal static class EntityFacetParser
                 "export" or "exports" => EntityFacets.Exports,
                 "view" or "views" or "saved-views" => EntityFacets.Views,
                 "relation" or "relations" => EntityFacets.Relations,
+                "action" or "actions" => EntityFacets.Actions,
                 _ => EntityFacets.None,
             };
         }

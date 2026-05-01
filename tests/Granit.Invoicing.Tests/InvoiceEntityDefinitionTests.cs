@@ -136,4 +136,39 @@ public sealed class InvoiceEntityDefinitionTests
         kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Void)).DefaultState.ShouldBe(KanbanColumnState.Hidden);
         kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Uncollectible)).DefaultState.ShouldBe(KanbanColumnState.Collapsed);
     }
+
+    [Fact]
+    public void Descriptor_exposes_lifecycle_actions_in_declaration_order()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        d.Actions.Select(a => a.Name).ShouldBe(
+            ["finalize", "void", "mark-uncollectible", "download-pdf"]);
+    }
+
+    [Fact]
+    public void Descriptor_finalize_action_is_apicall_post_with_confirmation_and_manage_perm()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+        Granit.Entities.Actions.EntityActionDescriptor finalize = d.Actions.Single(a => a.Name == "finalize");
+
+        finalize.Kind.ShouldBe(Granit.Entities.Actions.EntityActionKind.ApiCall);
+        finalize.HttpMethod.ShouldBe("POST");
+        finalize.UrlTemplate.ShouldBe("/api/v1/invoices/{id}/finalize");
+        finalize.RequiresPermission.ShouldBe("Invoicing.Invoices.Manage");
+        finalize.ConfirmationKey.ShouldBe("Invoicing:Action.Finalize.Confirm");
+    }
+
+    [Fact]
+    public void Descriptor_download_pdf_action_is_download_kind_no_method_no_confirmation()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+        Granit.Entities.Actions.EntityActionDescriptor pdf = d.Actions.Single(a => a.Name == "download-pdf");
+
+        pdf.Kind.ShouldBe(Granit.Entities.Actions.EntityActionKind.Download);
+        pdf.HttpMethod.ShouldBeNull();
+        pdf.UrlTemplate.ShouldBe("/api/v1/invoices/{id}/pdf");
+        pdf.ConfirmationKey.ShouldBeNull();
+        pdf.RequiresPermission.ShouldBe("Invoicing.Invoices.Read");
+    }
 }

@@ -1,3 +1,4 @@
+using Granit.Entities.Actions;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
@@ -100,4 +101,13 @@ public sealed record EntityDefinitionDescriptor
     /// layouts declared via <c>b.KanbanView&lt;TGroupBy&gt;(...)</c> and friends.
     /// </summary>
     public IReadOnlyList<EntityListLayoutDescriptor> ListLayouts { get; init; } = [];
+
+    /// <summary>
+    /// Actions exposed on this entity — both intra-module via <c>Action(...)</c> on
+    /// the builder and cross-module via <see cref="IEntityActionContributor"/>
+    /// grafts. Sorted by <see cref="EntityActionDescriptor.Order"/> then
+    /// <see cref="EntityActionDescriptor.Name"/>; intra-module declarations take
+    /// precedence on conflicts (same <see cref="EntityActionDescriptor.Name"/>).
+    /// </summary>
+    public IReadOnlyList<EntityActionDescriptor> Actions { get; init; } = [];
 }

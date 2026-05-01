@@ -95,5 +95,38 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
                 .Column(InvoiceStatus.Open, c => c.Color(KanbanColor.Orange))
                 .Column(InvoiceStatus.Paid, c => c.Color(KanbanColor.Green))
                 .Column(InvoiceStatus.Void, c => c.Color(KanbanColor.Neutral).Hidden())
-                .Column(InvoiceStatus.Uncollectible, c => c.Color(KanbanColor.Red).Collapsed()));
+                .Column(InvoiceStatus.Uncollectible, c => c.Color(KanbanColor.Red).Collapsed()))
+            // Phase 2.B — actions exposed on the invoice detail header. Lifecycle
+            // mutations route through the Granit.Invoicing endpoints (POST handlers
+            // already in place); the PDF download hits the existing document
+            // endpoint. WorkflowTransition and structured input forms are deferred
+            // to a follow-up — the four actions below cover the showcase parity gap
+            // identified by the front Claude.
+            .Action("finalize", a => a
+                .ApiCall("POST", "/api/v1/invoices/{id}/finalize")
+                .DisplayKey("Invoicing:Action.Finalize")
+                .Icon("check")
+                .Order(10)
+                .RequiresPermission("Invoicing.Invoices.Manage")
+                .Confirmation("Invoicing:Action.Finalize.Confirm"))
+            .Action("void", a => a
+                .ApiCall("POST", "/api/v1/invoices/{id}/void")
+                .DisplayKey("Invoicing:Action.Void")
+                .Icon("ban")
+                .Order(20)
+                .RequiresPermission("Invoicing.Invoices.Manage")
+                .Confirmation("Invoicing:Action.Void.Confirm"))
+            .Action("mark-uncollectible", a => a
+                .ApiCall("POST", "/api/v1/invoices/{id}/mark-uncollectible")
+                .DisplayKey("Invoicing:Action.MarkUncollectible")
+                .Icon("alert-triangle")
+                .Order(30)
+                .RequiresPermission("Invoicing.Invoices.Manage")
+                .Confirmation("Invoicing:Action.MarkUncollectible.Confirm"))
+            .Action("download-pdf", a => a
+                .Download("/api/v1/invoices/{id}/pdf")
+                .DisplayKey("Invoicing:Action.DownloadPdf")
+                .Icon("file-down")
+                .Order(40)
+                .RequiresPermission("Invoicing.Invoices.Read"));
 }

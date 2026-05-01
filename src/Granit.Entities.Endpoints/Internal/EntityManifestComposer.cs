@@ -1,3 +1,4 @@
+using Granit.Entities.Actions;
 using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Forms;
@@ -56,6 +57,10 @@ internal static class EntityManifestComposer
             ? ComposeRelations(definition, grantedPermissions)
             : null;
 
+        IReadOnlyList<EntityActionManifest>? actions = facets.HasFlag(EntityFacets.Actions)
+            ? ComposeActions(definition, grantedPermissions)
+            : null;
+
         return new EntityManifestResponse(
             SchemaVersion,
             identity,
@@ -63,7 +68,40 @@ internal static class EntityManifestComposer
             forms,
             details,
             collections,
-            relations);
+            relations,
+            actions);
+    }
+
+    private static List<EntityActionManifest> ComposeActions(
+        EntityDefinitionDescriptor d, IReadOnlySet<string> granted)
+    {
+        if (d.Actions.Count == 0)
+        {
+            return [];
+        }
+
+        List<EntityActionManifest> actions = new(d.Actions.Count);
+        foreach (EntityActionDescriptor action in d.Actions)
+        {
+            if (action.RequiresPermission is { } perm && !granted.Contains(perm))
+            {
+                // Drop entirely — defense in depth (per ADR-040 §6).
+                continue;
+            }
+
+            actions.Add(new EntityActionManifest(
+                action.Name,
+                action.Kind,
+                action.DisplayKey,
+                action.Icon,
+                action.Order,
+                action.UrlTemplate,
+                action.HttpMethod,
+                action.ConfirmationKey,
+                action.WorkflowTransitionName,
+                action.ContributorAssemblyName));
+        }
+        return actions;
     }
 
     private static List<EntityRelationManifest> ComposeRelations(

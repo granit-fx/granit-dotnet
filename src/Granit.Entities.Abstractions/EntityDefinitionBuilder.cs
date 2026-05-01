@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Granit.Entities.Actions;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
@@ -29,6 +30,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     private readonly List<Func<DetailDescriptor>> _detailFactories = [];
     private readonly List<RelationDescriptor> _relations = [];
     private readonly List<Func<EntityListLayoutDescriptor>> _layoutFactories = [];
+    private readonly List<EntityActionDescriptor> _actions = [];
 
     /// <summary>Sets the i18n key for the entity's display name (singular).</summary>
     public EntityDefinitionBuilder<TEntity> DisplayKey(string displayKey)
@@ -218,6 +220,29 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         return this;
     }
 
+    /// <summary>
+    /// Declares an action exposed on this entity (button on the detail header,
+    /// row action, kanban tile quick-action — surface decided by the renderer).
+    /// One of <see cref="EntityActionBuilder{TEntity}.ApiCall"/>,
+    /// <see cref="EntityActionBuilder{TEntity}.Download"/>,
+    /// <see cref="EntityActionBuilder{TEntity}.Navigate"/> or
+    /// <see cref="EntityActionBuilder{TEntity}.WorkflowTransition"/> must be called
+    /// inside <paramref name="configure"/>; otherwise <c>Build()</c> rejects the
+    /// definition.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> Action(
+        string name,
+        Action<EntityActionBuilder<TEntity>> configure)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        EntityActionBuilder<TEntity> builder = new(name);
+        configure(builder);
+        _actions.Add(builder.Build());
+        return this;
+    }
+
     internal EntityDefinitionDescriptor Build(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -237,6 +262,11 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         AssertAtMostOneDefaultLayout(layouts);
         AssertUniqueLayoutKinds(layouts);
 
+        AssertUniqueActionNames(_actions);
+        IReadOnlyList<EntityActionDescriptor> actions = [.. _actions
+            .OrderBy(a => a.Order)
+            .ThenBy(a => a.Name, StringComparer.Ordinal)];
+
         return new EntityDefinitionDescriptor
         {
             Name = name,
@@ -254,7 +284,21 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
             Details = details,
             Relations = relations,
             ListLayouts = layouts,
+            Actions = actions,
         };
+    }
+
+    private static void AssertUniqueActionNames(IReadOnlyList<EntityActionDescriptor> actions)
+    {
+        IGrouping<string, EntityActionDescriptor>? duplicate = actions
+            .GroupBy(a => a.Name, StringComparer.Ordinal)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicate is not null)
+        {
+            throw new InvalidOperationException(
+                $"Duplicate action name '{duplicate.Key}' on entity '{typeof(TEntity).FullName}'. Names must be unique per entity.");
+        }
     }
 
     private static void AssertAtMostOneDefaultLayout(IReadOnlyList<EntityListLayoutDescriptor> layouts)

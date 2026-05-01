@@ -71,7 +71,7 @@ public sealed class EntityDefinitionRegistryTests
     }
 
     private static EntityDefinitionRegistry Build(IEnumerable<IEntityDefinitionDescriptor> definitions) =>
-        new(definitions, [], NullLogger<EntityDefinitionRegistry>.Instance);
+        new(definitions, [], [], NullLogger<EntityDefinitionRegistry>.Instance);
 
     private sealed record FakeDescriptor(string Name, Type EntityType) : IEntityDefinitionDescriptor
     {

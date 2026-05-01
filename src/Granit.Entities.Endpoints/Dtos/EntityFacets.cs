@@ -38,6 +38,9 @@ public enum EntityFacets
     /// <summary>Relations declared on the entity (intra-module + cross-module contributions per ADR-048).</summary>
     Relations = 1 << 8,
 
+    /// <summary>Actions exposed on the entity (intra-module + cross-module contributions per ADR-040).</summary>
+    Actions = 1 << 9,
+
     /// <summary>All facets — the default when <c>?facets=</c> is absent.</summary>
-    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views | Relations,
+    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views | Relations | Actions,
 }
