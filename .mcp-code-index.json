@@ -44715,6 +44715,38 @@
       ]
     },
     {
+      "name": "GpcDiscoveryEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Privacy.Endpoints.Discovery.GpcDiscoveryEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Discovery/GpcDiscoveryEndpointRouteBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MapGranitGpcDiscovery",
+          "kind": "method",
+          "signature": "MapGranitGpcDiscovery(this IEndpointRouteBuilder endpoints)",
+          "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GpcDiscoveryOptions",
+      "fqn": "Granit.Privacy.Endpoints.Discovery.GpcDiscoveryOptions",
+      "kind": "class",
+      "project": "Granit.Privacy.Endpoints",
+      "file": "src/Granit.Privacy.Endpoints/Discovery/GpcDiscoveryOptions.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "Enabled",
+          "kind": "property",
+          "signature": "bool Enabled",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
       "name": "LegalDocumentCreateRequest",
       "fqn": "Granit.Privacy.Endpoints.Dtos.LegalDocumentCreateRequest",
       "kind": "record",
@@ -44871,7 +44903,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/GranitPrivacyEndpointsModule.cs",
-      "line": 41,
+      "line": 44,
       "members": [
         {
           "name": "ConfigureServices",
