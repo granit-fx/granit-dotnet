@@ -19524,6 +19524,31 @@
       ]
     },
     {
+      "name": "CalendarLayoutBuilder",
+      "fqn": "Granit.Entities.Layouts.CalendarLayoutBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/CalendarLayoutBuilder.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "StartField",
+          "kind": "method",
+          "signature": "StartField(Expression<Func<TEntity, DateTimeOffset>> propertySelector)",
+          "returnType": "CalendarLayoutBuilder<TEntity>"
+        }
+      ]
+    },
+    {
+      "name": "CalendarLayoutDescriptor",
+      "fqn": "Granit.Entities.Layouts.CalendarLayoutDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/CalendarLayoutDescriptor.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "EntityListLayoutDescriptor",
       "fqn": "Granit.Entities.Layouts.EntityListLayoutDescriptor",
       "kind": "record",

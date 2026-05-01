@@ -221,6 +221,26 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Declares a calendar list-view layout for this entity. The renderer
+    /// (<c>EntityCalendar</c>) reads items via the range-query endpoint
+    /// (<c>GET /api/entities/{name}/calendar</c>) and positions each one
+    /// between <see cref="CalendarLayoutBuilder{TEntity}.StartField"/> and the
+    /// optional <see cref="CalendarLayoutBuilder{TEntity}.EndField"/>. The list
+    /// layout is always available implicitly — adding calendar exposes the
+    /// <c>EntityListViewSwitcher</c> with a second tab.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> CalendarView(
+        Action<CalendarLayoutBuilder<TEntity>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        CalendarLayoutBuilder<TEntity> builder = new();
+        configure(builder);
+        _layoutFactories.Add(builder.Build);
+        return this;
+    }
+
+    /// <summary>
     /// Declares an action exposed on this entity (button on the detail header,
     /// row action, kanban tile quick-action — surface decided by the renderer).
     /// One of <see cref="EntityActionBuilder{TEntity}.ApiCall"/>,

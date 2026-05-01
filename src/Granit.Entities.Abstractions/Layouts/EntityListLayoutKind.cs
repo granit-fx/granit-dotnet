@@ -13,4 +13,7 @@ public enum EntityListLayoutKind
 
     /// <summary>Card-board layout grouped by a discrete property (typically an enum or lookup).</summary>
     Kanban = 1,
+
+    /// <summary>Time-axis layout (month / week / day grid) keyed on a date or datetime property.</summary>
+    Calendar = 2,
 }
