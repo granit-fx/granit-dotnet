@@ -32,7 +32,7 @@ public static class GpcDiscoveryEndpointRouteBuilderExtensions
     /// versioning prefix.
     /// </para>
     /// </remarks>
-    public static IEndpointRouteBuilder MapGranitGpcDiscovery(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapGranitPrivacyGpcDiscovery(this IEndpointRouteBuilder endpoints)
     {
         ArgumentNullException.ThrowIfNull(endpoints);
 

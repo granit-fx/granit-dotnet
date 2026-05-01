@@ -44754,9 +44754,9 @@
       "line": 12,
       "members": [
         {
-          "name": "MapGranitGpcDiscovery",
+          "name": "MapGranitPrivacyGpcDiscovery",
           "kind": "method",
-          "signature": "MapGranitGpcDiscovery(this IEndpointRouteBuilder endpoints)",
+          "signature": "MapGranitPrivacyGpcDiscovery(this IEndpointRouteBuilder endpoints)",
           "returnType": "IEndpointRouteBuilder"
         }
       ]
