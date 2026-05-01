@@ -24,6 +24,7 @@ public sealed class EntityActionBuilder<TEntity>
     private string? _httpMethod;
     private string? _confirmationKey;
     private string? _workflowTransitionName;
+    private bool _showOnKanbanCard;
 
     internal EntityActionBuilder(string name, string? contributorAssemblyName = null)
     {
@@ -138,6 +139,21 @@ public sealed class EntityActionBuilder<TEntity>
         return this;
     }
 
+    /// <summary>
+    /// Pins this action as a compact icon-button on the source entity's kanban
+    /// tile (Phase 2.B.2). Use sparingly — kanban tiles have far less surface
+    /// than the detail header, so only opt in for the actions the user genuinely
+    /// performs at-a-glance (typical: quick "+ Note" / "+ Task" buttons or the
+    /// most frequent lifecycle transition). The action is also rendered on the
+    /// detail header via the same descriptor; the kanban tile reuses the same
+    /// payload. Skip this for destructive or rare actions (Void, Archive).
+    /// </summary>
+    public EntityActionBuilder<TEntity> OnKanbanCard()
+    {
+        _showOnKanbanCard = true;
+        return this;
+    }
+
     internal EntityActionDescriptor Build()
     {
         // Kind-specific guards: invariants the fluent shortcuts can't catch on
@@ -161,6 +177,7 @@ public sealed class EntityActionBuilder<TEntity>
             HttpMethod: _httpMethod,
             ConfirmationKey: _confirmationKey,
             WorkflowTransitionName: _workflowTransitionName,
-            ContributorAssemblyName: _contributorAssemblyName);
+            ContributorAssemblyName: _contributorAssemblyName,
+            ShowOnKanbanCard: _showOnKanbanCard);
     }
 }

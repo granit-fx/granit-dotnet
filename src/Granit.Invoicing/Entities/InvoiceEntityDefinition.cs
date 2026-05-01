@@ -108,7 +108,12 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
                 .Icon("check")
                 .Order(10)
                 .RequiresPermission("Invoicing.Invoices.Manage")
-                .Confirmation("Invoicing:Action.Finalize.Confirm"))
+                .Confirmation("Invoicing:Action.Finalize.Confirm")
+                // Phase 2.B.2 — pin the finalize quick-action on the kanban tile
+                // so a clerk can move a Draft invoice to Open without opening the
+                // detail. The destructive actions (void, mark-uncollectible) stay
+                // off the tile to avoid mis-clicks.
+                .OnKanbanCard())
             .Action("void", a => a
                 .ApiCall("POST", "/api/v1/invoices/{id}/void")
                 .DisplayKey("Invoicing:Action.Void")
@@ -128,5 +133,8 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
                 .DisplayKey("Invoicing:Action.DownloadPdf")
                 .Icon("file-down")
                 .Order(40)
-                .RequiresPermission("Invoicing.Invoices.Read"));
+                .RequiresPermission("Invoicing.Invoices.Read")
+                // PDF download is non-destructive and frequently requested from
+                // the kanban view (clerk grabs a copy without leaving the board).
+                .OnKanbanCard());
 }

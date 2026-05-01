@@ -616,4 +616,92 @@ public sealed class EntityManifestComposerTests
 
         manifest.Collections!.ListLayouts.Single().Kanban!.Card.Relations.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void Compose_kanban_card_pins_actions_that_opted_in()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+            },
+            Columns = [],
+        };
+
+        Granit.Entities.Actions.EntityActionDescriptor pinned = new(
+            Name: "quick-note",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: "Notes:Action.Add",
+            Icon: "note-plus",
+            Order: 5,
+            RequiresPermission: null,
+            UrlTemplate: "/api/{id}/notes",
+            HttpMethod: "POST",
+            ConfirmationKey: null,
+            WorkflowTransitionName: null,
+            ContributorAssemblyName: "Granit.Notes",
+            ShowOnKanbanCard: true);
+
+        Granit.Entities.Actions.EntityActionDescriptor unpinned = pinned with { Name = "void", ShowOnKanbanCard = false };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [kanban])
+            with
+        { Actions = [pinned, unpinned] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityKanbanCardActionManifest only = manifest.Collections!
+            .ListLayouts.Single().Kanban!.Card.Actions.ShouldHaveSingleItem();
+        only.Name.ShouldBe("quick-note");
+        only.Icon.ShouldBe("note-plus");
+        only.ContributorAssemblyName.ShouldBe("Granit.Notes");
+    }
+
+    [Fact]
+    public void Compose_kanban_card_drops_pinned_action_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+            },
+            Columns = [],
+        };
+
+        Granit.Entities.Actions.EntityActionDescriptor gated = new(
+            Name: "void",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: null, Icon: "ban", Order: 0,
+            RequiresPermission: "Invoicing.Invoices.Manage",
+            UrlTemplate: "/api/{id}/void", HttpMethod: "POST",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnKanbanCard: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [kanban])
+            with
+        { Actions = [gated] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.Single().Kanban!.Card.Actions.ShouldBeEmpty();
+    }
 }

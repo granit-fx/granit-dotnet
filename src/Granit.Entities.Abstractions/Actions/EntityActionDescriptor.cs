@@ -17,6 +17,7 @@ namespace Granit.Entities.Actions;
 /// <param name="ConfirmationKey">Optional i18n key for the confirmation modal shown before invoking the action.</param>
 /// <param name="WorkflowTransitionName">Name of the target workflow state for <see cref="EntityActionKind.WorkflowTransition"/>.</param>
 /// <param name="ContributorAssemblyName">Name of the contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+/// <param name="ShowOnKanbanCard">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's kanban tile (Phase 2.B.2). Off by default — only the actions the contributor explicitly opts into via <c>OnKanbanCard()</c> are pinned, since kanban tiles have far less surface than the detail header.</param>
 public sealed record EntityActionDescriptor(
     string Name,
     EntityActionKind Kind,
@@ -28,4 +29,5 @@ public sealed record EntityActionDescriptor(
     string? HttpMethod,
     string? ConfirmationKey,
     string? WorkflowTransitionName,
-    string? ContributorAssemblyName);
+    string? ContributorAssemblyName,
+    bool ShowOnKanbanCard = false);

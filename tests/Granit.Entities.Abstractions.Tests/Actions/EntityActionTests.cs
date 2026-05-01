@@ -140,4 +140,31 @@ public sealed class EntityActionTests
                 .Action("finalize", a => a.ApiCall("POST", "/x"))
                 .Action("finalize", a => a.ApiCall("POST", "/y"));
     }
+
+    [Fact]
+    public void OnKanbanCard_defaults_false_and_opt_in_sets_flag()
+    {
+        EntityDefinitionDescriptor d = new SampleDefinition().Descriptor;
+
+        d.Actions.Single(a => a.Name == "finalize").ShowOnKanbanCard.ShouldBeFalse();
+
+        EntityDefinitionDescriptor pinned = new KanbanPinnedDefinition().Descriptor;
+        pinned.Actions.Single(a => a.Name == "quick-note").ShowOnKanbanCard.ShouldBeTrue();
+        pinned.Actions.Single(a => a.Name == "archive").ShowOnKanbanCard.ShouldBeFalse();
+    }
+
+    private sealed class KanbanPinnedDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.KanbanPinned";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .Action("quick-note", a => a
+                    .ApiCall("POST", "/api/v1/orders/{id}/notes")
+                    .Icon("note-plus")
+                    .OnKanbanCard())
+                .Action("archive", a => a
+                    .WorkflowTransition("Archived")
+                    .Icon("archive"));
+    }
 }

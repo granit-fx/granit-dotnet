@@ -59,16 +59,18 @@ public sealed record EntityKanbanLayoutManifest(
 /// <summary>
 /// Card-content schema rendered inside a kanban tile. Frappe-style: optional
 /// title (falls back to the entity's <c>DisplayProperty</c> when absent) plus
-/// an ordered list of body fields, plus pinned smart-buttons summarising the
-/// relations the contributors opted to surface on the tile.
+/// an ordered list of body fields, plus pinned smart-buttons (relations) and
+/// pinned icon-buttons (actions) the contributors opted to surface on the tile.
 /// </summary>
 /// <param name="TitleProperty">Entity property used as the tile headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
 /// <param name="Fields">Body fields, in declaration order — already permission-filtered server-side.</param>
-/// <param name="Relations">Compact references to the entity's relations that opted into kanban via <c>OnKanbanCard()</c>. Already permission-filtered.</param>
+/// <param name="Relations">Compact references to the entity's relations that opted into kanban via <c>Relation.OnKanbanCard()</c>. Already permission-filtered.</param>
+/// <param name="Actions">Compact references to the entity's actions that opted into kanban via <c>Action.OnKanbanCard()</c>. Already permission-filtered.</param>
 public sealed record EntityKanbanCardManifest(
     string? TitleProperty,
     IReadOnlyList<EntityFormFieldManifest> Fields,
-    IReadOnlyList<EntityKanbanCardRelationManifest> Relations);
+    IReadOnlyList<EntityKanbanCardRelationManifest> Relations,
+    IReadOnlyList<EntityKanbanCardActionManifest> Actions);
 
 /// <summary>
 /// Compact reference to one relation pinned on a kanban tile. Carries only the
@@ -81,6 +83,22 @@ public sealed record EntityKanbanCardManifest(
 /// <param name="Icon">Icon override on the smart-button.</param>
 /// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
 public sealed record EntityKanbanCardRelationManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ContributorAssemblyName);
+
+/// <summary>
+/// Compact reference to one action pinned on a kanban tile. Same wire shape
+/// philosophy as <see cref="EntityKanbanCardRelationManifest"/> — the renderer
+/// looks up the full descriptor (URL template, HTTP method, confirmation key)
+/// in the entity's <c>Actions</c> facet via <see cref="Name"/>.
+/// </summary>
+/// <param name="Name">Stable action name — matches the entry in the entity's <c>Actions</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the user-facing label (rendered as tooltip on the icon-button).</param>
+/// <param name="Icon">Icon name from the catalog.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntityKanbanCardActionManifest(
     string Name,
     string? DisplayKey,
     string? Icon,
