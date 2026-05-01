@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
+using Granit.Entities.Layouts;
 using Granit.Entities.Relations;
 
 namespace Granit.Entities;
@@ -27,6 +28,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     private readonly List<Func<FormDescriptor>> _formFactories = [];
     private readonly List<Func<DetailDescriptor>> _detailFactories = [];
     private readonly List<RelationDescriptor> _relations = [];
+    private readonly List<Func<EntityListLayoutDescriptor>> _layoutFactories = [];
 
     /// <summary>Sets the i18n key for the entity's display name (singular).</summary>
     public EntityDefinitionBuilder<TEntity> DisplayKey(string displayKey)
@@ -196,6 +198,26 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         return this;
     }
 
+    /// <summary>
+    /// Declares a kanban list-view layout for this entity. The
+    /// <typeparamref name="TGroupBy"/> generic argument types the
+    /// <c>GroupBy</c> property and the per-column values so the DSL refuses
+    /// invalid enum members at compile time. The list layout is always
+    /// available implicitly — adding kanban exposes the
+    /// <c>EntityListViewSwitcher</c> with a second tab.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> KanbanView<TGroupBy>(
+        Action<KanbanLayoutBuilder<TEntity, TGroupBy>> configure)
+        where TGroupBy : notnull
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        KanbanLayoutBuilder<TEntity, TGroupBy> builder = new();
+        configure(builder);
+        _layoutFactories.Add(builder.Build);
+        return this;
+    }
+
     internal EntityDefinitionDescriptor Build(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -210,6 +232,10 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         IReadOnlyList<RelationDescriptor> relations = [.. _relations
             .OrderBy(r => r.Order)
             .ThenBy(r => r.Name, StringComparer.Ordinal)];
+
+        IReadOnlyList<EntityListLayoutDescriptor> layouts = [.. _layoutFactories.Select(f => f())];
+        AssertAtMostOneDefaultLayout(layouts);
+        AssertUniqueLayoutKinds(layouts);
 
         return new EntityDefinitionDescriptor
         {
@@ -227,7 +253,31 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
             Forms = forms,
             Details = details,
             Relations = relations,
+            ListLayouts = layouts,
         };
+    }
+
+    private static void AssertAtMostOneDefaultLayout(IReadOnlyList<EntityListLayoutDescriptor> layouts)
+    {
+        int defaults = layouts.Count(l => l.IsDefault);
+        if (defaults > 1)
+        {
+            throw new InvalidOperationException(
+                $"At most one list-view layout may be marked IsDefault on entity '{typeof(TEntity).FullName}' — found {defaults}.");
+        }
+    }
+
+    private static void AssertUniqueLayoutKinds(IReadOnlyList<EntityListLayoutDescriptor> layouts)
+    {
+        IGrouping<EntityListLayoutKind, EntityListLayoutDescriptor>? duplicate = layouts
+            .GroupBy(l => l.Kind)
+            .FirstOrDefault(g => g.Count() > 1);
+
+        if (duplicate is not null)
+        {
+            throw new InvalidOperationException(
+                $"Duplicate list-view layout kind '{duplicate.Key}' on entity '{typeof(TEntity).FullName}'. Declare at most one layout per kind.");
+        }
     }
 
     private static void AssertUniqueRelationNames(IReadOnlyList<RelationDescriptor> relations)

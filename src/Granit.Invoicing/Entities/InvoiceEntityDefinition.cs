@@ -1,4 +1,5 @@
 using Granit.Entities;
+using Granit.Entities.Layouts;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Exports;
 using Granit.Invoicing.Metrics;
@@ -77,5 +78,22 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
             {
                 d.Section("overview", s => s.InheritsFromForm("default"));
                 d.SidePanel.Audit().Timeline();
-            });
+            })
+            // Phase 2.A — kanban grouped by InvoiceStatus. Tile shows the
+            // invoice number as headline + party + due date + total in the
+            // body. Terminal states (Void / Uncollectible) are hidden by
+            // default — workflow keeps them addressable but they shouldn't
+            // clutter the daily board.
+            .KanbanView<InvoiceStatus>(k => k
+                .GroupBy(i => i.Status)
+                .Card(c => c
+                    .Title(i => i.InvoiceNumber)
+                    .Field(i => i.PartyId)
+                    .Field(i => i.DueAt)
+                    .Field(i => i.Total))
+                .Column(InvoiceStatus.Draft, c => c.Color(KanbanColor.Gray))
+                .Column(InvoiceStatus.Open, c => c.Color(KanbanColor.Orange))
+                .Column(InvoiceStatus.Paid, c => c.Color(KanbanColor.Green))
+                .Column(InvoiceStatus.Void, c => c.Color(KanbanColor.Neutral).Hidden())
+                .Column(InvoiceStatus.Uncollectible, c => c.Color(KanbanColor.Red).Collapsed()));
 }

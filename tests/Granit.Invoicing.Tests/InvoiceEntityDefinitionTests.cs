@@ -1,5 +1,6 @@
 using Granit.Entities;
 using Granit.Entities.Forms;
+using Granit.Entities.Layouts;
 using Granit.Invoicing.Domain;
 using Granit.Invoicing.Entities;
 using Shouldly;
@@ -101,5 +102,38 @@ public sealed class InvoiceEntityDefinitionTests
         d.QueryDefinitionType.ShouldNotBeNull();
         d.ExportDefinitionType.ShouldNotBeNull();
         d.MetricDefinitionTypes.Count.ShouldBeGreaterThan(0);
+    }
+
+    [Fact]
+    public void Descriptor_exposes_kanban_layout_grouped_by_status()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        KanbanLayoutDescriptor kanban = d.ListLayouts.OfType<KanbanLayoutDescriptor>().ShouldHaveSingleItem();
+        kanban.GroupByPropertyName.ShouldBe("Status");
+        kanban.GroupByClrType.ShouldBe(typeof(InvoiceStatus));
+    }
+
+    [Fact]
+    public void Descriptor_kanban_card_uses_invoice_number_as_title_and_lists_party_due_total()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+        var kanban = (KanbanLayoutDescriptor)d.ListLayouts.Single(l => l.Kind == EntityListLayoutKind.Kanban);
+
+        kanban.Card.TitleProperty.ShouldBe("InvoiceNumber");
+        kanban.Card.Fields.Select(f => f.PropertyName).ShouldBe(["PartyId", "DueAt", "Total"]);
+    }
+
+    [Fact]
+    public void Descriptor_kanban_columns_carry_status_specific_color_and_state()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+        var kanban = (KanbanLayoutDescriptor)d.ListLayouts.Single(l => l.Kind == EntityListLayoutKind.Kanban);
+
+        kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Draft)).Color.ShouldBe(KanbanColor.Gray);
+        kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Open)).Color.ShouldBe(KanbanColor.Orange);
+        kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Paid)).Color.ShouldBe(KanbanColor.Green);
+        kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Void)).DefaultState.ShouldBe(KanbanColumnState.Hidden);
+        kanban.Columns.Single(c => c.Value == nameof(InvoiceStatus.Uncollectible)).DefaultState.ShouldBe(KanbanColumnState.Collapsed);
     }
 }

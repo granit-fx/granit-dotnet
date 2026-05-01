@@ -1,5 +1,6 @@
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
+using Granit.Entities.Layouts;
 using Granit.Entities.Relations;
 
 namespace Granit.Entities;
@@ -91,4 +92,12 @@ public sealed record EntityDefinitionDescriptor
     /// precedence on conflicts (same <see cref="RelationDescriptor.Name"/>).
     /// </summary>
     public IReadOnlyList<RelationDescriptor> Relations { get; init; } = [];
+
+    /// <summary>
+    /// Alternative list-view layouts the entity supports (kanban, calendar,
+    /// map, …). The default <see cref="EntityListLayoutKind.List"/> is always
+    /// available implicitly; this collection only carries the additional
+    /// layouts declared via <c>b.KanbanView&lt;TGroupBy&gt;(...)</c> and friends.
+    /// </summary>
+    public IReadOnlyList<EntityListLayoutDescriptor> ListLayouts { get; init; } = [];
 }

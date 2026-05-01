@@ -327,7 +327,8 @@ public sealed class EntityManifestComposerTests
 
     private static EntityDefinitionDescriptor BuildDescriptor(
         IReadOnlyList<FormDescriptor>? forms = null,
-        IReadOnlyList<DetailDescriptor>? details = null) => new()
+        IReadOnlyList<DetailDescriptor>? details = null,
+        IReadOnlyList<Granit.Entities.Layouts.EntityListLayoutDescriptor>? listLayouts = null) => new()
         {
             Name = "Test.Sample",
             EntityType = typeof(SampleEntity),
@@ -342,5 +343,113 @@ public sealed class EntityManifestComposerTests
             WorkflowDefinitionType = null,
             Forms = forms ?? [],
             Details = details ?? [],
+            ListLayouts = listLayouts ?? [],
         };
+
+    [Fact]
+    public void Compose_emits_kanban_layout_with_card_and_columns()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            IsDefault = true,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                TitleProperty = "Title",
+                Fields = [
+                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 },
+                ],
+            },
+            Columns = [
+                new Granit.Entities.Layouts.KanbanColumnDescriptor
+                {
+                    Value = "Open",
+                    Color = Granit.Entities.Layouts.KanbanColor.Orange,
+                    DefaultState = Granit.Entities.Layouts.KanbanColumnState.Open,
+                },
+                new Granit.Entities.Layouts.KanbanColumnDescriptor
+                {
+                    Value = "Done",
+                    Color = Granit.Entities.Layouts.KanbanColor.Green,
+                    DefaultState = Granit.Entities.Layouts.KanbanColumnState.Collapsed,
+                },
+            ],
+        };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [kanban]);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityListLayoutManifest layout = manifest.Collections!.ListLayouts.ShouldHaveSingleItem();
+        layout.Kind.ShouldBe(Granit.Entities.Layouts.EntityListLayoutKind.Kanban);
+        layout.IsDefault.ShouldBeTrue();
+        layout.Kanban.ShouldNotBeNull();
+        layout.Kanban!.GroupByPropertyName.ShouldBe("Status");
+        layout.Kanban.Card.TitleProperty.ShouldBe("Title");
+        layout.Kanban.Card.Fields.Select(f => f.PropertyName).ShouldBe(["Owner"]);
+        layout.Kanban.Columns.Select(c => c.Value).ShouldBe(["Open", "Done"]);
+        layout.Kanban.Columns.Single(c => c.Value == "Done").DefaultState
+            .ShouldBe(Granit.Entities.Layouts.KanbanColumnState.Collapsed);
+    }
+
+    [Fact]
+    public void Compose_drops_layout_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            RequiresPermission = "Tasks.Tasks.Kanban",
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor { Fields = [] },
+            Columns = [],
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [kanban]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compose_filters_kanban_card_fields_by_permission()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                Fields = [
+                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 },
+                    new FieldDescriptor { PropertyName = "Salary", ClrType = typeof(decimal), Widget = "money", Order = 1, RequiresPermission = "Tasks.Sensitive.Read" },
+                ],
+            },
+            Columns = [],
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [kanban]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.ShouldHaveSingleItem()
+            .Kanban!.Card.Fields.Select(f => f.PropertyName).ShouldBe(["Owner"]);
+    }
+
+    private enum SampleStatus { Open, Done }
 }

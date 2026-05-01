@@ -1,6 +1,7 @@
 using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Forms;
+using Granit.Entities.Layouts;
 using Granit.Entities.Relations;
 
 namespace Granit.Entities.Endpoints.Internal;
@@ -48,7 +49,7 @@ internal static class EntityManifestComposer
             facets.HasFlag(EntityFacets.Collections)
             || facets.HasFlag(EntityFacets.Exports)
             || facets.HasFlag(EntityFacets.Dashboards)
-                ? ComposeCollections(definition, defaultViewId)
+                ? ComposeCollections(definition, grantedPermissions, defaultViewId)
                 : null;
 
         IReadOnlyList<EntityRelationManifest>? relations = facets.HasFlag(EntityFacets.Relations)
@@ -261,7 +262,9 @@ internal static class EntityManifestComposer
     }
 
     private static EntityCollectionsSection ComposeCollections(
-        EntityDefinitionDescriptor d, Guid? defaultViewId)
+        EntityDefinitionDescriptor d,
+        IReadOnlySet<string> granted,
+        Guid? defaultViewId)
     {
         EntityCollectionReference? query = d.QueryDefinitionType is { } q
             ? new EntityCollectionReference(InferDefinitionName(q), q.Name)
@@ -279,7 +282,67 @@ internal static class EntityManifestComposer
             .Select(t => new EntityCollectionReference(InferDefinitionName(t), t.Name))
             .ToList();
 
-        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId);
+        IReadOnlyList<EntityListLayoutManifest> layouts = ComposeListLayouts(d.ListLayouts, granted);
+
+        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts);
+    }
+
+    private static List<EntityListLayoutManifest> ComposeListLayouts(
+        IReadOnlyList<EntityListLayoutDescriptor> source,
+        IReadOnlySet<string> granted)
+    {
+        List<EntityListLayoutManifest> layouts = new(source.Count);
+        foreach (EntityListLayoutDescriptor layout in source)
+        {
+            if (layout.RequiresPermission is { } perm && !granted.Contains(perm))
+            {
+                // Drop entirely — defense in depth.
+                continue;
+            }
+
+            EntityKanbanLayoutManifest? kanban = layout switch
+            {
+                KanbanLayoutDescriptor k => ComposeKanban(k, granted),
+                _ => null,
+            };
+
+            // Layout produced no usable shape (e.g. kanban whose card lost every
+            // field to permission filtering). Drop the layout — empty switcher
+            // tabs would be UX clutter.
+            if (kanban is null && layout.Kind == EntityListLayoutKind.Kanban)
+            {
+                continue;
+            }
+
+            layouts.Add(new EntityListLayoutManifest(
+                layout.Kind,
+                layout.IsDefault,
+                kanban));
+        }
+        return layouts;
+    }
+
+    private static EntityKanbanLayoutManifest? ComposeKanban(
+        KanbanLayoutDescriptor descriptor,
+        IReadOnlySet<string> granted)
+    {
+        List<EntityFormFieldManifest> cardFields = FilterFields(descriptor.Card.Fields, granted);
+
+        // A kanban with no surviving body field is still useful when the title
+        // fallback (entity DisplayProperty) carries the headline; only drop if
+        // the explicit Title got filtered AND no body field survives.
+        // (Title filtering is symmetric with form field permissions.)
+
+        EntityKanbanCardManifest card = new(descriptor.Card.TitleProperty, cardFields);
+
+        IReadOnlyList<EntityKanbanColumnManifest> columns = [.. descriptor.Columns
+            .Select(c => new EntityKanbanColumnManifest(c.Value, c.Color, c.DefaultState))];
+
+        return new EntityKanbanLayoutManifest(
+            descriptor.GroupByPropertyName,
+            descriptor.GroupByClrType.Name,
+            card,
+            columns);
     }
 
     /// <summary>

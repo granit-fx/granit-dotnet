@@ -18910,7 +18910,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 27,
+      "line": 31,
       "members": []
     },
     {
@@ -18919,7 +18919,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 14,
+      "line": 17,
       "members": []
     },
     {
@@ -19028,6 +19028,42 @@
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityIdentitySection.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 66,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanColumnManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanColumnManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 74,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanLayoutManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "EntityListLayoutManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityListLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 43,
       "members": []
     },
     {
@@ -19190,7 +19226,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionBuilder.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "DisplayKey",
@@ -19206,13 +19242,19 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/EntityDefinitionDescriptor.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "Name",
           "kind": "property",
           "signature": "required string Name",
           "returnType": "required string"
+        },
+        {
+          "name": "ListLayouts",
+          "kind": "property",
+          "signature": "IReadOnlyList<EntityListLayoutDescriptor> ListLayouts",
+          "returnType": "IReadOnlyList<EntityListLayoutDescriptor>"
         }
       ]
     },
@@ -19368,6 +19410,117 @@
           "returnType": "IEntityDefinitionDescriptor?"
         }
       ]
+    },
+    {
+      "name": "EntityListLayoutDescriptor",
+      "fqn": "Granit.Entities.Layouts.EntityListLayoutDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/EntityListLayoutDescriptor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "EntityListLayoutKind",
+      "fqn": "Granit.Entities.Layouts.EntityListLayoutKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/EntityListLayoutKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "KanbanCardBuilder",
+      "fqn": "Granit.Entities.Layouts.KanbanCardBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanCardBuilder.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "KanbanCardDescriptor",
+      "fqn": "Granit.Entities.Layouts.KanbanCardDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanCardDescriptor.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "KanbanColor",
+      "fqn": "Granit.Entities.Layouts.KanbanColor",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanColor.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "KanbanColumnBuilder",
+      "fqn": "Granit.Entities.Layouts.KanbanColumnBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanColumnBuilder.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Color",
+          "kind": "method",
+          "signature": "Color(KanbanColor color)",
+          "returnType": "KanbanColumnBuilder"
+        }
+      ]
+    },
+    {
+      "name": "KanbanColumnDescriptor",
+      "fqn": "Granit.Entities.Layouts.KanbanColumnDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanColumnDescriptor.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "Value",
+          "kind": "property",
+          "signature": "required string Value",
+          "returnType": "required string"
+        }
+      ]
+    },
+    {
+      "name": "KanbanColumnState",
+      "fqn": "Granit.Entities.Layouts.KanbanColumnState",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanColumnState.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "KanbanLayoutBuilder",
+      "fqn": "Granit.Entities.Layouts.KanbanLayoutBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanLayoutBuilder.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "GroupBy",
+          "kind": "method",
+          "signature": "GroupBy(Expression<Func<TEntity, TGroupBy>> propertySelector)",
+          "returnType": "KanbanLayoutBuilder<TEntity, TGroupBy>"
+        }
+      ]
+    },
+    {
+      "name": "KanbanLayoutDescriptor",
+      "fqn": "Granit.Entities.Layouts.KanbanLayoutDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/KanbanLayoutDescriptor.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "EntitiesOptions",
@@ -28129,7 +28282,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Entities/InvoiceEntityDefinition.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "Name",
