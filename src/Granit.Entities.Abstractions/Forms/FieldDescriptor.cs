@@ -15,14 +15,16 @@ public sealed record FieldDescriptor
     public required Type ClrType { get; init; }
 
     /// <summary>
-    /// Widget name from the standard catalog (e.g. <c>"text"</c>, <c>"money"</c>) or
-    /// <c>"custom:&lt;app-prefix&gt;-&lt;name&gt;"</c> for app-specific widgets — see ADR-041.
+    /// Component name from the standard catalog (e.g. <c>"text"</c>, <c>"money"</c>) or
+    /// <c>"custom:&lt;app-prefix&gt;-&lt;name&gt;"</c> for app-specific components — see ADR-041.
+    /// "Component" replaces "Widget" at the field level; dashboard panels (KPI / Chart /
+    /// Table / …) keep the "Widget" naming because they are page-level units.
     /// </summary>
-    public required string Widget { get; init; }
+    public required string Component { get; init; }
 
     /// <summary>
-    /// Optional widget-specific configuration carried opaquely to the renderer
-    /// (e.g. <c>{ currencyCode: "EUR" }</c> for the <c>money</c> widget).
+    /// Optional component-specific configuration carried opaquely to the renderer
+    /// (e.g. <c>{ currencyCode: "EUR" }</c> for the <c>money</c> component).
     /// </summary>
     public IReadOnlyDictionary<string, object?>? Config { get; init; }
 

@@ -49,6 +49,14 @@ public sealed record EntityDefinitionDescriptor
     public string? DisplayProperty { get; init; }
 
     /// <summary>
+    /// Property name (PascalCase) shown alongside <see cref="DisplayProperty"/> in
+    /// references and list rows to provide context (e.g. <c>"PartyName"</c> on an
+    /// Invoice → renderer composes "INV-001 — Acme Corp"). Optional; when absent the
+    /// renderer shows only the display label.
+    /// </summary>
+    public string? SubtitleProperty { get; init; }
+
+    /// <summary>
     /// CLR type of the referenced <c>QueryDefinition&lt;TEntity&gt;</c>, or <see langword="null"/>
     /// when no list collection is exposed.
     /// </summary>

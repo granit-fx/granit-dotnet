@@ -28,9 +28,9 @@ public sealed record EntityFormSectionManifest(
 
 /// <summary>One form field.</summary>
 /// <param name="PropertyName">PascalCase property name on the entity.</param>
-/// <param name="ClrTypeName">Short CLR type name — drives the renderer when <see cref="Widget"/> doesn't override it.</param>
-/// <param name="Widget">Widget identifier from the standard catalog or <c>custom:</c> namespace (ADR-041).</param>
-/// <param name="Config">Opaque widget-specific configuration, or <see langword="null"/>.</param>
+/// <param name="ClrTypeName">Short CLR type name — drives the renderer when <see cref="Component"/> doesn't override it.</param>
+/// <param name="Component">Component identifier from the standard catalog or <c>custom:</c> namespace (ADR-041). "Component" replaces the previous "Widget" naming at the field level; dashboard panels keep "Widget" for page-level units.</param>
+/// <param name="Config">Opaque component-specific configuration, or <see langword="null"/>.</param>
 /// <param name="LabelKey">i18n key for the field label.</param>
 /// <param name="HelpKey">i18n key for the help text under the field.</param>
 /// <param name="Order">Display order within the section.</param>
@@ -39,7 +39,7 @@ public sealed record EntityFormSectionManifest(
 public sealed record EntityFormFieldManifest(
     string PropertyName,
     string ClrTypeName,
-    string Widget,
+    string Component,
     IReadOnlyDictionary<string, object?>? Config,
     string? LabelKey,
     string? HelpKey,

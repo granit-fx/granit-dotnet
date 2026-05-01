@@ -26,6 +26,7 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
             .Icon("file-text")
             .PermissionGroup("Invoicing.Invoices")
             .DisplayProperty(i => i.InvoiceNumber)
+            .SubtitleProperty(i => i.Status)
             .Query<InvoiceQueryDefinition>()
             .Export<InvoiceExportDefinition>()
             .Metric<UnpaidInvoiceCountMetricDefinition>()

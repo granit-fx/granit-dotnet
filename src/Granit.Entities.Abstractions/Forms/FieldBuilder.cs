@@ -16,7 +16,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
     private readonly string _propertyName;
     private readonly Type _clrType;
 
-    private string _widget;
+    private string _component;
     private Dictionary<string, object?>? _config;
     private string? _labelKey;
     private string? _helpKey;
@@ -39,19 +39,25 @@ public sealed class FieldBuilder<TEntity, TProperty>
 
         _propertyName = property.Name;
         _clrType = typeof(TProperty);
-        _widget = ChooseDefaultWidget(typeof(TProperty));
+        _component = ChooseDefaultComponent(typeof(TProperty));
         _order = order;
     }
 
     /// <summary>
-    /// Sets the widget (per ADR-041): a name from the standard catalog
+    /// Sets the field component (per ADR-041): a name from the standard catalog
     /// (<c>"text"</c>, <c>"money"</c>, …) or <c>"custom:&lt;app-prefix&gt;-&lt;name&gt;"</c>
-    /// for app-specific widgets. Optional config payload carried opaquely to the renderer.
+    /// for app-specific components. Optional config payload carried opaquely to the renderer.
     /// </summary>
-    public FieldBuilder<TEntity, TProperty> Widget(string widget, IReadOnlyDictionary<string, object?>? config = null)
+    /// <remarks>
+    /// "Component" replaces the previous "Widget" naming — dashboard panels keep "Widget"
+    /// (KPI / Chart / Table / …) because they are large, page-level units; field-level
+    /// renderers are small UI controls bound to a single property and "Component" matches
+    /// the React mental model the front consumes.
+    /// </remarks>
+    public FieldBuilder<TEntity, TProperty> Component(string component, IReadOnlyDictionary<string, object?>? config = null)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(widget);
-        _widget = widget;
+        ArgumentException.ThrowIfNullOrWhiteSpace(component);
+        _component = component;
         _config = config is null ? null : new Dictionary<string, object?>(config, StringComparer.Ordinal);
         return this;
     }
@@ -107,7 +113,7 @@ public sealed class FieldBuilder<TEntity, TProperty>
         {
             PropertyName = _propertyName,
             ClrType = _clrType,
-            Widget = _widget,
+            Component = _component,
             Config = _config,
             LabelKey = _labelKey,
             HelpKey = _helpKey,
@@ -118,10 +124,10 @@ public sealed class FieldBuilder<TEntity, TProperty>
         };
 
     /// <summary>
-    /// Picks a sensible default widget from the standard catalog (per ADR-041) based on the
-    /// property's CLR type. Apps override via <see cref="Widget(string, IReadOnlyDictionary{string, object?}?)"/>.
+    /// Picks a sensible default component from the standard catalog (per ADR-041) based on the
+    /// property's CLR type. Apps override via <see cref="Component(string, IReadOnlyDictionary{string, object?}?)"/>.
     /// </summary>
-    private static string ChooseDefaultWidget(Type clrType)
+    private static string ChooseDefaultComponent(Type clrType)
     {
         Type unwrapped = Nullable.GetUnderlyingType(clrType) ?? clrType;
 

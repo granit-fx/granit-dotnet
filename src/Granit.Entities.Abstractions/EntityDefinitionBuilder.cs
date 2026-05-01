@@ -19,6 +19,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     private string? _icon;
     private string? _permissionGroup;
     private string? _displayProperty;
+    private string? _subtitleProperty;
 
     private Type? _queryDefinitionType;
     private Type? _exportDefinitionType;
@@ -76,6 +77,29 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         }
 
         _displayProperty = property.Name;
+        return this;
+    }
+
+    /// <summary>
+    /// Names a secondary property displayed alongside <see cref="DisplayProperty{TProperty}"/>
+    /// to give context in references and list rows (lambda must be a direct property
+    /// access). Typical pattern: <c>DisplayProperty</c> = <c>"Number"</c>, <c>SubtitleProperty</c> =
+    /// <c>"PartyName"</c>, frontend renders "INV-001 — Acme Corp". Optional; absent
+    /// means the renderer shows only the display label.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> SubtitleProperty<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
+    {
+        ArgumentNullException.ThrowIfNull(propertySelector);
+
+        if (propertySelector.Body is not MemberExpression member
+            || member.Member is not PropertyInfo property)
+        {
+            throw new ArgumentException(
+                "SubtitleProperty selector must be a direct property access expression (e.g. x => x.CustomerName).",
+                nameof(propertySelector));
+        }
+
+        _subtitleProperty = property.Name;
         return this;
     }
 
@@ -295,6 +319,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
             Icon = _icon,
             PermissionGroup = _permissionGroup,
             DisplayProperty = _displayProperty,
+            SubtitleProperty = _subtitleProperty,
             QueryDefinitionType = _queryDefinitionType,
             ExportDefinitionType = _exportDefinitionType,
             MetricDefinitionTypes = _metricDefinitionTypes.AsReadOnly(),

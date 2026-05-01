@@ -30,14 +30,14 @@ public sealed class EntityManifestComposerTests
                                 {
                                     PropertyName = "Name",
                                     ClrType = typeof(string),
-                                    Widget = "text",
+                                    Component = "text",
                                     Order = 0,
                                 },
                                 new FieldDescriptor
                                 {
                                     PropertyName = "Amount",
                                     ClrType = typeof(decimal),
-                                    Widget = "money",
+                                    Component = "money",
                                     Order = 1,
                                     RequiresPermission = "Invoicing.Invoices.Manage",
                                 },
@@ -79,7 +79,7 @@ public sealed class EntityManifestComposerTests
                                 {
                                     PropertyName = "Vault",
                                     ClrType = typeof(string),
-                                    Widget = "text",
+                                    Component = "text",
                                     Order = 0,
                                     RequiresPermission = "Secrets.Vault.Read",
                                 },
@@ -185,14 +185,14 @@ public sealed class EntityManifestComposerTests
                                     {
                                         PropertyName = "Line1",
                                         ClrType = typeof(string),
-                                        Widget = "text",
+                                        Component = "text",
                                         Order = 0,
                                     },
                                     new FieldDescriptor
                                     {
                                         PropertyName = "City",
                                         ClrType = typeof(string),
-                                        Widget = "text",
+                                        Component = "text",
                                         Order = 1,
                                     },
                                 ],
@@ -244,14 +244,14 @@ public sealed class EntityManifestComposerTests
                                     {
                                         PropertyName = "Line1",
                                         ClrType = typeof(string),
-                                        Widget = "text",
+                                        Component = "text",
                                         Order = 0,
                                     },
                                     new FieldDescriptor
                                     {
                                         PropertyName = "Country",
                                         ClrType = typeof(string),
-                                        Widget = "text",
+                                        Component = "text",
                                         Order = 1,
                                         RequiresPermission = "Sample.Manage",
                                     },
@@ -298,7 +298,7 @@ public sealed class EntityManifestComposerTests
                                     {
                                         PropertyName = "Vault",
                                         ClrType = typeof(string),
-                                        Widget = "text",
+                                        Component = "text",
                                         Order = 0,
                                         RequiresPermission = "Sample.Manage",
                                     },
@@ -359,7 +359,7 @@ public sealed class EntityManifestComposerTests
             {
                 TitleProperty = "Title",
                 Fields = [
-                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 },
+                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 },
                 ],
             },
             Columns = [
@@ -433,8 +433,8 @@ public sealed class EntityManifestComposerTests
             Card = new Granit.Entities.Layouts.KanbanCardDescriptor
             {
                 Fields = [
-                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 },
-                    new FieldDescriptor { PropertyName = "Salary", ClrType = typeof(decimal), Widget = "money", Order = 1, RequiresPermission = "Tasks.Sensitive.Read" },
+                    new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 },
+                    new FieldDescriptor { PropertyName = "Salary", ClrType = typeof(decimal), Component = "money", Order = 1, RequiresPermission = "Tasks.Sensitive.Read" },
                 ],
             },
             Columns = [],
@@ -607,7 +607,7 @@ public sealed class EntityManifestComposerTests
             GroupByClrType = typeof(SampleStatus),
             Card = new Granit.Entities.Layouts.KanbanCardDescriptor
             {
-                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 }],
             },
             Columns = [],
         };
@@ -658,7 +658,7 @@ public sealed class EntityManifestComposerTests
             GroupByClrType = typeof(SampleStatus),
             Card = new Granit.Entities.Layouts.KanbanCardDescriptor
             {
-                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 }],
             },
             Columns = [],
         };
@@ -701,7 +701,7 @@ public sealed class EntityManifestComposerTests
             GroupByClrType = typeof(SampleStatus),
             Card = new Granit.Entities.Layouts.KanbanCardDescriptor
             {
-                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 }],
             },
             Columns = [],
         };
@@ -750,7 +750,7 @@ public sealed class EntityManifestComposerTests
             GroupByClrType = typeof(SampleStatus),
             Card = new Granit.Entities.Layouts.KanbanCardDescriptor
             {
-                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Component = "text", Order = 0 }],
             },
             Columns = [],
         };
