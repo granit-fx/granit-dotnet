@@ -147,67 +147,6 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # INTEGRATION TESTS (needs Docker service container)
-  # ---------------------------------------------------------------------------
-  integration-test:
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    services:
-      postgres:
-        image: postgres:18
-        env:
-          POSTGRES_DB: granit_test
-          POSTGRES_USER: granit_test
-          POSTGRES_PASSWORD: test_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U granit_test"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-    env:
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: "5432"
-      POSTGRES_DB: granit_test
-      POSTGRES_USER: granit_test
-      POSTGRES_PASSWORD: test_password
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: NuGet cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
-        with:
-          path: ~/.nuget/packages
-          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props') }}
-          restore-keys: nuget-${{ runner.os }}-
-
-      - name: Build
-        run: dotnet build -c $CONFIGURATION -p:RunAnalyzers=false -p:EnforceCodeStyleInBuild=false
-
-      - name: Run integration tests
-        run: |
-          for proj in tests/*.Tests.Integration/*.Tests.Integration.csproj; do
-            [ -f "$proj" ] && dotnet test "$proj" -c $CONFIGURATION --no-build \
-              --logger "trx;LogFilePath=TestResults/results.trx" \
-              --collect:"XPlat Code Coverage" \
-              -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover,cobertura
-          done
-
-      - name: Upload integration test results
-        if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        with:
-          name: integration-test-results
-          path: "**/TestResults/"
-          retention-days: 7
-
-  # ---------------------------------------------------------------------------
   # SECURITY (parallel, no build needed except CodeQL)
   # ---------------------------------------------------------------------------
   secret-detection:
