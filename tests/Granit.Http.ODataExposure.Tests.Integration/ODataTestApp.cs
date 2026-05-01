@@ -6,6 +6,7 @@ using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
 using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -70,6 +71,13 @@ internal sealed class ODataTestApp : IAsyncDisposable
         SqlCaptureSink sqlCapture = new();
 
         builder.Services.AddSingleton<ICurrentTenant, CurrentTenant>();
+        // C3b — TenantPartitionedRateLimiter constructor depends on
+        // ICurrentUserService (for the per-user partition fallback) and on
+        // TimeProvider (for the sliding-window counter). The OData suites
+        // only exercise tenant + IP partitioning, so SystemCurrentUserService
+        // and the stock wall-clock are the right neutral defaults.
+        builder.Services.AddSingleton<ICurrentUserService, SystemCurrentUserService>();
+        builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<IPermissionChecker, StubPermissionChecker>();
         builder.Services.AddSingleton(sqlCapture);
 
