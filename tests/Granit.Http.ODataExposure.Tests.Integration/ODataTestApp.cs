@@ -6,6 +6,7 @@ using Granit.QueryEngine;
 using Granit.QueryEngine.Extensions;
 using Granit.RateLimiting.Extensions;
 using Granit.RateLimiting.Options;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -70,6 +71,13 @@ internal sealed class ODataTestApp : IAsyncDisposable
         SqlCaptureSink sqlCapture = new();
 
         builder.Services.AddSingleton<ICurrentTenant, CurrentTenant>();
+        // C3b — TenantPartitionedRateLimiter constructor depends on
+        // ICurrentUserService (for the per-user partition fallback) and on
+        // TimeProvider (for the sliding-window counter). The OData suites
+        // only exercise tenant + IP partitioning, so SystemCurrentUserService
+        // and the stock wall-clock are the right neutral defaults.
+        builder.Services.AddSingleton<ICurrentUserService, SystemCurrentUserService>();
+        builder.Services.AddSingleton(TimeProvider.System);
         builder.Services.AddSingleton<IPermissionChecker, StubPermissionChecker>();
         builder.Services.AddSingleton(sqlCapture);
 
@@ -109,18 +117,24 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         // Tenant-switching middleware — read X-Test-Tenant header, scope the
         // change to the request's lifetime via using/Dispose so AsyncLocal
-        // restores cleanly even if downstream throws.
+        // restores cleanly even if downstream throws. ALWAYS open a scope:
+        // when no header is present, scope to a null tenant so the static
+        // AsyncLocal in CurrentTenant cannot leak a value from a prior test
+        // through the same xUnit execution context (regression fix —
+        // anonymous request was returning the previous test's tenant rows).
         app.Use(async (context, next) =>
         {
+            Guid? tenantId = null;
             if (context.Request.Headers.TryGetValue("X-Test-Tenant", out Microsoft.Extensions.Primitives.StringValues header)
-                && Guid.TryParse(header.ToString(), out Guid tenantId))
+                && Guid.TryParse(header.ToString(), out Guid parsed))
             {
-                ICurrentTenant currentTenant = context.RequestServices.GetRequiredService<ICurrentTenant>();
-                using IDisposable tenantScope = currentTenant.Change(tenantId, name: $"Tenant-{tenantId}");
-                await next(context).ConfigureAwait(false);
-                return;
+                tenantId = parsed;
             }
 
+            ICurrentTenant currentTenant = context.RequestServices.GetRequiredService<ICurrentTenant>();
+            using IDisposable tenantScope = currentTenant.Change(
+                tenantId,
+                name: tenantId is { } v ? $"Tenant-{v}" : null);
             await next(context).ConfigureAwait(false);
         });
 

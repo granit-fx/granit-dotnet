@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -152,26 +153,40 @@ public sealed class QueryHardeningTests(PostgresFixture postgres)
     public async Task Expand_InWhitelist_AcceptedThoughTheNavigationDoesntExist()
     {
         // The Invoice entity has no Customer navigation in the test schema;
-        // OData responds with the validation error from its own translator
-        // (not our 400). What we pin here is that whitelist validation does
-        // NOT pre-empt the request when the property name matches.
+        // OData responds with a parser-level error (it throws an
+        // ODataException straight up, which TestServer re-raises as a
+        // SendAsync exception). What we pin here is that the C3 whitelist
+        // check does NOT pre-empt the request when the property name matches
+        // the whitelist — so the failure must come from the OData parser
+        // itself, never from the framework's "not permitted" rejection.
         using HttpRequestMessage request = new(HttpMethod.Get,
             "/api/granit/odata/Invoices?$expand=Customer");
         request.Headers.Add("X-Test-Tenant", TenantA.ToString());
 
-        HttpResponseMessage response = await _appExpandWhitelist.Client.SendAsync(
-            request, TestContext.Current.CancellationToken);
-
-        // Either OData accepts and tries to expand (200 with empty navigation)
-        // or fails downstream because the EDM has no Customer navigation
-        // (500/400 from the translator). What MUST NOT happen is the C3 layer
-        // returning its own "not whitelisted" 400 — verified by reading the
-        // body for the explicit whitelist phrasing.
-        if (response.StatusCode == HttpStatusCode.BadRequest)
+        // Either the request returns a response (200 with empty navigation
+        // or 400 from the translator) OR it throws an ODataException because
+        // the EDM has no Customer navigation. Both outcomes prove the C3
+        // layer let the request through; only a "not permitted" payload
+        // would indicate the whitelist short-circuited.
+        string body = string.Empty;
+        try
         {
-            string body = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-            body.ShouldNotContain("not permitted");
+            HttpResponseMessage response = await _appExpandWhitelist.Client.SendAsync(
+                request, TestContext.Current.CancellationToken);
+            body = response.Content.Headers.ContentLength is > 0
+                ? await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+                : string.Empty;
         }
+        catch (Microsoft.OData.ODataException)
+        {
+            // Expected when OData can't find the Customer navigation in the
+            // EDM. The exception itself proves the C3 check accepted the
+            // expand — assertion satisfied trivially.
+            return;
+        }
+
+        body.ShouldNotContain("not permitted");
+        body.ShouldNotContain("not whitelisted");
     }
 
     [Fact]
@@ -202,6 +217,11 @@ public sealed class QueryHardeningTests(PostgresFixture postgres)
     {
         using IServiceScope scope = app.CreateScope();
         TestDbContext db = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+        // PostgresFixture is shared across the test class — wipe any leftover
+        // row from a previous test before reseeding so PageSize / MaxTop
+        // assertions stay deterministic.
+        await db.Invoices.IgnoreQueryFilters().ExecuteDeleteAsync();
 
         // 5 invoices for tenant A — enough to exercise PageSize=3 and
         // MaxTop=5 caps.
