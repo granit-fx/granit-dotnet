@@ -2511,6 +2511,15 @@
           "Granit.Validation": "[0.1.0-dev, )"
         }
       },
+      "granit.identity.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.identity.federated": {
         "type": "Project",
         "dependencies": {

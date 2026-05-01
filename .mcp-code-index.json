@@ -1130,6 +1130,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Identity.EntityFrameworkCore",
+      "deps": [
+        "Granit.Identity",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity.Federated",
       "deps": [
         "Granit.Analytics",
@@ -23936,6 +23944,56 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "IdentityEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.EntityFrameworkCore",
+      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitIdentityEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitIdentityEntityFrameworkCore(this IServiceCollection services, Action<DbContextOptionsBuilder> configureDbContext)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "IdentityModelBuilderExtensions",
+      "fqn": "Granit.Identity.EntityFrameworkCore.Extensions.IdentityModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Identity.EntityFrameworkCore",
+      "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureGranitIdentityModule",
+          "kind": "method",
+          "signature": "ConfigureGranitIdentityModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitIdentityDbProperties",
+      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentityDbProperties",
+      "kind": "class",
+      "project": "Granit.Identity.EntityFrameworkCore",
+      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityDbProperties.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GranitIdentityEntityFrameworkCoreModule",
+      "fqn": "Granit.Identity.EntityFrameworkCore.GranitIdentityEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Identity.EntityFrameworkCore",
+      "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
+      "line": 20,
+      "members": []
     },
     {
       "name": "IdentityGroupMembershipChangedEto",
