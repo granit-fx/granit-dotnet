@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Shouldly;
 using Xunit;
@@ -202,6 +203,11 @@ public sealed class QueryHardeningTests(PostgresFixture postgres)
     {
         using IServiceScope scope = app.CreateScope();
         TestDbContext db = scope.ServiceProvider.GetRequiredService<TestDbContext>();
+
+        // PostgresFixture is shared across the test class — wipe any leftover
+        // row from a previous test before reseeding so PageSize / MaxTop
+        // assertions stay deterministic.
+        await db.Invoices.IgnoreQueryFilters().ExecuteDeleteAsync();
 
         // 5 invoices for tenant A — enough to exercise PageSize=3 and
         // MaxTop=5 caps.

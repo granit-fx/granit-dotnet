@@ -155,7 +155,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         IEdmModel edmModel)
         where TEntity : class
     {
-        RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async (
+        RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async Task<object?> (
                 ODataQueryOptions<TEntity> options,
                 HttpContext httpContext,
                 [FromServices] IQueryableSource<TEntity> source,
@@ -168,7 +168,7 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 if (descriptor.RequiredPermission is { } perm
                     && !await permissionChecker.IsGrantedAsync(perm, cancellationToken).ConfigureAwait(false))
                 {
-                    return (IResult)TypedResults.Forbid();
+                    return TypedResults.Forbid();
                 }
 
                 string? tenantTag = currentTenant is { IsAvailable: true, Id: { } tid }
@@ -194,7 +194,13 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
                 ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
                 IQueryable applied = options.ApplyTo(filtered, querySettings);
-                return TypedResults.Ok(applied);
+
+                // Return the raw IQueryable so the WithODataResult filter wraps it
+                // in an ODataResult ({ "@odata.context": "...", "value": [...] }).
+                // TypedResults.Ok would short-circuit the filter — its IResult-check
+                // returns the inner Ok<IQueryable> unwrapped, which serializes as a
+                // bare JSON array and breaks every BI-tool consumer expecting v4.
+                return applied;
             })
             .WithODataModel(edmModel)
             .WithODataResult()

@@ -179,6 +179,13 @@ public sealed class TenantIsolationTests(PostgresFixture postgres)
         using IServiceScope scope = _app.CreateScope();
         TestDbContext db = scope.ServiceProvider.GetRequiredService<TestDbContext>();
 
+        // The PostgresFixture container is shared across the whole test class,
+        // so leftover rows from a previous test would inflate the row counts
+        // asserted below. IgnoreQueryFilters so we wipe the soft-deleted row
+        // too — the tenant filter never applies because each row's TenantId
+        // is set explicitly.
+        await db.Invoices.IgnoreQueryFilters().ExecuteDeleteAsync(TestContext.Current.CancellationToken);
+
         // Seed 5 invoices per tenant + 1 soft-deleted in tenant A. Ignoring
         // the query filter so the soft-deleted row actually persists; the
         // tenant filter is bypassed too because we set TenantId explicitly
