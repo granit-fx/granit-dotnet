@@ -23,10 +23,13 @@ internal static class CalendarRangeEndpoint
             .WithDescription(
                 "Reads the entity's CalendarLayoutDescriptor (selected by the optional ?calendar= name when an entity exposes more than one) "
                 + "and returns the events whose Start/End falls inside [from, to]. The range is enforced server-side: a window wider than 366 days "
-                + "or with To < From is rejected with 400. Returns an empty list when the entity declares no calendar layout, no item matches, or "
-                + "the host has not yet wired a real ICalendarRangeService implementation. Permission filtering and FusionCache layer in via separate stories.")
+                + "or with To < From is rejected with 400. Permission gate inherited from the underlying entity's Read permission — same defense-in-depth "
+                + "as the manifest endpoint (no calendar-specific permission, rationale: the calendar exposes an aggregate of data the user could already "
+                + "see via the list endpoint). Returns an empty list when the entity declares no calendar layout, no item matches, or "
+                + "the host has not yet wired a real ICalendarRangeService implementation. FusionCache layers in via a separate story.")
             .Produces<IReadOnlyList<CalendarItemResponse>>()
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
@@ -36,6 +39,7 @@ internal static class CalendarRangeEndpoint
         string name,
         [AsParameters] CalendarRangeRequest request,
         [FromServices] IEntityDefinitionRegistry registry,
+        [FromServices] EntityPermissionResolver permissionResolver,
         [FromServices] ICalendarRangeService calendarRangeService,
         CancellationToken cancellationToken)
     {
@@ -48,6 +52,19 @@ internal static class CalendarRangeEndpoint
         }
 
         EntityDefinitionDescriptor descriptor = definitionRef.Descriptor;
+        EntityPermissionSnapshot snapshot = await permissionResolver
+            .ResolveAsync(descriptor.PermissionGroup, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!snapshot.IsVisible)
+        {
+            // 403 — defense-in-depth: same shape as the manifest endpoint
+            // (a denied read leaks no calendar data, not even row counts).
+            return TypedResults.Problem(
+                detail: $"You do not have permission to read entity '{name}'.",
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+
         CalendarLayoutDescriptor? layout = SelectCalendarLayout(descriptor, request.Calendar);
 
         if (layout is null)
