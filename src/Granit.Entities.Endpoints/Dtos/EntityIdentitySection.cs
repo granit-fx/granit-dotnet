@@ -7,10 +7,12 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="Icon">Icon from the standard catalog, or <see langword="null"/>.</param>
 /// <param name="PermissionGroup">Permission-group prefix (e.g. <c>"Parties.Parties"</c>).</param>
 /// <param name="DisplayProperty">Property used to label references (e.g. <c>"Number"</c>), or <see langword="null"/>.</param>
+/// <param name="SubtitleProperty">Optional secondary property displayed alongside <paramref name="DisplayProperty"/> for context (e.g. <c>"PartyName"</c> on an Invoice → renderer shows "INV-001 — Acme Corp"). <see langword="null"/> when the entity declares no subtitle.</param>
 public sealed record EntityIdentitySection(
     string Name,
     string EntityClrType,
     string? DisplayKey,
     string? Icon,
     string? PermissionGroup,
-    string? DisplayProperty);
+    string? DisplayProperty,
+    string? SubtitleProperty);

@@ -19142,7 +19142,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityIdentitySection.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {

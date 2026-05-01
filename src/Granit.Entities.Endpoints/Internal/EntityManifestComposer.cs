@@ -151,7 +151,8 @@ internal static class EntityManifestComposer
             d.DisplayKey,
             d.Icon,
             d.PermissionGroup,
-            d.DisplayProperty);
+            d.DisplayProperty,
+            d.SubtitleProperty);
 
     private static EntityPermissionsSection ComposePermissions(EntityPermissionSnapshot s) =>
         new(s.CanRead, s.CanCreate, s.CanUpdate, s.CanDelete, s.CanManage, s.CanExecute);

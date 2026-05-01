@@ -42,6 +42,7 @@ public sealed class PartyEntityDefinition : EntityDefinition<Party>
             .Icon("users")
             .PermissionGroup("Parties.Parties")
             .DisplayProperty(p => p.Name)
+            .SubtitleProperty(p => p.Kind)
             .Query<PartyQueryDefinition>()
             .Export<PartyExportDefinition>()
             .Metric<PartyCountMetricDefinition>()

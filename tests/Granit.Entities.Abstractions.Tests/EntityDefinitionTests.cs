@@ -47,6 +47,29 @@ public sealed class EntityDefinitionTests
         d.Icon.ShouldBe("box");
         d.PermissionGroup.ShouldBe("Sample.SampleEntities");
         d.DisplayProperty.ShouldBe("Title");
+        d.SubtitleProperty.ShouldBe("Status");
+    }
+
+    [Fact]
+    public void SubtitleProperty_DefaultsToNull_WhenNotConfigured()
+    {
+        // SubtitleProperty is optional — entities with only DisplayProperty
+        // surface no subtitle, and the renderer falls back to a single label.
+        EntityDefinitionDescriptor d = new MinimalEntityDefinition().Descriptor;
+
+        d.DisplayProperty.ShouldBe("Title");
+        d.SubtitleProperty.ShouldBeNull();
+    }
+
+    [Fact]
+    public void SubtitleProperty_RejectsNonDirectPropertyAccess()
+    {
+        // Mirror of DisplayProperty's contract: only direct property access
+        // expressions are accepted (no method calls, no compound expressions).
+        EntityDefinitionBuilder<SampleEntity> builder = new();
+
+        Should.Throw<ArgumentException>(() =>
+            builder.SubtitleProperty(x => x.Title.ToUpperInvariant()));
     }
 
     [Fact]
@@ -182,7 +205,8 @@ public sealed class EntityDefinitionTests
             b.DisplayKey("Entity:SampleEntity")
              .Icon("box")
              .PermissionGroup("Sample.SampleEntities")
-             .DisplayProperty(s => s.Title);
+             .DisplayProperty(s => s.Title)
+             .SubtitleProperty(s => s.Status);
 
             b.Query<SampleQueryDefinition>();
             b.Export<SampleExportDefinition>();
@@ -211,6 +235,14 @@ public sealed class EntityDefinitionTests
                 .SectionsFromForm()
                 .SidePanel.Audit().Timeline());
         }
+    }
+
+    private sealed class MinimalEntityDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.Minimal";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> b) =>
+            b.DisplayProperty(s => s.Title);
     }
 
     private sealed class DuplicateFormDefinition : EntityDefinition<SampleEntity>
