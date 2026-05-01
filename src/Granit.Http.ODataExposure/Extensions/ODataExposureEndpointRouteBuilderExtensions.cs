@@ -1,5 +1,6 @@
 using System.Reflection;
 using Granit.Authorization;
+using Granit.Domain;
 using Granit.Http.ODataExposure.Diagnostics;
 using Granit.Http.ODataExposure.Internal;
 using Granit.Http.ODataExposure.Options;
@@ -29,8 +30,11 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <summary>Header set on the response when a user-supplied <c>$top</c> was clamped to the EntitySet's <see cref="ODataEntitySetDescriptor.MaxTop"/>. Lets observability tools spot misconfigured BI refresh jobs.</summary>
     internal const string MaxTopAppliedHeader = "OData-MaxTop-Applied";
 
-    /// <summary>Rate-limit policy name applied to every OData route in the group. Hosts configure quotas under <c>RateLimiting:Policies:granit-odata</c>.</summary>
+    /// <summary>Rate-limit policy name applied to every tenant-feed OData route. Hosts configure quotas under <c>RateLimiting:Policies:granit-odata</c>.</summary>
     public const string RateLimitPolicyName = "granit-odata";
+
+    /// <summary>Rate-limit policy name applied to every host-feed OData route. Distinct policy so the wider quotas typical of host-side BI workflows do not bleed onto tenant-facing routes. Hosts configure quotas under <c>RateLimiting:Policies:granit-odata-host</c> (recommended <c>PartitionBy: User</c>).</summary>
+    public const string HostRateLimitPolicyName = "granit-odata-host";
 
     /// <summary>
     /// Maps the configured OData EntitySets under <paramref name="prefix"/>.
@@ -70,25 +74,107 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 nameof(configure));
         }
 
-        ValidateStrictConfiguration(options.Descriptors);
+        return MapEndpointsCore(
+            endpoints,
+            prefix,
+            options.Descriptors,
+            ODataFeedKind.Tenant,
+            RateLimitPolicyName,
+            ODataEdmModelBuilder.TenantContainerName);
+    }
 
-        IEdmModel edmModel = ODataEdmModelBuilder.Build(options.Descriptors);
+    /// <summary>
+    /// Maps the configured <b>host-feed</b> OData EntitySets under
+    /// <paramref name="prefix"/> — the cross-tenant feed reserved for host
+    /// operators (finance ops, compliance, capacity planning).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Three strict-config gates apply on top of the tenant-feed validator:
+    /// </para>
+    /// <list type="number">
+    ///   <item>The required permission MUST resolve to a <c>PermissionDefinition</c> with <c>MultiTenancySides == Host</c>; <c>Tenant</c> and <c>Both</c> are rejected at startup.</item>
+    ///   <item>Anonymous access is not allowed (the host builder does not expose <c>AllowAnonymousAccess</c>).</item>
+    ///   <item>Every host-feed EntitySet whose entity implements <c>IMultiTenant</c> MUST have called <c>AcknowledgeCrossTenantExposure(q =&gt; q.IgnoreQueryFilters([GranitFilterNames.MultiTenant]))</c>. The bypass lambda is supplied by the host so this module stays free of an EF Core dependency, and so the explicit "I know what I'm doing" lives in code, not in a flag.</item>
+    /// </list>
+    /// <para>
+    /// Container name for the EDM is <c>HostContainer</c> (vs <c>Container</c>
+    /// on the tenant-feed) so any BI client that mistakenly reuses the wrong
+    /// <c>$metadata</c> document gets an immediate schema mismatch.
+    /// </para>
+    /// </remarks>
+    /// <param name="endpoints">Endpoint route builder (the host's <c>app</c>).</param>
+    /// <param name="prefix">Route prefix mounted at, conventionally <c>"/api/{version}/odata/host"</c>.</param>
+    /// <param name="configure">Configuration callback declaring host-feed EntitySets via <see cref="ODataHostExposureOptions"/>.</param>
+    /// <returns>The outer <see cref="RouteGroupBuilder"/> for further chaining.</returns>
+    /// <exception cref="ArgumentException">No EntitySet was declared in <paramref name="configure"/>.</exception>
+    /// <exception cref="InvalidOperationException">Strict-config validation failed (missing permission, wrong <c>MultiTenancySides</c>, missing <c>AcknowledgeCrossTenantExposure</c>, missing <c>$expand</c> intent, or unresolvable permission definition).</exception>
+    public static RouteGroupBuilder MapGranitODataHostEndpoints(
+        this IEndpointRouteBuilder endpoints,
+        string prefix,
+        Action<ODataHostExposureOptions> configure)
+    {
+        ArgumentNullException.ThrowIfNull(endpoints);
+        ArgumentException.ThrowIfNullOrWhiteSpace(prefix);
+        ArgumentNullException.ThrowIfNull(configure);
+
+        ODataHostExposureOptions options = new();
+        configure(options);
+
+        if (options.Descriptors.Count == 0)
+        {
+            throw new ArgumentException(
+                "MapGranitODataHostEndpoints requires at least one EntitySet — call options.EntitySet<TEntity, TQueryDefinition>(name) inside the configure callback.",
+                nameof(configure));
+        }
+
+        return MapEndpointsCore(
+            endpoints,
+            prefix,
+            options.Descriptors,
+            ODataFeedKind.Host,
+            HostRateLimitPolicyName,
+            ODataEdmModelBuilder.HostContainerName);
+    }
+
+    /// <summary>
+    /// Shared route-mapping pipeline used by both <see cref="MapGranitODataEndpoints"/>
+    /// and <see cref="MapGranitODataHostEndpoints"/>. Validates strict-config
+    /// (feed-kind aware), builds the EDM model with the appropriate container
+    /// name, and wires the service document, <c>$metadata</c>, and per-set
+    /// routes under <paramref name="rateLimitPolicy"/>.
+    /// </summary>
+    private static RouteGroupBuilder MapEndpointsCore(
+        IEndpointRouteBuilder endpoints,
+        string prefix,
+        IReadOnlyList<ODataEntitySetDescriptor> descriptors,
+        ODataFeedKind feedKind,
+        string rateLimitPolicy,
+        string containerName)
+    {
+        ValidateStrictConfiguration(descriptors, endpoints.ServiceProvider);
+
+        IEdmModel edmModel = ODataEdmModelBuilder.Build(descriptors, containerName);
+
+        string tagSuffix = feedKind == ODataFeedKind.Host ? "OData (Host)" : "OData";
+        string serviceDocOpName = feedKind == ODataFeedKind.Host ? "ODataHostServiceDocument" : "ODataServiceDocument";
+        string metadataOpName = feedKind == ODataFeedKind.Host ? "ODataHostMetadata" : "ODataMetadata";
 
         RouteGroupBuilder root = endpoints.MapGroup(prefix)
-            .WithTags("OData")
-            .RequireGranitRateLimiting(RateLimitPolicyName);
+            .WithTags(tagSuffix)
+            .RequireGranitRateLimiting(rateLimitPolicy);
 
         root.MapODataServiceDocument("", edmModel)
-            .WithName("ODataServiceDocument")
+            .WithName(serviceDocOpName)
             .WithSummary("OData v4 service document — lists every exposed EntitySet with its metadata link.")
-            .WithDescription("Power BI / Excel / Tableau read this document to discover which EntitySets are available. Each set is queryable via the standard $filter / $select / $top / $skip / $orderby clauses.");
+            .WithDescription("BI clients (Power BI / Excel / Tableau) read this document to discover which EntitySets are available. Each set is queryable via the standard $filter / $select / $top / $skip / $orderby clauses.");
 
         root.MapODataMetadata("$metadata", edmModel)
-            .WithName("ODataMetadata")
+            .WithName(metadataOpName)
             .WithSummary("OData v4 EDM metadata document (CSDL XML).")
             .WithDescription("BI tools consume this CSDL document to populate their Navigator / table picker. The EDM is built from the application's registered QueryDefinition&lt;T&gt; instances.");
 
-        foreach (ODataEntitySetDescriptor descriptor in options.Descriptors)
+        foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {
             MethodInfo mapper = typeof(ODataExposureEndpointRouteBuilderExtensions)
                 .GetMethod(nameof(MapEntitySetRoute), BindingFlags.NonPublic | BindingFlags.Static)!
@@ -111,13 +197,22 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// that lives inside a closure (and is therefore not statically
     /// reflectable).
     /// </summary>
-    /// <exception cref="InvalidOperationException">Any descriptor lacks both <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/> and <see cref="ODataEntitySetBuilder{TEntity}.AllowAnonymousAccess"/>, OR neither <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/> nor <see cref="ODataEntitySetBuilder{TEntity}.DisableExpand"/>.</exception>
-    private static void ValidateStrictConfiguration(IReadOnlyList<ODataEntitySetDescriptor> descriptors)
+    /// <exception cref="InvalidOperationException">Any descriptor lacks both <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/> and <see cref="ODataEntitySetBuilder{TEntity}.AllowAnonymousAccess"/>, OR neither <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/> nor <see cref="ODataEntitySetBuilder{TEntity}.DisableExpand"/>; or — for host-feed mounts — the permission resolves to a non-<c>Host</c> <see cref="MultiTenancySides"/>, the entity is <c>IMultiTenant</c> without a matching <c>AcknowledgeCrossTenantExposure</c> call, or the permission is unresolvable.</exception>
+    private static void ValidateStrictConfiguration(
+        IReadOnlyList<ODataEntitySetDescriptor> descriptors,
+        IServiceProvider services)
     {
         List<string> errors = [];
 
+        IPermissionDefinitionManager? permissionDefinitions =
+            descriptors.Any(d => d.FeedKind == ODataFeedKind.Host && d.RequiredPermission is not null)
+                ? services.GetService<IPermissionDefinitionManager>()
+                : null;
+
         foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {
+            // Tenant-feed (default) and host-feed share the permission +
+            // expand intent gates. Host-feed adds two extra checks below.
             if (descriptor.RequiredPermission is null && !descriptor.AnonymousAccessAcknowledged)
             {
                 errors.Add(
@@ -129,6 +224,35 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                 errors.Add(
                     $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
             }
+
+            if (descriptor.FeedKind != ODataFeedKind.Host)
+            {
+                continue;
+            }
+
+            // Host-feed gate #1: permission must resolve to MultiTenancySides.Host (NOT Both, NOT Tenant).
+            if (descriptor.RequiredPermission is { } perm)
+            {
+                PermissionDefinition? permission = permissionDefinitions?.Find(perm);
+                if (permission is null)
+                {
+                    errors.Add(
+                        $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' but no PermissionDefinition with that name is registered. Declare it in an IPermissionDefinitionProvider with MultiTenancySides.Host before mounting the host-feed.");
+                }
+                else if (permission.MultiTenancySides != MultiTenancySides.Host)
+                {
+                    errors.Add(
+                        $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' which is declared as MultiTenancySides.{permission.MultiTenancySides} — host-feed access requires MultiTenancySides.Host. Either declare a dedicated host-side permission, or move this EntitySet to the tenant-feed (MapGranitODataEndpoints).");
+                }
+            }
+
+            // Host-feed gate #2: IMultiTenant entities require AcknowledgeCrossTenantExposure(...).
+            if (typeof(IMultiTenant).IsAssignableFrom(descriptor.EntityType)
+                && !descriptor.CrossTenantExposureAcknowledged)
+            {
+                errors.Add(
+                    $"Host-feed EntitySet '{descriptor.EntitySetName}' targets IMultiTenant entity '{descriptor.EntityType.Name}' but did not call AcknowledgeCrossTenantExposure(...). Without an explicit per-query bypass lambda, the framework's tenant filter (tenantId == currentTenant.Id) returns no rows for a tenantless caller — fail-closed. Add: .AcknowledgeCrossTenantExposure(q => q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])).");
+            }
         }
 
         if (errors.Count > 0)
@@ -139,9 +263,14 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         }
     }
 
-    /// <summary>Suggests the conventional <c>OData.{Module}.{Entity}.Read</c> permission name for the descriptor's entity, used in the strict-config error message.</summary>
-    private static string RequiredPermissionConvention(ODataEntitySetDescriptor descriptor) =>
-        $"OData.{descriptor.EntityType.Namespace?.Split('.').LastOrDefault() ?? "Module"}.{descriptor.EntityType.Name}.Read";
+    /// <summary>Suggests the conventional <c>OData.{Module}.{Entity}.Read</c> (or <c>OData.Host.{Module}.{Entity}.Read</c> for host-feed) permission name, used in the strict-config error message.</summary>
+    private static string RequiredPermissionConvention(ODataEntitySetDescriptor descriptor)
+    {
+        string segment = descriptor.EntityType.Namespace?.Split('.').LastOrDefault() ?? "Module";
+        return descriptor.FeedKind == ODataFeedKind.Host
+            ? $"OData.Host.{segment}.{descriptor.EntityType.Name}.Read"
+            : $"OData.{segment}.{descriptor.EntityType.Name}.Read";
+    }
 
     /// <summary>
     /// Wires one EntitySet's <c>GET /{EntitySetName}</c> route. Closed over
@@ -155,6 +284,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         IEdmModel edmModel)
         where TEntity : class
     {
+        // Captured once at Map time — typed Func used per-request without a cast.
+        var crossTenantBypass = descriptor.CrossTenantBypass as Func<IQueryable<TEntity>, IQueryable<TEntity>>;
+
         RouteHandlerBuilder route = root.MapGet(descriptor.EntitySetName, async Task<object?> (
                 ODataQueryOptions<TEntity> options,
                 HttpContext httpContext,
@@ -171,26 +303,42 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                     return TypedResults.Forbid();
                 }
 
-                string? tenantTag = currentTenant is { IsAvailable: true, Id: { } tid }
-                    ? tid.ToString()
-                    : null;
+                // Host-feed: there is no ambient tenant. Coalesce to "global"
+                // upstream of the metric tag so the dimension is never null
+                // (no confusion with "tenant not yet resolved").
+                string? tenantTag = descriptor.FeedKind == ODataFeedKind.Host
+                    ? "global"
+                    : currentTenant is { IsAvailable: true, Id: { } tid } ? tid.ToString() : null;
+
+                string feedKindTag = descriptor.FeedKind == ODataFeedKind.Host ? "host" : "tenant";
 
                 if (RejectIfCountDisallowed(httpContext, descriptor) is { } countRejection)
                 {
-                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "count_disabled", tenantTag);
+                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "count_disabled", tenantTag, feedKindTag);
                     return countRejection;
                 }
 
                 if (RejectIfExpandUnauthorised(httpContext, descriptor) is { } expandRejection)
                 {
-                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag);
+                    metrics.RecordRejectedQuery(descriptor.EntitySetName, "expand_not_whitelisted", tenantTag, feedKindTag);
                     return expandRejection;
                 }
 
-                ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag);
+                ApplyMaxTopAppliedHeader(httpContext, descriptor, metrics, tenantTag, feedKindTag);
+
+                IQueryable<TEntity> baseQueryable = source.GetQueryable();
+
+                // Host-feed: apply the host-supplied per-query bypass BEFORE
+                // the QueryEngine pipeline runs, so the QueryEngine sees an
+                // already-untenanted queryable. Tenant-feed: no bypass; the
+                // QueryEngine receives the source as-is.
+                if (crossTenantBypass is not null)
+                {
+                    baseQueryable = crossTenantBypass(baseQueryable);
+                }
 
                 IQueryable<TEntity> filtered = engine.BuildFilteredQuery(
-                    source.GetQueryable(), new QueryRequest());
+                    baseQueryable, new QueryRequest());
 
                 ODataQuerySettings querySettings = new() { PageSize = descriptor.PageSize };
                 IQueryable applied = options.ApplyTo(filtered, querySettings);
@@ -318,7 +466,8 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         HttpContext httpContext,
         ODataEntitySetDescriptor descriptor,
         ODataExposureMetrics metrics,
-        string? tenantTag)
+        string? tenantTag,
+        string feedKindTag)
     {
         if (!httpContext.Request.Query.TryGetValue("$top", out StringValues topRaw)
             || !int.TryParse(topRaw.ToString(), out int requestedTop)
@@ -329,6 +478,6 @@ public static class ODataExposureEndpointRouteBuilderExtensions
 
         httpContext.Response.Headers[MaxTopAppliedHeader] =
             descriptor.MaxTop.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        metrics.RecordTopClamped(descriptor.EntitySetName, tenantTag);
+        metrics.RecordTopClamped(descriptor.EntitySetName, tenantTag, feedKindTag);
     }
 }

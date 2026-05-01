@@ -12,15 +12,25 @@ namespace Granit.Http.ODataExposure.Internal;
 /// </summary>
 internal static class ODataEdmModelBuilder
 {
+    /// <summary>Default OData container name for the tenant-feed mount.</summary>
+    public const string TenantContainerName = "Container";
+
+    /// <summary>OData container name for the host-feed mount. Distinct from <see cref="TenantContainerName"/> so a BI client cannot reuse one feed's <c>$metadata</c> document on the other URL by accident — schema mismatch surfaces immediately.</summary>
+    public const string HostContainerName = "HostContainer";
+
     /// <summary>
     /// Builds the EDM model for the supplied descriptors.
     /// </summary>
     /// <param name="descriptors">EntitySet descriptors registered via the fluent options.</param>
+    /// <param name="containerName">OData container name; defaults to <see cref="TenantContainerName"/>. Host-feed callers pass <see cref="HostContainerName"/>.</param>
     /// <returns>The built <see cref="IEdmModel"/>, ready to wire into <c>WithODataModel</c>.</returns>
     /// <exception cref="ArgumentException"><paramref name="descriptors"/> is empty.</exception>
-    public static IEdmModel Build(IReadOnlyList<ODataEntitySetDescriptor> descriptors)
+    public static IEdmModel Build(
+        IReadOnlyList<ODataEntitySetDescriptor> descriptors,
+        string containerName = TenantContainerName)
     {
         ArgumentNullException.ThrowIfNull(descriptors);
+        ArgumentException.ThrowIfNullOrWhiteSpace(containerName);
 
         if (descriptors.Count == 0)
         {
@@ -29,7 +39,7 @@ internal static class ODataEdmModelBuilder
                 nameof(descriptors));
         }
 
-        ODataConventionModelBuilder builder = new();
+        ODataConventionModelBuilder builder = new() { ContainerName = containerName };
 
         foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {

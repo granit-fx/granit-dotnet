@@ -142,3 +142,65 @@ request can trigger a long-running query.
   the OData metadata document at `/{prefix}/$metadata` (CSDL XML) is the
   authoritative discovery surface — Power BI / Excel / Tableau consume it
   natively.
+
+## Host-feed (cross-tenant BI for host operators)
+
+`MapGranitODataEndpoints` (above) covers the standard tenant-scoped feed: a
+tenant analyst sees only their tenant's rows. For legitimate cross-tenant
+analytics — finance ops (MRR/ARR across all tenants), compliance (audit
+entries cross-tenant), capacity planning — use the dedicated host-feed mount.
+
+```csharp
+app.MapGranitODataHostEndpoints("/api/{version}/odata/host", opts =>
+{
+    opts.EntitySet<Tenant, TenantQueryDefinition>("Tenants")
+        .RequirePermission("OData.Host.Platform.Tenants.Read")  // MUST be MultiTenancySides.Host
+        .DisableExpand();
+
+    opts.EntitySet<Invoice, InvoiceQueryDefinition>("InvoicesAllTenants")
+        .RequirePermission("OData.Host.Invoicing.Invoices.Read")
+        .AcknowledgeCrossTenantExposure(q =>
+            q.IgnoreQueryFilters([GranitFilterNames.MultiTenant]))    // explicit per-query bypass
+        .ExpandWhitelist("Customer");
+});
+```
+
+Three strict-config gates are added on top of the tenant-feed validator:
+
+1. **Permission must be `MultiTenancySides.Host`.** The validator resolves
+   the permission name through `IPermissionDefinitionManager` at startup
+   and refuses `Tenant` or `Both`. A permission without an `IPermissionDefinitionProvider`
+   declaration is also refused.
+2. **No anonymous access.** The host builder does not expose
+   `AllowAnonymousAccess()` — every host-feed set is gated.
+3. **`AcknowledgeCrossTenantExposure(...)` mandatory for `IMultiTenant` entities.**
+   The host writes the per-query bypass lambda at the call site. Without it,
+   the framework filter `tenantId == currentTenant.Id` returns no rows for a
+   tenantless caller — fail-closed. The bypass lambda is `q => q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])`
+   on EF Core; alternative providers can plug their own.
+
+Other distinctions:
+
+- **Distinct OData container name.** Tenant-feed uses `Container`; host-feed uses
+  `HostContainer`. A BI client that mixes the two `$metadata` documents sees an
+  immediate schema mismatch.
+- **Distinct rate-limit policy.** `granit-odata-host` (recommended `PartitionBy: User`,
+  wider quotas — fewer users, heavier queries) vs `granit-odata` (recommended
+  `PartitionBy: Tenant`).
+- **Telemetry tag `feed_kind=host|tenant`** on every `ODataExposureMetrics`
+  counter so audit dashboards can filter cross-tenant access events distinctly
+  (ISO 27001 A.12.4).
+
+### When to use Host-feed vs Granit.Analytics
+
+| Need | Use |
+| ---- | --- |
+| Cross-tenant aggregate KPI for a host dashboard | `Granit.Analytics` (`MetricDefinition`) |
+| Cross-tenant tabular data for Power BI / Excel / Tableau | Host-feed (this module) |
+| Per-tenant tabular data for tenant admins | Tenant-feed (this module) |
+| Per-tenant aggregate KPI inside an admin grid | `Granit.Analytics` |
+
+`Granit.Analytics` is the right fit when the consumer is the application's own
+admin UI and the value is one or a few aggregated numbers per call. Host-feed
+is the right fit when the consumer is an external BI tool that needs full
+tabular data and benefits from `$filter` / `$select` / `$top` composition.

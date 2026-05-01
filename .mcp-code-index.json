@@ -22779,7 +22779,7 @@
         {
           "name": "RecordTopClamped",
           "kind": "method",
-          "signature": "RecordTopClamped(string entitySet, string? tenantId)",
+          "signature": "RecordTopClamped(string entitySet, string? tenantId, string feedKind)",
           "returnType": "void"
         }
       ]
@@ -22790,7 +22790,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "MapGranitODataEndpoints",
@@ -22867,6 +22867,37 @@
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Options/ODataExposureOptions.cs",
       "line": 20,
+      "members": []
+    },
+    {
+      "name": "ODataHostEntitySetBuilder",
+      "fqn": "Granit.Http.ODataExposure.Options.ODataHostEntitySetBuilder",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Options/ODataHostExposureOptions.cs",
+      "line": 86,
+      "members": [
+        {
+          "name": "ExpandWhitelist",
+          "kind": "method",
+          "signature": "ExpandWhitelist(params string[] properties)",
+          "returnType": "ODataHostEntitySetBuilder<TEntity>"
+        },
+        {
+          "name": "MaxExpansionDepth",
+          "kind": "method",
+          "signature": "MaxExpansionDepth(int depth)",
+          "returnType": "ODataHostEntitySetBuilder<TEntity>"
+        }
+      ]
+    },
+    {
+      "name": "ODataHostExposureOptions",
+      "fqn": "Granit.Http.ODataExposure.Options.ODataHostExposureOptions",
+      "kind": "class",
+      "project": "Granit.Http.ODataExposure",
+      "file": "src/Granit.Http.ODataExposure/Options/ODataHostExposureOptions.cs",
+      "line": 26,
       "members": []
     },
     {

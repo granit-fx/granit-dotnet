@@ -16,6 +16,7 @@ public sealed class ODataExposureMetrics
     private const string TagTenantId = "tenant_id";
     private const string TagEntitySet = "entity_set";
     private const string TagReason = "reason";
+    private const string TagFeedKind = "feed_kind";
     private const string DefaultTenant = "global";
 
     private readonly Counter<long> _rejectedQueries;
@@ -39,20 +40,26 @@ public sealed class ODataExposureMetrics
     /// <summary>Records a rejection at the C3 hardening layer.</summary>
     /// <param name="entitySet">EntitySet name surfaced on the route (e.g. <c>"Invoices"</c>).</param>
     /// <param name="reason">Stable snake_case reason tag (<c>"count_disabled"</c>, <c>"expand_not_whitelisted"</c>).</param>
-    /// <param name="tenantId">Resolved tenant id, or <see langword="null"/> when no tenant is active.</param>
-    public void RecordRejectedQuery(string entitySet, string reason, string? tenantId) =>
+    /// <param name="tenantId">Resolved tenant id, or <see langword="null"/> when no tenant is active. Coalesced to <c>"global"</c> on the metric.</param>
+    /// <param name="feedKind">Feed origin (<c>"tenant"</c> or <c>"host"</c>) — distinguishes per-tenant exposure events from cross-tenant host-feed events for audit dashboards.</param>
+    public void RecordRejectedQuery(string entitySet, string reason, string? tenantId, string feedKind) =>
         _rejectedQueries.Add(1, new TagList
         {
             { TagEntitySet, entitySet },
             { TagReason, reason },
             { TagTenantId, tenantId ?? DefaultTenant },
+            { TagFeedKind, feedKind },
         });
 
     /// <summary>Records a $top clamp.</summary>
-    public void RecordTopClamped(string entitySet, string? tenantId) =>
+    /// <param name="entitySet">EntitySet name surfaced on the route.</param>
+    /// <param name="tenantId">Resolved tenant id, or <see langword="null"/> when no tenant is active. Coalesced to <c>"global"</c> on the metric.</param>
+    /// <param name="feedKind">Feed origin (<c>"tenant"</c> or <c>"host"</c>).</param>
+    public void RecordTopClamped(string entitySet, string? tenantId, string feedKind) =>
         _topClamped.Add(1, new TagList
         {
             { TagEntitySet, entitySet },
             { TagTenantId, tenantId ?? DefaultTenant },
+            { TagFeedKind, feedKind },
         });
 }

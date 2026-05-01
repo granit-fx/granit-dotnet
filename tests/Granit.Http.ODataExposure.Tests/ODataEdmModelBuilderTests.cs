@@ -72,6 +72,37 @@ public sealed class ODataEdmModelBuilderTests
         Should.Throw<ArgumentNullException>(() => ODataEdmModelBuilder.Build(null!));
     }
 
+    [Fact]
+    public void Build_DefaultContainerName_IsTenantContainer()
+    {
+        // Tenant-feed default. Locks the convention so a BI client can rely
+        // on the same container name across releases.
+        ODataEntitySetDescriptor descriptor = new(
+            "Invoices", typeof(Invoice), typeof(string), null);
+
+        IEdmModel model = ODataEdmModelBuilder.Build([descriptor]);
+
+        model.EntityContainer.Name.ShouldBe(ODataEdmModelBuilder.TenantContainerName);
+        model.EntityContainer.Name.ShouldBe("Container");
+    }
+
+    [Fact]
+    public void Build_HostContainerName_DistinguishesTheFeed()
+    {
+        // Host-feed gate #3: a distinct container name surfaces an immediate
+        // schema mismatch when a BI client mistakenly reuses one feed's
+        // $metadata document on the other URL.
+        ODataEntitySetDescriptor descriptor = new(
+            "Tenants", typeof(Invoice), typeof(string), null);
+
+        IEdmModel model = ODataEdmModelBuilder.Build(
+            [descriptor],
+            ODataEdmModelBuilder.HostContainerName);
+
+        model.EntityContainer.Name.ShouldBe("HostContainer");
+        model.EntityContainer.Name.ShouldNotBe(ODataEdmModelBuilder.TenantContainerName);
+    }
+
     private sealed class Invoice
     {
         public Guid Id { get; init; }

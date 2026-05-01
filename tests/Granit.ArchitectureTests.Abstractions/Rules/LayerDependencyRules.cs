@@ -139,19 +139,21 @@ public static class LayerDependencyRules
     /// <summary>
     /// IQueryable must not escape the persistence/data layer.
     /// Types whose namespace contains a default-allowed fragment (EntityFrameworkCore,
-    /// QueryEngine, Persistence) are exempt, as are types following the
-    /// <c>*QueryableSource</c> convention — the standard bridge for exposing
-    /// IQueryable to the QueryEngine endpoints layer — and concrete
-    /// <c>*MetricDefinition</c> types deriving from
-    /// <c>JoinedMetricDefinition&lt;TEntity, TJoined, TValue&gt;</c>, whose
-    /// <c>Project</c> method intrinsically takes <c>IQueryable</c> on both sides
-    /// of the join (the projection is the unit of aggregation; running it
-    /// elsewhere would force materialisation in memory).
+    /// QueryEngine, Persistence, Analytics, ODataExposure) are exempt — these
+    /// modules ARE the query pipeline; surfacing <c>IQueryable</c> on a bridge
+    /// type (e.g. the OData host-feed builder's user-supplied bypass lambda)
+    /// is part of their contract. Types following the <c>*QueryableSource</c>
+    /// convention — the standard bridge for exposing IQueryable to the
+    /// QueryEngine endpoints layer — and concrete <c>*MetricDefinition</c> types
+    /// deriving from <c>JoinedMetricDefinition&lt;TEntity, TJoined, TValue&gt;</c>,
+    /// whose <c>Project</c> method intrinsically takes <c>IQueryable</c> on both
+    /// sides of the join (the projection is the unit of aggregation; running it
+    /// elsewhere would force materialisation in memory), are also exempt.
     /// </summary>
     public static void IQueryableShouldNotEscapePersistenceLayer(
         ArchUnitNET.Domain.Architecture architecture)
     {
-        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "QueryEngine", "Persistence", "Export", "Identity.Local", "Identity.OpenIddict", "Analytics"];
+        string[] allowedNamespaceFragments = ["EntityFrameworkCore", "QueryEngine", "Persistence", "Export", "Identity.Local", "Identity.OpenIddict", "Analytics", "ODataExposure"];
 
         IEnumerable<IType> violators = architecture.Types
             .Where(t => !allowedNamespaceFragments.Any(ns =>

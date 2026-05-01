@@ -19,6 +19,9 @@ namespace Granit.Http.ODataExposure.Internal;
 /// <param name="MaxExpansionDepth">Maximum nesting depth allowed for <c>$expand</c>. Default <c>1</c> — flat expand only; nested expand requires explicit opt-in.</param>
 /// <param name="AnonymousAccessAcknowledged">Set by <see cref="Options.ODataEntitySetBuilder{TEntity}.AllowAnonymousAccess"/> to declare that the absence of <see cref="RequiredPermission"/> is intentional. Without this flag, the strict-config validator (C6 #1395) refuses to start the host — every OData EntitySet must be either gated or explicitly anonymous.</param>
 /// <param name="ExpandConfigurationAcknowledged">Set by <see cref="Options.ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/>, <see cref="Options.ODataEntitySetBuilder{TEntity}.DisableExpand"/>, or implicit via <see cref="Options.ODataEntitySetBuilder{TEntity}.AllowNoExpansion"/>. The strict-config validator refuses to start the host until one of these is called — implicit "expand disabled" is a security smell, the host must declare the intent.</param>
+/// <param name="FeedKind">Tenant-feed (default) or host-feed (cross-tenant, <see cref="ODataFeedKind.Host"/>). Set by <c>MapGranitODataHostEndpoints</c> on every host-feed descriptor. Drives feed-kind-aware strict-config rules (Host permission, cross-tenant acknowledgement) and the <c>feed_kind</c> OTel tag.</param>
+/// <param name="CrossTenantBypass">Host-supplied bypass lambda applied to the queryable before the QueryEngine pipeline runs. Typed <c>Func&lt;IQueryable&lt;TEntity&gt;, IQueryable&lt;TEntity&gt;&gt;</c> erased to <see cref="Delegate"/> so the descriptor stays non-generic. Required for <see cref="FeedKind"/> = <see cref="ODataFeedKind.Host"/> when the entity is <c>IMultiTenant</c> — the host writes <c>q =&gt; q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])</c> at the call site so the explicit "I know what I'm doing" lives in code, not in a flag.</param>
+/// <param name="CrossTenantExposureAcknowledged">Set by <c>AcknowledgeCrossTenantExposure</c> on the host-feed builder. Required for any host-feed EntitySet whose entity implements <c>IMultiTenant</c>; the strict-config validator throws at <c>MapGranitODataHostEndpoints</c> time when missing.</param>
 internal sealed record ODataEntitySetDescriptor(
     string EntitySetName,
     Type EntityType,
@@ -30,4 +33,7 @@ internal sealed record ODataEntitySetDescriptor(
     IReadOnlyList<string>? ExpandWhitelist = null,
     int MaxExpansionDepth = 1,
     bool AnonymousAccessAcknowledged = false,
-    bool ExpandConfigurationAcknowledged = false);
+    bool ExpandConfigurationAcknowledged = false,
+    ODataFeedKind FeedKind = ODataFeedKind.Tenant,
+    Delegate? CrossTenantBypass = null,
+    bool CrossTenantExposureAcknowledged = false);
