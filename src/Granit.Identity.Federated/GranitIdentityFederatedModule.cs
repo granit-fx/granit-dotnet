@@ -1,7 +1,9 @@
 using Granit.Analytics.Extensions;
 using Granit.DataExchange.Extensions;
+using Granit.Entities.Extensions;
 using Granit.Identity;
 using Granit.Identity.Federated.Domain;
+using Granit.Identity.Federated.Entities;
 using Granit.Identity.Federated.Exports;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Metrics;
@@ -29,6 +31,9 @@ public sealed class GranitIdentityFederatedModule : GranitModule
         // Query + Export definitions (ADR-020: owned by the base module).
         context.Services.AddQueryDefinition<UserCacheEntry, UserCacheEntryQueryDefinition>();
         context.Services.AddExportDefinition<UserCacheEntry, UserCacheEntryExportDefinition>();
+
+        // Phase 2 EntityDefinition (ADR-050).
+        context.Services.AddEntityDefinition<UserCacheEntry, UserCacheEntryEntityDefinition>();
 
         context.Services.AddMetricDefinition<UserCacheEntry, int, EnabledUserCacheEntryCountMetricDefinition>();
         context.Services.AddMetricDefinition<UserCacheEntry, int, UserCacheEntryCountMetricDefinition>();

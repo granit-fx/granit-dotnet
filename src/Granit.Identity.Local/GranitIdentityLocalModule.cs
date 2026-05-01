@@ -1,10 +1,12 @@
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Entities.Extensions;
 using Granit.Events;
 using Granit.Guids;
 using Granit.Identity;
 using Granit.Identity.Local.Diagnostics;
 using Granit.Identity.Local.Domain;
+using Granit.Identity.Local.Entities;
 using Granit.Identity.Local.Exports;
 using Granit.Identity.Local.Queries;
 using Granit.Modularity;
@@ -46,5 +48,9 @@ public sealed class GranitIdentityLocalModule : GranitModule
         context.Services.AddQueryDefinition<GranitUserGroup, GranitUserGroupQueryDefinition>();
         context.Services.AddExportDefinition<GranitRole, GranitRoleExportDefinition>();
         context.Services.AddExportDefinition<GranitUserGroup, GranitUserGroupExportDefinition>();
+
+        // Phase 2 EntityDefinitions (ADR-050).
+        context.Services.AddEntityDefinition<GranitRole, GranitRoleEntityDefinition>();
+        context.Services.AddEntityDefinition<GranitUserGroup, GranitUserGroupEntityDefinition>();
     }
 }

@@ -1,10 +1,12 @@
 using System.Reflection;
 using Granit.Authorization.Domain;
+using Granit.Authorization.Entities;
 using Granit.Authorization.Exports;
 using Granit.Authorization.Extensions;
 using Granit.Authorization.Queries;
 using Granit.Caching;
 using Granit.DataExchange.Extensions;
+using Granit.Entities.Extensions;
 using Granit.Modularity;
 using Granit.QueryEngine.Extensions;
 using Granit.Users;
@@ -33,6 +35,10 @@ public sealed class GranitAuthorizationModule : GranitModule
 
         context.Services.AddQueryDefinition<RoleMetadata, RoleMetadataQueryDefinition>();
         context.Services.AddExportDefinition<RoleMetadata, RoleMetadataExportDefinition>();
+
+        // Phase 2 EntityDefinitions (ADR-050).
+        context.Services.AddEntityDefinition<PermissionGrant, PermissionGrantEntityDefinition>();
+        context.Services.AddEntityDefinition<RoleMetadata, RoleMetadataEntityDefinition>();
 
         foreach (Assembly assembly in context.ModuleAssemblies)
         {

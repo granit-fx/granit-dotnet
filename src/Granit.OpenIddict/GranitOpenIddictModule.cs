@@ -1,11 +1,13 @@
 using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
+using Granit.Entities.Extensions;
 using Granit.Http.Cookies;
 using Granit.Identity.Local;
 using Granit.Identity.Local.Options;
 using Granit.Identity.Local.Services;
 using Granit.Modularity;
 using Granit.OpenIddict.Diagnostics;
+using Granit.OpenIddict.Entities;
 using Granit.OpenIddict.Entities.OpenIddict;
 using Granit.OpenIddict.Exports;
 using Granit.OpenIddict.Internal;
@@ -126,6 +128,10 @@ public sealed class GranitOpenIddictModule : GranitModule
         context.Services.AddQueryDefinition<GranitOpenIddictScope, GranitOpenIddictScopeQueryDefinition>();
         context.Services.AddExportDefinition<GranitOpenIddictApplication, OpenIddictApplicationExportDefinition>();
         context.Services.AddExportDefinition<GranitOpenIddictScope, OpenIddictScopeExportDefinition>();
+
+        // Phase 2 EntityDefinitions (ADR-050).
+        context.Services.AddEntityDefinition<GranitOpenIddictApplication, GranitOpenIddictApplicationEntityDefinition>();
+        context.Services.AddEntityDefinition<GranitOpenIddictScope, GranitOpenIddictScopeEntityDefinition>();
     }
 
     private static void PostConfigureIdentityCookie(

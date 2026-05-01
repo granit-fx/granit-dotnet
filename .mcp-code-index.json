@@ -307,6 +307,7 @@
       "deps": [
         "Granit.Caching",
         "Granit.DataExchange.Abstractions",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -1134,6 +1135,7 @@
         "Granit.Encryption.EntityFrameworkCore",
         "Granit.Identity",
         "Granit.Localization",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -1239,6 +1241,7 @@
         "Granit.Events",
         "Granit.Guids",
         "Granit.Identity",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.Settings",
         "Granit.Timing"
@@ -1846,6 +1849,7 @@
         "Granit.Encryption",
         "Granit.Http.Cookies",
         "Granit.Identity.Local",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -8327,6 +8331,38 @@
       "members": []
     },
     {
+      "name": "PermissionGrantEntityDefinition",
+      "fqn": "Granit.Authorization.Entities.PermissionGrantEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Entities/PermissionGrantEntityDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "RoleMetadataEntityDefinition",
+      "fqn": "Granit.Authorization.Entities.RoleMetadataEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Authorization",
+      "file": "src/Granit.Authorization/Entities/RoleMetadataEntityDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IPermissionGrantDbContext",
       "fqn": "Granit.Authorization.EntityFrameworkCore.DbContext.IPermissionGrantDbContext",
       "kind": "interface",
@@ -8538,7 +8574,7 @@
       "kind": "class",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/GranitAuthorizationModule.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -24107,6 +24143,22 @@
       ]
     },
     {
+      "name": "UserCacheEntryEntityDefinition",
+      "fqn": "Granit.Identity.Federated.Entities.UserCacheEntryEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Entities/UserCacheEntryEntityDefinition.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IUserCacheDbContext",
       "fqn": "Granit.Identity.Federated.EntityFrameworkCore.DbContext.IUserCacheDbContext",
       "kind": "interface",
@@ -24513,7 +24565,7 @@
       "kind": "class",
       "project": "Granit.Identity.Federated",
       "file": "src/Granit.Identity.Federated/GranitIdentityFederatedModule.cs",
-      "line": 24,
+      "line": 26,
       "members": [
         {
           "name": "ConfigureServices",
@@ -26212,6 +26264,38 @@
       "members": []
     },
     {
+      "name": "GranitRoleEntityDefinition",
+      "fqn": "Granit.Identity.Local.Entities.GranitRoleEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Entities/GranitRoleEntityDefinition.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitUserGroupEntityDefinition",
+      "fqn": "Granit.Identity.Local.Entities.GranitUserGroupEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Entities/GranitUserGroupEntityDefinition.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "AccountDeletedEto",
       "fqn": "Granit.Identity.Local.Events.AccountDeletedEto",
       "kind": "record",
@@ -26346,7 +26430,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/GranitIdentityLocalModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",
@@ -37343,6 +37427,38 @@
       ]
     },
     {
+      "name": "GranitOpenIddictApplicationEntityDefinition",
+      "fqn": "Granit.OpenIddict.Entities.GranitOpenIddictApplicationEntityDefinition",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/GranitOpenIddictApplicationEntityDefinition.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitOpenIddictScopeEntityDefinition",
+      "fqn": "Granit.OpenIddict.Entities.GranitOpenIddictScopeEntityDefinition",
+      "kind": "class",
+      "project": "Granit.OpenIddict",
+      "file": "src/Granit.OpenIddict/Entities/GranitOpenIddictScopeEntityDefinition.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitOpenIddictApplication",
       "fqn": "Granit.OpenIddict.Entities.OpenIddict.GranitOpenIddictApplication",
       "kind": "class",
@@ -37512,7 +37628,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict",
       "file": "src/Granit.OpenIddict/GranitOpenIddictModule.cs",
-      "line": 35,
+      "line": 37,
       "members": [
         {
           "name": "ConfigureServices",

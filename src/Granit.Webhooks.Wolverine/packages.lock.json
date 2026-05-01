@@ -11,8 +11,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.35.2",
-        "contentHash": "Ckgt5A2gG42GGE4KB6LZaYiAKbZJnFwPUOQ2I7AOq8Jo9//Sma966AQFUvAFRTutw7PdyPDK2aq6XSvhhlIxwQ==",
+        "resolved": "5.36.0",
+        "contentHash": "oOEwyUNKKNSx3sFS9PaVOAqJBTfYY+qrHKt7Bhyr3vyAPpR9R2bX3HwkR7avdQ1BALtEd4lb9twjKW2wZxld8g==",
         "dependencies": {
           "JasperFx": "1.28.2",
           "JasperFx.Events": "1.31.1",
@@ -628,6 +628,7 @@
         "dependencies": {
           "Granit.Caching": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
         }
       },
@@ -687,6 +688,17 @@
           "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
           "Microsoft.Extensions.Options": "[10.*, )",
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
+        }
+      },
+      "granit.entities.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics.Abstractions": "[0.1.0-dev, )",
+          "Granit.Dashboards.Abstractions": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Granit.Workflow.Abstractions": "[0.1.0-dev, )"
         }
       },
       "granit.guids": {
@@ -768,6 +780,12 @@
           "Granit.Validation": "[0.1.0-dev, )",
           "WolverineFx": "[5.*, )",
           "WolverineFx.FluentValidation": "[5.*, )"
+        }
+      },
+      "granit.workflow.abstractions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )"
         }
       },
       "FluentValidation": {
@@ -975,11 +993,11 @@
       "WolverineFx.FluentValidation": {
         "type": "CentralTransitive",
         "requested": "[5.*, )",
-        "resolved": "5.35.2",
-        "contentHash": "20srWDLuoD6odJvu7NOZC2sNRUBYErWMS5DzvnYesKZRX5IasXkhkSDmAMkVqE402mYPxtD6f+6TXyRhseCZng==",
+        "resolved": "5.36.0",
+        "contentHash": "1v31bPCGzhP3jVmDbYvXmmVEj45ZomYBJtyni5liE4T760oEMI+yNzLkp+PM5Z8j1ug4bbasSlVWEzWInASb+Q==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.35.2"
+          "WolverineFx": "5.36.0"
         }
       },
       "ZiggyCreatures.FusionCache": {
