@@ -22,7 +22,7 @@ The Notion-style mental model locked during planning splits a collection of reco
 
 Frappe ships ~10 view types (List, Report, Kanban, Calendar, Gantt, Image, Tree, Map, Dashboard) with config conventions per type but no formal catalog or schema. The result: each app reinvents the binding (Calendar needs a `start_date`; Kanban needs a `Select` field; Tree needs `is_tree: 1`); errors surface at user click time, not at developer boot time.
 
-Granit needs the same multi-view dividend with the type-safety it gets from compile-time enums and JSON Schema validation. ADR-041 (widget catalog) established the pattern for fields; this ADR extends it to view kinds.
+Granit needs the same multi-view dividend with the type-safety it gets from compile-time enums and JSON Schema validation. ADR-041 (component catalog) established the pattern for fields; this ADR extends it to view kinds.
 
 ## Decision
 
@@ -50,7 +50,7 @@ This is the **v1 catalog**. Adding a new kind requires an ADR amendment, a rende
 
 ### 2. Custom view-kind namespacing — `custom:<app-prefix>-<name>`
 
-When an app needs a view that isn't in the standard catalog (e.g., a sales pipeline with custom drag-and-drop semantics, an org chart, a flow diagram), the backend declares `custom:<app-prefix>-<name>` and the front-end registers a matching renderer in its `customViewRegistry`. Same rules as the widget catalog (ADR-041 §2):
+When an app needs a view that isn't in the standard catalog (e.g., a sales pipeline with custom drag-and-drop semantics, an org chart, a flow diagram), the backend declares `custom:<app-prefix>-<name>` and the front-end registers a matching renderer in its `customViewRegistry`. Same rules as the component catalog (ADR-041 §2):
 
 - `custom:` prefix mandatory; bare unknown names rejected at boot via the integrity check.
 - `<app-prefix>` matches `^[a-z][a-z0-9]*$`, identifies the owning module / app.
@@ -127,7 +127,7 @@ This rule has two consequences:
 ## Cross-references
 
 - [ADR-040](./040-three-tier-metadata-architecture) — Three-tier metadata. The kind catalog is Tier A (compiled); user-saved views (`EntityView`) are an additive layer that cannot mutate the kind.
-- [ADR-041](./041-widget-catalog) — Widget catalog. Same closed-set + `custom:<prefix>-<name>` namespace pattern, applied to field renderers.
+- [ADR-041](./041-component-catalog) — Component catalog. Same closed-set + `custom:<prefix>-<name>` namespace pattern, applied to field renderers.
 - [ADR-047](./047-entity-view) — `EntityView` supersedes `Granit.QueryEngine.SavedViews`. Documents the immutable `basedOn` rule referenced in §5 above.
 
 ## References

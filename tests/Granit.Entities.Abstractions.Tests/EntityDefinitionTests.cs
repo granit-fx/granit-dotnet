@@ -99,25 +99,25 @@ public sealed class EntityDefinitionTests
     }
 
     [Fact]
-    public void FieldBuilder_ChoosesDefaultWidget_FromClrType()
+    public void FieldBuilder_ChoosesDefaultComponent_FromClrType()
     {
         EntityDefinitionDescriptor d = new SampleEntityDefinition().Descriptor;
 
         var fields = d.Forms[0].Sections.SelectMany(s => s.Fields).ToDictionary(f => f.PropertyName);
 
-        fields["Title"].Widget.ShouldBe("text");
-        fields["Active"].Widget.ShouldBe("boolean");
-        fields["IssuedAt"].Widget.ShouldBe("datetime");
-        // Amount is overridden to "money" in the fixture (covered by FieldBuilder_OverridesWidget_AndConfig).
+        fields["Title"].Component.ShouldBe("text");
+        fields["Active"].Component.ShouldBe("boolean");
+        fields["IssuedAt"].Component.ShouldBe("datetime");
+        // Amount is overridden to "money" in the fixture (covered by FieldBuilder_OverridesComponent_AndConfig).
     }
 
     [Fact]
-    public void FieldBuilder_OverridesWidget_AndConfig()
+    public void FieldBuilder_OverridesComponent_AndConfig()
     {
         EntityDefinitionDescriptor d = new SampleEntityDefinition().Descriptor;
         FieldDescriptor amount = d.Forms[0].Sections.SelectMany(s => s.Fields).First(f => f.PropertyName == "Amount");
 
-        amount.Widget.ShouldBe("money");
+        amount.Component.ShouldBe("money");
         amount.Config.ShouldNotBeNull();
         amount.Config!["currencyCode"].ShouldBe("EUR");
     }
@@ -219,7 +219,7 @@ public sealed class EntityDefinitionTests
                 .Section("general", s => s
                     .Field(x => x.Title)
                     .Field(x => x.Amount, fld => fld
-                        .Widget("money", new Dictionary<string, object?>(StringComparer.Ordinal) { ["currencyCode"] = "EUR" })
+                        .Component("money", new Dictionary<string, object?>(StringComparer.Ordinal) { ["currencyCode"] = "EUR" })
                         .RequiresPermission("Sample.SampleEntities.Manage"))
                     .Field(x => x.Active)
                     .Field(x => x.IssuedAt)

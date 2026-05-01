@@ -249,7 +249,7 @@ internal static class EntityManifestComposer
             fields.Add(new EntityFormFieldManifest(
                 field.PropertyName,
                 field.ClrType.Name,
-                field.Widget,
+                field.Component,
                 field.Config,
                 field.LabelKey,
                 field.HelpKey,

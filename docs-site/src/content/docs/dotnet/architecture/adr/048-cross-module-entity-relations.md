@@ -82,7 +82,7 @@ services.AddEntityRelationContribution<InvoicesOnPartyRelationContribution>();
 | `Tab` | Embedded grid as a tab inside the detail (intra-module collections) | Owned child collections that belong to the parent's editing context (InvoiceLines, Addresses) |
 | `InlineChips` | Chip row inline with the detail content | Many-to-many relations where the items are short labels (Tags, Categories) |
 
-This is the **v1 catalog** — same closed-set + `custom:` namespace pattern as [ADR-041](./041-widget-catalog) §2 / [ADR-042](./042-view-catalog) §2. Adding a new display mode requires an ADR amendment + renderer in `@granit/entities-react`.
+This is the **v1 catalog** — same closed-set + `custom:` namespace pattern as [ADR-041](./041-component-catalog) §2 / [ADR-042](./042-view-catalog) §2. Adding a new display mode requires an ADR amendment + renderer in `@granit/entities-react`.
 
 ### 3. Aggregates — closed primitive set
 
@@ -186,7 +186,7 @@ Plus the intra-module `Addresses` tab on `Party`. Five total relations on a sing
 
 - [ADR-040](./040-three-tier-metadata-architecture) — Three-tier metadata. Relations are Tier A (compiled); tenant admins cannot add cross-module relations from the UI.
 - [ADR-038](./038-analytics-dashboard-definition-vs-aggregate) — Aggregate computation reuses `MetricDefinition` machinery internally; no parallel pipeline.
-- [ADR-041](./041-widget-catalog) §2 — Same closed-set + `custom:` namespace pattern, applied to display modes.
+- [ADR-041](./041-component-catalog) §2 — Same closed-set + `custom:` namespace pattern, applied to display modes.
 - [ADR-045](./045-contributor-pattern) — IoC contributor pattern. `IEntityRelationContributor` is the third primitive served (after `IWorkspaceContributor` and `IActivityTypeProvider`).
 
 ## References

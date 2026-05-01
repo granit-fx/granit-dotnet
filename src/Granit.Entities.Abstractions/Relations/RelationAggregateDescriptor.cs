@@ -9,7 +9,7 @@ namespace Granit.Entities.Relations;
 /// <param name="Kind">The aggregate kind.</param>
 /// <param name="PropertyName">PascalCase property name on the related entity, or <see langword="null"/> for <see cref="RelationAggregateKind.Count"/>.</param>
 /// <param name="LabelKey">i18n key for the user-facing label (e.g. <c>"Relation:Party.Invoices.Total"</c>).</param>
-/// <param name="Format">Optional formatter hint (e.g. <c>"currency"</c>, <c>"int"</c>) — opaque to the framework, mirrored from <see cref="Forms.FieldDescriptor.Widget"/> conventions.</param>
+/// <param name="Format">Optional formatter hint (e.g. <c>"currency"</c>, <c>"int"</c>) — opaque to the framework, mirrored from <see cref="Forms.FieldDescriptor.Component"/> conventions.</param>
 public sealed record RelationAggregateDescriptor(
     RelationAggregateKind Kind,
     string? PropertyName,
