@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "La condición especificada para '{PropertyName}' no se ha cumplido.",
     "Granit:Validation:AtLeastOneMappingTarget": "Al menos una asignación debe tener una propiedad destino no nula.",
     "Granit:Validation:BulkSettingsTooLarge": "Se permiten un máximo de 200 configuraciones por solicitud en lote.",
+    "Granit:Validation:CalendarRangeInverted": "El rango del calendario está invertido: 'Hasta' debe ser mayor o igual que 'Desde'.",
+    "Granit:Validation:CalendarRangeTooWide": "El rango del calendario es demasiado amplio: la ventana solicitada no puede superar los 366 días.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' solo puede contener letras, dígitos, guiones, guiones bajos o puntos.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' no es un número de tarjeta de crédito válido.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' y 'Page' son mutuamente excluyentes.",

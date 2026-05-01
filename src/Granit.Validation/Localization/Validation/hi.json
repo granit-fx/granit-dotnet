@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' के लिए निर्दिष्ट शर्त पूरी नहीं हुई।",
     "Granit:Validation:AtLeastOneMappingTarget": "कम से कम एक मैपिंग में नॉन-नल लक्ष्य प्रॉपर्टी होनी चाहिए।",
     "Granit:Validation:BulkSettingsTooLarge": "प्रति बल्क अनुरोध अधिकतम 200 सेटिंग्स अनुमत हैं।",
+    "Granit:Validation:CalendarRangeInverted": "कैलेंडर सीमा उलट गई है: 'तक' 'से' से बड़ा या उसके बराबर होना चाहिए.",
+    "Granit:Validation:CalendarRangeTooWide": "कैलेंडर सीमा बहुत व्यापक है: अनुरोधित विंडो 366 दिनों से अधिक नहीं हो सकती.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' में केवल अक्षर, अंक, हाइफ़न, अंडरस्कोर या बिंदु होने चाहिए।",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' एक मान्य क्रेडिट कार्ड नंबर नहीं है।",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' और 'Page' परस्पर अनन्य हैं।",

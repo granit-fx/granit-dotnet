@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "La condition spécifiée n'a pas été remplie pour '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Au moins un mappage doit avoir une propriété cible non nulle.",
     "Granit:Validation:BulkSettingsTooLarge": "Maximum 200 paramètres autorisés par requête groupée.",
+    "Granit:Validation:CalendarRangeInverted": "La plage du calendrier est inversée : 'Jusqu'à' doit être supérieur ou égal à 'À partir de'.",
+    "Granit:Validation:CalendarRangeTooWide": "La plage du calendrier est trop large : la fenêtre demandée ne peut pas dépasser 366 jours.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' ne peut contenir que des lettres, des chiffres, des tirets, des underscores ou des points.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' n'est pas un numéro de carte bancaire valide.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' et 'Page' sont mutuellement exclusifs.",

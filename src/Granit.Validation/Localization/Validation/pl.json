@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "Określony warunek nie został spełniony dla '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Co najmniej jedno mapowanie musi mieć niepustą właściwość docelową.",
     "Granit:Validation:BulkSettingsTooLarge": "Dozwolonych jest maksymalnie 200 ustawień na żądanie zbiorcze.",
+    "Granit:Validation:CalendarRangeInverted": "Zakres kalendarza jest odwrócony: 'Do' musi być większe lub równe 'Od'.",
+    "Granit:Validation:CalendarRangeTooWide": "Zakres kalendarza jest zbyt szeroki: żądane okno nie może przekraczać 366 dni.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' może zawierać tylko litery, cyfry, myślniki, podkreślenia lub kropki.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' nie jest prawidłowym numerem karty kredytowej.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' i 'Page' wykluczają się wzajemnie.",

@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
     "Granit:Validation:AtLeastOneMappingTarget": "少なくとも1つのマッピングにnullでないターゲットプロパティが必要です。",
     "Granit:Validation:BulkSettingsTooLarge": "一括リクエストあたり最大200件の設定が許可されます。",
+    "Granit:Validation:CalendarRangeInverted": "カレンダーの範囲が逆転しています。「終了」は「開始」以上である必要があります。",
+    "Granit:Validation:CalendarRangeTooWide": "カレンダーの範囲が広すぎます。要求されたウィンドウは366日を超えることはできません。",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' には英数字、ハイフン、アンダースコア、ドットのみ使用できます。",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' は有効なクレジットカード番号ではありません。",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' と 'Page' は同時に使用できません。",

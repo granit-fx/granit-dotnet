@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
     "Granit:Validation:AtLeastOneMappingTarget": "Minstens één toewijzing moet een niet-null doeleigenschap hebben.",
     "Granit:Validation:BulkSettingsTooLarge": "Maximaal 200 instellingen toegestaan per bulkverzoek.",
+    "Granit:Validation:CalendarRangeInverted": "Het kalenderbereik is omgekeerd: 'Tot' moet groter dan of gelijk aan 'Van' zijn.",
+    "Granit:Validation:CalendarRangeTooWide": "Het kalenderbereik is te breed: het aangevraagde venster mag niet groter zijn dan 366 dagen.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' mag alleen letters, cijfers, koppeltekens, underscores of punten bevatten.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' is geen geldig creditcardnummer.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' en 'Page' sluiten elkaar uit.",

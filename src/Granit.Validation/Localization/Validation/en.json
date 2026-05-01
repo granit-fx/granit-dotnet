@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "The specified condition was not met for '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "At least one mapping must have a non-null target property.",
     "Granit:Validation:BulkSettingsTooLarge": "Maximum 200 settings allowed per bulk request.",
+    "Granit:Validation:CalendarRangeInverted": "The calendar range is inverted: 'To' must be greater than or equal to 'From'.",
+    "Granit:Validation:CalendarRangeTooWide": "The calendar range is too wide: the requested window cannot exceed 366 days.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' must only contain letters, digits, hyphens, underscores, or dots.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' is not a valid credit card number.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' and 'Page' are mutually exclusive.",

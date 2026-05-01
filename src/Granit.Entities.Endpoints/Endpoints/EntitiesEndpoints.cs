@@ -39,6 +39,7 @@ internal static class EntitiesEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
         group.MapRelationAggregatesEndpoint();
+        group.MapCalendarRangeEndpoint();
 
         return group;
     }

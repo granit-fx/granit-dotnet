@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "Zadaná podmínka nebyla splněna pro '{PropertyName}'.",
     "Granit:Validation:AtLeastOneMappingTarget": "Alespoň jedno mapování musí mít nenulovou cílovou vlastnost.",
     "Granit:Validation:BulkSettingsTooLarge": "Povoleno je maximálně 200 nastavení na hromadný požadavek.",
+    "Granit:Validation:CalendarRangeInverted": "Rozsah kalendáře je obrácený: hodnota 'Do' musí být větší nebo rovna 'Od'.",
+    "Granit:Validation:CalendarRangeTooWide": "Rozsah kalendáře je příliš široký: požadované okno nesmí přesáhnout 366 dní.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' může obsahovat pouze písmena, číslice, pomlčky, podtržítka nebo tečky.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' není platné číslo kreditní karty.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' a 'Page' nelze použít současně.",

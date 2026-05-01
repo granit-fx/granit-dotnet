@@ -64,6 +64,11 @@ public static class EntitiesEndpointRouteBuilderExtensions
         // parallelism is the implementation's responsibility (story #1561).
         services.TryAddSingleton<Granit.Entities.Relations.IRelationAggregateService,
             Granit.Entities.Relations.NullRelationAggregateService>();
+        // Calendar range queries default to a no-op until a host plugs an EF
+        // Core executor in (story #1689). Hosts override by registering a
+        // concrete ICalendarRangeService BEFORE calling AddGranitEntitiesEndpoints,
+        // or by calling Replace afterwards.
+        services.TryAddSingleton<ICalendarRangeService, NullCalendarRangeService>();
         services.AddOptions<EntitiesEndpointsOptions>();
         Granit.Diagnostics.GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
         return services;

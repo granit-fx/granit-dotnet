@@ -18984,6 +18984,24 @@
       "members": []
     },
     {
+      "name": "CalendarItemResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.CalendarItemResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/CalendarItemResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CalendarRangeRequest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.CalendarRangeRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/CalendarRangeRequest.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "EntityActionManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityActionManifest",
       "kind": "record",
@@ -19282,6 +19300,38 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ICalendarRangeService",
+      "fqn": "Granit.Entities.Endpoints.Internal.ICalendarRangeService",
+      "kind": "interface",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Internal/ICalendarRangeService.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "GetItemsAsync",
+          "kind": "method",
+          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
+        }
+      ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.Endpoints.Internal.struct",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Internal/ICalendarRangeService.cs",
+      "line": 34,
+      "members": [
+        {
+          "name": "GetItemsAsync",
+          "kind": "method",
+          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
         }
       ]
     },

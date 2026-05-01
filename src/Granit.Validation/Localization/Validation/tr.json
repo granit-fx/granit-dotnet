@@ -5,6 +5,8 @@
     "Granit:Validation:AsyncPredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
     "Granit:Validation:AtLeastOneMappingTarget": "En az bir eşleme, boş olmayan bir hedef özelliğe sahip olmalıdır.",
     "Granit:Validation:BulkSettingsTooLarge": "Toplu istek başına en fazla 200 ayara izin verilir.",
+    "Granit:Validation:CalendarRangeInverted": "Takvim aralığı ters: 'Bitiş', 'Başlangıç' değerine eşit veya ondan büyük olmalıdır.",
+    "Granit:Validation:CalendarRangeTooWide": "Takvim aralığı çok geniş: istenen pencere 366 günü aşamaz.",
     "Granit:Validation:CodeInvalidFormat": "'{PropertyName}' yalnızca harf, rakam, tire, alt çizgi veya nokta içerebilir.",
     "Granit:Validation:CreditCardValidator": "'{PropertyName}' geçerli bir kredi kartı numarası değil.",
     "Granit:Validation:CursorPageMutuallyExclusive": "'Cursor' ve 'Page' birlikte kullanılamaz.",
