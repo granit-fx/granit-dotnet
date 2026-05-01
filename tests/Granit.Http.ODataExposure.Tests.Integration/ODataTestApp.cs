@@ -117,18 +117,24 @@ internal sealed class ODataTestApp : IAsyncDisposable
 
         // Tenant-switching middleware — read X-Test-Tenant header, scope the
         // change to the request's lifetime via using/Dispose so AsyncLocal
-        // restores cleanly even if downstream throws.
+        // restores cleanly even if downstream throws. ALWAYS open a scope:
+        // when no header is present, scope to a null tenant so the static
+        // AsyncLocal in CurrentTenant cannot leak a value from a prior test
+        // through the same xUnit execution context (regression fix —
+        // anonymous request was returning the previous test's tenant rows).
         app.Use(async (context, next) =>
         {
+            Guid? tenantId = null;
             if (context.Request.Headers.TryGetValue("X-Test-Tenant", out Microsoft.Extensions.Primitives.StringValues header)
-                && Guid.TryParse(header.ToString(), out Guid tenantId))
+                && Guid.TryParse(header.ToString(), out Guid parsed))
             {
-                ICurrentTenant currentTenant = context.RequestServices.GetRequiredService<ICurrentTenant>();
-                using IDisposable tenantScope = currentTenant.Change(tenantId, name: $"Tenant-{tenantId}");
-                await next(context).ConfigureAwait(false);
-                return;
+                tenantId = parsed;
             }
 
+            ICurrentTenant currentTenant = context.RequestServices.GetRequiredService<ICurrentTenant>();
+            using IDisposable tenantScope = currentTenant.Change(
+                tenantId,
+                name: tenantId is { } v ? $"Tenant-{v}" : null);
             await next(context).ConfigureAwait(false);
         });
 
