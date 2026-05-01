@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Varlık görünümleri",
+    "Permission:Entities.Views.Read": "Varlık görünümlerini görüntüle",
+    "Permission:Entities.Views.Create": "Kişisel varlık görünümleri oluştur",
+    "Permission:Entities.Views.Share": "Varlık görünümlerini rollerle veya kullanıcılarla paylaş",
+    "Permission:Entities.Views.Manage": "Varlık görünümlerini yönet (sabitle / kiracı varsayılanı ayarla / yükselt)",
+    "Permission:Entities.Views.Delete.Any": "Herhangi bir varlık görünümünü sil (moderasyon)"
+  }
 }

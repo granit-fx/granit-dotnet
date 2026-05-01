@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Entiteitsweergaven",
+    "Permission:Entities.Views.Read": "Entiteitsweergaven bekijken",
+    "Permission:Entities.Views.Create": "Persoonlijke entiteitsweergaven maken",
+    "Permission:Entities.Views.Share": "Entiteitsweergaven delen met rollen of gebruikers",
+    "Permission:Entities.Views.Manage": "Entiteitsweergaven beheren (vastmaken / tenant-standaard instellen / promoveren)",
+    "Permission:Entities.Views.Delete.Any": "Elke entiteitsweergave verwijderen (moderatie)"
+  }
 }

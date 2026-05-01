@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "de",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Entitätsansichten",
+    "Permission:Entities.Views.Read": "Entitätsansichten anzeigen",
+    "Permission:Entities.Views.Create": "Persönliche Entitätsansichten erstellen",
+    "Permission:Entities.Views.Share": "Entitätsansichten mit Rollen oder Benutzern teilen",
+    "Permission:Entities.Views.Manage": "Entitätsansichten verwalten (anheften / Mandanten-Standard festlegen / hochstufen)",
+    "Permission:Entities.Views.Delete.Any": "Beliebige Entitätsansicht löschen (Moderation)"
+  }
 }

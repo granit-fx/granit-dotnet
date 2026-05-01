@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Widoki encji",
+    "Permission:Entities.Views.Read": "Wyświetlanie widoków encji",
+    "Permission:Entities.Views.Create": "Tworzenie osobistych widoków encji",
+    "Permission:Entities.Views.Share": "Udostępnianie widoków encji rolom lub użytkownikom",
+    "Permission:Entities.Views.Manage": "Zarządzanie widokami encji (przypinanie / ustawianie domyślnego dla najemcy / promowanie)",
+    "Permission:Entities.Views.Delete.Any": "Usuwanie dowolnego widoku encji (moderacja)"
+  }
 }

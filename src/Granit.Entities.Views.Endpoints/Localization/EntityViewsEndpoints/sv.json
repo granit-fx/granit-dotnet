@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Entitetsvyer",
+    "Permission:Entities.Views.Read": "Visa entitetsvyer",
+    "Permission:Entities.Views.Create": "Skapa personliga entitetsvyer",
+    "Permission:Entities.Views.Share": "Dela entitetsvyer med roller eller användare",
+    "Permission:Entities.Views.Manage": "Hantera entitetsvyer (fäst / ange tenant-standard / befordra)",
+    "Permission:Entities.Views.Delete.Any": "Ta bort valfri entitetsvy (moderering)"
+  }
 }
