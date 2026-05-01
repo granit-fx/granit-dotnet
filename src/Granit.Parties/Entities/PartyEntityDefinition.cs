@@ -20,8 +20,12 @@ namespace Granit.Parties.Entities;
 /// <para>
 /// Form variants:
 /// <list type="bullet">
-///   <item><c>"default"</c> — full edit form with identity, locale, contact, and metadata sections.</item>
-///   <item><c>"quick"</c> — minimum-input subset for the SPA's quick-create modal (Name + Currency + Status).</item>
+///   <item><c>"default"</c> — full edit form with identity, locale, contact, the
+///     four owned-collection sections (emails, phones, addresses, external
+///     mappings) and a <c>"tax"</c> read-only section for the computed tax
+///     status.</item>
+///   <item><c>"quick"</c> — minimum-input subset for the SPA's quick-create modal
+///     (Name + Currency + Status).</item>
 /// </list>
 /// </para>
 /// </remarks>
@@ -53,7 +57,31 @@ public sealed class PartyEntityDefinition : EntityDefinition<Party>
                 .Section("contact", s => s
                     .Field(p => p.Website)
                     .Field(p => p.TaxId)
-                    .Field(p => p.RegistrationNumber)))
+                    .Field(p => p.RegistrationNumber))
+                .OwnedCollectionSection<PartyEmail>("emails", p => p.Emails, s => s
+                    .ItemDisplayProperty(e => e.Address)
+                    .ItemField(e => e.Address)
+                    .ItemField(e => e.Label)
+                    .ItemField(e => e.IsPrimary))
+                .OwnedCollectionSection<PartyPhone>("phones", p => p.Phones, s => s
+                    .ItemDisplayProperty(ph => ph.Number)
+                    .ItemField(ph => ph.Kind)
+                    .ItemField(ph => ph.Number)
+                    .ItemField(ph => ph.Label)
+                    .ItemField(ph => ph.IsPrimary))
+                .OwnedCollectionSection<PartyAddress>("addresses", p => p.Addresses, s => s
+                    .ItemDisplayProperty(a => a.Label)
+                    .ItemField(a => a.Kind)
+                    .ItemField(a => a.Label)
+                    .ItemField(a => a.IsDefault))
+                .OwnedCollectionSection<PartyExternalMapping>(
+                    "externalMappings", p => p.ExternalMappings, s => s
+                    .CollapsedByDefault()
+                    .ItemDisplayProperty(m => m.ProviderName)
+                    .ItemField(m => m.ProviderName)
+                    .ItemField(m => m.ExternalId))
+                .Section("tax", s => s
+                    .Field(p => p.TaxStatus, x => x.ReadOnly())))
             .Form("quick", f => f
                 .Section("essentials", s => s
                     .Field(p => p.Name)

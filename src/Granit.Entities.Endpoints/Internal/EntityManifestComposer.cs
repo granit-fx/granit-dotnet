@@ -131,27 +131,17 @@ internal static class EntityManifestComposer
             List<EntityFormSectionManifest> sections = new(form.Sections.Count);
             foreach (SectionDescriptor section in form.Sections)
             {
-                List<EntityFormFieldManifest> fields = new(section.Fields.Count);
-                foreach (FieldDescriptor field in section.Fields)
+                if (section.OwnedCollection is { } owned)
                 {
-                    if (field.RequiresPermission is { } perm
-                        && !granted.Contains(perm))
+                    EntityFormSectionManifest? ownedSection = ComposeOwnedCollectionSection(section, owned, granted);
+                    if (ownedSection is not null)
                     {
-                        // Drop entirely — defense in depth.
-                        continue;
+                        sections.Add(ownedSection);
                     }
-
-                    fields.Add(new EntityFormFieldManifest(
-                        field.PropertyName,
-                        field.ClrType.Name,
-                        field.Widget,
-                        field.Config,
-                        field.LabelKey,
-                        field.HelpKey,
-                        field.Order,
-                        field.ReadOnly,
-                        field.VisibleIf));
+                    continue;
                 }
+
+                List<EntityFormFieldManifest> fields = FilterFields(section.Fields, granted);
 
                 // A section with no surviving fields is dropped too — avoids
                 // empty section headers when the user lacks permission for
@@ -173,6 +163,61 @@ internal static class EntityManifestComposer
         }
 
         return forms;
+    }
+
+    private static EntityFormSectionManifest? ComposeOwnedCollectionSection(
+        SectionDescriptor section,
+        OwnedCollectionDescriptor owned,
+        IReadOnlySet<string> granted)
+    {
+        List<EntityFormFieldManifest> itemFields = FilterFields(owned.ItemFields, granted);
+
+        // No surviving item field → drop the whole section (defense in depth).
+        if (itemFields.Count == 0)
+        {
+            return null;
+        }
+
+        EntityFormOwnedCollectionManifest collection = new(
+            owned.PropertyName,
+            owned.ItemType.Name,
+            itemFields,
+            owned.ItemDisplayProperty,
+            owned.MaxRendered);
+
+        return new EntityFormSectionManifest(
+            section.Key,
+            section.LabelKey,
+            section.Order,
+            section.CollapsedByDefault,
+            Fields: [],
+            OwnedCollection: collection);
+    }
+
+    private static List<EntityFormFieldManifest> FilterFields(
+        IReadOnlyList<FieldDescriptor> source,
+        IReadOnlySet<string> granted)
+    {
+        List<EntityFormFieldManifest> fields = new(source.Count);
+        foreach (FieldDescriptor field in source)
+        {
+            if (field.RequiresPermission is { } perm && !granted.Contains(perm))
+            {
+                continue;
+            }
+
+            fields.Add(new EntityFormFieldManifest(
+                field.PropertyName,
+                field.ClrType.Name,
+                field.Widget,
+                field.Config,
+                field.LabelKey,
+                field.HelpKey,
+                field.Order,
+                field.ReadOnly,
+                field.VisibleIf));
+        }
+        return fields;
     }
 
     private static List<EntityDetailManifest> ComposeDetails(

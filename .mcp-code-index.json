@@ -18991,7 +18991,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 37,
+      "line": 39,
       "members": []
     },
     {
@@ -19004,12 +19004,21 @@
       "members": []
     },
     {
+      "name": "EntityFormOwnedCollectionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormOwnedCollectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
+      "line": 56,
+      "members": []
+    },
+    {
       "name": "EntityFormSectionManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormSectionManifest",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 20,
+      "line": 21,
       "members": []
     },
     {
@@ -19256,7 +19265,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FormBuilder.cs",
-      "line": 7,
+      "line": 10,
       "members": []
     },
     {
@@ -19266,6 +19275,24 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Forms/FormDescriptor.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "OwnedCollectionDescriptor",
+      "fqn": "Granit.Entities.Forms.OwnedCollectionDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/OwnedCollectionDescriptor.cs",
+      "line": 15,
+      "members": []
+    },
+    {
+      "name": "OwnedCollectionSectionBuilder",
+      "fqn": "Granit.Entities.Forms.OwnedCollectionSectionBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Forms/OwnedCollectionSectionBuilder.cs",
+      "line": 13,
       "members": []
     },
     {
@@ -28102,7 +28129,7 @@
       "kind": "class",
       "project": "Granit.Invoicing",
       "file": "src/Granit.Invoicing/Entities/InvoiceEntityDefinition.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "Name",
@@ -38526,7 +38553,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Entities/PartyEntityDefinition.cs",
-      "line": 28,
+      "line": 32,
       "members": [
         {
           "name": "Name",

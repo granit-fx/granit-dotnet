@@ -8,9 +8,10 @@ namespace Granit.Invoicing.Entities;
 
 /// <summary>
 /// Phase 1.F cobaye — declares the <see cref="Invoice"/> aggregate's UI surface
-/// (per ADR-040). Form variants <c>"default"</c> + <c>"quick"</c>, detail with
-/// the standard Audit + Timeline side panels, list collection backed by the
-/// existing <c>InvoiceQueryDefinition</c>.
+/// (per ADR-040). Form variants <c>"default"</c> + <c>"quick"</c>; the default
+/// form carries the line-items, external-references, and document
+/// owned-collection sections; detail uses the standard Audit + Timeline side
+/// panels; list collection backed by the existing <c>InvoiceQueryDefinition</c>.
 /// </summary>
 public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
 {
@@ -46,7 +47,27 @@ public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
                     .Field(i => i.TaxTotal)
                     .Field(i => i.Total)
                     .Field(i => i.AmountPaid)
-                    .Field(i => i.AmountRemaining)))
+                    .Field(i => i.AmountRemaining))
+                .OwnedCollectionSection<InvoiceLineItem>("lineItems", i => i.LineItems, s => s
+                    .ItemDisplayProperty(li => li.Description)
+                    .ItemField(li => li.Description)
+                    .ItemField(li => li.Quantity)
+                    .ItemField(li => li.UnitPrice)
+                    .ItemField(li => li.Amount, x => x.ReadOnly())
+                    .ItemField(li => li.TaxRate)
+                    .ItemField(li => li.TaxAmount, x => x.ReadOnly()))
+                .OwnedCollectionSection<InvoiceExternalReference>(
+                    "externalReferences", i => i.ExternalReferences, s => s
+                    .CollapsedByDefault()
+                    .ItemDisplayProperty(r => r.ProviderName)
+                    .ItemField(r => r.ProviderName)
+                    .ItemField(r => r.ExternalId))
+                .OwnedCollectionSection<InvoiceDocument>("documents", i => i.Documents, s => s
+                    .CollapsedByDefault()
+                    .ItemDisplayProperty(doc => doc.FileName)
+                    .ItemField(doc => doc.FileName, x => x.ReadOnly())
+                    .ItemField(doc => doc.ContentType, x => x.ReadOnly())
+                    .ItemField(doc => doc.GeneratedAt, x => x.ReadOnly())))
             .Form("quick", f => f
                 .Section("essentials", s => s
                     .Field(i => i.PartyId)

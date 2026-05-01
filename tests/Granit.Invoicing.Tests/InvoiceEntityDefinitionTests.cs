@@ -1,4 +1,6 @@
 using Granit.Entities;
+using Granit.Entities.Forms;
+using Granit.Invoicing.Domain;
 using Granit.Invoicing.Entities;
 using Shouldly;
 using Xunit;
@@ -28,12 +30,67 @@ public sealed class InvoiceEntityDefinitionTests
     }
 
     [Fact]
+    public void Descriptor_default_form_carries_scalar_and_owned_collection_sections_in_declaration_order()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        FormDescriptor defaultForm = d.Forms.Single(f => f.Name == "default");
+
+        defaultForm.Sections.Select(s => s.Key).ShouldBe(
+            ["identity", "billing", "amounts", "lineItems", "externalReferences", "documents"]);
+    }
+
+    [Fact]
+    public void Descriptor_lineItems_owned_collection_targets_InvoiceLineItem_with_description_as_display_property()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        SectionDescriptor lineItems = d.Forms.Single(f => f.Name == "default")
+            .Sections.Single(s => s.Key == "lineItems");
+
+        lineItems.OwnedCollection.ShouldNotBeNull();
+        lineItems.OwnedCollection!.PropertyName.ShouldBe("LineItems");
+        lineItems.OwnedCollection.ItemType.ShouldBe(typeof(InvoiceLineItem));
+        lineItems.OwnedCollection.ItemDisplayProperty.ShouldBe("Description");
+        lineItems.OwnedCollection.ItemFields.Select(f => f.PropertyName)
+            .ShouldBe(["Description", "Quantity", "UnitPrice", "Amount", "TaxRate", "TaxAmount"]);
+    }
+
+    [Fact]
+    public void Descriptor_lineItems_marks_computed_amounts_as_read_only()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        OwnedCollectionDescriptor lineItems = d.Forms.Single(f => f.Name == "default")
+            .Sections.Single(s => s.Key == "lineItems")
+            .OwnedCollection!;
+
+        lineItems.ItemFields.Single(f => f.PropertyName == "Amount").ReadOnly.ShouldBeTrue();
+        lineItems.ItemFields.Single(f => f.PropertyName == "TaxAmount").ReadOnly.ShouldBeTrue();
+        lineItems.ItemFields.Single(f => f.PropertyName == "Quantity").ReadOnly.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void Descriptor_documents_section_targets_InvoiceDocument_and_is_collapsed()
+    {
+        EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
+
+        SectionDescriptor documents = d.Forms.Single(f => f.Name == "default")
+            .Sections.Single(s => s.Key == "documents");
+
+        documents.CollapsedByDefault.ShouldBeTrue();
+        documents.OwnedCollection!.ItemType.ShouldBe(typeof(InvoiceDocument));
+        documents.OwnedCollection.ItemFields.ShouldAllBe(f => f.ReadOnly);
+    }
+
+    [Fact]
     public void Descriptor_default_form_groups_amounts_separately_from_identity()
     {
         EntityDefinitionDescriptor d = new InvoiceEntityDefinition().Descriptor;
 
-        Granit.Entities.Forms.FormDescriptor defaultForm = d.Forms.Single(f => f.Name == "default");
-        defaultForm.Sections.Select(s => s.Key).ShouldBe(["identity", "billing", "amounts"]);
+        FormDescriptor defaultForm = d.Forms.Single(f => f.Name == "default");
+        defaultForm.Sections.Select(s => s.Key).ShouldContain("identity");
+        defaultForm.Sections.Select(s => s.Key).ShouldContain("amounts");
     }
 
     [Fact]

@@ -159,6 +159,172 @@ public sealed class EntityManifestComposerTests
         manifest.SchemaVersion.ShouldBe(EntityManifestComposer.SchemaVersion);
     }
 
+    [Fact]
+    public void Compose_emits_owned_collection_section_with_item_fields_and_display_property()
+    {
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(
+            forms: [
+                new FormDescriptor
+                {
+                    Name = "default",
+                    Customizable = false,
+                    Sections = [
+                        new SectionDescriptor
+                        {
+                            Key = "addresses",
+                            Order = 0,
+                            Fields = [],
+                            OwnedCollection = new OwnedCollectionDescriptor
+                            {
+                                PropertyName = "Addresses",
+                                ItemType = typeof(SampleAddress),
+                                ItemDisplayProperty = "Line1",
+                                MaxRendered = 5,
+                                ItemFields = [
+                                    new FieldDescriptor
+                                    {
+                                        PropertyName = "Line1",
+                                        ClrType = typeof(string),
+                                        Widget = "text",
+                                        Order = 0,
+                                    },
+                                    new FieldDescriptor
+                                    {
+                                        PropertyName = "City",
+                                        ClrType = typeof(string),
+                                        Widget = "text",
+                                        Order = 1,
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ]);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Forms,
+            defaultViewId: null);
+
+        EntityFormSectionManifest section = manifest.Forms!.Single().Sections.Single();
+        section.Key.ShouldBe("addresses");
+        section.Fields.ShouldBeEmpty();
+        section.OwnedCollection.ShouldNotBeNull();
+        section.OwnedCollection!.PropertyName.ShouldBe("Addresses");
+        section.OwnedCollection.ItemTypeName.ShouldBe(nameof(SampleAddress));
+        section.OwnedCollection.ItemDisplayProperty.ShouldBe("Line1");
+        section.OwnedCollection.MaxRendered.ShouldBe(5);
+        section.OwnedCollection.ItemFields.Select(f => f.PropertyName).ShouldBe(["Line1", "City"]);
+    }
+
+    [Fact]
+    public void Compose_filters_owned_collection_item_fields_by_permission()
+    {
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(
+            forms: [
+                new FormDescriptor
+                {
+                    Name = "default",
+                    Customizable = false,
+                    Sections = [
+                        new SectionDescriptor
+                        {
+                            Key = "addresses",
+                            Order = 0,
+                            Fields = [],
+                            OwnedCollection = new OwnedCollectionDescriptor
+                            {
+                                PropertyName = "Addresses",
+                                ItemType = typeof(SampleAddress),
+                                ItemFields = [
+                                    new FieldDescriptor
+                                    {
+                                        PropertyName = "Line1",
+                                        ClrType = typeof(string),
+                                        Widget = "text",
+                                        Order = 0,
+                                    },
+                                    new FieldDescriptor
+                                    {
+                                        PropertyName = "Country",
+                                        ClrType = typeof(string),
+                                        Widget = "text",
+                                        Order = 1,
+                                        RequiresPermission = "Sample.Manage",
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ]);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Forms,
+            defaultViewId: null);
+
+        manifest.Forms!.Single().Sections.Single().OwnedCollection!.ItemFields
+            .Select(f => f.PropertyName)
+            .ShouldBe(["Line1"]);
+    }
+
+    [Fact]
+    public void Compose_drops_owned_collection_section_when_every_item_field_is_filtered()
+    {
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(
+            forms: [
+                new FormDescriptor
+                {
+                    Name = "default",
+                    Customizable = false,
+                    Sections = [
+                        new SectionDescriptor
+                        {
+                            Key = "addresses",
+                            Order = 0,
+                            Fields = [],
+                            OwnedCollection = new OwnedCollectionDescriptor
+                            {
+                                PropertyName = "Addresses",
+                                ItemType = typeof(SampleAddress),
+                                ItemFields = [
+                                    new FieldDescriptor
+                                    {
+                                        PropertyName = "Vault",
+                                        ClrType = typeof(string),
+                                        Widget = "text",
+                                        Order = 0,
+                                        RequiresPermission = "Sample.Manage",
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            ]);
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Forms,
+            defaultViewId: null);
+
+        manifest.Forms!.Single().Sections.ShouldBeEmpty();
+    }
+
+    private sealed class SampleAddress
+    {
+        public string Line1 { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
+    }
+
     private static EntityDefinitionDescriptor BuildDescriptor(
         IReadOnlyList<FormDescriptor>? forms = null,
         IReadOnlyList<DetailDescriptor>? details = null) => new()
