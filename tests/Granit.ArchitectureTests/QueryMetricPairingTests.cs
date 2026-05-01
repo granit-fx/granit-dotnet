@@ -57,6 +57,10 @@ public sealed class QueryMetricPairingTests
     /// </remarks>
     private static readonly HashSet<string> MetricBacklog = new(StringComparer.Ordinal)
     {
+        // [BACKLOG] User aggregate landed in B-step 1 of ADR-051. Concrete metrics
+        // (active-user count, last-month-signups, etc.) ship in a follow-up once
+        // the EF Core companion package + IUserDirectoryQueryableSource impl land.
+        "Granit.Identity.Domain.User",
     };
 
     private static bool IsExempt(string fullName) =>

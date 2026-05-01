@@ -1111,6 +1111,8 @@
       "name": "Granit.Identity",
       "deps": [
         "Granit",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Entities.Abstractions",
         "Granit.QueryEngine.Abstractions"
       ],
       "framework": "net10.0"
@@ -23550,6 +23552,52 @@
       ]
     },
     {
+      "name": "User",
+      "fqn": "Granit.Identity.Domain.User",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Domain/User.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "DisplayName",
+          "kind": "property",
+          "signature": "string DisplayName",
+          "returnType": "string"
+        },
+        {
+          "name": "Email",
+          "kind": "property",
+          "signature": "string Email",
+          "returnType": "string"
+        },
+        {
+          "name": "FirstName",
+          "kind": "property",
+          "signature": "string? FirstName",
+          "returnType": "string?"
+        },
+        {
+          "name": "TenantId",
+          "kind": "property",
+          "signature": "Guid? TenantId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string email, string displayName, string? firstName = null, string? lastName = null, string? phoneNumber = null, Guid? tenantId = null)",
+          "returnType": "User"
+        },
+        {
+          "name": "Disable",
+          "kind": "method",
+          "signature": "Disable()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "IdentityDeviceActivityResponse",
       "fqn": "Granit.Identity.Endpoints.Dtos.IdentityDeviceActivityResponse",
       "kind": "record",
@@ -23874,6 +23922,22 @@
       "members": []
     },
     {
+      "name": "UserEntityDefinition",
+      "fqn": "Granit.Identity.Entities.UserEntityDefinition",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Entities/UserEntityDefinition.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "IdentityGroupMembershipChangedEto",
       "fqn": "Granit.Identity.Events.IdentityGroupMembershipChangedEto",
       "kind": "record",
@@ -23953,6 +24017,28 @@
       "file": "src/Granit.Identity/Events/UserCacheSyncedEto.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "UserExportDefinition",
+      "fqn": "Granit.Identity.Exports.UserExportDefinition",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Exports/UserExportDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "UserQueryDefinition",
+          "kind": "method",
+          "signature": "UserQueryDefinition()",
+          "returnType": "string? QueryDefinitionName =>"
+        }
+      ]
     },
     {
       "name": "IdentityServiceCollectionExtensions",
@@ -25269,7 +25355,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/GranitIdentityModule.cs",
-      "line": 14,
+      "line": 25,
       "members": [
         {
           "name": "ConfigureServices",
@@ -25586,6 +25672,22 @@
           "kind": "method",
           "signature": "GetStaleCountAsync(CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "IUserDirectoryQueryableSource",
+      "fqn": "Granit.Identity.IUserDirectoryQueryableSource",
+      "kind": "interface",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/IUserDirectoryQueryableSource.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "GetQueryable",
+          "kind": "method",
+          "signature": "GetQueryable()",
+          "returnType": "IQueryable<User>"
         }
       ]
     },
@@ -27670,6 +27772,22 @@
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
       "line": 22,
       "members": []
+    },
+    {
+      "name": "UserQueryDefinition",
+      "fqn": "Granit.Identity.Queries.UserQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Queries/UserQueryDefinition.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "ImagingAIMetrics",
