@@ -140,6 +140,54 @@ public sealed class TenantIsolationTests(PostgresFixture postgres)
             $"tenant filter must come before user $filter — actual SQL:\n{selectCommand}");
     }
 
+    [Fact]
+    public async Task TenantA_NarrowSelectOnTenantId_StillScopedToTenantA()
+    {
+        // $select=TenantId returns only the tenant column. Even when the
+        // user picks the smallest possible projection, the framework
+        // filter still keeps the row set bound to TenantA — projection
+        // does not move filtering to the client.
+        HttpResponseMessage response = await GetAsync(
+            TenantA, "Invoices?$select=TenantId");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        IReadOnlyList<JsonElement> rows = await ReadValueAsync(response);
+        rows.Count.ShouldBe(5);
+        rows.ShouldAllBe(r => r.GetProperty("TenantId").GetGuid() == TenantA);
+    }
+
+    [Fact]
+    public async Task TenantA_OrderByTenantIdDesc_DoesNotLeakOtherTenants()
+    {
+        // $orderby on the TenantId column itself: a hostile actor could
+        // hope sorting somehow includes other tenants' rows. The framework
+        // filter is unaffected by ORDER BY — only the row order changes,
+        // and only T1's rows ever enter the sort.
+        HttpResponseMessage response = await GetAsync(
+            TenantA, "Invoices?$orderby=TenantId desc");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        IReadOnlyList<JsonElement> rows = await ReadValueAsync(response);
+        rows.Count.ShouldBe(5);
+        rows.ShouldAllBe(r => r.GetProperty("TenantId").GetGuid() == TenantA);
+    }
+
+    [Fact]
+    public async Task TenantA_FunctionCallCombinedWithHostilePredicate_StaysScopedToTenantA()
+    {
+        // Composes a built-in OData function (contains) with the hostile
+        // filter — defends against the hypothesis that an OData translator
+        // optimisation might re-order or short-circuit when a function is
+        // present in the user predicate. AND-prefix wins regardless.
+        HttpResponseMessage response = await GetAsync(
+            TenantA,
+            $"Invoices?$filter=contains(Number, 'A') and TenantId eq {TenantB:D}");
+
+        response.StatusCode.ShouldBe(HttpStatusCode.OK);
+        IReadOnlyList<JsonElement> rows = await ReadValueAsync(response);
+        rows.ShouldBeEmpty();
+    }
+
     [Fact(Skip =
         "Reveals a constant-folding bug in ApplyGranitConventions's multi-tenant filter: " +
         "EF Core inlines currentTenant.Id into the compiled SQL at first model build " +
