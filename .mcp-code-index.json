@@ -19305,27 +19305,11 @@
     },
     {
       "name": "ICalendarRangeService",
-      "fqn": "Granit.Entities.Endpoints.Internal.ICalendarRangeService",
+      "fqn": "Granit.Entities.Endpoints.ICalendarRangeService",
       "kind": "interface",
       "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Internal/ICalendarRangeService.cs",
+      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
       "line": 19,
-      "members": [
-        {
-          "name": "GetItemsAsync",
-          "kind": "method",
-          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
-          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
-        }
-      ]
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Entities.Endpoints.Internal.struct",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Internal/ICalendarRangeService.cs",
-      "line": 34,
       "members": [
         {
           "name": "GetItemsAsync",
@@ -19368,6 +19352,15 @@
           "returnType": "TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan."
         }
       ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.Endpoints.struct",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
+      "line": 34,
+      "members": []
     },
     {
       "name": "EntityDefinition",

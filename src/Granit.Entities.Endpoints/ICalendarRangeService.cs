@@ -1,7 +1,7 @@
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
-namespace Granit.Entities.Endpoints.Internal;
+namespace Granit.Entities.Endpoints;
 
 /// <summary>
 /// Resolves calendar items for one entity within a time window. The default
@@ -32,18 +32,3 @@ public interface ICalendarRangeService
 
 /// <summary>Inclusive time window for the calendar query.</summary>
 public readonly record struct CalendarRange(DateTimeOffset From, DateTimeOffset To);
-
-/// <summary>
-/// No-op implementation registered by default. Returns an empty result —
-/// suitable for hosts that have not yet wired the EF Core executor or for
-/// modules that expose a calendar layout purely for the manifest.
-/// </summary>
-internal sealed class NullCalendarRangeService : ICalendarRangeService
-{
-    public Task<IReadOnlyList<CalendarItemResponse>> GetItemsAsync(
-        EntityDefinitionDescriptor entity,
-        CalendarLayoutDescriptor layout,
-        CalendarRange range,
-        CancellationToken cancellationToken) =>
-        Task.FromResult<IReadOnlyList<CalendarItemResponse>>([]);
-}
