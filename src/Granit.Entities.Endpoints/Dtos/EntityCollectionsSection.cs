@@ -35,15 +35,33 @@ public sealed record EntityCollectionReference(
 /// <summary>
 /// One alternative list-view layout exposed in the manifest. The kind drives
 /// front-end component selection; per-kind config lives in <see cref="Kanban"/>
-/// (and future <c>Calendar</c> / <c>Map</c> / <c>Gallery</c> sub-records).
+/// or <see cref="Calendar"/> (and future <c>Map</c> / <c>Gallery</c> sub-records).
 /// </summary>
 /// <param name="Kind">Layout kind from the closed catalog.</param>
 /// <param name="IsDefault">Whether this layout is the default tab on first render.</param>
 /// <param name="Kanban">Kanban-specific configuration when <see cref="Kind"/> is <see cref="EntityListLayoutKind.Kanban"/>.</param>
+/// <param name="Calendar">Calendar-specific configuration when <see cref="Kind"/> is <see cref="EntityListLayoutKind.Calendar"/>.</param>
 public sealed record EntityListLayoutManifest(
     EntityListLayoutKind Kind,
     bool IsDefault,
-    EntityKanbanLayoutManifest? Kanban);
+    EntityKanbanLayoutManifest? Kanban,
+    EntityCalendarLayoutManifest? Calendar);
+
+/// <summary>
+/// Calendar-specific layout configuration carried in the manifest. Property
+/// names address fields on the entity; the renderer (<c>EntityCalendar</c>)
+/// reads the actual values via the range-query endpoint
+/// (<c>GET /api/entities/{name}/calendar</c>).
+/// </summary>
+/// <param name="StartPropertyName">Entity property carrying the event start (required).</param>
+/// <param name="EndPropertyName">Entity property carrying the event end. <see langword="null"/> for point-in-time markers.</param>
+/// <param name="TitlePropertyName">Entity property used as the event headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
+/// <param name="ColorByPropertyName">Entity property used to bucket events into colour groups, or <see langword="null"/> for theme default.</param>
+public sealed record EntityCalendarLayoutManifest(
+    string StartPropertyName,
+    string? EndPropertyName,
+    string? TitlePropertyName,
+    string? ColorByPropertyName);
 
 /// <summary>Kanban-specific layout configuration carried in the manifest.</summary>
 /// <param name="GroupByPropertyName">Entity property used to bucket rows into columns.</param>

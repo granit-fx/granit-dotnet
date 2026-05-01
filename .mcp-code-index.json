@@ -18993,6 +18993,15 @@
       "members": []
     },
     {
+      "name": "EntityCalendarLayoutManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 60,
+      "members": []
+    },
+    {
       "name": "EntityCollectionReference",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionReference",
       "kind": "record",
@@ -19124,7 +19133,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 101,
+      "line": 119,
       "members": []
     },
     {
@@ -19133,7 +19142,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 69,
+      "line": 87,
       "members": []
     },
     {
@@ -19142,7 +19151,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 85,
+      "line": 103,
       "members": []
     },
     {
@@ -19151,7 +19160,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 111,
+      "line": 129,
       "members": []
     },
     {
@@ -19160,7 +19169,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 53,
+      "line": 71,
       "members": []
     },
     {
@@ -19169,7 +19178,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 43,
+      "line": 44,
       "members": []
     },
     {

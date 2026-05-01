@@ -346,6 +346,12 @@ internal static class EntityManifestComposer
                 _ => null,
             };
 
+            EntityCalendarLayoutManifest? calendar = layout switch
+            {
+                CalendarLayoutDescriptor c => ComposeCalendar(c),
+                _ => null,
+            };
+
             // Layout produced no usable shape (e.g. kanban whose card lost every
             // field to permission filtering). Drop the layout — empty switcher
             // tabs would be UX clutter.
@@ -357,10 +363,17 @@ internal static class EntityManifestComposer
             layouts.Add(new EntityListLayoutManifest(
                 layout.Kind,
                 layout.IsDefault,
-                kanban));
+                kanban,
+                calendar));
         }
         return layouts;
     }
+
+    private static EntityCalendarLayoutManifest ComposeCalendar(CalendarLayoutDescriptor descriptor) =>
+        new(descriptor.StartPropertyName,
+            descriptor.EndPropertyName,
+            descriptor.TitlePropertyName,
+            descriptor.ColorByPropertyName);
 
     private static EntityKanbanLayoutManifest? ComposeKanban(
         KanbanLayoutDescriptor descriptor,

@@ -451,6 +451,80 @@ public sealed class EntityManifestComposerTests
             .Kanban!.Card.Fields.Select(f => f.PropertyName).ShouldBe(["Owner"]);
     }
 
+    [Fact]
+    public void Compose_emits_calendar_layout_with_start_end_title_and_color_by()
+    {
+        Granit.Entities.Layouts.CalendarLayoutDescriptor calendar = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Calendar,
+            IsDefault = true,
+            StartPropertyName = "StartsAt",
+            EndPropertyName = "EndsAt",
+            TitlePropertyName = "Subject",
+            ColorByPropertyName = "Status",
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [calendar]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityListLayoutManifest layout = manifest.Collections!.ListLayouts.ShouldHaveSingleItem();
+        layout.Kind.ShouldBe(Granit.Entities.Layouts.EntityListLayoutKind.Calendar);
+        layout.IsDefault.ShouldBeTrue();
+        layout.Kanban.ShouldBeNull();
+        layout.Calendar.ShouldNotBeNull();
+        layout.Calendar!.StartPropertyName.ShouldBe("StartsAt");
+        layout.Calendar.EndPropertyName.ShouldBe("EndsAt");
+        layout.Calendar.TitlePropertyName.ShouldBe("Subject");
+        layout.Calendar.ColorByPropertyName.ShouldBe("Status");
+    }
+
+    [Fact]
+    public void Compose_emits_minimal_calendar_with_only_start_field()
+    {
+        Granit.Entities.Layouts.CalendarLayoutDescriptor calendar = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Calendar,
+            StartPropertyName = "OccurredAt",
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [calendar]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityCalendarLayoutManifest emitted = manifest.Collections!.ListLayouts.ShouldHaveSingleItem().Calendar!;
+        emitted.StartPropertyName.ShouldBe("OccurredAt");
+        emitted.EndPropertyName.ShouldBeNull();
+        emitted.TitlePropertyName.ShouldBeNull();
+        emitted.ColorByPropertyName.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Compose_drops_calendar_layout_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Layouts.CalendarLayoutDescriptor calendar = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Calendar,
+            RequiresPermission = "Meetings.Meetings.Calendar",
+            StartPropertyName = "StartsAt",
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [calendar]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.ShouldBeEmpty();
+    }
+
     private enum SampleStatus { Open, Done }
 
     [Fact]
