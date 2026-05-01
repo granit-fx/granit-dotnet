@@ -1,0 +1,230 @@
+---
+title: "OData host-feed — cross-tenant BI for host operators"
+description: "Expose a separate OData v4 mount for cross-tenant analytics by SuperAdmins (finance ops, compliance, capacity planning) without re-introducing the cross-tenant leak vector. Three strict-config gates make every host-feed EntitySet an explicit, auditable opt-in."
+sidebar:
+  label: OData host-feed
+  order: 41
+---
+
+import { Aside, Steps } from "@astrojs/starlight/components";
+
+The standard [OData feed](/dotnet/business/analytics/odata-power-bi/) is
+tenant-scoped: a tenant analyst sees only their own tenant's rows. That is
+correct for the vast majority of BI use cases — and it is the framework's
+explicit security model.
+
+A small set of legitimate use cases need data **across tenants**, and they
+are owned by the host (the SaaS operator), not by any individual tenant:
+
+- **Finance ops** — MRR / ARR rolled up across the entire customer base.
+- **Compliance** — `AuditEntries` or `PrivacyRequests` cross-tenant for
+  ISO 27001 A.12.4 audit trails.
+- **Capacity planning** — `UsageAggregates` cross-tenant to anticipate
+  scaling needs.
+- **Product analytics** — churn analysis on `Subscriptions` across tenants
+  by plan.
+
+For these cases, `Granit.Http.ODataExposure` ships a **second mount**:
+`MapGranitODataHostEndpoints` — same module, separate URL, separate
+options surface, and three strict-config gates that make every cross-tenant
+exposure an explicit, auditable opt-in.
+
+<Aside type="caution" title="This is the bypass the rest of the module exists to prevent">
+  Cross-tenant exposure is exactly what the standard tenant-feed was
+  designed to make impossible. Mounting a host-feed deliberately punches
+  a hole through the tenant filter for a specific set of EntitySets — it
+  must NEVER be used as a workaround when a tenant filter "gets in the
+  way". If the answer to *"why bypass the tenant filter?"* is anything
+  other than *"the host operator legitimately needs cross-tenant data
+  and the user is authenticated as a host SuperAdmin"*, the right answer
+  is to fix the tenant context, not to use this mount.
+</Aside>
+
+## Mounting the host-feed
+
+```csharp
+// Tenant-feed (unchanged) — every analyst sees their own tenant's rows
+app.MapGranitODataEndpoints("/api/v1/odata", opts =>
+{
+    opts.EntitySet<Invoice, InvoiceQueryDefinition>("Invoices")
+        .RequirePermission("OData.Invoicing.Invoices.Read")
+        .ExpandWhitelist("Customer");
+});
+
+// Host-feed — separate URL, separate $metadata container, separate rate limit
+app.MapGranitODataHostEndpoints("/api/v1/odata/host", opts =>
+{
+    opts.EntitySet<Tenant, TenantQueryDefinition>("Tenants")
+        .RequirePermission("OData.Host.Platform.Tenants.Read")    // MUST be MultiTenancySides.Host
+        .DisableExpand();
+
+    opts.EntitySet<Invoice, InvoiceQueryDefinition>("InvoicesAllTenants")
+        .RequirePermission("OData.Host.Invoicing.Invoices.Read")
+        .AcknowledgeCrossTenantExposure(q =>
+            q.IgnoreQueryFilters([GranitFilterNames.MultiTenant]))   // explicit per-query bypass
+        .ExpandWhitelist("Customer");
+});
+```
+
+Two characteristics of this code are deliberate:
+
+- The options type is **`ODataHostExposureOptions`** — distinct from the
+  tenant-feed's `ODataExposureOptions`. A configuration block intended for
+  one mount cannot accidentally be applied to the other; the C# compiler
+  rejects the mismatch.
+- The bypass is a **lambda the host writes at the call site** — not a flag
+  on the builder. The framework module never references EF Core, and the
+  explicit "I know what I'm doing" lives in actual code that a reviewer
+  reads, not in a property name buried under several `with` clauses.
+
+## The three strict-config gates
+
+Every host-feed EntitySet must pass three gates at startup. Failing any
+gate throws `InvalidOperationException` from `MapGranitODataHostEndpoints`,
+listing every misconfigured set in a single message.
+
+### Gate 1 — Permission must resolve to `MultiTenancySides.Host`
+
+The host-feed validator resolves the EntitySet's `RequirePermission` name
+through `IPermissionDefinitionManager` at startup. The resolved
+`PermissionDefinition.MultiTenancySides` MUST equal `Host`. `Tenant` and
+`Both` are rejected; an unregistered permission name is rejected too.
+
+This rule prevents host-feed access from leaking through tenant-side role
+inheritance — a permission marked `Both` could be granted to a tenant role
+and unintentionally unlock cross-tenant data.
+
+```csharp
+// In your *PermissionDefinitionProvider:
+PermissionGroup hostGroup = context.AddGroup(
+    "OData.Host.Invoicing",
+    new LocalizableString("PermissionGroup:OData.Host.Invoicing"));
+
+hostGroup.AddPermission(
+    "OData.Host.Invoicing.Invoices.Read",
+    new LocalizableString("Permission:OData.Host.Invoicing.Invoices.Read"),
+    multiTenancySide: MultiTenancySides.Host);
+```
+
+Naming convention: `OData.Host.{Module}.{Entity}.Read` — the `.Host`
+segment makes the cross-tenant scope visible in admin UIs and audit logs.
+
+### Gate 2 — No anonymous access
+
+`ODataHostEntitySetBuilder<TEntity>` does not expose an
+`AllowAnonymousAccess()` method. Every host-feed set is gated, period —
+the public-feed scenario (e.g. tenant-agnostic reference data) belongs on
+the tenant-feed, not on a feed that is meant to be cross-tenant.
+
+### Gate 3 — `IMultiTenant` entities require `AcknowledgeCrossTenantExposure`
+
+When the EntitySet's entity implements `IMultiTenant`, the host MUST call
+`AcknowledgeCrossTenantExposure(...)` and supply a per-query bypass
+lambda. Without it, the framework's tenant filter
+(`tenantId == currentTenant.Id`) returns no rows for a tenantless caller —
+fail-closed, but confusing — so the validator throws at startup with a
+direct pointer to the missing call.
+
+```csharp
+.AcknowledgeCrossTenantExposure(q =>
+    q.IgnoreQueryFilters([GranitFilterNames.MultiTenant]))
+```
+
+Why a host-supplied lambda rather than a flag:
+
+- **The OData module stays free of an EF Core dependency.** The bypass
+  primitive (`IgnoreQueryFilters`) lives in `Microsoft.EntityFrameworkCore`;
+  the application's `Program.cs` already references EF Core, so the lambda
+  is written there, not in framework code.
+- **Per-query, not AsyncLocal.** The framework also exposes
+  `IDataFilter.Disable<IMultiTenant>()` for service-level bypass — but that
+  path is `AsyncLocal`-based and we have an unresolved cross-request leak
+  documented in our defensive-bypass history (#1180 / #1182 / #1185).
+  Localising the bypass inside the request's expression tree avoids any
+  risk of propagation outside the OData pipeline.
+- **The "I know what I'm doing" is explicit code.** A reviewer reading the
+  `Program.cs` host-feed configuration sees the bypass on the screen —
+  it cannot be hidden behind a flag default.
+
+Non-`IMultiTenant` entities (e.g. the `Tenant` table itself, or any
+host-scoped configuration entity) do NOT need the acknowledgement — the
+framework filter does not apply to them in the first place.
+
+## Operational distinctions vs the tenant-feed
+
+| Concern | Tenant-feed | Host-feed |
+| ------- | ----------- | --------- |
+| Default URL prefix | `/api/v1/odata` | `/api/v1/odata/host` |
+| OData container name | `Container` | `HostContainer` |
+| Rate-limit policy | `granit-odata` (recommended `PartitionBy: Tenant`) | `granit-odata-host` (recommended `PartitionBy: User`, wider quotas) |
+| `feed_kind` OTel tag on metrics | `tenant` | `host` |
+| `tenant_id` OTel tag on metrics | resolved tenant id | `"global"` (no ambient tenant) |
+| Anonymous access | allowed via `AllowAnonymousAccess()` for reference-data feeds | never |
+| `IMultiTenant` entity allowed? | yes (default — filter applies) | yes (explicit bypass required) |
+
+The distinct EDM container name matters more than it looks: a BI client
+that mistakenly reuses one feed's `$metadata` document on the other URL
+sees an immediate schema mismatch, surfacing the misconfiguration loudly
+instead of silently returning unexpected data.
+
+## Telemetry — auditing host-feed traffic
+
+Every `ODataExposureMetrics` counter (`granit.odata.query.rejected`,
+`granit.odata.query.top_clamped`, etc.) carries the `feed_kind` tag.
+A dedicated audit dashboard for cross-tenant access events is a one-line
+filter in Grafana / your OTel collector:
+
+```promql
+sum by (entity_set, reason) (
+    rate(granit_odata_query_rejected_total{feed_kind="host"}[5m])
+)
+```
+
+ISO 27001 A.12.4 (event logging) is satisfied by the same telemetry that
+already covers the tenant-feed — no new instrumentation needed in the
+host application.
+
+## When to use host-feed vs `Granit.Analytics`
+
+Both surfaces can answer cross-tenant questions. The right choice depends
+on the consumer and the shape of the answer.
+
+| Need | Use |
+| ---- | --- |
+| One number ("MRR across all tenants") inside a host admin dashboard | [`Granit.Analytics`](/dotnet/business/analytics/conventions/) (`MetricDefinition` aggregating across tenants, surfaced via the Layer 1 KPI endpoint) |
+| Tabular data for an external BI tool (Power BI / Excel / Tableau) | Host-feed (this page) |
+| One number inside a tenant admin dashboard | [`Granit.Analytics`](/dotnet/business/analytics/conventions/) (the standard tenant-scoped path) |
+| Tabular data for a tenant analyst | [Standard OData feed](/dotnet/business/analytics/odata-power-bi/) |
+
+Rule of thumb: if the consumer is the application's own UI and the value
+is one (or a few) aggregated numbers per call, `Granit.Analytics` is the
+right tool. If the consumer is an external BI tool that needs full row sets
+and benefits from `$filter` / `$select` / `$top` composition, the OData
+feed (tenant or host) is the right tool.
+
+## Connecting Power BI to the host-feed
+
+The mechanics are identical to the [tenant-feed walkthrough](/dotnet/business/analytics/odata-power-bi/) —
+Power BI Desktop's *Get Data → OData feed* dialog accepts the host-feed URL
+as-is. Two configuration changes worth highlighting:
+
+<Steps>
+
+1. **Edit the `.pbids` URL** to point at `/api/v1/odata/host` instead of
+   `/api/v1/odata`. The container name in the discovered `$metadata` is
+   `HostContainer`; Power BI discovers EntitySets identically.
+
+2. **Sign in with a host SuperAdmin account.** A tenant user's bearer
+   token will not carry the `OData.Host.*` permissions, so the Navigator
+   will return zero EntitySets (every set is `403`). Use a dedicated
+   service principal scoped to the host realm for unattended Power BI
+   Service refresh jobs.
+
+</Steps>
+
+## See also
+
+- [`Granit.Http.ODataExposure` README](https://github.com/granit-fx/granit-dotnet/blob/develop/src/Granit.Http.ODataExposure/README.md) — fluent builder, hardening defaults, rate-limit configuration.
+- [Standard OData feed (Power BI / Excel / Tableau)](/dotnet/business/analytics/odata-power-bi/) — the tenant-scoped sibling of this page.
+- [Analytics conventions](/dotnet/business/analytics/conventions/) — `MetricDefinition`, `DashboardDefinition`, naming and pairing rules.
+- [EPIC #1366 — Business Intelligence](https://github.com/granit-fx/granit-dotnet/issues/1366) and the [host-feed reflection #1665](https://github.com/granit-fx/granit-dotnet/issues/1665) that drove this design.
