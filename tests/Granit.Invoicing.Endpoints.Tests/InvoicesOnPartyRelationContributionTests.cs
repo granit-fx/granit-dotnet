@@ -26,5 +26,6 @@ public sealed class InvoicesOnPartyRelationContributionTests
         invoices.Aggregates.Select(a => a.Kind).ShouldBe(
             [RelationAggregateKind.Count, RelationAggregateKind.Sum]);
         invoices.ContributorAssemblyName.ShouldNotBeNull();
+        invoices.ShowOnKanbanCard.ShouldBeTrue("the invoice counter is pinned on the Party kanban tile");
     }
 }

@@ -112,4 +112,41 @@ public sealed class PartyEntityDefinitionTests
         d.ExportDefinitionType.ShouldNotBeNull();
         d.MetricDefinitionTypes.ShouldNotBeEmpty();
     }
+
+    [Fact]
+    public void Descriptor_exposes_kanban_layout_grouped_by_status()
+    {
+        EntityDefinitionDescriptor d = new PartyEntityDefinition().Descriptor;
+
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban =
+            d.ListLayouts.OfType<Granit.Entities.Layouts.KanbanLayoutDescriptor>().ShouldHaveSingleItem();
+        kanban.GroupByPropertyName.ShouldBe("Status");
+        kanban.GroupByClrType.ShouldBe(typeof(PartyStatus));
+    }
+
+    [Fact]
+    public void Descriptor_kanban_card_uses_name_as_title_with_kind_and_currency()
+    {
+        EntityDefinitionDescriptor d = new PartyEntityDefinition().Descriptor;
+        var kanban = (Granit.Entities.Layouts.KanbanLayoutDescriptor)d.ListLayouts
+            .Single(l => l.Kind == Granit.Entities.Layouts.EntityListLayoutKind.Kanban);
+
+        kanban.Card.TitleProperty.ShouldBe("Name");
+        kanban.Card.Fields.Select(f => f.PropertyName).ShouldBe(["Kind", "DefaultCurrency"]);
+    }
+
+    [Fact]
+    public void Descriptor_kanban_columns_carry_status_specific_color_and_state()
+    {
+        EntityDefinitionDescriptor d = new PartyEntityDefinition().Descriptor;
+        var kanban = (Granit.Entities.Layouts.KanbanLayoutDescriptor)d.ListLayouts
+            .Single(l => l.Kind == Granit.Entities.Layouts.EntityListLayoutKind.Kanban);
+
+        kanban.Columns.Single(c => c.Value == nameof(PartyStatus.Active)).Color
+            .ShouldBe(Granit.Entities.Layouts.KanbanColor.Green);
+        kanban.Columns.Single(c => c.Value == nameof(PartyStatus.Suspended)).DefaultState
+            .ShouldBe(Granit.Entities.Layouts.KanbanColumnState.Collapsed);
+        kanban.Columns.Single(c => c.Value == nameof(PartyStatus.Archived)).DefaultState
+            .ShouldBe(Granit.Entities.Layouts.KanbanColumnState.Hidden);
+    }
 }

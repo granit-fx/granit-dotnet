@@ -19,6 +19,7 @@ namespace Granit.Entities.Relations;
 /// <param name="Aggregates">Aggregates surfaced by this relation, in declaration order.</param>
 /// <param name="QueryDefinitionName">Optional reference to a <c>QueryDefinition</c> on the target entity — when set, the renderer uses it for the drilldown collection instead of the target entity's default query.</param>
 /// <param name="ContributorAssemblyName">Name of the assembly that contributed this relation. <see langword="null"/> for intra-module declarations; populated by the contribution context for cross-module grafts.</param>
+/// <param name="ShowOnKanbanCard">When <see langword="true"/>, the relation also appears as a compact smart-button on the source entity's kanban tile (Phase 2.B.1). Off by default — only the relations the contributor explicitly opts into via <c>OnKanbanCard()</c> are pinned, since kanban tiles have far less surface than the detail header.</param>
 public sealed record RelationDescriptor(
     string Name,
     RelationCardinality Cardinality,
@@ -32,4 +33,5 @@ public sealed record RelationDescriptor(
     string? ForeignKeyExpression,
     IReadOnlyList<RelationAggregateDescriptor> Aggregates,
     string? QueryDefinitionName,
-    string? ContributorAssemblyName);
+    string? ContributorAssemblyName,
+    bool ShowOnKanbanCard = false);

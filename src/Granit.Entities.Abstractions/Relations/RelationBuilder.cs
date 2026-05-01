@@ -23,6 +23,7 @@ public sealed class RelationBuilder<TSource, TRelated>
     private string? _requiresPermission;
     private string? _queryDefinitionName;
     private RelationAggregateBuilder<TRelated>? _aggregates;
+    private bool _showOnKanbanCard;
     private readonly string? _contributorAssemblyName;
 
     internal RelationBuilder(
@@ -93,6 +94,21 @@ public sealed class RelationBuilder<TSource, TRelated>
         return this;
     }
 
+    /// <summary>
+    /// Pins this relation as a compact smart-button on the source entity's kanban
+    /// tile (Phase 2.B.1). Use sparingly — kanban tiles have far less surface than
+    /// the detail header, so only opt in for the relations the user genuinely wants
+    /// to see at-a-glance (typical: counters of related notes / tasks / messages).
+    /// The relation must already be visible on the detail header (the kanban tile
+    /// reuses the same descriptor); calling this without the relation also
+    /// rendering on detail still works but is unusual.
+    /// </summary>
+    public RelationBuilder<TSource, TRelated> OnKanbanCard()
+    {
+        _showOnKanbanCard = true;
+        return this;
+    }
+
     internal RelationDescriptor Build(string targetEntityName) =>
         new(
             _name,
@@ -107,7 +123,8 @@ public sealed class RelationBuilder<TSource, TRelated>
             _foreignKeyExpression,
             _aggregates?.Build() ?? [],
             _queryDefinitionName,
-            _contributorAssemblyName);
+            _contributorAssemblyName,
+            _showOnKanbanCard);
 
     internal static string ResolveTargetEntityName(string? overrideName) =>
         overrideName ?? typeof(TRelated).FullName ?? typeof(TRelated).Name;

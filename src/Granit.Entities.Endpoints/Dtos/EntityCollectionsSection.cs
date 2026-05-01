@@ -59,13 +59,32 @@ public sealed record EntityKanbanLayoutManifest(
 /// <summary>
 /// Card-content schema rendered inside a kanban tile. Frappe-style: optional
 /// title (falls back to the entity's <c>DisplayProperty</c> when absent) plus
-/// an ordered list of body fields.
+/// an ordered list of body fields, plus pinned smart-buttons summarising the
+/// relations the contributors opted to surface on the tile.
 /// </summary>
 /// <param name="TitleProperty">Entity property used as the tile headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
 /// <param name="Fields">Body fields, in declaration order — already permission-filtered server-side.</param>
+/// <param name="Relations">Compact references to the entity's relations that opted into kanban via <c>OnKanbanCard()</c>. Already permission-filtered.</param>
 public sealed record EntityKanbanCardManifest(
     string? TitleProperty,
-    IReadOnlyList<EntityFormFieldManifest> Fields);
+    IReadOnlyList<EntityFormFieldManifest> Fields,
+    IReadOnlyList<EntityKanbanCardRelationManifest> Relations);
+
+/// <summary>
+/// Compact reference to one relation pinned on a kanban tile. Carries only the
+/// fields the renderer needs to draw a small smart-button (name, label, icon,
+/// permission-aware aggregate selection) — the full relation descriptor stays
+/// addressable via the entity's <c>Relations</c> facet.
+/// </summary>
+/// <param name="Name">Stable relation name — matches the entry in the entity's <c>Relations</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the user-facing label.</param>
+/// <param name="Icon">Icon override on the smart-button.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntityKanbanCardRelationManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ContributorAssemblyName);
 
 /// <summary>One per-value kanban column declaration.</summary>
 /// <param name="Value">Wire form of the discrete <c>GroupBy</c> value (enum member name, string literal, …).</param>

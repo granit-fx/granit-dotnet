@@ -112,4 +112,27 @@ public sealed class RelationBuilderTests
             b.HasMany<Address>(p => p.Addresses.Where(a => a.City == "Paris"));
     }
 
+    [Fact]
+    public void OnKanbanCard_defaults_false_and_opt_in_sets_flag()
+    {
+        EntityDefinitionDescriptor d = new KanbanPinnedDefinition().Descriptor;
+
+        RelationDescriptor pinned = d.Relations.Single(r => r.Name == "Addresses");
+        RelationDescriptor unpinned = d.Relations.Single(r => r.Name == "Primary");
+
+        pinned.ShowOnKanbanCard.ShouldBeTrue();
+        unpinned.ShowOnKanbanCard.ShouldBeFalse();
+    }
+
+    private sealed class KanbanPinnedDefinition : EntityDefinition<Party>
+    {
+        public override string Name => "Test.Party.KanbanPinned";
+        protected override void Configure(EntityDefinitionBuilder<Party> b) =>
+            b
+                .HasMany<Address>(p => p.Addresses, r => r
+                    .DisplayAs(RelationDisplay.SmartButton)
+                    .OnKanbanCard())
+                .HasOne<PrimaryContact>(p => p.Primary, r => r
+                    .DisplayAs(RelationDisplay.Sidebar));
+    }
 }

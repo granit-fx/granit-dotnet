@@ -320,13 +320,14 @@ internal static class EntityManifestComposer
             .Select(t => new EntityCollectionReference(InferDefinitionName(t), t.Name))
             .ToList();
 
-        IReadOnlyList<EntityListLayoutManifest> layouts = ComposeListLayouts(d.ListLayouts, granted);
+        IReadOnlyList<EntityListLayoutManifest> layouts = ComposeListLayouts(d.ListLayouts, d.Relations, granted);
 
         return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts);
     }
 
     private static List<EntityListLayoutManifest> ComposeListLayouts(
         IReadOnlyList<EntityListLayoutDescriptor> source,
+        IReadOnlyList<RelationDescriptor> relations,
         IReadOnlySet<string> granted)
     {
         List<EntityListLayoutManifest> layouts = new(source.Count);
@@ -340,7 +341,7 @@ internal static class EntityManifestComposer
 
             EntityKanbanLayoutManifest? kanban = layout switch
             {
-                KanbanLayoutDescriptor k => ComposeKanban(k, granted),
+                KanbanLayoutDescriptor k => ComposeKanban(k, relations, granted),
                 _ => null,
             };
 
@@ -362,6 +363,7 @@ internal static class EntityManifestComposer
 
     private static EntityKanbanLayoutManifest? ComposeKanban(
         KanbanLayoutDescriptor descriptor,
+        IReadOnlyList<RelationDescriptor> relations,
         IReadOnlySet<string> granted)
     {
         List<EntityFormFieldManifest> cardFields = FilterFields(descriptor.Card.Fields, granted);
@@ -371,7 +373,17 @@ internal static class EntityManifestComposer
         // the explicit Title got filtered AND no body field survives.
         // (Title filtering is symmetric with form field permissions.)
 
-        EntityKanbanCardManifest card = new(descriptor.Card.TitleProperty, cardFields);
+        // Pin only the relations the contributor opted into via OnKanbanCard()
+        // AND that survived the user's permission check (defense in depth —
+        // a relation hidden from the detail header MUST also be hidden from
+        // the kanban tile).
+        IReadOnlyList<EntityKanbanCardRelationManifest> pinnedRelations = [.. relations
+            .Where(r => r.ShowOnKanbanCard
+                && (r.RequiresPermission is null || granted.Contains(r.RequiresPermission)))
+            .Select(r => new EntityKanbanCardRelationManifest(
+                r.Name, r.DisplayKey, r.Icon, r.ContributorAssemblyName))];
+
+        EntityKanbanCardManifest card = new(descriptor.Card.TitleProperty, cardFields, pinnedRelations);
 
         IReadOnlyList<EntityKanbanColumnManifest> columns = [.. descriptor.Columns
             .Select(c => new EntityKanbanColumnManifest(c.Value, c.Color, c.DefaultState))];

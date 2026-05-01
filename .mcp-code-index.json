@@ -19122,7 +19122,16 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 66,
+      "line": 68,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardRelationManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 83,
       "members": []
     },
     {
@@ -19131,7 +19140,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 74,
+      "line": 93,
       "members": []
     },
     {
@@ -19815,7 +19824,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Relations/RelationDescriptor.cs",
-      "line": 22,
+      "line": 23,
       "members": []
     },
     {
@@ -38798,7 +38807,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Entities/PartyEntityDefinition.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "Name",

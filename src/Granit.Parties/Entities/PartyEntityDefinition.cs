@@ -1,4 +1,5 @@
 using Granit.Entities;
+using Granit.Entities.Layouts;
 using Granit.Parties.Domain;
 using Granit.Parties.Exports;
 using Granit.Parties.Metrics;
@@ -91,5 +92,17 @@ public sealed class PartyEntityDefinition : EntityDefinition<Party>
             {
                 d.Section("overview", s => s.InheritsFromForm("default"));
                 d.SidePanel.Audit().Timeline();
-            });
+            })
+            // Phase 2.A — kanban grouped by PartyStatus. The Archived column is
+            // hidden by default (terminal state, ISO-27001 retention column —
+            // shouldn't clutter the daily board); Suspended is collapsed.
+            .KanbanView<PartyStatus>(k => k
+                .GroupBy(p => p.Status)
+                .Card(c => c
+                    .Title(p => p.Name)
+                    .Field(p => p.Kind)
+                    .Field(p => p.DefaultCurrency))
+                .Column(PartyStatus.Active, c => c.Color(KanbanColor.Green))
+                .Column(PartyStatus.Suspended, c => c.Color(KanbanColor.Orange).Collapsed())
+                .Column(PartyStatus.Archived, c => c.Color(KanbanColor.Neutral).Hidden()));
 }

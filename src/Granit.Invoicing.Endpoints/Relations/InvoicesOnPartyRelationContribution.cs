@@ -24,5 +24,9 @@ internal sealed class InvoicesOnPartyRelationContribution : IEntityRelationContr
                 .RequiresPermission(InvoicingPermissions.Invoices.Read)
                 .Aggregate(a => a
                     .Count(labelKey: "Invoicing:Relation.OnParty.Invoices.Count")
-                    .Sum(i => i.Total, labelKey: "Invoicing:Relation.OnParty.Invoices.Total", format: "currency")));
+                    .Sum(i => i.Total, labelKey: "Invoicing:Relation.OnParty.Invoices.Total", format: "currency"))
+                // Phase 2.B.1 — pin the invoice counter on the Party kanban tile so
+                // the daily-board view shows "N invoices" at a glance without opening
+                // each record.
+                .OnKanbanCard());
 }

@@ -522,4 +522,98 @@ public sealed class EntityManifestComposerTests
 
         manifest.Actions.ShouldBeNull();
     }
+
+    [Fact]
+    public void Compose_kanban_card_pins_relations_that_opted_in()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+            },
+            Columns = [],
+        };
+
+        Granit.Entities.Relations.RelationDescriptor pinned = new(
+            Name: "tasks",
+            Cardinality: Granit.Entities.Relations.RelationCardinality.Many,
+            Display: Granit.Entities.Relations.RelationDisplay.SmartButton,
+            TargetEntityName: "Granit.Tasks.Task",
+            TargetEntityClrType: typeof(SampleEntity),
+            DisplayKey: "Tasks:Relation.Tasks",
+            Icon: "checklist",
+            Order: 10,
+            RequiresPermission: null,
+            ForeignKeyExpression: null,
+            Aggregates: [],
+            QueryDefinitionName: null,
+            ContributorAssemblyName: "Granit.Tasks",
+            ShowOnKanbanCard: true);
+
+        Granit.Entities.Relations.RelationDescriptor unpinned = pinned with { Name = "notes", ShowOnKanbanCard = false };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [kanban])
+            with
+        { Relations = [pinned, unpinned] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityKanbanCardRelationManifest only = manifest.Collections!
+            .ListLayouts.Single().Kanban!.Card.Relations.ShouldHaveSingleItem();
+        only.Name.ShouldBe("tasks");
+        only.Icon.ShouldBe("checklist");
+        only.ContributorAssemblyName.ShouldBe("Granit.Tasks");
+    }
+
+    [Fact]
+    public void Compose_kanban_card_drops_pinned_relation_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Layouts.KanbanLayoutDescriptor kanban = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Kanban,
+            GroupByPropertyName = "Status",
+            GroupByClrType = typeof(SampleStatus),
+            Card = new Granit.Entities.Layouts.KanbanCardDescriptor
+            {
+                Fields = [new FieldDescriptor { PropertyName = "Owner", ClrType = typeof(string), Widget = "text", Order = 0 }],
+            },
+            Columns = [],
+        };
+
+        Granit.Entities.Relations.RelationDescriptor gated = new(
+            Name: "tasks",
+            Cardinality: Granit.Entities.Relations.RelationCardinality.Many,
+            Display: Granit.Entities.Relations.RelationDisplay.SmartButton,
+            TargetEntityName: "Granit.Tasks.Task",
+            TargetEntityClrType: typeof(SampleEntity),
+            DisplayKey: null, Icon: null, Order: 10,
+            RequiresPermission: "Tasks.Tasks.Read",
+            ForeignKeyExpression: null,
+            Aggregates: [],
+            QueryDefinitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnKanbanCard: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [kanban])
+            with
+        { Relations = [gated] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.Single().Kanban!.Card.Relations.ShouldBeEmpty();
+    }
 }
