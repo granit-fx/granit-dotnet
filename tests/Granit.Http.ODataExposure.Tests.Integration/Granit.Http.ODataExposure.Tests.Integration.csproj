@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit.Authorization\Granit.Authorization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.DataExchange.Abstractions\Granit.DataExchange.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Http.ODataExposure\Granit.Http.ODataExposure.csproj" />
     <ProjectReference Include="..\..\src\Granit.RateLimiting\Granit.RateLimiting.csproj" />
     <ProjectReference Include="..\..\src\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />

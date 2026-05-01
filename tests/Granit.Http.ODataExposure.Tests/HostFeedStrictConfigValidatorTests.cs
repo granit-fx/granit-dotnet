@@ -1,5 +1,7 @@
 using Granit.Authorization;
+using Granit.DataExchange.Export;
 using Granit.Domain;
+using Granit.Entities;
 using Granit.Http.ODataExposure.Extensions;
 using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
@@ -162,6 +164,16 @@ public sealed class HostFeedStrictConfigValidatorTests
         builder.Services.AddSingleton<QueryDefinition<MultiTenantInvoice>>(new MultiTenantInvoiceQueryDefinition());
         builder.Services.AddSingleton<QueryDefinition<TenantStub>>(new TenantStubQueryDefinition());
 
+        // ADR-050 plumbing: every entity exposed on a host-feed needs an
+        // EntityDefinition + Export pair. Registered minimally so the
+        // strict-config validator gates land on host-feed-specific failures
+        // (the focus of these tests), not on missing-EntityDefinition
+        // failures (covered in EntityDefinitionStrictConfigTests).
+        builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new MultiTenantInvoiceEntityDefinition());
+        builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new TenantStubEntityDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new MultiTenantInvoiceExportDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new TenantStubExportDefinition());
+
         builder.Services.AddGranitODataExposure();
         builder.Services.AddSingleton(hostPermissions);
 
@@ -227,5 +239,33 @@ public sealed class HostFeedStrictConfigValidatorTests
         public override string Name => "Test.Invoices";
         protected override void Configure(QueryDefinitionBuilder<MultiTenantInvoice> builder) =>
             builder.Column(i => i.Number, c => c.Filterable());
+    }
+
+    public sealed class MultiTenantInvoiceEntityDefinition : EntityDefinition<MultiTenantInvoice>
+    {
+        public override string Name => "Test.MultiTenantInvoice";
+        protected override void Configure(EntityDefinitionBuilder<MultiTenantInvoice> builder) =>
+            builder.Query<MultiTenantInvoiceQueryDefinition>().Export<MultiTenantInvoiceExportDefinition>();
+    }
+
+    public sealed class TenantStubEntityDefinition : EntityDefinition<TenantStub>
+    {
+        public override string Name => "Test.TenantStub";
+        protected override void Configure(EntityDefinitionBuilder<TenantStub> builder) =>
+            builder.Query<TenantStubQueryDefinition>().Export<TenantStubExportDefinition>();
+    }
+
+    public sealed class MultiTenantInvoiceExportDefinition : ExportDefinition<MultiTenantInvoice>
+    {
+        public override string Name => "Test.MultiTenantInvoiceExport";
+        protected override void Configure(ExportDefinitionBuilder<MultiTenantInvoice> builder) =>
+            builder.Field(i => i.Number);
+    }
+
+    public sealed class TenantStubExportDefinition : ExportDefinition<TenantStub>
+    {
+        public override string Name => "Test.TenantStubExport";
+        protected override void Configure(ExportDefinitionBuilder<TenantStub> builder) =>
+            builder.Field(t => t.Slug);
     }
 }

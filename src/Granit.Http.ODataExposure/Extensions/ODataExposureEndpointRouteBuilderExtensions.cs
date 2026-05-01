@@ -1,6 +1,8 @@
 using System.Reflection;
 using Granit.Authorization;
+using Granit.DataExchange.Export;
 using Granit.Domain;
+using Granit.Entities;
 using Granit.Http.ODataExposure.Diagnostics;
 using Granit.Http.ODataExposure.Internal;
 using Granit.Http.ODataExposure.Options;
@@ -140,7 +142,9 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// <summary>
     /// Shared route-mapping pipeline used by both <see cref="MapGranitODataEndpoints"/>
     /// and <see cref="MapGranitODataHostEndpoints"/>. Validates strict-config
-    /// (feed-kind aware), builds the EDM model with the appropriate container
+    /// (feed-kind aware), resolves each entity's scalar property whitelist
+    /// from its <c>EntityDefinition</c>'s referenced <c>ExportDefinition</c>
+    /// (per ADR-050), builds the EDM model with the appropriate container
     /// name, and wires the service document, <c>$metadata</c>, and per-set
     /// routes under <paramref name="rateLimitPolicy"/>.
     /// </summary>
@@ -152,9 +156,10 @@ public static class ODataExposureEndpointRouteBuilderExtensions
         string rateLimitPolicy,
         string containerName)
     {
-        ValidateStrictConfiguration(descriptors, endpoints.ServiceProvider);
+        Dictionary<Type, IReadOnlyList<string>> scalarWhitelistByEntity =
+            ValidateAndResolveWhitelists(descriptors, endpoints.ServiceProvider);
 
-        IEdmModel edmModel = ODataEdmModelBuilder.Build(descriptors, containerName);
+        IEdmModel edmModel = ODataEdmModelBuilder.Build(descriptors, scalarWhitelistByEntity, containerName);
 
         string tagSuffix = feedKind == ODataFeedKind.Host ? "OData (Host)" : "OData";
         string serviceDocOpName = feedKind == ODataFeedKind.Host ? "ODataHostServiceDocument" : "ODataServiceDocument";
@@ -197,17 +202,40 @@ public static class ODataExposureEndpointRouteBuilderExtensions
     /// that lives inside a closure (and is therefore not statically
     /// reflectable).
     /// </summary>
-    /// <exception cref="InvalidOperationException">Any descriptor lacks both <see cref="ODataEntitySetBuilder{TEntity}.RequirePermission"/> and <see cref="ODataEntitySetBuilder{TEntity}.AllowAnonymousAccess"/>, OR neither <see cref="ODataEntitySetBuilder{TEntity}.ExpandWhitelist"/> nor <see cref="ODataEntitySetBuilder{TEntity}.DisableExpand"/>; or — for host-feed mounts — the permission resolves to a non-<c>Host</c> <see cref="MultiTenancySides"/>, the entity is <c>IMultiTenant</c> without a matching <c>AcknowledgeCrossTenantExposure</c> call, or the permission is unresolvable.</exception>
-    private static void ValidateStrictConfiguration(
+    /// <summary>
+    /// Validates the strict-config rules for every <see cref="ODataEntitySetDescriptor"/>
+    /// AND resolves the per-entity scalar property whitelist consumed by the
+    /// EDM builder (per ADR-050). Both passes share the same DI lookups, so
+    /// they are folded into a single helper to avoid resolving the registries
+    /// twice on the boot-time hot path.
+    /// </summary>
+    /// <returns>Per-entity scalar property names allowed on the EDM EntityType, derived from each entity's <c>ExportDefinition.GetFields()</c> filtered to <c>IsNavigation == false</c> and <c>PropertyPath</c> containing no <c>'.'</c>.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Any descriptor fails one of:
+    /// (a) permission gate (missing or implicit anonymous);
+    /// (b) <c>$expand</c>-intent gate (missing whitelist or DisableExpand);
+    /// (c) host-feed gates (non-Host permission, missing AcknowledgeCrossTenantExposure on IMultiTenant);
+    /// (d) ADR-050 gates: no registered <c>EntityDefinition</c> for the entity type, or the <c>EntityDefinition</c> declares no <c>b.Export&lt;T&gt;()</c> reference, or no <c>IExportDefinitionDescriptor</c> is registered for the entity type.
+    /// </exception>
+    private static Dictionary<Type, IReadOnlyList<string>> ValidateAndResolveWhitelists(
         IReadOnlyList<ODataEntitySetDescriptor> descriptors,
         IServiceProvider services)
     {
         List<string> errors = [];
+        Dictionary<Type, IReadOnlyList<string>> whitelistByEntity = [];
 
         IPermissionDefinitionManager? permissionDefinitions =
             descriptors.Any(d => d.FeedKind == ODataFeedKind.Host && d.RequiredPermission is not null)
                 ? services.GetService<IPermissionDefinitionManager>()
                 : null;
+
+        // ADR-050 gates: resolve EntityDefinition + Export descriptors once.
+        // Both abstractions live in their *.Abstractions packages so this
+        // module avoids a hard dep on the runtime registries.
+        IReadOnlyList<IEntityDefinitionDescriptor> entityDefinitions =
+            [.. services.GetServices<IEntityDefinitionDescriptor>()];
+        IReadOnlyList<IExportDefinitionDescriptor> exportDefinitions =
+            [.. services.GetServices<IExportDefinitionDescriptor>()];
 
         foreach (ODataEntitySetDescriptor descriptor in descriptors)
         {
@@ -225,34 +253,47 @@ public static class ODataExposureEndpointRouteBuilderExtensions
                     $"EntitySet '{descriptor.EntitySetName}' must call either ExpandWhitelist(...) or DisableExpand() — implicit \"$expand disabled\" is rejected by the strict-config validator (C6 #1395). Use DisableExpand() to declare the intent, or ExpandWhitelist(\"NavProp1\", ...) to allow specific navigations.");
             }
 
-            if (descriptor.FeedKind != ODataFeedKind.Host)
+            if (descriptor.FeedKind == ODataFeedKind.Host)
             {
+                ValidateHostFeedGates(descriptor, permissionDefinitions, errors);
+            }
+
+            // ADR-050 gate #1: every EntitySet's entity MUST have a registered EntityDefinition.
+            IEntityDefinitionDescriptor? entityDefinition = entityDefinitions
+                .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
+            if (entityDefinition is null)
+            {
+                errors.Add(
+                    $"EntitySet '{descriptor.EntitySetName}' targets entity '{descriptor.EntityType.Name}' which has no registered EntityDefinition. Per ADR-050, every OData EntitySet requires an EntityDefinition gate — register one via services.AddEntityDefinition<{descriptor.EntityType.Name}, {descriptor.EntityType.Name}EntityDefinition>() before mounting this set.");
                 continue;
             }
 
-            // Host-feed gate #1: permission must resolve to MultiTenancySides.Host (NOT Both, NOT Tenant).
-            if (descriptor.RequiredPermission is { } perm)
-            {
-                PermissionDefinition? permission = permissionDefinitions?.Find(perm);
-                if (permission is null)
-                {
-                    errors.Add(
-                        $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' but no PermissionDefinition with that name is registered. Declare it in an IPermissionDefinitionProvider with MultiTenancySides.Host before mounting the host-feed.");
-                }
-                else if (permission.MultiTenancySides != MultiTenancySides.Host)
-                {
-                    errors.Add(
-                        $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' which is declared as MultiTenancySides.{permission.MultiTenancySides} — host-feed access requires MultiTenancySides.Host. Either declare a dedicated host-side permission, or move this EntitySet to the tenant-feed (MapGranitODataEndpoints).");
-                }
-            }
-
-            // Host-feed gate #2: IMultiTenant entities require AcknowledgeCrossTenantExposure(...).
-            if (typeof(IMultiTenant).IsAssignableFrom(descriptor.EntityType)
-                && !descriptor.CrossTenantExposureAcknowledged)
+            // ADR-050 gate #2: the EntityDefinition MUST reference an ExportDefinition via b.Export<T>().
+            if (entityDefinition.Descriptor.ExportDefinitionType is null)
             {
                 errors.Add(
-                    $"Host-feed EntitySet '{descriptor.EntitySetName}' targets IMultiTenant entity '{descriptor.EntityType.Name}' but did not call AcknowledgeCrossTenantExposure(...). Without an explicit per-query bypass lambda, the framework's tenant filter (tenantId == currentTenant.Id) returns no rows for a tenantless caller — fail-closed. Add: .AcknowledgeCrossTenantExposure(q => q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])).");
+                    $"EntitySet '{descriptor.EntitySetName}' uses EntityDefinition '{entityDefinition.Name}' which does not declare a b.Export<T>() reference. Per ADR-050, the OData EDM whitelist is derived from the referenced ExportDefinition — add b.Export<{descriptor.EntityType.Name}ExportDefinition>() to the EntityDefinition's Configure method.");
+                continue;
             }
+
+            // ADR-050 gate #3: the referenced Export must be DI-registered as IExportDefinitionDescriptor.
+            IExportDefinitionDescriptor? export = exportDefinitions
+                .FirstOrDefault(e => e.EntityType == descriptor.EntityType);
+            if (export is null)
+            {
+                errors.Add(
+                    $"EntitySet '{descriptor.EntitySetName}' references Export '{entityDefinition.Descriptor.ExportDefinitionType.Name}' but no IExportDefinitionDescriptor is registered for entity type '{descriptor.EntityType.Name}'. Did you forget services.AddExportDefinition<{descriptor.EntityType.Name}, {entityDefinition.Descriptor.ExportDefinitionType.Name}>()?");
+                continue;
+            }
+
+            // Resolved field set: scalars only (flat paths, IsNavigation == false).
+            // Flat paths (no dot) keep v1 simple — nested navigation paths
+            // ("Customer.Name") will be lifted to OData NavigationProperty in
+            // a follow-up PR derived from EntityDefinition.Relations.
+            whitelistByEntity[descriptor.EntityType] =
+                [.. export.GetFields()
+                    .Where(f => !f.IsNavigation && !f.PropertyPath.Contains('.', StringComparison.Ordinal))
+                    .Select(f => f.PropertyPath)];
         }
 
         if (errors.Count > 0)
@@ -260,6 +301,41 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             throw new InvalidOperationException(
                 "OData EntitySet configuration is incomplete:" + Environment.NewLine
                 + string.Join(Environment.NewLine, errors.Select(e => "  - " + e)));
+        }
+
+        return whitelistByEntity;
+    }
+
+    /// <summary>
+    /// Host-feed-only gates: the permission must resolve to <see cref="MultiTenancySides.Host"/>,
+    /// and any <c>IMultiTenant</c> entity must have called
+    /// <c>AcknowledgeCrossTenantExposure(...)</c>.
+    /// </summary>
+    private static void ValidateHostFeedGates(
+        ODataEntitySetDescriptor descriptor,
+        IPermissionDefinitionManager? permissionDefinitions,
+        List<string> errors)
+    {
+        if (descriptor.RequiredPermission is { } perm)
+        {
+            PermissionDefinition? permission = permissionDefinitions?.Find(perm);
+            if (permission is null)
+            {
+                errors.Add(
+                    $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' but no PermissionDefinition with that name is registered. Declare it in an IPermissionDefinitionProvider with MultiTenancySides.Host before mounting the host-feed.");
+            }
+            else if (permission.MultiTenancySides != MultiTenancySides.Host)
+            {
+                errors.Add(
+                    $"Host-feed EntitySet '{descriptor.EntitySetName}' requires permission '{perm}' which is declared as MultiTenancySides.{permission.MultiTenancySides} — host-feed access requires MultiTenancySides.Host. Either declare a dedicated host-side permission, or move this EntitySet to the tenant-feed (MapGranitODataEndpoints).");
+            }
+        }
+
+        if (typeof(IMultiTenant).IsAssignableFrom(descriptor.EntityType)
+            && !descriptor.CrossTenantExposureAcknowledged)
+        {
+            errors.Add(
+                $"Host-feed EntitySet '{descriptor.EntitySetName}' targets IMultiTenant entity '{descriptor.EntityType.Name}' but did not call AcknowledgeCrossTenantExposure(...). Without an explicit per-query bypass lambda, the framework's tenant filter (tenantId == currentTenant.Id) returns no rows for a tenantless caller — fail-closed. Add: .AcknowledgeCrossTenantExposure(q => q.IgnoreQueryFilters([GranitFilterNames.MultiTenant])).");
         }
     }
 

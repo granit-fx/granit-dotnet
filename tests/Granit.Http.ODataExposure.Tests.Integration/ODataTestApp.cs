@@ -1,4 +1,6 @@
 using Granit.Authorization;
+using Granit.DataExchange.Export;
+using Granit.Entities;
 using Granit.Http.ODataExposure.Extensions;
 using Granit.Http.ODataExposure.Options;
 using Granit.MultiTenancy;
@@ -95,6 +97,13 @@ internal sealed class ODataTestApp : IAsyncDisposable
         });
 
         builder.Services.AddScoped<IQueryableSource<Invoice>, InvoiceSource>();
+
+        // ADR-050 plumbing: EntityDefinition gate + Export field source.
+        // Singleton registrations match the production patterns used by
+        // AddEntityDefinition / AddExportDefinition.
+        builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new InvoiceEntityDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new InvoiceExportDefinition());
+
         builder.Services.AddGranitODataExposure();
 
         // C3b — every OData route is gated by the "granit-odata" rate-limit

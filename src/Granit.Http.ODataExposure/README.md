@@ -41,6 +41,56 @@ through the OData service document, queries them with `$filter` /
 `$select` / `$top` / `$orderby`, and never sees rows belonging to other
 tenants.
 
+## Surface contract — EntityDefinition required (ADR-050)
+
+Every EntitySet MUST target an entity for which an
+`EntityDefinition<TEntity>` is registered, AND the EntityDefinition MUST
+reference an `ExportDefinition<TEntity>` via `b.Export<TExportDefinition>()`.
+The startup validator throws otherwise — there is no silent fallback.
+
+```csharp
+public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
+{
+    public override string Name => "Granit.Invoicing.Invoice";
+
+    protected override void Configure(EntityDefinitionBuilder<Invoice> b)
+    {
+        b.DisplayKey("Entity:Invoice").PermissionGroup("Invoicing.Invoices");
+        b.Query<InvoiceQueryDefinition>();
+        b.Export<InvoiceExportDefinition>();   // ← drives the OData EDM whitelist
+        // Form / Detail / Relations as usual…
+    }
+}
+```
+
+The OData EDM EntityType is built by:
+
+1. Resolving the `EntityDefinition` for the target entity from
+   `IEnumerable<IEntityDefinitionDescriptor>` (registered via
+   `services.AddEntityDefinition<...>()`).
+2. Following `EntityDefinition.Descriptor.ExportDefinitionType` to the
+   matching `ExportDefinition`.
+3. Whitelisting properties from `ExportDefinition.GetFields()` filtered to
+   `IsNavigation == false` and `PropertyPath` containing no `.` (flat
+   scalar fields only for v1; navigation paths land in a follow-up that
+   derives `NavigationProperty` from `EntityDefinition.Relations`).
+4. Allowing the navigation properties listed in
+   `.ExpandWhitelist(...)` on the EntitySet builder (existing mechanism).
+
+Properties not in the whitelist are removed from the EDM via
+`EntityTypeConfiguration.RemoveProperty(...)` BEFORE convention discovery
+runs — notably `AggregateRoot.DomainEvents` /
+`AggregateRoot.IntegrationEvents`, which would otherwise leak into
+`$metadata` because they are publicly exposed on every aggregate root to
+satisfy `IDomainEventSource` / `IIntegrationEventSource`.
+
+> **Why EntityDefinition rather than Export directly?** EntityDefinition
+> is the orchestrator (Phase 1 — `Granit.Entities`). Pinning OData to it
+> aligns the BI surface with the framework's entity-modeling direction:
+> as more modules ship `EntityDefinition`s in subsequent phases, their
+> entities become OData-exposable. See [ADR-050](../../docs-site/src/content/docs/dotnet/architecture/adr/050-odata-edm-whitelist-via-entity-definition.md)
+> for the full trade-off analysis.
+
 ## Request flow
 
 Per EntitySet `GET /api/{version}/odata/{Name}?$filter=…&$select=…&$top=…`:

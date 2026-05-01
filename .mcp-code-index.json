@@ -1062,6 +1062,8 @@
       "deps": [
         "Granit",
         "Granit.Authorization",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Entities.Abstractions",
         "Granit.Http.Abstractions",
         "Granit.QueryEngine.Abstractions",
         "Granit.RateLimiting"
@@ -22790,7 +22792,7 @@
       "kind": "class",
       "project": "Granit.Http.ODataExposure",
       "file": "src/Granit.Http.ODataExposure/Extensions/ODataExposureEndpointRouteBuilderExtensions.cs",
-      "line": 28,
+      "line": 30,
       "members": [
         {
           "name": "MapGranitODataEndpoints",

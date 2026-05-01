@@ -1,4 +1,6 @@
 using Granit.Authorization;
+using Granit.DataExchange.Export;
+using Granit.Entities;
 using Granit.Http.ODataExposure.Extensions;
 using Granit.MultiTenancy;
 using Granit.QueryEngine;
@@ -100,6 +102,16 @@ public sealed class StrictConfigValidatorTests
         builder.Services.AddSingleton<QueryDefinition<Invoice>>(new InvoiceQueryDefinition());
         builder.Services.AddSingleton<QueryDefinition<Customer>>(new CustomerQueryDefinition());
 
+        // Per ADR-050: every OData EntitySet's entity must have a registered
+        // EntityDefinition referencing an Export. Tests here register the
+        // minimum needed for the validator's lookups to succeed; the
+        // dedicated EntityDefinitionStrictConfigTests file covers the gate
+        // failure paths.
+        builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new InvoiceEntityDefinition());
+        builder.Services.AddSingleton<IEntityDefinitionDescriptor>(new CustomerEntityDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new InvoiceExportDefinition());
+        builder.Services.AddSingleton<IExportDefinitionDescriptor>(new CustomerExportDefinition());
+
         builder.Services.AddGranitODataExposure();
         builder.Services.AddGranitRateLimiting(o =>
         {
@@ -139,5 +151,33 @@ public sealed class StrictConfigValidatorTests
         public override string Name => "Test.Customers";
         protected override void Configure(QueryDefinitionBuilder<Customer> builder) =>
             builder.Column(c => c.Name, b => b.Filterable());
+    }
+
+    public sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
+    {
+        public override string Name => "Test.Invoice";
+        protected override void Configure(EntityDefinitionBuilder<Invoice> builder) =>
+            builder.Query<InvoiceQueryDefinition>().Export<InvoiceExportDefinition>();
+    }
+
+    public sealed class CustomerEntityDefinition : EntityDefinition<Customer>
+    {
+        public override string Name => "Test.Customer";
+        protected override void Configure(EntityDefinitionBuilder<Customer> builder) =>
+            builder.Query<CustomerQueryDefinition>().Export<CustomerExportDefinition>();
+    }
+
+    public sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
+    {
+        public override string Name => "Test.InvoiceExport";
+        protected override void Configure(ExportDefinitionBuilder<Invoice> builder) =>
+            builder.Field(i => i.Number);
+    }
+
+    public sealed class CustomerExportDefinition : ExportDefinition<Customer>
+    {
+        public override string Name => "Test.CustomerExport";
+        protected override void Configure(ExportDefinitionBuilder<Customer> builder) =>
+            builder.Field(c => c.Name);
     }
 }

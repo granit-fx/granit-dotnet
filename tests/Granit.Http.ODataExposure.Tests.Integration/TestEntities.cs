@@ -1,4 +1,6 @@
+using Granit.DataExchange.Export;
 using Granit.Domain;
+using Granit.Entities;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.QueryEngine;
@@ -66,4 +68,33 @@ internal sealed class InvoiceSource(TestDbContext db) : IQueryableSource<Invoice
 {
     private readonly TestDbContext _db = db;
     public IQueryable<Invoice> GetQueryable() => _db.Invoices.AsNoTracking();
+}
+
+/// <summary>
+/// Per ADR-050, OData EntitySets require a registered EntityDefinition that
+/// references an ExportDefinition. The integration suites use the simplest
+/// possible pair to land the v1 contract — Number, Amount, TenantId scalars
+/// (the latter intentionally exposed because hostile <c>$filter</c> targets
+/// it; tenant isolation is enforced by the framework filter, not by hiding
+/// the column).
+/// </summary>
+internal sealed class InvoiceExportDefinition : ExportDefinition<Invoice>
+{
+    public override string Name => "Test.InvoiceExport";
+
+    protected override void Configure(ExportDefinitionBuilder<Invoice> builder) =>
+        builder
+            .Field(i => i.Number)
+            .Field(i => i.Amount)
+            .Field(i => i.TenantId);
+}
+
+internal sealed class InvoiceEntityDefinition : EntityDefinition<Invoice>
+{
+    public override string Name => "Test.Invoice";
+
+    protected override void Configure(EntityDefinitionBuilder<Invoice> builder) =>
+        builder
+            .Query<InvoiceQueryDefinition>()
+            .Export<InvoiceExportDefinition>();
 }
