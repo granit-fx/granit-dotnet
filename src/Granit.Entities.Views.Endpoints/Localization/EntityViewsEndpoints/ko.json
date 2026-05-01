@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "ko",
+  "texts": {
+    "PermissionGroup:Entities.Views": "엔터티 뷰",
+    "Permission:Entities.Views.Read": "엔터티 뷰 보기",
+    "Permission:Entities.Views.Create": "개인 엔터티 뷰 생성",
+    "Permission:Entities.Views.Share": "역할 또는 사용자와 엔터티 뷰 공유",
+    "Permission:Entities.Views.Manage": "엔터티 뷰 관리 (고정 / 테넌트 기본값 설정 / 승격)",
+    "Permission:Entities.Views.Delete.Any": "모든 엔터티 뷰 삭제 (모더레이션)"
+  }
 }

@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Entities.Views": "实体视图",
+    "Permission:Entities.Views.Read": "查看实体视图",
+    "Permission:Entities.Views.Create": "创建个人实体视图",
+    "Permission:Entities.Views.Share": "与角色或用户共享实体视图",
+    "Permission:Entities.Views.Manage": "管理实体视图（固定 / 设为租户默认 / 提升）",
+    "Permission:Entities.Views.Delete.Any": "删除任何实体视图（审核）"
+  }
 }

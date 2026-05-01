@@ -1,8 +1,11 @@
 {
-  "PermissionGroup:Entities.Views": "Entity views",
-  "Permission:Entities.Views.Read": "Read entity views",
-  "Permission:Entities.Views.Create": "Create personal entity views",
-  "Permission:Entities.Views.Share": "Share entity views with roles or users",
-  "Permission:Entities.Views.Manage": "Manage entity views (pin / set tenant default / promote)",
-  "Permission:Entities.Views.Delete.Any": "Delete any entity view (moderation)"
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Entities.Views": "Pohledy na entity",
+    "Permission:Entities.Views.Read": "Zobrazit pohledy na entity",
+    "Permission:Entities.Views.Create": "Vytvářet osobní pohledy na entity",
+    "Permission:Entities.Views.Share": "Sdílet pohledy na entity s rolemi nebo uživateli",
+    "Permission:Entities.Views.Manage": "Spravovat pohledy na entity (připnout / nastavit výchozí pro tenant / povýšit)",
+    "Permission:Entities.Views.Delete.Any": "Smazat libovolný pohled na entitu (moderace)"
+  }
 }
