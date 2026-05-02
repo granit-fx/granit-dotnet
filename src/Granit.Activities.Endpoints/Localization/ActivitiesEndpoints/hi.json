@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:Activities": "गतिविधियाँ",
+    "Permission:Activities.Activities.Read": "गतिविधियाँ पढ़ें",
+    "Permission:Activities.Activities.Manage": "गतिविधियाँ प्रबंधित करें",
+    "Permission:Activities.Activities.Execute": "गतिविधियाँ पूरी करें"
+  }
+}

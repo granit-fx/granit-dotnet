@@ -1,6 +1,8 @@
+using Granit.Activities.Abstractions;
 using Granit.Activities.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Activities.EntityFrameworkCore.Extensions;
@@ -26,6 +28,8 @@ public static class ActivitiesEntityFrameworkCoreHostApplicationBuilderExtension
         ArgumentNullException.ThrowIfNull(configure);
 
         builder.Services.AddGranitDbContext<ActivitiesDbContext>(configure);
+        builder.Services.AddScoped<IActivityReader, EfCoreActivityReader>();
+        builder.Services.AddScoped<IActivityWriter, EfCoreActivityWriter>();
         return builder;
     }
 }

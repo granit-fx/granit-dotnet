@@ -1,0 +1,9 @@
+{
+  "culture": "cs",
+  "texts": {
+    "PermissionGroup:Activities": "Aktivity",
+    "Permission:Activities.Activities.Read": "Číst aktivity",
+    "Permission:Activities.Activities.Manage": "Spravovat aktivity",
+    "Permission:Activities.Activities.Execute": "Dokončit aktivity"
+  }
+}

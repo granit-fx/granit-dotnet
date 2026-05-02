@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "PermissionGroup:Activities": "Aktiviteter",
+    "Permission:Activities.Activities.Read": "Läs aktiviteter",
+    "Permission:Activities.Activities.Manage": "Hantera aktiviteter",
+    "Permission:Activities.Activities.Execute": "Slutför aktiviteter"
+  }
+}

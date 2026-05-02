@@ -1,0 +1,9 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:Activities": "Aktywności",
+    "Permission:Activities.Activities.Read": "Odczyt aktywności",
+    "Permission:Activities.Activities.Manage": "Zarządzanie aktywnościami",
+    "Permission:Activities.Activities.Execute": "Ukończ aktywności"
+  }
+}

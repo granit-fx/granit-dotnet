@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Activities": "Activiteiten",
+    "Permission:Activities.Activities.Read": "Activiteiten lezen",
+    "Permission:Activities.Activities.Manage": "Activiteiten beheren",
+    "Permission:Activities.Activities.Execute": "Activiteiten voltooien"
+  }
+}

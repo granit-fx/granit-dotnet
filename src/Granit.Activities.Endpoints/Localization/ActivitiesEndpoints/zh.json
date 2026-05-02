@@ -1,0 +1,9 @@
+{
+  "culture": "zh",
+  "texts": {
+    "PermissionGroup:Activities": "活动",
+    "Permission:Activities.Activities.Read": "读取活动",
+    "Permission:Activities.Activities.Manage": "管理活动",
+    "Permission:Activities.Activities.Execute": "完成活动"
+  }
+}

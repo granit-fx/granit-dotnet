@@ -12,6 +12,7 @@
       "src/Granit.AI.VectorData/Granit.AI.VectorData.csproj",
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj",
+      "src/Granit.Activities.Endpoints/Granit.Activities.Endpoints.csproj",
       "src/Granit.Activities.EntityFrameworkCore/Granit.Activities.EntityFrameworkCore.csproj",
       "src/Granit.Activities/Granit.Activities.csproj",
       "src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj",

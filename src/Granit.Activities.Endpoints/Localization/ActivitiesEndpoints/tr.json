@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "PermissionGroup:Activities": "Aktiviteler",
+    "Permission:Activities.Activities.Read": "Aktiviteleri oku",
+    "Permission:Activities.Activities.Manage": "Aktiviteleri yönet",
+    "Permission:Activities.Activities.Execute": "Aktiviteleri tamamla"
+  }
+}
