@@ -52,3 +52,16 @@ public sealed class RescheduleActivityRequestValidator : AbstractValidator<Resch
         RuleFor(x => x.NewDueAt).NotEqual(default(DateTimeOffset));
     }
 }
+
+public sealed class ActivityCalendarRequestValidator : AbstractValidator<ActivityCalendarRequest>
+{
+    public ActivityCalendarRequestValidator()
+    {
+        RuleFor(x => x.From).NotEqual(default(DateTimeOffset));
+        RuleFor(x => x.To).NotEqual(default(DateTimeOffset))
+            .GreaterThan(x => x.From);
+        RuleFor(x => x.EntityType).MaximumLength(256);
+        RuleFor(x => x.Type).MaximumLength(512);
+        RuleFor(x => x.Assignee).MaximumLength(64);
+    }
+}
