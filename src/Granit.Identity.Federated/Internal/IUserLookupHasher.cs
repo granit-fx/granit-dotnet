@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="Granit.Identity.Federated.Domain.UserCacheEntry.Email"/>
+/// <see cref="Granit.Identity.Federated.Domain.FederatedIdentity.Email"/>
 /// is encrypted at rest via <see cref="Granit.Encryption.EntityFrameworkCore.EncryptedAttribute"/>.
 /// Ciphertext is not <c>LIKE</c>-searchable, so an exact-match lookup index sits
 /// alongside the encrypted column: <c>EmailHash = HMAC-SHA256(pepper, lowered-email)</c>.

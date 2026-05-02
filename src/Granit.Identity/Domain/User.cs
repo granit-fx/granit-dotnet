@@ -6,7 +6,7 @@ namespace Granit.Identity.Domain;
 
 /// <summary>
 /// Canonical user aggregate per ADR-051. Replaces the dual hierarchy
-/// <c>LocalIdentity</c> (local) / <c>UserCacheEntry</c> (federated) at the
+/// <c>LocalIdentity</c> (local) / <c>FederatedIdentity</c> (federated) at the
 /// "who is this person" level — auth-secret storage and IdP-cache fields
 /// live in their own siblings (<c>LocalIdentity</c> / <c>FederatedIdentity</c>)
 /// that reference <see cref="Id"/> via FK.
@@ -23,7 +23,7 @@ namespace Granit.Identity.Domain;
 /// Implements <see cref="IIdentityUser"/> so existing consumers
 /// (<see cref="IUserLookupService"/>, <see cref="IIdentityUserReader"/>,
 /// audit projections) see it interchangeably with the legacy
-/// <c>LocalIdentity</c> / <c>UserCacheEntry</c> implementations during the
+/// <c>LocalIdentity</c> / <c>FederatedIdentity</c> implementations during the
 /// staged migration.
 /// </para>
 /// </remarks>

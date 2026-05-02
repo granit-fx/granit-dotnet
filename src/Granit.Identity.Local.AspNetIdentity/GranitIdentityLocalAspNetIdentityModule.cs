@@ -129,7 +129,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
     {
         // Detect redundant Granit.Identity.Federated.EntityFrameworkCore registration.
         // When OpenIddict is the identity provider, LocalIdentity is the source of truth —
-        // UserCacheEntry and UserCacheSyncMiddleware are unnecessary.
+        // FederatedIdentity and UserCacheSyncMiddleware are unnecessary.
         var userCacheDbContextType = Type.GetType(
             "Granit.Identity.Federated.EntityFrameworkCore.DbContext.IUserCacheDbContext, Granit.Identity.Federated.EntityFrameworkCore",
             throwOnError: false);
@@ -147,7 +147,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
     {
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside "
-                + "Granit.Identity.Local.AspNetIdentity. UserCacheEntry is redundant when the "
+                + "Granit.Identity.Local.AspNetIdentity. FederatedIdentity is redundant when the "
                 + "identity provider stores users locally (LocalIdentity). Remove the "
                 + "Granit.Identity.Federated.EntityFrameworkCore package reference to avoid an "
                 + "unnecessary database table and per-request cache sync overhead.")]

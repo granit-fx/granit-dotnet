@@ -10,13 +10,13 @@ public static class UserCacheModelBuilderExtensions
     /// Applies all entity configurations for the Granit Identity module.
     /// </summary>
     /// <remarks>
-    /// Configures the <see cref="UserCacheEntry"/> entity: table name, column constraints,
+    /// Configures the <see cref="FederatedIdentity"/> entity: table name, column constraints,
     /// and indexes for efficient lookup and search.
     /// Call this from <c>OnModelCreating</c> in the host application's DbContext.
     /// </remarks>
     public static ModelBuilder ConfigureIdentityModule(this ModelBuilder builder)
     {
-        builder.Entity<UserCacheEntry>(entity =>
+        builder.Entity<FederatedIdentity>(entity =>
         {
             entity.ToTable(
                 GranitIdentityDbProperties.DbTablePrefix + "user_cache_entries",

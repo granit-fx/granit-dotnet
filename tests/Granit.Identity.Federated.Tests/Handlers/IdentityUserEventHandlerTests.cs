@@ -45,7 +45,7 @@ public sealed class IdentityUserEventHandlerTests
             new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
         await _store.Received(1).UpsertAsync(
-            Arg.Is<UserCacheEntry>(e => e.ExternalUserId == "user-1" && e.Username == "jdoe"),
+            Arg.Is<FederatedIdentity>(e => e.ExternalUserId == "user-1" && e.Username == "jdoe"),
             Arg.Any<CancellationToken>());
     }
 
@@ -60,7 +60,7 @@ public sealed class IdentityUserEventHandlerTests
             new IdentityUserUpdatedEto("user-1"), TestContext.Current.CancellationToken);
 
         await _store.DidNotReceive().UpsertAsync(
-            Arg.Any<UserCacheEntry>(), Arg.Any<CancellationToken>());
+            Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]

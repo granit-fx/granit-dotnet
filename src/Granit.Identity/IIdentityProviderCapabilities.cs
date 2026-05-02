@@ -51,7 +51,7 @@ public interface IIdentityProviderCapabilities
     /// </summary>
     /// <remarks>
     /// When <see langword="true"/> (e.g., ASP.NET Core Identity / OpenIddict), the user cache
-    /// (<c>UserCacheEntry</c>) and sync middleware (<c>UserCacheSyncMiddleware</c>) are unnecessary
+    /// (<c>FederatedIdentity</c>) and sync middleware (<c>UserCacheSyncMiddleware</c>) are unnecessary
     /// because users are already queryable via SQL. When <see langword="false"/> (e.g., Keycloak,
     /// Entra ID), the cache is required for local queries.
     /// </remarks>

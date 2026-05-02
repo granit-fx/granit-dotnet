@@ -6,7 +6,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore;
 
 /// <summary>
 /// Granit module for EF Core identity user cache persistence.
-/// Provides <see cref="Entities.UserCacheEntry"/> entity, <see cref="DbContext.IUserCacheDbContext"/>,
+/// Provides <see cref="Entities.FederatedIdentity"/> entity, <see cref="DbContext.IUserCacheDbContext"/>,
 /// and <see cref="IUserLookupService"/> with cache-aside strategy and login-time sync.
 /// </summary>
 /// <remarks>

@@ -4,26 +4,26 @@ namespace Granit.Identity.Federated.Internal;
 
 /// <summary>
 /// Internal data access layer for identity user cache entries.
-/// Provides CRUD, search, GDPR, and diagnostic operations on <see cref="UserCacheEntry"/>.
+/// Provides CRUD, search, GDPR, and diagnostic operations on <see cref="FederatedIdentity"/>.
 /// </summary>
 internal interface IUserCacheStore
 {
     // -- Read --
 
     /// <summary>Finds a cached user by external ID within a specific tenant scope.</summary>
-    Task<UserCacheEntry?> FindByExternalIdAsync(
+    Task<FederatedIdentity?> FindByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Finds the first cached entry for an external user ID, regardless of tenant (host context).</summary>
-    Task<UserCacheEntry?> FindFirstByExternalIdAsync(
+    Task<FederatedIdentity?> FindFirstByExternalIdAsync(
         string externalUserId, CancellationToken cancellationToken = default);
 
     /// <summary>Batch lookup of cached users by external IDs within a tenant scope.</summary>
-    Task<IReadOnlyList<UserCacheEntry>> FindByExternalIdsAsync(
+    Task<IReadOnlyList<FederatedIdentity>> FindByExternalIdsAsync(
         IReadOnlyCollection<string> externalUserIds, Guid? tenantId, CancellationToken cancellationToken = default);
 
     /// <summary>Searches cached users by free-text term (username, email, first name, last name) with pagination.</summary>
-    Task<(IReadOnlyList<UserCacheEntry> Items, int TotalCount)> SearchAsync(
+    Task<(IReadOnlyList<FederatedIdentity> Items, int TotalCount)> SearchAsync(
         string term, Guid? tenantId, int page, int pageSize, CancellationToken cancellationToken = default);
 
     // -- Diagnostics --
@@ -45,10 +45,10 @@ internal interface IUserCacheStore
     // -- Write --
 
     /// <summary>Inserts or updates a single cache entry (matched by TenantId + ExternalUserId).</summary>
-    Task UpsertAsync(UserCacheEntry entry, CancellationToken cancellationToken = default);
+    Task UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default);
 
     /// <summary>Inserts or updates multiple cache entries in batch.</summary>
-    Task UpsertManyAsync(IReadOnlyList<UserCacheEntry> entries, CancellationToken cancellationToken = default);
+    Task UpsertManyAsync(IReadOnlyList<FederatedIdentity> entries, CancellationToken cancellationToken = default);
 
     // -- GDPR --
 

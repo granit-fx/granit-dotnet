@@ -1,7 +1,7 @@
 {
   "culture": "ja",
   "texts": {
-    "Metric:Granit.Identity.Federated.EnabledUserCacheEntryCountMetric": "有効な連携ユーザー",
-    "Metric:Granit.Identity.Federated.UserCacheEntryCountMetric": "連携ユーザー（合計）"
+    "Metric:Granit.Identity.Federated.EnabledFederatedIdentityCountMetric": "有効な連携ユーザー",
+    "Metric:Granit.Identity.Federated.FederatedIdentityCountMetric": "連携ユーザー（合計）"
   }
 }

@@ -4,7 +4,7 @@ namespace Granit.Identity.Federated.Notifications;
 
 /// <summary>
 /// Notification raised when a user-sync between the upstream identity provider
-/// and the local <c>UserCacheEntry</c> table fails. Provides the human-readable
+/// and the local <c>FederatedIdentity</c> table fails. Provides the human-readable
 /// signal ISO 27001 A.12.4 expects on top of the existing log line — drift
 /// between IdP and our user cache must reach a responder, not only the SIEM.
 /// </summary>

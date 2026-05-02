@@ -11,7 +11,7 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.Tests;
 internal sealed class TestDbContext(DbContextOptions<TestDbContext> options)
     : Microsoft.EntityFrameworkCore.DbContext(options), IUserCacheDbContext
 {
-    public DbSet<UserCacheEntry> UserCacheEntries => Set<UserCacheEntry>();
+    public DbSet<FederatedIdentity> FederatedIdentities => Set<FederatedIdentity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ConfigureIdentityModule();

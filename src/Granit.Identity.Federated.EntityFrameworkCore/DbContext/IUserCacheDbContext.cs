@@ -11,5 +11,5 @@ namespace Granit.Identity.Federated.EntityFrameworkCore.DbContext;
 public interface IUserCacheDbContext
 {
     /// <summary>Identity user cache entries table.</summary>
-    DbSet<UserCacheEntry> UserCacheEntries { get; }
+    DbSet<FederatedIdentity> FederatedIdentities { get; }
 }

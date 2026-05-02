@@ -7,13 +7,13 @@ namespace Granit.Identity.Federated.Queries;
 /// Query definition for federated user cache entries — declares columns, filters, sorting,
 /// and search for the query engine.
 /// </summary>
-public sealed class UserCacheEntryQueryDefinition : QueryDefinition<UserCacheEntry>
+public sealed class FederatedIdentityQueryDefinition : QueryDefinition<FederatedIdentity>
 {
     /// <inheritdoc/>
-    public override string Name => "Granit.Identity.Federated.UserCacheEntryQuery";
+    public override string Name => "Granit.Identity.Federated.FederatedIdentityQuery";
 
     /// <inheritdoc/>
-    protected override void Configure(QueryDefinitionBuilder<UserCacheEntry> builder)
+    protected override void Configure(QueryDefinitionBuilder<FederatedIdentity> builder)
     {
         builder
             // Identity

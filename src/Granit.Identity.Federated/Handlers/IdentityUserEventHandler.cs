@@ -40,7 +40,7 @@ internal sealed partial class IdentityUserEventHandler(
             .ConfigureAwait(false);
 
         await localEventBus.PublishAsync(
-            new UserCacheEntryErasedEvent(@event.UserId, @event.TenantId), cancellationToken)
+            new FederatedIdentityErasedEvent(@event.UserId, @event.TenantId), cancellationToken)
             .ConfigureAwait(false);
 
         LogUserCacheDeleted(@event.UserId);
@@ -92,7 +92,7 @@ internal sealed partial class IdentityUserEventHandler(
             return;
         }
 
-        var entry = new UserCacheEntry
+        var entry = new FederatedIdentity
         {
             ExternalUserId = user.UserId,
             Username = user.Username,

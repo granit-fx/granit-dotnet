@@ -29,14 +29,14 @@ public sealed class GranitIdentityFederatedModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         // Query + Export definitions (ADR-020: owned by the base module).
-        context.Services.AddQueryDefinition<UserCacheEntry, UserCacheEntryQueryDefinition>();
-        context.Services.AddExportDefinition<UserCacheEntry, UserCacheEntryExportDefinition>();
+        context.Services.AddQueryDefinition<FederatedIdentity, FederatedIdentityQueryDefinition>();
+        context.Services.AddExportDefinition<FederatedIdentity, FederatedIdentityExportDefinition>();
 
         // Phase 2 EntityDefinition (ADR-050).
-        context.Services.AddEntityDefinition<UserCacheEntry, UserCacheEntryEntityDefinition>();
+        context.Services.AddEntityDefinition<FederatedIdentity, FederatedIdentityEntityDefinition>();
 
-        context.Services.AddMetricDefinition<UserCacheEntry, int, EnabledUserCacheEntryCountMetricDefinition>();
-        context.Services.AddMetricDefinition<UserCacheEntry, int, UserCacheEntryCountMetricDefinition>();
+        context.Services.AddMetricDefinition<FederatedIdentity, int, EnabledFederatedIdentityCountMetricDefinition>();
+        context.Services.AddMetricDefinition<FederatedIdentity, int, FederatedIdentityCountMetricDefinition>();
 
         // Default to a no-op rate limiter on token-exchange. Hosts that wire
         // Granit.RateLimiting can replace this registration with a distributed-store
