@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Export.Domain;
@@ -58,7 +59,7 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
     /// Reference to the generated file in blob storage. Set when <see cref="Status"/> is
     /// <see cref="ExportJobStatus.Completed"/>.
     /// </summary>
-    public string? BlobReference { get; private set; }
+    public BlobReference? BlobReference { get; private set; }
 
     /// <summary>
     /// Generated file name for download (e.g. <c>"patients_2026-03-03.xlsx"</c>).
@@ -104,7 +105,7 @@ public sealed class ExportJob : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Marks the export as completed.
     /// </summary>
-    internal void Complete(string blobReference, string fileName, int rowCount, DateTimeOffset completedAt)
+    internal void Complete(BlobReference blobReference, string fileName, int rowCount, DateTimeOffset completedAt)
     {
         if (Status is not ExportJobStatus.Exporting)
         {

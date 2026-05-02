@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.DataExchange;
 
 /// <summary>
@@ -17,7 +19,7 @@ public interface IDataExchangeFileProvider
     /// <param name="blobReference">The blob reference stored on the import/export job.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A readable stream. The caller is responsible for disposing it.</returns>
-    Task<Stream> OpenAsync(string blobReference, CancellationToken cancellationToken = default);
+    Task<Stream> OpenAsync(BlobReference blobReference, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Saves a file and returns a blob reference for subsequent retrieval via <see cref="OpenAsync"/>.
@@ -25,13 +27,13 @@ public interface IDataExchangeFileProvider
     /// <param name="fileName">The original file name.</param>
     /// <param name="content">The file stream to save.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    /// <returns>The blob reference string.</returns>
-    Task<string> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default);
+    /// <returns>The blob reference produced by the provider.</returns>
+    Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Deletes a previously saved file by its blob reference.
     /// </summary>
     /// <param name="blobReference">The blob reference to delete.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
-    Task DeleteAsync(string blobReference, CancellationToken cancellationToken = default);
+    Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default);
 }

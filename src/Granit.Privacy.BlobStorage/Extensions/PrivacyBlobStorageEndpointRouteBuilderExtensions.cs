@@ -89,8 +89,8 @@ public static class PrivacyBlobStorageEndpointRouteBuilderExtensions
                 statusCode: StatusCodes.Status409Conflict);
         }
 
-        if (string.IsNullOrWhiteSpace(status.ArchiveBlobReferenceId) ||
-            !Guid.TryParse(status.ArchiveBlobReferenceId, out Guid archiveBlobId))
+        if (status.ArchiveBlobReferenceId is null ||
+            !Guid.TryParse(status.ArchiveBlobReferenceId.Value, out Guid archiveBlobId))
         {
             return TypedResults.Problem(
                 detail: $"Export archive for request '{requestId}' has no resolvable blob reference.",

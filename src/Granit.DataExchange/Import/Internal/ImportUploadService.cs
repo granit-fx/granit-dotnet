@@ -1,6 +1,7 @@
 using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
@@ -50,7 +51,7 @@ internal sealed partial class ImportUploadService(
         }
 
         string safeFileName = Path.GetFileName(fileName);
-        string blobReference = await fileProvider.SaveAsync(safeFileName, fileStream, cancellationToken)
+        BlobReference blobReference = await fileProvider.SaveAsync(safeFileName, fileStream, cancellationToken)
             .ConfigureAwait(false);
 
         var job = ImportJob.Create(

@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
@@ -19,5 +21,5 @@ public sealed record ExportRequestStatus(
     ExportRequestState State,
     DateTimeOffset RequestedAt,
     DateTimeOffset? CompletedAt,
-    string? ArchiveBlobReferenceId,
+    BlobReference? ArchiveBlobReferenceId,
     IReadOnlyList<string> MissingProviders);

@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.MultiTenancy;
 using Granit.Persistence;
 using Granit.Persistence.EntityFrameworkCore;
@@ -63,7 +64,7 @@ internal sealed class EfExportRequestTracker<TContext>(
     public async Task MarkCompletedAsync(
         Guid requestId,
         ExportRequestState state,
-        string? archiveBlobReferenceId,
+        BlobReference? archiveBlobReferenceId,
         IReadOnlyList<string>? missingProviders,
         CancellationToken cancellationToken = default)
     {

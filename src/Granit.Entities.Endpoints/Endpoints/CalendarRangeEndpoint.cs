@@ -1,11 +1,16 @@
+using System.Globalization;
+using System.Security.Claims;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
+using Granit.Entities.Endpoints.Options;
 using Granit.Entities.Layouts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Entities.Endpoints.Endpoints;
 
@@ -26,21 +31,28 @@ internal static class CalendarRangeEndpoint
                 + "or with To < From is rejected with 400. Permission gate inherited from the underlying entity's Read permission — same defense-in-depth "
                 + "as the manifest endpoint (no calendar-specific permission, rationale: the calendar exposes an aggregate of data the user could already "
                 + "see via the list endpoint). Returns an empty list when the entity declares no calendar layout, no item matches, or "
-                + "the host has not yet wired a real ICalendarRangeService implementation. FusionCache layers in via a separate story.")
+                + "the host has not yet wired a real ICalendarRangeService implementation. FusionCache 1-minute sliding TTL keyed on "
+                + "(entity, calendar, from, to, user-perms-hash, culture); strong ETag served on every response so polling clients save bandwidth via 304 short-circuits; "
+                + "per-entity eviction tags let Wolverine handlers drop every cached window for the entity on entity-lifecycle events.")
             .Produces<IReadOnlyList<CalendarItemResponse>>()
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status304NotModified)
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         return group;
     }
 
-    private static async Task<Results<Ok<IReadOnlyList<CalendarItemResponse>>, ProblemHttpResult>> HandleAsync(
+    private static async Task<Results<Ok<IReadOnlyList<CalendarItemResponse>>, ProblemHttpResult, StatusCodeHttpResult>> HandleAsync(
         string name,
         [AsParameters] CalendarRangeRequest request,
         [FromServices] IEntityDefinitionRegistry registry,
         [FromServices] EntityPermissionResolver permissionResolver,
         [FromServices] ICalendarRangeService calendarRangeService,
+        [FromServices] IFusionCache cache,
+        [FromServices] IOptions<EntitiesEndpointsOptions> options,
+        HttpContext httpContext,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
         IEntityDefinitionDescriptor? definitionRef = registry.GetByName(name);
@@ -77,10 +89,28 @@ internal static class CalendarRangeEndpoint
             return TypedResults.Ok<IReadOnlyList<CalendarItemResponse>>([]);
         }
 
-        IReadOnlyList<CalendarItemResponse> items = await calendarRangeService
-            .GetItemsAsync(descriptor, layout, new CalendarRange(request.From, request.To), cancellationToken)
-            .ConfigureAwait(false);
+        CultureInfo culture = CultureInfo.CurrentUICulture;
+        string cacheKey = CalendarRangeCacheKey.Build(
+            descriptor.Name, request.Calendar, request.From, request.To, user, culture);
+        string evictionTag = CalendarRangeCacheKey.EvictionTag(descriptor.Name);
+        FusionCacheEntryOptions entryOptions = new() { Duration = options.Value.CalendarRangeCacheTtl };
 
+        IReadOnlyList<CalendarItemResponse> items = await cache.GetOrSetAsync<IReadOnlyList<CalendarItemResponse>>(
+            cacheKey,
+            async (ctx, ct) => await calendarRangeService
+                .GetItemsAsync(descriptor, layout, new CalendarRange(request.From, request.To), ct)
+                .ConfigureAwait(false),
+            entryOptions,
+            tags: [evictionTag],
+            token: cancellationToken).ConfigureAwait(false);
+
+        string etag = CalendarRangeETag.Compute(items);
+        if (httpContext.Request.Headers.IfNoneMatch.ToString() == etag)
+        {
+            return TypedResults.StatusCode(StatusCodes.Status304NotModified);
+        }
+
+        httpContext.Response.Headers.ETag = etag;
         return TypedResults.Ok(items);
     }
 

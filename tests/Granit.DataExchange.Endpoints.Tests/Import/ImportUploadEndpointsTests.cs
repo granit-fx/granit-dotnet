@@ -15,6 +15,7 @@ using Granit.DataExchange.Import.Domain;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
@@ -68,8 +69,8 @@ public sealed class ImportUploadEndpointsTests : IAsyncDisposable
             .Returns(new[] { new[] { "Alice", "alice@test.com" } });
 
         _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns("blob-ref-1");
-        _fileProvider.OpenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Returns(BlobReference.Create("blob-ref-1"));
+        _fileProvider.OpenAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>())
             .Returns(_ => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();

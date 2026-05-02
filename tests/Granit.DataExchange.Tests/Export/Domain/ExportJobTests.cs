@@ -69,7 +69,7 @@ public sealed class ExportJobTests
         job.Complete("blob/export.xlsx", "patients_2026-03-21.xlsx", 500, completedAt);
 
         job.Status.ShouldBe(ExportJobStatus.Completed);
-        job.BlobReference.ShouldBe("blob/export.xlsx");
+        job.BlobReference!.Value.ShouldBe("blob/export.xlsx");
         job.FileName.ShouldBe("patients_2026-03-21.xlsx");
         job.RowCount.ShouldBe(500);
         job.CompletedAt.ShouldBe(completedAt);

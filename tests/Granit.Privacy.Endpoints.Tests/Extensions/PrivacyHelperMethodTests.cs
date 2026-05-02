@@ -267,7 +267,9 @@ public sealed class PrivacyHelperMethodTests
         var userId = Guid.NewGuid();
         DateTimeOffset requestedAt = DateTimeOffset.UtcNow;
         DateTimeOffset? completedAt = state == ExportRequestState.Completed ? DateTimeOffset.UtcNow : null;
-        string? archiveRef = state == ExportRequestState.Completed ? "blob-ref-123" : null;
+        Granit.Domain.ValueObjects.BlobReference? archiveRef = state == ExportRequestState.Completed
+            ? Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-123")
+            : null;
         IReadOnlyList<string> missingProviders = state == ExportRequestState.PartiallyCompleted
             ? ["ProviderA"]
             : [];

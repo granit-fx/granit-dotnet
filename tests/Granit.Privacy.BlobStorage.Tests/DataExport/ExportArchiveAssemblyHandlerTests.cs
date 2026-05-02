@@ -222,7 +222,7 @@ public sealed class ExportArchiveAssemblyHandlerTests : IDisposable
         await _tracker.Received(1).MarkCompletedAsync(
             requestId,
             ExportRequestState.PartiallyCompleted,
-            Arg.Any<string>(),
+            Arg.Any<Granit.Domain.ValueObjects.BlobReference?>(),
             Arg.Is<IReadOnlyList<string>>(l => l.Count == 1 && l[0] == "auditing"),
             Arg.Any<CancellationToken>());
     }

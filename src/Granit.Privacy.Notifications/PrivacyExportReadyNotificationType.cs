@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.Notifications;
 
 namespace Granit.Privacy.Notifications;
@@ -42,6 +43,14 @@ public sealed class PrivacyExportReadyNotificationType
 /// <param name="Regulation">Privacy regulation code the request was filed under (e.g. <c>EU_GDPR</c>).</param>
 public sealed record PrivacyExportReadyNotificationData(
     Guid RequestId,
-    string ArchiveBlobReferenceId,
+    BlobReference ArchiveBlobReferenceId,
     DateTimeOffset RequestedAt,
-    string Regulation);
+    string Regulation)
+{
+    /// <summary>
+    /// String form of <see cref="ArchiveBlobReferenceId"/> exposed for Scriban templates.
+    /// Email templates render <c>{{ model.archive_blob_reference_display }}</c> to avoid
+    /// reaching through the value object's <c>.value</c> indirection in template syntax.
+    /// </summary>
+    public string ArchiveBlobReferenceDisplay => ArchiveBlobReferenceId.Value;
+}

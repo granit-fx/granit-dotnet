@@ -82,16 +82,16 @@ public sealed partial class ExportArchiveAssemblyHandler(
                 {
                     foreach (ReceivedFragment fragment in @event.Fragments)
                     {
-                        if (fragment.BlobReferenceId.StartsWith(
+                        if (fragment.BlobReferenceId.Value.StartsWith(
                             PrivacyExportContainerNames.EmptyFragmentPrefix, StringComparison.Ordinal))
                         {
                             emptyProviders.Add(fragment.ProviderName);
                             continue;
                         }
 
-                        if (!Guid.TryParse(fragment.BlobReferenceId, out Guid blobId))
+                        if (!Guid.TryParse(fragment.BlobReferenceId.Value, out Guid blobId))
                         {
-                            LogUnexpectedBlobReference(logger, fragment.ProviderName, fragment.BlobReferenceId, @event.RequestId);
+                            LogUnexpectedBlobReference(logger, fragment.ProviderName, fragment.BlobReferenceId.Value, @event.RequestId);
                             continue;
                         }
 

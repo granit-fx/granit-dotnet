@@ -13,6 +13,7 @@ using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Import.Reporting;
+using Granit.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
@@ -41,7 +42,7 @@ public sealed class ImportReportEndpointsTests : IAsyncDisposable
 
     public ImportReportEndpointsTests()
     {
-        _fileProvider.OpenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _fileProvider.OpenAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>())
             .Returns(_ => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
 
         _correctionGenerator.GenerateAsync(

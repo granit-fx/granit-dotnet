@@ -265,6 +265,25 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     }
 
     /// <summary>
+    /// Declares a gallery list-view layout for this entity. The renderer
+    /// (<c>EntityGallery</c>) lays out one tile per row, resolving each tile's
+    /// preview from the <see cref="GalleryLayoutBuilder{TEntity}.ImageField"/>
+    /// (a <c>BlobReference</c>-typed property) via the host's blob-storage
+    /// download endpoint. The list layout stays implicit — adding gallery
+    /// exposes the <c>EntityListViewSwitcher</c> with an additional tab.
+    /// </summary>
+    public EntityDefinitionBuilder<TEntity> GalleryView(
+        Action<GalleryLayoutBuilder<TEntity>> configure)
+    {
+        ArgumentNullException.ThrowIfNull(configure);
+
+        GalleryLayoutBuilder<TEntity> builder = new();
+        configure(builder);
+        _layoutFactories.Add(builder.Build);
+        return this;
+    }
+
+    /// <summary>
     /// Declares an action exposed on this entity (button on the detail header,
     /// row action, kanban tile quick-action — surface decided by the renderer).
     /// One of <see cref="EntityActionBuilder{TEntity}.ApiCall"/>,

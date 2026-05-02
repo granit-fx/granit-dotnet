@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Entities.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Entities.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Entities.EntityFrameworkCore.Tests" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
 

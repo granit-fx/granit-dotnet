@@ -40,7 +40,7 @@ public sealed class ExportOrchestratorTests
         _clock.Now.Returns(_now);
 
         _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns("blob-ref-export");
+            .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob-ref-export"));
 
         _jobReader.GetAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
             .Returns(call =>
@@ -120,7 +120,7 @@ public sealed class ExportOrchestratorTests
         // Assert — job is mutated in-place by the orchestrator
         job.Status.ShouldBe(ExportJobStatus.Completed);
         job.RowCount.ShouldBe(2); // TestDataSource yields 2 entities
-        job.BlobReference.ShouldBe("blob-ref-export");
+        job.BlobReference!.Value.ShouldBe("blob-ref-export");
         job.FileName.ShouldNotBeNull();
         job.CompletedAt.ShouldBe(_now);
         // 2 calls: Exporting then Completed (same reference, so check call count)

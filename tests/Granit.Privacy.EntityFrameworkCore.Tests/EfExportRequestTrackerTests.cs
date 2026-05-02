@@ -93,7 +93,7 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
         status.ShouldNotBeNull();
         status.State.ShouldBe(ExportRequestState.Completed);
         status.CompletedAt.ShouldBe(Now.AddMinutes(5));
-        status.ArchiveBlobReferenceId.ShouldBe("blob://archive-123");
+        status.ArchiveBlobReferenceId!.Value.ShouldBe("blob://archive-123");
         status.MissingProviders.ShouldNotBeNull();
         status.MissingProviders.ShouldContain("mailer");
     }

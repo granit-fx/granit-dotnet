@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Granit.Domain.ValueObjects;
 
 namespace Granit.DataExchange.Internal;
 
@@ -18,19 +19,21 @@ internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvid
     private long _counter;
 
     /// <inheritdoc/>
-    public Task<Stream> OpenAsync(string blobReference, CancellationToken cancellationToken = default)
+    public Task<Stream> OpenAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
-        if (!_store.TryGetValue(blobReference, out byte[]? data))
+        ArgumentNullException.ThrowIfNull(blobReference);
+
+        if (!_store.TryGetValue(blobReference.Value, out byte[]? data))
         {
             throw new FileNotFoundException(
-                $"Blob reference '{blobReference}' not found in the in-memory store.");
+                $"Blob reference '{blobReference.Value}' not found in the in-memory store.");
         }
 
         return Task.FromResult<Stream>(new MemoryStream(data, writable: false));
     }
 
     /// <inheritdoc/>
-    public Task<string> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
+    public Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(content);
 
@@ -40,13 +43,15 @@ internal sealed class InMemoryDataExchangeFileProvider : IDataExchangeFileProvid
         string reference = $"mem-{Interlocked.Increment(ref _counter)}";
         _store[reference] = buffer.ToArray();
 
-        return Task.FromResult(reference);
+        return Task.FromResult(BlobReference.Create(reference));
     }
 
     /// <inheritdoc/>
-    public Task DeleteAsync(string blobReference, CancellationToken cancellationToken = default)
+    public Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
-        _store.TryRemove(blobReference, out _);
+        ArgumentNullException.ThrowIfNull(blobReference);
+
+        _store.TryRemove(blobReference.Value, out _);
         return Task.CompletedTask;
     }
 }

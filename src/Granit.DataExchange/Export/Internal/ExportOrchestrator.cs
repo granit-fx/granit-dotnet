@@ -6,6 +6,7 @@ using Granit.DataExchange.Diagnostics;
 using Granit.DataExchange.Export.Domain;
 using Granit.DataExchange.Export.Events;
 using Granit.DataExchange.Export.Messages;
+using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
@@ -103,7 +104,7 @@ internal sealed partial class ExportOrchestrator(
 
             // Store the generated file
             string fileName = $"{SanitizeFileName(request.DefinitionName)}_{clock.Now:yyyy-MM-dd_HHmmss}{writer.FileExtension}";
-            string blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
+            BlobReference blobReference = await fileProvider.SaveAsync(fileName, outputStream, cancellationToken).ConfigureAwait(false);
 
             stopwatch.Stop();
             job.Complete(blobReference, fileName, rowCount, clock.Now);

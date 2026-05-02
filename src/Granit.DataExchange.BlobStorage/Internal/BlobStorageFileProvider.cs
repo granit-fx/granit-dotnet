@@ -1,6 +1,7 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Internal;
 using Granit.DataExchange.BlobStorage.Options;
+using Granit.Domain.ValueObjects;
 using Granit.Guids;
 using Microsoft.Extensions.Options;
 
@@ -18,15 +19,17 @@ internal sealed class BlobStorageFileProvider(
     IOptions<DataExchangeBlobStorageOptions> options) : IDataExchangeFileProvider
 {
     /// <inheritdoc/>
-    public async Task<Stream> OpenAsync(string blobReference, CancellationToken cancellationToken = default)
+    public async Task<Stream> OpenAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(blobReference);
+
         string bucket = keyStrategy.ResolveBucketName(options.Value.ContainerName);
-        return await storeProvider.OpenReadAsync(bucket, blobReference, cancellationToken)
+        return await storeProvider.OpenReadAsync(bucket, blobReference.Value, cancellationToken)
             .ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async Task<string> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
+    public async Task<BlobReference> SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)
     {
         string objectKey = keyStrategy.BuildObjectKey(options.Value.ContainerName, guidGenerator.Create());
         string bucket = keyStrategy.ResolveBucketName(options.Value.ContainerName);
@@ -38,14 +41,16 @@ internal sealed class BlobStorageFileProvider(
             options.Value.DefaultContentType,
             cancellationToken).ConfigureAwait(false);
 
-        return objectKey;
+        return BlobReference.Create(objectKey);
     }
 
     /// <inheritdoc/>
-    public async Task DeleteAsync(string blobReference, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(blobReference);
+
         string bucket = keyStrategy.ResolveBucketName(options.Value.ContainerName);
-        await storeProvider.DeleteAsync(bucket, blobReference, cancellationToken)
+        await storeProvider.DeleteAsync(bucket, blobReference.Value, cancellationToken)
             .ConfigureAwait(false);
     }
 }

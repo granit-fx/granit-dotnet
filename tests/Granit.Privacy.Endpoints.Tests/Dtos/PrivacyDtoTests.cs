@@ -33,7 +33,7 @@ public sealed class PrivacyDtoTests
         response.State.ShouldBe("Completed");
         response.RequestedAt.ShouldBe(requested);
         response.CompletedAt.ShouldBe(completed);
-        response.ArchiveBlobReferenceId.ShouldBe("gdpr-export/123");
+        response.ArchiveBlobReferenceId!.Value.ShouldBe("gdpr-export/123");
         response.MissingProviders.ShouldContain("provider-a");
     }
 

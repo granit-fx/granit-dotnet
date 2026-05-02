@@ -39,7 +39,7 @@ public sealed class ImportJobTests
         job.OriginalFileName.ShouldBe("patients.csv");
         job.MimeType.ShouldBe("text/csv");
         job.FileSizeBytes.ShouldBe(2048);
-        job.BlobReference.ShouldBe("blob/ref");
+        job.BlobReference.Value.ShouldBe("blob/ref");
         job.Status.ShouldBe(ImportJobStatus.Created);
         job.TenantId.ShouldBe(tenantId);
         job.MappingsJson.ShouldBeNull();

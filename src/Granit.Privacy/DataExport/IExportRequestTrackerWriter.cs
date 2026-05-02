@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
@@ -26,7 +28,7 @@ public interface IExportRequestTrackerWriter
     Task MarkCompletedAsync(
         Guid requestId,
         ExportRequestState state,
-        string? archiveBlobReferenceId,
+        BlobReference? archiveBlobReferenceId,
         IReadOnlyList<string>? missingProviders,
         CancellationToken cancellationToken = default);
 }

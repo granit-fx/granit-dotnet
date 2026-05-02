@@ -122,9 +122,9 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         result.UserId.ShouldBe(startEvt.UserId);
         result.IsPartial.ShouldBeFalse();
         result.MissingProviders.ShouldBeEmpty();
-        result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+        result.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
         result.Fragments.Count.ShouldBe(2);
-        result.Fragments.Select(f => f.BlobReferenceId).ShouldBe(["blob-patients", "blob-billing"], ignoreOrder: true);
+        result.Fragments.Select(f => f.BlobReferenceId.Value).ShouldBe(["blob-patients", "blob-billing"], ignoreOrder: true);
     }
 
     // -------------------------------------------------------------------------
@@ -146,7 +146,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
 
         result.IsPartial.ShouldBeTrue();
         result.MissingProviders.ShouldContain("appointments");
-        result.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+        result.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
         result.Fragments.Count.ShouldBe(2);
     }
 
@@ -186,7 +186,7 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         PersonalDataPreparedEto evt = new(
             Guid.NewGuid(), "patients", "blob-ref-123", "application/json");
 
-        evt.BlobReferenceId.ShouldBe("blob-ref-123");
+        evt.BlobReferenceId.Value.ShouldBe("blob-ref-123");
 
         System.Reflection.PropertyInfo[] properties =
             typeof(PersonalDataPreparedEto).GetProperties();
@@ -235,6 +235,6 @@ public sealed class PersonalDataExportSagaTests : IDisposable
         ExportCompletedEto? result = saga.Handle(
             new PersonalDataPreparedEto(startEvt.RequestId, "auth", "blob-auth", "application/json"), _metrics);
 
-        result!.ArchiveBlobReferenceId.ShouldBe($"personal-data-export/{startEvt.RequestId}");
+        result!.ArchiveBlobReferenceId.Value.ShouldBe($"personal-data-export/{startEvt.RequestId}");
     }
 }

@@ -12,7 +12,7 @@ public sealed class ReceivedFragmentTests
         var sut = new ReceivedFragment("billing", "blob-456", "text/csv");
 
         sut.ProviderName.ShouldBe("billing");
-        sut.BlobReferenceId.ShouldBe("blob-456");
+        sut.BlobReferenceId.Value.ShouldBe("blob-456");
         sut.ContentType.ShouldBe("text/csv");
     }
 

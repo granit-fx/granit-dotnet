@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.Events;
 using Wolverine.Persistence.Sagas;
 
@@ -11,5 +12,5 @@ namespace Granit.Privacy.DataExport.Events;
 public sealed record PersonalDataPreparedEto(
     [property: SagaIdentity] Guid RequestId,
     string ProviderName,
-    string BlobReferenceId,
+    BlobReference BlobReferenceId,
     string ContentType) : IIntegrationEvent;

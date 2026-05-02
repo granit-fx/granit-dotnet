@@ -16,4 +16,7 @@ public enum EntityListLayoutKind
 
     /// <summary>Time-axis layout (month / week / day grid) keyed on a date or datetime property.</summary>
     Calendar = 2,
+
+    /// <summary>Image-card grid layout keyed on a <c>BlobReference</c> property.</summary>
+    Gallery = 3,
 }

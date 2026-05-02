@@ -123,7 +123,7 @@ public sealed class PersonalDataExportSaga : Saga
         return new ExportCompletedEto(
             Id,
             UserId,
-            $"personal-data-export/{Id}",
+            PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
             IsPartial: false,
             MissingProviders: [],
             Fragments: ReceivedFragments.AsReadOnly(),
@@ -142,7 +142,7 @@ public sealed class PersonalDataExportSaga : Saga
         return new ExportCompletedEto(
             Id,
             UserId,
-            $"personal-data-export/{Id}",
+            PrivacyExportContainerNames.ArchiveBlobReferenceId(Id),
             IsPartial: true,
             MissingProviders: PendingProviders.AsReadOnly(),
             Fragments: ReceivedFragments.AsReadOnly(),

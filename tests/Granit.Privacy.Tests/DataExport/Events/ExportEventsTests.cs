@@ -58,7 +58,7 @@ public sealed class ExportEventsTests
 
         sut.RequestId.ShouldBe(requestId);
         sut.ProviderName.ShouldBe("patients");
-        sut.BlobReferenceId.ShouldBe("blob-ref-1");
+        sut.BlobReferenceId.Value.ShouldBe("blob-ref-1");
         sut.ContentType.ShouldBe("application/json");
     }
 
@@ -87,7 +87,7 @@ public sealed class ExportEventsTests
 
         sut.RequestId.ShouldBe(requestId);
         sut.UserId.ShouldBe(userId);
-        sut.ArchiveBlobReferenceId.ShouldBe("gdpr-export/123");
+        sut.ArchiveBlobReferenceId.Value.ShouldBe("gdpr-export/123");
         sut.IsPartial.ShouldBeTrue();
         sut.MissingProviders.Count.ShouldBe(2);
         sut.MissingProviders.ShouldContain("billing");

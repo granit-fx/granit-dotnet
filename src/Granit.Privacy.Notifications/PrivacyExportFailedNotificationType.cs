@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.Notifications;
 
 namespace Granit.Privacy.Notifications;
@@ -50,8 +51,14 @@ public sealed class PrivacyExportFailedNotificationType
 /// <param name="Regulation">Privacy regulation code the request was filed under.</param>
 public sealed record PrivacyExportFailedNotificationData(
     Guid RequestId,
-    string ArchiveBlobReferenceId,
+    BlobReference ArchiveBlobReferenceId,
     IReadOnlyList<string> MissingProviders,
     string MissingProvidersDisplay,
     DateTimeOffset RequestedAt,
-    string Regulation);
+    string Regulation)
+{
+    /// <summary>
+    /// String form of <see cref="ArchiveBlobReferenceId"/> exposed for Scriban templates.
+    /// </summary>
+    public string ArchiveBlobReferenceDisplay => ArchiveBlobReferenceId.Value;
+}

@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Privacy.BlobStorage.DataExport;
 
 /// <summary>
@@ -35,4 +37,4 @@ public sealed record ExportManifestFragment(
     string ProviderName,
     string FileName,
     string ContentType,
-    string BlobReferenceId);
+    BlobReference BlobReferenceId);

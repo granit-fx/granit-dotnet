@@ -14,6 +14,7 @@ using Granit.DataExchange.Import.Messages;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
 using Granit.DataExchange.Import.Reporting;
+using Granit.Domain.ValueObjects;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.AspNetCore.Authentication;
@@ -225,7 +226,7 @@ public sealed class ImportExecutionEndpointsTests : IAsyncDisposable
         var jobId = Guid.NewGuid();
         ImportJob job = BuildJob(jobId, ImportJobStatus.Mapped);
         _jobReader.GetAsync(jobId, Arg.Any<CancellationToken>()).Returns(job);
-        _fileProvider.DeleteAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _fileProvider.DeleteAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>())
             .Returns(Task.CompletedTask);
 
         // Act

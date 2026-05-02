@@ -1,5 +1,6 @@
 using Granit.DataExchange.Import.Events;
 using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.MultiTenancy;
 
 namespace Granit.DataExchange.Import.Domain;
@@ -26,7 +27,7 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
         string originalFileName,
         string mimeType,
         long fileSizeBytes,
-        string blobReference,
+        BlobReference blobReference,
         Guid? tenantId = null) => new()
         {
             Id = id,
@@ -69,7 +70,7 @@ public sealed class ImportJob : AuditedAggregateRoot, IMultiTenant
     /// <summary>
     /// Reference to the file in blob storage.
     /// </summary>
-    public string BlobReference { get; private set; } = string.Empty;
+    public BlobReference BlobReference { get; private set; } = null!;
 
     /// <summary>
     /// Current lifecycle status.

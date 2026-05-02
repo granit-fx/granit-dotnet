@@ -3,6 +3,7 @@ using Granit.DataExchange.Import.Internal;
 using Granit.DataExchange.Import.Mapping;
 using Granit.DataExchange.Import.Parsing;
 using Granit.DataExchange.Import.Pipeline;
+using Granit.Domain.ValueObjects;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Shouldly;
@@ -35,7 +36,7 @@ public sealed class ImportPreviewServiceTests
         _parser.ReadPreviewAsync(Arg.Any<Stream>(), Arg.Any<FileParsingOptions>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
             .Returns(new List<string[]>([["Alice", "alice@test.com"], ["Bob", "bob@test.com"]]));
 
-        _fileProvider.OpenAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+        _fileProvider.OpenAsync(Arg.Any<BlobReference>(), Arg.Any<CancellationToken>())
             .Returns(_ => Task.FromResult<Stream>(new MemoryStream(System.Text.Encoding.UTF8.GetBytes("Name,Email\nAlice,alice@test.com"))));
 
         var services = new ServiceCollection();

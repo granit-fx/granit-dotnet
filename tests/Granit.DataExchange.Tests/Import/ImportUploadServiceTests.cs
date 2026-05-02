@@ -31,7 +31,7 @@ public sealed class ImportUploadServiceTests
         _guidGenerator.Create().Returns(Guid.NewGuid());
         _clock.Now.Returns(new DateTimeOffset(2026, 4, 5, 12, 0, 0, TimeSpan.Zero));
         _fileProvider.SaveAsync(Arg.Any<string>(), Arg.Any<Stream>(), Arg.Any<CancellationToken>())
-            .Returns("blob://test/file.csv");
+            .Returns(Granit.Domain.ValueObjects.BlobReference.Create("blob://test/file.csv"));
 
         var services = new ServiceCollection();
         services.AddSingleton<IImportDefinitionDescriptor>(_descriptor);

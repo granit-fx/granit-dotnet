@@ -902,6 +902,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.EntityFrameworkCore",
+      "deps": [
+        "Granit.Entities.Endpoints",
+        "Granit.Persistence.EntityFrameworkCore",
+        "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Entities.Views",
       "deps": [
         "Granit.Entities.Views.Abstractions"
@@ -15503,7 +15512,7 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Export/Domain/ExportJob.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "Create",
@@ -15538,8 +15547,8 @@
         {
           "name": "BlobReference",
           "kind": "property",
-          "signature": "string? BlobReference",
-          "returnType": "string?"
+          "signature": "BlobReference? BlobReference",
+          "returnType": "BlobReference?"
         }
       ]
     },
@@ -16082,24 +16091,24 @@
       "kind": "interface",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/IDataExchangeFileProvider.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "OpenAsync",
           "kind": "method",
-          "signature": "OpenAsync(string blobReference, CancellationToken cancellationToken = default)",
+          "signature": "OpenAsync(BlobReference blobReference, CancellationToken cancellationToken = default)",
           "returnType": "Task<Stream>"
         },
         {
           "name": "SaveAsync",
           "kind": "method",
           "signature": "SaveAsync(string fileName, Stream content, CancellationToken cancellationToken = default)",
-          "returnType": "Task<string>"
+          "returnType": "Task<BlobReference>"
         },
         {
           "name": "DeleteAsync",
           "kind": "method",
-          "signature": "DeleteAsync(string blobReference, CancellationToken cancellationToken = default)",
+          "signature": "DeleteAsync(BlobReference blobReference, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -16110,12 +16119,12 @@
       "kind": "class",
       "project": "Granit.DataExchange",
       "file": "src/Granit.DataExchange/Import/Domain/ImportJob.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "Create",
           "kind": "method",
-          "signature": "Create(Guid id, string definitionName, string entityTypeName, string originalFileName, string mimeType, long fileSizeBytes, string blobReference, Guid? tenantId = null)",
+          "signature": "Create(Guid id, string definitionName, string entityTypeName, string originalFileName, string mimeType, long fileSizeBytes, BlobReference blobReference, Guid? tenantId = null)",
           "returnType": "ImportJob"
         },
         {
@@ -18327,6 +18336,28 @@
       ]
     },
     {
+      "name": "BlobReference",
+      "fqn": "Granit.Domain.ValueObjects.BlobReference",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/Domain/ValueObjects/BlobReference.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string value)",
+          "returnType": "required string Value { get; init; } public BlobReference"
+        },
+        {
+          "name": "BlobReference",
+          "kind": "method",
+          "signature": "BlobReference(string value)",
+          "returnType": "implicit operator"
+        }
+      ]
+    },
+    {
       "name": "ContentType",
       "fqn": "Granit.Domain.ValueObjects.ContentType",
       "kind": "class",
@@ -19396,6 +19427,12 @@
           "kind": "method",
           "signature": "FromSeconds(30)",
           "returnType": "TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(1)",
+          "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
         }
       ]
     },
@@ -19465,6 +19502,38 @@
           "kind": "property",
           "signature": "IReadOnlyList<EntityActionDescriptor> Actions",
           "returnType": "IReadOnlyList<EntityActionDescriptor>"
+        }
+      ]
+    },
+    {
+      "name": "EntitiesEntityFrameworkCoreServiceCollectionExtensions",
+      "fqn": "Granit.Entities.EntityFrameworkCore.Extensions.EntitiesEntityFrameworkCoreServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.EntityFrameworkCore",
+      "file": "src/Granit.Entities.EntityFrameworkCore/Extensions/EntitiesEntityFrameworkCoreServiceCollectionExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "AddGranitEntitiesEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitEntitiesEntityFrameworkCore(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesEntityFrameworkCoreModule",
+      "fqn": "Granit.Entities.EntityFrameworkCore.GranitEntitiesEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Entities.EntityFrameworkCore",
+      "file": "src/Granit.Entities.EntityFrameworkCore/GranitEntitiesEntityFrameworkCoreModule.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
@@ -19672,6 +19741,47 @@
       "file": "src/Granit.Entities.Abstractions/Layouts/EntityListLayoutKind.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "GalleryCardSize",
+      "fqn": "Granit.Entities.Layouts.GalleryCardSize",
+      "kind": "enum",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/GalleryCardSize.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GalleryLayoutBuilder",
+      "fqn": "Granit.Entities.Layouts.GalleryLayoutBuilder",
+      "kind": "class",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/GalleryLayoutBuilder.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "ImageField",
+          "kind": "method",
+          "signature": "ImageField(Expression<Func<TEntity, BlobReference?>> propertySelector)",
+          "returnType": "GalleryLayoutBuilder<TEntity>"
+        }
+      ]
+    },
+    {
+      "name": "GalleryLayoutDescriptor",
+      "fqn": "Granit.Entities.Layouts.GalleryLayoutDescriptor",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Layouts/GalleryLayoutDescriptor.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ImagePropertyName",
+          "kind": "property",
+          "signature": "required string ImagePropertyName",
+          "returnType": "required string"
+        }
+      ]
     },
     {
       "name": "KanbanCardBuilder",
@@ -25824,17 +25934,17 @@
       ]
     },
     {
-      "name": "GranitUserManager",
-      "fqn": "Granit.Identity.Local.AspNetIdentity.GranitUserManager",
+      "name": "LocalIdentityManager",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.LocalIdentityManager",
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
-      "file": "src/Granit.Identity.Local.AspNetIdentity/GranitUserManager.cs",
+      "file": "src/Granit.Identity.Local.AspNetIdentity/LocalIdentityManager.cs",
       "line": 27,
       "members": [
         {
           "name": "AccessFailedAsync",
           "kind": "method",
-          "signature": "AccessFailedAsync(GranitUser user)",
+          "signature": "AccessFailedAsync(LocalIdentity user)",
           "returnType": "Task<IdentityResult>"
         }
       ]
@@ -25919,28 +26029,6 @@
       "members": []
     },
     {
-      "name": "GranitUser",
-      "fqn": "Granit.Identity.Local.Domain.GranitUser",
-      "kind": "class",
-      "project": "Granit.Identity.Local",
-      "file": "src/Granit.Identity.Local/Domain/GranitUser.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "FirstName",
-          "kind": "property",
-          "signature": "string? FirstName",
-          "returnType": "string?"
-        },
-        {
-          "name": "ToString",
-          "kind": "method",
-          "signature": "ToString()",
-          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
-        }
-      ]
-    },
-    {
       "name": "GranitUserGroup",
       "fqn": "Granit.Identity.Local.Domain.GranitUserGroup",
       "kind": "class",
@@ -25964,6 +26052,28 @@
       "file": "src/Granit.Identity.Local/Domain/GranitUserGroupMember.cs",
       "line": 8,
       "members": []
+    },
+    {
+      "name": "LocalIdentity",
+      "fqn": "Granit.Identity.Local.Domain.LocalIdentity",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Domain/LocalIdentity.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "Guid UserId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "signature": "ToString()",
+          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
+        }
+      ]
     },
     {
       "name": "AccountAuthenticatorKeyResponse",
@@ -37697,7 +37807,7 @@
         {
           "name": "ConfigureOpenIddictModule",
           "kind": "method",
-          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, MetadataMappingOptions<GranitUser>? extensionOptions = null)",
+          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, MetadataMappingOptions<LocalIdentity>? extensionOptions = null)",
           "returnType": "ModelBuilder"
         }
       ]
@@ -44605,7 +44715,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
-      "line": 18,
+      "line": 20,
       "members": []
     },
     {
@@ -44614,7 +44724,7 @@
       "kind": "record",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportManifest.cs",
-      "line": 34,
+      "line": 36,
       "members": []
     },
     {
@@ -44875,7 +44985,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/ExportCompletedEto.cs",
-      "line": 24,
+      "line": 25,
       "members": []
     },
     {
@@ -44893,7 +45003,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/Events/PersonalDataPreparedEto.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -44920,7 +45030,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ExportRequestStatus.cs",
-      "line": 16,
+      "line": 18,
       "members": []
     },
     {
@@ -44973,7 +45083,7 @@
       "kind": "interface",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/IExportRequestTrackerWriter.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "RecordRequestAsync",
@@ -44984,7 +45094,7 @@
         {
           "name": "MarkCompletedAsync",
           "kind": "method",
-          "signature": "MarkCompletedAsync(Guid requestId, ExportRequestState state, string? archiveBlobReferenceId, IReadOnlyList<string>? missingProviders, CancellationToken cancellationToken = default)",
+          "signature": "MarkCompletedAsync(Guid requestId, ExportRequestState state, BlobReference? archiveBlobReferenceId, IReadOnlyList<string>? missingProviders, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -45051,13 +45161,13 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/PrivacyExportContainerNames.cs",
-      "line": 7,
+      "line": 9,
       "members": [
         {
           "name": "ArchiveBlobReferenceId",
           "kind": "method",
           "signature": "ArchiveBlobReferenceId(Guid requestId)",
-          "returnType": "string"
+          "returnType": "BlobReference"
         }
       ]
     },
@@ -45067,7 +45177,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataExport/ReceivedFragment.cs",
-      "line": 6,
+      "line": 8,
       "members": []
     },
     {
@@ -45253,7 +45363,7 @@
       "kind": "record",
       "project": "Granit.Privacy.Endpoints",
       "file": "src/Granit.Privacy.Endpoints/Dtos/PrivacyExportStatusResponse.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -45447,7 +45557,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/ExportRequestEntity.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "UserId",
@@ -46146,8 +46256,15 @@
       "kind": "record",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyExportFailedNotificationType.cs",
-      "line": 51,
-      "members": []
+      "line": 52,
+      "members": [
+        {
+          "name": "ArchiveBlobReferenceDisplay",
+          "kind": "property",
+          "signature": "string ArchiveBlobReferenceDisplay",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "PrivacyExportFailedNotificationType",
@@ -46155,7 +46272,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyExportFailedNotificationType.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "new",
@@ -46183,8 +46300,15 @@
       "kind": "record",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyExportReadyNotificationType.cs",
-      "line": 43,
-      "members": []
+      "line": 44,
+      "members": [
+        {
+          "name": "ArchiveBlobReferenceDisplay",
+          "kind": "property",
+          "signature": "string ArchiveBlobReferenceDisplay",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "PrivacyExportReadyNotificationType",
@@ -46192,7 +46316,7 @@
       "kind": "class",
       "project": "Granit.Privacy.Notifications",
       "file": "src/Granit.Privacy.Notifications/PrivacyExportReadyNotificationType.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "new",

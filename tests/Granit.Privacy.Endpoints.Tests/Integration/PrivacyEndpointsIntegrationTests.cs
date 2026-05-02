@@ -209,7 +209,7 @@ public sealed class PrivacyEndpointsIntegrationTests : IAsyncLifetime
         result.ShouldNotBeNull();
         result.Count.ShouldBe(1);
         result[0].State.ShouldBe("Completed");
-        result[0].ArchiveBlobReferenceId.ShouldBe("archive-ref-123");
+        result[0].ArchiveBlobReferenceId!.Value.ShouldBe("archive-ref-123");
     }
 
     // -------------------------------------------------------------------------

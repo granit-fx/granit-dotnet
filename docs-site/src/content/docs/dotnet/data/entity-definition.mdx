@@ -77,6 +77,8 @@ resolvable through DI — host startup fails fast on a typo or missing registrat
 | `Query<T>` / `Export<T>` / `Metric<T>` / `Dashboard<T>` | Wire references to declarative collection primitives | `.Query<MyQueryDef>()`, `.Metric<MyMetricDef>()` |
 | `HasMany<TRelated>` / `HasOne<TRelated>` | Smart-button / tab / sidebar / inline-chips relation on detail | `.HasMany(p => p.Invoices, r => r.DisplayAs(RelationDisplay.SmartButton).Aggregate(a => a.Count()))` |
 | `KanbanView<TGroupBy>(...)` | Kanban board grouped by an enum | `.GroupBy(p => p.Status).Card(...).Column(...)` |
+| `CalendarView(...)` | Time-axis grid (month / week / day) keyed on a date property | `.StartField(p => p.StartsAt).EndField(p => p.EndsAt).TitleField(p => p.Subject).ColorBy(p => p.Status)` |
+| `GalleryView(...)` | Image-card grid keyed on a `BlobReference` property | `.ImageField(p => p.Avatar).TitleField(p => p.DisplayName).SubtitleField(p => p.Email).CardSize(GalleryCardSize.Medium)` |
 | `Action("name", ...)` | Detail-header / row / kanban-tile button | `.ApiCall("POST", "/api/.../finalize").RequiresPermission("...")` |
 
 Per-field defense in depth: `RequiresPermission(...)` drops the field from the manifest
@@ -110,6 +112,92 @@ The merger (`EntityRelationMerger`) folds contributions into the matching descri
 boot — name conflicts resolve in favour of the entity's intra-module declarations.
 
 `IEntityActionContributor` follows the symmetric pattern for cross-module action grafts.
+
+## Calendar view
+
+A calendar layout reads its rows from a dedicated range-query endpoint that the
+framework mounts alongside the manifest:
+
+```text
+GET /api/entities/{name}/calendar?from=2026-05-01T00:00:00Z&to=2026-05-31T23:59:59Z[&calendar=primary]
+```
+
+The handler composes an overlap predicate
+(`Start <= to AND from <= (End ?? Start)`) on top of the entity's
+`IQueryable<T>`, projects each row into `CalendarItemResponse`
+(`Id` + `Start` + `End?` + `Title` + `Color?`), and returns the list. The window
+is capped at 366 days; an inverted window (`To < From`) is rejected with `400`.
+Responses are FusionCache-backed (1-minute sliding TTL keyed on
+`(entity, calendar, from, to, user-perms-hash, culture)`) and carry a strong
+ETag so polling clients save bandwidth via `304 Not Modified` short-circuits.
+Per-entity eviction tags drop every cached window for the entity when one of
+its rows is created, updated, or deleted (the framework wires this automatically
+for entities implementing `IEmitEntityLifecycleEvents`).
+
+The executor lives in the **`Granit.Entities.EntityFrameworkCore`** companion
+package — register it in your composition root **after** every
+`AddEntityDefinition<T, TDef>()` call so the per-entity dispatcher picks up
+every calendar layout you declared:
+
+```csharp
+builder.Services
+    .AddEntityDefinition<Meeting, MeetingEntityDefinition>()
+    .AddEntityDefinition<Reservation, ReservationEntityDefinition>();
+
+// AFTER every AddEntityDefinition — the loop reads the registered descriptors
+// at this moment to wire one closed-generic CalendarRangeRunner<T> per entity
+// that exposes a CalendarLayoutDescriptor.
+builder.Services.AddGranitEntitiesEntityFrameworkCore();
+```
+
+Without the companion package, the calendar endpoint stays mounted but returns
+an empty list (the framework's `NullCalendarRangeService` default). See the
+[view catalog ADR](/dotnet/architecture/adr/042-view-catalog/) for the full
+range-endpoint contract.
+
+## Gallery view
+
+A gallery layout renders an image-card grid. The `ImageField` selector is typed
+to `BlobReference?` (`Granit.Domain.ValueObjects.BlobReference`) — the framework's
+opaque reference for blob-storage objects. The renderer resolves each card's
+preview to a pre-signed URL via the host's `Granit.BlobStorage` download endpoint,
+which also enforces tenant isolation:
+
+```csharp
+public sealed class Photo : Entity
+{
+    public BlobReference? Thumbnail { get; private set; }
+    public string Caption { get; private set; } = string.Empty;
+    public string Author { get; private set; } = string.Empty;
+}
+
+public sealed class PhotoEntityDefinition : EntityDefinition<Photo>
+{
+    public override string Name => "Granit.Photos.Photo";
+
+    protected override void Configure(EntityDefinitionBuilder<Photo> builder) =>
+        builder
+            .DisplayProperty(p => p.Caption)
+            .Query<PhotoQueryDefinition>()
+            .GalleryView(g => g
+                .ImageField(p => p.Thumbnail)
+                .TitleField(p => p.Caption)
+                .SubtitleField(p => p.Author)
+                .CardSize(GalleryCardSize.Medium));
+}
+```
+
+The DSL signature rejects non-`BlobReference` selectors at compile time. `BlobReference`
+is a `SingleValueObject<string>` with implicit `string ↔ BlobReference` operators
+(EF Core converters auto-applied via `ApplyGranitConventions` — same column type,
+no migration needed; JSON-serialised as a plain string via
+`SingleValueObjectJsonConverterFactory`, so wire format with HTTP clients and
+Wolverine outboxes stays identical to the previous `string` shape).
+
+Two architecture tests keep the contract honest at boot time:
+
+- `GalleryImageFieldTypeTests` — every `GalleryLayoutDescriptor.ImageProperty` resolves to a `BlobReference` (or nullable) property.
+- `GalleryFieldWhitelistPairingTests` — every property a gallery card surfaces (image, title, subtitle) is whitelisted in the matching `QueryDefinition.GetColumns()`.
 
 ## Related
 

@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Privacy.Endpoints.Dtos;
 
 /// <summary>
@@ -17,5 +19,5 @@ public sealed record PrivacyExportStatusResponse(
     string State,
     DateTimeOffset RequestedAt,
     DateTimeOffset? CompletedAt,
-    string? ArchiveBlobReferenceId,
+    BlobReference? ArchiveBlobReferenceId,
     IReadOnlyList<string> MissingProviders);

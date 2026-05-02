@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.Privacy.DataExport;
 
 namespace Granit.Privacy.EntityFrameworkCore.Entities;
@@ -28,7 +29,7 @@ public sealed class ExportRequestEntity : Entity, IMultiTenant
     /// Convention: <c>personal-data-export/{RequestId}</c> (see
     /// <see cref="PrivacyExportContainerNames.ArchiveBlobReferenceId"/>).
     /// </summary>
-    public string? ArchiveBlobReferenceId { get; set; }
+    public BlobReference? ArchiveBlobReferenceId { get; set; }
 
     /// <summary>
     /// Providers that did not respond before the saga timeout. Empty for fully-completed

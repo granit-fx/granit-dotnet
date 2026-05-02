@@ -72,7 +72,7 @@ public sealed class EfExportJobStoreTests
         loaded!.Status.ShouldBe(ExportJobStatus.Completed);
         loaded.RowCount.ShouldBe(42);
         loaded.FileName.ShouldBe("export.csv");
-        loaded.BlobReference.ShouldBe("blob-123");
+        loaded.BlobReference!.Value.ShouldBe("blob-123");
         loaded.CompletedAt.ShouldNotBeNull();
     }
 

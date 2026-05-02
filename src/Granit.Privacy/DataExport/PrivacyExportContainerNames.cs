@@ -1,3 +1,5 @@
+using Granit.Domain.ValueObjects;
+
 namespace Granit.Privacy.DataExport;
 
 /// <summary>
@@ -21,5 +23,6 @@ public static class PrivacyExportContainerNames
     /// Blob key convention for the final assembled ZIP archive.
     /// Matches <c>ExportCompletedEto.ArchiveBlobReferenceId</c> used by the saga.
     /// </summary>
-    public static string ArchiveBlobReferenceId(Guid requestId) => $"personal-data-export/{requestId}";
+    public static BlobReference ArchiveBlobReferenceId(Guid requestId) =>
+        BlobReference.Create($"personal-data-export/{requestId}");
 }

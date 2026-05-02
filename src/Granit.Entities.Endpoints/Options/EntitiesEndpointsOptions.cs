@@ -30,4 +30,14 @@ public sealed class EntitiesEndpointsOptions
     /// burst-clear all relation aggregates for a row in one call.
     /// </summary>
     public TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// FusionCache TTL for calendar range responses returned by
+    /// <c>GET /api/entities/{name}/calendar</c>. Calendar data is more volatile
+    /// than the manifest (new events appear continuously), so the default is
+    /// 1 minute sliding. Per-entity eviction tags allow Wolverine handlers
+    /// reacting to entity-lifecycle events to drop every cached window for the
+    /// entity in one call (story #1691).
+    /// </summary>
+    public TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan.FromMinutes(1);
 }

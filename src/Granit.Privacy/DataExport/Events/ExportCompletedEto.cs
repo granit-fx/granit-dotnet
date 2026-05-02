@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.Events;
 
 namespace Granit.Privacy.DataExport.Events;
@@ -24,7 +25,7 @@ namespace Granit.Privacy.DataExport.Events;
 public sealed record ExportCompletedEto(
     Guid RequestId,
     Guid UserId,
-    string ArchiveBlobReferenceId,
+    BlobReference ArchiveBlobReferenceId,
     bool IsPartial,
     IReadOnlyList<string> MissingProviders,
     IReadOnlyList<ReceivedFragment> Fragments,
