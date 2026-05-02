@@ -47,6 +47,11 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // Granit.Documents.Endpoints.
         builder.Services.AddScoped<IFolderService, FolderService>();
 
+        // Document service (F3.2): upload-ticket request + finalize flow that wraps
+        // BlobStorage's presigned upload pipeline and creates Document + initial
+        // DocumentVersion atomically.
+        builder.Services.AddScoped<IDocumentService, DocumentService>();
+
         return builder;
     }
 }

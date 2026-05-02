@@ -18642,6 +18642,15 @@
       "members": []
     },
     {
+      "name": "DocumentVersion",
+      "fqn": "Granit.Documents.Domain.DocumentVersion",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/DocumentVersion.cs",
+      "line": 23,
+      "members": []
+    },
+    {
       "name": "Folder",
       "fqn": "Granit.Documents.Domain.Folder",
       "kind": "class",
@@ -18679,12 +18688,48 @@
       "members": []
     },
     {
+      "name": "DocumentResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "FinalizeUploadRequest",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.FinalizeUploadRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/FinalizeUploadRequest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "UploadTicketRequest",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.UploadTicketRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/UploadTicketRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "UploadTicketResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.UploadTicketResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/UploadTicketResponse.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "DocumentsEndpointRouteBuilderExtensions",
       "fqn": "Granit.Documents.Endpoints.Extensions.DocumentsEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Extensions/DocumentsEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitDocuments",
@@ -18778,6 +18823,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "Documents",
+      "fqn": "Granit.Documents.Endpoints.Permissions.Documents",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 26,
+      "members": []
     },
     {
       "name": "DocumentsPermissions",
@@ -18909,6 +18963,15 @@
       "members": []
     },
     {
+      "name": "DocumentVersionAddedEvent",
+      "fqn": "Granit.Documents.Events.DocumentVersionAddedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentVersionAddedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "FolderCreatedEvent",
       "fqn": "Granit.Documents.Events.FolderCreatedEvent",
       "kind": "record",
@@ -19009,6 +19072,28 @@
           "kind": "method",
           "signature": "EnsureTenantRootAsync(Guid? tenantId, Guid ownerUserId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IDocumentService",
+      "fqn": "Granit.Documents.IDocumentService",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/IDocumentService.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "RequestUploadTicketAsync",
+          "kind": "method",
+          "signature": "RequestUploadTicketAsync(string fileName, string contentType, long maxAllowedBytes, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedUploadTicket>"
+        },
+        {
+          "name": "FinalizeUploadAsync",
+          "kind": "method",
+          "signature": "FinalizeUploadAsync(Guid blobId, Guid? folderId, Guid ownerUserId, string name, string? description = null, string? commitMessage = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document>"
         }
       ]
     },

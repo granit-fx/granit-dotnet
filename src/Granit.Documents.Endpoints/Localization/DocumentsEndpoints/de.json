@@ -1,6 +1,8 @@
 {
   "culture": "de",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Dokumente hochladen, umbenennen, verschieben und in den Papierkorb legen",
+    "Permission:Documents.Documents.Read": "Dokumente anzeigen und herunterladen",
     "Permission:Documents.Folders.Manage": "Ordner erstellen, umbenennen, verschieben und in den Papierkorb legen",
     "Permission:Documents.Folders.Read": "Ordner anzeigen",
     "PermissionGroup:Documents": "Dokumente"

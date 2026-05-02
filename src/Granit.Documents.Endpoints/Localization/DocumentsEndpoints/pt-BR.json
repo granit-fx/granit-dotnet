@@ -1,6 +1,7 @@
 {
   "culture": "pt-BR",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Carregar, renomear, mover e enviar documentos para a lixeira",
     "Permission:Documents.Folders.Manage": "Criar, renomear, mover e enviar pastas para a lixeira"
   }
 }

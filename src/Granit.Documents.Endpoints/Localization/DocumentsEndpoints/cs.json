@@ -1,6 +1,8 @@
 {
   "culture": "cs",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Nahrávat, přejmenovávat, přesouvat a odstraňovat dokumenty",
+    "Permission:Documents.Documents.Read": "Zobrazit a stáhnout dokumenty",
     "Permission:Documents.Folders.Manage": "Vytvářet, přejmenovávat, přesouvat a odstraňovat složky",
     "Permission:Documents.Folders.Read": "Zobrazit složky",
     "PermissionGroup:Documents": "Dokumenty"

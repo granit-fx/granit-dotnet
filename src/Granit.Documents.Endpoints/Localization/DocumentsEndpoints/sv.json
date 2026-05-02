@@ -1,6 +1,8 @@
 {
   "culture": "sv",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Ladda upp, byta namn på, flytta och papperskorga dokument",
+    "Permission:Documents.Documents.Read": "Visa och ladda ner dokument",
     "Permission:Documents.Folders.Manage": "Skapa, byta namn på, flytta och papperskorga mappar",
     "Permission:Documents.Folders.Read": "Visa mappar",
     "PermissionGroup:Documents": "Dokument"

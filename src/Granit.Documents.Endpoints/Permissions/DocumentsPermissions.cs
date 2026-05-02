@@ -21,4 +21,14 @@ public static class DocumentsPermissions
         /// <summary>Manage folders (create, rename, move, trash, restore, permanent delete).</summary>
         public const string Manage = "Documents.Folders.Manage";
     }
+
+    /// <summary>Permissions on documents.</summary>
+    public static class Documents
+    {
+        /// <summary>Read documents (download, get metadata, list versions).</summary>
+        public const string Read = "Documents.Documents.Read";
+
+        /// <summary>Manage documents (upload, rename, move, trash, restore, permanent delete).</summary>
+        public const string Manage = "Documents.Documents.Manage";
+    }
 }

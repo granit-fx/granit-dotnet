@@ -1,3 +1,4 @@
+using Granit.Documents.Endpoints.Documents.Endpoints;
 using Granit.Documents.Endpoints.Folders.Endpoints;
 using Granit.Documents.Endpoints.Options;
 using Granit.Validation.AspNetCore;
@@ -38,6 +39,7 @@ public static class DocumentsEndpointRouteBuilderExtensions
         }
 
         group.MapFolderEndpoints();
+        group.MapDocumentEndpoints();
 
         return group;
     }

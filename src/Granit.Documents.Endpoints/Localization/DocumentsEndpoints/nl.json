@@ -1,6 +1,8 @@
 {
   "culture": "nl",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Documenten uploaden, hernoemen, verplaatsen en in de prullenbak gooien",
+    "Permission:Documents.Documents.Read": "Documenten bekijken en downloaden",
     "Permission:Documents.Folders.Manage": "Mappen aanmaken, hernoemen, verplaatsen en in de prullenbak gooien",
     "Permission:Documents.Folders.Read": "Mappen bekijken",
     "PermissionGroup:Documents": "Documenten"

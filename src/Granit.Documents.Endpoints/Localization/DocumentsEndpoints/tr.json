@@ -1,6 +1,8 @@
 {
   "culture": "tr",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Belgeleri yükleme, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
+    "Permission:Documents.Documents.Read": "Belgeleri görüntüle ve indir",
     "Permission:Documents.Folders.Manage": "Klasörleri oluşturma, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
     "Permission:Documents.Folders.Read": "Klasörleri görüntüle",
     "PermissionGroup:Documents": "Belgeler"

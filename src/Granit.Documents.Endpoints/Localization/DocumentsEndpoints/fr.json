@@ -1,6 +1,8 @@
 {
   "culture": "fr",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Téléverser, renommer, déplacer et corbeillir les documents",
+    "Permission:Documents.Documents.Read": "Consulter et télécharger les documents",
     "Permission:Documents.Folders.Manage": "Créer, renommer, déplacer et corbeillir des dossiers",
     "Permission:Documents.Folders.Read": "Consulter les dossiers",
     "PermissionGroup:Documents": "Documents"

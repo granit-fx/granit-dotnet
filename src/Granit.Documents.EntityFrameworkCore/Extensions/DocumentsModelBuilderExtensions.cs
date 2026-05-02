@@ -19,6 +19,7 @@ public static class DocumentsModelBuilderExtensions
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ApplyConfiguration(new FolderConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentVersionConfiguration());
         return modelBuilder;
     }
 }

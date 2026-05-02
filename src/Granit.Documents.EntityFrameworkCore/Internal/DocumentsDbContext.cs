@@ -32,6 +32,9 @@ internal sealed class DocumentsDbContext(
     /// <summary>Tenant-scoped documents — every row points at a folder via <see cref="Document.FolderId"/>.</summary>
     public DbSet<Document> Documents { get; set; } = null!;
 
+    /// <summary>Append-only version history. The current pointer lives on <see cref="Document.CurrentVersionId"/>.</summary>
+    public DbSet<DocumentVersion> DocumentVersions { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

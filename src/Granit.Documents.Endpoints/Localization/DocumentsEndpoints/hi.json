@@ -1,6 +1,8 @@
 {
   "culture": "hi",
   "texts": {
+    "Permission:Documents.Documents.Manage": "दस्तावेज़ अपलोड करें, नाम बदलें, स्थानांतरित करें और कूड़ेदान में डालें",
+    "Permission:Documents.Documents.Read": "दस्तावेज़ देखें और डाउनलोड करें",
     "Permission:Documents.Folders.Manage": "फ़ोल्डर बनाएँ, नाम बदलें, स्थानांतरित करें और कूड़ेदान में डालें",
     "Permission:Documents.Folders.Read": "फ़ोल्डर देखें",
     "PermissionGroup:Documents": "दस्तावेज़"

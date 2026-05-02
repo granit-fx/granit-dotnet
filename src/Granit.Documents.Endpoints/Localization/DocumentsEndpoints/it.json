@@ -1,6 +1,8 @@
 {
   "culture": "it",
   "texts": {
+    "Permission:Documents.Documents.Manage": "Caricare, rinominare, spostare e cestinare documenti",
+    "Permission:Documents.Documents.Read": "Visualizzare e scaricare documenti",
     "Permission:Documents.Folders.Manage": "Creare, rinominare, spostare e cestinare cartelle",
     "Permission:Documents.Folders.Read": "Visualizzare le cartelle",
     "PermissionGroup:Documents": "Documenti"
