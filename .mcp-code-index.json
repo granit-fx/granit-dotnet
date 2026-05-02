@@ -4838,6 +4838,15 @@
       "members": []
     },
     {
+      "name": "ActivityCalendarRequestValidator",
+      "fqn": "Granit.Activities.Endpoints.Validators.ActivityCalendarRequestValidator",
+      "kind": "class",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
+      "line": 56,
+      "members": []
+    },
+    {
       "name": "CancelActivityRequestValidator",
       "fqn": "Granit.Activities.Endpoints.Validators.CancelActivityRequestValidator",
       "kind": "class",

@@ -1442,10 +1442,54 @@
       "granit": {
         "type": "Project"
       },
+      "granit.activities": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Activities.Abstractions": "[0.1.0-dev, )",
+          "Granit.Analytics": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )"
+        }
+      },
       "granit.activities.abstractions": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
+        }
+      },
+      "granit.activities.backgroundjobs": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Activities": "[0.1.0-dev, )",
+          "Granit.BackgroundJobs": "[0.1.0-dev, )"
+        }
+      },
+      "granit.activities.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Activities": "[0.1.0-dev, )",
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.activities.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Activities": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
+      "granit.activities.notifications": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Activities": "[0.1.0-dev, )",
+          "Granit.Notifications.Abstractions": "[0.1.0-dev, )",
+          "Granit.Templating": "[0.1.0-dev, )"
         }
       },
       "granit.ai": {
@@ -2256,6 +2300,30 @@
           "PuppeteerSharp": "[24.*, )"
         }
       },
+      "granit.documents": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.BlobStorage": "[0.1.0-dev, )"
+        }
+      },
+      "granit.documents.endpoints": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Authorization": "[0.1.0-dev, )",
+          "Granit.Documents": "[0.1.0-dev, )",
+          "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
+          "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.documents.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Documents": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
+        }
+      },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {
@@ -2305,6 +2373,15 @@
           "Granit.Http.ApiDocumentation": "[0.1.0-dev, )",
           "Granit.Localization": "[0.1.0-dev, )",
           "Granit.Validation": "[0.1.0-dev, )"
+        }
+      },
+      "granit.entities.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Entities.Endpoints": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
         }
       },
       "granit.entities.views": {
@@ -3342,6 +3419,13 @@
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
           "libphonenumber-csharp": "[9.*, )"
+        }
+      },
+      "granit.parties.identity": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Identity": "[0.1.0-dev, )",
+          "Granit.Parties": "[0.1.0-dev, )"
         }
       },
       "granit.parties.mergeable": {

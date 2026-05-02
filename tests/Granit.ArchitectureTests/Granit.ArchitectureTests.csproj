@@ -31,6 +31,12 @@
        (excludes Analyzers/CodeFixes/SourceGenerator which target netstandard2.0) -->
   <ItemGroup>
     <ProjectReference Include="..\..\src\Granit\Granit.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities\Granit.Activities.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities.Abstractions\Granit.Activities.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities.BackgroundJobs\Granit.Activities.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities.Endpoints\Granit.Activities.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities.EntityFrameworkCore\Granit.Activities.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Activities.Notifications\Granit.Activities.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI\Granit.AI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.AzureOpenAI\Granit.AI.AzureOpenAI.csproj" />
     <ProjectReference Include="..\..\src\Granit.AI.Endpoints\Granit.AI.Endpoints.csproj" />
@@ -122,12 +128,16 @@
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration\Granit.DocumentGeneration.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Excel\Granit.DocumentGeneration.Excel.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Pdf\Granit.DocumentGeneration.Pdf.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents\Granit.Documents.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents.Endpoints\Granit.Documents.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents.EntityFrameworkCore\Granit.Documents.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.BackgroundJobs\Granit.Encryption.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.EntityFrameworkCore\Granit.Encryption.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities\Granit.Entities.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Endpoints\Granit.Entities.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities.EntityFrameworkCore\Granit.Entities.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Views\Granit.Entities.Views.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Views.Abstractions\Granit.Entities.Views.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Views.Endpoints\Granit.Entities.Views.Endpoints.csproj" />
@@ -258,6 +268,7 @@
     <ProjectReference Include="..\..\src\Granit.Parties.Deduplication.BackgroundJobs\Granit.Parties.Deduplication.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.Endpoints\Granit.Parties.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.EntityFrameworkCore\Granit.Parties.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Parties.Identity\Granit.Parties.Identity.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.Mergeable\Granit.Parties.Mergeable.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.MultiTenancy\Granit.Parties.MultiTenancy.csproj" />
     <ProjectReference Include="..\..\src\Granit.Parties.Privacy\Granit.Parties.Privacy.csproj" />

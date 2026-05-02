@@ -72,6 +72,7 @@
     <Project Path="src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Encryption/Granit.Encryption.csproj" />
     <Project Path="src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj" />
+    <Project Path="src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Identity.Federated.Cognito.BackgroundJobs/Granit.Identity.Federated.Cognito.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Identity.Federated.Cognito/Granit.Identity.Federated.Cognito.csproj" />
     <Project Path="src/Granit.Identity.Federated.EntityFrameworkCore/Granit.Identity.Federated.EntityFrameworkCore.csproj" />
@@ -119,6 +120,7 @@
     <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
     <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
     <Project Path="src/Granit.Entities.Endpoints/Granit.Entities.Endpoints.csproj" />
+    <Project Path="src/Granit.Entities.EntityFrameworkCore/Granit.Entities.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Entities.Views.Abstractions/Granit.Entities.Views.Abstractions.csproj" />
     <Project Path="src/Granit.Entities.Views.Endpoints/Granit.Entities.Views.Endpoints.csproj" />
     <Project Path="src/Granit.Entities.Views.EntityFrameworkCore/Granit.Entities.Views.EntityFrameworkCore.csproj" />
@@ -435,6 +437,7 @@
     <Project Path="tests/Granit.Encryption.EntityFrameworkCore.Tests/Granit.Encryption.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Encryption.Tests/Granit.Encryption.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Endpoints.Tests/Granit.Identity.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Identity.EntityFrameworkCore.Tests/Granit.Identity.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.BackgroundJobs.Tests/Granit.Identity.Federated.Cognito.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests.Integration/Granit.Identity.Federated.Cognito.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Identity.Federated.Cognito.Tests/Granit.Identity.Federated.Cognito.Tests.csproj" />
@@ -489,6 +492,7 @@
     <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Tests/Granit.Entities.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Endpoints.Tests/Granit.Entities.Endpoints.Tests.csproj" />
+    <Project Path="tests/Granit.Entities.EntityFrameworkCore.Tests/Granit.Entities.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.Abstractions.Tests/Granit.Entities.Views.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.Endpoints.Tests/Granit.Entities.Views.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.EntityFrameworkCore.Tests/Granit.Entities.Views.EntityFrameworkCore.Tests.csproj" />
