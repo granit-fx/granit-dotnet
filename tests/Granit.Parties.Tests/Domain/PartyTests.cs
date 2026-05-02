@@ -1,4 +1,5 @@
 using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.Parties.Domain;
 using Granit.Parties.Domain.ValueObjects;
 using Granit.Parties.Events;
@@ -596,37 +597,38 @@ public sealed class PartyTests
     // ── Avatar ────────────────────────────────────────────────────
 
     [Fact]
-    public void SetAvatar_StoresBlobId_AndRaisesUpdated()
+    public void SetAvatar_StoresReference_AndRaisesUpdated()
     {
         Party c = NewCompany();
-        var blobId = Guid.NewGuid();
+        var reference = BlobReference.Create("avatars/abc-123.png");
 
-        c.SetAvatar(blobId);
+        c.SetAvatar(reference);
 
-        c.AvatarBlobId.ShouldBe(blobId);
+        c.Avatar.ShouldBe(reference);
         c.DomainEvents.OfType<PartyUpdatedEvent>().ShouldHaveSingleItem();
     }
 
     [Fact]
-    public void SetAvatar_EmptyGuid_Throws() =>
-        Should.Throw<ArgumentException>(() => NewCompany().SetAvatar(Guid.Empty));
+    public void SetAvatar_NullReference_Throws() =>
+        Should.Throw<ArgumentNullException>(() => NewCompany().SetAvatar(null!));
 
     [Fact]
     public void SetAvatar_OnArchived_Throws()
     {
         Party c = NewCompany();
         c.Archive();
-        Should.Throw<InvalidOperationException>(() => c.SetAvatar(Guid.NewGuid()));
+        Should.Throw<InvalidOperationException>(() =>
+            c.SetAvatar(BlobReference.Create("avatars/x.png")));
     }
 
     [Fact]
     public void ClearAvatar_WhenSet_ReturnsTrue_AndClears()
     {
         Party c = NewCompany();
-        c.SetAvatar(Guid.NewGuid());
+        c.SetAvatar(BlobReference.Create("avatars/x.png"));
 
         c.ClearAvatar().ShouldBeTrue();
-        c.AvatarBlobId.ShouldBeNull();
+        c.Avatar.ShouldBeNull();
     }
 
     [Fact]

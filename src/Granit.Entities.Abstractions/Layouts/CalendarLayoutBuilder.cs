@@ -45,8 +45,14 @@ public sealed class CalendarLayoutBuilder<TEntity>
         return this;
     }
 
-    /// <summary>Names the property used as the event headline on the tile.</summary>
-    public CalendarLayoutBuilder<TEntity> TitleField(Expression<Func<TEntity, string>> propertySelector)
+    /// <summary>
+    /// Names the property used as the event headline on the tile. Generic on
+    /// <typeparamref name="TProperty"/>: the renderer stringifies the value
+    /// (enum names, primitive <c>ToString()</c>) so non-string properties —
+    /// statuses, ids, numerics — work as titles without forcing the host to
+    /// duplicate a string projection on the entity.
+    /// </summary>
+    public CalendarLayoutBuilder<TEntity> TitleField<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
     {
         _titlePropertyName = ReadPropertyName(propertySelector, "TitleField");
         return this;

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Domain.ValueObjects;
 using Granit.Mergeable;
 using Granit.Mergeable.Domain;
 using Granit.Mergeable.Exceptions;
@@ -410,7 +411,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         AddIfDifferent(conflicts, "Timezone", Timezone, loser.Timezone);
         AddIfDifferent(conflicts, "TaxId", TaxId, loser.TaxId);
         AddIfDifferent(conflicts, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
-        AddIfDifferent(conflicts, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
+        AddIfDifferent(conflicts, "Avatar", Avatar, loser.Avatar);
 
         // ParentPartyId — compare the unwrapped Guid? to keep the FieldConflict payload
         // primitive and JSON-friendly (the audit cache stores it).
@@ -497,7 +498,7 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
         Timezone = ResolveScalar(choices, "Timezone", Timezone, loser.Timezone) ?? Timezone;
         TaxId = ResolveScalar(choices, "TaxId", TaxId, loser.TaxId);
         RegistrationNumber = ResolveScalar(choices, "RegistrationNumber", RegistrationNumber, loser.RegistrationNumber);
-        AvatarBlobId = ResolveScalar(choices, "AvatarBlobId", AvatarBlobId, loser.AvatarBlobId);
+        Avatar = ResolveScalar(choices, "Avatar", Avatar, loser.Avatar);
 
         // ParentPartyId — round-trip via PartyId.
         ParentPartyId = ResolveParentPartyId(choices, ParentPartyId, loser.ParentPartyId);
@@ -632,7 +633,14 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     /// avatar — photo for an Individual, logo for a Company. <c>null</c> = no avatar.
     /// Set/clear via <see cref="SetAvatar"/> / <see cref="ClearAvatar"/>.
     /// </summary>
-    public Guid? AvatarBlobId { get; private set; }
+    /// <remarks>
+    /// Typed as <see cref="BlobReference"/> (not bare <see cref="Guid"/>) so the
+    /// Gallery layout (<see cref="GalleryLayoutDescriptor.ImagePropertyName"/>)
+    /// can bind directly and the renderer routes through the host's
+    /// blob-storage download endpoint with its security gate intact.
+    /// </remarks>
+    [SensitiveData]
+    public BlobReference? Avatar { get; private set; }
 
     // ── Hierarchy ─────────────────────────────────────────────────
 
@@ -1180,14 +1188,11 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     /// The blob itself lives in <c>Granit.BlobStorage</c>; this method stores only
     /// the soft reference.
     /// </summary>
-    public void SetAvatar(Guid blobId)
+    public void SetAvatar(BlobReference reference)
     {
+        ArgumentNullException.ThrowIfNull(reference);
         EnsureMutable();
-        if (blobId == Guid.Empty)
-        {
-            throw new ArgumentException("Blob identifier must not be empty.", nameof(blobId));
-        }
-        AvatarBlobId = blobId;
+        Avatar = reference;
         RaiseUpdated();
     }
 
@@ -1195,8 +1200,8 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     public bool ClearAvatar()
     {
         EnsureMutable();
-        if (AvatarBlobId is null) { return false; }
-        AvatarBlobId = null;
+        if (Avatar is null) { return false; }
+        Avatar = null;
         RaiseUpdated();
         return true;
     }

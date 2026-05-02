@@ -19,7 +19,7 @@ internal static class PartyMapper
         c.RegistrationNumber,
         c.ParentPartyId is { } pid ? pid.Value : null,
         c.UserId,
-        c.AvatarBlobId,
+        c.Avatar?.Value,
         c.Roles,
         c.Status,
         [.. c.Addresses.Select(ToAddressResponse)],

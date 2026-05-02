@@ -105,5 +105,15 @@ public sealed class PartyEntityDefinition : EntityDefinition<Party>
                     .Field(p => p.DefaultCurrency))
                 .Column(PartyStatus.Active, c => c.Color(KanbanColor.Green))
                 .Column(PartyStatus.Suspended, c => c.Color(KanbanColor.Orange).Collapsed())
-                .Column(PartyStatus.Archived, c => c.Color(KanbanColor.Neutral).Hidden()));
+                .Column(PartyStatus.Archived, c => c.Color(KanbanColor.Neutral).Hidden()))
+            // Phase 2.B — gallery view keyed on the avatar BlobReference.
+            // Title falls back to the entity's DisplayProperty (Name);
+            // subtitle pinned to PartyKind (enum) so cards distinguish
+            // Persons / Companies / Departments at a glance — the renderer
+            // stringifies the enum name. CardSize=Medium balances density vs
+            // preview clarity for an operator-facing CRM list.
+            .GalleryView(g => g
+                .ImageField(p => p.Avatar)
+                .SubtitleField(p => p.Kind)
+                .CardSize(GalleryCardSize.Medium));
 }

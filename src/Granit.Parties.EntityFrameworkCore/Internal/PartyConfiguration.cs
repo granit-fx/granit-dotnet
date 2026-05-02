@@ -1,3 +1,4 @@
+using Granit.Domain.ValueObjects;
 using Granit.Parties.Domain;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
 using Granit.Parties.EntityFrameworkCore.Entities;
@@ -37,7 +38,13 @@ internal sealed class PartyConfiguration : IEntityTypeConfiguration<Party>
         builder.Property(c => c.Status).IsRequired();
         builder.Property(c => c.Roles).IsRequired();
         builder.Property(c => c.UserId);
-        builder.Property(c => c.AvatarBlobId);
+        // BlobReference is a SingleValueObject<string>; ApplyGranitConventions
+        // auto-wires the SingleValueObjectConverter, so we only need to declare
+        // the column length cap (mirrors ImportJobConfiguration's BlobReference
+        // mapping). Column name follows the existing convention even though
+        // the property renamed from AvatarBlobId → Avatar (kept for migration
+        // continuity — pre-1.0 reset still preserves audit traces).
+        builder.Property(c => c.Avatar).HasMaxLength(BlobReference.MaxLength);
 
         // Free-form metadata (Stripe-style customer.metadata) — JSON column.
         // MetadataSyncInterceptor handles the IHasMetadata write side automatically.

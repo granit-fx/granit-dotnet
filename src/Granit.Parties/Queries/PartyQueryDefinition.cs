@@ -24,7 +24,7 @@ public sealed class PartyQueryDefinition : QueryDefinition<Party>
             .Column(c => c.Status, col => col.Label("Status").LabelKey("Parties.Columns.Status").Filterable().Sortable())
             // Contact / branding
             .Column(c => c.Website, col => col.Label("Website").LabelKey("Parties.Columns.Website").Filterable())
-            .Column(c => c.AvatarBlobId, col => col.Label("Avatar").LabelKey("Parties.Columns.Avatar").Filterable())
+            .Column(c => c.Avatar, col => col.Label("Avatar").LabelKey("Parties.Columns.Avatar").Filterable())
             // Locale
             .Column(c => c.DefaultCurrency, col => col.Label("Currency").LabelKey("Parties.Columns.DefaultCurrency").Filterable().Sortable())
             .Column(c => c.Language, col => col.Label("Language").LabelKey("Parties.Columns.Language").Filterable())

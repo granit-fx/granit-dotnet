@@ -16,7 +16,7 @@ public sealed record PartyResponse(
     string? RegistrationNumber,
     Guid? ParentPartyId,
     Guid? UserId,
-    Guid? AvatarBlobId,
+    string? Avatar,
     PartyRoles Roles,
     PartyStatus Status,
     IReadOnlyList<PartyAddressResponse> Addresses,

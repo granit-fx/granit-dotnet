@@ -37,15 +37,27 @@ public sealed class GalleryLayoutBuilder<TEntity>
         return this;
     }
 
-    /// <summary>Names the property used as the card headline. Falls back to the entity's <c>DisplayProperty</c>.</summary>
-    public GalleryLayoutBuilder<TEntity> TitleField(Expression<Func<TEntity, string>> propertySelector)
+    /// <summary>
+    /// Names the property used as the card headline. Falls back to the
+    /// entity's <c>DisplayProperty</c> when omitted. Generic on
+    /// <typeparamref name="TProperty"/>: the renderer stringifies the value
+    /// (enum names, primitive <c>ToString()</c>) so non-string properties —
+    /// status enums, kinds, ids — work as titles without forcing the host
+    /// to duplicate a string projection on the entity.
+    /// </summary>
+    public GalleryLayoutBuilder<TEntity> TitleField<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
     {
         _titlePropertyName = ReadPropertyName(propertySelector, "TitleField");
         return this;
     }
 
-    /// <summary>Names the optional secondary line shown under the title (e.g. category, tag, status).</summary>
-    public GalleryLayoutBuilder<TEntity> SubtitleField(Expression<Func<TEntity, string>> propertySelector)
+    /// <summary>
+    /// Names the optional secondary line shown under the title (e.g.
+    /// category, tag, status). Generic on <typeparamref name="TProperty"/>
+    /// for the same reason as <see cref="TitleField{TProperty}"/> — enums
+    /// and primitives are valid subtitle sources.
+    /// </summary>
+    public GalleryLayoutBuilder<TEntity> SubtitleField<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
     {
         _subtitlePropertyName = ReadPropertyName(propertySelector, "SubtitleField");
         return this;
