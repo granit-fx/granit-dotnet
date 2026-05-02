@@ -56,6 +56,31 @@ public interface IFolderService
     Task<Folder?> RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Moves the folder identified by <paramref name="id"/> under the parent identified
+    /// by <paramref name="newParentFolderId"/> (or the tenant root when <c>null</c>) and
+    /// re-materialises the <c>Path</c> / <c>Depth</c> of every descendant folder in a
+    /// single SQL <c>UPDATE</c> within the same transaction.
+    /// </summary>
+    /// <returns>The updated moved folder, or <c>null</c> when the folder is not found.</returns>
+    /// <remarks>
+    /// <para>
+    /// Validation is performed by the <see cref="Folder.MoveTo"/> aggregate method
+    /// (cycle / descendant / cross-tenant / trashed-target rejection); invalid moves
+    /// surface as <see cref="InvalidOperationException"/> from the call site.
+    /// </para>
+    /// <para>
+    /// On success the moved folder emits a per-aggregate <see cref="Events.FolderMovedEvent"/>
+    /// + <see cref="Events.FolderPathChangedEvent"/>, and the service emits a single
+    /// <see cref="Events.FolderTreePathChangedEvent"/> aggregating the prefix change
+    /// for downstream consumers (cache invalidation, search index).
+    /// </para>
+    /// </remarks>
+    Task<Folder?> MoveAsync(
+        Guid id,
+        Guid? newParentFolderId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Trashes the folder with the given identifier. Returns the trashed folder, or
     /// <c>null</c> when the folder is not found or excluded by the tenant filter.
     /// </summary>

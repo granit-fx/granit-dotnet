@@ -83,6 +83,21 @@ internal static class FolderEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
 
+        folders.MapPost("/{id:guid}/move", MoveAsync)
+            .WithName("MoveFolder")
+            .WithSummary("Moves a folder under a new parent.")
+            .WithDescription(
+                "Moves the folder identified by `id` under `newParentFolderId` (or under the "
+                + "invisible tenant root when omitted). The materialised path and depth of the "
+                + "moved folder AND every descendant are re-materialised in a single SQL "
+                + "UPDATE within the same transaction. Cycles, cross-tenant moves, and moves "
+                + "under a trashed or descendant target are rejected. The tenant root cannot "
+                + "be moved.")
+            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .Produces<FolderResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
         folders.MapDelete("/{id:guid}", TrashAsync)
             .WithName("TrashFolder")
             .WithSummary("Sends a folder to the trash (soft-delete).")
@@ -179,6 +194,32 @@ internal static class FolderEndpoints
                 statusCode: StatusCodes.Status404NotFound);
         }
         return TypedResults.Ok(folder.ToResponse());
+    }
+
+    private static async Task<Results<Ok<FolderResponse>, ProblemHttpResult>> MoveAsync(
+        Guid id,
+        MoveFolderRequest request,
+        [FromServices] IFolderService folders,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Folder? folder = await folders
+                .MoveAsync(id, request.NewParentFolderId, cancellationToken)
+                .ConfigureAwait(false);
+            if (folder is null)
+            {
+                return TypedResults.Problem(
+                    $"Folder '{id}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(folder.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Cycle, cross-tenant, descendant target, trashed target, or root invariant.
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
     }
 
     private static async Task<Results<Ok<FolderResponse>, ProblemHttpResult>> TrashAsync(

@@ -1,6 +1,8 @@
 using Granit.Documents;
 using Granit.Documents.Domain;
 using Granit.Documents.EntityFrameworkCore.Internal;
+using Granit.Documents.Events;
+using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Granit.Timing;
@@ -23,6 +25,7 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
     private TestDbContextFactory _factory = null!;
     private DocumentBootstrapService _bootstrap = null!;
     private FolderService _sut = null!;
+    private CapturingLocalEventBus _localEventBus = null!;
 
     private static readonly Guid TenantId = Guid.NewGuid();
     private static readonly Guid OwnerId = Guid.NewGuid();
@@ -50,7 +53,10 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(DateTimeOffset.UtcNow);
 
-        _sut = new FolderService(_factory, _bootstrap, currentTenant, new SequentialGuidGenerator(), clock);
+        _localEventBus = new CapturingLocalEventBus();
+
+        _sut = new FolderService(
+            _factory, _bootstrap, currentTenant, new SequentialGuidGenerator(), clock, _localEventBus);
     }
 
     public ValueTask DisposeAsync() => _holdOpen.DisposeAsync();
@@ -158,6 +164,119 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
         trashed.TrashedAt.ShouldNotBeNull();
     }
 
+    // -------------------------------------------------------------------------
+    // F2.4 — MoveAsync + descendant path re-materialisation
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task MoveAsync_ToDifferentParent_UpdatesMovedFolderPathAndDepth()
+    {
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, TestContext.Current.CancellationToken);
+        Folder b = await _sut.CreateAsync(null, "B", OwnerId, TestContext.Current.CancellationToken);
+        Folder leaf = await _sut.CreateAsync(a.Id, "Leaf", OwnerId, TestContext.Current.CancellationToken);
+
+        Folder? moved = await _sut.MoveAsync(leaf.Id, b.Id, TestContext.Current.CancellationToken);
+
+        moved.ShouldNotBeNull();
+        moved.ParentFolderId.ShouldBe(b.Id);
+        moved.Path.ShouldBe("/B/Leaf");
+        moved.Depth.ShouldBe(2);
+    }
+
+    [Fact]
+    public async Task MoveAsync_ThreeLevelSubtree_ReMaterialisesEveryDescendantPath()
+    {
+        // Build a 3-level subtree under "A": A/B/C/D and a parallel A/B/C/E plus
+        // an unrelated sibling "Other" that must not be touched.
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, TestContext.Current.CancellationToken);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, TestContext.Current.CancellationToken);
+        Folder c = await _sut.CreateAsync(b.Id, "C", OwnerId, TestContext.Current.CancellationToken);
+        Folder d = await _sut.CreateAsync(c.Id, "D", OwnerId, TestContext.Current.CancellationToken);
+        Folder e = await _sut.CreateAsync(c.Id, "E", OwnerId, TestContext.Current.CancellationToken);
+
+        Folder x = await _sut.CreateAsync(null, "X", OwnerId, TestContext.Current.CancellationToken);
+        Folder other = await _sut.CreateAsync(null, "Other", OwnerId, TestContext.Current.CancellationToken);
+
+        // Move B (and its subtree) under X — expected: /X/B, /X/B/C, /X/B/C/D, /X/B/C/E
+        Folder? movedB = await _sut.MoveAsync(b.Id, x.Id, TestContext.Current.CancellationToken);
+
+        movedB.ShouldNotBeNull();
+        movedB.Path.ShouldBe("/X/B");
+        movedB.Depth.ShouldBe(2);
+
+        // Reload descendants from a fresh context to verify the bulk SQL UPDATE landed.
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Folder cReloaded = await db.Folders.SingleAsync(f => f.Id == c.Id, TestContext.Current.CancellationToken);
+        Folder dReloaded = await db.Folders.SingleAsync(f => f.Id == d.Id, TestContext.Current.CancellationToken);
+        Folder eReloaded = await db.Folders.SingleAsync(f => f.Id == e.Id, TestContext.Current.CancellationToken);
+        Folder otherReloaded = await db.Folders.SingleAsync(f => f.Id == other.Id, TestContext.Current.CancellationToken);
+
+        cReloaded.Path.ShouldBe("/X/B/C");
+        cReloaded.Depth.ShouldBe(3);
+        dReloaded.Path.ShouldBe("/X/B/C/D");
+        dReloaded.Depth.ShouldBe(4);
+        eReloaded.Path.ShouldBe("/X/B/C/E");
+        eReloaded.Depth.ShouldBe(4);
+
+        // Unrelated sibling untouched.
+        otherReloaded.Path.ShouldBe("/Other");
+        otherReloaded.Depth.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task MoveAsync_NullNewParent_PutsFolderUnderTenantRoot()
+    {
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, TestContext.Current.CancellationToken);
+        Folder leaf = await _sut.CreateAsync(a.Id, "Leaf", OwnerId, TestContext.Current.CancellationToken);
+
+        Folder? moved = await _sut.MoveAsync(leaf.Id, newParentFolderId: null, TestContext.Current.CancellationToken);
+
+        moved.ShouldNotBeNull();
+        moved.Path.ShouldBe("/Leaf");
+        moved.Depth.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task MoveAsync_DescendantTarget_Throws()
+    {
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, TestContext.Current.CancellationToken);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, TestContext.Current.CancellationToken);
+
+        await Should.ThrowAsync<InvalidOperationException>(
+            async () => await _sut.MoveAsync(a.Id, b.Id, TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task MoveAsync_UnknownId_ReturnsNull()
+    {
+        Folder x = await _sut.CreateAsync(null, "X", OwnerId, TestContext.Current.CancellationToken);
+
+        Folder? result = await _sut.MoveAsync(Guid.NewGuid(), x.Id, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task MoveAsync_PublishesTreePathChangedEvent_OnLocalBus()
+    {
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, TestContext.Current.CancellationToken);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, TestContext.Current.CancellationToken);
+        Folder x = await _sut.CreateAsync(null, "X", OwnerId, TestContext.Current.CancellationToken);
+
+        _localEventBus.Captured.Clear();
+
+        await _sut.MoveAsync(a.Id, x.Id, TestContext.Current.CancellationToken);
+
+        FolderTreePathChangedEvent treeEvent = _localEventBus.Captured
+            .OfType<FolderTreePathChangedEvent>()
+            .ShouldHaveSingleItem();
+
+        treeEvent.MovedFolderId.ShouldBe(a.Id);
+        treeEvent.OldPathPrefix.ShouldBe("/A");
+        treeEvent.NewPathPrefix.ShouldBe("/X/A");
+        treeEvent.AffectedDescendantCount.ShouldBe(1); // B
+    }
+
     [Fact]
     public async Task GetByIdAsync_TenantRoot_IsNotHidden_ButEndpointFiltersIt()
     {
@@ -184,5 +303,18 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
     private sealed class SequentialGuidGenerator : IGuidGenerator
     {
         public Guid Create() => Guid.NewGuid();
+    }
+
+    /// <summary>Captures every <c>PublishAsync</c> call so tests can assert event emission.</summary>
+    private sealed class CapturingLocalEventBus : ILocalEventBus
+    {
+        public List<object> Captured { get; } = [];
+
+        public Task PublishAsync<TEvent>(TEvent localEvent, CancellationToken cancellationToken = default)
+            where TEvent : class
+        {
+            Captured.Add(localEvent);
+            return Task.CompletedTask;
+        }
     }
 }

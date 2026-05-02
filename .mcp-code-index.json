@@ -18419,6 +18419,15 @@
       "members": []
     },
     {
+      "name": "MoveFolderRequest",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.MoveFolderRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/MoveFolderRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "RenameFolderRequest",
       "fqn": "Granit.Documents.Endpoints.Folders.Dtos.RenameFolderRequest",
       "kind": "record",
@@ -18588,6 +18597,15 @@
       "members": []
     },
     {
+      "name": "FolderTreePathChangedEvent",
+      "fqn": "Granit.Documents.Events.FolderTreePathChangedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderTreePathChangedEvent.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "DocumentsServiceCollectionExtensions",
       "fqn": "Granit.Documents.Extensions.DocumentsServiceCollectionExtensions",
       "kind": "class",
@@ -18664,6 +18682,12 @@
           "name": "RenameAsync",
           "kind": "method",
           "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder?>"
+        },
+        {
+          "name": "MoveAsync",
+          "kind": "method",
+          "signature": "MoveAsync(Guid id, Guid? newParentFolderId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Folder?>"
         },
         {
