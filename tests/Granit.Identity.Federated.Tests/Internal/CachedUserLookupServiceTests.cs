@@ -1,4 +1,6 @@
 using Granit.Guids;
+using Granit.Identity;
+using Granit.Identity.Domain;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Internal;
 using Granit.Identity.Federated.Options;
@@ -22,13 +24,14 @@ public sealed class CachedUserLookupServiceTests
     private readonly ICurrentTenant _tenant = Substitute.For<ICurrentTenant>();
     private readonly TimeProvider _timeProvider = Substitute.For<TimeProvider>();
     private readonly IGuidGenerator _guidGenerator = Substitute.For<IGuidGenerator>();
+    private readonly IUserDirectoryWriter _userDirectoryWriter = Substitute.For<IUserDirectoryWriter>();
     private readonly IOptions<UserCacheOptions> _options = Microsoft.Extensions.Options.Options.Create(new UserCacheOptions
     {
         StalenessThreshold = TimeSpan.FromHours(24)
     });
 
     private CachedUserLookupService CreateService() => new(
-        _store, _provider, _tenant, _timeProvider, _guidGenerator, _options,
+        _store, _provider, _tenant, _timeProvider, _guidGenerator, _userDirectoryWriter, _options,
         NullLogger<CachedUserLookupService>.Instance);
 
     private static FederatedIdentityUser CreateUser(string id = "user-1") => new(
@@ -180,11 +183,15 @@ public sealed class CachedUserLookupServiceTests
         _provider.GetUsersAsync(null, 100, 100, Arg.Any<CancellationToken>())
             .Returns(page2);
 
+        // Joint hydration drives one UpsertAsync per provider row instead
+        // of a single UpsertManyAsync: per ADR-051 B-step 3.5 each new
+        // row materialises a canonical User first, so the batch path
+        // unfolds into per-row sequencing.
         CachedUserLookupService service = CreateService();
         int synced = await service.RefreshAllAsync(TestContext.Current.CancellationToken);
 
         synced.ShouldBe(150);
-        await _store.Received(2).UpsertManyAsync(Arg.Any<IReadOnlyList<FederatedIdentity>>(), Arg.Any<CancellationToken>());
+        await _store.Received(150).UpsertAsync(Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -217,5 +224,137 @@ public sealed class CachedUserLookupServiceTests
 
         result.Items.Count.ShouldBe(1);
         result.TotalCount.ShouldBe(1);
+    }
+
+    // ──── Joint User + FederatedIdentity hydration (ADR-051 B-step 3.5) ────
+
+    [Fact]
+    public async Task FindByIdAsync_OnCacheMiss_CreatesCanonicalUser_BeforeFederatedIdentity()
+    {
+        // No existing cache row. Provider returns the user. The joint
+        // hydration helper must create the canonical User row first
+        // (mirroring B-step 2.5) so admin grids see it immediately.
+        var generatedId = Guid.NewGuid();
+        _guidGenerator.Create().Returns(generatedId);
+
+        _store.FindByExternalIdAsync("user-1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns((FederatedIdentity?)null);
+        _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IIdentityUser?>(CreateUser()));
+
+        CachedUserLookupService service = CreateService();
+        await service.FindByIdAsync("user-1", TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.Received(1).CreateAsync(
+            Arg.Is<User>(u =>
+                u.Id == generatedId
+                && u.Email == "jdoe@test.com"
+                && u.DisplayName == "John Doe"),
+            Arg.Any<CancellationToken>());
+        await _store.Received(1).UpsertAsync(
+            Arg.Is<FederatedIdentity>(e => e.Id == generatedId && e.UserId == generatedId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task FindByIdAsync_OnExistingStaleEntry_DoesNotCreateUser_OnRefresh()
+    {
+        // Existing entry exists (with its own Id/UserId already aligned).
+        // The provider returns a fresh copy. The update path must
+        // preserve the existing identifier pair and SKIP the User create.
+        var existingId = Guid.NewGuid();
+        FederatedIdentity stale = CreateCacheEntry(lastSyncedAt: DateTimeOffset.UtcNow.AddDays(-2));
+        stale.Id = existingId;
+        stale.UserId = existingId;
+
+        _store.FindByExternalIdAsync("user-1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(stale);
+        _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IIdentityUser?>(CreateUser()));
+
+        CachedUserLookupService service = CreateService();
+        await service.FindByIdAsync("user-1", TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.DidNotReceive().CreateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+        await _store.Received(1).UpsertAsync(
+            Arg.Is<FederatedIdentity>(e => e.Id == existingId && e.UserId == existingId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task FindByIdAsync_CompensatesUserDelete_WhenFederatedInsertFails()
+    {
+        // The User row is created first; if the FederatedIdentity insert
+        // throws, the canonical row would orphan — the helper must
+        // hard-delete it to keep the directory consistent.
+        var generatedId = Guid.NewGuid();
+        _guidGenerator.Create().Returns(generatedId);
+
+        _store.FindByExternalIdAsync("user-1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns((FederatedIdentity?)null);
+        _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IIdentityUser?>(CreateUser()));
+        _store.UpsertAsync(Arg.Any<FederatedIdentity>(), Arg.Any<CancellationToken>())
+            .Throws(new InvalidOperationException("store offline"));
+
+        CachedUserLookupService service = CreateService();
+
+        // FindByIdAsync wraps the cache-miss block in a try/catch that
+        // swallows non-cancellation exceptions and returns the stale
+        // entry — so the throw is absorbed by the caller, not surfaced.
+        // We just verify the compensation ran.
+        await service.FindByIdAsync("user-1", TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.Received(1).CreateAsync(
+            Arg.Is<User>(u => u.Id == generatedId), Arg.Any<CancellationToken>());
+        await _userDirectoryWriter.Received(1).DeleteAsync(generatedId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task FindByIdAsync_FallsBackToEmail_AsDisplayName_WhenNamesAreMissing()
+    {
+        var generatedId = Guid.NewGuid();
+        _guidGenerator.Create().Returns(generatedId);
+
+        FederatedIdentityUser nameless = new(
+            UserId: "user-2", Username: "anon", Email: "anon@test.com",
+            FirstName: null, LastName: null, Enabled: true);
+
+        _store.FindByExternalIdAsync("user-2", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns((FederatedIdentity?)null);
+        _provider.GetUserAsync("user-2", Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IIdentityUser?>(nameless));
+
+        CachedUserLookupService service = CreateService();
+        await service.FindByIdAsync("user-2", TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.Received(1).CreateAsync(
+            Arg.Is<User>(u => u.DisplayName == "anon@test.com"),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task RefreshByIdAsync_FetchesExistingFirst_BeforeJointHydration()
+    {
+        // RefreshByIdAsync didn't previously do an existence check — the
+        // joint hydration adds one so updates correctly preserve the
+        // existing Id/UserId pair instead of generating fresh ones.
+        var existingId = Guid.NewGuid();
+        FederatedIdentity existing = CreateCacheEntry();
+        existing.Id = existingId;
+        existing.UserId = existingId;
+
+        _store.FindByExternalIdAsync("user-1", Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
+            .Returns(existing);
+        _provider.GetUserAsync("user-1", Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IIdentityUser?>(CreateUser()));
+
+        CachedUserLookupService service = CreateService();
+        await service.RefreshByIdAsync("user-1", TestContext.Current.CancellationToken);
+
+        await _userDirectoryWriter.DidNotReceive().CreateAsync(Arg.Any<User>(), Arg.Any<CancellationToken>());
+        await _store.Received(1).UpsertAsync(
+            Arg.Is<FederatedIdentity>(e => e.Id == existingId && e.UserId == existingId),
+            Arg.Any<CancellationToken>());
     }
 }
