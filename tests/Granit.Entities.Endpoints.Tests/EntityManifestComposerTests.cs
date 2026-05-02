@@ -508,7 +508,35 @@ public sealed class EntityManifestComposerTests
         emitted.ImagePropertyName.ShouldBe("Cover");
         emitted.TitlePropertyName.ShouldBeNull();
         emitted.SubtitlePropertyName.ShouldBeNull();
+        emitted.GroupByPropertyName.ShouldBeNull();
         emitted.CardSize.ShouldBe(Granit.Entities.Layouts.GalleryCardSize.Medium);
+    }
+
+    [Fact]
+    public void Compose_emits_gallery_layout_with_GroupByPropertyName()
+    {
+        // Optional GroupByField — when set, the renderer paints titled
+        // sections instead of a flat grid. The manifest must surface the
+        // property name verbatim so the front-end can route the bucket
+        // header label and request the matching server-side groupBy
+        // parameter on the query endpoint.
+        Granit.Entities.Layouts.GalleryLayoutDescriptor gallery = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Gallery,
+            ImagePropertyName = "Cover",
+            GroupByPropertyName = "Status",
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [gallery]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityGalleryLayoutManifest emitted = manifest.Collections!.ListLayouts
+            .ShouldHaveSingleItem().Gallery.ShouldNotBeNull();
+        emitted.GroupByPropertyName.ShouldBe("Status");
     }
 
     [Fact]

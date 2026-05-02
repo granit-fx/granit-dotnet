@@ -26,6 +26,17 @@ public sealed record GalleryLayoutDescriptor : EntityListLayoutDescriptor
     /// <summary>Optional secondary line under the title (e.g. category, tag, status).</summary>
     public string? SubtitlePropertyName { get; init; }
 
+    /// <summary>
+    /// Optional grouping property — when set, the renderer paints one
+    /// titled section per distinct value (cards laid out in a grid inside
+    /// each section), instead of a single flat grid. Mirrors Kanban's
+    /// per-value column layout, except the per-bucket configuration
+    /// (color, default state) is not exposed: gallery sections only carry
+    /// a header label so the discriminator type doesn't need to be a
+    /// closed enum.
+    /// </summary>
+    public string? GroupByPropertyName { get; init; }
+
     /// <summary>Card size — controls grid track sizing in the renderer.</summary>
     public GalleryCardSize CardSize { get; init; } = GalleryCardSize.Medium;
 }

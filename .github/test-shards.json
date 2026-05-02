@@ -54,6 +54,7 @@
       "name": "business",
       "label": "Business Features",
       "projects": [
+        "tests/Granit.Activities.Abstractions.Tests",
         "tests/Granit.Analytics.Abstractions.Tests",
         "tests/Granit.Analytics.Endpoints.Tests",
         "tests/Granit.Analytics.EntityFrameworkCore.Tests",

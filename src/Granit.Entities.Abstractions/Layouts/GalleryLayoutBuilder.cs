@@ -18,6 +18,7 @@ public sealed class GalleryLayoutBuilder<TEntity>
     private string? _imagePropertyName;
     private string? _titlePropertyName;
     private string? _subtitlePropertyName;
+    private string? _groupByPropertyName;
     private GalleryCardSize _cardSize = GalleryCardSize.Medium;
     private bool _isDefault;
     private string? _requiresPermission;
@@ -60,6 +61,26 @@ public sealed class GalleryLayoutBuilder<TEntity>
     public GalleryLayoutBuilder<TEntity> SubtitleField<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
     {
         _subtitlePropertyName = ReadPropertyName(propertySelector, "SubtitleField");
+        return this;
+    }
+
+    /// <summary>
+    /// Names the optional property the gallery groups cards by. When set,
+    /// the renderer paints one titled section per distinct value (cards
+    /// laid out in a grid inside each section) instead of a single flat
+    /// grid. Generic on <typeparamref name="TProperty"/> so any
+    /// discriminator type — enum, string, primitive, lookup id — works
+    /// without forcing a string projection on the entity. Optional: when
+    /// omitted, the renderer paints a flat grid.
+    /// </summary>
+    /// <remarks>
+    /// Unlike kanban's <c>GroupBy</c>, the gallery does not surface
+    /// per-bucket configuration (color, default state) — section headers
+    /// only carry a label, so a closed enum is not required.
+    /// </remarks>
+    public GalleryLayoutBuilder<TEntity> GroupByField<TProperty>(Expression<Func<TEntity, TProperty>> propertySelector)
+    {
+        _groupByPropertyName = ReadPropertyName(propertySelector, "GroupByField");
         return this;
     }
 
@@ -109,6 +130,7 @@ public sealed class GalleryLayoutBuilder<TEntity>
             ImagePropertyName = _imagePropertyName,
             TitlePropertyName = _titlePropertyName,
             SubtitlePropertyName = _subtitlePropertyName,
+            GroupByPropertyName = _groupByPropertyName,
             CardSize = _cardSize,
         };
     }
