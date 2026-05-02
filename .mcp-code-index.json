@@ -848,6 +848,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents",
+      "deps": [
+        "Granit",
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -17961,6 +17969,59 @@
       ]
     },
     {
+      "name": "DocumentsServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Extensions.DocumentsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocuments",
+          "kind": "method",
+          "signature": "AddGranitDocuments(this IServiceCollection services, Action<GranitDocumentsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsModule",
+      "fqn": "Granit.Documents.GranitDocumentsModule",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/GranitDocumentsModule.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "GranitDocumentsOptions",
+      "fqn": "Granit.Documents.Options.GranitDocumentsOptions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Options/GranitDocumentsOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "TrashRetentionDays",
+          "kind": "property",
+          "signature": "int TrashRetentionDays",
+          "returnType": "int"
+        },
+        {
+          "name": "DefaultTenantQuotaBytes",
+          "kind": "property",
+          "signature": "long DefaultTenantQuotaBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan AclCacheTtl { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
       "name": "AggregateRoot",
       "fqn": "Granit.Domain.AggregateRoot",
       "kind": "class",
@@ -19103,7 +19164,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 60,
+      "line": 63,
       "members": []
     },
     {
@@ -19224,6 +19285,15 @@
       "members": []
     },
     {
+      "name": "EntityGalleryLayoutManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 80,
+      "members": []
+    },
+    {
       "name": "EntityIdentitySection",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityIdentitySection",
       "kind": "record",
@@ -19238,7 +19308,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 119,
+      "line": 139,
       "members": []
     },
     {
@@ -19247,7 +19317,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 87,
+      "line": 107,
       "members": []
     },
     {
@@ -19256,7 +19326,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 103,
+      "line": 123,
       "members": []
     },
     {
@@ -19265,7 +19335,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 129,
+      "line": 149,
       "members": []
     },
     {
@@ -19274,7 +19344,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 71,
+      "line": 91,
       "members": []
     },
     {
@@ -19283,7 +19353,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 44,
+      "line": 46,
       "members": []
     },
     {
@@ -38769,7 +38839,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/Party.cs",
-      "line": 40,
+      "line": 41,
       "members": [
         {
           "name": "Create",
@@ -38847,7 +38917,7 @@
           "name": "AsReadOnly",
           "kind": "method",
           "signature": "AsReadOnly()",
-          "returnType": "Guid? AvatarBlobId { get; private set; } public PartyId? ParentPartyId { get; private set; } public Guid? UserId { get; private set; } public PartyRoles Roles { get; private set; } public PartyStatus Status { get; private set; } public IReadOnlyList<PartyExternalMapping> ExternalMappings => _externalMappings."
+          "returnType": "BlobReference? Avatar { get; private set; } public PartyId? ParentPartyId { get; private set; } public Guid? UserId { get; private set; } public PartyRoles Roles { get; private set; } public PartyStatus Status { get; private set; } public IReadOnlyList<PartyExternalMapping> ExternalMappings => _externalMappings."
         },
         {
           "name": "TenantId",
