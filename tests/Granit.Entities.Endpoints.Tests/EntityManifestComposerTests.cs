@@ -452,6 +452,66 @@ public sealed class EntityManifestComposerTests
     }
 
     [Fact]
+    public void Compose_emits_gallery_layout_with_image_title_subtitle_and_card_size()
+    {
+        Granit.Entities.Layouts.GalleryLayoutDescriptor gallery = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Gallery,
+            IsDefault = true,
+            ImagePropertyName = "Cover",
+            TitlePropertyName = "Title",
+            SubtitlePropertyName = "Category",
+            CardSize = Granit.Entities.Layouts.GalleryCardSize.Large,
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [gallery]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityListLayoutManifest layout = manifest.Collections!.ListLayouts.ShouldHaveSingleItem();
+        layout.Kind.ShouldBe(Granit.Entities.Layouts.EntityListLayoutKind.Gallery);
+        layout.IsDefault.ShouldBeTrue();
+        layout.Kanban.ShouldBeNull();
+        layout.Calendar.ShouldBeNull();
+        layout.Gallery.ShouldNotBeNull();
+        layout.Gallery!.ImagePropertyName.ShouldBe("Cover");
+        layout.Gallery.TitlePropertyName.ShouldBe("Title");
+        layout.Gallery.SubtitlePropertyName.ShouldBe("Category");
+        layout.Gallery.CardSize.ShouldBe(Granit.Entities.Layouts.GalleryCardSize.Large);
+    }
+
+    [Fact]
+    public void Compose_emits_minimal_gallery_with_only_image_and_default_card_size()
+    {
+        // ImagePropertyName is the only required field per
+        // GalleryLayoutDescriptor. Title / subtitle fall back to the
+        // entity's DisplayProperty / SubtitleProperty in the renderer;
+        // CardSize defaults to Medium.
+        Granit.Entities.Layouts.GalleryLayoutDescriptor gallery = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Gallery,
+            ImagePropertyName = "Cover",
+        };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            BuildDescriptor(listLayouts: [gallery]),
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityGalleryLayoutManifest emitted = manifest.Collections!.ListLayouts
+            .ShouldHaveSingleItem().Gallery.ShouldNotBeNull();
+        emitted.ImagePropertyName.ShouldBe("Cover");
+        emitted.TitlePropertyName.ShouldBeNull();
+        emitted.SubtitlePropertyName.ShouldBeNull();
+        emitted.CardSize.ShouldBe(Granit.Entities.Layouts.GalleryCardSize.Medium);
+    }
+
+    [Fact]
     public void Compose_emits_calendar_layout_with_start_end_title_and_color_by()
     {
         Granit.Entities.Layouts.CalendarLayoutDescriptor calendar = new()

@@ -353,6 +353,12 @@ internal static class EntityManifestComposer
                 _ => null,
             };
 
+            EntityGalleryLayoutManifest? gallery = layout switch
+            {
+                GalleryLayoutDescriptor g => ComposeGallery(g),
+                _ => null,
+            };
+
             // Layout produced no usable shape (e.g. kanban whose card lost every
             // field to permission filtering). Drop the layout — empty switcher
             // tabs would be UX clutter.
@@ -365,7 +371,8 @@ internal static class EntityManifestComposer
                 layout.Kind,
                 layout.IsDefault,
                 kanban,
-                calendar));
+                calendar,
+                gallery));
         }
         return layouts;
     }
@@ -375,6 +382,12 @@ internal static class EntityManifestComposer
             descriptor.EndPropertyName,
             descriptor.TitlePropertyName,
             descriptor.ColorByPropertyName);
+
+    private static EntityGalleryLayoutManifest ComposeGallery(GalleryLayoutDescriptor descriptor) =>
+        new(descriptor.ImagePropertyName,
+            descriptor.TitlePropertyName,
+            descriptor.SubtitlePropertyName,
+            descriptor.CardSize);
 
     private static EntityKanbanLayoutManifest? ComposeKanban(
         KanbanLayoutDescriptor descriptor,

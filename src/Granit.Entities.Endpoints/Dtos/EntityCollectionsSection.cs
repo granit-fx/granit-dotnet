@@ -34,18 +34,21 @@ public sealed record EntityCollectionReference(
 
 /// <summary>
 /// One alternative list-view layout exposed in the manifest. The kind drives
-/// front-end component selection; per-kind config lives in <see cref="Kanban"/>
-/// or <see cref="Calendar"/> (and future <c>Map</c> / <c>Gallery</c> sub-records).
+/// front-end component selection; per-kind config lives in <see cref="Kanban"/>,
+/// <see cref="Calendar"/>, or <see cref="Gallery"/> (and a future <c>Map</c>
+/// sub-record).
 /// </summary>
 /// <param name="Kind">Layout kind from the closed catalog.</param>
 /// <param name="IsDefault">Whether this layout is the default tab on first render.</param>
 /// <param name="Kanban">Kanban-specific configuration when <see cref="Kind"/> is <see cref="EntityListLayoutKind.Kanban"/>.</param>
 /// <param name="Calendar">Calendar-specific configuration when <see cref="Kind"/> is <see cref="EntityListLayoutKind.Calendar"/>.</param>
+/// <param name="Gallery">Gallery-specific configuration when <see cref="Kind"/> is <see cref="EntityListLayoutKind.Gallery"/>.</param>
 public sealed record EntityListLayoutManifest(
     EntityListLayoutKind Kind,
     bool IsDefault,
     EntityKanbanLayoutManifest? Kanban,
-    EntityCalendarLayoutManifest? Calendar);
+    EntityCalendarLayoutManifest? Calendar,
+    EntityGalleryLayoutManifest? Gallery);
 
 /// <summary>
 /// Calendar-specific layout configuration carried in the manifest. Property
@@ -62,6 +65,23 @@ public sealed record EntityCalendarLayoutManifest(
     string? EndPropertyName,
     string? TitlePropertyName,
     string? ColorByPropertyName);
+
+/// <summary>
+/// Gallery-specific layout configuration carried in the manifest. Property
+/// names address fields on the entity; the renderer (<c>EntityGallery</c>)
+/// reads each row's image via the host's blob-storage download endpoint and
+/// labels the card with <see cref="TitlePropertyName"/> /
+/// <see cref="SubtitlePropertyName"/>.
+/// </summary>
+/// <param name="ImagePropertyName">Entity property carrying the card image — typed <c>BlobReference</c> (or nullable). Required.</param>
+/// <param name="TitlePropertyName">Entity property used as the card headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
+/// <param name="SubtitlePropertyName">Optional secondary line under the title, or <see langword="null"/> for none.</param>
+/// <param name="CardSize">Card size — drives CSS-grid track sizing in the renderer.</param>
+public sealed record EntityGalleryLayoutManifest(
+    string ImagePropertyName,
+    string? TitlePropertyName,
+    string? SubtitlePropertyName,
+    GalleryCardSize CardSize);
 
 /// <summary>Kanban-specific layout configuration carried in the manifest.</summary>
 /// <param name="GroupByPropertyName">Entity property used to bucket rows into columns.</param>
