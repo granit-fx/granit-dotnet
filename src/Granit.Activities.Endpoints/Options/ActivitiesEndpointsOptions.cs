@@ -19,4 +19,10 @@ public sealed class ActivitiesEndpointsOptions
 
     /// <summary>Default page size when the caller does not specify one. Default: <c>20</c>.</summary>
     public int DefaultPageSize { get; set; } = 20;
+
+    /// <summary>Maximum width of the cross-entity calendar window in days (story #1801). Default: <c>90</c>.</summary>
+    public int MaxCalendarRangeDays { get; set; } = 90;
+
+    /// <summary>FusionCache TTL for the activities calendar response. Default: 1 minute (sliding).</summary>
+    public TimeSpan CalendarCacheTtl { get; set; } = TimeSpan.FromMinutes(1);
 }

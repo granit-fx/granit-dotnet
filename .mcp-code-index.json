@@ -99,6 +99,7 @@
       "deps": [
         "Granit.Activities",
         "Granit.Authorization",
+        "Granit.Caching",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation"
       ],
@@ -4515,6 +4516,24 @@
       "members": []
     },
     {
+      "name": "ActivityCalendarItemResponse",
+      "fqn": "Granit.Activities.Endpoints.Dtos.ActivityCalendarItemResponse",
+      "kind": "record",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Dtos/ActivityCalendarItemResponse.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "ActivityCalendarRequest",
+      "fqn": "Granit.Activities.Endpoints.Dtos.ActivityCalendarRequest",
+      "kind": "record",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Dtos/ActivityCalendarRequest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "ActivityListResponse",
       "fqn": "Granit.Activities.Endpoints.Dtos.ActivityListResponse",
       "kind": "record",
@@ -4594,6 +4613,22 @@
       ]
     },
     {
+      "name": "ActivitiesEndpointsServiceCollectionExtensions",
+      "fqn": "Granit.Activities.Endpoints.Extensions.ActivitiesEndpointsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Extensions/ActivitiesEndpointsServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitActivitiesCalendarCacheInvalidation",
+          "kind": "method",
+          "signature": "AddGranitActivitiesCalendarCacheInvalidation(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitActivitiesEndpointsModule",
       "fqn": "Granit.Activities.Endpoints.GranitActivitiesEndpointsModule",
       "kind": "class",
@@ -4633,6 +4668,18 @@
           "kind": "property",
           "signature": "int DefaultPageSize",
           "returnType": "int"
+        },
+        {
+          "name": "MaxCalendarRangeDays",
+          "kind": "property",
+          "signature": "int MaxCalendarRangeDays",
+          "returnType": "int"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(1)",
+          "returnType": "TimeSpan CalendarCacheTtl { get; set; } = TimeSpan."
         }
       ]
     },

@@ -45,9 +45,32 @@ activities never re-open. `Complete` / `Cancel` / `Reassign` / `Reschedule` on
 an already-terminal activity return `409 Conflict` with the aggregate's error
 message. Create a new activity if a follow-up is needed.
 
+## Cross-entity calendar (story A6)
+
+`GET /api/activities/calendar?from=…&to=…[&assignee=me|<userId>][&entityType=…][&type=Call,Meeting][&status=…]`
+
+Returns activities laid out on a time axis spanning every entity type the
+caller can read. Window must be `> 0` and `<= ActivitiesEndpointsOptions.MaxCalendarRangeDays`
+(default 90 days), otherwise `400`. Per-tenant FusionCache (1-minute sliding
+TTL) + strong ETag + `304 Not Modified` short-circuit. Per-tenant eviction
+tags drop the cache when an `Activity` row is created / updated / deleted /
+bulk-updated.
+
+Wire the cache invalidator alongside the runtime + EF persistence:
+
+```csharp
+builder.Services
+    .AddGranitActivities()
+    .AddGranitActivitiesEntityFrameworkCore(opts => opts.UseNpgsql(connStr))
+    .AddGranitActivitiesCalendarCacheInvalidation();
+```
+
+The response shape (`ActivityCalendarItemResponse`) carries the raw activity
+type name + status + entity reference; the React shell composes the displayed
+title client-side from the `Activity:{type}` i18n key it receives via the
+`activities` manifest section (story A5).
+
 ## Out of scope
 
-- Cross-entity calendar (`GET /api/activities/calendar`) — story A6
 - Notifications / email — story A7
 - Background reminders / overdue scan — story A8
-- `EntityDefinition.Activities()` opt-in — story A5

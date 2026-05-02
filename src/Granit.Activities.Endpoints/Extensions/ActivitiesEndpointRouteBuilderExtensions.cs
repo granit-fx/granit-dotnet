@@ -37,6 +37,7 @@ public static class ActivitiesEndpointRouteBuilderExtensions
             .RequireAuthorization(ActivitiesPermissions.Activities.Read);
 
         group.MapActivityEndpoints();
+        group.MapActivityCalendarEndpoint();
         return group;
     }
 }
