@@ -79,6 +79,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Activities.Abstractions",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Analytics",
       "deps": [
         "Granit",
@@ -4340,6 +4347,121 @@
           "kind": "method",
           "signature": "DeleteAsync(string workspaceName, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActivityType",
+      "fqn": "Granit.Activities.ActivityType",
+      "kind": "record",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/ActivityType.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ActivityTypeServiceCollectionExtensions",
+      "fqn": "Granit.Activities.Extensions.ActivityTypeServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/Extensions/ActivityTypeServiceCollectionExtensions.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "GranitActivitiesAbstractionsModule",
+      "fqn": "Granit.Activities.GranitActivitiesAbstractionsModule",
+      "kind": "class",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/GranitActivitiesAbstractionsModule.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "IActivityRegistry",
+      "fqn": "Granit.Activities.IActivityRegistry",
+      "kind": "interface",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/IActivityRegistry.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "TryGet",
+          "kind": "method",
+          "signature": "TryGet(string name, out ActivityType type)",
+          "returnType": "IReadOnlyDictionary<string, ActivityType> All { get; } bool"
+        }
+      ]
+    },
+    {
+      "name": "IActivityTypeProvider",
+      "fqn": "Granit.Activities.IActivityTypeProvider",
+      "kind": "interface",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/IActivityTypeProvider.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Provide",
+          "kind": "method",
+          "signature": "Provide()",
+          "returnType": "IEnumerable<ActivityType>"
+        }
+      ]
+    },
+    {
+      "name": "StandardActivityTypeProvider",
+      "fqn": "Granit.Activities.StandardActivityTypeProvider",
+      "kind": "class",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/StandardActivityTypeProvider.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Provide",
+          "kind": "method",
+          "signature": "Provide()",
+          "returnType": "IEnumerable<ActivityType>"
+        }
+      ]
+    },
+    {
+      "name": "StandardActivityTypes",
+      "fqn": "Granit.Activities.StandardActivityTypes",
+      "kind": "class",
+      "project": "Granit.Activities.Abstractions",
+      "file": "src/Granit.Activities.Abstractions/StandardActivityTypes.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name: \"ToDo\", Icon: \"check-square\", DisplayKey: \"Activity:ToDo\")",
+          "returnType": "ActivityType ToDo ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name: \"Call\", Icon: \"phone\", DisplayKey: \"Activity:Call\")",
+          "returnType": "ActivityType Call ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name: \"Meeting\", Icon: \"calendar\", DisplayKey: \"Activity:Meeting\", DefaultDurationMinutes: 30)",
+          "returnType": "ActivityType Meeting ="
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name: \"Email\", Icon: \"mail\", DisplayKey: \"Activity:Email\")",
+          "returnType": "ActivityType Email ="
+        },
+        {
+          "name": "All",
+          "kind": "property",
+          "signature": "IReadOnlyList<ActivityType> All",
+          "returnType": "IReadOnlyList<ActivityType>"
         }
       ]
     },

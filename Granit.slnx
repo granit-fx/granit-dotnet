@@ -100,6 +100,7 @@
     <Project Path="src/Granit.Vault/Granit.Vault.csproj" />
   </Folder>
   <Folder Name="/src/Application/">
+    <Project Path="src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj" />
     <Project Path="src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj" />
     <Project Path="src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj" />
     <Project Path="src/Granit.Analytics.EntityFrameworkCore/Granit.Analytics.EntityFrameworkCore.csproj" />
@@ -460,6 +461,7 @@
     <Project Path="tests/Granit.Vault.Tests/Granit.Vault.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/Application/">
+    <Project Path="tests/Granit.Activities.Abstractions.Tests/Granit.Activities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.EntityFrameworkCore.Tests/Granit.Analytics.EntityFrameworkCore.Tests.csproj" />
