@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Granit.Entities.Actions;
+using Granit.Entities.Activities;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
@@ -32,6 +33,8 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     private readonly List<RelationDescriptor> _relations = [];
     private readonly List<Func<EntityListLayoutDescriptor>> _layoutFactories = [];
     private readonly List<EntityActionDescriptor> _actions = [];
+
+    private ActivitiesDescriptor? _activities;
 
     /// <summary>Sets the i18n key for the entity's display name (singular).</summary>
     public EntityDefinitionBuilder<TEntity> DisplayKey(string displayKey)
@@ -306,6 +309,35 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         return this;
     }
 
+    /// <summary>
+    /// Opts the entity into hosting cross-entity activities (ADR-046 §3).
+    /// Surfaces the manifest's <c>activities</c> section so the React shell
+    /// can render the activity creation modal + side panel for this entity.
+    /// </summary>
+    /// <param name="configure">
+    /// Optional builder configuration — restrict the activity-type catalog via
+    /// <see cref="ActivitiesOptionsBuilder{TEntity}.AllowedTypes(string[])"/>
+    /// or pre-fill the assignee via
+    /// <see cref="ActivitiesOptionsBuilder{TEntity}.DefaultAssignee{TProperty}(System.Linq.Expressions.Expression{System.Func{TEntity, TProperty}})"/>.
+    /// Calling <c>.Activities()</c> with no configuration enables every
+    /// registered activity type with no default assignee.
+    /// </param>
+    /// <remarks>
+    /// Activity types named in <c>AllowedTypes(...)</c> that don't resolve in
+    /// <see cref="IActivityRegistry"/> at manifest time are silently dropped
+    /// (per ADR-045 §3) — call sites can safely list types contributed by
+    /// optional modules. The activity types registry itself is populated by
+    /// the host via <c>AddGranitActivities()</c>; without it, the
+    /// <c>activities</c> manifest section is omitted entirely.
+    /// </remarks>
+    public EntityDefinitionBuilder<TEntity> Activities(Action<ActivitiesOptionsBuilder<TEntity>>? configure = null)
+    {
+        ActivitiesOptionsBuilder<TEntity> builder = new();
+        configure?.Invoke(builder);
+        _activities = builder.Build();
+        return this;
+    }
+
     internal EntityDefinitionDescriptor Build(string name)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -349,6 +381,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
             Relations = relations,
             ListLayouts = layouts,
             Actions = actions,
+            Activities = _activities,
         };
     }
 

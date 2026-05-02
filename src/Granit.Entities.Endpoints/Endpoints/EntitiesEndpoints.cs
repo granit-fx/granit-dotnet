@@ -125,7 +125,10 @@ internal static class EntitiesEndpoints
         [FromServices] IOptions<EntitiesEndpointsOptions> options,
         ClaimsPrincipal user,
         HttpContext httpContext,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        // Optional — null when the host has not loaded Granit.Activities runtime;
+        // the manifest then omits the activities section entirely (ADR-045 §3).
+        [FromServices] Granit.Activities.IActivityRegistry? activityRegistry = null)
     {
         IEntityDefinitionDescriptor? definitionRef = registry.GetByName(name);
         if (definitionRef is null)
@@ -161,7 +164,7 @@ internal static class EntitiesEndpoints
                 IReadOnlySet<string> grantedPermissions = await CollectGrantedPermissionsAsync(
                     permissionResolver, descriptor, ct).ConfigureAwait(false);
                 return EntityManifestComposer.Compose(
-                    descriptor, snapshot, grantedPermissions, selected, defaultViewId: null);
+                    descriptor, snapshot, grantedPermissions, selected, defaultViewId: null, activityRegistry);
             },
             new FusionCacheEntryOptions { Duration = options.Value.ManifestCacheTtl },
             token: cancellationToken)

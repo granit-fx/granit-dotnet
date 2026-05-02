@@ -1,3 +1,4 @@
+using Granit.Activities;
 using Granit.Entities.Actions;
 using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
@@ -24,7 +25,8 @@ internal static class EntityManifestComposer
         EntityPermissionSnapshot permissions,
         IReadOnlySet<string> grantedPermissions,
         EntityFacets facets,
-        Guid? defaultViewId)
+        Guid? defaultViewId,
+        IActivityRegistry? activityRegistry = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentNullException.ThrowIfNull(permissions);
@@ -61,6 +63,10 @@ internal static class EntityManifestComposer
             ? ComposeActions(definition, grantedPermissions)
             : null;
 
+        EntityActivitiesManifest? activities = facets.HasFlag(EntityFacets.Activities)
+            ? ComposeActivities(definition, activityRegistry)
+            : null;
+
         return new EntityManifestResponse(
             SchemaVersion,
             identity,
@@ -69,7 +75,40 @@ internal static class EntityManifestComposer
             details,
             collections,
             relations,
-            actions);
+            actions,
+            activities);
+    }
+
+    /// <summary>
+    /// Projects the entity's <see cref="ActivitiesDescriptor"/> opt-in into the
+    /// wire-shape manifest section. Returns <see langword="null"/> when:
+    /// <list type="bullet">
+    ///   <item>The entity did not call <c>.Activities()</c> on its builder.</item>
+    ///   <item>The host did not load <c>Granit.Activities</c> runtime
+    ///         (<paramref name="activityRegistry"/> is <see langword="null"/>) — the
+    ///         catalog cannot be validated, so the section is omitted entirely
+    ///         per ADR-045 §3 silent-skip semantic.</item>
+    /// </list>
+    /// Allowed type names absent from the registry are silently dropped from the
+    /// manifest so that an entity opting into <c>"Quote"</c> simply does not
+    /// surface that option when <c>Granit.Sales</c> is not loaded.
+    /// </summary>
+    private static EntityActivitiesManifest? ComposeActivities(
+        EntityDefinitionDescriptor d,
+        IActivityRegistry? activityRegistry)
+    {
+        if (d.Activities is null || activityRegistry is null)
+        {
+            return null;
+        }
+
+        IReadOnlyList<string> filteredAllowed = d.Activities.AllowedTypeNames.Count == 0
+            ? activityRegistry.All.Keys.ToArray()
+            : [.. d.Activities.AllowedTypeNames.Where(name => activityRegistry.TryGet(name, out _))];
+
+        return new EntityActivitiesManifest(
+            AllowedTypes: filteredAllowed,
+            DefaultAssignee: d.Activities.DefaultAssigneePropertyName);
     }
 
     private static List<EntityActionManifest> ComposeActions(
