@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "PermissionGroup:EntitiesCustomization": "Personalizacja encji",
+    "Permission:EntitiesCustomization.Customizations.Read": "Odczyt personalizacji encji",
+    "Permission:EntitiesCustomization.Customizations.Manage": "Zarządzanie personalizacjami encji"
+  }
+}

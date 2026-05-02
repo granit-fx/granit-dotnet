@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "PermissionGroup:EntitiesCustomization": "Entity customization",
+    "Permission:EntitiesCustomization.Customizations.Read": "Read entity customizations",
+    "Permission:EntitiesCustomization.Customizations.Manage": "Manage entity customizations"
+  }
+}

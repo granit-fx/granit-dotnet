@@ -86,6 +86,7 @@
         "tests/Granit.Entities.Abstractions.Tests",
         "tests/Granit.Entities.Customization.Tests",
         "tests/Granit.Entities.Customization.EntityFrameworkCore.Tests",
+        "tests/Granit.Entities.Customization.Endpoints.Tests",
         "tests/Granit.Entities.Endpoints.Tests",
         "tests/Granit.Entities.EntityFrameworkCore.Tests",
         "tests/Granit.Entities.Tests",

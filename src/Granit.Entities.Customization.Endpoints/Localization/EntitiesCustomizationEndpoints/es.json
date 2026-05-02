@@ -1,0 +1,8 @@
+{
+  "culture": "es",
+  "texts": {
+    "PermissionGroup:EntitiesCustomization": "Personalización de entidades",
+    "Permission:EntitiesCustomization.Customizations.Read": "Consultar personalizaciones de entidades",
+    "Permission:EntitiesCustomization.Customizations.Manage": "Gestionar personalizaciones de entidades"
+  }
+}

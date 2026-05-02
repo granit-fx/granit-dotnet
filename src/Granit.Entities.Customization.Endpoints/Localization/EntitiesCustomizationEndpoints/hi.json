@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "PermissionGroup:EntitiesCustomization": "इकाई अनुकूलन",
+    "Permission:EntitiesCustomization.Customizations.Read": "इकाई अनुकूलन देखें",
+    "Permission:EntitiesCustomization.Customizations.Manage": "इकाई अनुकूलन प्रबंधित करें"
+  }
+}

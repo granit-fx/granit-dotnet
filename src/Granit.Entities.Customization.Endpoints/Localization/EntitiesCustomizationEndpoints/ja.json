@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "PermissionGroup:EntitiesCustomization": "エンティティのカスタマイズ",
+    "Permission:EntitiesCustomization.Customizations.Read": "エンティティのカスタマイズを表示",
+    "Permission:EntitiesCustomization.Customizations.Manage": "エンティティのカスタマイズを管理"
+  }
+}
