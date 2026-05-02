@@ -334,6 +334,201 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         url.ShouldBeNull();
     }
 
+    // -------------------------------------------------------------------------
+    // F3.4 — Rename / UpdateDescription / Move / Trash / GetByIdAsync
+    // -------------------------------------------------------------------------
+
+    private async Task<Document> SeedDocumentAsync(string name = "F.pdf", Guid? folderId = null)
+    {
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "application/pdf", SizeBytes: 100, RejectionReason: null));
+        return await _sut.FinalizeUploadAsync(blobId, folderId, OwnerId, name, null, null,
+            TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_Existing_ReturnsDocument()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        Document? fetched = await _sut.GetByIdAsync(seeded.Id, TestContext.Current.CancellationToken);
+
+        fetched.ShouldNotBeNull();
+        fetched.Id.ShouldBe(seeded.Id);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_Missing_ReturnsNull()
+    {
+        Document? fetched = await _sut.GetByIdAsync(Guid.NewGuid(),
+            TestContext.Current.CancellationToken);
+
+        fetched.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task RenameAsync_UpdatesNameAndIncrementsRowVersion()
+    {
+        Document seeded = await SeedDocumentAsync("Old.pdf");
+        uint before = seeded.RowVersion;
+
+        Document? renamed = await _sut.RenameAsync(seeded.Id, "New.pdf",
+            TestContext.Current.CancellationToken);
+
+        renamed.ShouldNotBeNull();
+        renamed.Name.ShouldBe("New.pdf");
+        renamed.RowVersion.ShouldBeGreaterThan(before);
+    }
+
+    [Fact]
+    public async Task RenameAsync_Missing_ReturnsNull()
+    {
+        Document? result = await _sut.RenameAsync(Guid.NewGuid(), "X.pdf",
+            TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task UpdateDescriptionAsync_UpdatesValue()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        Document? result = await _sut.UpdateDescriptionAsync(seeded.Id, "fresh",
+            TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Description.ShouldBe("fresh");
+    }
+
+    [Fact]
+    public async Task UpdateDescriptionAsync_NullClears()
+    {
+        Document seeded = await SeedDocumentAsync();
+        await _sut.UpdateDescriptionAsync(seeded.Id, "non-null",
+            TestContext.Current.CancellationToken);
+
+        Document? result = await _sut.UpdateDescriptionAsync(seeded.Id, null,
+            TestContext.Current.CancellationToken);
+
+        result.ShouldNotBeNull();
+        result.Description.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task MoveAsync_DifferentFolder_UpdatesFolderId()
+    {
+        Document seeded = await SeedDocumentAsync();
+        Guid rootId = await _bootstrap.EnsureTenantRootAsync(TenantId, OwnerId,
+            TestContext.Current.CancellationToken);
+
+        await using DocumentsDbContext seed = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Folder rootFolder = await seed.Folders.SingleAsync(f => f.Id == rootId,
+            TestContext.Current.CancellationToken);
+        var contracts = Folder.Create(Guid.NewGuid(), rootFolder, "Contracts", OwnerId);
+        seed.Folders.Add(contracts);
+        await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        Document? moved = await _sut.MoveAsync(seeded.Id, contracts.Id,
+            TestContext.Current.CancellationToken);
+
+        moved.ShouldNotBeNull();
+        moved.FolderId.ShouldBe(contracts.Id);
+    }
+
+    [Fact]
+    public async Task MoveAsync_NullNewFolder_PutsDocumentUnderTenantRoot()
+    {
+        // Seed a document under a sub-folder, then move it to null (tenant root).
+        Guid rootId = await _bootstrap.EnsureTenantRootAsync(TenantId, OwnerId,
+            TestContext.Current.CancellationToken);
+        Folder contracts;
+        await using (DocumentsDbContext seed = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            Folder rootFolder = await seed.Folders.SingleAsync(f => f.Id == rootId,
+                TestContext.Current.CancellationToken);
+            contracts = Folder.Create(Guid.NewGuid(), rootFolder, "Contracts", OwnerId);
+            seed.Folders.Add(contracts);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        Document seeded = await SeedDocumentAsync(folderId: contracts.Id);
+
+        Document? moved = await _sut.MoveAsync(seeded.Id, newFolderId: null,
+            TestContext.Current.CancellationToken);
+
+        moved.ShouldNotBeNull();
+        moved.FolderId.ShouldBe(rootId);
+    }
+
+    [Fact]
+    public async Task MoveAsync_TrashedFolder_Throws()
+    {
+        Document seeded = await SeedDocumentAsync();
+        Guid rootId = await _bootstrap.EnsureTenantRootAsync(TenantId, OwnerId,
+            TestContext.Current.CancellationToken);
+
+        Folder trashedFolder;
+        await using (DocumentsDbContext seed = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            Folder rootFolder = await seed.Folders.SingleAsync(f => f.Id == rootId,
+                TestContext.Current.CancellationToken);
+            trashedFolder = Folder.Create(Guid.NewGuid(), rootFolder, "Garbage", OwnerId);
+            trashedFolder.Trash(DateTimeOffset.UtcNow);
+            seed.Folders.Add(trashedFolder);
+            await seed.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await _sut.MoveAsync(seeded.Id, trashedFolder.Id,
+                TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task MoveAsync_MissingTargetFolder_Throws()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await _sut.MoveAsync(seeded.Id, Guid.NewGuid(),
+                TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task MoveAsync_Missing_ReturnsNull()
+    {
+        Document? result = await _sut.MoveAsync(Guid.NewGuid(), null,
+            TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task TrashAsync_SetsStatusAndTrashedAt()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        Document? trashed = await _sut.TrashAsync(seeded.Id,
+            TestContext.Current.CancellationToken);
+
+        trashed.ShouldNotBeNull();
+        trashed.Status.ShouldBe(DocumentStatus.Trashed);
+        trashed.TrashedAt.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task TrashAsync_Missing_ReturnsNull()
+    {
+        Document? result = await _sut.TrashAsync(Guid.NewGuid(),
+            TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
     private sealed class TestDbContextFactory(DbContextOptions<DocumentsDbContext> options)
         : IDbContextFactory<DocumentsDbContext>
     {

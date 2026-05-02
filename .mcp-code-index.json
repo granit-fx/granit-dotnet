@@ -18763,6 +18763,24 @@
       "members": []
     },
     {
+      "name": "MoveDocumentRequest",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.MoveDocumentRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/MoveDocumentRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "RenameDocumentRequest",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.RenameDocumentRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/RenameDocumentRequest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "UploadTicketRequest",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.UploadTicketRequest",
       "kind": "record",
@@ -19166,6 +19184,36 @@
           "kind": "method",
           "signature": "RequestDownloadUrlAsync(Guid documentId, Guid? versionId, Guid requestedByUserId, CancellationToken cancellationToken = default)",
           "returnType": "Task<PresignedDownloadUrl?>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
+        },
+        {
+          "name": "UpdateDescriptionAsync",
+          "kind": "method",
+          "signature": "UpdateDescriptionAsync(Guid id, string? newDescription, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
+        },
+        {
+          "name": "MoveAsync",
+          "kind": "method",
+          "signature": "MoveAsync(Guid id, Guid? newFolderId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
+        },
+        {
+          "name": "TrashAsync",
+          "kind": "method",
+          "signature": "TrashAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
         }
       ]
     },

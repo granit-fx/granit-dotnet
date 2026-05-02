@@ -201,4 +201,120 @@ internal sealed class DocumentService(
         metrics.RecordDownload(currentTenant.Id?.ToString());
         return url;
     }
+
+    /// <inheritdoc />
+    public async Task<Document?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<Document?> RenameAsync(
+        Guid id,
+        string newName,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+
+        document.Rename(newName);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return document;
+    }
+
+    /// <inheritdoc />
+    public async Task<Document?> UpdateDescriptionAsync(
+        Guid id,
+        string? newDescription,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+
+        document.UpdateDescription(newDescription);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return document;
+    }
+
+    /// <inheritdoc />
+    public async Task<Document?> MoveAsync(
+        Guid id,
+        Guid? newFolderId,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+
+        Guid effectiveFolderId = newFolderId ?? await bootstrap
+            .EnsureTenantRootAsync(document.TenantId, document.OwnerUserId, cancellationToken)
+            .ConfigureAwait(false);
+
+        Folder? newFolder = await context.Folders
+            .FirstOrDefaultAsync(f => f.Id == effectiveFolderId, cancellationToken)
+            .ConfigureAwait(false);
+        if (newFolder is null)
+        {
+            throw new InvalidOperationException(
+                $"Target folder {effectiveFolderId} was not found under the current tenant scope.");
+        }
+
+        document.MoveTo(newFolder);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return document;
+    }
+
+    /// <inheritdoc />
+    public async Task<Document?> TrashAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+
+        document.Trash(clock.Now);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return document;
+    }
 }

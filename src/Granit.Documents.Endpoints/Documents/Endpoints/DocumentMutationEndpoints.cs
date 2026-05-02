@@ -1,0 +1,187 @@
+using Granit.Documents.Domain;
+using Granit.Documents.Endpoints.Documents.Dtos;
+using Granit.Documents.Endpoints.Documents.Mapping;
+using Granit.Documents.Endpoints.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+
+namespace Granit.Documents.Endpoints.Documents.Endpoints;
+
+/// <summary>
+/// HTTP endpoints for document lifecycle mutations (F3.4): get-by-id, rename / update
+/// description, move, trash.
+/// </summary>
+internal static class DocumentMutationEndpoints
+{
+    public static RouteGroupBuilder MapDocumentMutationEndpoints(this RouteGroupBuilder documents)
+    {
+        ArgumentNullException.ThrowIfNull(documents);
+
+        documents.MapGet("/{id:guid}", GetByIdAsync)
+            .WithName("GetDocument")
+            .WithSummary("Returns a document by id.")
+            .WithDescription(
+                "Returns the document identified by `id`, including its current version "
+                + "pointer and folder placement. 404 when the document is not found or "
+                + "excluded by the tenant filter.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Read))
+            .Produces<DocumentResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
+        documents.MapPatch("/{id:guid}", RenameAsync)
+            .WithName("RenameDocument")
+            .WithSummary("Renames a document and / or updates its description.")
+            .WithDescription(
+                "Partial update — fields left null are unchanged. Send `clearDescription: true` "
+                + "to drop the description (sending an empty string sets a non-null empty "
+                + "value, which is rarely what callers want). 404 when the document is "
+                + "missing; 409 when the document is trashed.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces<DocumentResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict)
+            .ProducesValidationProblem();
+
+        documents.MapPost("/{id:guid}/move", MoveAsync)
+            .WithName("MoveDocument")
+            .WithSummary("Moves a document under a different folder.")
+            .WithDescription(
+                "Moves the document identified by `id` under `newFolderId` (or under the "
+                + "tenant root when omitted). Cross-tenant moves and moves into trashed or "
+                + "missing folders surface as 409 Conflict.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces<DocumentResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        documents.MapDelete("/{id:guid}", TrashAsync)
+            .WithName("TrashDocument")
+            .WithSummary("Sends a document to the trash (soft-delete).")
+            .WithDescription(
+                "Moves the document identified by `id` to the trash. Permanent deletion "
+                + "happens after the configured retention period via the empty-trash "
+                + "background job (F8 / F9.2). Already-trashed documents surface as 409.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces<DocumentResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
+        return documents;
+    }
+
+    // -------------------------------------------------------------------------
+    // Handlers
+    // -------------------------------------------------------------------------
+
+    private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> GetByIdAsync(
+        Guid id,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        Document? document = await documents.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
+        if (document is null)
+        {
+            return TypedResults.Problem(
+                $"Document '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+        return TypedResults.Ok(document.ToResponse());
+    }
+
+    private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> RenameAsync(
+        Guid id,
+        RenameDocumentRequest request,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Document? document = null;
+            if (request.Name is not null)
+            {
+                document = await documents.RenameAsync(id, request.Name, cancellationToken).ConfigureAwait(false);
+                if (document is null)
+                {
+                    return TypedResults.Problem(
+                        $"Document '{id}' was not found.",
+                        statusCode: StatusCodes.Status404NotFound);
+                }
+            }
+
+            if (request.ClearDescription || request.Description is not null)
+            {
+                string? newDescription = request.ClearDescription ? null : request.Description;
+                document = await documents.UpdateDescriptionAsync(id, newDescription, cancellationToken)
+                    .ConfigureAwait(false);
+                if (document is null)
+                {
+                    return TypedResults.Problem(
+                        $"Document '{id}' was not found.",
+                        statusCode: StatusCodes.Status404NotFound);
+                }
+            }
+
+            // Validator guarantees at least one mutation requested; document is not null here.
+            return TypedResults.Ok(document!.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+    }
+
+    private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> MoveAsync(
+        Guid id,
+        MoveDocumentRequest request,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Document? document = await documents
+                .MoveAsync(id, request.NewFolderId, cancellationToken)
+                .ConfigureAwait(false);
+            if (document is null)
+            {
+                return TypedResults.Problem(
+                    $"Document '{id}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(document.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+    }
+
+    private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> TrashAsync(
+        Guid id,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Document? document = await documents.TrashAsync(id, cancellationToken).ConfigureAwait(false);
+            if (document is null)
+            {
+                return TypedResults.Problem(
+                    $"Document '{id}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(document.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+    }
+}
