@@ -14,13 +14,33 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="Dashboards">Dashboards embedded on the detail header.</param>
 /// <param name="DefaultViewId">Resolved default <c>EntityView</c> id per ADR-049's 5-tier resolver, or <see langword="null"/> when none applies.</param>
 /// <param name="ListLayouts">Alternative list-view layouts (kanban, …) the entity exposes — drives the EntityListViewSwitcher tabs.</param>
+/// <param name="HeaderActions">Compact references to actions the entity opted into the list-page header via <c>OnListHeader()</c>. Pinned above the layout tabs (Odoo-style action bar) — entity-scope, no <c>{id}</c> placeholder. Already permission-filtered.</param>
 public sealed record EntityCollectionsSection(
     EntityCollectionReference? Query,
     EntityCollectionReference? Export,
     IReadOnlyList<EntityCollectionReference> Metrics,
     IReadOnlyList<EntityCollectionReference> Dashboards,
     Guid? DefaultViewId,
-    IReadOnlyList<EntityListLayoutManifest> ListLayouts);
+    IReadOnlyList<EntityListLayoutManifest> ListLayouts,
+    IReadOnlyList<EntityHeaderActionManifest> HeaderActions);
+
+/// <summary>
+/// Compact reference to one action pinned on the list-page header
+/// (entity-scope, surfaced above the list / kanban / gallery / calendar
+/// tabs). Same wire-shape philosophy as
+/// <see cref="EntityKanbanCardActionManifest"/> — the renderer looks up
+/// the full descriptor (URL template, HTTP method, confirmation key)
+/// in the entity's <c>Actions</c> facet via <see cref="Name"/>.
+/// </summary>
+/// <param name="Name">Stable action name — matches the entry in the entity's <c>Actions</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the user-facing label (button caption).</param>
+/// <param name="Icon">Icon name from the catalog.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntityHeaderActionManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ContributorAssemblyName);
 
 /// <summary>
 /// Reference to one external declarative primitive (Query / Export / Metric / Dashboard
@@ -60,11 +80,27 @@ public sealed record EntityListLayoutManifest(
 /// <param name="EndPropertyName">Entity property carrying the event end. <see langword="null"/> for point-in-time markers.</param>
 /// <param name="TitlePropertyName">Entity property used as the event headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
 /// <param name="ColorByPropertyName">Entity property used to bucket events into colour groups, or <see langword="null"/> for theme default.</param>
+/// <param name="Actions">Compact references to the entity's actions that opted into calendar tiles via <c>OnCalendarTile()</c>. Already permission-filtered.</param>
 public sealed record EntityCalendarLayoutManifest(
     string StartPropertyName,
     string? EndPropertyName,
     string? TitlePropertyName,
-    string? ColorByPropertyName);
+    string? ColorByPropertyName,
+    IReadOnlyList<EntityCalendarTileActionManifest> Actions);
+
+/// <summary>
+/// Compact reference to one action pinned on a calendar tile. Same
+/// wire-shape philosophy as <see cref="EntityKanbanCardActionManifest"/>.
+/// </summary>
+/// <param name="Name">Stable action name — matches the entry in the entity's <c>Actions</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the user-facing label (rendered as tooltip on the icon-button).</param>
+/// <param name="Icon">Icon name from the catalog.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntityCalendarTileActionManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ContributorAssemblyName);
 
 /// <summary>
 /// Gallery-specific layout configuration carried in the manifest. Property
@@ -78,12 +114,28 @@ public sealed record EntityCalendarLayoutManifest(
 /// <param name="SubtitlePropertyName">Optional secondary line under the title, or <see langword="null"/> for none.</param>
 /// <param name="GroupByPropertyName">Optional grouping property — when set, the renderer paints one titled section per distinct value instead of a flat grid. <see langword="null"/> for ungrouped flat layout.</param>
 /// <param name="CardSize">Card size — drives CSS-grid track sizing in the renderer.</param>
+/// <param name="Actions">Compact references to the entity's actions that opted into gallery cards via <c>OnGalleryCard()</c>. Already permission-filtered.</param>
 public sealed record EntityGalleryLayoutManifest(
     string ImagePropertyName,
     string? TitlePropertyName,
     string? SubtitlePropertyName,
     string? GroupByPropertyName,
-    GalleryCardSize CardSize);
+    GalleryCardSize CardSize,
+    IReadOnlyList<EntityGalleryCardActionManifest> Actions);
+
+/// <summary>
+/// Compact reference to one action pinned on a gallery card. Same
+/// wire-shape philosophy as <see cref="EntityKanbanCardActionManifest"/>.
+/// </summary>
+/// <param name="Name">Stable action name — matches the entry in the entity's <c>Actions</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the user-facing label (rendered as tooltip on the icon-button).</param>
+/// <param name="Icon">Icon name from the catalog.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntityGalleryCardActionManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ContributorAssemblyName);
 
 /// <summary>Kanban-specific layout configuration carried in the manifest.</summary>
 /// <param name="GroupByPropertyName">Entity property used to bucket rows into columns.</param>

@@ -866,4 +866,190 @@ public sealed class EntityManifestComposerTests
 
         manifest.Collections!.ListLayouts.Single().Kanban!.Card.Actions.ShouldBeEmpty();
     }
+
+    // ──── Gallery / Calendar / Header action surfaces (Odoo-style action bar) ────
+
+    [Fact]
+    public void Compose_gallery_card_pins_actions_that_opted_in()
+    {
+        Granit.Entities.Layouts.GalleryLayoutDescriptor gallery = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Gallery,
+            ImagePropertyName = "Cover",
+        };
+
+        Granit.Entities.Actions.EntityActionDescriptor pinned = new(
+            Name: "quick-share",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: "Parties:Action.Share",
+            Icon: "share",
+            Order: 0,
+            RequiresPermission: null,
+            UrlTemplate: "/api/parties/{id}/share",
+            HttpMethod: "POST",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnGalleryCard: true);
+
+        Granit.Entities.Actions.EntityActionDescriptor unpinned = pinned with { Name = "void", ShowOnGalleryCard = false };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [gallery])
+            with
+        { Actions = [pinned, unpinned] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityGalleryCardActionManifest only = manifest.Collections!
+            .ListLayouts.Single().Gallery!.Actions.ShouldHaveSingleItem();
+        only.Name.ShouldBe("quick-share");
+        only.Icon.ShouldBe("share");
+    }
+
+    [Fact]
+    public void Compose_gallery_card_drops_pinned_action_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Layouts.GalleryLayoutDescriptor gallery = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Gallery,
+            ImagePropertyName = "Cover",
+        };
+
+        Granit.Entities.Actions.EntityActionDescriptor gated = new(
+            Name: "void",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: null, Icon: "ban", Order: 0,
+            RequiresPermission: "Parties.Parties.Manage",
+            UrlTemplate: "/api/parties/{id}/void", HttpMethod: "POST",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnGalleryCard: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [gallery])
+            with
+        { Actions = [gated] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.ListLayouts.Single().Gallery!.Actions.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compose_calendar_tile_pins_actions_that_opted_in()
+    {
+        Granit.Entities.Layouts.CalendarLayoutDescriptor calendar = new()
+        {
+            Kind = Granit.Entities.Layouts.EntityListLayoutKind.Calendar,
+            StartPropertyName = "StartsAt",
+        };
+
+        Granit.Entities.Actions.EntityActionDescriptor pinned = new(
+            Name: "join-meeting",
+            Kind: Granit.Entities.Actions.EntityActionKind.Navigate,
+            DisplayKey: "Meetings:Action.Join",
+            Icon: "video",
+            Order: 0,
+            RequiresPermission: null,
+            UrlTemplate: "/meetings/{id}/join",
+            HttpMethod: null,
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnCalendarTile: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor(listLayouts: [calendar])
+            with
+        { Actions = [pinned] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntityCalendarTileActionManifest only = manifest.Collections!
+            .ListLayouts.Single().Calendar!.Actions.ShouldHaveSingleItem();
+        only.Name.ShouldBe("join-meeting");
+        only.Icon.ShouldBe("video");
+    }
+
+    [Fact]
+    public void Compose_emits_HeaderActions_for_actions_pinned_via_OnListHeader()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor importAction = new(
+            Name: "import",
+            Kind: Granit.Entities.Actions.EntityActionKind.Navigate,
+            DisplayKey: "DataExchange:Action.Import",
+            Icon: "upload",
+            Order: 0,
+            RequiresPermission: null,
+            UrlTemplate: "/import?entity=Party",
+            HttpMethod: null,
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: "Granit.DataExchange",
+            ShowOnListHeader: true);
+
+        Granit.Entities.Actions.EntityActionDescriptor rowOnly = importAction with
+        {
+            Name = "void",
+            ShowOnListHeader = false,
+            UrlTemplate = "/api/parties/{id}/void",
+            Kind = Granit.Entities.Actions.EntityActionKind.ApiCall,
+            HttpMethod = "POST",
+        };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor() with
+        { Actions = [importAction, rowOnly] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        // Only the OnListHeader-opted-in action surfaces in HeaderActions;
+        // row-level actions stay in the top-level Actions facet but are
+        // absent from this compact list.
+        EntityHeaderActionManifest only = manifest.Collections!
+            .HeaderActions.ShouldHaveSingleItem();
+        only.Name.ShouldBe("import");
+        only.Icon.ShouldBe("upload");
+        only.ContributorAssemblyName.ShouldBe("Granit.DataExchange");
+    }
+
+    [Fact]
+    public void Compose_HeaderActions_drops_pinned_action_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor gated = new(
+            Name: "import",
+            Kind: Granit.Entities.Actions.EntityActionKind.Navigate,
+            DisplayKey: null, Icon: "upload", Order: 0,
+            RequiresPermission: "DataExchange.Imports.Execute",
+            UrlTemplate: "/import?entity=Party", HttpMethod: null,
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnListHeader: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor() with
+        { Actions = [gated] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.HeaderActions.ShouldBeEmpty();
+    }
 }

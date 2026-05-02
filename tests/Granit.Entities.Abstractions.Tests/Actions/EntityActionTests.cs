@@ -167,4 +167,68 @@ public sealed class EntityActionTests
                     .WorkflowTransition("Archived")
                     .Icon("archive"));
     }
+
+    [Fact]
+    public void Surface_opt_ins_default_false_and_opt_in_sets_flags()
+    {
+        EntityDefinitionDescriptor d = new SurfacesPinnedDefinition().Descriptor;
+
+        EntityActionDescriptor gallery = d.Actions.Single(a => a.Name == "share");
+        gallery.ShowOnGalleryCard.ShouldBeTrue();
+        gallery.ShowOnCalendarTile.ShouldBeFalse();
+        gallery.ShowOnKanbanCard.ShouldBeFalse();
+        gallery.ShowOnListHeader.ShouldBeFalse();
+
+        EntityActionDescriptor calendar = d.Actions.Single(a => a.Name == "join");
+        calendar.ShowOnCalendarTile.ShouldBeTrue();
+        calendar.ShowOnGalleryCard.ShouldBeFalse();
+
+        EntityActionDescriptor header = d.Actions.Single(a => a.Name == "import");
+        header.ShowOnListHeader.ShouldBeTrue();
+        header.UrlTemplate.ShouldBe("/import?entity=Order");
+    }
+
+    [Fact]
+    public void OnListHeader_rejects_action_with_id_placeholder_in_url()
+    {
+        // Header actions are entity-scope; an {id} placeholder cannot
+        // expand to anything useful since no row is selected when the
+        // header bar fires. Caught at host startup, not at runtime.
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            _ = new InvalidHeaderActionDefinition().Descriptor);
+
+        ex.Message.ShouldContain("OnListHeader");
+        ex.Message.ShouldContain("{id}");
+    }
+
+    private sealed class SurfacesPinnedDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.SurfacesPinned";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .Action("share", a => a
+                    .ApiCall("POST", "/api/v1/orders/{id}/share")
+                    .Icon("share")
+                    .OnGalleryCard())
+                .Action("join", a => a
+                    .Navigate("/meetings/{id}/join")
+                    .Icon("video")
+                    .OnCalendarTile())
+                .Action("import", a => a
+                    .Navigate("/import?entity=Order")
+                    .Icon("upload")
+                    .OnListHeader());
+    }
+
+    private sealed class InvalidHeaderActionDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.InvalidHeader";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder.Action("import", a => a
+                .ApiCall("POST", "/api/v1/orders/{id}/import")  // {id} not allowed for header
+                .Icon("upload")
+                .OnListHeader());
+    }
 }

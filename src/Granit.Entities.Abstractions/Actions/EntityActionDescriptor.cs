@@ -18,6 +18,9 @@ namespace Granit.Entities.Actions;
 /// <param name="WorkflowTransitionName">Name of the target workflow state for <see cref="EntityActionKind.WorkflowTransition"/>.</param>
 /// <param name="ContributorAssemblyName">Name of the contributing assembly. <see langword="null"/> for intra-module declarations.</param>
 /// <param name="ShowOnKanbanCard">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's kanban tile (Phase 2.B.2). Off by default — only the actions the contributor explicitly opts into via <c>OnKanbanCard()</c> are pinned, since kanban tiles have far less surface than the detail header.</param>
+/// <param name="ShowOnGalleryCard">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's gallery card. Off by default — same surface-budget rationale as <see cref="ShowOnKanbanCard"/>.</param>
+/// <param name="ShowOnCalendarTile">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's calendar tile. Off by default — calendar tiles are smaller than kanban cards so curate carefully.</param>
+/// <param name="ShowOnListHeader">When <see langword="true"/>, the action is pinned on the list-page header (above the list / kanban / gallery / calendar tabs), not on individual rows. Use for entity-scope actions like <c>Import</c>, <c>Export</c>, <c>BulkArchive</c> — the URL template must NOT carry a <c>{id}</c> placeholder since no row is selected. Mirrors Odoo's top-of-list action bar.</param>
 public sealed record EntityActionDescriptor(
     string Name,
     EntityActionKind Kind,
@@ -30,4 +33,7 @@ public sealed record EntityActionDescriptor(
     string? ConfirmationKey,
     string? WorkflowTransitionName,
     string? ContributorAssemblyName,
-    bool ShowOnKanbanCard = false);
+    bool ShowOnKanbanCard = false,
+    bool ShowOnGalleryCard = false,
+    bool ShowOnCalendarTile = false,
+    bool ShowOnListHeader = false);

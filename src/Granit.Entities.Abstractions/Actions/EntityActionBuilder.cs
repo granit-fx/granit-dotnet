@@ -25,6 +25,9 @@ public sealed class EntityActionBuilder<TEntity>
     private string? _confirmationKey;
     private string? _workflowTransitionName;
     private bool _showOnKanbanCard;
+    private bool _showOnGalleryCard;
+    private bool _showOnCalendarTile;
+    private bool _showOnListHeader;
 
     internal EntityActionBuilder(string name, string? contributorAssemblyName = null)
     {
@@ -154,6 +157,44 @@ public sealed class EntityActionBuilder<TEntity>
         return this;
     }
 
+    /// <summary>
+    /// Pins this action as a compact icon-button on the source entity's
+    /// gallery card. Same surface-budget rationale as
+    /// <see cref="OnKanbanCard"/> — gallery cards have less room than the
+    /// detail header, so only opt in for the at-a-glance actions a user
+    /// genuinely triggers from a card preview.
+    /// </summary>
+    public EntityActionBuilder<TEntity> OnGalleryCard()
+    {
+        _showOnGalleryCard = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Pins this action as a compact icon-button on the source entity's
+    /// calendar tile. Calendar tiles are smaller than kanban or gallery
+    /// cards — curate even more carefully (typical use: a one-click
+    /// "Join meeting" / "Mark done" on a per-event tile).
+    /// </summary>
+    public EntityActionBuilder<TEntity> OnCalendarTile()
+    {
+        _showOnCalendarTile = true;
+        return this;
+    }
+
+    /// <summary>
+    /// Pins this action on the list-page header (above the
+    /// list / kanban / gallery / calendar tabs), not on individual rows.
+    /// Use for entity-scope actions like Import, Export, BulkArchive —
+    /// the URL template MUST NOT carry a <c>{id}</c> placeholder since no
+    /// row is selected. Mirrors Odoo's top-of-list action bar.
+    /// </summary>
+    public EntityActionBuilder<TEntity> OnListHeader()
+    {
+        _showOnListHeader = true;
+        return this;
+    }
+
     internal EntityActionDescriptor Build()
     {
         // Kind-specific guards: invariants the fluent shortcuts can't catch on
@@ -164,6 +205,17 @@ public sealed class EntityActionBuilder<TEntity>
             throw new InvalidOperationException(
                 $"Action '{_name}' must declare a URL via ApiCall(...) / Download(...) / Navigate(...) "
                 + "or be a WorkflowTransition. Bare actions are not allowed.");
+        }
+
+        // List-header actions are entity-scope — a {id} placeholder would
+        // expand to nothing useful since no row is selected when the
+        // header bar fires. Catch the misconfiguration at build time
+        // (host startup) instead of letting it ship a broken URL.
+        if (_showOnListHeader && _urlTemplate is { } template && template.Contains("{id}", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(
+                $"Action '{_name}' is pinned on the list header (OnListHeader) but its URL template contains '{{id}}'. "
+                + "Header actions are entity-scope; remove the placeholder or surface this action on rows / cards instead.");
         }
 
         return new EntityActionDescriptor(
@@ -178,6 +230,9 @@ public sealed class EntityActionBuilder<TEntity>
             ConfirmationKey: _confirmationKey,
             WorkflowTransitionName: _workflowTransitionName,
             ContributorAssemblyName: _contributorAssemblyName,
-            ShowOnKanbanCard: _showOnKanbanCard);
+            ShowOnKanbanCard: _showOnKanbanCard,
+            ShowOnGalleryCard: _showOnGalleryCard,
+            ShowOnCalendarTile: _showOnCalendarTile,
+            ShowOnListHeader: _showOnListHeader);
     }
 }

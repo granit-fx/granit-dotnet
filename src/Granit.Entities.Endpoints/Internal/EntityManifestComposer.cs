@@ -362,7 +362,13 @@ internal static class EntityManifestComposer
 
         IReadOnlyList<EntityListLayoutManifest> layouts = ComposeListLayouts(d.ListLayouts, d.Relations, d.Actions, granted);
 
-        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts);
+        IReadOnlyList<EntityHeaderActionManifest> headerActions = [.. d.Actions
+            .Where(a => a.ShowOnListHeader && (a.RequiresPermission is null || granted.Contains(a.RequiresPermission)))
+            .OrderBy(a => a.Order)
+            .Select(a => new EntityHeaderActionManifest(
+                a.Name, a.DisplayKey, a.Icon, a.ContributorAssemblyName))];
+
+        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts, headerActions);
     }
 
     private static List<EntityListLayoutManifest> ComposeListLayouts(
@@ -388,13 +394,13 @@ internal static class EntityManifestComposer
 
             EntityCalendarLayoutManifest? calendar = layout switch
             {
-                CalendarLayoutDescriptor c => ComposeCalendar(c),
+                CalendarLayoutDescriptor c => ComposeCalendar(c, actions, granted),
                 _ => null,
             };
 
             EntityGalleryLayoutManifest? gallery = layout switch
             {
-                GalleryLayoutDescriptor g => ComposeGallery(g),
+                GalleryLayoutDescriptor g => ComposeGallery(g, actions, granted),
                 _ => null,
             };
 
@@ -416,18 +422,44 @@ internal static class EntityManifestComposer
         return layouts;
     }
 
-    private static EntityCalendarLayoutManifest ComposeCalendar(CalendarLayoutDescriptor descriptor) =>
-        new(descriptor.StartPropertyName,
+    private static EntityCalendarLayoutManifest ComposeCalendar(
+        CalendarLayoutDescriptor descriptor,
+        IReadOnlyList<EntityActionDescriptor> actions,
+        IReadOnlySet<string> granted)
+    {
+        IReadOnlyList<EntityCalendarTileActionManifest> pinnedActions = [.. actions
+            .Where(a => a.ShowOnCalendarTile && (a.RequiresPermission is null || granted.Contains(a.RequiresPermission)))
+            .OrderBy(a => a.Order)
+            .Select(a => new EntityCalendarTileActionManifest(
+                a.Name, a.DisplayKey, a.Icon, a.ContributorAssemblyName))];
+
+        return new EntityCalendarLayoutManifest(
+            descriptor.StartPropertyName,
             descriptor.EndPropertyName,
             descriptor.TitlePropertyName,
-            descriptor.ColorByPropertyName);
+            descriptor.ColorByPropertyName,
+            pinnedActions);
+    }
 
-    private static EntityGalleryLayoutManifest ComposeGallery(GalleryLayoutDescriptor descriptor) =>
-        new(descriptor.ImagePropertyName,
+    private static EntityGalleryLayoutManifest ComposeGallery(
+        GalleryLayoutDescriptor descriptor,
+        IReadOnlyList<EntityActionDescriptor> actions,
+        IReadOnlySet<string> granted)
+    {
+        IReadOnlyList<EntityGalleryCardActionManifest> pinnedActions = [.. actions
+            .Where(a => a.ShowOnGalleryCard && (a.RequiresPermission is null || granted.Contains(a.RequiresPermission)))
+            .OrderBy(a => a.Order)
+            .Select(a => new EntityGalleryCardActionManifest(
+                a.Name, a.DisplayKey, a.Icon, a.ContributorAssemblyName))];
+
+        return new EntityGalleryLayoutManifest(
+            descriptor.ImagePropertyName,
             descriptor.TitlePropertyName,
             descriptor.SubtitlePropertyName,
             descriptor.GroupByPropertyName,
-            descriptor.CardSize);
+            descriptor.CardSize,
+            pinnedActions);
+    }
 
     private static EntityKanbanLayoutManifest? ComposeKanban(
         KanbanLayoutDescriptor descriptor,
