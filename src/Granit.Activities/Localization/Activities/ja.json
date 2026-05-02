@@ -4,6 +4,22 @@
     "Activity:ToDo": "ToDo",
     "Activity:Call": "通話",
     "Activity:Meeting": "会議",
-    "Activity:Email": "メール"
+    "Activity:Email": "メール",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "未完了アクティビティ",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "期限切れアクティビティ",
+
+    "Activities.Columns.Tenant": "テナント",
+    "Activities.Columns.EntityType": "ホストエンティティ",
+    "Activities.Columns.EntityId": "ホスト ID",
+    "Activities.Columns.Type": "タイプ",
+    "Activities.Columns.Status": "ステータス",
+    "Activities.Columns.AssignedToUserId": "担当者",
+    "Activities.Columns.CreatedByUserId": "作成者",
+    "Activities.Columns.CompletedByUserId": "完了者",
+    "Activities.Columns.DueAt": "期限",
+    "Activities.Columns.CompletedAt": "完了日時",
+    "Activities.Columns.OverdueNotifiedAt": "期限切れ通知日時",
+    "Activities.Columns.Description": "説明"
   }
 }

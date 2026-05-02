@@ -4,6 +4,22 @@
     "Activity:ToDo": "待办事项",
     "Activity:Call": "通话",
     "Activity:Meeting": "会议",
-    "Activity:Email": "电子邮件"
+    "Activity:Email": "电子邮件",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "未完成活动",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "逾期活动",
+
+    "Activities.Columns.Tenant": "租户",
+    "Activities.Columns.EntityType": "宿主实体",
+    "Activities.Columns.EntityId": "宿主 ID",
+    "Activities.Columns.Type": "类型",
+    "Activities.Columns.Status": "状态",
+    "Activities.Columns.AssignedToUserId": "指派给",
+    "Activities.Columns.CreatedByUserId": "创建人",
+    "Activities.Columns.CompletedByUserId": "完成人",
+    "Activities.Columns.DueAt": "截止时间",
+    "Activities.Columns.CompletedAt": "完成时间",
+    "Activities.Columns.OverdueNotifiedAt": "逾期通知时间",
+    "Activities.Columns.Description": "描述"
   }
 }

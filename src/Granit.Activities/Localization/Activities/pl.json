@@ -4,6 +4,22 @@
     "Activity:ToDo": "Do zrobienia",
     "Activity:Call": "Połączenie",
     "Activity:Meeting": "Spotkanie",
-    "Activity:Email": "E-mail"
+    "Activity:Email": "E-mail",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "Otwarte aktywności",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "Zaległe aktywności",
+
+    "Activities.Columns.Tenant": "Tenant",
+    "Activities.Columns.EntityType": "Encja nadrzędna",
+    "Activities.Columns.EntityId": "Id nadrzędne",
+    "Activities.Columns.Type": "Typ",
+    "Activities.Columns.Status": "Status",
+    "Activities.Columns.AssignedToUserId": "Przypisana do",
+    "Activities.Columns.CreatedByUserId": "Utworzona przez",
+    "Activities.Columns.CompletedByUserId": "Zamknięta przez",
+    "Activities.Columns.DueAt": "Termin",
+    "Activities.Columns.CompletedAt": "Zamknięta dnia",
+    "Activities.Columns.OverdueNotifiedAt": "Zgłoszona jako zaległa dnia",
+    "Activities.Columns.Description": "Opis"
   }
 }

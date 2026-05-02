@@ -4,6 +4,22 @@
     "Activity:ToDo": "Tarea",
     "Activity:Call": "Llamada",
     "Activity:Meeting": "Reunión",
-    "Activity:Email": "Correo electrónico"
+    "Activity:Email": "Correo electrónico",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "Actividades abiertas",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "Actividades vencidas",
+
+    "Activities.Columns.Tenant": "Tenant",
+    "Activities.Columns.EntityType": "Entidad anfitriona",
+    "Activities.Columns.EntityId": "Id anfitrión",
+    "Activities.Columns.Type": "Tipo",
+    "Activities.Columns.Status": "Estado",
+    "Activities.Columns.AssignedToUserId": "Asignada a",
+    "Activities.Columns.CreatedByUserId": "Creada por",
+    "Activities.Columns.CompletedByUserId": "Cerrada por",
+    "Activities.Columns.DueAt": "Vencimiento",
+    "Activities.Columns.CompletedAt": "Cerrada el",
+    "Activities.Columns.OverdueNotifiedAt": "Notificada como vencida el",
+    "Activities.Columns.Description": "Descripción"
   }
 }

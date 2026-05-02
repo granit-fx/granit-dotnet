@@ -4,6 +4,22 @@
     "Activity:ToDo": "कार्य",
     "Activity:Call": "कॉल",
     "Activity:Meeting": "मीटिंग",
-    "Activity:Email": "ईमेल"
+    "Activity:Email": "ईमेल",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "खुली गतिविधियाँ",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "विलंबित गतिविधियाँ",
+
+    "Activities.Columns.Tenant": "टेनेंट",
+    "Activities.Columns.EntityType": "होस्ट इकाई",
+    "Activities.Columns.EntityId": "होस्ट आईडी",
+    "Activities.Columns.Type": "प्रकार",
+    "Activities.Columns.Status": "स्थिति",
+    "Activities.Columns.AssignedToUserId": "सौंपी गई",
+    "Activities.Columns.CreatedByUserId": "बनाई गई द्वारा",
+    "Activities.Columns.CompletedByUserId": "पूर्ण द्वारा",
+    "Activities.Columns.DueAt": "नियत तिथि",
+    "Activities.Columns.CompletedAt": "पूर्ण होने का समय",
+    "Activities.Columns.OverdueNotifiedAt": "विलंब अधिसूचित समय",
+    "Activities.Columns.Description": "विवरण"
   }
 }

@@ -4,6 +4,22 @@
     "Activity:ToDo": "Att göra",
     "Activity:Call": "Samtal",
     "Activity:Meeting": "Möte",
-    "Activity:Email": "E-post"
+    "Activity:Email": "E-post",
+
+    "Metric:Granit.Activities.OpenActivityCountMetric": "Öppna aktiviteter",
+    "Metric:Granit.Activities.OverdueActivityCountMetric": "Försenade aktiviteter",
+
+    "Activities.Columns.Tenant": "Tenant",
+    "Activities.Columns.EntityType": "Värdentitet",
+    "Activities.Columns.EntityId": "Värd-id",
+    "Activities.Columns.Type": "Typ",
+    "Activities.Columns.Status": "Status",
+    "Activities.Columns.AssignedToUserId": "Tilldelad till",
+    "Activities.Columns.CreatedByUserId": "Skapad av",
+    "Activities.Columns.CompletedByUserId": "Avslutad av",
+    "Activities.Columns.DueAt": "Förfallodatum",
+    "Activities.Columns.CompletedAt": "Avslutad",
+    "Activities.Columns.OverdueNotifiedAt": "Försenad notifierad",
+    "Activities.Columns.Description": "Beskrivning"
   }
 }
