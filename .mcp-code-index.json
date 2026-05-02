@@ -18698,6 +18698,15 @@
       "members": []
     },
     {
+      "name": "DownloadUrlResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DownloadUrlResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DownloadUrlResponse.cs",
+      "line": 14,
+      "members": []
+    },
+    {
       "name": "FinalizeUploadRequest",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.FinalizeUploadRequest",
       "kind": "record",
@@ -18928,6 +18937,15 @@
       "members": []
     },
     {
+      "name": "DocumentDownloadedEvent",
+      "fqn": "Granit.Documents.Events.DocumentDownloadedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentDownloadedEvent.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "DocumentMovedEvent",
       "fqn": "Granit.Documents.Events.DocumentMovedEvent",
       "kind": "record",
@@ -19095,6 +19113,12 @@
           "kind": "method",
           "signature": "FinalizeUploadAsync(Guid blobId, Guid? folderId, Guid ownerUserId, string name, string? description = null, string? commitMessage = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<Document>"
+        },
+        {
+          "name": "RequestDownloadUrlAsync",
+          "kind": "method",
+          "signature": "RequestDownloadUrlAsync(Guid documentId, Guid? versionId, Guid requestedByUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedDownloadUrl?>"
         }
       ]
     },

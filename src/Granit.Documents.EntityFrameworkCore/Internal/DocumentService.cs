@@ -141,4 +141,64 @@ internal sealed class DocumentService(
         metrics.RecordUpload(currentTenant.Id?.ToString());
         return document;
     }
+
+    /// <inheritdoc />
+    public async Task<PresignedDownloadUrl?> RequestDownloadUrlAsync(
+        Guid documentId,
+        Guid? versionId,
+        Guid requestedByUserId,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == documentId, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+        if (document.Status != DocumentStatus.Active)
+        {
+            throw new InvalidOperationException(
+                $"Document {documentId} is not active (status: {document.Status}).");
+        }
+
+        // Resolve target version: explicit override or the current pointer.
+        Guid targetVersionId = versionId ?? document.CurrentVersionId
+            ?? throw new InvalidOperationException(
+                $"Document {documentId} has no current version yet — finalize an upload first.");
+
+        DocumentVersion? version = await context.DocumentVersions
+            .FirstOrDefaultAsync(
+                v => v.Id == targetVersionId && v.DocumentId == document.Id,
+                cancellationToken)
+            .ConfigureAwait(false);
+        if (version is null)
+        {
+            return null;
+        }
+
+        // Issue the presigned URL via BlobStorage.
+        PresignedDownloadUrl url = await blobStorage
+            .CreateDownloadUrlAsync(ContainerName, version.BlobDescriptorId, options: null, cancellationToken)
+            .ConfigureAwait(false);
+
+        // Audit + metrics. The DocumentDownloadedEvent flows through Granit.Auditing for
+        // the ISO 27001 A.12.4.1 trail.
+        await localEventBus.PublishAsync(
+            new DocumentDownloadedEvent(
+                document.Id,
+                version.Id,
+                document.TenantId,
+                requestedByUserId,
+                clock.Now,
+                url.ExpiresAt),
+            cancellationToken).ConfigureAwait(false);
+
+        metrics.RecordDownload(currentTenant.Id?.ToString());
+        return url;
+    }
 }
