@@ -114,6 +114,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Activities.Notifications",
+      "deps": [
+        "Granit.Activities",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Analytics",
       "deps": [
         "Granit",
@@ -4849,12 +4858,30 @@
       "members": []
     },
     {
+      "name": "ActivityOverdueEvent",
+      "fqn": "Granit.Activities.Events.ActivityOverdueEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityOverdueEvent.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "ActivityReassignedEvent",
       "fqn": "Granit.Activities.Events.ActivityReassignedEvent",
       "kind": "record",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Events/ActivityReassignedEvent.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "ActivityReminderDueEvent",
+      "fqn": "Granit.Activities.Events.ActivityReminderDueEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityReminderDueEvent.cs",
+      "line": 17,
       "members": []
     },
     {
@@ -4940,6 +4967,160 @@
           "returnType": "IEnumerable<ActivityType>"
         }
       ]
+    },
+    {
+      "name": "ActivityAssignedNotificationData",
+      "fqn": "Granit.Activities.Notifications.ActivityAssignedNotificationData",
+      "kind": "record",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityAssignedNotificationType.cs",
+      "line": 31,
+      "members": []
+    },
+    {
+      "name": "ActivityAssignedNotificationType",
+      "fqn": "Granit.Activities.Notifications.ActivityAssignedNotificationType",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityAssignedNotificationType.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ActivityAssignedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "ActivityOverdueNotificationData",
+      "fqn": "Granit.Activities.Notifications.ActivityOverdueNotificationData",
+      "kind": "record",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityOverdueNotificationType.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "ActivityOverdueNotificationType",
+      "fqn": "Granit.Activities.Notifications.ActivityOverdueNotificationType",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityOverdueNotificationType.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ActivityOverdueNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "ActivityReminderNotificationData",
+      "fqn": "Granit.Activities.Notifications.ActivityReminderNotificationData",
+      "kind": "record",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityReminderNotificationType.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "ActivityReminderNotificationType",
+      "fqn": "Granit.Activities.Notifications.ActivityReminderNotificationType",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/ActivityReminderNotificationType.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ActivityReminderNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "GranitActivitiesNotificationsModule",
+      "fqn": "Granit.Activities.Notifications.GranitActivitiesNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/GranitActivitiesNotificationsModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ActivityAssignedHandler",
+      "fqn": "Granit.Activities.Notifications.Handlers.ActivityAssignedHandler",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/Handlers/ActivityAssignedHandler.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "ActivityOverdueHandler",
+      "fqn": "Granit.Activities.Notifications.Handlers.ActivityOverdueHandler",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/Handlers/ActivityOverdueHandler.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "ActivityReminderHandler",
+      "fqn": "Granit.Activities.Notifications.Handlers.ActivityReminderHandler",
+      "kind": "class",
+      "project": "Granit.Activities.Notifications",
+      "file": "src/Granit.Activities.Notifications/Handlers/ActivityReminderHandler.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "StandardActivityTypeProvider",

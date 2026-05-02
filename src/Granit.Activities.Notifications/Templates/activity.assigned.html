@@ -1,0 +1,5 @@
+<title>You have a new {{ model.type }} activity</title>
+<p>Hi,</p>
+<p>A new <strong>{{ model.type }}</strong> activity has been assigned to you, due <strong>{{ model.due_at | date.to_string '%B %d, %Y at %H:%M UTC' }}</strong>.</p>
+<p>Reference: <code>{{ model.activity_id }}</code> on <code>{{ model.entity_type }}</code> #<code>{{ model.entity_id }}</code>.</p>
+<p>Open the activity in the application to add notes, reschedule, or mark it complete.</p>

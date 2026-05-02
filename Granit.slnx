@@ -103,6 +103,7 @@
     <Project Path="src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj" />
     <Project Path="src/Granit.Activities.Endpoints/Granit.Activities.Endpoints.csproj" />
     <Project Path="src/Granit.Activities.EntityFrameworkCore/Granit.Activities.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Activities.Notifications/Granit.Activities.Notifications.csproj" />
     <Project Path="src/Granit.Activities/Granit.Activities.csproj" />
     <Project Path="src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj" />
     <Project Path="src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj" />
@@ -468,6 +469,7 @@
     <Project Path="tests/Granit.Activities.Abstractions.Tests/Granit.Activities.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Activities.Endpoints.Tests/Granit.Activities.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Activities.EntityFrameworkCore.Tests/Granit.Activities.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Activities.Notifications.Tests/Granit.Activities.Notifications.Tests.csproj" />
     <Project Path="tests/Granit.Activities.Tests/Granit.Activities.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj" />
     <Project Path="tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj" />
