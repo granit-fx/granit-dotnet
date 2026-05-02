@@ -1,0 +1,9 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Activity:ToDo": "कार्य",
+    "Activity:Call": "कॉल",
+    "Activity:Meeting": "मीटिंग",
+    "Activity:Email": "ईमेल"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Activity:ToDo": "待办事项",
+    "Activity:Call": "通话",
+    "Activity:Meeting": "会议",
+    "Activity:Email": "电子邮件"
+  }
+}

@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Activities</PackageId>
+    <Description>Cross-entity polymorphic to-do module (ADR-046): Activity aggregate (polymorphic on EntityType + EntityId), ActivityStatus enum, lifecycle domain events, integration events for Wolverine outbox, and the runtime IActivityRegistry that aggregates IActivityTypeProvider contributions. Pull this from hosts that resolve and persist activities; module-side declarations only need Granit.Activities.Abstractions.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Activities.Tests" />
+    <InternalsVisibleTo Include="Granit.Activities.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Activities.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Activities.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Activities.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\**\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Activities.Abstractions\Granit.Activities.Abstractions.csproj" />
+    <ProjectReference Include="..\Granit.Localization\Granit.Localization.csproj" />
+  </ItemGroup>
+
+</Project>

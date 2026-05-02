@@ -79,6 +79,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Activities",
+      "deps": [
+        "Granit",
+        "Granit.Activities.Abstractions",
+        "Granit.Localization"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Activities.Abstractions",
       "deps": [
         "Granit"
@@ -4360,6 +4369,116 @@
       "members": []
     },
     {
+      "name": "Activity",
+      "fqn": "Granit.Activities.Domain.Activity",
+      "kind": "class",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Domain/Activity.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string entityType, Guid entityId, string type, Guid assignedToUserId, DateTimeOffset dueAt, IActivityRegistry registry, Guid? createdByUserId = null, string? description = null, Guid? tenantId = null)",
+          "returnType": "Activity"
+        },
+        {
+          "name": "EntityId",
+          "kind": "property",
+          "signature": "Guid EntityId",
+          "returnType": "Guid"
+        }
+      ]
+    },
+    {
+      "name": "ActivityStatus",
+      "fqn": "Granit.Activities.Domain.ActivityStatus",
+      "kind": "enum",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Domain/ActivityStatus.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivityAssignedEto",
+      "fqn": "Granit.Activities.Events.ActivityAssignedEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityAssignedEto.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ActivityAssignedEvent",
+      "fqn": "Granit.Activities.Events.ActivityAssignedEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityAssignedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "ActivityCancelledEvent",
+      "fqn": "Granit.Activities.Events.ActivityCancelledEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityCancelledEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivityCompletedEto",
+      "fqn": "Granit.Activities.Events.ActivityCompletedEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityCompletedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivityCompletedEvent",
+      "fqn": "Granit.Activities.Events.ActivityCompletedEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityCompletedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivityReassignedEvent",
+      "fqn": "Granit.Activities.Events.ActivityReassignedEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityReassignedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ActivityRescheduledEvent",
+      "fqn": "Granit.Activities.Events.ActivityRescheduledEvent",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityRescheduledEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivitiesServiceCollectionExtensions",
+      "fqn": "Granit.Activities.Extensions.ActivitiesServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Extensions/ActivitiesServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitActivities",
+          "kind": "method",
+          "signature": "AddGranitActivities(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "ActivityTypeServiceCollectionExtensions",
       "fqn": "Granit.Activities.Extensions.ActivityTypeServiceCollectionExtensions",
       "kind": "class",
@@ -4375,6 +4494,15 @@
       "project": "Granit.Activities.Abstractions",
       "file": "src/Granit.Activities.Abstractions/GranitActivitiesAbstractionsModule.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "GranitActivitiesModule",
+      "fqn": "Granit.Activities.GranitActivitiesModule",
+      "kind": "class",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/GranitActivitiesModule.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -19596,7 +19724,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 80,
+      "line": 81,
       "members": []
     },
     {
@@ -19614,7 +19742,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 139,
+      "line": 141,
       "members": []
     },
     {
@@ -19623,7 +19751,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 107,
+      "line": 109,
       "members": []
     },
     {
@@ -19632,7 +19760,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 123,
+      "line": 125,
       "members": []
     },
     {
@@ -19641,7 +19769,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 149,
+      "line": 151,
       "members": []
     },
     {
@@ -19650,7 +19778,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 91,
+      "line": 93,
       "members": []
     },
     {

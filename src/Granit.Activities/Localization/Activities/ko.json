@@ -1,0 +1,9 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Activity:ToDo": "할 일",
+    "Activity:Call": "통화",
+    "Activity:Meeting": "회의",
+    "Activity:Email": "이메일"
+  }
+}
