@@ -720,6 +720,101 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         persistedNumbers.Distinct().Count().ShouldBe(persistedNumbers.Count);
     }
 
+    // -------------------------------------------------------------------------
+    // F4.2 — ListVersionsAsync (paged history)
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task ListVersionsAsync_AfterFinalize_ReturnsSingleV1_FlaggedAsCurrent()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        DocumentVersionPage? page = await _sut.ListVersionsAsync(
+            seeded.Id, skip: 0, take: 50, TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(1);
+        page.CurrentVersionId.ShouldBe(seeded.CurrentVersionId);
+        DocumentVersion only = page.Versions.ShouldHaveSingleItem();
+        only.VersionNumber.ShouldBe(1);
+        only.Id.ShouldBe(seeded.CurrentVersionId!.Value);
+    }
+
+    [Fact]
+    public async Task ListVersionsAsync_MultipleVersions_OrderedDescending()
+    {
+        Document seeded = await SeedDocumentAsync();
+        for (int i = 2; i <= 4; i++)
+        {
+            var blobId = Guid.NewGuid();
+            StubBlobConfirmation(blobId);
+            await _sut.AppendVersionAsync(seeded.Id, blobId, OwnerId, $"v{i}",
+                TestContext.Current.CancellationToken);
+        }
+
+        DocumentVersionPage? page = await _sut.ListVersionsAsync(
+            seeded.Id, skip: 0, take: 50, TestContext.Current.CancellationToken);
+
+        page.ShouldNotBeNull();
+        page.TotalCount.ShouldBe(4);
+        int[] numbers = [.. page.Versions.Select(v => v.VersionNumber)];
+        numbers.ShouldBe([4, 3, 2, 1]);
+        // Latest version is the current pointer.
+        page.CurrentVersionId.ShouldBe(page.Versions[0].Id);
+    }
+
+    [Fact]
+    public async Task ListVersionsAsync_PagingSlicesResultSet()
+    {
+        Document seeded = await SeedDocumentAsync();
+        for (int i = 2; i <= 5; i++)
+        {
+            var blobId = Guid.NewGuid();
+            StubBlobConfirmation(blobId);
+            await _sut.AppendVersionAsync(seeded.Id, blobId, OwnerId, null,
+                TestContext.Current.CancellationToken);
+        }
+
+        DocumentVersionPage? firstPage = await _sut.ListVersionsAsync(
+            seeded.Id, skip: 0, take: 2, TestContext.Current.CancellationToken);
+        DocumentVersionPage? secondPage = await _sut.ListVersionsAsync(
+            seeded.Id, skip: 2, take: 2, TestContext.Current.CancellationToken);
+        DocumentVersionPage? thirdPage = await _sut.ListVersionsAsync(
+            seeded.Id, skip: 4, take: 2, TestContext.Current.CancellationToken);
+
+        firstPage.ShouldNotBeNull();
+        firstPage.TotalCount.ShouldBe(5);
+        firstPage.Versions.Select(v => v.VersionNumber).ShouldBe([5, 4]);
+
+        secondPage.ShouldNotBeNull();
+        secondPage.Versions.Select(v => v.VersionNumber).ShouldBe([3, 2]);
+
+        thirdPage.ShouldNotBeNull();
+        thirdPage.Versions.Select(v => v.VersionNumber).ShouldBe([1]);
+    }
+
+    [Fact]
+    public async Task ListVersionsAsync_MissingDocument_ReturnsNull()
+    {
+        DocumentVersionPage? page = await _sut.ListVersionsAsync(
+            Guid.NewGuid(), skip: 0, take: 50, TestContext.Current.CancellationToken);
+
+        page.ShouldBeNull();
+    }
+
+    [Theory]
+    [InlineData(-1, 10)]
+    [InlineData(0, 0)]
+    [InlineData(0, -1)]
+    public async Task ListVersionsAsync_InvalidPaging_Throws(int skip, int take)
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        await Should.ThrowAsync<ArgumentOutOfRangeException>(async () =>
+            await _sut.ListVersionsAsync(seeded.Id, skip, take,
+                TestContext.Current.CancellationToken));
+    }
+
     private sealed class TestDbContextFactory(DbContextOptions<DocumentsDbContext> options)
         : IDbContextFactory<DocumentsDbContext>
     {

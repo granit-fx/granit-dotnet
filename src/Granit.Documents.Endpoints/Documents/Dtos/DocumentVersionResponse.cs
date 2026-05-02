@@ -11,6 +11,12 @@ namespace Granit.Documents.Endpoints.Documents.Dtos;
 /// <param name="UploadedByUserId">User who finalised this version.</param>
 /// <param name="UploadedAt">UTC instant the version was finalised.</param>
 /// <param name="CommitMessage">Optional free-text changelog supplied by the uploader.</param>
+/// <param name="IsCurrent">
+/// <c>true</c> when this row matches the parent document's <c>CurrentVersionId</c>
+/// at the moment the page was rendered. The list endpoint computes it server-side;
+/// the append endpoint always returns <c>true</c> (a freshly-appended version is
+/// the new current).
+/// </param>
 public sealed record DocumentVersionResponse(
     Guid Id,
     Guid DocumentId,
@@ -21,4 +27,5 @@ public sealed record DocumentVersionResponse(
     string? ContentHash,
     Guid UploadedByUserId,
     DateTimeOffset UploadedAt,
-    string? CommitMessage);
+    string? CommitMessage,
+    bool IsCurrent);

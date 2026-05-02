@@ -74,9 +74,30 @@ public interface IDocumentService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Returns a paged slice of the document's version history, ordered by
+    /// <see cref="DocumentVersion.VersionNumber"/> descending (latest first), along with
+    /// the parent document's <see cref="Document.CurrentVersionId"/> so the HTTP mapper
+    /// can flag which row is the active version.
+    /// </summary>
+    /// <param name="documentId">Document whose history is requested.</param>
+    /// <param name="skip">Number of versions to skip (for pagination); must be ≥ 0.</param>
+    /// <param name="take">Maximum number of versions to return; must be &gt; 0.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// The page on success, or <c>null</c> when the document is not found or excluded by
+    /// the tenant filter. An empty <c>Versions</c> list with <c>TotalCount = 0</c> is
+    /// possible only for a document that has not yet had its first version finalised.
+    /// </returns>
+    Task<DocumentVersionPage?> ListVersionsAsync(
+        Guid documentId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Issues a presigned download URL for a document. Defaults to the document's
     /// <see cref="Document.CurrentVersionId"/>; an explicit <paramref name="versionId"/>
-    /// fetches a specific historical version (F4.2 list endpoint surfaces them).
+    /// fetches a specific historical version surfaced by <see cref="ListVersionsAsync"/>.
     /// </summary>
     /// <param name="documentId">Document to download.</param>
     /// <param name="versionId">Optional specific version. <c>null</c> resolves to <see cref="Document.CurrentVersionId"/>.</param>

@@ -266,6 +266,55 @@ internal sealed class DocumentService(
     }
 
     /// <inheritdoc />
+    public async Task<DocumentVersionPage?> ListVersionsAsync(
+        Guid documentId,
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        if (skip < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(skip), "skip must be non-negative.");
+        }
+        if (take <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(take), "take must be strictly positive.");
+        }
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        // Pull only the columns we need from Document — the version listing endpoint does
+        // not need the full aggregate, just the existence + current-version pointer.
+        var doc = await context.Documents
+            .Where(d => d.Id == documentId)
+            .Select(d => new { d.Id, d.CurrentVersionId })
+            .FirstOrDefaultAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (doc is null)
+        {
+            return null;
+        }
+
+        IQueryable<DocumentVersion> versionsQuery = context.DocumentVersions
+            .Where(v => v.DocumentId == documentId);
+
+        int totalCount = await versionsQuery
+            .CountAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        List<DocumentVersion> page = await versionsQuery
+            .OrderByDescending(v => v.VersionNumber)
+            .Skip(skip)
+            .Take(take)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return new DocumentVersionPage(page, totalCount, doc.CurrentVersionId);
+    }
+
+    /// <inheritdoc />
     public async Task<PresignedDownloadUrl?> RequestDownloadUrlAsync(
         Guid documentId,
         Guid? versionId,
