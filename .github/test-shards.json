@@ -187,6 +187,7 @@
         "tests/Granit.BackgroundJobs.Notifications.Tests",
         "tests/Granit.BackgroundJobs.Tests",
         "tests/Granit.BackgroundJobs.Wolverine.Tests",
+        "tests/Granit.Documents.EntityFrameworkCore.Tests",
         "tests/Granit.Documents.Tests",
         "tests/Granit.Events.Tests",
         "tests/Granit.Events.Wolverine.Tests",

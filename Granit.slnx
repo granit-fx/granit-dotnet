@@ -137,6 +137,7 @@
     <Project Path="src/Granit.DocumentGeneration.Excel/Granit.DocumentGeneration.Excel.csproj" />
     <Project Path="src/Granit.DocumentGeneration.Pdf/Granit.DocumentGeneration.Pdf.csproj" />
     <Project Path="src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj" />
+    <Project Path="src/Granit.Documents.EntityFrameworkCore/Granit.Documents.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Documents/Granit.Documents.csproj" />
     <Project Path="src/Granit.Features.Endpoints/Granit.Features.Endpoints.csproj" />
     <Project Path="src/Granit.Features.EntityFrameworkCore/Granit.Features.EntityFrameworkCore.csproj" />
@@ -497,6 +498,7 @@
     <Project Path="tests/Granit.DocumentGeneration.Excel.Tests/Granit.DocumentGeneration.Excel.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Pdf.Tests/Granit.DocumentGeneration.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj" />
+    <Project Path="tests/Granit.Documents.EntityFrameworkCore.Tests/Granit.Documents.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Tests/Granit.Documents.Tests.csproj" />
     <Project Path="tests/Granit.Features.Endpoints.Tests/Granit.Features.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Features.EntityFrameworkCore.Tests/Granit.Features.EntityFrameworkCore.Tests.csproj" />

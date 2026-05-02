@@ -856,6 +856,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -17967,6 +17975,63 @@
           "returnType": "Task<DocumentResult>"
         }
       ]
+    },
+    {
+      "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "DocumentsModelBuilderExtensions",
+      "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsModelBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "ConfigureDocumentsModule",
+          "kind": "method",
+          "signature": "ConfigureDocumentsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsDbProperties",
+      "fqn": "Granit.Documents.EntityFrameworkCore.GranitDocumentsDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsDbProperties.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.EntityFrameworkCore.GranitDocumentsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsEntityFrameworkCoreModule.cs",
+      "line": 26,
+      "members": []
     },
     {
       "name": "DocumentsServiceCollectionExtensions",
