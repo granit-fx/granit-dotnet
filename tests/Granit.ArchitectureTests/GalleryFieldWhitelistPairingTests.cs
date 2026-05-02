@@ -56,6 +56,7 @@ public sealed class GalleryFieldWhitelistPairingTests
             CheckProperty(gallery.ImagePropertyName, "ImageField", required: true);
             CheckProperty(gallery.TitlePropertyName, "TitleField");
             CheckProperty(gallery.SubtitlePropertyName, "SubtitleField");
+            CheckProperty(gallery.GroupByPropertyName, "GroupByField");
 
             void CheckProperty(string? propertyName, string dslName, bool required = false)
             {

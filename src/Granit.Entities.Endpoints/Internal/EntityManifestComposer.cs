@@ -387,6 +387,7 @@ internal static class EntityManifestComposer
         new(descriptor.ImagePropertyName,
             descriptor.TitlePropertyName,
             descriptor.SubtitlePropertyName,
+            descriptor.GroupByPropertyName,
             descriptor.CardSize);
 
     private static EntityKanbanLayoutManifest? ComposeKanban(
