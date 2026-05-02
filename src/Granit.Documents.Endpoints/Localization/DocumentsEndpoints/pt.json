@@ -1,0 +1,8 @@
+{
+  "culture": "pt",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Criar, renomear, mover e enviar pastas para a reciclagem",
+    "Permission:Documents.Folders.Read": "Ver pastas",
+    "PermissionGroup:Documents": "Documentos"
+  }
+}

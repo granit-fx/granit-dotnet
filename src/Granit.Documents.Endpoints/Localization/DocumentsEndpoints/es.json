@@ -1,0 +1,8 @@
+{
+  "culture": "es",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Crear, renombrar, mover y enviar carpetas a la papelera",
+    "Permission:Documents.Folders.Read": "Ver carpetas",
+    "PermissionGroup:Documents": "Documentos"
+  }
+}

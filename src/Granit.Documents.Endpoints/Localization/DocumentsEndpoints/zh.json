@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "创建、重命名、移动和回收文件夹",
+    "Permission:Documents.Folders.Read": "查看文件夹",
+    "PermissionGroup:Documents": "文档"
+  }
+}

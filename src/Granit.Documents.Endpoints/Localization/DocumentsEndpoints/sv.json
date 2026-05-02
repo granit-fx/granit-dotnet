@@ -1,0 +1,8 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Skapa, byta namn på, flytta och papperskorga mappar",
+    "Permission:Documents.Folders.Read": "Visa mappar",
+    "PermissionGroup:Documents": "Dokument"
+  }
+}

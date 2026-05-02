@@ -43,6 +43,10 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // index ux_documents_folders_one_root_per_tenant.
         builder.Services.AddScoped<IDocumentBootstrapService, DocumentBootstrapService>();
 
+        // Folder service (F2.3): EF Core-backed CRUD orchestration consumed by
+        // Granit.Documents.Endpoints.
+        builder.Services.AddScoped<IFolderService, FolderService>();
+
         return builder;
     }
 }

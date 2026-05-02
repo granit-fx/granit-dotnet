@@ -863,6 +863,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Documents",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.EntityFrameworkCore",
       "deps": [
         "Granit.Documents",
@@ -18164,6 +18174,116 @@
       "members": []
     },
     {
+      "name": "DocumentsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.Endpoints.Extensions.DocumentsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Extensions/DocumentsEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitDocuments",
+          "kind": "method",
+          "signature": "MapGranitDocuments(this IEndpointRouteBuilder endpoints, Action<DocumentsEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "CreateFolderRequest",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.CreateFolderRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/CreateFolderRequest.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "FolderBreadcrumbResponse",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.FolderBreadcrumbResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/FolderBreadcrumbResponse.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "FolderResponse",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.FolderResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/FolderResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "ListFoldersResponse",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.ListFoldersResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/ListFoldersResponse.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "RenameFolderRequest",
+      "fqn": "Granit.Documents.Endpoints.Folders.Dtos.RenameFolderRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Folders/Dtos/RenameFolderRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "GranitDocumentsEndpointsModule",
+      "fqn": "Granit.Documents.Endpoints.GranitDocumentsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/GranitDocumentsEndpointsModule.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "DocumentsEndpointsOptions",
+      "fqn": "Granit.Documents.Endpoints.Options.DocumentsEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Options/DocumentsEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DocumentsPermissions",
+      "fqn": "Granit.Documents.Endpoints.Permissions.DocumentsPermissions",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "Folders",
+      "fqn": "Granit.Documents.Endpoints.Permissions.Folders",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -18312,6 +18432,52 @@
           "kind": "method",
           "signature": "EnsureTenantRootAsync(Guid? tenantId, Guid ownerUserId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IFolderService",
+      "fqn": "Granit.Documents.IFolderService",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/IFolderService.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(Guid? parentFolderId, string name, Guid ownerUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder?>"
+        },
+        {
+          "name": "ListChildrenAsync",
+          "kind": "method",
+          "signature": "ListChildrenAsync(Guid? parentFolderId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Folder>>"
+        },
+        {
+          "name": "GetBreadcrumbAsync",
+          "kind": "method",
+          "signature": "GetBreadcrumbAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Folder>>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder?>"
+        },
+        {
+          "name": "TrashAsync",
+          "kind": "method",
+          "signature": "TrashAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder?>"
         }
       ]
     },
@@ -19612,7 +19778,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 80,
+      "line": 81,
       "members": []
     },
     {
@@ -19630,7 +19796,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 139,
+      "line": 141,
       "members": []
     },
     {
@@ -19639,7 +19805,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 107,
+      "line": 109,
       "members": []
     },
     {
@@ -19648,7 +19814,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 123,
+      "line": 125,
       "members": []
     },
     {
@@ -19657,7 +19823,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 149,
+      "line": 151,
       "members": []
     },
     {
@@ -19666,7 +19832,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 91,
+      "line": 93,
       "members": []
     },
     {
