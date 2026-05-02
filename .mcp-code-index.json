@@ -979,6 +979,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Customization.EntityFrameworkCore",
+      "deps": [
+        "Granit.Entities.Customization",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Entities.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -20868,7 +20876,7 @@
       "kind": "record",
       "project": "Granit.Entities.Customization",
       "file": "src/Granit.Entities.Customization/Domain/Deltas/LayoutDelta.cs",
-      "line": 10,
+      "line": 23,
       "members": []
     },
     {
@@ -20925,6 +20933,63 @@
       "project": "Granit.Entities.Customization",
       "file": "src/Granit.Entities.Customization/Domain/LayoutKind.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntitiesCustomizationEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Entities.Customization.EntityFrameworkCore.Extensions.EntitiesCustomizationEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Customization.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Customization.EntityFrameworkCore/Extensions/EntitiesCustomizationEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddGranitEntitiesCustomizationEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitEntitiesCustomizationEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "EntitiesCustomizationModelBuilderExtensions",
+      "fqn": "Granit.Entities.Customization.EntityFrameworkCore.Extensions.EntitiesCustomizationModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Customization.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Customization.EntityFrameworkCore/Extensions/EntitiesCustomizationModelBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ConfigureEntitiesCustomizationModule",
+          "kind": "method",
+          "signature": "ConfigureEntitiesCustomizationModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesCustomizationDbProperties",
+      "fqn": "Granit.Entities.Customization.EntityFrameworkCore.GranitEntitiesCustomizationDbProperties",
+      "kind": "class",
+      "project": "Granit.Entities.Customization.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Customization.EntityFrameworkCore/GranitEntitiesCustomizationDbProperties.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesCustomizationEntityFrameworkCoreModule",
+      "fqn": "Granit.Entities.Customization.EntityFrameworkCore.GranitEntitiesCustomizationEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Entities.Customization.EntityFrameworkCore",
+      "file": "src/Granit.Entities.Customization.EntityFrameworkCore/GranitEntitiesCustomizationEntityFrameworkCoreModule.cs",
+      "line": 16,
       "members": []
     },
     {
