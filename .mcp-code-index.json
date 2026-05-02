@@ -848,6 +848,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents",
+      "deps": [
+        "Granit",
+        "Granit.BlobStorage"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -17957,6 +17965,59 @@
           "kind": "method",
           "signature": "RenderAsync(string html, DocumentFormat targetFormat, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentResult>"
+        }
+      ]
+    },
+    {
+      "name": "DocumentsServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Extensions.DocumentsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocuments",
+          "kind": "method",
+          "signature": "AddGranitDocuments(this IServiceCollection services, Action<GranitDocumentsOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsModule",
+      "fqn": "Granit.Documents.GranitDocumentsModule",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/GranitDocumentsModule.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "GranitDocumentsOptions",
+      "fqn": "Granit.Documents.Options.GranitDocumentsOptions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Options/GranitDocumentsOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "TrashRetentionDays",
+          "kind": "property",
+          "signature": "int TrashRetentionDays",
+          "returnType": "int"
+        },
+        {
+          "name": "DefaultTenantQuotaBytes",
+          "kind": "property",
+          "signature": "long DefaultTenantQuotaBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan AclCacheTtl { get; set; } = TimeSpan."
         }
       ]
     },

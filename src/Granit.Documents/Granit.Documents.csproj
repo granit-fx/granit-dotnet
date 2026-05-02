@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents</PackageId>
+    <Description>User-managed file and asset management module for Granit. Folders, owners, share ACL with path-based resolution and FusionCache, autonomous versioning, tenant storage quota, and tags. Composes on top of Granit.BlobStorage; DAM concerns (renditions, asset metadata, public links, content indexing, workflows) ship as opt-in extensions.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.EntityFrameworkCore" />
+    <InternalsVisibleTo Include="Granit.Documents.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Documents.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.Documents.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.Notifications" />
+    <InternalsVisibleTo Include="Granit.Documents.Notifications.Tests" />
+    <!-- Required by NSubstitute (Castle.DynamicProxy) to mock internal interfaces in tests -->
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.BlobStorage\Granit.BlobStorage.csproj" />
+  </ItemGroup>
+
+</Project>
