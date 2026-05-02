@@ -73,6 +73,20 @@ internal static class DocumentEndpoints
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
 
+        documents.MapGet("/{id:guid}/versions", ListVersionsAsync)
+            .WithName("ListDocumentVersions")
+            .WithSummary("Lists the version history of a document.")
+            .WithDescription(
+                "Returns a paged slice of the document's version history ordered by "
+                + "VersionNumber descending (latest first). The currently-active version "
+                + "is flagged via `isCurrent: true`. Use `?skip=` and `?take=` to page; "
+                + "defaults are skip=0, take=50 (max 200). Returns 404 when the document "
+                + "is missing or excluded by the tenant filter.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Read))
+            .Produces<ListDocumentVersionsResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         documents.MapDocumentMutationEndpoints();
 
         documents.MapGet("/{id:guid}/download", DownloadAsync)
@@ -167,7 +181,7 @@ internal static class DocumentEndpoints
             }
             return TypedResults.Created(
                 $"/documents/{id}/versions/{version.Id}",
-                version.ToResponse());
+                version.ToResponse(isCurrent: true));
         }
         catch (InvalidOperationException ex)
         {
@@ -176,6 +190,31 @@ internal static class DocumentEndpoints
                 ex.Message,
                 statusCode: StatusCodes.Status422UnprocessableEntity);
         }
+    }
+
+    private static async Task<Results<Ok<ListDocumentVersionsResponse>, ProblemHttpResult>> ListVersionsAsync(
+        Guid id,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken,
+        [FromQuery] int? skip = null,
+        [FromQuery] int? take = null)
+    {
+        const int DefaultTake = 50;
+        const int MaxTake = 200;
+
+        int effectiveSkip = Math.Max(0, skip ?? 0);
+        int effectiveTake = Math.Clamp(take ?? DefaultTake, 1, MaxTake);
+
+        DocumentVersionPage? page = await documents
+            .ListVersionsAsync(id, effectiveSkip, effectiveTake, cancellationToken)
+            .ConfigureAwait(false);
+        if (page is null)
+        {
+            return TypedResults.Problem(
+                $"Document '{id}' was not found.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+        return TypedResults.Ok(page.ToResponse(effectiveSkip, effectiveTake));
     }
 
     private static async Task<Results<Ok<DownloadUrlResponse>, ProblemHttpResult>> DownloadAsync(

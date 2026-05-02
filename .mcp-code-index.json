@@ -18964,6 +18964,15 @@
       ]
     },
     {
+      "name": "DocumentVersionPage",
+      "fqn": "Granit.Documents.DocumentVersionPage",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/DocumentVersionPage.cs",
+      "line": 13,
+      "members": []
+    },
+    {
       "name": "Document",
       "fqn": "Granit.Documents.Domain.Document",
       "kind": "class",
@@ -19064,7 +19073,7 @@
       "kind": "record",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentVersionResponse.cs",
-      "line": 14,
+      "line": 20,
       "members": []
     },
     {
@@ -19083,6 +19092,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/FinalizeUploadRequest.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "ListDocumentVersionsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentVersionsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/ListDocumentVersionsResponse.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -19507,6 +19525,12 @@
           "kind": "method",
           "signature": "AppendVersionAsync(Guid documentId, Guid blobId, Guid uploadedByUserId, string? commitMessage = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentVersion?>"
+        },
+        {
+          "name": "ListVersionsAsync",
+          "kind": "method",
+          "signature": "ListVersionsAsync(Guid documentId, int skip, int take, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentVersionPage?>"
         },
         {
           "name": "RequestDownloadUrlAsync",
