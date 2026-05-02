@@ -18005,6 +18005,43 @@
       ]
     },
     {
+      "name": "Folder",
+      "fqn": "Granit.Documents.Domain.Folder",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/Folder.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Folder parent, string name, Guid ownerUserId)",
+          "returnType": "Folder"
+        },
+        {
+          "name": "Path",
+          "kind": "property",
+          "signature": "string Path",
+          "returnType": "string"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "int Depth { get; private set; } public Guid OwnerUserId { get; private set; } public bool IsTenantRoot { get; private set; } public FolderStatus Status { get; private set; } public DateTimeOffset? TrashedAt { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "FolderStatus",
+      "fqn": "Granit.Documents.Domain.FolderStatus",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/FolderStatus.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -18026,7 +18063,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsModelBuilderExtensions.cs",
-      "line": 9,
+      "line": 10,
       "members": [
         {
           "name": "ConfigureDocumentsModule",
@@ -18059,6 +18096,60 @@
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsEntityFrameworkCoreModule.cs",
       "line": 26,
+      "members": []
+    },
+    {
+      "name": "FolderCreatedEvent",
+      "fqn": "Granit.Documents.Events.FolderCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderCreatedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "FolderMovedEvent",
+      "fqn": "Granit.Documents.Events.FolderMovedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderMovedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "FolderPathChangedEvent",
+      "fqn": "Granit.Documents.Events.FolderPathChangedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderPathChangedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "FolderRenamedEvent",
+      "fqn": "Granit.Documents.Events.FolderRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderRenamedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "FolderRestoredEvent",
+      "fqn": "Granit.Documents.Events.FolderRestoredEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderRestoredEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "FolderTrashedEvent",
+      "fqn": "Granit.Documents.Events.FolderTrashedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/FolderTrashedEvent.cs",
+      "line": 8,
       "members": []
     },
     {

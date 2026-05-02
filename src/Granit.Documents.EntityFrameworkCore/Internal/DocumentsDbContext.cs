@@ -1,4 +1,5 @@
 using Granit.DataFiltering;
+using Granit.Documents.Domain;
 using Granit.Documents.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
@@ -11,10 +12,9 @@ namespace Granit.Documents.EntityFrameworkCore.Internal;
 /// </summary>
 /// <remarks>
 /// <para>
-/// Isolated from the host application's DbContext to avoid coupling. Phase-1 scaffolding:
-/// no <see cref="DbSet{TEntity}"/> declarations yet — aggregate roots arrive in subsequent
-/// stories (F2 <c>Folder</c>, F3 <c>Document</c>, …) along with their <c>IEntityTypeConfiguration</c>
-/// classes wired by <see cref="DocumentsModelBuilderExtensions.ConfigureDocumentsModule"/>.
+/// Isolated from the host application's DbContext to avoid coupling. Aggregate roots are
+/// added story-by-story along with their <c>IEntityTypeConfiguration</c> classes wired
+/// by <see cref="DocumentsModelBuilderExtensions.ConfigureDocumentsModule"/>.
 /// </para>
 /// <para>
 /// Compatible with SQL Server and PostgreSQL.
@@ -26,6 +26,9 @@ internal sealed class DocumentsDbContext(
     IDataFilter? dataFilter = null)
     : DbContext(options)
 {
+    /// <summary>Tenant-scoped folder hierarchy (one tenant-root row per tenant).</summary>
+    public DbSet<Folder> Folders { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
