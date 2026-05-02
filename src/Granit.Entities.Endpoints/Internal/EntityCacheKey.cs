@@ -86,6 +86,18 @@ internal static class EntityCacheKey
     }
 
     /// <summary>
+    /// FusionCache eviction tag covering every cached manifest entry for one
+    /// entity (across permission hashes, cultures, and facet selections). Used
+    /// by the Layer 1 customization PUT / DELETE handlers (ADR-053) to evict
+    /// the manifest cache after a tenant changes the entity's customization.
+    /// </summary>
+    public static string EvictionTagForManifest(string entityName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityName);
+        return $"{ManifestPrefix}:{entityName}";
+    }
+
+    /// <summary>
     /// SHA-256 over the sorted role + permission claim values. 16 hex chars is
     /// enough — collisions on this surface only mean a stale entry is served
     /// up to the next TTL boundary; security gating runs separately on every

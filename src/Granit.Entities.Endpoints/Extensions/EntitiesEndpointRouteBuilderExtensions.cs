@@ -69,6 +69,9 @@ public static class EntitiesEndpointRouteBuilderExtensions
         // concrete ICalendarRangeService BEFORE calling AddGranitEntitiesEndpoints,
         // or by calling Replace afterwards.
         services.TryAddSingleton<ICalendarRangeService, NullCalendarRangeService>();
+        // Layer 1 customization (ADR-053): default no-op applier. Replaced by
+        // Granit.Entities.Customization.Endpoints when that package is loaded.
+        services.TryAddScoped<IManifestCustomizationApplier, NullManifestCustomizationApplier>();
         services.AddOptions<EntitiesEndpointsOptions>();
         Granit.Diagnostics.GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
         return services;

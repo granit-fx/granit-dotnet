@@ -6,10 +6,18 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="Name">Variant name, unique per entity (e.g. <c>"default"</c>).</param>
 /// <param name="Customizable">When <see langword="true"/>, tenant admins may reorder/regroup/hide fields (Tier B Layer 1).</param>
 /// <param name="Sections">Sections in declaration order.</param>
+/// <param name="HiddenByOverride">
+/// Field property names hidden by an active Layer 1 customization (ADR-053).
+/// Surfaced for the field-inspector dev tooling so the React shell can render
+/// a "hidden by tenant" badge — the fields themselves are absent from
+/// <see cref="EntityFormSectionManifest.Fields"/>.
+/// <see langword="null"/> when no customization is active or no field is hidden.
+/// </param>
 public sealed record EntityFormManifest(
     string Name,
     bool Customizable,
-    IReadOnlyList<EntityFormSectionManifest> Sections);
+    IReadOnlyList<EntityFormSectionManifest> Sections,
+    IReadOnlyList<string>? HiddenByOverride = null);
 
 /// <summary>One form section.</summary>
 /// <param name="Key">Stable section key (e.g. <c>"identity"</c>).</param>
@@ -36,6 +44,12 @@ public sealed record EntityFormSectionManifest(
 /// <param name="Order">Display order within the section.</param>
 /// <param name="ReadOnly">Read-only in the form context.</param>
 /// <param name="VisibleIf">Closed-DSL conditional-visibility rule (ADR-040), or <see langword="null"/>.</param>
+/// <param name="Provenance">
+/// Per-field source attribution (ADR-053 §6). <see langword="null"/> means
+/// compiled defaults; a non-null value (typically <c>tenant-customization</c>)
+/// signals the field was reordered or regrouped by an active Layer 1
+/// customization.
+/// </param>
 public sealed record EntityFormFieldManifest(
     string PropertyName,
     string ClrTypeName,
@@ -45,7 +59,8 @@ public sealed record EntityFormFieldManifest(
     string? HelpKey,
     int Order,
     bool ReadOnly,
-    VisibilityCondition? VisibleIf);
+    VisibilityCondition? VisibleIf,
+    EntityProvenance? Provenance = null);
 
 /// <summary>An owned-collection sub-section (rendered as a list of items per ADR-040).</summary>
 /// <param name="PropertyName">Owner-side property exposing the collection (e.g. <c>"Addresses"</c>).</param>

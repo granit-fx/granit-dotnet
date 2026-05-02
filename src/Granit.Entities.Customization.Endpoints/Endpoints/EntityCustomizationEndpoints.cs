@@ -3,6 +3,7 @@ using Granit.Entities.Customization.Domain.Deltas;
 using Granit.Entities.Customization.Endpoints.Dtos;
 using Granit.Entities.Customization.Endpoints.Internal;
 using Granit.Entities.Customization.Endpoints.Permissions;
+using Granit.Entities.Endpoints.Internal;
 using Granit.Guids;
 using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Entities.Customization.Endpoints.Endpoints;
 
@@ -78,6 +80,7 @@ internal static class EntityCustomizationEndpoints
         [FromServices] EntityCustomizationAuditWriter auditWriter,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IGuidGenerator guidGenerator,
+        [FromServices] IFusionCache cache,
         CancellationToken cancellationToken)
     {
         ValidationResult validation = descriptorValidator.Validate(entityName, layoutKind, request.Deltas);
@@ -104,6 +107,9 @@ internal static class EntityCustomizationEndpoints
 
         await writer.UpsertAsync(toPersist, cancellationToken).ConfigureAwait(false);
         await auditWriter.WriteUpsertAsync(toPersist, previousDeltas, cancellationToken).ConfigureAwait(false);
+        await cache.RemoveByTagAsync(
+            EntityCacheKey.EvictionTagForManifest(entityName), token: cancellationToken)
+            .ConfigureAwait(false);
 
         EntityCustomization? saved = await reader.GetAsync(entityName, layoutKind, tenantId, cancellationToken)
             .ConfigureAwait(false);
@@ -117,6 +123,7 @@ internal static class EntityCustomizationEndpoints
         [FromServices] IEntityCustomizationWriter writer,
         [FromServices] EntityCustomizationAuditWriter auditWriter,
         [FromServices] ICurrentTenant currentTenant,
+        [FromServices] IFusionCache cache,
         CancellationToken cancellationToken)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
@@ -130,6 +137,9 @@ internal static class EntityCustomizationEndpoints
 
         await writer.DeleteAsync(existing.Id, cancellationToken).ConfigureAwait(false);
         await auditWriter.WriteDeleteAsync(existing, cancellationToken).ConfigureAwait(false);
+        await cache.RemoveByTagAsync(
+            EntityCacheKey.EvictionTagForManifest(entityName), token: cancellationToken)
+            .ConfigureAwait(false);
         return TypedResults.NoContent();
     }
 

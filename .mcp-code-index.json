@@ -987,6 +987,7 @@
         "Granit.Entities",
         "Granit.Entities.Abstractions",
         "Granit.Entities.Customization",
+        "Granit.Entities.Endpoints",
         "Granit.Guids",
         "Granit.Http.ApiDocumentation",
         "Granit.Validation"
@@ -20990,7 +20991,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/GranitEntitiesCustomizationEndpointsModule.cs",
-      "line": 28,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21407,7 +21408,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 39,
+      "line": 53,
       "members": []
     },
     {
@@ -21416,7 +21417,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 9,
+      "line": 16,
       "members": []
     },
     {
@@ -21425,7 +21426,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 56,
+      "line": 71,
       "members": []
     },
     {
@@ -21434,7 +21435,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 21,
+      "line": 29,
       "members": []
     },
     {
@@ -21555,6 +21556,24 @@
       "members": []
     },
     {
+      "name": "EntityProvenance",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenance",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntityProvenanceLayers",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenanceLayers",
+      "kind": "class",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "EntityRelationAggregateManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationAggregateManifest",
       "kind": "record",
@@ -21644,6 +21663,22 @@
           "kind": "method",
           "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
           "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
+        }
+      ]
+    },
+    {
+      "name": "IManifestCustomizationApplier",
+      "fqn": "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier",
+      "kind": "interface",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Internal/IManifestCustomizationApplier.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ApplyAsync",
+          "kind": "method",
+          "signature": "ApplyAsync(string entityName, EntityManifestResponse composedManifest, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityManifestResponse>"
         }
       ]
     },

@@ -17,8 +17,12 @@ namespace Granit.Entities.Endpoints.Internal;
 /// </summary>
 internal static class EntityManifestComposer
 {
-    /// <summary>Manifest schema version. Bump on breaking shape changes.</summary>
-    public const int SchemaVersion = 1;
+    /// <summary>
+    /// Manifest schema version. Bump on breaking shape changes.
+    /// v2 adds per-field <c>Provenance</c> + per-form <c>HiddenByOverride</c>
+    /// for the Layer 1 customization field-inspector dev tooling (ADR-053 §6).
+    /// </summary>
+    public const int SchemaVersion = 2;
 
     public static EntityManifestResponse Compose(
         EntityDefinitionDescriptor definition,

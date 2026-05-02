@@ -123,6 +123,7 @@ internal static class EntitiesEndpoints
         [FromServices] EntityPermissionResolver permissionResolver,
         [FromServices] IFusionCache cache,
         [FromServices] IOptions<EntitiesEndpointsOptions> options,
+        [FromServices] IManifestCustomizationApplier customizationApplier,
         ClaimsPrincipal user,
         HttpContext httpContext,
         CancellationToken cancellationToken,
@@ -163,10 +164,15 @@ internal static class EntitiesEndpoints
             {
                 IReadOnlySet<string> grantedPermissions = await CollectGrantedPermissionsAsync(
                     permissionResolver, descriptor, ct).ConfigureAwait(false);
-                return EntityManifestComposer.Compose(
+                EntityManifestResponse composed = EntityManifestComposer.Compose(
                     descriptor, snapshot, grantedPermissions, selected, defaultViewId: null, activityRegistry);
+                // Layer 4 (ADR-053): apply tenant customization deltas + provenance.
+                // Default impl is a no-op; replaced by Granit.Entities.Customization.Endpoints
+                // when that package is loaded.
+                return await customizationApplier.ApplyAsync(name, composed, ct).ConfigureAwait(false);
             },
             new FusionCacheEntryOptions { Duration = options.Value.ManifestCacheTtl },
+            tags: [EntityCacheKey.EvictionTagForManifest(name)],
             token: cancellationToken)
             .ConfigureAwait(false);
 
