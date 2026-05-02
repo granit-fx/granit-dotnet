@@ -674,6 +674,7 @@
         "dependencies": {
           "Fido2.AspNet": "[4.*, )",
           "Granit.Caching": "[0.1.0-dev, )",
+          "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
           "Granit.Identity.Local": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",

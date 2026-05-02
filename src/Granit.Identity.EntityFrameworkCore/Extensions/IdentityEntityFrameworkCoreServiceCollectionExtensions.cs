@@ -13,8 +13,9 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
 {
     /// <summary>
     /// Registers the <see cref="IdentityDbContext"/> + the EF Core
-    /// implementation of <see cref="IUserDirectoryQueryableSource"/>.
-    /// Hosts call this from their <c>Program.cs</c> alongside the other
+    /// implementations of <see cref="IUserDirectoryQueryableSource"/>
+    /// and <see cref="IUserDirectoryWriter"/>. Hosts call this from
+    /// their <c>Program.cs</c> alongside the other
     /// <c>AddGranit*EntityFrameworkCore</c> companions; the
     /// <paramref name="configureDbContext"/> callback supplies the
     /// connection string and provider (Npgsql in production, SQLite for
@@ -33,6 +34,7 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
         services.AddGranitDbContext<IdentityDbContext>(configureDbContext);
 
         services.TryAddScoped<IUserDirectoryQueryableSource, EfUserDirectoryQueryableSource>();
+        services.TryAddScoped<IUserDirectoryWriter, EfUserDirectoryWriter>();
 
         return services;
     }
