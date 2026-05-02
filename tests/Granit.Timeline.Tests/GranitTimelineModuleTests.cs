@@ -13,36 +13,33 @@ public sealed class GranitTimelineModuleTests
     [Fact]
     public void Module_DependsOn_GranitGuidsModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitGuidsModule));
     }
 
     [Fact]
     public void Module_DependsOn_GranitQueryEngineAbstractionsModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitQueryEngineAbstractionsModule));
     }
 
     [Fact]
     public void Module_DependsOn_removed_security_dependency()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
 
         allDeps.ShouldNotContain(t => t.Name == "GranitSecurityModule",
             "GranitSecurityModule was dissolved — it should no longer appear in DependsOn");
@@ -51,12 +48,11 @@ public sealed class GranitTimelineModuleTests
     [Fact]
     public void Module_DependsOn_GranitTimingModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitTimingModule));
     }
 

@@ -2,7 +2,13 @@ using Granit.Timeline;
 
 namespace Granit.Timeline.Endpoints.Dtos;
 
-/// <summary>Activity stream entry.</summary>
+/// <summary>
+/// Activity stream entry. The <c>Reactions</c> field carries the per-emoji
+/// reaction summary keyed by the catalog emoji (e.g. <c>"thumbs_up"</c>);
+/// only emojis with at least one reaction are present and the field itself
+/// is <see langword="null"/> when the entry has no reactions, keeping the
+/// wire payload tight (story C3).
+/// </summary>
 public sealed record TimelineStreamEntryResponse(
     Guid Id,
     DateTimeOffset OccurredAt,
@@ -11,7 +17,8 @@ public sealed record TimelineStreamEntryResponse(
     string? AuthorName,
     string Body,
     IReadOnlyList<TimelineAttachmentInfoResponse> Attachments,
-    Guid? ParentEntryId);
+    Guid? ParentEntryId,
+    IReadOnlyDictionary<string, ReactionAggregateResponse>? Reactions = null);
 
 /// <summary>Attachment metadata.</summary>
 public sealed record TimelineAttachmentInfoResponse(

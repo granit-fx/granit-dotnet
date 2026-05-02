@@ -18,6 +18,7 @@ public static class TimelineModelBuilderExtensions
     {
         modelBuilder.ApplyConfiguration(new TimelineEntryConfiguration());
         modelBuilder.ApplyConfiguration(new TimelineAttachmentConfiguration());
+        modelBuilder.ApplyConfiguration(new ReactionConfiguration());
         return modelBuilder;
     }
 }

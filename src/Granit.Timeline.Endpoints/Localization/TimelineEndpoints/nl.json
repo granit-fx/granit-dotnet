@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Alle tijdlijnvermeldingen beheren (verwijderen) ongeacht eigenaar",
     "Permission:Timeline.InternalNotes.Read": "Alleen voor personeel bestemde interne notities bekijken",
     "Permission:Timeline.Followers.Manage": "Entiteiten volgen en ontvolgen in activiteitenfeeds",
-    "Granit:Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen."
+    "Permission:Timeline.Reactions.React": "Reageren op tijdlijnvermeldingen met de catalogus-emoji's",
+    "Granit:Validation:TooManyAttachments": "U kunt niet meer dan 20 bestanden bijvoegen.",
+
+    "Reaction:thumbs_up": "Duim omhoog",
+    "Reaction:heart": "Hart",
+    "Reaction:tada": "Vieren",
+    "Reaction:joy": "Lachen",
+    "Reaction:eyes": "Ogen"
   }
 }

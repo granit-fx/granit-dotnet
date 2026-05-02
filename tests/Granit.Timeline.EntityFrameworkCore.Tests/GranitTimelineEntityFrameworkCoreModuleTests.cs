@@ -16,24 +16,22 @@ public sealed class GranitTimelineEntityFrameworkCoreModuleTests
     [Fact]
     public void Module_DependsOn_GranitTimelineModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineEntityFrameworkCoreModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineEntityFrameworkCoreModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitTimelineModule));
     }
 
     [Fact]
     public void Module_DependsOn_GranitPersistenceEntityFrameworkCoreModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineEntityFrameworkCoreModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineEntityFrameworkCoreModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitPersistenceEntityFrameworkCoreModule));
     }
 }

@@ -17,36 +17,33 @@ public sealed class GranitTimelineEndpointsModuleTests
     [Fact]
     public void Module_DependsOn_GranitAuthorizationModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineEndpointsModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineEndpointsModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitAuthorizationModule));
     }
 
     [Fact]
     public void Module_DependsOn_GranitTimelineModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineEndpointsModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineEndpointsModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitTimelineModule));
     }
 
     [Fact]
     public void Module_DependsOn_GranitHttpApiDocumentationModule()
     {
-        DependsOnAttribute[] attributes = typeof(GranitTimelineEndpointsModule)
+        DependsOnAttribute[] attributes = [.. typeof(GranitTimelineEndpointsModule)
             .GetCustomAttributes(typeof(DependsOnAttribute), false)
-            .Cast<DependsOnAttribute>()
-            .ToArray();
+            .Cast<DependsOnAttribute>()];
 
-        Type[] allDeps = attributes.SelectMany(a => a.DependedTypes).ToArray();
+        Type[] allDeps = [.. attributes.SelectMany(a => a.DependedTypes)];
         allDeps.ShouldContain(typeof(GranitHttpApiDocumentationModule));
     }
 }

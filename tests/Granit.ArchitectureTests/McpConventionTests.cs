@@ -70,8 +70,7 @@ public sealed class McpConventionTests
             foreach (FieldInfo field in nested.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                          .Where(f => f is { IsLiteral: true, FieldType.Name: "String" }))
             {
-                string? value = field.GetValue(null) as string;
-                if (value is null)
+                if (field.GetValue(null) is not string value)
                 {
                     continue;
                 }

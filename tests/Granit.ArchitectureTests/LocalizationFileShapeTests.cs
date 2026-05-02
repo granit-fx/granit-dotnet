@@ -35,7 +35,7 @@ public sealed class LocalizationFileShapeTests
     public void Every_localization_json_file_should_use_the_culture_envelope()
     {
         string srcDir = Path.Join(RepoRoot, "src");
-        IReadOnlyList<string> files = EnumerateLocalizationFiles(srcDir).ToList();
+        IReadOnlyList<string> files = [.. EnumerateLocalizationFiles(srcDir)];
 
         files.ShouldNotBeEmpty(
             "No localization JSON files discovered — the test cannot run. " +

@@ -47,5 +47,11 @@ internal sealed class TimelinePermissionDefinitionProvider : IPermissionDefiniti
             LocalizableString.Create<TimelineEndpointsLocalizationResource>(
                 "Permission:Timeline.Followers.Manage"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            TimelinePermissions.Reactions.React,
+            LocalizableString.Create<TimelineEndpointsLocalizationResource>(
+                "Permission:Timeline.Reactions.React"),
+            MultiTenancySides.Both);
     }
 }

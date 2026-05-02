@@ -56,6 +56,12 @@ public sealed class TimelineStreamEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(Substitute.For<ITimelineNotifier>());
         builder.Services.AddSingleton(Substitute.For<Granit.Users.ICurrentUserService>());
 
+        // Reactions infra (story C1-C3) — stream endpoint enriches entries
+        // with the per-emoji reaction summary; no reactions are exercised here
+        // so the substitute returns an empty list by default.
+        builder.Services.AddSingleton(Substitute.For<IReactionReader>());
+        builder.Services.AddSingleton(Substitute.For<IReactionWriter>());
+
         _app = builder.Build();
         _app.MapGranitTimeline();
         _app.StartAsync().GetAwaiter().GetResult();

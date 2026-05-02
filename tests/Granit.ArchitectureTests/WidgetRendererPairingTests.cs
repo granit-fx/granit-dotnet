@@ -40,9 +40,7 @@ public sealed class WidgetRendererPairingTests
     {
         Assembly[] assemblies = LoadFrameworkAssemblies();
 
-        IReadOnlyList<Type> definitions = ScanConcreteSubtypes<WidgetDefinition>(assemblies)
-            .Where(t => t.Name.EndsWith(DefinitionSuffix, StringComparison.Ordinal))
-            .ToList();
+        IReadOnlyList<Type> definitions = [.. ScanConcreteSubtypes<WidgetDefinition>(assemblies).Where(t => t.Name.EndsWith(DefinitionSuffix, StringComparison.Ordinal))];
 
         var rendererPrefixes = ScanConcreteSubtypes<IWidgetInstanceRenderer>(assemblies)
             .Where(t => t.Name.EndsWith(RendererSuffix, StringComparison.Ordinal))
@@ -75,9 +73,7 @@ public sealed class WidgetRendererPairingTests
         // a good signal of dead code.
         Assembly[] assemblies = LoadFrameworkAssemblies();
 
-        IReadOnlyList<Type> renderers = ScanConcreteSubtypes<IWidgetInstanceRenderer>(assemblies)
-            .Where(t => t.Name.EndsWith(RendererSuffix, StringComparison.Ordinal))
-            .ToList();
+        IReadOnlyList<Type> renderers = [.. ScanConcreteSubtypes<IWidgetInstanceRenderer>(assemblies).Where(t => t.Name.EndsWith(RendererSuffix, StringComparison.Ordinal))];
 
         var definitionPrefixes = ScanConcreteSubtypes<WidgetDefinition>(assemblies)
             .Where(t => t.Name.EndsWith(DefinitionSuffix, StringComparison.Ordinal))

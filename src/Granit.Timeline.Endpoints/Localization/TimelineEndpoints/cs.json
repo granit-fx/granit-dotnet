@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Spravovat (mazat) libovolnou položku časové osy bez ohledu na vlastníka",
     "Permission:Timeline.InternalNotes.Read": "Zobrazit interní poznámky pouze pro zaměstnance v kanálech aktivity",
     "Permission:Timeline.Followers.Manage": "Sledovat a přestat sledovat entity v kanálech aktivity",
-    "Granit:Validation:TooManyAttachments": "Nelze připojit více než 20 souborů."
+    "Permission:Timeline.Reactions.React": "Reagovat na položky časové osy emoji z katalogu",
+    "Granit:Validation:TooManyAttachments": "Nelze připojit více než 20 souborů.",
+
+    "Reaction:thumbs_up": "Palec nahoru",
+    "Reaction:heart": "Srdce",
+    "Reaction:tada": "Oslava",
+    "Reaction:joy": "Smích",
+    "Reaction:eyes": "Oči"
   }
 }

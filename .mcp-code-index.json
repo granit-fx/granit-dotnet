@@ -56874,6 +56874,56 @@
       "members": []
     },
     {
+      "name": "IReactionReader",
+      "fqn": "Granit.Timeline.Abstractions.IReactionReader",
+      "kind": "interface",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/IReactionReader.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "GetByEntryAsync",
+          "kind": "method",
+          "signature": "GetByEntryAsync(Guid entryId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Reaction>>"
+        },
+        {
+          "name": "GetByEntriesAsync",
+          "kind": "method",
+          "signature": "GetByEntriesAsync(IReadOnlyCollection<Guid> entryIds, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Reaction>>"
+        },
+        {
+          "name": "FindAsync",
+          "kind": "method",
+          "signature": "FindAsync(Guid entryId, Guid userId, string emoji, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Reaction?>"
+        }
+      ]
+    },
+    {
+      "name": "IReactionWriter",
+      "fqn": "Granit.Timeline.Abstractions.IReactionWriter",
+      "kind": "interface",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Abstractions/IReactionWriter.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(Reaction reaction, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RemoveAsync",
+          "kind": "method",
+          "signature": "RemoveAsync(Guid entryId, Guid userId, string emoji, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "ITimelineFollowerService",
       "fqn": "Granit.Timeline.Abstractions.ITimelineFollowerService",
       "kind": "interface",
@@ -56970,6 +57020,38 @@
           "kind": "method",
           "signature": "AddAttachmentAsync(Guid entryId, Guid blobId, string fileName, string contentType, long sizeBytes, CancellationToken cancellationToken = default)",
           "returnType": "Task<TimelineAttachment>"
+        }
+      ]
+    },
+    {
+      "name": "Reaction",
+      "fqn": "Granit.Timeline.Domain.Reaction",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Domain/Reaction.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid entryId, Guid userId, string emoji, DateTimeOffset createdAt, string createdBy, Guid? tenantId = null)",
+          "returnType": "Reaction"
+        }
+      ]
+    },
+    {
+      "name": "ReactionEmojiCatalog",
+      "fqn": "Granit.Timeline.Domain.ReactionEmojiCatalog",
+      "kind": "class",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Domain/ReactionEmojiCatalog.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "IsValid",
+          "kind": "method",
+          "signature": "IsValid(string emoji)",
+          "returnType": "bool"
         }
       ]
     },
@@ -57072,12 +57154,39 @@
       "members": []
     },
     {
+      "name": "ReactionAggregateResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.ReactionAggregateResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "ReactionCatalogEntryResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.ReactionCatalogEntryResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "ReactionToggleResponse",
+      "fqn": "Granit.Timeline.Endpoints.Dtos.ReactionToggleResponse",
+      "kind": "record",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Dtos/ReactionResponses.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "TimelineAttachmentInfoResponse",
       "fqn": "Granit.Timeline.Endpoints.Dtos.TimelineAttachmentInfoResponse",
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 17,
+      "line": 24,
       "members": []
     },
     {
@@ -57086,7 +57195,7 @@
       "kind": "record",
       "project": "Granit.Timeline.Endpoints",
       "file": "src/Granit.Timeline.Endpoints/Dtos/TimelineResponses.cs",
-      "line": 6,
+      "line": 12,
       "members": []
     },
     {
@@ -57164,6 +57273,15 @@
       "members": []
     },
     {
+      "name": "Reactions",
+      "fqn": "Granit.Timeline.Endpoints.Permissions.Reactions",
+      "kind": "class",
+      "project": "Granit.Timeline.Endpoints",
+      "file": "src/Granit.Timeline.Endpoints/Permissions/TimelinePermissions.cs",
+      "line": 41,
+      "members": []
+    },
+    {
       "name": "TimelinePermissions",
       "fqn": "Granit.Timeline.Endpoints.Permissions.TimelinePermissions",
       "kind": "class",
@@ -57227,6 +57345,24 @@
       "project": "Granit.Timeline.EntityFrameworkCore",
       "file": "src/Granit.Timeline.EntityFrameworkCore/GranitTimelineEntityFrameworkCoreModule.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "ReactionToggleAction",
+      "fqn": "Granit.Timeline.Events.ReactionToggleAction",
+      "kind": "enum",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Events/ReactionToggledEvent.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "ReactionToggledEvent",
+      "fqn": "Granit.Timeline.Events.ReactionToggledEvent",
+      "kind": "record",
+      "project": "Granit.Timeline",
+      "file": "src/Granit.Timeline/Events/ReactionToggledEvent.cs",
+      "line": 15,
       "members": []
     },
     {

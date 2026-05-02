@@ -40,6 +40,13 @@ public static class TimelineEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.Replace(
             ServiceDescriptor.Scoped<ITimelineReader, EfCoreTimelineQuery>());
 
+        // Reactions (story C1) — single EF impl backs both reader + writer.
+        builder.Services.AddScoped<EfCoreReactionStore>();
+        builder.Services.Replace(
+            ServiceDescriptor.Scoped<IReactionReader>(sp => sp.GetRequiredService<EfCoreReactionStore>()));
+        builder.Services.Replace(
+            ServiceDescriptor.Scoped<IReactionWriter>(sp => sp.GetRequiredService<EfCoreReactionStore>()));
+
         return builder;
     }
 }

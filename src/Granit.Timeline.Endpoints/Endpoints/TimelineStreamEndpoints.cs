@@ -2,9 +2,11 @@ using Granit.Authorization;
 using Granit.Authorization.Extensions;
 using Granit.QueryEngine;
 using Granit.Timeline.Abstractions;
+using Granit.Timeline.Domain;
 using Granit.Timeline.Endpoints.Dtos;
 using Granit.Timeline.Endpoints.Internal;
 using Granit.Timeline.Endpoints.Permissions;
+using Granit.Users;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -34,6 +36,8 @@ internal static class TimelineStreamEndpoints
         string entityType,
         string entityId,
         [FromServices] ITimelineReader reader,
+        [FromServices] IReactionReader reactionReader,
+        [FromServices] ICurrentUserService currentUser,
         [FromServices] IPermissionChecker permissionChecker,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = QueryEngineDefaults.DefaultPageSize,
@@ -54,8 +58,21 @@ internal static class TimelineStreamEndpoints
             result = new PagedResult<TimelineStreamEntry>(filtered, result.TotalCount, result.HasMore);
         }
 
+        // C3 — batch-load reactions for the visible entries in one round trip,
+        // then attach the per-emoji summary to each response. Entries without
+        // reactions get a null Reactions field (omitted on the wire).
+        Guid[] entryIds = [.. result.Items.Select(e => e.Id)];
+        IReadOnlyList<Reaction> reactions = await reactionReader
+            .GetByEntriesAsync(entryIds, cancellationToken)
+            .ConfigureAwait(false);
+        Guid? currentUserId = Guid.TryParse(currentUser.UserId, out Guid uid) ? uid : null;
+        IReadOnlyDictionary<Guid, IReadOnlyDictionary<string, ReactionAggregateResponse>> byEntry =
+            TimelineResponseMapper.AggregateReactions(reactions, currentUserId);
+
         PagedResult<TimelineStreamEntryResponse> mapped = new(
-            result.Items.Select(TimelineResponseMapper.ToResponse).ToList(),
+            [.. result.Items.Select(e => TimelineResponseMapper.ToResponse(
+                e,
+                byEntry.TryGetValue(e.Id, out IReadOnlyDictionary<string, ReactionAggregateResponse>? r) ? r : null))],
             result.TotalCount,
             result.HasMore);
 

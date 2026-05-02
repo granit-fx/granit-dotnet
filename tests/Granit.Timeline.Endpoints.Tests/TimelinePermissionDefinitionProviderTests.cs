@@ -101,7 +101,19 @@ public sealed class TimelinePermissionDefinitionProviderTests
     }
 
     [Fact]
-    public void DefinePermissions_registers_exactly_five_permissions()
+    public void DefinePermissions_registers_Reactions_React_permission()
+    {
+        FakePermissionDefinitionContext context = new();
+        TimelinePermissionDefinitionProvider provider = new();
+
+        provider.DefinePermissions(context);
+
+        PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
+        group.Permissions.ShouldContain(p => p.Name == TimelinePermissions.Reactions.React);
+    }
+
+    [Fact]
+    public void DefinePermissions_registers_exactly_six_permissions()
     {
         // Arrange
         FakePermissionDefinitionContext context = new();
@@ -110,9 +122,9 @@ public sealed class TimelinePermissionDefinitionProviderTests
         // Act
         provider.DefinePermissions(context);
 
-        // Assert
+        // Assert — Entries.{Read, Create, Manage} + InternalNotes.Read + Followers.Manage + Reactions.React
         PermissionGroup group = context.Groups.Single(g => g.Name == TimelinePermissions.GroupName);
-        group.Permissions.Count.ShouldBe(5);
+        group.Permissions.Count.ShouldBe(6);
     }
 
     [Fact]

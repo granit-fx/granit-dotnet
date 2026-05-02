@@ -36,4 +36,16 @@ public static class TimelinePermissions
         /// <summary>Grants access to follow/unfollow entities and view follower lists.</summary>
         public const string Manage = "Timeline.Followers.Manage";
     }
+
+    /// <summary>Permissions for the reactions resource (story C2 / ADR-046 §1).</summary>
+    public static class Reactions
+    {
+        /// <summary>
+        /// Grants access to read the reactions catalog and toggle reactions on
+        /// timeline entries via <c>POST /timeline/entries/{id}/reactions/{emoji}</c>.
+        /// Catalog read requires the same permission (defense in depth — a
+        /// user who cannot react does not need to see the picker).
+        /// </summary>
+        public const string React = "Timeline.Reactions.React";
+    }
 }

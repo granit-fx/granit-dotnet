@@ -15,12 +15,11 @@ public sealed class DtoConventionTests
     public void Endpoint_types_should_not_use_Dto_suffix()
     {
         // Auto-discover endpoint namespaces from loaded architecture graph
-        string[] endpointNamespaces = Architecture.Namespaces
+        string[] endpointNamespaces = [.. Architecture.Namespaces
             .Select(ns => ns.FullName)
             .Where(ns => ns.StartsWith("Granit.", StringComparison.Ordinal)
                 && ns.EndsWith(".Endpoints", StringComparison.Ordinal))
-            .Distinct()
-            .ToArray();
+            .Distinct()];
 
         NamingConventionRules.EndpointTypesShouldNotUseDtoSuffix(Architecture, endpointNamespaces);
     }

@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Zarządzanie (usuwanie) wpisów osi czasu niezależnie od właściciela",
     "Permission:Timeline.InternalNotes.Read": "Przeglądanie wewnętrznych notatek dostępnych tylko dla personelu",
     "Permission:Timeline.Followers.Manage": "Obserwowanie i rezygnacja z obserwowania podmiotów w kanałach aktywności",
-    "Granit:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików."
+    "Permission:Timeline.Reactions.React": "Reaguj na wpisy osi czasu emoji z katalogu",
+    "Granit:Validation:TooManyAttachments": "Nie można dołączyć więcej niż 20 plików.",
+
+    "Reaction:thumbs_up": "Kciuk w górę",
+    "Reaction:heart": "Serce",
+    "Reaction:tada": "Świętowanie",
+    "Reaction:joy": "Śmiech",
+    "Reaction:eyes": "Oczy"
   }
 }

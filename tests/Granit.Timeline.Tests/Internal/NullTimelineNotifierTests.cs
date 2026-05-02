@@ -19,7 +19,7 @@ public sealed class NullTimelineNotifierTests
             "Test comment", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
         List<string> followerIds = ["user-2", "user-3"];
 
-        Func<Task> act = () => _notifier.NotifyEntryPostedAsync(
+        Task act() => _notifier.NotifyEntryPostedAsync(
             entry, followerIds, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
@@ -33,7 +33,7 @@ public sealed class NullTimelineNotifierTests
             "{}", new AuthorInfo("system", "System"), DateTimeOffset.UtcNow, "system");
         List<string> followerIds = [];
 
-        Func<Task> act = () => _notifier.NotifyEntryPostedAsync(
+        Task act() => _notifier.NotifyEntryPostedAsync(
             entry, followerIds, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
@@ -60,7 +60,7 @@ public sealed class NullTimelineNotifierTests
             "Hey @user-2", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
         List<string> mentionedUserIds = ["user-2"];
 
-        Func<Task> act = () => _notifier.NotifyMentionedUsersAsync(
+        Task act() => _notifier.NotifyMentionedUsersAsync(
             entry, mentionedUserIds, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
@@ -74,7 +74,7 @@ public sealed class NullTimelineNotifierTests
             "No mentions here", new AuthorInfo("user-1", "Alice"), DateTimeOffset.UtcNow, "user-1");
         List<string> mentionedUserIds = [];
 
-        Func<Task> act = () => _notifier.NotifyMentionedUsersAsync(
+        Task act() => _notifier.NotifyMentionedUsersAsync(
             entry, mentionedUserIds, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);

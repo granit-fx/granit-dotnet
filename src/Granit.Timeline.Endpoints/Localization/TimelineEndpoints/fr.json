@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Gérer (supprimer) toute entrée de fil d'activité quel que soit le propriétaire",
     "Permission:Timeline.InternalNotes.Read": "Consulter les notes internes réservées au personnel",
     "Permission:Timeline.Followers.Manage": "Suivre et ne plus suivre des entités dans les fils d'activité",
-    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers."
+    "Permission:Timeline.Reactions.React": "Réagir aux entrées du fil d'activité avec les emojis du catalogue",
+    "Granit:Validation:TooManyAttachments": "Impossible de joindre plus de 20 fichiers.",
+
+    "Reaction:thumbs_up": "Pouce levé",
+    "Reaction:heart": "Cœur",
+    "Reaction:tada": "Bravo",
+    "Reaction:joy": "Rire",
+    "Reaction:eyes": "Yeux"
   }
 }

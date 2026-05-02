@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Manage (delete) any timeline entry regardless of ownership",
     "Permission:Timeline.InternalNotes.Read": "View staff-only internal notes in activity feeds",
     "Permission:Timeline.Followers.Manage": "Follow and unfollow entities in timeline feeds",
-    "Granit:Validation:TooManyAttachments": "Cannot attach more than 20 files."
+    "Permission:Timeline.Reactions.React": "React to timeline entries with the closed-catalog emojis",
+    "Granit:Validation:TooManyAttachments": "Cannot attach more than 20 files.",
+
+    "Reaction:thumbs_up": "Thumbs up",
+    "Reaction:heart": "Heart",
+    "Reaction:tada": "Celebrate",
+    "Reaction:joy": "Laughing",
+    "Reaction:eyes": "Eyes"
   }
 }

@@ -59,6 +59,7 @@ public static class TimelineEndpointRouteBuilderExtensions
         group.MapStreamEndpoints();
         group.MapEntryEndpoints();
         group.MapFollowerEndpoints();
+        group.MapReactionEndpoints();
 
         return group;
     }

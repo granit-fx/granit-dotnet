@@ -26,6 +26,9 @@ internal sealed class TimelineDbContext(
     /// <summary>Attachment references linking entries to BlobStorage blobs.</summary>
     public DbSet<TimelineAttachment> TimelineAttachments => Set<TimelineAttachment>();
 
+    /// <summary>Per-entry user reactions (👍 / ❤️ / 🎉 / 😂 / 👀) per ADR-046 + story C1.</summary>
+    public DbSet<Reaction> Reactions => Set<Reaction>();
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

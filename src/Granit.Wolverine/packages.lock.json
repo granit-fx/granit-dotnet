@@ -11,8 +11,8 @@
       "WolverineFx": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.36.0",
-        "contentHash": "oOEwyUNKKNSx3sFS9PaVOAqJBTfYY+qrHKt7Bhyr3vyAPpR9R2bX3HwkR7avdQ1BALtEd4lb9twjKW2wZxld8g==",
+        "resolved": "5.36.1",
+        "contentHash": "wP3Ez6usBGWmhJ67Z7MX07RVB6WKRxUEwUASn7NDfeH8jQVBZSc1aUprCijMIYHk5Ulsxx5vxwiVKSAlTMILFA==",
         "dependencies": {
           "JasperFx": "1.28.2",
           "JasperFx.Events": "1.31.1",
@@ -25,11 +25,11 @@
       "WolverineFx.FluentValidation": {
         "type": "Direct",
         "requested": "[5.*, )",
-        "resolved": "5.36.0",
-        "contentHash": "1v31bPCGzhP3jVmDbYvXmmVEj45ZomYBJtyni5liE4T760oEMI+yNzLkp+PM5Z8j1ug4bbasSlVWEzWInASb+Q==",
+        "resolved": "5.36.1",
+        "contentHash": "0iBtbbPI3RsiqILFde56C6XYhHU4OxI1J5ONycHGqIYGy6xRDu8OrByj1DWv6T5K3n50qEUBHxp/0/vZBfMyBw==",
         "dependencies": {
           "FluentValidation": "12.0.0",
-          "WolverineFx": "5.36.0"
+          "WolverineFx": "5.36.1"
         }
       },
       "FastExpressionCompiler": {

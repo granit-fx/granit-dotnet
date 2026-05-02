@@ -126,15 +126,14 @@ public sealed class MergeableConventionTests
     }
 
     private static List<Type> FindAllReferenceRewriterImplementations() =>
-        AllSrcTypes()
+        [.. AllSrcTypes()
             .Where(t => !t.IsAbstract && !t.IsInterface)
             .Where(t => t.GetInterfaces().Any(i =>
                 i.IsGenericType
                 && i.GetGenericTypeDefinition() == typeof(IReferenceRewriter<>)
-                && i.GenericTypeArguments[0] == typeof(Party)))
-            .ToList();
+                && i.GenericTypeArguments[0] == typeof(Party)))];
 
-    private static readonly object EagerLoadGate = new();
+    private static readonly Lock EagerLoadGate = new();
     private static bool _eagerLoaded;
 
     /// <summary>
@@ -193,7 +192,7 @@ public sealed class MergeableConventionTests
             }
             catch (ReflectionTypeLoadException ex)
             {
-                types = ex.Types.Where(t => t is not null).Cast<Type>().ToArray();
+                types = [.. ex.Types.Where(t => t is not null).Cast<Type>()];
             }
 
             foreach (Type t in types)

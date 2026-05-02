@@ -38,10 +38,9 @@ public sealed class PrivacyDataProviderConventionTests
             Type[] providers;
             try
             {
-                providers = assembly.GetTypes()
+                providers = [.. assembly.GetTypes()
                     .Where(t => !t.IsAbstract && !t.IsInterface)
-                    .Where(t => typeof(IPrivacyDataProvider).IsAssignableFrom(t))
-                    .ToArray();
+                    .Where(t => typeof(IPrivacyDataProvider).IsAssignableFrom(t))];
             }
             catch (ReflectionTypeLoadException)
             {
@@ -50,10 +49,9 @@ public sealed class PrivacyDataProviderConventionTests
 
             foreach (Type provider in providers)
             {
-                Type[] candidateHandlers = assembly.GetTypes()
+                Type[] candidateHandlers = [.. assembly.GetTypes()
                     .Where(t => !t.IsAbstract && !t.IsInterface && t.IsPublic)
-                    .Where(t => t.Name.EndsWith("PersonalDataExportHandler", StringComparison.Ordinal))
-                    .ToArray();
+                    .Where(t => t.Name.EndsWith("PersonalDataExportHandler", StringComparison.Ordinal))];
 
                 bool hasMatchingHandler = candidateHandlers.Any(h => HandlerReferencesProvider(h, provider));
                 if (!hasMatchingHandler)

@@ -67,9 +67,7 @@ public sealed class SagaConventionTests
             Type[] sagaTypes;
             try
             {
-                sagaTypes = assembly.GetTypes()
-                    .Where(t => !t.IsAbstract && typeof(Saga).IsAssignableFrom(t))
-                    .ToArray();
+                sagaTypes = [.. assembly.GetTypes().Where(t => !t.IsAbstract && typeof(Saga).IsAssignableFrom(t))];
             }
             catch (ReflectionTypeLoadException)
             {
@@ -135,9 +133,7 @@ public sealed class SagaConventionTests
             Type[] sagaTypes;
             try
             {
-                sagaTypes = assembly.GetTypes()
-                    .Where(t => !t.IsAbstract && typeof(Saga).IsAssignableFrom(t))
-                    .ToArray();
+                sagaTypes = [.. assembly.GetTypes().Where(t => !t.IsAbstract && typeof(Saga).IsAssignableFrom(t))];
             }
             catch (ReflectionTypeLoadException)
             {

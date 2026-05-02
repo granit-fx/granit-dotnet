@@ -38,9 +38,7 @@ public sealed class ODataPermissionConventionTests
     [Fact]
     public void OData_Host_permissions_must_declare_MultiTenancySides_Host()
     {
-        IReadOnlyList<PermissionDefinition> hostFeedPermissions = ScanPermissions()
-            .Where(p => p.Name.StartsWith("OData.Host.", StringComparison.Ordinal))
-            .ToList();
+        IReadOnlyList<PermissionDefinition> hostFeedPermissions = [.. ScanPermissions().Where(p => p.Name.StartsWith("OData.Host.", StringComparison.Ordinal))];
 
         IEnumerable<string> violators = hostFeedPermissions
             .Where(p => p.MultiTenancySides != MultiTenancySides.Host)
@@ -62,11 +60,10 @@ public sealed class ODataPermissionConventionTests
         // MultiTenancySides.Host — that would prevent tenant users from
         // ever being granted it. Common typo: copy-paste a host-feed
         // declaration but forget to drop the .Host segment in the name.
-        IReadOnlyList<PermissionDefinition> tenantFeedPermissions = ScanPermissions()
+        IReadOnlyList<PermissionDefinition> tenantFeedPermissions = [.. ScanPermissions()
             .Where(p =>
                 p.Name.StartsWith("OData.", StringComparison.Ordinal)
-                && !p.Name.StartsWith("OData.Host.", StringComparison.Ordinal))
-            .ToList();
+                && !p.Name.StartsWith("OData.Host.", StringComparison.Ordinal))];
 
         IEnumerable<string> violators = tenantFeedPermissions
             .Where(p => p.MultiTenancySides == MultiTenancySides.Host)

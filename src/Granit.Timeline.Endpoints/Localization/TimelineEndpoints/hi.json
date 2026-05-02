@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "स्वामित्व की परवाह किए बिना किसी भी टाइमलाइन प्रविष्टि को प्रबंधित (हटाएँ) करें",
     "Permission:Timeline.InternalNotes.Read": "गतिविधि फ़ीड में केवल-स्टाफ़ आंतरिक नोट देखें",
     "Permission:Timeline.Followers.Manage": "टाइमलाइन फ़ीड में इकाइयों को फ़ॉलो और अनफ़ॉलो करें",
-    "Granit:Validation:TooManyAttachments": "20 से अधिक फ़ाइलें संलग्न नहीं की जा सकतीं।"
+    "Permission:Timeline.Reactions.React": "कैटलॉग इमोजी से टाइमलाइन प्रविष्टियों पर प्रतिक्रिया दें",
+    "Granit:Validation:TooManyAttachments": "20 से अधिक फ़ाइलें संलग्न नहीं की जा सकतीं।",
+
+    "Reaction:thumbs_up": "अंगूठा ऊपर",
+    "Reaction:heart": "दिल",
+    "Reaction:tada": "जश्न",
+    "Reaction:joy": "हँसी",
+    "Reaction:eyes": "आँखें"
   }
 }

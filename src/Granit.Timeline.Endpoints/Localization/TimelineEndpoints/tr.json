@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Sahibinden bağımsız olarak herhangi bir zaman çizelgesi girişini yönetin (silin)",
     "Permission:Timeline.InternalNotes.Read": "Etkinlik akışlarında yalnızca personele özel dahili notları görüntüleyin",
     "Permission:Timeline.Followers.Manage": "Etkinlik akışlarında varlıkları takip edin ve takipten çıkın",
-    "Granit:Validation:TooManyAttachments": "20'den fazla dosya eklenemez."
+    "Permission:Timeline.Reactions.React": "Zaman çizelgesi girişlerine katalog emojileriyle tepki verin",
+    "Granit:Validation:TooManyAttachments": "20'den fazla dosya eklenemez.",
+
+    "Reaction:thumbs_up": "Beğeni",
+    "Reaction:heart": "Kalp",
+    "Reaction:tada": "Kutlama",
+    "Reaction:joy": "Gülme",
+    "Reaction:eyes": "Gözler"
   }
 }

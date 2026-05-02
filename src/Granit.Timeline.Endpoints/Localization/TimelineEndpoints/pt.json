@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Gerir (eliminar) qualquer entrada de cronologia independentemente do proprietário",
     "Permission:Timeline.InternalNotes.Read": "Ver notas internas apenas para funcionários nos feeds de atividade",
     "Permission:Timeline.Followers.Manage": "Seguir e deixar de seguir entidades nos feeds de atividade",
-    "Granit:Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros."
+    "Permission:Timeline.Reactions.React": "Reagir às entradas da cronologia com os emojis do catálogo",
+    "Granit:Validation:TooManyAttachments": "Não é possível anexar mais de 20 ficheiros.",
+
+    "Reaction:thumbs_up": "Polegar para cima",
+    "Reaction:heart": "Coração",
+    "Reaction:tada": "Comemorar",
+    "Reaction:joy": "Riso",
+    "Reaction:eyes": "Olhos"
   }
 }

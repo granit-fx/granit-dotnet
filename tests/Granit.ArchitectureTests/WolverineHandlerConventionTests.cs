@@ -37,10 +37,9 @@ public sealed class WolverineHandlerConventionTests
             Type[] internalHandlers;
             try
             {
-                internalHandlers = assembly.GetTypes()
+                internalHandlers = [.. assembly.GetTypes()
                     .Where(t => !t.IsPublic && !t.IsAbstract && !t.IsInterface)
-                    .Where(HasWolverineHandlerMethod)
-                    .ToArray();
+                    .Where(HasWolverineHandlerMethod)];
             }
             catch (ReflectionTypeLoadException)
             {

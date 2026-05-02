@@ -34,6 +34,13 @@ public static class TimelineServiceCollectionExtensions
         // Notifier facade (no-op, replaced by Granit.Timeline.Notifications)
         services.TryAddScoped<ITimelineNotifier, NullTimelineNotifier>();
 
+        // Reactions (story C1) — default in-memory store, replaced by EF Core.
+        // Single instance backs both reader + writer because the in-memory
+        // implementation needs a shared list across roles.
+        services.TryAddScoped<InMemoryReactionStore>();
+        services.TryAddScoped<IReactionReader>(sp => sp.GetRequiredService<InMemoryReactionStore>());
+        services.TryAddScoped<IReactionWriter>(sp => sp.GetRequiredService<InMemoryReactionStore>());
+
         // Query + Export definitions (ADR-020: owned by the base module).
         services.AddQueryDefinition<TimelineEntry, TimelineEntryQueryDefinition>();
         services.AddExportDefinition<TimelineEntry, TimelineEntryExportDefinition>();

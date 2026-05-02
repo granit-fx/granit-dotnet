@@ -60,7 +60,7 @@ internal static class TimelineEntryEndpoints
         IReadOnlyList<string> mentionedUserIds = MentionParser.ExtractMentionedUserIds(entry.Body);
         if (mentionedUserIds.Count > MaxMentionsPerEntry)
         {
-            mentionedUserIds = mentionedUserIds.Take(MaxMentionsPerEntry).ToList();
+            mentionedUserIds = [.. mentionedUserIds.Take(MaxMentionsPerEntry)];
         }
 
         // Notify followers

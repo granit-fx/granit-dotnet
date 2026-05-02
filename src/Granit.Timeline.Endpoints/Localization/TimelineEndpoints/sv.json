@@ -7,6 +7,13 @@
     "Permission:Timeline.Entries.Manage": "Hantera (ta bort) tidslinjepost oavsett ägare",
     "Permission:Timeline.InternalNotes.Read": "Visa personalens interna anteckningar i aktivitetsflöden",
     "Permission:Timeline.Followers.Manage": "Följa och sluta följa entiteter i aktivitetsflöden",
-    "Granit:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer."
+    "Permission:Timeline.Reactions.React": "Reagera på tidslinjeposter med katalogens emojier",
+    "Granit:Validation:TooManyAttachments": "Det går inte att bifoga fler än 20 filer.",
+
+    "Reaction:thumbs_up": "Tummen upp",
+    "Reaction:heart": "Hjärta",
+    "Reaction:tada": "Fira",
+    "Reaction:joy": "Skratt",
+    "Reaction:eyes": "Ögon"
   }
 }

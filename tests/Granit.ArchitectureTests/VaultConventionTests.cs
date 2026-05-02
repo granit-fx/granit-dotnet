@@ -84,9 +84,7 @@ public sealed class VaultConventionTests
         // Every Granit.Vault.Exceptions.* type must inherit from SecretVaultException, or from
         // Granit.Exceptions.NotFoundException / ForbiddenException (the two framework-level
         // user-friendly bases used by SecretNotFoundException / SecretAccessDeniedException).
-        Type[] exceptionTypes = typeof(SecretVaultException).Assembly.GetTypes()
-            .Where(t => t.Namespace == "Granit.Vault.Exceptions" && typeof(Exception).IsAssignableFrom(t))
-            .ToArray();
+        Type[] exceptionTypes = [.. typeof(SecretVaultException).Assembly.GetTypes().Where(t => t.Namespace == "Granit.Vault.Exceptions" && typeof(Exception).IsAssignableFrom(t))];
 
         foreach (Type type in exceptionTypes)
         {
@@ -107,12 +105,11 @@ public sealed class VaultConventionTests
         // Default interface method on ISecretStore centralises the anti-footgun contract:
         // only SecretNotFoundException → null; every other failure bubbles. Providers must
         // NOT reimplement it, or they risk swallowing 403/503 under the guise of "missing".
-        Type[] concrete = ProviderAssemblies
+        Type[] concrete = [.. ProviderAssemblies
             .Append(typeof(ISecretStore).Assembly)
             .SelectMany(a => a.GetTypes())
             .Distinct()
-            .Where(t => t.IsClass && !t.IsAbstract && typeof(ISecretStore).IsAssignableFrom(t))
-            .ToArray();
+            .Where(t => t.IsClass && !t.IsAbstract && typeof(ISecretStore).IsAssignableFrom(t))];
 
         foreach (Type type in concrete)
         {

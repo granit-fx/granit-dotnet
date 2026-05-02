@@ -78,15 +78,14 @@ public sealed partial class ValidationConventionTests
             try { allTypes = assembly.GetTypes(); }
             catch (ReflectionTypeLoadException ex) { allTypes = ex.Types.Where(t => t is not null).ToArray()!; }
 
-            Type[] requestTypes = allTypes
+            Type[] requestTypes = [.. allTypes
                 .Where(t => t.Name.EndsWith("Request", StringComparison.Ordinal)
                     && t.IsPublic
                     && !t.IsAbstract
                     && !t.IsInterface
                     && !ValidatorExemptions.Contains(t.Name)
                     && !IsCustomBindingType(t)
-                    && !HasOnlyValidationFreeProperties(t))
-                .ToArray();
+                    && !HasOnlyValidationFreeProperties(t))];
 
             foreach (Type requestType in requestTypes)
             {
