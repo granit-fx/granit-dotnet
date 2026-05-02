@@ -1,5 +1,8 @@
+using Granit.Diagnostics;
+using Granit.Documents.Diagnostics;
 using Granit.Documents.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Documents.Extensions;
@@ -19,15 +22,19 @@ public static class DocumentsServiceCollectionExtensions
     /// (when present) and validated on application start.
     /// </param>
     /// <remarks>
-    /// Phase-1 scaffolding registration: only options binding is performed. Domain
-    /// services, endpoints, and persistence are wired by subsequent stories of the
-    /// Granit.Documents Epic.
+    /// Phase-1 scaffolding registration: option binding plus diagnostics
+    /// (<see cref="DocumentsMetrics"/> meter and <c>Granit.Documents</c>
+    /// <see cref="System.Diagnostics.ActivitySource"/>). Domain services, endpoints,
+    /// and persistence are wired by subsequent stories of the Granit.Documents Epic.
     /// </remarks>
     public static IServiceCollection AddGranitDocuments(
         this IServiceCollection services,
         Action<GranitDocumentsOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        GranitActivitySourceRegistry.Register(DocumentsActivitySource.Name);
+        services.TryAddSingleton<DocumentsMetrics>();
 
         OptionsBuilder<GranitDocumentsOptions> optionsBuilder = services
             .AddOptions<GranitDocumentsOptions>()
