@@ -25,4 +25,7 @@ internal static class DocumentMapper
             ticket.HttpMethod,
             ticket.ExpiresAt,
             ticket.RequiredHeaders);
+
+    public static DownloadUrlResponse ToResponse(this PresignedDownloadUrl url) =>
+        new(url.Url, url.ExpiresAt);
 }

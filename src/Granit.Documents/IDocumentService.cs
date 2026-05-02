@@ -46,4 +46,24 @@ public interface IDocumentService
         string? description = null,
         string? commitMessage = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Issues a presigned download URL for a document. Defaults to the document's
+    /// <see cref="Document.CurrentVersionId"/>; an explicit <paramref name="versionId"/>
+    /// fetches a specific historical version (F4.2 list endpoint surfaces them).
+    /// </summary>
+    /// <param name="documentId">Document to download.</param>
+    /// <param name="versionId">Optional specific version. <c>null</c> resolves to <see cref="Document.CurrentVersionId"/>.</param>
+    /// <param name="requestedByUserId">User issuing the request (recorded in the <c>DocumentDownloadedEvent</c> for audit).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// The presigned download URL on success, or <c>null</c> when the document or version
+    /// is not found or excluded by the tenant filter. Throws on trashed / permanently-
+    /// deleted documents.
+    /// </returns>
+    Task<PresignedDownloadUrl?> RequestDownloadUrlAsync(
+        Guid documentId,
+        Guid? versionId,
+        Guid requestedByUserId,
+        CancellationToken cancellationToken = default);
 }

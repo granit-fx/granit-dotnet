@@ -55,6 +55,23 @@ internal static class DocumentEndpoints
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
 
+        documents.MapGet("/{id:guid}/download", DownloadAsync)
+            .WithName("RequestDocumentDownloadUrl")
+            .WithSummary("Issues a presigned download URL for a document version.")
+            .WithDescription(
+                "Returns a JSON response carrying a short-lived presigned URL the client can "
+                + "use to download the bytes directly from the configured cloud provider. "
+                + "Defaults to the document's CurrentVersionId; pass `?versionId={guid}` to "
+                + "download a specific historical version. Emits a DocumentDownloadedEvent for "
+                + "the ISO 27001 audit trail and increments granit.documents.download.count. "
+                + "Returns 404 when the document or version is not found, 409 when the document "
+                + "is trashed or has no current version yet.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Read))
+            .Produces<DownloadUrlResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
         return documents;
     }
 
@@ -105,6 +122,37 @@ internal static class DocumentEndpoints
             return TypedResults.Problem(
                 ex.Message,
                 statusCode: StatusCodes.Status422UnprocessableEntity);
+        }
+    }
+
+    private static async Task<Results<Ok<DownloadUrlResponse>, ProblemHttpResult>> DownloadAsync(
+        Guid id,
+        [FromQuery] Guid? versionId,
+        [FromServices] IDocumentService documents,
+        [FromServices] IHttpContextAccessor accessor,
+        CancellationToken cancellationToken)
+    {
+        Guid requestedByUserId = ResolveOwnerUserId(accessor.HttpContext);
+
+        try
+        {
+            BlobStorage.PresignedDownloadUrl? url = await documents
+                .RequestDownloadUrlAsync(id, versionId, requestedByUserId, cancellationToken)
+                .ConfigureAwait(false);
+            if (url is null)
+            {
+                return TypedResults.Problem(
+                    versionId is null
+                        ? $"Document '{id}' was not found."
+                        : $"Document '{id}' or version '{versionId}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(url.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Trashed / permanently-deleted document or no current version yet.
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
     }
 

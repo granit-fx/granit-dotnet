@@ -214,6 +214,126 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         doc.FolderId.ShouldBe(contracts.Id);
     }
 
+    // -------------------------------------------------------------------------
+    // F3.3 — RequestDownloadUrlAsync
+    // -------------------------------------------------------------------------
+
+    [Fact]
+    public async Task RequestDownloadUrlAsync_HappyPath_ReturnsUrlAndEmitsAuditEvent()
+    {
+        // Seed a document via the upload flow.
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "application/pdf", SizeBytes: 100, RejectionReason: null));
+        Document doc = await _sut.FinalizeUploadAsync(
+            blobId, null, OwnerId, "F.pdf", null, null, TestContext.Current.CancellationToken);
+
+        // Stub the download URL.
+        DateTimeOffset expires = DateTimeOffset.UtcNow.AddMinutes(15);
+        var presigned = new PresignedDownloadUrl(new Uri("https://storage.test/dl/abc"), expires);
+        _blobStorage
+            .CreateDownloadUrlAsync(DocumentService.ContainerName, blobId, options: null, Arg.Any<CancellationToken>())
+            .Returns(presigned);
+
+        _localEventBus.Captured.Clear();
+        var requester = Guid.NewGuid();
+
+        PresignedDownloadUrl? url = await _sut.RequestDownloadUrlAsync(
+            doc.Id, versionId: null, requester, TestContext.Current.CancellationToken);
+
+        url.ShouldNotBeNull();
+        url.Url.ShouldBe(presigned.Url);
+        url.ExpiresAt.ShouldBe(expires);
+
+        DocumentDownloadedEvent ev = _localEventBus.Captured
+            .OfType<DocumentDownloadedEvent>().ShouldHaveSingleItem();
+        ev.DocumentId.ShouldBe(doc.Id);
+        ev.RequestedByUserId.ShouldBe(requester);
+        ev.UrlExpiresAt.ShouldBe(expires);
+        ev.VersionId.ShouldBe(doc.CurrentVersionId!.Value);
+    }
+
+    [Fact]
+    public async Task RequestDownloadUrlAsync_UnknownDocument_ReturnsNull()
+    {
+        PresignedDownloadUrl? url = await _sut.RequestDownloadUrlAsync(
+            Guid.NewGuid(), versionId: null, requestedByUserId: Guid.NewGuid(),
+            TestContext.Current.CancellationToken);
+
+        url.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task RequestDownloadUrlAsync_TrashedDocument_Throws()
+    {
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "application/pdf", SizeBytes: 100, RejectionReason: null));
+        Document doc = await _sut.FinalizeUploadAsync(
+            blobId, null, OwnerId, "F.pdf", null, null, TestContext.Current.CancellationToken);
+
+        // Trash the document directly via the aggregate + DbContext.
+        await using (DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            Document tracked = await db.Documents.SingleAsync(d => d.Id == doc.Id,
+                TestContext.Current.CancellationToken);
+            tracked.Trash(DateTimeOffset.UtcNow);
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await _sut.RequestDownloadUrlAsync(doc.Id, null, Guid.NewGuid(),
+                TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task RequestDownloadUrlAsync_SpecificVersion_ResolvesIt()
+    {
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "text/plain", SizeBytes: 1, RejectionReason: null));
+        Document doc = await _sut.FinalizeUploadAsync(
+            blobId, null, OwnerId, "F.txt", null, null, TestContext.Current.CancellationToken);
+
+        Guid versionId = doc.CurrentVersionId!.Value;
+        _blobStorage
+            .CreateDownloadUrlAsync(DocumentService.ContainerName, blobId, options: null, Arg.Any<CancellationToken>())
+            .Returns(new PresignedDownloadUrl(new Uri("https://storage.test/dl/v1"), DateTimeOffset.UtcNow.AddMinutes(5)));
+
+        PresignedDownloadUrl? url = await _sut.RequestDownloadUrlAsync(
+            doc.Id, versionId, Guid.NewGuid(), TestContext.Current.CancellationToken);
+
+        url.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task RequestDownloadUrlAsync_SpecificVersion_NotFound_ReturnsNull()
+    {
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "text/plain", SizeBytes: 1, RejectionReason: null));
+        Document doc = await _sut.FinalizeUploadAsync(
+            blobId, null, OwnerId, "F.txt", null, null, TestContext.Current.CancellationToken);
+
+        PresignedDownloadUrl? url = await _sut.RequestDownloadUrlAsync(
+            doc.Id, versionId: Guid.NewGuid(), Guid.NewGuid(),
+            TestContext.Current.CancellationToken);
+
+        url.ShouldBeNull();
+    }
+
     private sealed class TestDbContextFactory(DbContextOptions<DocumentsDbContext> options)
         : IDbContextFactory<DocumentsDbContext>
     {
