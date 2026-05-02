@@ -55,6 +55,24 @@ internal static class DocumentEndpoints
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
 
+        documents.MapPost("/{id:guid}/versions", AppendVersionAsync)
+            .WithName("AppendDocumentVersion")
+            .WithSummary("Appends a new version to an existing document.")
+            .WithDescription(
+                "Confirms with BlobStorage that the bytes have arrived and pass validation, "
+                + "then atomically appends a new DocumentVersion under the parent document "
+                + "with VersionNumber = max + 1 and updates Document.CurrentVersionId. "
+                + "Optimistic concurrency on Document.RowVersion plus the unique index on "
+                + "(DocumentId, VersionNumber) protect concurrent uploaders. Returns 422 "
+                + "when the blob fails validation or the document is trashed; 404 when the "
+                + "document is missing or excluded by the tenant filter.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces<DocumentVersionResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
+            .ProducesValidationProblem();
+
         documents.MapDocumentMutationEndpoints();
 
         documents.MapGet("/{id:guid}/download", DownloadAsync)
@@ -121,6 +139,39 @@ internal static class DocumentEndpoints
             // Catches both validation failures (blob rejected) and missing-target-folder.
             // Status code is the right granularity here: 422 fits both for v1; F7 will
             // refine the quota path to 403.
+            return TypedResults.Problem(
+                ex.Message,
+                statusCode: StatusCodes.Status422UnprocessableEntity);
+        }
+    }
+
+    private static async Task<Results<Created<DocumentVersionResponse>, ProblemHttpResult>> AppendVersionAsync(
+        Guid id,
+        AppendVersionRequest request,
+        [FromServices] IDocumentService documents,
+        [FromServices] IHttpContextAccessor accessor,
+        CancellationToken cancellationToken)
+    {
+        Guid uploadedByUserId = ResolveOwnerUserId(accessor.HttpContext);
+
+        try
+        {
+            DocumentVersion? version = await documents
+                .AppendVersionAsync(id, request.BlobId, uploadedByUserId, request.CommitMessage, cancellationToken)
+                .ConfigureAwait(false);
+            if (version is null)
+            {
+                return TypedResults.Problem(
+                    $"Document '{id}' was not found.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Created(
+                $"/documents/{id}/versions/{version.Id}",
+                version.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Blob validation failure or trashed-document append.
             return TypedResults.Problem(
                 ex.Message,
                 statusCode: StatusCodes.Status422UnprocessableEntity);

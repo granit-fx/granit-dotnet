@@ -18917,12 +18917,30 @@
       "members": []
     },
     {
+      "name": "AppendVersionRequest",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.AppendVersionRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/AppendVersionRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DocumentResponse",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentResponse",
       "kind": "record",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentResponse.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "DocumentVersionResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentVersionResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentVersionResponse.cs",
+      "line": 14,
       "members": []
     },
     {
@@ -19359,6 +19377,12 @@
           "kind": "method",
           "signature": "FinalizeUploadAsync(Guid blobId, Guid? folderId, Guid ownerUserId, string name, string? description = null, string? commitMessage = null, CancellationToken cancellationToken = default)",
           "returnType": "Task<Document>"
+        },
+        {
+          "name": "AppendVersionAsync",
+          "kind": "method",
+          "signature": "AppendVersionAsync(Guid documentId, Guid blobId, Guid uploadedByUserId, string? commitMessage = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentVersion?>"
         },
         {
           "name": "RequestDownloadUrlAsync",
@@ -20448,7 +20472,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 21,
+      "line": 24,
       "members": []
     },
     {
@@ -20655,7 +20679,16 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 63,
+      "line": 84,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarTileActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarTileActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 99,
       "members": []
     },
     {
@@ -20664,7 +20697,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 31,
+      "line": 51,
       "members": []
     },
     {
@@ -20673,7 +20706,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -20776,12 +20809,30 @@
       "members": []
     },
     {
+      "name": "EntityGalleryCardActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 134,
+      "members": []
+    },
+    {
       "name": "EntityGalleryLayoutManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryLayoutManifest",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 81,
+      "line": 118,
+      "members": []
+    },
+    {
+      "name": "EntityHeaderActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityHeaderActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 39,
       "members": []
     },
     {
@@ -20799,7 +20850,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 141,
+      "line": 193,
       "members": []
     },
     {
@@ -20808,7 +20859,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 109,
+      "line": 161,
       "members": []
     },
     {
@@ -20817,7 +20868,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 125,
+      "line": 177,
       "members": []
     },
     {
@@ -20826,7 +20877,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 151,
+      "line": 203,
       "members": []
     },
     {
@@ -20835,7 +20886,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 93,
+      "line": 145,
       "members": []
     },
     {
@@ -20844,7 +20895,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 46,
+      "line": 66,
       "members": []
     },
     {

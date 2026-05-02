@@ -48,6 +48,32 @@ public interface IDocumentService
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Appends a new <c>DocumentVersion</c> to an existing document. Confirms the blob
+    /// with <c>BlobStorage</c>, computes <c>VersionNumber = max + 1</c>, persists the new
+    /// row, and updates <see cref="Document.CurrentVersionId"/> via the optimistic-
+    /// concurrency-protected <see cref="Document.SetCurrentVersion"/> behavior. On
+    /// concurrent appends, the implementation retries once after re-reading the latest
+    /// state; after that, the concurrent <c>DbUpdateConcurrencyException</c> surfaces.
+    /// </summary>
+    /// <param name="documentId">Document to append a version to.</param>
+    /// <param name="blobId">Identifier returned by <see cref="RequestUploadTicketAsync"/>.</param>
+    /// <param name="uploadedByUserId">Identifier of the user issuing the new version.</param>
+    /// <param name="commitMessage">Optional changelog attached to the new version.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>
+    /// The newly-created <see cref="DocumentVersion"/> on success, or <c>null</c> when the
+    /// document is not found or excluded by the tenant filter. Throws
+    /// <see cref="InvalidOperationException"/> when the document is trashed or
+    /// permanently-deleted, or when the blob fails validation.
+    /// </returns>
+    Task<DocumentVersion?> AppendVersionAsync(
+        Guid documentId,
+        Guid blobId,
+        Guid uploadedByUserId,
+        string? commitMessage = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Issues a presigned download URL for a document. Defaults to the document's
     /// <see cref="Document.CurrentVersionId"/>; an explicit <paramref name="versionId"/>
     /// fetches a specific historical version (F4.2 list endpoint surfaces them).

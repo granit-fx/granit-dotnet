@@ -529,6 +529,197 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         result.ShouldBeNull();
     }
 
+    // -------------------------------------------------------------------------
+    // F4.1 — AppendVersionAsync (autonomous monotonic versioning)
+    // -------------------------------------------------------------------------
+
+    private void StubBlobConfirmation(Guid blobId, string contentType = "application/pdf", long sizeBytes = 100)
+    {
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: contentType, SizeBytes: sizeBytes, RejectionReason: null));
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_HappyPath_CreatesV2_UpdatesCurrentVersionPointer_EmitsEvent()
+    {
+        Document seeded = await SeedDocumentAsync();
+        Guid v1Id = seeded.CurrentVersionId!.Value;
+        uint rvBefore = seeded.RowVersion;
+        _localEventBus.Captured.Clear();
+
+        var v2BlobId = Guid.NewGuid();
+        StubBlobConfirmation(v2BlobId, sizeBytes: 200);
+
+        DocumentVersion? v2 = await _sut.AppendVersionAsync(
+            seeded.Id, v2BlobId, OwnerId, "v2 commit", TestContext.Current.CancellationToken);
+
+        v2.ShouldNotBeNull();
+        v2.VersionNumber.ShouldBe(2);
+        v2.DocumentId.ShouldBe(seeded.Id);
+        v2.BlobDescriptorId.ShouldBe(v2BlobId);
+        v2.SizeBytes.ShouldBe(200);
+        v2.CommitMessage.ShouldBe("v2 commit");
+        v2.Id.ShouldNotBe(v1Id);
+
+        // Document.CurrentVersionId moved to the new version + RowVersion bumped.
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Document persisted = await db.Documents.SingleAsync(d => d.Id == seeded.Id,
+            TestContext.Current.CancellationToken);
+        persisted.CurrentVersionId.ShouldBe(v2.Id);
+        persisted.RowVersion.ShouldBeGreaterThan(rvBefore);
+
+        // Version history holds both rows.
+        List<DocumentVersion> versions = await db.DocumentVersions
+            .Where(v => v.DocumentId == seeded.Id)
+            .OrderBy(v => v.VersionNumber)
+            .ToListAsync(TestContext.Current.CancellationToken);
+        versions.Count.ShouldBe(2);
+        versions[0].VersionNumber.ShouldBe(1);
+        versions[1].VersionNumber.ShouldBe(2);
+
+        // Event emission.
+        DocumentVersionAddedEvent ev = _localEventBus.Captured
+            .OfType<DocumentVersionAddedEvent>().ShouldHaveSingleItem();
+        ev.VersionNumber.ShouldBe(2);
+        ev.VersionId.ShouldBe(v2.Id);
+        ev.BlobDescriptorId.ShouldBe(v2BlobId);
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_SequentialAppends_VersionNumbersAreMonotonic()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        for (int expected = 2; expected <= 5; expected++)
+        {
+            var blobId = Guid.NewGuid();
+            StubBlobConfirmation(blobId, sizeBytes: expected * 100L);
+
+            DocumentVersion? created = await _sut.AppendVersionAsync(
+                seeded.Id, blobId, OwnerId, $"v{expected}", TestContext.Current.CancellationToken);
+
+            created.ShouldNotBeNull();
+            created.VersionNumber.ShouldBe(expected);
+        }
+
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        List<int> numbers = await db.DocumentVersions
+            .Where(v => v.DocumentId == seeded.Id)
+            .OrderBy(v => v.VersionNumber)
+            .Select(v => v.VersionNumber)
+            .ToListAsync(TestContext.Current.CancellationToken);
+        numbers.ShouldBe([1, 2, 3, 4, 5]);
+
+        Document final = await db.Documents.SingleAsync(d => d.Id == seeded.Id,
+            TestContext.Current.CancellationToken);
+        DocumentVersion latest = await db.DocumentVersions
+            .SingleAsync(v => v.DocumentId == seeded.Id && v.VersionNumber == 5,
+                TestContext.Current.CancellationToken);
+        final.CurrentVersionId.ShouldBe(latest.Id);
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_MissingDocument_ReturnsNull()
+    {
+        var blobId = Guid.NewGuid();
+        StubBlobConfirmation(blobId);
+
+        DocumentVersion? result = await _sut.AppendVersionAsync(
+            Guid.NewGuid(), blobId, OwnerId, null, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_TrashedDocument_Throws()
+    {
+        Document seeded = await SeedDocumentAsync();
+        await using (DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken))
+        {
+            Document tracked = await db.Documents.SingleAsync(d => d.Id == seeded.Id,
+                TestContext.Current.CancellationToken);
+            tracked.Trash(DateTimeOffset.UtcNow);
+            await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        }
+
+        var blobId = Guid.NewGuid();
+        StubBlobConfirmation(blobId);
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await _sut.AppendVersionAsync(seeded.Id, blobId, OwnerId, null,
+                TestContext.Current.CancellationToken));
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_BlobInvalid_Throws_NoVersionPersisted()
+    {
+        Document seeded = await SeedDocumentAsync();
+        var blobId = Guid.NewGuid();
+        _blobStorage
+            .ConfirmUploadAsync(DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: false, Status: BlobStatus.Rejected,
+                VerifiedContentType: null, SizeBytes: null, RejectionReason: "Magic-bytes mismatch"));
+
+        await Should.ThrowAsync<InvalidOperationException>(async () =>
+            await _sut.AppendVersionAsync(seeded.Id, blobId, OwnerId, null,
+                TestContext.Current.CancellationToken));
+
+        // Only the original v1 should be present.
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        int count = await db.DocumentVersions
+            .CountAsync(v => v.DocumentId == seeded.Id, TestContext.Current.CancellationToken);
+        count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task AppendVersionAsync_ConcurrentAppends_ProduceDistinctMonotonicVersionNumbers()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        // Stub a fresh blob per parallel invocation. NSubstitute's per-argument stubs are
+        // honoured concurrently because each call resolves the matching Returns entry.
+        Guid[] blobIds = [Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()];
+        foreach (Guid b in blobIds)
+        {
+            StubBlobConfirmation(b);
+        }
+
+        Task<DocumentVersion?>[] tasks = blobIds
+            .Select(b => _sut.AppendVersionAsync(seeded.Id, b, OwnerId, null,
+                TestContext.Current.CancellationToken))
+            .ToArray();
+
+        DocumentVersion?[] results = await Task.WhenAll(tasks);
+
+        results.ShouldAllBe(v => v != null);
+        // Distinct version numbers awarded — the unique-index + retry loop guarantees no duplicates.
+        int[] numbers = [.. results.Select(v => v!.VersionNumber).OrderBy(n => n)];
+        numbers.Distinct().Count().ShouldBe(blobIds.Length);
+        numbers.ShouldAllBe(n => n >= 2);
+        numbers.Max().ShouldBe(1 + blobIds.Length);
+
+        // Document.CurrentVersionId points at one of the created versions (whichever
+        // wrote last under the optimistic concurrency token wins last-write).
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Document final = await db.Documents.SingleAsync(d => d.Id == seeded.Id,
+            TestContext.Current.CancellationToken);
+        Guid[] versionIds = [.. results.Select(v => v!.Id)];
+        versionIds.ShouldContain(final.CurrentVersionId!.Value);
+
+        // No duplicate (DocumentId, VersionNumber) tuples — the unique index would have
+        // thrown DbUpdateException; we'd see a thrown task above otherwise.
+        List<int> persistedNumbers = await db.DocumentVersions
+            .Where(v => v.DocumentId == seeded.Id)
+            .Select(v => v.VersionNumber)
+            .ToListAsync(TestContext.Current.CancellationToken);
+        persistedNumbers.Count.ShouldBe(1 + blobIds.Length);
+        persistedNumbers.Distinct().Count().ShouldBe(persistedNumbers.Count);
+    }
+
     private sealed class TestDbContextFactory(DbContextOptions<DocumentsDbContext> options)
         : IDbContextFactory<DocumentsDbContext>
     {

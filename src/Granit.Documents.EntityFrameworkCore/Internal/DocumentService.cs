@@ -143,6 +143,129 @@ internal sealed class DocumentService(
     }
 
     /// <inheritdoc />
+    public async Task<DocumentVersion?> AppendVersionAsync(
+        Guid documentId,
+        Guid blobId,
+        Guid uploadedByUserId,
+        string? commitMessage = null,
+        CancellationToken cancellationToken = default)
+    {
+        // 1. Confirm the blob — runs validators and transitions Pending → Valid. Done
+        //    outside the retry loop because the transition is non-idempotent past Valid:
+        //    re-calling ConfirmUploadAsync on a Valid blob throws BlobNotValidException.
+        BlobConfirmationResult confirmation = await blobStorage
+            .ConfirmUploadAsync(ContainerName, blobId, cancellationToken)
+            .ConfigureAwait(false);
+        if (!confirmation.IsValid)
+        {
+            metrics.RecordQuotaRejected(currentTenant.Id?.ToString());
+            throw new InvalidOperationException(
+                $"Blob {blobId} did not pass validation: {confirmation.RejectionReason ?? "unknown"}.");
+        }
+
+        long sizeBytes = confirmation.SizeBytes
+            ?? throw new InvalidOperationException(
+                $"Blob {blobId} validated successfully but BlobStorage returned no size.");
+        string contentType = confirmation.VerifiedContentType
+            ?? throw new InvalidOperationException(
+                $"Blob {blobId} validated successfully but BlobStorage returned no content type.");
+
+        // 2. Append loop — at most 2 attempts. The unique index on
+        //    (DocumentId, VersionNumber) plus the optimistic-concurrency token on
+        //    Document.RowVersion together guarantee that two parallel callers cannot
+        //    both succeed with the same VersionNumber: the second writer either trips
+        //    the unique constraint (DbUpdateException) or the row-version check
+        //    (DbUpdateConcurrencyException). Either way we re-read and retry once;
+        //    a second collision propagates as the original exception.
+        const int MaxAttempts = 2;
+        for (int attempt = 1; attempt <= MaxAttempts; attempt++)
+        {
+            try
+            {
+                return await TryAppendVersionAsync(
+                    documentId, blobId, uploadedByUserId, sizeBytes, contentType, commitMessage,
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (DbUpdateConcurrencyException) when (attempt < MaxAttempts)
+            {
+                // RowVersion drifted under us — reload and try again.
+            }
+            catch (DbUpdateException) when (attempt < MaxAttempts)
+            {
+                // Unique-index collision on (DocumentId, VersionNumber) — reload and retry.
+            }
+        }
+
+        // Unreachable: the loop either returns inside the try, or the final attempt's
+        // exception propagates without being caught (the `when` filters guard only
+        // the non-final attempts).
+        throw new InvalidOperationException(
+            $"AppendVersionAsync exited the retry loop unexpectedly for document {documentId}.");
+    }
+
+    private async Task<DocumentVersion?> TryAppendVersionAsync(
+        Guid documentId,
+        Guid blobId,
+        Guid uploadedByUserId,
+        long sizeBytes,
+        string contentType,
+        string? commitMessage,
+        CancellationToken cancellationToken)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == documentId, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return null;
+        }
+
+        // Domain enforces "active document" via SetCurrentVersion → ThrowIfNotActive.
+
+        int nextVersionNumber = (await context.DocumentVersions
+            .Where(v => v.DocumentId == document.Id)
+            .MaxAsync(v => (int?)v.VersionNumber, cancellationToken)
+            .ConfigureAwait(false) ?? 0) + 1;
+
+        var version = DocumentVersion.Create(
+            guidGenerator.Create(),
+            document,
+            versionNumber: nextVersionNumber,
+            blobDescriptorId: blobId,
+            sizeBytes: sizeBytes,
+            contentType: contentType,
+            contentHash: null,
+            uploadedByUserId: uploadedByUserId,
+            uploadedAt: clock.Now,
+            commitMessage: commitMessage);
+
+        // SetCurrentVersion bumps Document.RowVersion — feeds the optimistic concurrency
+        // check that detects parallel appenders racing on the same document.
+        document.SetCurrentVersion(version.Id);
+
+        context.DocumentVersions.Add(version);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        await localEventBus.PublishAsync(
+            new DocumentVersionAddedEvent(
+                document.Id,
+                document.TenantId,
+                version.Id,
+                version.VersionNumber,
+                version.BlobDescriptorId,
+                version.SizeBytes,
+                version.UploadedByUserId),
+            cancellationToken).ConfigureAwait(false);
+
+        metrics.RecordUpload(currentTenant.Id?.ToString());
+        return version;
+    }
+
+    /// <inheritdoc />
     public async Task<PresignedDownloadUrl?> RequestDownloadUrlAsync(
         Guid documentId,
         Guid? versionId,

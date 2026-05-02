@@ -28,4 +28,17 @@ internal static class DocumentMapper
 
     public static DownloadUrlResponse ToResponse(this PresignedDownloadUrl url) =>
         new(url.Url, url.ExpiresAt);
+
+    public static DocumentVersionResponse ToResponse(this DocumentVersion version) =>
+        new(
+            version.Id,
+            version.DocumentId,
+            version.VersionNumber,
+            version.BlobDescriptorId,
+            version.SizeBytes,
+            version.ContentType,
+            version.ContentHash,
+            version.UploadedByUserId,
+            version.UploadedAt,
+            version.CommitMessage);
 }
