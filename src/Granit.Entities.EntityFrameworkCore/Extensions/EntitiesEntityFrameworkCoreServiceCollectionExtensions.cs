@@ -1,6 +1,8 @@
 using Granit.Entities.Endpoints;
+using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.EntityFrameworkCore.Internal;
 using Granit.Entities.Layouts;
+using Granit.Entities.Relations;
 using Granit.Events;
 using Granit.QueryEngine;
 using Microsoft.Extensions.DependencyInjection;
@@ -108,5 +110,149 @@ public static class EntitiesEntityFrameworkCoreServiceCollectionExtensions
         }
 
         return services;
+    }
+
+    /// <summary>
+    /// Registers a closed-generic
+    /// <see cref="RelationAggregateCacheInvalidator{TRelated}"/> per related entity
+    /// type that participates in at least one relation declaration — both
+    /// intra-module declarations on <see cref="EntityDefinitionBuilder{TEntity}"/>
+    /// and cross-module grafts via <see cref="IEntityRelationContributor"/>.
+    /// Story #1793.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// MUST be called AFTER every <c>AddEntityDefinition&lt;T, TDef&gt;()</c> and
+    /// <c>AddEntityRelationContribution&lt;T&gt;()</c> registration — the scan
+    /// iterates the descriptor and contributor service descriptors collected in
+    /// the container at the time of this call.
+    /// </para>
+    /// <para>
+    /// The related entity type must implement
+    /// <see cref="Granit.Domain.IEmitEntityLifecycleEvents"/>; otherwise the
+    /// invalidator silently skips it (the cached aggregates still expire via
+    /// the sliding TTL, just not surgically on each write).
+    /// </para>
+    /// </remarks>
+    public static IServiceCollection AddGranitEntitiesRelationAggregateInvalidation(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        List<IEntityDefinitionDescriptor> definitions = MaterializeEntityDefinitions(services);
+        var wireNameByClrType = definitions.ToDictionary(d => d.EntityType, d => d.Name);
+
+        // Group every relation declaration by related CLR type → list of
+        // (sourceEntityName, relationName) tag inputs.
+        Dictionary<Type, List<string>> tagsByRelatedType = [];
+
+        // Pass 1 — intra-module relations carried directly on each descriptor.
+        foreach (IEntityDefinitionDescriptor definition in definitions)
+        {
+            string sourceName = definition.Name;
+            foreach (RelationDescriptor relation in definition.Descriptor.Relations
+                .Where(r => r.ContributorAssemblyName is null))
+            {
+                AddTag(tagsByRelatedType, relation.TargetEntityClrType,
+                    RelationAggregateCacheKey.EvictionTagForRelation(sourceName, relation.Name));
+            }
+        }
+
+        // Pass 2 — cross-module contributions resolved through the contribution
+        // context (replays the same `Contribute` call the runtime registry uses).
+        foreach (IEntityRelationContributor contributor in MaterializeRelationContributors(services))
+        {
+            EntityRelationContributionContext context = new();
+            contributor.Contribute(context);
+            foreach ((Type sourceType, IReadOnlyList<RelationDescriptor> contributed) in context.Contributions)
+            {
+                if (!wireNameByClrType.TryGetValue(sourceType, out string? sourceName))
+                {
+                    continue; // dropped contributions — same silent-skip semantic as EntityRelationMerger
+                }
+                foreach (RelationDescriptor relation in contributed)
+                {
+                    AddTag(tagsByRelatedType, relation.TargetEntityClrType,
+                        RelationAggregateCacheKey.EvictionTagForRelation(sourceName, relation.Name));
+                }
+            }
+        }
+
+        // Register one closed-generic invalidator per related type, keyed on the
+        // framework's three lifecycle events.
+        foreach ((Type relatedType, List<string> evictionTags) in tagsByRelatedType)
+        {
+            if (!typeof(Granit.Domain.IEmitEntityLifecycleEvents).IsAssignableFrom(relatedType))
+            {
+                continue;
+            }
+
+            Type targetsType = typeof(RelationAggregateInvalidationTargets<>).MakeGenericType(relatedType);
+            IReadOnlyList<string> dedupedTags = evictionTags.Distinct(StringComparer.Ordinal).ToArray();
+            object targetsInstance = Activator.CreateInstance(targetsType, dedupedTags)!;
+            services.AddSingleton(targetsType, targetsInstance);
+
+            Type closedInvalidatorType = typeof(RelationAggregateCacheInvalidator<>).MakeGenericType(relatedType);
+            services.AddScoped(
+                typeof(ILocalEventHandler<>).MakeGenericType(typeof(EntityCreatedEvent<>).MakeGenericType(relatedType)),
+                closedInvalidatorType);
+            services.AddScoped(
+                typeof(ILocalEventHandler<>).MakeGenericType(typeof(EntityUpdatedEvent<>).MakeGenericType(relatedType)),
+                closedInvalidatorType);
+            services.AddScoped(
+                typeof(ILocalEventHandler<>).MakeGenericType(typeof(EntityDeletedEvent<>).MakeGenericType(relatedType)),
+                closedInvalidatorType);
+        }
+
+        return services;
+    }
+
+    private static void AddTag(Dictionary<Type, List<string>> bag, Type relatedType, string tag)
+    {
+        if (!bag.TryGetValue(relatedType, out List<string>? tags))
+        {
+            tags = [];
+            bag[relatedType] = tags;
+        }
+        tags.Add(tag);
+    }
+
+    private static List<IEntityDefinitionDescriptor> MaterializeEntityDefinitions(IServiceCollection services)
+    {
+        List<IEntityDefinitionDescriptor> descriptors = [];
+        foreach (ServiceDescriptor descriptor in services.Where(d => d.ServiceType == typeof(IEntityDefinitionDescriptor)))
+        {
+            using ServiceProvider tempProvider = new ServiceCollection()
+                .Add(descriptor switch
+                {
+                    { ImplementationFactory: { } factory } => ServiceDescriptor.Singleton(typeof(IEntityDefinitionDescriptor), factory),
+                    { ImplementationInstance: { } instance } => ServiceDescriptor.Singleton(typeof(IEntityDefinitionDescriptor), instance),
+                    { ImplementationType: { } implType } => ServiceDescriptor.Singleton(typeof(IEntityDefinitionDescriptor), implType),
+                    _ => throw new InvalidOperationException(
+                        "IEntityDefinitionDescriptor must be registered with a factory, instance or implementation type."),
+                })
+                .BuildServiceProvider();
+            descriptors.Add(tempProvider.GetRequiredService<IEntityDefinitionDescriptor>());
+        }
+        return descriptors;
+    }
+
+    private static List<IEntityRelationContributor> MaterializeRelationContributors(IServiceCollection services)
+    {
+        List<IEntityRelationContributor> contributors = [];
+        foreach (ServiceDescriptor descriptor in services.Where(d => d.ServiceType == typeof(IEntityRelationContributor)))
+        {
+            using ServiceProvider tempProvider = new ServiceCollection()
+                .Add(descriptor switch
+                {
+                    { ImplementationFactory: { } factory } => ServiceDescriptor.Singleton(typeof(IEntityRelationContributor), factory),
+                    { ImplementationInstance: { } instance } => ServiceDescriptor.Singleton(typeof(IEntityRelationContributor), instance),
+                    { ImplementationType: { } implType } => ServiceDescriptor.Singleton(typeof(IEntityRelationContributor), implType),
+                    _ => throw new InvalidOperationException(
+                        "IEntityRelationContributor must be registered with a factory, instance or implementation type."),
+                })
+                .BuildServiceProvider();
+            contributors.Add(tempProvider.GetRequiredService<IEntityRelationContributor>());
+        }
+        return contributors;
     }
 }

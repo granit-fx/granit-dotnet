@@ -113,6 +113,34 @@ boot — name conflicts resolve in favour of the entity's intra-module declarati
 
 `IEntityActionContributor` follows the symmetric pattern for cross-module action grafts.
 
+### Cache invalidation on related-entity writes
+
+Smart-button counters are cached for 30 seconds (configurable via
+`EntitiesEndpointsOptions.RelationAggregatesCacheTtl`). When a related entity
+implements `IEmitEntityLifecycleEvents`, the framework wires an event-driven
+invalidator so writes evict the cached counters surgically — no need to wait for
+the sliding TTL.
+
+Wire it in the host's composition root after every entity definition + relation
+contributor has been registered:
+
+```csharp
+services
+    .AddEntityDefinition<Party, PartyEntityDefinition>()
+    .AddEntityRelationContribution<InvoicesOnPartyRelationContribution>()
+    .AddGranitEntitiesEntityFrameworkCore()                // calendar runners
+    .AddGranitEntitiesRelationAggregateInvalidation();     // smart-button invalidation
+```
+
+Granularity is per (source entity, relation name): when any `Invoice` row
+changes, every cached `Party.invoices` counter is dropped in one
+`RemoveByTagAsync` call. The eviction tag scheme — declared on
+`RelationAggregateCacheKey.EvictionTagForRelation(sourceEntityName, relationName)`
+— is coarser than per-(source row id) because `RelationDescriptor` does not
+carry an executable foreign-key predicate yet; cached entries also carry the
+finer per-(source, id) tag for future per-row invalidation when the source row
+itself changes.
+
 ## Calendar view
 
 A calendar layout reads its rows from a dedicated range-query endpoint that the

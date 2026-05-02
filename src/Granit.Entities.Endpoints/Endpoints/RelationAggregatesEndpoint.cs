@@ -183,13 +183,18 @@ internal static class RelationAggregatesEndpoint
                 .ConfigureAwait(false);
 
             FusionCacheEntryOptions entryOptions = new() { Duration = options.RelationAggregatesCacheTtl };
-            string evictionTag = RelationAggregateCacheKey.EvictionTag(sourceEntityName, sourceId);
+            string sourceTag = RelationAggregateCacheKey.EvictionTag(sourceEntityName, sourceId);
 
             foreach ((string relName, RelationAggregateValue value) in computed)
             {
                 string key = RelationAggregateCacheKey.Build(
                     sourceEntityName, sourceId, relName, user, culture);
-                await cache.SetAsync(key, value, entryOptions, [evictionTag], token: cancellationToken)
+                // Two tags per entry: the per-(source, id) tag drops every relation
+                // when the source row changes; the per-(source, relation) tag drops
+                // every cached counter for one relation when any row of the related
+                // entity changes (story #1793).
+                string relationTag = RelationAggregateCacheKey.EvictionTagForRelation(sourceEntityName, relName);
+                await cache.SetAsync(key, value, entryOptions, [sourceTag, relationTag], token: cancellationToken)
                     .ConfigureAwait(false);
                 cached[relName] = value;
             }
