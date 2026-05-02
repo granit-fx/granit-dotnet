@@ -18611,6 +18611,37 @@
       ]
     },
     {
+      "name": "Document",
+      "fqn": "Granit.Documents.Domain.Document",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/Document.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Folder folder, Guid ownerUserId, string name, string? description = null)",
+          "returnType": "Document"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "string? Description { get; private set; } public Guid? CurrentVersionId { get; private set; } public DocumentStatus Status { get; private set; } public DateTimeOffset? TrashedAt { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentStatus",
+      "fqn": "Granit.Documents.Domain.DocumentStatus",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/DocumentStatus.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "Folder",
       "fqn": "Granit.Documents.Domain.Folder",
       "kind": "class",
@@ -18821,6 +18852,60 @@
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsEntityFrameworkCoreModule.cs",
       "line": 26,
+      "members": []
+    },
+    {
+      "name": "DocumentCreatedEvent",
+      "fqn": "Granit.Documents.Events.DocumentCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentCreatedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DocumentCurrentVersionChangedEvent",
+      "fqn": "Granit.Documents.Events.DocumentCurrentVersionChangedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentCurrentVersionChangedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "DocumentMovedEvent",
+      "fqn": "Granit.Documents.Events.DocumentMovedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentMovedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DocumentRenamedEvent",
+      "fqn": "Granit.Documents.Events.DocumentRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentRenamedEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DocumentRestoredEvent",
+      "fqn": "Granit.Documents.Events.DocumentRestoredEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentRestoredEvent.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "DocumentTrashedEvent",
+      "fqn": "Granit.Documents.Events.DocumentTrashedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentTrashedEvent.cs",
+      "line": 8,
       "members": []
     },
     {
