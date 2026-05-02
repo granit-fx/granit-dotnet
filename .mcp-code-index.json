@@ -1262,6 +1262,7 @@
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
         "Granit.Caching",
+        "Granit.Guids",
         "Granit.Identity",
         "Granit.Identity.Local",
         "Granit.Persistence.EntityFrameworkCore"
@@ -19396,6 +19397,12 @@
           "kind": "method",
           "signature": "FromSeconds(30)",
           "returnType": "TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(1)",
+          "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
         }
       ]
     },
@@ -25750,6 +25757,28 @@
       ]
     },
     {
+      "name": "IUserDirectoryWriter",
+      "fqn": "Granit.Identity.IUserDirectoryWriter",
+      "kind": "interface",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/IUserDirectoryWriter.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(User user, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IUserLookupService",
       "fqn": "Granit.Identity.IUserLookupService",
       "kind": "interface",
@@ -25824,17 +25853,17 @@
       ]
     },
     {
-      "name": "GranitUserManager",
-      "fqn": "Granit.Identity.Local.AspNetIdentity.GranitUserManager",
+      "name": "LocalIdentityManager",
+      "fqn": "Granit.Identity.Local.AspNetIdentity.LocalIdentityManager",
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
-      "file": "src/Granit.Identity.Local.AspNetIdentity/GranitUserManager.cs",
-      "line": 27,
+      "file": "src/Granit.Identity.Local.AspNetIdentity/LocalIdentityManager.cs",
+      "line": 40,
       "members": [
         {
-          "name": "AccessFailedAsync",
+          "name": "CreateAsync",
           "kind": "method",
-          "signature": "AccessFailedAsync(GranitUser user)",
+          "signature": "CreateAsync(LocalIdentity user)",
           "returnType": "Task<IdentityResult>"
         }
       ]
@@ -25919,28 +25948,6 @@
       "members": []
     },
     {
-      "name": "GranitUser",
-      "fqn": "Granit.Identity.Local.Domain.GranitUser",
-      "kind": "class",
-      "project": "Granit.Identity.Local",
-      "file": "src/Granit.Identity.Local/Domain/GranitUser.cs",
-      "line": 29,
-      "members": [
-        {
-          "name": "FirstName",
-          "kind": "property",
-          "signature": "string? FirstName",
-          "returnType": "string?"
-        },
-        {
-          "name": "ToString",
-          "kind": "method",
-          "signature": "ToString()",
-          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
-        }
-      ]
-    },
-    {
       "name": "GranitUserGroup",
       "fqn": "Granit.Identity.Local.Domain.GranitUserGroup",
       "kind": "class",
@@ -25964,6 +25971,28 @@
       "file": "src/Granit.Identity.Local/Domain/GranitUserGroupMember.cs",
       "line": 8,
       "members": []
+    },
+    {
+      "name": "LocalIdentity",
+      "fqn": "Granit.Identity.Local.Domain.LocalIdentity",
+      "kind": "class",
+      "project": "Granit.Identity.Local",
+      "file": "src/Granit.Identity.Local/Domain/LocalIdentity.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "UserId",
+          "kind": "property",
+          "signature": "Guid UserId",
+          "returnType": "Guid"
+        },
+        {
+          "name": "ToString",
+          "kind": "method",
+          "signature": "ToString()",
+          "returnType": "DateTimeOffset? ModifiedAt { get; set; } public string? ModifiedBy { get; set; } string IIdentityUser.UserId => Id."
+        }
+      ]
     },
     {
       "name": "AccountAuthenticatorKeyResponse",
@@ -37697,7 +37726,7 @@
         {
           "name": "ConfigureOpenIddictModule",
           "kind": "method",
-          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, MetadataMappingOptions<GranitUser>? extensionOptions = null)",
+          "signature": "ConfigureOpenIddictModule(this ModelBuilder modelBuilder, IDataFilter? dataFilter = null, MetadataMappingOptions<LocalIdentity>? extensionOptions = null)",
           "returnType": "ModelBuilder"
         }
       ]

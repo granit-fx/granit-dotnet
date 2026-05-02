@@ -30,4 +30,14 @@ public sealed class EntitiesEndpointsOptions
     /// burst-clear all relation aggregates for a row in one call.
     /// </summary>
     public TimeSpan RelationAggregatesCacheTtl { get; set; } = TimeSpan.FromSeconds(30);
+
+    /// <summary>
+    /// FusionCache TTL for the calendar range-query endpoint
+    /// (<c>GET /api/entities/{name}/calendar</c>). Calendar data is more volatile
+    /// than the manifest (new events appear continuously), so the default keeps
+    /// the entry short — 1 minute. The cache key includes the resolved user
+    /// permission hash plus the From/To window, so entries are safe to share
+    /// across requests with the same security context and the same window.
+    /// </summary>
+    public TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan.FromMinutes(1);
 }
