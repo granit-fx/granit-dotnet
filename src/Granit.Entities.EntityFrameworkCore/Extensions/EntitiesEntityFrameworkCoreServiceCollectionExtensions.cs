@@ -201,6 +201,11 @@ public static class EntitiesEntityFrameworkCoreServiceCollectionExtensions
             services.AddScoped(
                 typeof(ILocalEventHandler<>).MakeGenericType(typeof(EntityDeletedEvent<>).MakeGenericType(relatedType)),
                 closedInvalidatorType);
+            // Bulk event — same invalidator, opt-in payload for hosts that
+            // emit one bulk event instead of N per-row events (story #1794).
+            services.AddScoped(
+                typeof(ILocalEventHandler<>).MakeGenericType(typeof(EntityBulkUpdatedEvent<>).MakeGenericType(relatedType)),
+                closedInvalidatorType);
         }
 
         return services;

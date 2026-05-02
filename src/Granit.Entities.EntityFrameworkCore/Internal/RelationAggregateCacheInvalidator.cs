@@ -33,7 +33,8 @@ internal sealed class RelationAggregateCacheInvalidator<TRelated>(
     RelationAggregateInvalidationTargets<TRelated> targets) :
     ILocalEventHandler<EntityCreatedEvent<TRelated>>,
     ILocalEventHandler<EntityUpdatedEvent<TRelated>>,
-    ILocalEventHandler<EntityDeletedEvent<TRelated>>
+    ILocalEventHandler<EntityDeletedEvent<TRelated>>,
+    ILocalEventHandler<EntityBulkUpdatedEvent<TRelated>>
     where TRelated : class, Granit.Domain.IEmitEntityLifecycleEvents
 {
     public Task HandleAsync(EntityCreatedEvent<TRelated> localEvent, CancellationToken cancellationToken = default) =>
@@ -44,6 +45,14 @@ internal sealed class RelationAggregateCacheInvalidator<TRelated>(
 
     public Task HandleAsync(EntityDeletedEvent<TRelated> localEvent, CancellationToken cancellationToken = default) =>
         EvictAsync(cancellationToken);
+
+    // One bulk event collapses to one eviction sweep — coarser tag granularity
+    // already groups per (source, relation), so the bulk event simply avoids the
+    // N-way fan-out cost when the host has a batch of writes (story #1794).
+    public Task HandleAsync(EntityBulkUpdatedEvent<TRelated> localEvent, CancellationToken cancellationToken = default) =>
+        localEvent.Entities.Count == 0
+            ? Task.CompletedTask
+            : EvictAsync(cancellationToken);
 
     private async Task EvictAsync(CancellationToken cancellationToken)
     {
