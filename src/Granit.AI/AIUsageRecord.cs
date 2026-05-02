@@ -11,7 +11,11 @@ public sealed record AIUsageRecord
     /// <summary>Tenant that made the request, or <c>null</c> if no tenant context.</summary>
     public Guid? TenantId { get; init; }
 
-    /// <summary>User that made the request, or <c>null</c> if anonymous/system.</summary>
+    /// <summary>
+    /// Canonical <see cref="Granit.Identity.Domain.User.Id"/> that made
+    /// the request (per ADR-051), or <c>null</c> if anonymous / system.
+    /// The same Guid resolves both the local and federated login paths.
+    /// </summary>
     public Guid? UserId { get; init; }
 
     /// <summary>Workspace name used for the request.</summary>

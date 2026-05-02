@@ -642,9 +642,14 @@ public sealed class Party : AuditedAggregateRoot, IMultiTenant, IHasMetadata, IM
     // ── User linkage ──────────────────────────────────────────────
 
     /// <summary>
-    /// Authenticated user identifier this party represents. Only meaningful for
-    /// <see cref="PartyKind.Individual"/>. One user → at most one party (enforced by
-    /// a partial unique index in the EF configuration).
+    /// Canonical <see cref="Granit.Identity.Domain.User.Id"/> this
+    /// party represents (per ADR-051). Only meaningful for
+    /// <see cref="PartyKind.Individual"/>. One user → at most one
+    /// party (enforced by a partial unique index in the EF
+    /// configuration). Auto-populated by
+    /// <c>EnsurePartyForUserHandler</c> in the optional
+    /// <c>Granit.Parties.Identity</c> bridge — apps that do not load
+    /// the bridge keep this as <c>null</c>.
     /// </summary>
     public Guid? UserId { get; private set; }
 
