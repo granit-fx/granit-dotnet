@@ -301,6 +301,7 @@
       "tests/Granit.DataLookup.Tests/Granit.DataLookup.Tests.csproj",
       "tests/Granit.Diagnostics.Endpoints.Tests/Granit.Diagnostics.Endpoints.Tests.csproj",
       "tests/Granit.Diagnostics.Tests/Granit.Diagnostics.Tests.csproj",
+      "tests/Granit.Documents.EntityFrameworkCore.Tests.Integration/Granit.Documents.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Documents.EntityFrameworkCore.Tests/Granit.Documents.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Documents.Tests/Granit.Documents.Tests.csproj",
       "tests/Granit.Encryption.BackgroundJobs.Tests/Granit.Encryption.BackgroundJobs.Tests.csproj",

@@ -502,6 +502,7 @@
     <Project Path="tests/Granit.DocumentGeneration.Excel.Tests/Granit.DocumentGeneration.Excel.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Pdf.Tests/Granit.DocumentGeneration.Pdf.Tests.csproj" />
     <Project Path="tests/Granit.DocumentGeneration.Tests/Granit.DocumentGeneration.Tests.csproj" />
+    <Project Path="tests/Granit.Documents.EntityFrameworkCore.Tests.Integration/Granit.Documents.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Documents.EntityFrameworkCore.Tests/Granit.Documents.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Tests/Granit.Documents.Tests.csproj" />
     <Project Path="tests/Granit.Features.Endpoints.Tests/Granit.Features.Endpoints.Tests.csproj" />
