@@ -1,3 +1,4 @@
+using Granit.Documents.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Documents.EntityFrameworkCore.Extensions;
@@ -13,14 +14,10 @@ public static class DocumentsModelBuilderExtensions
     /// </summary>
     /// <param name="modelBuilder">The model builder.</param>
     /// <returns>The same <paramref name="modelBuilder"/> for chaining.</returns>
-    /// <remarks>
-    /// Phase-1 scaffolding: no entity configurations registered yet. Subsequent stories
-    /// (F2 <c>Folder</c>, F3 <c>Document</c>, …) will add their <c>IEntityTypeConfiguration</c>
-    /// classes here.
-    /// </remarks>
     public static ModelBuilder ConfigureDocumentsModule(this ModelBuilder modelBuilder)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
+        modelBuilder.ApplyConfiguration(new FolderConfiguration());
         return modelBuilder;
     }
 }
