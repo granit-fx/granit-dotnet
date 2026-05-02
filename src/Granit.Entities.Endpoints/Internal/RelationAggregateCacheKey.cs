@@ -39,11 +39,22 @@ internal static class RelationAggregateCacheKey
 
     /// <summary>
     /// Cache eviction tag for all aggregates of a given (sourceEntity, sourceId).
-    /// Phase 2 wires invalidation events to <c>cache.RemoveByTagAsync(...)</c> when
-    /// the source or any of its related rows change.
+    /// Used when the source row itself changes — drops every cached aggregate for
+    /// that one row across every relation.
     /// </summary>
     public static string EvictionTag(string sourceEntityName, string sourceId) =>
         $"entity:{sourceEntityName}:{sourceId}";
+
+    /// <summary>
+    /// Cache eviction tag for all aggregates of a given relation, across every
+    /// source row (story #1793). Used by the EF Core relation-aggregate
+    /// invalidator: when any row of the related entity changes, the per-relation
+    /// tag drops every cached counter for that relation in one call. Coarser than
+    /// the per-(source, id) tag but the only viable scheme without an executable
+    /// foreign-key predicate on <see cref="RelationDescriptor"/>.
+    /// </summary>
+    public static string EvictionTagForRelation(string sourceEntityName, string relationName) =>
+        $"entity-relation:{sourceEntityName}:{relationName}";
 
     private static string HashPermissions(ClaimsPrincipal user)
     {

@@ -51,6 +51,26 @@ public sealed class RelationAggregateCacheKeyTests
             .ShouldBe("entity:Granit.Parties.Party:abc-123");
     }
 
+    [Fact]
+    public void EvictionTagForRelation_is_per_source_relation()
+    {
+        RelationAggregateCacheKey.EvictionTagForRelation("Granit.Parties.Party", "invoices")
+            .ShouldBe("entity-relation:Granit.Parties.Party:invoices");
+    }
+
+    [Fact]
+    public void Source_and_relation_eviction_tags_are_distinct_namespaces()
+    {
+        // Two-tag scheme on cache writes: source-row drops one parent's
+        // counters; relation-tag drops every parent's counters for that one
+        // relation. Their prefixes must not collide.
+        string source = RelationAggregateCacheKey.EvictionTag("Party", "abc");
+        string relation = RelationAggregateCacheKey.EvictionTagForRelation("Party", "invoices");
+        source.ShouldNotBe(relation);
+        source.ShouldStartWith("entity:");
+        relation.ShouldStartWith("entity-relation:");
+    }
+
     private static ClaimsPrincipal BuildUser(IEnumerable<string> roles, string sub)
     {
         List<Claim> claims = [new(ClaimTypes.NameIdentifier, sub)];

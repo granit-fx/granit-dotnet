@@ -19656,7 +19656,7 @@
       "kind": "class",
       "project": "Granit.Entities.EntityFrameworkCore",
       "file": "src/Granit.Entities.EntityFrameworkCore/Extensions/EntitiesEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitEntitiesEntityFrameworkCore",
