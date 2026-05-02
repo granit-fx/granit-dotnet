@@ -66,4 +66,40 @@ public interface IDocumentService
         Guid? versionId,
         Guid requestedByUserId,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the document with the given identifier, or <c>null</c> when not found
+    /// or excluded by the tenant filter.
+    /// </summary>
+    Task<Document?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Renames the document. Returns the updated aggregate, or <c>null</c> when the
+    /// document is not found or excluded by the tenant filter.
+    /// </summary>
+    /// <remarks>Aggregate-level invariants surface as <see cref="InvalidOperationException"/>.</remarks>
+    Task<Document?> RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Updates the optional description (<c>null</c> clears it). Returns the updated
+    /// aggregate, or <c>null</c> when the document is not found.
+    /// </summary>
+    Task<Document?> UpdateDescriptionAsync(Guid id, string? newDescription, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Moves the document under <paramref name="newFolderId"/> (or the tenant root when
+    /// <c>null</c>). Returns the updated aggregate, or <c>null</c> when the document is
+    /// not found.
+    /// </summary>
+    /// <remarks>
+    /// Cross-tenant moves and moves into a trashed folder surface as
+    /// <see cref="InvalidOperationException"/>; missing target folder surfaces the same way.
+    /// </remarks>
+    Task<Document?> MoveAsync(Guid id, Guid? newFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sends the document to the trash. Returns the trashed aggregate, or <c>null</c>
+    /// when the document is not found.
+    /// </summary>
+    Task<Document?> TrashAsync(Guid id, CancellationToken cancellationToken = default);
 }
