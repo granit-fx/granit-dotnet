@@ -1,6 +1,7 @@
 using Granit.Documents.EntityFrameworkCore.Internal;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Granit.Documents.EntityFrameworkCore.Extensions;
@@ -36,6 +37,11 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         ArgumentNullException.ThrowIfNull(configure);
 
         builder.Services.AddGranitDbContext<DocumentsDbContext>(configure);
+
+        // Tenant-root bootstrap (F2.2): scoped so the per-instance memoisation cache lives
+        // for the duration of one request only. Concurrency-safe via the partial unique
+        // index ux_documents_folders_one_root_per_tenant.
+        builder.Services.AddScoped<IDocumentBootstrapService, DocumentBootstrapService>();
 
         return builder;
     }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Documents.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.EntityFrameworkCore.Tests.Integration" />
     <InternalsVisibleTo Include="Granit.Documents.Endpoints" />
     <InternalsVisibleTo Include="Granit.Documents.Endpoints.Tests" />
     <InternalsVisibleTo Include="Granit.Documents.BackgroundJobs" />

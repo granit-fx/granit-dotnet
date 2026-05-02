@@ -18047,7 +18047,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
@@ -18176,6 +18176,22 @@
       "file": "src/Granit.Documents/GranitDocumentsModule.cs",
       "line": 25,
       "members": []
+    },
+    {
+      "name": "IDocumentBootstrapService",
+      "fqn": "Granit.Documents.IDocumentBootstrapService",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/IDocumentBootstrapService.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "EnsureTenantRootAsync",
+          "kind": "method",
+          "signature": "EnsureTenantRootAsync(Guid? tenantId, Guid ownerUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid>"
+        }
+      ]
     },
     {
       "name": "GranitDocumentsOptions",
