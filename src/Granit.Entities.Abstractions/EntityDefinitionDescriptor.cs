@@ -1,4 +1,5 @@
 using Granit.Entities.Actions;
+using Granit.Entities.Activities;
 using Granit.Entities.Details;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
@@ -118,4 +119,13 @@ public sealed record EntityDefinitionDescriptor
     /// precedence on conflicts (same <see cref="EntityActionDescriptor.Name"/>).
     /// </summary>
     public IReadOnlyList<EntityActionDescriptor> Actions { get; init; } = [];
+
+    /// <summary>
+    /// Activity opt-in (ADR-046 §3) — when non-<see langword="null"/>, the
+    /// entity hosts cross-entity activities; the manifest exposes
+    /// <c>activities.allowedTypes</c> and the optional default-assignee
+    /// property pointer. Set via
+    /// <see cref="EntityDefinitionBuilder{TEntity}.Activities(System.Action{ActivitiesOptionsBuilder{TEntity}})"/>.
+    /// </summary>
+    public ActivitiesDescriptor? Activities { get; init; }
 }

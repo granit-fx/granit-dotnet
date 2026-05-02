@@ -161,6 +161,47 @@ regardless of batch size. A 1000-row import emits one cache eviction sweep, not
 Per-row events and bulk events are alternatives, not complements — emit one or
 the other for the same set of rows, never both.
 
+## Activities
+
+Opt an entity into hosting cross-entity to-dos (calls, meetings, follow-up
+tasks…) per [ADR-046](/dotnet/architecture/adr/046-activities-vs-timeline/) by
+calling `.Activities()` on the builder:
+
+```csharp
+public sealed class CustomerEntityDefinition : EntityDefinition<Customer>
+{
+    protected override void Configure(EntityDefinitionBuilder<Customer> b)
+    {
+        b.PermissionGroup("Customers");
+        b.Activities(a => a
+            .AllowedTypes("Call", "Meeting", "Email", "ToDo")
+            .DefaultAssignee(c => c.AccountManagerUserId));
+
+        b.Detail("default", d => d.SidePanel(p => p.Activities()));
+    }
+}
+```
+
+The manifest section `entity.activities` carries the resolved
+`allowedTypes` (filtered against the runtime `IActivityRegistry`) plus the
+optional `defaultAssignee` property name. Activity types listed in
+`AllowedTypes(...)` that are not registered with the framework are silently
+dropped from the manifest — entities can safely opt into types contributed by
+optional modules (e.g. `"Quote"` from `Granit.Sales`) without breaking when
+those modules are not loaded.
+
+The `activities` section is omitted entirely when:
+
+- the entity does not call `.Activities()`, or
+- the host has not loaded the `Granit.Activities` runtime
+  (`AddGranitActivities()`) — without it the registry is unavailable and the
+  catalog cannot be validated.
+
+`Detail.SidePanel.Activities()` is the standard side-panel hook that surfaces
+the React `<EntityActivitiesPanel />` component on the detail view; it works
+independently of the `.Activities()` opt-in (the panel renders an empty state
+when the entity does not own activities).
+
 ## Calendar view
 
 A calendar layout reads its rows from a dedicated range-query endpoint that the

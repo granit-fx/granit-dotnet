@@ -41,6 +41,9 @@ public enum EntityFacets
     /// <summary>Actions exposed on the entity (intra-module + cross-module contributions per ADR-040).</summary>
     Actions = 1 << 9,
 
+    /// <summary>Activities opt-in (ADR-046) — allowed activity-type catalog + default-assignee property pointer. Section is omitted when the entity does not call <c>.Activities()</c>.</summary>
+    Activities = 1 << 10,
+
     /// <summary>All facets — the default when <c>?facets=</c> is absent.</summary>
-    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views | Relations | Actions,
+    All = Identity | Permissions | Forms | Details | Collections | Dashboards | Exports | Views | Relations | Actions | Activities,
 }
