@@ -3,7 +3,7 @@ using Granit.Domain;
 namespace Granit.Identity.Local.Domain;
 
 /// <summary>
-/// Join entity linking a <see cref="GranitUser"/> to a <see cref="GranitUserGroup"/>.
+/// Join entity linking a <see cref="LocalIdentity"/> to a <see cref="GranitUserGroup"/>.
 /// </summary>
 public class GranitUserGroupMember : AuditedEntity, IMultiTenant
 {

@@ -42,7 +42,7 @@ public sealed partial class ClientSideAuthorizationHandler(
 {
     /// <summary>
     /// Well-known claim type for the tenant identifier carried on the principal,
-    /// as populated by <c>GranitUserClaimsPrincipalFactory</c> for tenant users.
+    /// as populated by <c>LocalIdentityClaimsPrincipalFactory</c> for tenant users.
     /// </summary>
     private const string TenantIdClaimType = "tenant_id";
 

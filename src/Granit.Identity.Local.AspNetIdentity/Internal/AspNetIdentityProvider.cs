@@ -21,7 +21,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <see cref="IIdentityCredentialVerifier"/>.
 /// </remarks>
 internal sealed partial class AspNetIdentityProvider(
-    UserManager<GranitUser> _userManager,
+    UserManager<LocalIdentity> _userManager,
     RoleManager<GranitRole> _roleManager,
     ILocalIdentityGroupStore _groupStore,
     ILogger<AspNetIdentityProvider> _logger) : IIdentityProvider
@@ -33,7 +33,7 @@ internal sealed partial class AspNetIdentityProvider(
         string? search = null, int? first = null, int? max = null,
         CancellationToken cancellationToken = default)
     {
-        IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
+        IQueryable<LocalIdentity> query = _userManager.Users.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -56,7 +56,7 @@ internal sealed partial class AspNetIdentityProvider(
             query = query.Take(max.Value);
         }
 
-        List<GranitUser> users = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
+        List<LocalIdentity> users = await query.ToListAsync(cancellationToken).ConfigureAwait(false);
         return users.Cast<IIdentityUser>().ToList();
     }
 
@@ -64,7 +64,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<IIdentityUser?> GetUserAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
         return user;
     }
 
@@ -74,7 +74,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<IIdentityUser> CreateUserAsync(
         IdentityUserCreate user, CancellationToken cancellationToken = default)
     {
-        GranitUser entity = new()
+        LocalIdentity entity = new()
         {
             UserName = user.Username,
             Email = user.Email,
@@ -105,7 +105,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task SetUserEnabledAsync(
         string userId, bool enabled, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         if (enabled)
@@ -124,7 +124,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task UpdateUserAsync(
         string userId, IdentityUserUpdate update, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         if (update.FirstName is not null)
@@ -166,7 +166,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<IReadOnlyList<IIdentityUser>> GetRoleMembersAsync(
         string roleName, CancellationToken cancellationToken = default)
     {
-        IList<GranitUser> users = await _userManager.GetUsersInRoleAsync(roleName).ConfigureAwait(false);
+        IList<LocalIdentity> users = await _userManager.GetUsersInRoleAsync(roleName).ConfigureAwait(false);
         return users.Cast<IIdentityUser>().ToList();
     }
 
@@ -174,7 +174,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<IReadOnlyList<GranitIdentityRole>> GetUserRolesAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return [];
@@ -188,7 +188,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task AssignRoleAsync(
         string userId, string roleName, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         IdentityResult result = await _userManager.AddToRoleAsync(user, roleName).ConfigureAwait(false);
@@ -204,7 +204,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task RemoveRoleAsync(
         string userId, string roleName, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         IdentityResult result = await _userManager.RemoveFromRoleAsync(user, roleName).ConfigureAwait(false);
@@ -279,7 +279,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task SetTemporaryPasswordAsync(
         string userId, string temporaryPassword, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         string token = await _userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(false);
@@ -301,7 +301,7 @@ internal sealed partial class AspNetIdentityProvider(
     public async Task<bool> VerifyUserCredentialsAsync(
         string username, string password, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await _userManager.FindByNameAsync(username).ConfigureAwait(false);
+        LocalIdentity? user = await _userManager.FindByNameAsync(username).ConfigureAwait(false);
         if (user is null)
         {
             return false;

@@ -13,14 +13,14 @@ namespace Granit.OpenIddict.Endpoints.Tests.Integration;
 
 public sealed class OidcPrincipalFactoryTests
 {
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly IClaimsDestinationProvider _destinationProvider;
     private readonly OidcPrincipalFactory _factory;
 
     public OidcPrincipalFactoryTests()
     {
-        IUserStore<GranitUser> userStore = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> userStore = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             userStore, null, null, null, null, null, null, null, null);
 
         _destinationProvider = Substitute.For<IClaimsDestinationProvider>();
@@ -33,7 +33,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsSubjectClaim()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         SetupUserManager(user);
 
         ClaimsPrincipal principal = await _factory.CreateUserPrincipalAsync(
@@ -47,7 +47,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsPreferredUsername()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.UserName = "jdoe";
         SetupUserManager(user);
 
@@ -62,7 +62,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsNameFromFirstAndLast()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.FirstName = "John";
         user.LastName = "Doe";
         SetupUserManager(user);
@@ -79,7 +79,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_OnlyFirstName_SetsNameWithoutTrailingSpace()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.FirstName = "John";
         user.LastName = null;
         SetupUserManager(user);
@@ -96,7 +96,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_NullNames_NoNameClaim()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.FirstName = null;
         user.LastName = null;
         SetupUserManager(user);
@@ -113,7 +113,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsEmailClaims()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.Email = "john@example.com";
         user.EmailConfirmed = true;
         SetupUserManager(user);
@@ -129,7 +129,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_UnconfirmedEmail_SetsVerifiedFalse()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.Email = "john@example.com";
         user.EmailConfirmed = false;
         SetupUserManager(user);
@@ -144,7 +144,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_NullEmail_NoEmailClaim()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.Email = null;
         SetupUserManager(user);
 
@@ -158,7 +158,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsPhoneClaims()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.PhoneNumber = "+32471000000";
         user.PhoneNumberConfirmed = true;
         SetupUserManager(user);
@@ -174,7 +174,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_NullPhone_NoPhoneClaim()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         user.PhoneNumber = null;
         SetupUserManager(user);
 
@@ -188,7 +188,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_IncludesRoles()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         SetupUserManager(user, roles: ["admin", "editor"]);
 
         ClaimsPrincipal principal = await _factory.CreateUserPrincipalAsync(
@@ -204,7 +204,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_IncludesCustomClaims()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         List<Claim> customClaims = [new Claim("tenant_id", "abc-123")];
         SetupUserManager(user, customClaims: customClaims);
 
@@ -218,7 +218,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_SetsScopes()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         SetupUserManager(user);
 
         ImmutableArray<string> scopes = ["openid", "profile", "email"];
@@ -234,7 +234,7 @@ public sealed class OidcPrincipalFactoryTests
     [Fact]
     public async Task CreateUserPrincipal_CallsDestinationProvider()
     {
-        GranitUser user = CreateTestUser();
+        LocalIdentity user = CreateTestUser();
         SetupUserManager(user);
 
         await _factory.CreateUserPrincipalAsync(
@@ -279,7 +279,7 @@ public sealed class OidcPrincipalFactoryTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static GranitUser CreateTestUser() => new()
+    private static LocalIdentity CreateTestUser() => new()
     {
         Id = Guid.NewGuid(),
         UserName = "testuser",
@@ -290,7 +290,7 @@ public sealed class OidcPrincipalFactoryTests
     };
 
     private void SetupUserManager(
-        GranitUser user,
+        LocalIdentity user,
         IList<string>? roles = null,
         IList<Claim>? customClaims = null)
     {

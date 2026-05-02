@@ -12,7 +12,7 @@ public sealed class EntityTests
     [Fact]
     public void GranitUser_Default_Values()
     {
-        GranitUser user = new();
+        LocalIdentity user = new();
 
         user.FirstName.ShouldBeNull();
         user.LastName.ShouldBeNull();
@@ -32,7 +32,7 @@ public sealed class EntityTests
     {
         var tenantId = Guid.NewGuid();
         DateTimeOffset now = DateTimeOffset.UtcNow;
-        GranitUser user = new()
+        LocalIdentity user = new()
         {
             FirstName = "Alice",
             LastName = "Doe",
@@ -63,7 +63,7 @@ public sealed class EntityTests
     [Fact]
     public void GranitUser_Implements_IMultiTenant()
     {
-        GranitUser user = new();
+        LocalIdentity user = new();
 
         user.ShouldBeAssignableTo<IMultiTenant>();
     }
@@ -72,7 +72,7 @@ public sealed class EntityTests
     public void GranitUser_IMultiTenant_TenantId()
     {
         var tenantId = Guid.NewGuid();
-        GranitUser user = new() { TenantId = tenantId };
+        LocalIdentity user = new() { TenantId = tenantId };
 
         ((IMultiTenant)user).TenantId.ShouldBe(tenantId);
     }

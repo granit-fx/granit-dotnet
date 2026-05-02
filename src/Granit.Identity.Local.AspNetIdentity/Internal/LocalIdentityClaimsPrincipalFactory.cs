@@ -11,13 +11,13 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// middleware to resolve the tenant from the authenticated cookie on subsequent requests
 /// (authorize, refresh, 2FA second step).
 /// </summary>
-internal sealed class GranitUserClaimsPrincipalFactory(
-    UserManager<GranitUser> userManager,
+internal sealed class LocalIdentityClaimsPrincipalFactory(
+    UserManager<LocalIdentity> userManager,
     RoleManager<GranitRole> roleManager,
     IOptions<IdentityOptions> options)
-    : UserClaimsPrincipalFactory<GranitUser, GranitRole>(userManager, roleManager, options)
+    : UserClaimsPrincipalFactory<LocalIdentity, GranitRole>(userManager, roleManager, options)
 {
-    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(GranitUser user)
+    protected override async Task<ClaimsIdentity> GenerateClaimsAsync(LocalIdentity user)
     {
         ClaimsIdentity identity = await base.GenerateClaimsAsync(user).ConfigureAwait(false);
 

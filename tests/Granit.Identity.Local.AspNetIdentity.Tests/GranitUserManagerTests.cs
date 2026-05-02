@@ -33,7 +33,7 @@ public sealed class GranitUserManagerTests
     [InlineData(10, 120)]    // 2h (cap)
     public void ComputeLockoutDuration_ExponentialBackoff(int consecutiveLockouts, int expectedMinutes)
     {
-        GranitUserManager manager = CreateManager(DefaultOptions);
+        LocalIdentityManager manager = CreateManager(DefaultOptions);
 
         TimeSpan duration = manager.ComputeLockoutDuration(consecutiveLockouts);
 
@@ -43,7 +43,7 @@ public sealed class GranitUserManagerTests
     [Fact]
     public void ComputeLockoutDuration_ZeroLockouts_ReturnsBaseDuration()
     {
-        GranitUserManager manager = CreateManager(DefaultOptions);
+        LocalIdentityManager manager = CreateManager(DefaultOptions);
 
         TimeSpan duration = manager.ComputeLockoutDuration(0);
 
@@ -59,7 +59,7 @@ public sealed class GranitUserManagerTests
             MaxLockoutDuration = TimeSpan.FromMinutes(30),
             ExponentialBase = 3.0,
         };
-        GranitUserManager manager = CreateManager(options);
+        LocalIdentityManager manager = CreateManager(options);
 
         // 1 * 3^0 = 1 min
         manager.ComputeLockoutDuration(1).ShouldBe(TimeSpan.FromMinutes(1));
@@ -76,7 +76,7 @@ public sealed class GranitUserManagerTests
     [Fact]
     public void ComputeLockoutDuration_VeryHighLockoutCount_DoesNotOverflow()
     {
-        GranitUserManager manager = CreateManager(DefaultOptions);
+        LocalIdentityManager manager = CreateManager(DefaultOptions);
 
         // 2^99 would overflow — should be capped safely
         TimeSpan duration = manager.ComputeLockoutDuration(100);
@@ -86,14 +86,14 @@ public sealed class GranitUserManagerTests
 
     // ──── Helper ────
 
-    private static GranitUserManager CreateManager(GranitLockoutOptions lockoutOptions)
+    private static LocalIdentityManager CreateManager(GranitLockoutOptions lockoutOptions)
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
         IOptions<IdentityOptions> identityOptions = Microsoft.Extensions.Options.Options.Create(new IdentityOptions());
-        IPasswordHasher<GranitUser> hasher = Substitute.For<IPasswordHasher<GranitUser>>();
-        ILogger<GranitUserManager> logger = Substitute.For<ILogger<GranitUserManager>>();
+        IPasswordHasher<LocalIdentity> hasher = Substitute.For<IPasswordHasher<LocalIdentity>>();
+        ILogger<LocalIdentityManager> logger = Substitute.For<ILogger<LocalIdentityManager>>();
 
-        return new GranitUserManager(
+        return new LocalIdentityManager(
             store,
             identityOptions,
             hasher,

@@ -12,18 +12,18 @@ public sealed class AspNetTwoFactorServiceTests
 {
     private static readonly string UserId = Guid.NewGuid().ToString();
 
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly ITotpService _totpService = Substitute.For<ITotpService>();
     private readonly AspNetTwoFactorService _sut;
-    private readonly GranitUser _user;
+    private readonly LocalIdentity _user;
 
     public AspNetTwoFactorServiceTests()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
 
-        _user = new GranitUser { Id = Guid.Parse(UserId), Email = "user@test.com", UserName = "testuser" };
+        _user = new LocalIdentity { Id = Guid.Parse(UserId), Email = "user@test.com", UserName = "testuser" };
         _userManager.FindByIdAsync(UserId).Returns(_user);
 
         _sut = new AspNetTwoFactorService(_userManager, _totpService);
@@ -62,7 +62,7 @@ public sealed class AspNetTwoFactorServiceTests
     [Fact]
     public async Task GetStatusAsync_UserNotFound_Throws()
     {
-        _userManager.FindByIdAsync("unknown").Returns((GranitUser?)null);
+        _userManager.FindByIdAsync("unknown").Returns((LocalIdentity?)null);
 
         await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.GetStatusAsync("unknown", TestContext.Current.CancellationToken));
@@ -101,7 +101,7 @@ public sealed class AspNetTwoFactorServiceTests
     [Fact]
     public async Task GetAuthenticatorKeyAsync_NoEmail_UsesUserNameForQrCode()
     {
-        var user = new GranitUser { Id = Guid.NewGuid(), Email = null, UserName = "fallback-user" };
+        var user = new LocalIdentity { Id = Guid.NewGuid(), Email = null, UserName = "fallback-user" };
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.GetAuthenticatorKeyAsync(user).Returns("KEY123");
         _totpService.GetQrCodeUri("fallback-user", "KEY123").Returns("otpauth://...");
@@ -138,7 +138,7 @@ public sealed class AspNetTwoFactorServiceTests
             () => _sut.EnableAsync(UserId, "000000", TestContext.Current.CancellationToken));
 
         ex.Message.ShouldContain("Invalid TOTP");
-        await _userManager.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<GranitUser>(), Arg.Any<bool>());
+        await _userManager.DidNotReceive().SetTwoFactorEnabledAsync(Arg.Any<LocalIdentity>(), Arg.Any<bool>());
     }
 
     [Fact]

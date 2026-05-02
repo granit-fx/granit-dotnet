@@ -587,7 +587,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task CompletePasskeyAssertion_ValidCredential_Returns200()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.PasskeyService
             .CompleteAssertionAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
@@ -635,7 +635,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
 
         _server.UserManager
             .FindByIdAsync("nonexistent-user-id")
-            .Returns((GranitUser?)null);
+            .Returns((LocalIdentity?)null);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/passkeys/assertion/complete",
@@ -999,11 +999,11 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     {
         _server.UserManager
             .FindByEmailAsync("unknown@example.com")
-            .Returns((GranitUser?)null);
+            .Returns((LocalIdentity?)null);
 
         _server.UserManager
             .FindByNameAsync("unknown@example.com")
-            .Returns((GranitUser?)null);
+            .Returns((LocalIdentity?)null);
 
         HttpResponseMessage response = await _server.AnonymousClient.PostAsJsonAsync(
             "/account/login",
@@ -1017,7 +1017,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task Login_LockedOut_Returns401AndPublishesEvent()
     {
         DateTimeOffset lockoutEnd = DateTimeOffset.UtcNow.AddMinutes(5);
-        var fakeUser = new GranitUser
+        var fakeUser = new LocalIdentity
         {
             Id = AccountEndpointsTestServer.TestUserId,
             Email = "locked@example.com",
@@ -1056,7 +1056,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Login_RequiresTwoFactor_Returns200WithFlag()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.UserManager
             .FindByEmailAsync("2fa@example.com")
@@ -1084,7 +1084,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Login_NotAllowed_Returns401()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.UserManager
             .FindByEmailAsync("unconfirmed@example.com")
@@ -1105,7 +1105,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Login_WrongPassword_Returns401()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.UserManager
             .FindByEmailAsync("user@example.com")
@@ -1126,7 +1126,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Login_RememberMe_PassesPersistentFlag()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.UserManager
             .FindByEmailAsync("remember@example.com")
@@ -1153,7 +1153,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task Login_Success_Returns200()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.UserManager
             .FindByEmailAsync("success@example.com")
@@ -1191,7 +1191,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
         _server.CurrentTenant.IsAvailable.Returns(true);
         _server.CurrentTenant.Id.Returns(staleTenantId);
 
-        var hostAdmin = new GranitUser
+        var hostAdmin = new LocalIdentity
         {
             Id = AccountEndpointsTestServer.TestUserId,
             Email = "host-admin@example.com",
@@ -1294,7 +1294,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     [Fact]
     public async Task TwoFactorLogin_RecoveryCode_RememberMe_ReSignsPersistent()
     {
-        var fakeUser = new GranitUser { Id = AccountEndpointsTestServer.TestUserId };
+        var fakeUser = new LocalIdentity { Id = AccountEndpointsTestServer.TestUserId };
 
         _server.SignInManager
             .TwoFactorRecoveryCodeSignInAsync("RECOVERY1")
@@ -1340,7 +1340,7 @@ public sealed class AccountEndpointsIntegrationTests : IAsyncLifetime
     public async Task TwoFactorLogin_LockedOut_Returns401AndPublishesEvent()
     {
         DateTimeOffset lockoutEnd = DateTimeOffset.UtcNow.AddMinutes(10);
-        var fakeUser = new GranitUser
+        var fakeUser = new LocalIdentity
         {
             Id = AccountEndpointsTestServer.TestUserId,
             Email = "2fa-locked@example.com",

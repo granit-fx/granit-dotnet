@@ -7,7 +7,7 @@ namespace Granit.Identity.Local.Privacy.DataExport;
 
 /// <summary>
 /// Privacy data provider for Granit.Identity.Local. Emits the authenticated user's profile
-/// (<see cref="GranitUser"/>) and the roles they belong to as a JSON fragment during the
+/// (<see cref="LocalIdentity"/>) and the roles they belong to as a JSON fragment during the
 /// scatter-gather personal-data export saga (GDPR Art. 15/20).
 /// </summary>
 /// <remarks>
@@ -16,7 +16,7 @@ namespace Granit.Identity.Local.Privacy.DataExport;
 /// sentinel so the archive assembler records the provider in <c>manifest.EmptyProviders</c>
 /// rather than failing the whole export.
 /// </remarks>
-public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> userManager) : IPrivacyDataProvider
+public sealed class IdentityLocalPrivacyDataProvider(UserManager<LocalIdentity> userManager) : IPrivacyDataProvider
 {
     /// <inheritdoc />
     public static string ProviderName => "identity-local";
@@ -30,7 +30,7 @@ public sealed class IdentityLocalPrivacyDataProvider(UserManager<GranitUser> use
     /// <inheritdoc />
     public async Task<ReadOnlyMemory<byte>> ExportAsync(Guid userId, CancellationToken cancellationToken)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId.ToString()).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId.ToString()).ConfigureAwait(false);
         if (user is null)
         {
             return ReadOnlyMemory<byte>.Empty;

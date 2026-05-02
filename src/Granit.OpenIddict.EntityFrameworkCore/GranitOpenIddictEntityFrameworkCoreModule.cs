@@ -40,8 +40,8 @@ public sealed class GranitOpenIddictEntityFrameworkCoreModule : GranitModule
         context.Services.TryAddScoped<ILocalIdentityGroupStore, OpenIddictGroupStore>();
         context.Services.TryAddScoped<ISigningKeyStore, EfSigningKeyStore>();
 
-        // GranitUser implements IHasMetadata — apps can extend user properties
-        // by calling AddMetadataMappings<GranitUser> in their own module.
+        // LocalIdentity implements IHasMetadata — apps can extend user properties
+        // by calling AddMetadataMappings<LocalIdentity> in their own module.
         // The MetadataSyncInterceptor in Granit.Persistence handles sync automatically.
         context.Services.AddMetadataInfrastructure();
     }

@@ -20,7 +20,7 @@ public sealed class AspNetImpersonationServiceTests
 {
     private static readonly DateTimeOffset FixedNow = new(2025, 6, 15, 10, 0, 0, TimeSpan.Zero);
 
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
@@ -28,8 +28,8 @@ public sealed class AspNetImpersonationServiceTests
 
     public AspNetImpersonationServiceTests()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
 
         _clock.Now.Returns(FixedNow);
@@ -51,7 +51,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task ImpersonateAsync_ValidInputs_ReturnsTokenResult()
     {
-        GranitUser target = CreateUser();
+        LocalIdentity target = CreateUser();
         string targetId = target.Id.ToString();
         var impersonatorGuid = Guid.NewGuid();
         string impersonatorId = impersonatorGuid.ToString();
@@ -83,7 +83,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task ImpersonateAsync_PublishesUserImpersonatedEto()
     {
-        GranitUser target = CreateUser();
+        LocalIdentity target = CreateUser();
         var tenantId = Guid.NewGuid();
         target.TenantId = tenantId;
         string targetId = target.Id.ToString();
@@ -108,7 +108,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task ImpersonateAsync_CreatesAccessAndRefreshTokens()
     {
-        GranitUser target = CreateUser();
+        LocalIdentity target = CreateUser();
         string targetId = target.Id.ToString();
         var impersonatorGuid = Guid.NewGuid();
 
@@ -138,7 +138,7 @@ public sealed class AspNetImpersonationServiceTests
     public async Task ImpersonateAsync_UserNotFound_ThrowsInvalidOperation()
     {
         string unknownId = Guid.NewGuid().ToString();
-        _userManager.FindByIdAsync(unknownId).Returns((GranitUser?)null);
+        _userManager.FindByIdAsync(unknownId).Returns((LocalIdentity?)null);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.ImpersonateAsync(
@@ -183,7 +183,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task ImpersonateAsync_NullPayload_ReturnsEmptyToken()
     {
-        GranitUser target = CreateUser();
+        LocalIdentity target = CreateUser();
         string targetId = target.Id.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
@@ -205,7 +205,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task ImpersonateAsync_UserWithNoRoles_SucceedsWithoutRoleClaims()
     {
-        GranitUser target = CreateUser();
+        LocalIdentity target = CreateUser();
         string targetId = target.Id.ToString();
 
         _userManager.FindByIdAsync(targetId).Returns(target);
@@ -223,7 +223,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task BackToImpersonatorAsync_ValidId_ReturnsTokenResult()
     {
-        GranitUser admin = CreateUser();
+        LocalIdentity admin = CreateUser();
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
@@ -253,7 +253,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task BackToImpersonatorAsync_CreatesTokensWithCorrectExpiry()
     {
-        GranitUser admin = CreateUser();
+        LocalIdentity admin = CreateUser();
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
@@ -281,7 +281,7 @@ public sealed class AspNetImpersonationServiceTests
     public async Task BackToImpersonatorAsync_UserNotFound_ThrowsInvalidOperation()
     {
         string unknownId = Guid.NewGuid().ToString();
-        _userManager.FindByIdAsync(unknownId).Returns((GranitUser?)null);
+        _userManager.FindByIdAsync(unknownId).Returns((LocalIdentity?)null);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.BackToImpersonatorAsync(unknownId, TestContext.Current.CancellationToken));
@@ -302,7 +302,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task BackToImpersonatorAsync_NullPayload_ReturnsEmptyToken()
     {
-        GranitUser admin = CreateUser();
+        LocalIdentity admin = CreateUser();
         string adminId = admin.Id.ToString();
 
         _userManager.FindByIdAsync(adminId).Returns(admin);
@@ -324,7 +324,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task BackToImpersonatorAsync_UserWithNullUserName_UsesEmptyString()
     {
-        GranitUser admin = CreateUser();
+        LocalIdentity admin = CreateUser();
         admin.UserName = null;
         string adminId = admin.Id.ToString();
 
@@ -341,7 +341,7 @@ public sealed class AspNetImpersonationServiceTests
     [Fact]
     public async Task BackToImpersonatorAsync_UserWithNullEmail_UsesEmptyString()
     {
-        GranitUser admin = CreateUser();
+        LocalIdentity admin = CreateUser();
         admin.Email = null;
         string adminId = admin.Id.ToString();
 
@@ -357,7 +357,7 @@ public sealed class AspNetImpersonationServiceTests
 
     // ────────────────────── Helpers ──────────────────────
 
-    private static GranitUser CreateUser() => new()
+    private static LocalIdentity CreateUser() => new()
     {
         Id = Guid.NewGuid(),
         UserName = "testuser",

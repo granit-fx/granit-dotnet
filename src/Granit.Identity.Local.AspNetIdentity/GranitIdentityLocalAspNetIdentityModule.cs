@@ -41,8 +41,8 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         context.Services.Replace(ServiceDescriptor.Scoped<IUserLookupService,
             AspNetIdentityUserLookupService>());
 
-        // Replace default UserManager with GranitUserManager (exponential backoff lockout)
-        context.Services.Replace(ServiceDescriptor.Scoped<UserManager<GranitUser>, GranitUserManager>());
+        // Replace default UserManager with LocalIdentityManager (exponential backoff lockout)
+        context.Services.Replace(ServiceDescriptor.Scoped<UserManager<LocalIdentity>, LocalIdentityManager>());
 
         // Tenant-aware role lookup: the normalizer prefixes every NormalizeName call
         // with the current tenant id when one is active, letting the same display name
@@ -61,7 +61,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // This ensures multi-tenancy middleware can resolve the tenant from the authenticated
         // cookie on subsequent requests (authorize, refresh, 2FA second step).
         context.Services.Replace(ServiceDescriptor.Scoped<
-            IUserClaimsPrincipalFactory<GranitUser>, GranitUserClaimsPrincipalFactory>());
+            IUserClaimsPrincipalFactory<LocalIdentity>, LocalIdentityClaimsPrincipalFactory>());
 
         // Role orchestration — dual-writes GranitRole (Identity DbContext) + RoleMetadata
         // (host DbContext) with compensating delete on metadata failure.
@@ -70,7 +70,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         // Seed SuperAdmin / TenantAdministrator / User on host data seed.
         context.Services.AddTransient<IHostDataSeedContributor, IdentityLocalRoleSeedContributor>();
 
-        // ASP.NET Core Identity service implementations (depend on UserManager<GranitUser>)
+        // ASP.NET Core Identity service implementations (depend on UserManager<LocalIdentity>)
         context.Services.TryAddScoped<ITotpService, TotpService>();
         context.Services.TryAddScoped<ITwoFactorService, AspNetTwoFactorService>();
         context.Services.TryAddScoped<IPasskeyService, AspNetPasskeyService>();
@@ -128,7 +128,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         // Detect redundant Granit.Identity.Federated.EntityFrameworkCore registration.
-        // When OpenIddict is the identity provider, GranitUser is the source of truth —
+        // When OpenIddict is the identity provider, LocalIdentity is the source of truth —
         // UserCacheEntry and UserCacheSyncMiddleware are unnecessary.
         var userCacheDbContextType = Type.GetType(
             "Granit.Identity.Federated.EntityFrameworkCore.DbContext.IUserCacheDbContext, Granit.Identity.Federated.EntityFrameworkCore",
@@ -148,7 +148,7 @@ public sealed partial class GranitIdentityLocalAspNetIdentityModule : GranitModu
         [LoggerMessage(Level = LogLevel.Warning,
             Message = "Granit.Identity.Federated.EntityFrameworkCore is loaded alongside "
                 + "Granit.Identity.Local.AspNetIdentity. UserCacheEntry is redundant when the "
-                + "identity provider stores users locally (GranitUser). Remove the "
+                + "identity provider stores users locally (LocalIdentity). Remove the "
                 + "Granit.Identity.Federated.EntityFrameworkCore package reference to avoid an "
                 + "unnecessary database table and per-request cache sync overhead.")]
         public static partial void RedundantFederatedModuleDetected(ILogger logger);

@@ -155,8 +155,8 @@ internal static class AccountPasskeyEndpoints
         AccountPasskeyLoginRequest request,
         HttpContext httpContext,
         [FromServices] IPasskeyService passkeyService,
-        [FromServices] SignInManager<GranitUser> signInManager,
-        [FromServices] UserManager<GranitUser> userManager,
+        [FromServices] SignInManager<LocalIdentity> signInManager,
+        [FromServices] UserManager<LocalIdentity> userManager,
         CancellationToken cancellationToken)
     {
         IdentityLocalMetrics? metrics = httpContext.RequestServices.GetService<IdentityLocalMetrics>();
@@ -174,7 +174,7 @@ internal static class AccountPasskeyEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
-        GranitUser? user = await userManager.FindByIdAsync(assertion.UserId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(assertion.UserId).ConfigureAwait(false);
 
         if (user is null)
         {

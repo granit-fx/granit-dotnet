@@ -15,7 +15,7 @@ public sealed class GranitOpenIddictClientOptions
     /// Gets or sets a value indicating whether to auto-register users from external providers.
     /// </summary>
     /// <remarks>
-    /// When <see langword="true"/>, a new <c>GranitUser</c> is created on first login
+    /// When <see langword="true"/>, a new <c>LocalIdentity</c> is created on first login
     /// via external provider. When <see langword="false"/>, returns 403 if no existing account.
     /// </remarks>
     public bool AutoRegisterExternalUsers { get; set; } = true;

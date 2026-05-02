@@ -12,14 +12,14 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <see cref="EmailConfirmationRequestedEto"/> via <see cref="IDistributedEventBus"/>.
 /// </summary>
 internal sealed class AspNetEmailConfirmationService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IDistributedEventBus eventBus) : IEmailConfirmationService
 {
     /// <inheritdoc/>
     public async Task SendConfirmationEmailAsync(
         string userId, string email, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return;
@@ -37,7 +37,7 @@ internal sealed class AspNetEmailConfirmationService(
     public async Task<bool> ConfirmAsync(
         string userId, string token, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return false;

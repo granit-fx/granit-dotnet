@@ -52,7 +52,7 @@ public static class OpenIddictEntityFrameworkCoreHostApplicationBuilderExtension
 
         // 3. Register ASP.NET Core Identity
         builder.Services
-            .AddIdentity<GranitUser, GranitRole>(options =>
+            .AddIdentity<LocalIdentity, GranitRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
                 options.Lockout.MaxFailedAccessAttempts = lockoutOptions.MaxFailedAccessAttempts;

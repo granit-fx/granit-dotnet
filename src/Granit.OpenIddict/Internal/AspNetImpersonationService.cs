@@ -21,7 +21,7 @@ namespace Granit.OpenIddict.Internal;
 /// with impersonator claims for administrator impersonation.
 /// </summary>
 internal sealed partial class AspNetImpersonationService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IOpenIddictTokenManager tokenManager,
     IDistributedEventBus eventBus,
     IdentityLocalMetrics metrics,
@@ -41,7 +41,7 @@ internal sealed partial class AspNetImpersonationService(
         ArgumentException.ThrowIfNullOrWhiteSpace(impersonatorId);
         ArgumentException.ThrowIfNullOrWhiteSpace(impersonatorName);
 
-        GranitUser targetUser = await userManager.FindByIdAsync(targetUserId).ConfigureAwait(false)
+        LocalIdentity targetUser = await userManager.FindByIdAsync(targetUserId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Target user '{targetUserId}' not found.");
 
         // Build claims principal for the impersonated user
@@ -132,7 +132,7 @@ internal sealed partial class AspNetImpersonationService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(impersonatorId);
 
-        GranitUser adminUser = await userManager.FindByIdAsync(impersonatorId).ConfigureAwait(false)
+        LocalIdentity adminUser = await userManager.FindByIdAsync(impersonatorId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"Impersonator user '{impersonatorId}' not found.");
 
         // Build a fresh claims principal for the admin (no impersonator claims)

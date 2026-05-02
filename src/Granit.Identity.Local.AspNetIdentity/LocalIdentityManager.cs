@@ -12,7 +12,7 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// <remarks>
 /// <para>
 /// Overrides <see cref="AccessFailedAsync"/> to compute an exponentially increasing
-/// lockout duration based on <see cref="GranitUser.ConsecutiveLockouts"/>. The stock
+/// lockout duration based on <see cref="LocalIdentity.ConsecutiveLockouts"/>. The stock
 /// <see cref="SignInManager{TUser}"/> calls <c>AccessFailedAsync</c> on each failed
 /// login — this is the single, stable extension point that avoids overriding
 /// <c>SignInManager</c> (fragile across .NET upgrades).
@@ -24,24 +24,24 @@ namespace Granit.Identity.Local.AspNetIdentity;
 /// </para>
 /// </remarks>
 #pragma warning disable GRSEC001 // TimeProvider not available in UserManager constructor — DateTimeOffset.UtcNow is acceptable here
-public class GranitUserManager(
-    IUserStore<GranitUser> store,
+public class LocalIdentityManager(
+    IUserStore<LocalIdentity> store,
     IOptions<IdentityOptions> optionsAccessor,
-    IPasswordHasher<GranitUser> passwordHasher,
-    IEnumerable<IUserValidator<GranitUser>> userValidators,
-    IEnumerable<IPasswordValidator<GranitUser>> passwordValidators,
+    IPasswordHasher<LocalIdentity> passwordHasher,
+    IEnumerable<IUserValidator<LocalIdentity>> userValidators,
+    IEnumerable<IPasswordValidator<LocalIdentity>> passwordValidators,
     ILookupNormalizer keyNormalizer,
     IdentityErrorDescriber errors,
     IServiceProvider services,
-    ILogger<GranitUserManager> logger,
+    ILogger<LocalIdentityManager> logger,
     IOptions<GranitLockoutOptions> lockoutOptions)
-    : UserManager<GranitUser>(store, optionsAccessor, passwordHasher,
+    : UserManager<LocalIdentity>(store, optionsAccessor, passwordHasher,
         userValidators, passwordValidators, keyNormalizer, errors, services, logger)
 {
     private readonly GranitLockoutOptions _lockoutOptions = lockoutOptions.Value;
 
     /// <inheritdoc/>
-    public override async Task<IdentityResult> AccessFailedAsync(GranitUser user)
+    public override async Task<IdentityResult> AccessFailedAsync(LocalIdentity user)
     {
         ArgumentNullException.ThrowIfNull(user);
 
@@ -72,7 +72,7 @@ public class GranitUserManager(
     }
 
     /// <inheritdoc/>
-    public override async Task<IdentityResult> ResetAccessFailedCountAsync(GranitUser user)
+    public override async Task<IdentityResult> ResetAccessFailedCountAsync(LocalIdentity user)
     {
         ArgumentNullException.ThrowIfNull(user);
 

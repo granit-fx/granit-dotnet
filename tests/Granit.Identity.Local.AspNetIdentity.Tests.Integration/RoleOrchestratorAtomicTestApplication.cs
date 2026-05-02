@@ -52,7 +52,7 @@ public sealed class RoleOrchestratorAtomicTestApplication : IAsyncLifetime
         services.AddDbContextFactory<TestHostDbContext>(opts =>
             opts.UseNpgsql(_postgres.ConnectionString));
 
-        services.AddIdentityCore<GranitUser>()
+        services.AddIdentityCore<LocalIdentity>()
             .AddRoles<GranitRole>()
             .AddEntityFrameworkStores<TestIdentityDbContext>();
 

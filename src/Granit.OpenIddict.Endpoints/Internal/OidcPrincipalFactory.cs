@@ -10,11 +10,11 @@ using OpenIddict.Abstractions;
 namespace Granit.OpenIddict.Endpoints.Internal;
 
 /// <summary>
-/// Builds a <see cref="ClaimsPrincipal"/> from a <see cref="GranitUser"/> for OIDC token issuance.
+/// Builds a <see cref="ClaimsPrincipal"/> from a <see cref="LocalIdentity"/> for OIDC token issuance.
 /// Isolated from OpenIddict-specific types so the logic is reusable with other OIDC providers.
 /// </summary>
 internal sealed class OidcPrincipalFactory(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IClaimsDestinationProvider destinationProvider)
 {
     /// <summary>
@@ -27,7 +27,7 @@ internal sealed class OidcPrincipalFactory(
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A principal ready for token issuance.</returns>
     internal async Task<ClaimsPrincipal> CreateUserPrincipalAsync(
-        GranitUser user,
+        LocalIdentity user,
         ImmutableArray<string> scopes,
         string authenticationScheme,
         CancellationToken cancellationToken = default)

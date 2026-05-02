@@ -16,7 +16,7 @@ public sealed class AspNetAccountDeletionServiceTests
 {
     private static readonly DateTimeOffset FixedNow = new(2025, 6, 15, 10, 0, 0, TimeSpan.Zero);
 
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly IOpenIddictTokenManager _tokenManager = Substitute.For<IOpenIddictTokenManager>();
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly IClock _clock = Substitute.For<IClock>();
@@ -24,8 +24,8 @@ public sealed class AspNetAccountDeletionServiceTests
 
     public AspNetAccountDeletionServiceTests()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
 
         _clock.Now.Returns(FixedNow);
@@ -42,7 +42,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserExists_SoftDeletesUser()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -61,7 +61,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserExists_LocksAccount()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -78,7 +78,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserExists_UpdatesSecurityStamp()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -95,7 +95,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserExists_PublishesAccountDeletedEto()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         var tenantId = Guid.NewGuid();
         user.TenantId = tenantId;
         string userId = user.Id.ToString();
@@ -118,7 +118,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserWithNoTenant_PublishesEventWithNullTenant()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         user.TenantId = null;
         string userId = user.Id.ToString();
 
@@ -142,7 +142,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UserHasTokens_RevokesAllTokens()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -166,7 +166,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_NoTokens_StillSucceeds()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -185,7 +185,7 @@ public sealed class AspNetAccountDeletionServiceTests
     public async Task InitiateAsync_UserNotFound_ThrowsInvalidOperation()
     {
         string unknownId = Guid.NewGuid().ToString();
-        _userManager.FindByIdAsync(unknownId).Returns((GranitUser?)null);
+        _userManager.FindByIdAsync(unknownId).Returns((LocalIdentity?)null);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.InitiateAsync(unknownId, TestContext.Current.CancellationToken));
@@ -196,7 +196,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UpdateFails_ThrowsInvalidOperation()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -212,7 +212,7 @@ public sealed class AspNetAccountDeletionServiceTests
     [Fact]
     public async Task InitiateAsync_UpdateFails_DoesNotLockAccountOrRevokeTokens()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         string userId = user.Id.ToString();
 
         _userManager.FindByIdAsync(userId).Returns(user);
@@ -222,14 +222,14 @@ public sealed class AspNetAccountDeletionServiceTests
         await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.InitiateAsync(userId, TestContext.Current.CancellationToken));
 
-        await _userManager.DidNotReceive().SetLockoutEndDateAsync(Arg.Any<GranitUser>(), Arg.Any<DateTimeOffset>());
-        await _userManager.DidNotReceive().UpdateSecurityStampAsync(Arg.Any<GranitUser>());
+        await _userManager.DidNotReceive().SetLockoutEndDateAsync(Arg.Any<LocalIdentity>(), Arg.Any<DateTimeOffset>());
+        await _userManager.DidNotReceive().UpdateSecurityStampAsync(Arg.Any<LocalIdentity>());
         await _eventBus.DidNotReceive().PublishAsync(Arg.Any<AccountDeletedEto>(), Arg.Any<CancellationToken>());
     }
 
     // ────────────────────── Helpers ──────────────────────
 
-    private static GranitUser CreateUser() => new()
+    private static LocalIdentity CreateUser() => new()
     {
         Id = Guid.NewGuid(),
         UserName = "testuser",

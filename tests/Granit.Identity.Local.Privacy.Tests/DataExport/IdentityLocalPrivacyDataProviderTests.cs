@@ -10,8 +10,8 @@ namespace Granit.Identity.Local.Privacy.Tests.DataExport;
 
 public sealed class IdentityLocalPrivacyDataProviderTests
 {
-    private static UserManager<GranitUser> CreateUserManager(IUserStore<GranitUser> store) =>
-        Substitute.For<UserManager<GranitUser>>(store, null, null, null, null, null, null, null, null);
+    private static UserManager<LocalIdentity> CreateUserManager(IUserStore<LocalIdentity> store) =>
+        Substitute.For<UserManager<LocalIdentity>>(store, null, null, null, null, null, null, null, null);
 
     [Fact]
     public void ProviderName_Is_IdentityLocal() =>
@@ -31,9 +31,9 @@ public sealed class IdentityLocalPrivacyDataProviderTests
     [Fact]
     public async Task ExportAsync_UnknownUser_ReturnsEmpty()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        UserManager<GranitUser> userManager = CreateUserManager(store);
-        userManager.FindByIdAsync(Arg.Any<string>()).Returns((GranitUser?)null);
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        UserManager<LocalIdentity> userManager = CreateUserManager(store);
+        userManager.FindByIdAsync(Arg.Any<string>()).Returns((LocalIdentity?)null);
 
         IdentityLocalPrivacyDataProvider sut = new(userManager);
 
@@ -46,7 +46,7 @@ public sealed class IdentityLocalPrivacyDataProviderTests
     public async Task ExportAsync_KnownUser_ReturnsJsonWithProfileAndRoles()
     {
         var userId = Guid.NewGuid();
-        GranitUser user = new()
+        LocalIdentity user = new()
         {
             Id = userId,
             UserName = "alice",
@@ -59,8 +59,8 @@ public sealed class IdentityLocalPrivacyDataProviderTests
             CreatedBy = "system",
         };
 
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        UserManager<GranitUser> userManager = CreateUserManager(store);
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        UserManager<LocalIdentity> userManager = CreateUserManager(store);
         userManager.FindByIdAsync(userId.ToString()).Returns(user);
         userManager.GetRolesAsync(user).Returns<IList<string>>(["Admin", "User"]);
 

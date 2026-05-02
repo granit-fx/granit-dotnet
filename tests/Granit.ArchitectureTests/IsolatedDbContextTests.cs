@@ -63,7 +63,7 @@ public sealed partial class IsolatedDbContextTests
                 {
                     string rel = Path.GetRelativePath(RepoRoot, csFile);
 
-                    // GranitUser cannot implement ISoftDeletable (incompatible with UserManager),
+                    // LocalIdentity cannot implement ISoftDeletable (incompatible with UserManager),
                     // so OpenIddict's model builder must register the soft-delete filter manually.
                     if (rel.Contains("OpenIddict", StringComparison.Ordinal))
                     {

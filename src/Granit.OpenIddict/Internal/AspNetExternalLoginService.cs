@@ -16,7 +16,7 @@ namespace Granit.OpenIddict.Internal;
 /// <see cref="UserManager{TUser}"/> external login support.
 /// </summary>
 internal sealed class AspNetExternalLoginService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     ExternalClaimsMapper claimsMapper,
     IDistributedEventBus eventBus,
     IOptions<GranitOpenIddictClientOptions> clientOptions) : IExternalLoginService
@@ -25,7 +25,7 @@ internal sealed class AspNetExternalLoginService(
     public async Task<IReadOnlyList<GranitExternalLoginInfo>> GetLoginsAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return [];
@@ -41,7 +41,7 @@ internal sealed class AspNetExternalLoginService(
     public async Task AddLoginAsync(
         string userId, GranitExternalLoginInfo info, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         IdentityResult result = await userManager.AddLoginAsync(
@@ -60,7 +60,7 @@ internal sealed class AspNetExternalLoginService(
     public async Task RemoveLoginAsync(
         string userId, string provider, string providerKey, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         // Guard: cannot remove last login method if no password is set
@@ -96,7 +96,7 @@ internal sealed class AspNetExternalLoginService(
             throw new InvalidOperationException("External provider did not return a user identifier.");
         }
 
-        GranitUser? existingUser = await userManager.FindByLoginAsync(provider, providerKey)
+        LocalIdentity? existingUser = await userManager.FindByLoginAsync(provider, providerKey)
             .ConfigureAwait(false);
 
         if (existingUser is not null)
@@ -130,7 +130,7 @@ internal sealed class AspNetExternalLoginService(
                 "Account not found. Party your administrator.");
         }
 
-        GranitUser newUser = new()
+        LocalIdentity newUser = new()
         {
             UserName = props.Email ?? props.UserName ?? providerKey,
             Email = props.Email,

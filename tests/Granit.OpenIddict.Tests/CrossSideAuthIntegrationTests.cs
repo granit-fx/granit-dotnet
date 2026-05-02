@@ -73,7 +73,7 @@ public sealed class CrossSideAuthIntegrationTests : IAsyncDisposable
         builder.Logging.ClearProviders();
 
         // The module registers services like IExternalLoginService that depend on
-        // UserManager<GranitUser> and IClock, which we don't wire in this focused
+        // UserManager<LocalIdentity> and IClock, which we don't wire in this focused
         // fixture. Disable DI validation on build — these services are never
         // resolved by the pipeline under test (we only exercise authentication).
         builder.Host.UseDefaultServiceProvider(options =>

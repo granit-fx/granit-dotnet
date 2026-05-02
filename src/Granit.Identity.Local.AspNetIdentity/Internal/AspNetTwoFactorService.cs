@@ -8,14 +8,14 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <see cref="ITwoFactorService"/> implementation backed by <see cref="UserManager{TUser}"/>.
 /// </summary>
 internal sealed class AspNetTwoFactorService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     ITotpService totpService) : ITwoFactorService
 {
     /// <inheritdoc/>
     public async Task<TwoFactorStatus> GetStatusAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
 
         bool isEnabled = await userManager.GetTwoFactorEnabledAsync(user).ConfigureAwait(false);
         string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
@@ -28,7 +28,7 @@ internal sealed class AspNetTwoFactorService(
     public async Task<AuthenticatorKeyInfo> GetAuthenticatorKeyAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
 
         string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
         if (string.IsNullOrEmpty(key))
@@ -47,7 +47,7 @@ internal sealed class AspNetTwoFactorService(
     public async Task<IReadOnlyList<string>> EnableAsync(
         string userId, string code, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
 
         string? key = await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false);
         if (string.IsNullOrEmpty(key) || !totpService.ValidateCode(key, code))
@@ -66,7 +66,7 @@ internal sealed class AspNetTwoFactorService(
     /// <inheritdoc/>
     public async Task DisableAsync(string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
         await userManager.SetTwoFactorEnabledAsync(user, false).ConfigureAwait(false);
 
         // Invalidate security stamp to force re-authentication on existing sessions
@@ -76,7 +76,7 @@ internal sealed class AspNetTwoFactorService(
     /// <inheritdoc/>
     public async Task ResetAuthenticatorAsync(string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
         await userManager.ResetAuthenticatorKeyAsync(user).ConfigureAwait(false);
     }
 
@@ -84,13 +84,13 @@ internal sealed class AspNetTwoFactorService(
     public async Task<IReadOnlyList<string>> GenerateRecoveryCodesAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await FindUserAsync(userId).ConfigureAwait(false);
+        LocalIdentity user = await FindUserAsync(userId).ConfigureAwait(false);
         IEnumerable<string>? codes = await userManager
             .GenerateNewTwoFactorRecoveryCodesAsync(user, 10).ConfigureAwait(false);
         return codes?.ToList() ?? [];
     }
 
-    private async Task<GranitUser> FindUserAsync(string userId) =>
+    private async Task<LocalIdentity> FindUserAsync(string userId) =>
         await userManager.FindByIdAsync(userId).ConfigureAwait(false)
         ?? throw new InvalidOperationException($"User {userId} not found.");
 }

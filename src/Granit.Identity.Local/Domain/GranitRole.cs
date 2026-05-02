@@ -14,7 +14,7 @@ namespace Granit.Identity.Local.Domain;
 /// access is enforced at the permission/policy level, not at the role definition level.
 /// </para>
 /// <para>
-/// This differs from <see cref="GranitUser"/>, <see cref="GranitUserGroup"/>,
+/// This differs from <see cref="LocalIdentity"/>, <see cref="GranitUserGroup"/>,
 /// and <see cref="GranitUserGroupMember"/> which are all tenant-scoped.
 /// </para>
 /// </remarks>

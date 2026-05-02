@@ -8,7 +8,7 @@ namespace Granit.Identity;
 /// Implemented by:
 /// <list type="bullet">
 /// <item><c>FederatedIdentityUser</c> — immutable snapshot from external providers (Keycloak, EntraID, etc.)</item>
-/// <item><c>GranitUser</c> — EF Core entity for local mode (OpenIddict / ASP.NET Core Identity)</item>
+/// <item><c>LocalIdentity</c> — EF Core entity for local mode (OpenIddict / ASP.NET Core Identity)</item>
 /// <item><c>CachedIdentityUser</c> — EF Core cache entry for external providers</item>
 /// </list>
 /// </para>
@@ -23,7 +23,7 @@ public interface IIdentityUser
     /// User identifier (string for all modes).
     /// </summary>
     /// <remarks>
-    /// For local mode (<c>GranitUser</c>), returns <c>Id.ToString()</c>.
+    /// For local mode (<c>LocalIdentity</c>), returns <c>Id.ToString()</c>.
     /// For external mode, returns the provider's native identifier (e.g., Keycloak subject).
     /// </remarks>
     string UserId { get; }
@@ -51,7 +51,7 @@ public interface IIdentityUser
     /// Never <see langword="null"/> — returns an empty dictionary when no extra properties are set.
     /// </para>
     /// <para>
-    /// For <c>GranitUser</c>: deserialized from <c>CustomAttributesJson</c> (JSONB column).
+    /// For <c>LocalIdentity</c>: deserialized from <c>CustomAttributesJson</c> (JSONB column).
     /// For Keycloak: flattened user attributes.
     /// For <c>CachedIdentityUser</c>: deserialized from <c>MetadataJson</c>.
     /// </para>

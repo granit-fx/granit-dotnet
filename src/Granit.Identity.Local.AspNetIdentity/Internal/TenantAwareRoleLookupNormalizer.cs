@@ -26,7 +26,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// <see cref="ILookupNormalizer.NormalizeName"/> is invoked by ASP.NET Identity for both
 /// <c>NormalizedUserName</c> and <c>NormalizedName</c> lookups — the contract has no way
 /// to distinguish users from roles from inside the normalizer. The universal prefix
-/// therefore also scopes <c>GranitUser.NormalizedUserName</c> per tenant: users created
+/// therefore also scopes <c>LocalIdentity.NormalizedUserName</c> per tenant: users created
 /// inside a tenant context are invisible to host-side <c>FindByNameAsync</c> lookups and
 /// vice-versa. This matches Granit's tenant-isolation intent — host and tenant admin
 /// contexts never share a user-by-name lookup in practice. Email-based lookups

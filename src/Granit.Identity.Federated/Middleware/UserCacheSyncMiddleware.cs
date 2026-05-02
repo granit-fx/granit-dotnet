@@ -33,7 +33,7 @@ internal sealed class UserCacheSyncMiddleware(RequestDelegate next)
         IIdentityProviderCapabilities capabilities)
     {
         // Skip sync when users are stored locally (OpenIddict / ASP.NET Core Identity).
-        // GranitUser IS the source of truth — no cache needed.
+        // LocalIdentity IS the source of truth — no cache needed.
         if (capabilities.IsLocalStore)
         {
             await next(httpContext).ConfigureAwait(false);

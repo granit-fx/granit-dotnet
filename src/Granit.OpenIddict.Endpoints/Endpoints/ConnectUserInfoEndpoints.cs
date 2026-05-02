@@ -48,9 +48,9 @@ internal static class ConnectUserInfoEndpoints
                 authenticationSchemes: [OpenIddictServerAspNetCoreDefaults.AuthenticationScheme]);
         }
 
-        UserManager<GranitUser> userManager = context.RequestServices
-            .GetRequiredService<UserManager<GranitUser>>();
-        GranitUser? user = await userManager.FindByIdAsync(subject).ConfigureAwait(false);
+        UserManager<LocalIdentity> userManager = context.RequestServices
+            .GetRequiredService<UserManager<LocalIdentity>>();
+        LocalIdentity? user = await userManager.FindByIdAsync(subject).ConfigureAwait(false);
 
         if (user is null)
         {

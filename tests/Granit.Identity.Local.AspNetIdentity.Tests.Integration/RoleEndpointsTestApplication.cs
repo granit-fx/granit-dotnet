@@ -74,7 +74,7 @@ public sealed class RoleEndpointsTestApplication : IAsyncLifetime
         builder.Services.AddDbContext<TestHostDbContext>(opts =>
             opts.UseNpgsql(_postgres.ConnectionString));
 
-        builder.Services.AddIdentityCore<GranitUser>()
+        builder.Services.AddIdentityCore<LocalIdentity>()
             .AddRoles<GranitRole>()
             .AddEntityFrameworkStores<TestIdentityDbContext>();
 

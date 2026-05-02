@@ -16,7 +16,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests.Integration;
 /// <summary>
 /// Collection fixture that starts a PostgreSQL 17 container and builds a minimal service
 /// provider wiring everything the <see cref="GranitRoleOrchestrator"/> needs:
-/// ASP.NET Core Identity (with <c>GranitUser</c> / <c>GranitRole</c>), the
+/// ASP.NET Core Identity (with <c>LocalIdentity</c> / <c>GranitRole</c>), the
 /// authorization <see cref="TestHostDbContext"/> backing <c>IRoleMetadataStore</c>, and
 /// the orchestrator itself.
 /// </summary>
@@ -50,7 +50,7 @@ public sealed class RoleOrchestratorTestApplication : IAsyncLifetime
 
         // ASP.NET Core Identity — lightweight IdentityCore pipeline is enough for the
         // orchestrator; no cookies / token providers / email services required.
-        services.AddIdentityCore<GranitUser>()
+        services.AddIdentityCore<LocalIdentity>()
             .AddRoles<GranitRole>()
             .AddEntityFrameworkStores<TestIdentityDbContext>();
 

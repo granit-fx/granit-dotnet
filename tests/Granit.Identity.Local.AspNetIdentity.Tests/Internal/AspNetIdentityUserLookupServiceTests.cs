@@ -10,18 +10,18 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests.Internal;
 
 public sealed class AspNetIdentityUserLookupServiceTests
 {
-    private static UserManager<GranitUser> CreateUserManager()
+    private static UserManager<LocalIdentity> CreateUserManager()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        return Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        return Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
     }
 
     [Fact]
     public async Task FindByIdAsync_WhenUserNotFound_ReturnsNull()
     {
-        UserManager<GranitUser> userManager = CreateUserManager();
-        userManager.FindByIdAsync(Arg.Any<string>()).Returns((GranitUser?)null);
+        UserManager<LocalIdentity> userManager = CreateUserManager();
+        userManager.FindByIdAsync(Arg.Any<string>()).Returns((LocalIdentity?)null);
         AspNetIdentityUserLookupService sut = new(userManager);
 
         IIdentityUser? result = await sut.FindByIdAsync("nonexistent", TestContext.Current.CancellationToken);
@@ -32,8 +32,8 @@ public sealed class AspNetIdentityUserLookupServiceTests
     [Fact]
     public async Task FindByIdAsync_WhenUserFound_ReturnsUser()
     {
-        UserManager<GranitUser> userManager = CreateUserManager();
-        var user = new GranitUser { UserName = "alice" };
+        UserManager<LocalIdentity> userManager = CreateUserManager();
+        var user = new LocalIdentity { UserName = "alice" };
         userManager.FindByIdAsync("user-id").Returns(user);
         AspNetIdentityUserLookupService sut = new(userManager);
 

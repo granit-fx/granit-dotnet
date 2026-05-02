@@ -259,13 +259,13 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         }
 
         // Seed test user
-        UserManager<GranitUser> userManager =
-            services.GetRequiredService<UserManager<GranitUser>>();
+        UserManager<LocalIdentity> userManager =
+            services.GetRequiredService<UserManager<LocalIdentity>>();
 
-        GranitUser? user = await userManager.FindByEmailAsync(TestUserEmail);
+        LocalIdentity? user = await userManager.FindByEmailAsync(TestUserEmail);
         if (user is null)
         {
-            user = new GranitUser
+            user = new LocalIdentity
             {
                 UserName = TestUserEmail,
                 Email = TestUserEmail,

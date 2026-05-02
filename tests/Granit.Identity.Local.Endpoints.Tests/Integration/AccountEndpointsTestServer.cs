@@ -69,8 +69,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
     public IFusionCache FusionCache { get; }
     public ISettingProvider SettingProvider { get; }
     public TimeProvider TimeProvider { get; }
-    public SignInManager<GranitUser> SignInManager { get; }
-    public UserManager<GranitUser> UserManager { get; }
+    public SignInManager<LocalIdentity> SignInManager { get; }
+    public UserManager<LocalIdentity> UserManager { get; }
     public ICurrentTenant CurrentTenant { get; }
     public IDataFilter DataFilter { get; }
 
@@ -96,8 +96,8 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         IFusionCache fusionCache,
         ISettingProvider settingProvider,
         TimeProvider timeProvider,
-        SignInManager<GranitUser> signInManager,
-        UserManager<GranitUser> userManager,
+        SignInManager<LocalIdentity> signInManager,
+        UserManager<LocalIdentity> userManager,
         ICurrentTenant currentTenant,
         IDataFilter dataFilter)
     {
@@ -164,13 +164,13 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         timeProvider.GetUtcNow().Returns(FixedNow);
 
         // ASP.NET Identity mocks — SignInManager requires UserManager which requires IUserStore
-        IUserStore<GranitUser> userStore = Substitute.For<IUserStore<GranitUser>>();
-        UserManager<GranitUser> userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> userStore = Substitute.For<IUserStore<LocalIdentity>>();
+        UserManager<LocalIdentity> userManager = Substitute.For<UserManager<LocalIdentity>>(
             userStore, null, null, null, null, null, null, null, null);
-        SignInManager<GranitUser> signInManager = Substitute.For<SignInManager<GranitUser>>(
+        SignInManager<LocalIdentity> signInManager = Substitute.For<SignInManager<LocalIdentity>>(
             userManager,
             Substitute.For<Microsoft.AspNetCore.Http.IHttpContextAccessor>(),
-            Substitute.For<IUserClaimsPrincipalFactory<GranitUser>>(),
+            Substitute.For<IUserClaimsPrincipalFactory<LocalIdentity>>(),
             null, null, null, null);
 
         // Default: 2FA not enabled
@@ -222,7 +222,7 @@ internal sealed class AccountEndpointsTestServer : IAsyncDisposable
         builder.Services.AddSingleton(userManager);
         builder.Services.AddSingleton(currentTenant);
         builder.Services.AddSingleton(dataFilter);
-        builder.Services.AddSingleton<IPasswordHasher<GranitUser>, PasswordHasher<GranitUser>>();
+        builder.Services.AddSingleton<IPasswordHasher<LocalIdentity>, PasswordHasher<LocalIdentity>>();
 
         // Options
         builder.Services.AddSingleton(

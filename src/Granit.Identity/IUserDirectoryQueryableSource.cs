@@ -5,7 +5,7 @@ namespace Granit.Identity;
 /// <summary>
 /// Provides an <see cref="IQueryable{User}"/> source for the user directory
 /// — admin grids, OData feed, BI exports. Per ADR-051 the
-/// <see cref="User"/> aggregate replaces the dual <c>GranitUser</c> /
+/// <see cref="User"/> aggregate replaces the dual <c>LocalIdentity</c> /
 /// <c>UserCacheEntry</c> read paths with a single canonical surface.
 /// </summary>
 /// <remarks>

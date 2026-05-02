@@ -37,7 +37,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// </para>
 /// </remarks>
 internal sealed partial class AspNetPasskeyService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IFido2 fido2,
     PasskeyChallengeStore challengeStore,
     IClock clock,
@@ -51,7 +51,7 @@ internal sealed partial class AspNetPasskeyService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
         IList<UserPasskeyInfo> passkeys = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
@@ -69,7 +69,7 @@ internal sealed partial class AspNetPasskeyService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
         IList<UserPasskeyInfo> existing = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
@@ -114,7 +114,7 @@ internal sealed partial class AspNetPasskeyService(
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(credentialJson);
 
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
         string? originalOptionsJson = await challengeStore
@@ -237,7 +237,7 @@ internal sealed partial class AspNetPasskeyService(
             .Deserialize<AssertionOptions>(originalOptionsJson, s_optionsJson)
             ?? throw new InvalidOperationException("Stored assertion options are corrupt.");
 
-        GranitUser? user = await userManager.FindByPasskeyIdAsync(assertionResponse.RawId)
+        LocalIdentity? user = await userManager.FindByPasskeyIdAsync(assertionResponse.RawId)
             .ConfigureAwait(false);
 
         if (user is null)
@@ -307,7 +307,7 @@ internal sealed partial class AspNetPasskeyService(
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
         ArgumentException.ThrowIfNullOrWhiteSpace(newName);
 
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
         IList<UserPasskeyInfo> passkeys = await userManager.GetPasskeysAsync(user).ConfigureAwait(false);
@@ -341,7 +341,7 @@ internal sealed partial class AspNetPasskeyService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(userId);
 
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User '{userId}' not found.");
 
         // Safety check: cannot delete last passkey if no password is set

@@ -17,7 +17,7 @@ public static class OpenIddictModelBuilderExtensions
 {
     /// <summary>
     /// Configures the OpenIddict module entities: table prefixes, column constraints,
-    /// indexes, and the manual soft-delete filter for <see cref="GranitUser"/>.
+    /// indexes, and the manual soft-delete filter for <see cref="LocalIdentity"/>.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -26,7 +26,7 @@ public static class OpenIddictModelBuilderExtensions
     /// but BEFORE <c>modelBuilder.ApplyGranitConventions()</c>.
     /// </para>
     /// <para>
-    /// <see cref="GranitUser"/> cannot implement <see cref="ISoftDeletable"/> because
+    /// <see cref="LocalIdentity"/> cannot implement <see cref="ISoftDeletable"/> because
     /// ASP.NET Core Identity's <c>UserManager&lt;T&gt;</c> uses reflection/metadata
     /// patterns that are incompatible with the interface. The soft-delete filter is
     /// therefore registered manually here, using the same <c>bypass || real</c> pattern
@@ -46,7 +46,7 @@ public static class OpenIddictModelBuilderExtensions
     public static ModelBuilder ConfigureOpenIddictModule(
         this ModelBuilder modelBuilder,
         IDataFilter? dataFilter = null,
-        MetadataMappingOptions<GranitUser>? extensionOptions = null)
+        MetadataMappingOptions<LocalIdentity>? extensionOptions = null)
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
 
@@ -57,7 +57,7 @@ public static class OpenIddictModelBuilderExtensions
 
         SoftDeleteProxy proxy = new(dataFilter);
 
-        modelBuilder.Entity<GranitUser>(b =>
+        modelBuilder.Entity<LocalIdentity>(b =>
         {
             b.ToTable(prefix + "users", schema);
             b.Property(u => u.FirstName).HasMaxLength(256);
@@ -67,16 +67,16 @@ public static class OpenIddictModelBuilderExtensions
             b.Property(u => u.ModifiedBy).HasMaxLength(256);
 
             // Manual soft-delete filter with IDataFilter bypass support.
-            // GranitUser does NOT implement ISoftDeletable (incompatible with UserManager),
+            // LocalIdentity does NOT implement ISoftDeletable (incompatible with UserManager),
             // so ApplyGranitConventions cannot register this filter automatically.
             // Pattern: bypass (IDataFilter disabled) || real (!IsDeleted)
-            ParameterExpression param = Expression.Parameter(typeof(GranitUser), "u");
+            ParameterExpression param = Expression.Parameter(typeof(LocalIdentity), "u");
             UnaryExpression bypass = Expression.Not(
                 Expression.Property(Expression.Constant(proxy), nameof(SoftDeleteProxy.SoftDeleteEnabled)));
             UnaryExpression notDeleted = Expression.Not(
-                Expression.Property(param, nameof(GranitUser.IsDeleted)));
+                Expression.Property(param, nameof(LocalIdentity.IsDeleted)));
             var filter =
-                Expression.Lambda<Func<GranitUser, bool>>(Expression.OrElse(bypass, notDeleted), param);
+                Expression.Lambda<Func<LocalIdentity, bool>>(Expression.OrElse(bypass, notDeleted), param);
 
             b.HasQueryFilter(Granit.Persistence.EntityFrameworkCore.GranitFilterNames.SoftDelete, filter);
 
@@ -184,7 +184,7 @@ public static class OpenIddictModelBuilderExtensions
 
         if (extensionOptions is { Mappings.Count: > 0 })
         {
-            modelBuilder.Entity<GranitUser>(b =>
+            modelBuilder.Entity<LocalIdentity>(b =>
             {
                 foreach (MetadataMapping mapping in extensionOptions.Mappings)
                 {
@@ -211,7 +211,7 @@ public static class OpenIddictModelBuilderExtensions
     /// EF Core evaluates property access on a <see cref="ConstantExpression"/> as a query
     /// parameter re-evaluated on each query. This proxy mirrors the pattern used by
     /// <c>ApplyGranitConventions</c>'s internal <c>FilterProxy</c>, but only for the
-    /// <see cref="ISoftDeletable"/> filter needed by <see cref="GranitUser"/>.
+    /// <see cref="ISoftDeletable"/> filter needed by <see cref="LocalIdentity"/>.
     /// </summary>
     private sealed class SoftDeleteProxy(IDataFilter? dataFilter)
     {

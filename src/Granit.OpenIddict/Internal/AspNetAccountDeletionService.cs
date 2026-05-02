@@ -14,7 +14,7 @@ namespace Granit.OpenIddict.Internal;
 /// via <see cref="IDistributedEventBus"/>.
 /// </summary>
 internal sealed class AspNetAccountDeletionService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IOpenIddictTokenManager tokenManager,
     IDistributedEventBus eventBus,
     IClock clock) : IAccountDeletionService
@@ -22,7 +22,7 @@ internal sealed class AspNetAccountDeletionService(
     /// <inheritdoc/>
     public async Task InitiateAsync(string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
+        LocalIdentity user = await userManager.FindByIdAsync(userId).ConfigureAwait(false)
             ?? throw new InvalidOperationException($"User {userId} not found.");
 
         // Soft-delete

@@ -109,11 +109,11 @@ internal static partial class ConnectAuthorizationEndpoints
         // hide the user whenever their TenantId does not match the active scope —
         // host admins (TenantId = null) in particular become invisible on every
         // request that has inherited a tenant context from another source.
-        UserManager<GranitUser> userManager = context.RequestServices
-            .GetRequiredService<UserManager<GranitUser>>();
+        UserManager<LocalIdentity> userManager = context.RequestServices
+            .GetRequiredService<UserManager<LocalIdentity>>();
         IDataFilter? dataFilter = context.RequestServices.GetService<IDataFilter>();
 
-        GranitUser? user;
+        LocalIdentity? user;
         IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
         try
         {

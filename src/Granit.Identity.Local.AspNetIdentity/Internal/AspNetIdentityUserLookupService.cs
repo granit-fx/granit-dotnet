@@ -11,13 +11,13 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// bypassing any redundant cache layer.
 /// </summary>
 internal sealed class AspNetIdentityUserLookupService(
-    UserManager<GranitUser> _userManager) : IUserLookupService
+    UserManager<LocalIdentity> _userManager) : IUserLookupService
 {
     /// <inheritdoc/>
     public async Task<IIdentityUser?> FindByIdAsync(
         string userId, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false);
         return user;
     }
 
@@ -26,7 +26,7 @@ internal sealed class AspNetIdentityUserLookupService(
         IReadOnlyCollection<string> userIds, CancellationToken cancellationToken = default)
     {
         var guidIds = userIds.Select(Guid.Parse).ToList();
-        List<GranitUser> users = await _userManager.Users.AsNoTracking()
+        List<LocalIdentity> users = await _userManager.Users.AsNoTracking()
             .Where(u => guidIds.Contains(u.Id))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
         return users.Cast<IIdentityUser>().ToList();
@@ -36,7 +36,7 @@ internal sealed class AspNetIdentityUserLookupService(
     public async Task<PagedResult<IIdentityUser>> SearchAsync(
         string searchTerm, int page = 1, int pageSize = QueryEngineDefaults.DefaultPageSize, CancellationToken cancellationToken = default)
     {
-        IQueryable<GranitUser> query = _userManager.Users.AsNoTracking();
+        IQueryable<LocalIdentity> query = _userManager.Users.AsNoTracking();
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
@@ -49,7 +49,7 @@ internal sealed class AspNetIdentityUserLookupService(
 
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
         int skip = (page - 1) * pageSize;
-        List<GranitUser> items = await query
+        List<LocalIdentity> items = await query
             .OrderBy(u => u.UserName)
             .Skip(skip)
             .Take(pageSize)

@@ -12,14 +12,14 @@ namespace Granit.Identity.Local.AspNetIdentity.Internal;
 /// and publishes <see cref="EmailChangeRequestedEto"/> for downstream notification handlers.
 /// </summary>
 internal sealed class AspNetEmailChangeService(
-    UserManager<GranitUser> userManager,
+    UserManager<LocalIdentity> userManager,
     IDistributedEventBus eventBus) : IEmailChangeService
 {
     /// <inheritdoc/>
     public async Task<bool> RequestChangeAsync(
         string userId, string newEmail, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return false;
@@ -44,7 +44,7 @@ internal sealed class AspNetEmailChangeService(
     public async Task<bool> ConfirmChangeAsync(
         string userId, string newEmail, string token, CancellationToken cancellationToken = default)
     {
-        GranitUser? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
+        LocalIdentity? user = await userManager.FindByIdAsync(userId).ConfigureAwait(false);
         if (user is null)
         {
             return false;

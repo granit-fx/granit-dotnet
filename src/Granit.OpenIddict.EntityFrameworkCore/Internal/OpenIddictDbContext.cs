@@ -25,8 +25,8 @@ internal sealed class OpenIddictDbContext(
     DbContextOptions<OpenIddictDbContext> options,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null,
-    IOptions<MetadataMappingOptions<GranitUser>>? extensionOptions = null)
-    : IdentityDbContext<GranitUser, GranitRole, Guid>(options)
+    IOptions<MetadataMappingOptions<LocalIdentity>>? extensionOptions = null)
+    : IdentityDbContext<LocalIdentity, GranitRole, Guid>(options)
 {
     /// <summary>Gets the user groups set.</summary>
     public DbSet<GranitUserGroup> UserGroups => Set<GranitUserGroup>();

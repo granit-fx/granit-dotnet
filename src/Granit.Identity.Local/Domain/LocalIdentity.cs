@@ -26,9 +26,26 @@ namespace Granit.Identity.Local.Domain;
 /// in <c>Granit.Persistence.EntityFrameworkCore</c> handles Shadow Property synchronization.
 /// </para>
 /// </remarks>
-public class GranitUser : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasMetadata
+public class LocalIdentity : IdentityUser<Guid>, IMultiTenant, IIdentityUser, IHasMetadata
 {
     private IReadOnlyDictionary<string, string>? _parsedMetadata;
+
+    /// <summary>
+    /// Foreign key to the canonical <see cref="Granit.Identity.Domain.User"/>
+    /// aggregate (per ADR-051 B-step 2). Equal to <see cref="IdentityUser{TKey}.Id"/>
+    /// on greenfield records — the seed regeneration pre-populates both
+    /// tables with the same Guid so existing references continue to resolve.
+    /// </summary>
+    /// <remarks>
+    /// The FK is required: a <see cref="LocalIdentity"/> without a
+    /// corresponding <see cref="Granit.Identity.Domain.User"/> row would be
+    /// auth-only and unreachable from any of the canonical-user surfaces
+    /// (admin grid, OData feed, BI exports). Hosts populate this through
+    /// either the seed or a host-side handler that creates the
+    /// <see cref="Granit.Identity.Domain.User"/> row alongside the
+    /// <see cref="LocalIdentity"/> insert.
+    /// </remarks>
+    public Guid UserId { get; set; }
 
     /// <summary>Gets or sets the user's first name.</summary>
     public string? FirstName { get; set; }

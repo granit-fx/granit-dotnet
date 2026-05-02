@@ -4,7 +4,7 @@ namespace Granit.Identity.Local.Services;
 /// High-level service for managing TOTP two-factor authentication state.
 /// </summary>
 /// <remarks>
-/// Wraps <c>UserManager&lt;GranitUser&gt;</c> 2FA operations behind an abstraction
+/// Wraps <c>UserManager&lt;LocalIdentity&gt;</c> 2FA operations behind an abstraction
 /// consumable by the endpoints layer without a direct EF Core dependency.
 /// </remarks>
 public interface ITwoFactorService

@@ -67,8 +67,8 @@ internal static partial class AccountLoginEndpoints
 #pragma warning disable GRSEC003 // Method handles user credentials — server-side authentication
     private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleLoginAsync(
         AccountLoginRequest request,
-        [FromServices] SignInManager<GranitUser> signInManager,
-        [FromServices] UserManager<GranitUser> userManager,
+        [FromServices] SignInManager<LocalIdentity> signInManager,
+        [FromServices] UserManager<LocalIdentity> userManager,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -91,8 +91,8 @@ internal static partial class AccountLoginEndpoints
 
     private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleLoginCoreAsync(
         AccountLoginRequest request,
-        SignInManager<GranitUser> signInManager,
-        UserManager<GranitUser> userManager,
+        SignInManager<LocalIdentity> signInManager,
+        UserManager<LocalIdentity> userManager,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -111,7 +111,7 @@ internal static partial class AccountLoginEndpoints
         // does not match — making it impossible to log in as a host admin from a
         // browser that previously authenticated a tenant user, and vice-versa.
         // RequireUniqueEmail=true guarantees no ambiguity across tenants.
-        GranitUser? user;
+        LocalIdentity? user;
         IDisposable? tenantFilterScope = dataFilter?.Disable<IMultiTenant>();
         try
         {
@@ -200,7 +200,7 @@ internal static partial class AccountLoginEndpoints
 
     private static async Task<Results<Ok<AccountLoginResponse>, ProblemHttpResult>> HandleTwoFactorLoginAsync(
         AccountTwoFactorLoginRequest request,
-        [FromServices] SignInManager<GranitUser> signInManager,
+        [FromServices] SignInManager<LocalIdentity> signInManager,
         HttpContext httpContext,
         CancellationToken cancellationToken)
     {
@@ -242,7 +242,7 @@ internal static partial class AccountLoginEndpoints
             // so re-sign the user with a persistent cookie when RememberMe is requested.
             if (result.Succeeded && request.RememberMe)
             {
-                GranitUser? user = await signInManager.UserManager
+                LocalIdentity? user = await signInManager.UserManager
                     .GetUserAsync(httpContext.User).ConfigureAwait(false);
 
                 if (user is not null)
@@ -269,7 +269,7 @@ internal static partial class AccountLoginEndpoints
 
         if (result.IsLockedOut)
         {
-            GranitUser? lockedUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
+            LocalIdentity? lockedUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
                 .ConfigureAwait(false);
 
             LogLoginLockedOut(logger, lockedUser?.Id.ToString() ?? "two-factor-user");
@@ -313,7 +313,7 @@ internal static partial class AccountLoginEndpoints
     /// the rest of the 2FA ceremony runs in the correct context.
     /// </remarks>
     private static async Task<IDisposable?> ResolveTenantFromTwoFactorSessionAsync(
-        SignInManager<GranitUser> signInManager,
+        SignInManager<LocalIdentity> signInManager,
         ICurrentTenant? currentTenant,
         IDataFilter? dataFilter)
     {
@@ -324,7 +324,7 @@ internal static partial class AccountLoginEndpoints
 
         using IDisposable? filterScope = dataFilter?.Disable<IMultiTenant>();
 
-        GranitUser? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
+        LocalIdentity? twoFactorUser = await signInManager.GetTwoFactorAuthenticationUserAsync()
             .ConfigureAwait(false);
 
         return twoFactorUser is null ? null : currentTenant.Change(twoFactorUser.TenantId);
@@ -352,12 +352,12 @@ internal static partial class AccountLoginEndpoints
     /// real password verification.
     /// </summary>
     private static readonly string DummyPasswordHash =
-        new PasswordHasher<GranitUser>().HashPassword(null!, "K4$hDummyP@ssw0rd!");
+        new PasswordHasher<LocalIdentity>().HashPassword(null!, "K4$hDummyP@ssw0rd!");
 
     private static void PerformDummyPasswordHash(HttpContext httpContext)
     {
-        IPasswordHasher<GranitUser> hasher = httpContext.RequestServices
-            .GetRequiredService<IPasswordHasher<GranitUser>>();
+        IPasswordHasher<LocalIdentity> hasher = httpContext.RequestServices
+            .GetRequiredService<IPasswordHasher<LocalIdentity>>();
 
         // Use a random password each time to introduce natural timing jitter
         // and avoid a constant, fingerprint-able verification pattern.
@@ -368,8 +368,8 @@ internal static partial class AccountLoginEndpoints
 
     private static async Task PublishAccountLockedAsync(
         HttpContext httpContext,
-        UserManager<GranitUser> userManager,
-        GranitUser user,
+        UserManager<LocalIdentity> userManager,
+        LocalIdentity user,
         CancellationToken cancellationToken)
     {
         IDistributedEventBus? eventBus = httpContext.RequestServices.GetService<IDistributedEventBus>();

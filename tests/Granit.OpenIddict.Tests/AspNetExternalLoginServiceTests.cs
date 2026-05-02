@@ -16,7 +16,7 @@ namespace Granit.OpenIddict.Tests;
 
 public sealed class AspNetExternalLoginServiceTests
 {
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly ExternalClaimsMapper _claimsMapper = Substitute.For<ExternalClaimsMapper>();
     private readonly IDistributedEventBus _eventBus = Substitute.For<IDistributedEventBus>();
     private readonly GranitOpenIddictClientOptions _clientOptions = new() { AutoRegisterExternalUsers = true };
@@ -24,8 +24,8 @@ public sealed class AspNetExternalLoginServiceTests
 
     public AspNetExternalLoginServiceTests()
     {
-        IUserStore<GranitUser> store = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> store = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             store, null, null, null, null, null, null, null, null);
 
         _sut = new AspNetExternalLoginService(
@@ -40,7 +40,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task GetLoginsAsync_UserExists_ReturnsLogins()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.GetLoginsAsync(user).Returns(
         [
@@ -59,7 +59,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task GetLoginsAsync_UserNotFound_ReturnsEmpty()
     {
-        _userManager.FindByIdAsync("unknown").Returns((GranitUser?)null);
+        _userManager.FindByIdAsync("unknown").Returns((LocalIdentity?)null);
 
         IReadOnlyList<GranitExternalLoginInfo> logins =
             await _sut.GetLoginsAsync("unknown", TestContext.Current.CancellationToken);
@@ -72,7 +72,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task AddLoginAsync_Success()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.AddLoginAsync(user, Arg.Any<UserLoginInfo>()).Returns(IdentityResult.Success);
 
@@ -86,7 +86,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task AddLoginAsync_UserNotFound_Throws()
     {
-        _userManager.FindByIdAsync("unknown").Returns((GranitUser?)null);
+        _userManager.FindByIdAsync("unknown").Returns((LocalIdentity?)null);
 
         await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.AddLoginAsync(
@@ -98,7 +98,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task AddLoginAsync_IdentityResultFailed_Throws()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.AddLoginAsync(user, Arg.Any<UserLoginInfo>())
             .Returns(IdentityResult.Failed(new IdentityError { Description = "Duplicate login" }));
@@ -117,7 +117,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task RemoveLoginAsync_HasPasswordAndMultipleLogins_Succeeds()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(true);
         _userManager.GetLoginsAsync(user).Returns([new UserLoginInfo("Google", "key", "Google")]);
@@ -130,7 +130,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task RemoveLoginAsync_LastLoginWithoutPassword_Throws()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(false);
         _userManager.GetLoginsAsync(user).Returns([new UserLoginInfo("Google", "key", "Google")]);
@@ -144,7 +144,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task RemoveLoginAsync_NoPasswordButMultipleLogins_Succeeds()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         _userManager.FindByIdAsync(user.Id.ToString()).Returns(user);
         _userManager.HasPasswordAsync(user).Returns(false);
         _userManager.GetLoginsAsync(user).Returns(
@@ -163,7 +163,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task ProcessCallbackAsync_ExistingUserByLogin_ReturnsExistingUser()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         ClaimsPrincipal principal = CreatePrincipal("sub", "provider-key-123");
         _userManager.FindByLoginAsync("Google", "provider-key-123").Returns(user);
 
@@ -177,9 +177,9 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task ProcessCallbackAsync_ExistingUserByEmail_LinksAndReturnsExisting()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         ClaimsPrincipal principal = CreatePrincipal("sub", "new-provider-key");
-        _userManager.FindByLoginAsync("Google", "new-provider-key").Returns((GranitUser?)null);
+        _userManager.FindByLoginAsync("Google", "new-provider-key").Returns((LocalIdentity?)null);
         _claimsMapper.MapToUserProperties(principal, "Google")
             .Returns(new ExternalUserProperties { Email = "user@test.com" });
         _userManager.FindByEmailAsync("user@test.com").Returns(user);
@@ -197,7 +197,7 @@ public sealed class AspNetExternalLoginServiceTests
     public async Task ProcessCallbackAsync_AutoRegister_CreatesUserAndPublishesEvent()
     {
         ClaimsPrincipal principal = CreatePrincipal("sub", "brand-new-key");
-        _userManager.FindByLoginAsync("Google", "brand-new-key").Returns((GranitUser?)null);
+        _userManager.FindByLoginAsync("Google", "brand-new-key").Returns((LocalIdentity?)null);
         _claimsMapper.MapToUserProperties(principal, "Google")
             .Returns(new ExternalUserProperties
             {
@@ -205,16 +205,16 @@ public sealed class AspNetExternalLoginServiceTests
                 FirstName = "Jane",
                 LastName = "Doe",
             });
-        _userManager.FindByEmailAsync("new@example.com").Returns((GranitUser?)null);
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(IdentityResult.Success);
-        _userManager.AddLoginAsync(Arg.Any<GranitUser>(), Arg.Any<UserLoginInfo>())
+        _userManager.FindByEmailAsync("new@example.com").Returns((LocalIdentity?)null);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(IdentityResult.Success);
+        _userManager.AddLoginAsync(Arg.Any<LocalIdentity>(), Arg.Any<UserLoginInfo>())
             .Returns(IdentityResult.Success);
 
         ProcessCallbackResult result =
             await _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken);
 
         result.IsNewUser.ShouldBeTrue();
-        await _userManager.Received(1).CreateAsync(Arg.Is<GranitUser>(u =>
+        await _userManager.Received(1).CreateAsync(Arg.Is<LocalIdentity>(u =>
             u.Email == "new@example.com" &&
             u.FirstName == "Jane" &&
             u.LastName == "Doe" &&
@@ -229,10 +229,10 @@ public sealed class AspNetExternalLoginServiceTests
         _clientOptions.AutoRegisterExternalUsers = false;
 
         ClaimsPrincipal principal = CreatePrincipal("sub", "new-key");
-        _userManager.FindByLoginAsync("Google", "new-key").Returns((GranitUser?)null);
+        _userManager.FindByLoginAsync("Google", "new-key").Returns((LocalIdentity?)null);
         _claimsMapper.MapToUserProperties(principal, "Google")
             .Returns(new ExternalUserProperties { Email = "noone@example.com" });
-        _userManager.FindByEmailAsync("noone@example.com").Returns((GranitUser?)null);
+        _userManager.FindByEmailAsync("noone@example.com").Returns((LocalIdentity?)null);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.ProcessCallbackAsync(principal, "Google", TestContext.Current.CancellationToken));
@@ -252,7 +252,7 @@ public sealed class AspNetExternalLoginServiceTests
     [Fact]
     public async Task ProcessCallbackAsync_UsesNameIdentifierAsFallback()
     {
-        GranitUser user = CreateUser();
+        LocalIdentity user = CreateUser();
         ClaimsPrincipal principal = CreatePrincipal(ClaimTypes.NameIdentifier, "ni-key");
         _userManager.FindByLoginAsync("Microsoft", "ni-key").Returns(user);
 
@@ -262,7 +262,7 @@ public sealed class AspNetExternalLoginServiceTests
         result.UserId.ShouldBe(user.Id);
     }
 
-    private static GranitUser CreateUser() => new() { Id = Guid.NewGuid(), Email = "user@test.com" };
+    private static LocalIdentity CreateUser() => new() { Id = Guid.NewGuid(), Email = "user@test.com" };
 
     private static ClaimsPrincipal CreatePrincipal(string claimType, string claimValue) =>
         new(new ClaimsIdentity([new Claim(claimType, claimValue)]));

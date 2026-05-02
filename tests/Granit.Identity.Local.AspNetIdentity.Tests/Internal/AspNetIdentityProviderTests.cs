@@ -20,7 +20,7 @@ namespace Granit.Identity.Local.AspNetIdentity.Tests.Internal;
 /// </summary>
 public sealed class AspNetIdentityProviderTests
 {
-    private readonly UserManager<GranitUser> _userManager;
+    private readonly UserManager<LocalIdentity> _userManager;
     private readonly RoleManager<GranitRole> _roleManager;
     private readonly ILocalIdentityGroupStore _groupStore;
     private readonly ILogger<AspNetIdentityProvider> _logger;
@@ -28,8 +28,8 @@ public sealed class AspNetIdentityProviderTests
 
     public AspNetIdentityProviderTests()
     {
-        IUserStore<GranitUser> userStore = Substitute.For<IUserStore<GranitUser>>();
-        _userManager = Substitute.For<UserManager<GranitUser>>(
+        IUserStore<LocalIdentity> userStore = Substitute.For<IUserStore<LocalIdentity>>();
+        _userManager = Substitute.For<UserManager<LocalIdentity>>(
             userStore, null, null, null, null, null, null, null, null);
 
         IRoleStore<GranitRole> roleStore = Substitute.For<IRoleStore<GranitRole>>();
@@ -47,7 +47,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task GetUserAsync_WhenUserExists_ReturnsUser()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
 
         IIdentityUser? result = await _sut.GetUserAsync("user-1", TestContext.Current.CancellationToken);
@@ -71,66 +71,66 @@ public sealed class AspNetIdentityProviderTests
     public async Task CreateUserAsync_WithoutPassword_CallsCreateWithoutPassword()
     {
         IdentityUserCreate input = new("alice", "alice@test.com", "Alice", "Smith", true, null);
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(IdentityResult.Success);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(IdentityResult.Success);
 
         IIdentityUser result = await _sut.CreateUserAsync(input, TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
-        await _userManager.Received(1).CreateAsync(Arg.Is<GranitUser>(u =>
+        await _userManager.Received(1).CreateAsync(Arg.Is<LocalIdentity>(u =>
             u.UserName == "alice" &&
             u.Email == "alice@test.com" &&
             u.FirstName == "Alice" &&
             u.LastName == "Smith"));
-        await _userManager.DidNotReceive().CreateAsync(Arg.Any<GranitUser>(), Arg.Any<string>());
+        await _userManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>(), Arg.Any<string>());
     }
 
     [Fact]
     public async Task CreateUserAsync_WithEmptyPassword_CallsCreateWithoutPassword()
     {
         IdentityUserCreate input = new("bob", "bob@test.com", "Bob", "Jones", true, string.Empty);
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(IdentityResult.Success);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(IdentityResult.Success);
 
         await _sut.CreateUserAsync(input, TestContext.Current.CancellationToken);
 
-        await _userManager.Received(1).CreateAsync(Arg.Any<GranitUser>());
-        await _userManager.DidNotReceive().CreateAsync(Arg.Any<GranitUser>(), Arg.Any<string>());
+        await _userManager.Received(1).CreateAsync(Arg.Any<LocalIdentity>());
+        await _userManager.DidNotReceive().CreateAsync(Arg.Any<LocalIdentity>(), Arg.Any<string>());
     }
 
     [Fact]
     public async Task CreateUserAsync_WithTemporaryPassword_CallsCreateWithPassword()
     {
         IdentityUserCreate input = new("carol", "carol@test.com", "Carol", "Doe", true, "Temp123!");
-        _userManager.CreateAsync(Arg.Any<GranitUser>(), "Temp123!").Returns(IdentityResult.Success);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>(), "Temp123!").Returns(IdentityResult.Success);
 
         await _sut.CreateUserAsync(input, TestContext.Current.CancellationToken);
 
-        await _userManager.Received(1).CreateAsync(Arg.Any<GranitUser>(), "Temp123!");
+        await _userManager.Received(1).CreateAsync(Arg.Any<LocalIdentity>(), "Temp123!");
     }
 
     [Fact]
     public async Task CreateUserAsync_WhenDisabled_SetsLockoutToMaxValue()
     {
         IdentityUserCreate input = new("dave", "dave@test.com", "Dave", "Lee", false, null);
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(IdentityResult.Success);
-        _userManager.SetLockoutEndDateAsync(Arg.Any<GranitUser>(), Arg.Any<DateTimeOffset?>())
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(IdentityResult.Success);
+        _userManager.SetLockoutEndDateAsync(Arg.Any<LocalIdentity>(), Arg.Any<DateTimeOffset?>())
             .Returns(IdentityResult.Success);
 
         await _sut.CreateUserAsync(input, TestContext.Current.CancellationToken);
 
         await _userManager.Received(1).SetLockoutEndDateAsync(
-            Arg.Any<GranitUser>(), DateTimeOffset.MaxValue);
+            Arg.Any<LocalIdentity>(), DateTimeOffset.MaxValue);
     }
 
     [Fact]
     public async Task CreateUserAsync_WhenEnabled_DoesNotSetLockout()
     {
         IdentityUserCreate input = new("eve", "eve@test.com", "Eve", "Ray", true, null);
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(IdentityResult.Success);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(IdentityResult.Success);
 
         await _sut.CreateUserAsync(input, TestContext.Current.CancellationToken);
 
         await _userManager.DidNotReceive().SetLockoutEndDateAsync(
-            Arg.Any<GranitUser>(), Arg.Any<DateTimeOffset?>());
+            Arg.Any<LocalIdentity>(), Arg.Any<DateTimeOffset?>());
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public sealed class AspNetIdentityProviderTests
         IdentityUserCreate input = new("fail", "fail@test.com", null, null, true, null);
         var failure = IdentityResult.Failed(
             new IdentityError { Code = "DuplicateUserName", Description = "Username already taken." });
-        _userManager.CreateAsync(Arg.Any<GranitUser>()).Returns(failure);
+        _userManager.CreateAsync(Arg.Any<LocalIdentity>()).Returns(failure);
 
         InvalidOperationException ex = await Should.ThrowAsync<InvalidOperationException>(
             () => _sut.CreateUserAsync(input, TestContext.Current.CancellationToken));
@@ -153,7 +153,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task SetUserEnabledAsync_EnableUser_ClearsLockout()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset?>())
             .Returns(IdentityResult.Success);
@@ -166,7 +166,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task SetUserEnabledAsync_DisableUser_SetsLockoutToMaxValue()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.SetLockoutEndDateAsync(user, Arg.Any<DateTimeOffset?>())
             .Returns(IdentityResult.Success);
@@ -193,7 +193,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task UpdateUserAsync_UpdatesFirstNameAndLastName()
     {
-        GranitUser user = new() { UserName = "alice", FirstName = "Old", LastName = "Name" };
+        LocalIdentity user = new() { UserName = "alice", FirstName = "Old", LastName = "Name" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
         IdentityUserUpdate update = new(null, "New", "Last", null);
@@ -208,7 +208,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task UpdateUserAsync_UpdatesEmail()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.SetEmailAsync(user, "new@test.com").Returns(IdentityResult.Success);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
@@ -222,7 +222,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task UpdateUserAsync_NullFields_DoesNotModify()
     {
-        GranitUser user = new() { UserName = "alice", FirstName = "Original", LastName = "Name" };
+        LocalIdentity user = new() { UserName = "alice", FirstName = "Original", LastName = "Name" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.UpdateAsync(user).Returns(IdentityResult.Success);
         IdentityUserUpdate update = new(null, null, null, null);
@@ -231,7 +231,7 @@ public sealed class AspNetIdentityProviderTests
 
         user.FirstName.ShouldBe("Original");
         user.LastName.ShouldBe("Name");
-        await _userManager.DidNotReceive().SetEmailAsync(Arg.Any<GranitUser>(), Arg.Any<string>());
+        await _userManager.DidNotReceive().SetEmailAsync(Arg.Any<LocalIdentity>(), Arg.Any<string>());
     }
 
     [Fact]
@@ -250,7 +250,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task UpdateUserAsync_WhenUpdateFails_ThrowsInvalidOperationException()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         var failure = IdentityResult.Failed(
             new IdentityError { Code = "ConcurrencyFailure", Description = "Concurrency conflict." });
@@ -269,8 +269,8 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task GetRoleMembersAsync_ReturnsMappedUsers()
     {
-        GranitUser user1 = new() { UserName = "alice" };
-        GranitUser user2 = new() { UserName = "bob" };
+        LocalIdentity user1 = new() { UserName = "alice" };
+        LocalIdentity user2 = new() { UserName = "bob" };
         _userManager.GetUsersInRoleAsync("admin").Returns([user1, user2]);
 
         IReadOnlyList<IIdentityUser> result = await _sut.GetRoleMembersAsync(
@@ -284,7 +284,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task GetRoleMembersAsync_WhenNoMembers_ReturnsEmptyList()
     {
-        _userManager.GetUsersInRoleAsync("empty-role").Returns((IList<GranitUser>)[]);
+        _userManager.GetUsersInRoleAsync("empty-role").Returns((IList<LocalIdentity>)[]);
 
         IReadOnlyList<IIdentityUser> result = await _sut.GetRoleMembersAsync(
             "empty-role", TestContext.Current.CancellationToken);
@@ -297,7 +297,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task GetUserRolesAsync_WhenUserExists_ReturnsMappedRoles()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.GetRolesAsync(user).Returns((IList<string>)["admin", "editor"]);
 
@@ -325,7 +325,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task AssignRoleAsync_WhenSuccessful_AddsUserToRole()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.AddToRoleAsync(user, "admin").Returns(IdentityResult.Success);
 
@@ -349,7 +349,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task AssignRoleAsync_WhenFailed_ThrowsInvalidOperationException()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         var failure = IdentityResult.Failed(
             new IdentityError { Code = "InvalidRole", Description = "Role does not exist." });
@@ -367,7 +367,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task RemoveRoleAsync_WhenSuccessful_RemovesUserFromRole()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.RemoveFromRoleAsync(user, "admin").Returns(IdentityResult.Success);
 
@@ -391,7 +391,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task RemoveRoleAsync_WhenFailed_ThrowsInvalidOperationException()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         var failure = IdentityResult.Failed(
             new IdentityError { Code = "UserNotInRole", Description = "User is not in role." });
@@ -512,7 +512,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task SetTemporaryPasswordAsync_WhenSuccessful_ResetsPassword()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.GeneratePasswordResetTokenAsync(user).Returns("reset-token");
         _userManager.ResetPasswordAsync(user, "reset-token", "NewPass123!")
@@ -539,7 +539,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task SetTemporaryPasswordAsync_WhenResetFails_ThrowsInvalidOperationException()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByIdAsync("user-1").Returns(user);
         _userManager.GeneratePasswordResetTokenAsync(user).Returns("reset-token");
         var failure = IdentityResult.Failed(
@@ -559,7 +559,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task VerifyUserCredentialsAsync_WhenValid_ReturnsTrue()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByNameAsync("alice").Returns(user);
         _userManager.CheckPasswordAsync(user, "correct-password").Returns(true);
 
@@ -572,7 +572,7 @@ public sealed class AspNetIdentityProviderTests
     [Fact]
     public async Task VerifyUserCredentialsAsync_WhenInvalidPassword_ReturnsFalse()
     {
-        GranitUser user = new() { UserName = "alice" };
+        LocalIdentity user = new() { UserName = "alice" };
         _userManager.FindByNameAsync("alice").Returns(user);
         _userManager.CheckPasswordAsync(user, "wrong-password").Returns(false);
 

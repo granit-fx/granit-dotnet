@@ -22,7 +22,7 @@ namespace Granit.Identity.Local;
 /// Granit module for shared local identity abstractions.
 /// </summary>
 /// <remarks>
-/// Provides <see cref="Entities.GranitUser"/>, <see cref="Entities.GranitRole"/>,
+/// Provides <see cref="Entities.LocalIdentity"/>, <see cref="Entities.GranitRole"/>,
 /// <see cref="Domain.GranitUserGroup"/>, provider-agnostic service interfaces,
 /// integration events, and <see cref="Services.ILocalIdentityGroupStore"/>.
 /// Used by both <c>Granit.OpenIddict.EntityFrameworkCore</c> and any future

@@ -105,10 +105,10 @@ internal static partial class ConnectTokenEndpoints
         try
         {
             // Retrieve the user from the subject claim.
-            UserManager<GranitUser> userManager = context.RequestServices
-                .GetRequiredService<UserManager<GranitUser>>();
+            UserManager<LocalIdentity> userManager = context.RequestServices
+                .GetRequiredService<UserManager<LocalIdentity>>();
 
-            GranitUser? user = subject is not null
+            LocalIdentity? user = subject is not null
                 ? await userManager.FindByIdAsync(subject).ConfigureAwait(false)
                 : null;
 
