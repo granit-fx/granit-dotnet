@@ -39,4 +39,12 @@ public interface IActivityWriter
 
     /// <summary>Updates <see cref="Activity.DueAt"/> (allowed only while open).</summary>
     Task RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stamps <see cref="Activity.OverdueNotifiedAt"/> on the row, recording
+    /// that the overdue background job (story A8) has emitted its notification
+    /// for this activity. Idempotent — calling on an already-stamped row
+    /// preserves the original timestamp.
+    /// </summary>
+    Task MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default);
 }

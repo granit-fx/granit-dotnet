@@ -31,6 +31,33 @@ public interface IActivityReader
 
     /// <summary>Returns the total count matching <paramref name="filter"/> for paginated responses.</summary>
     Task<int> CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns every <see cref="Activity"/> that is past its due date, has not yet
+    /// been marked overdue (<see cref="Activity.OverdueNotifiedAt"/> is
+    /// <see langword="null"/>), and is still <see cref="ActivityStatus.Open"/>.
+    /// Used by the overdue-scan background job (story A8) — idempotency comes
+    /// from the <c>OverdueNotifiedAt</c> stamp set after the event is emitted.
+    /// </summary>
+    /// <param name="asOf">Reference instant — typically <c>clock.Now</c>.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<Activity>> GetOverdueAwaitingNotificationAsync(
+        DateTimeOffset asOf,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns every <see cref="Activity"/> that is <see cref="ActivityStatus.Open"/>
+    /// and whose <see cref="Activity.DueAt"/> falls within the half-open day window
+    /// <c>[<paramref name="dayStart"/>, <paramref name="dayEnd"/>)</c>. Used by the
+    /// daily reminder background job (story A8) to find activities due tomorrow.
+    /// </summary>
+    /// <param name="dayStart">Inclusive start of the day window.</param>
+    /// <param name="dayEnd">Exclusive end of the day window.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<IReadOnlyList<Activity>> GetOpenDueWithinAsync(
+        DateTimeOffset dayStart,
+        DateTimeOffset dayEnd,
+        CancellationToken cancellationToken = default);
 }
 
 /// <summary>

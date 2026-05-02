@@ -55,6 +55,9 @@ internal sealed class EfCoreActivityWriter(
     public Task RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default) =>
         MutateAsync(activityId, a => a.Reschedule(newDueAt), cancellationToken);
 
+    public Task MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default) =>
+        MutateAsync(activityId, a => a.MarkOverdueNotified(at), cancellationToken);
+
     private async Task MutateAsync(Guid activityId, Action<Activity> mutate, CancellationToken cancellationToken)
     {
         await using ActivitiesDbContext context = await contextFactory
