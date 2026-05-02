@@ -55,6 +55,8 @@ internal static class DocumentEndpoints
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
 
+        documents.MapDocumentMutationEndpoints();
+
         documents.MapGet("/{id:guid}/download", DownloadAsync)
             .WithName("RequestDocumentDownloadUrl")
             .WithSummary("Issues a presigned download URL for a document version.")

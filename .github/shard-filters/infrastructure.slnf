@@ -2,6 +2,9 @@
   "solution": {
     "path": "../../Granit.slnx",
     "projects": [
+      "src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj",
+      "src/Granit.Activities.Notifications/Granit.Activities.Notifications.csproj",
+      "src/Granit.Activities/Granit.Activities.csproj",
       "src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj",
       "src/Granit.Analytics/Granit.Analytics.csproj",
       "src/Granit.Analyzers.CodeFixes/Granit.Analyzers.CodeFixes.csproj",
@@ -98,6 +101,7 @@
       "src/Granit.Workflow/Granit.Workflow.csproj",
       "src/Granit.Workspaces.Abstractions/Granit.Workspaces.Abstractions.csproj",
       "src/Granit/Granit.csproj",
+      "tests/Granit.Activities.Notifications.Tests/Granit.Activities.Notifications.Tests.csproj",
       "tests/Granit.BackgroundJobs.Endpoints.Tests/Granit.BackgroundJobs.Endpoints.Tests.csproj",
       "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.BackgroundJobs.Notifications.Tests/Granit.BackgroundJobs.Notifications.Tests.csproj",
