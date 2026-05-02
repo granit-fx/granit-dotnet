@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "フォルダーの作成、名前変更、移動、ゴミ箱への移動",
+    "Permission:Documents.Folders.Read": "フォルダーを表示",
+    "PermissionGroup:Documents": "ドキュメント"
+  }
+}

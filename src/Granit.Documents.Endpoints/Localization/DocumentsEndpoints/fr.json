@@ -1,0 +1,8 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Créer, renommer, déplacer et corbeillir des dossiers",
+    "Permission:Documents.Folders.Read": "Consulter les dossiers",
+    "PermissionGroup:Documents": "Documents"
+  }
+}

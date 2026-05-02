@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Create, rename, move, and trash folders",
+    "Permission:Documents.Folders.Read": "View folders",
+    "PermissionGroup:Documents": "Documents"
+  }
+}

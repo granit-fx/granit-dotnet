@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Klasörleri oluşturma, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
+    "Permission:Documents.Folders.Read": "Klasörleri görüntüle",
+    "PermissionGroup:Documents": "Belgeler"
+  }
+}

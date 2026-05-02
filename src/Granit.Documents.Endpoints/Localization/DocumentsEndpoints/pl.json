@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Permission:Documents.Folders.Manage": "Tworzenie, zmiana nazwy, przenoszenie i przenoszenie do kosza folderów",
+    "Permission:Documents.Folders.Read": "Wyświetlanie folderów",
+    "PermissionGroup:Documents": "Dokumenty"
+  }
+}
