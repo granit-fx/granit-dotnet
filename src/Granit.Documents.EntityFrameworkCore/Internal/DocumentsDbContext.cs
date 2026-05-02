@@ -29,6 +29,9 @@ internal sealed class DocumentsDbContext(
     /// <summary>Tenant-scoped folder hierarchy (one tenant-root row per tenant).</summary>
     public DbSet<Folder> Folders { get; set; } = null!;
 
+    /// <summary>Tenant-scoped documents — every row points at a folder via <see cref="Document.FolderId"/>.</summary>
+    public DbSet<Document> Documents { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
