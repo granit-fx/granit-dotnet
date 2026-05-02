@@ -293,6 +293,7 @@
     <Project Path="src/Granit.Parties.Deduplication.BackgroundJobs/Granit.Parties.Deduplication.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Parties.Endpoints/Granit.Parties.Endpoints.csproj" />
     <Project Path="src/Granit.Parties.EntityFrameworkCore/Granit.Parties.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Parties.Identity/Granit.Parties.Identity.csproj" />
     <Project Path="src/Granit.Parties.Mergeable/Granit.Parties.Mergeable.csproj" />
     <Project Path="src/Granit.Parties.MultiTenancy/Granit.Parties.MultiTenancy.csproj" />
     <Project Path="src/Granit.Parties.Privacy/Granit.Parties.Privacy.csproj" />
@@ -695,6 +696,7 @@
     <Project Path="tests/Granit.Parties.Deduplication.Tests/Granit.Parties.Deduplication.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Endpoints.Tests/Granit.Parties.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Parties.EntityFrameworkCore.Tests/Granit.Parties.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/Granit.Parties.Identity.Tests/Granit.Parties.Identity.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Mergeable.Tests/Granit.Parties.Mergeable.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Mergeable.Tests.Integration/Granit.Parties.Mergeable.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Parties.MultiTenancy.Tests/Granit.Parties.MultiTenancy.Tests.csproj" />

@@ -59,6 +59,7 @@
         "tests/Granit.Parties.Deduplication.Tests",
         "tests/Granit.Parties.Endpoints.Tests",
         "tests/Granit.Parties.EntityFrameworkCore.Tests",
+        "tests/Granit.Parties.Identity.Tests",
         "tests/Granit.Parties.Mergeable.Tests",
         "tests/Granit.Parties.MultiTenancy.Tests",
         "tests/Granit.Parties.Privacy.Tests",
