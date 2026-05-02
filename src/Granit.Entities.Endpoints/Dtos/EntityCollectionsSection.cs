@@ -76,11 +76,13 @@ public sealed record EntityCalendarLayoutManifest(
 /// <param name="ImagePropertyName">Entity property carrying the card image — typed <c>BlobReference</c> (or nullable). Required.</param>
 /// <param name="TitlePropertyName">Entity property used as the card headline, or <see langword="null"/> for the entity's <c>DisplayProperty</c> fallback.</param>
 /// <param name="SubtitlePropertyName">Optional secondary line under the title, or <see langword="null"/> for none.</param>
+/// <param name="GroupByPropertyName">Optional grouping property — when set, the renderer paints one titled section per distinct value instead of a flat grid. <see langword="null"/> for ungrouped flat layout.</param>
 /// <param name="CardSize">Card size — drives CSS-grid track sizing in the renderer.</param>
 public sealed record EntityGalleryLayoutManifest(
     string ImagePropertyName,
     string? TitlePropertyName,
     string? SubtitlePropertyName,
+    string? GroupByPropertyName,
     GalleryCardSize CardSize);
 
 /// <summary>Kanban-specific layout configuration carried in the manifest.</summary>
