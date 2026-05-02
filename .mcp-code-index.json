@@ -1152,6 +1152,7 @@
         "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
         "Granit.Encryption.EntityFrameworkCore",
+        "Granit.Guids",
         "Granit.Identity",
         "Granit.Localization",
         "Granit.Entities.Abstractions",
@@ -1271,6 +1272,7 @@
       "name": "Granit.Identity.Local.AspNetIdentity",
       "deps": [
         "Granit.Caching",
+        "Granit.Guids",
         "Granit.Identity",
         "Granit.Identity.Local",
         "Granit.Persistence.EntityFrameworkCore"
@@ -1988,6 +1990,14 @@
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Parties.Identity",
+      "deps": [
+        "Granit.Identity",
+        "Granit.Parties"
       ],
       "framework": "net10.0"
     },
@@ -8911,7 +8921,7 @@
       "kind": "record",
       "project": "Granit.Authorization",
       "file": "src/Granit.Authorization/PermissionGrantLookupContext.cs",
-      "line": 10,
+      "line": 17,
       "members": []
     },
     {
@@ -23675,7 +23685,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Domain/User.cs",
-      "line": 30,
+      "line": 31,
       "members": [
         {
           "name": "DisplayName",
@@ -24187,6 +24197,24 @@
       "members": []
     },
     {
+      "name": "UserCreatedEto",
+      "fqn": "Granit.Identity.Events.UserCreatedEto",
+      "kind": "record",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Events/UserCreatedEto.cs",
+      "line": 39,
+      "members": []
+    },
+    {
+      "name": "UserProfileChangedEto",
+      "fqn": "Granit.Identity.Events.UserProfileChangedEto",
+      "kind": "record",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Events/UserProfileChangedEto.cs",
+      "line": 29,
+      "members": []
+    },
+    {
       "name": "UserExportDefinition",
       "fqn": "Granit.Identity.Exports.UserExportDefinition",
       "kind": "class",
@@ -24369,18 +24397,18 @@
       ]
     },
     {
-      "name": "UserCacheEntry",
-      "fqn": "Granit.Identity.Federated.Domain.UserCacheEntry",
+      "name": "FederatedIdentity",
+      "fqn": "Granit.Identity.Federated.Domain.FederatedIdentity",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Domain/UserCacheEntry.cs",
+      "file": "src/Granit.Identity.Federated/Domain/FederatedIdentity.cs",
       "line": 24,
       "members": [
         {
-          "name": "ExternalUserId",
+          "name": "UserId",
           "kind": "property",
-          "signature": "string ExternalUserId",
-          "returnType": "string"
+          "signature": "Guid UserId",
+          "returnType": "Guid"
         },
         {
           "name": "Username",
@@ -24397,11 +24425,11 @@
       ]
     },
     {
-      "name": "UserCacheEntryEntityDefinition",
-      "fqn": "Granit.Identity.Federated.Entities.UserCacheEntryEntityDefinition",
+      "name": "FederatedIdentityEntityDefinition",
+      "fqn": "Granit.Identity.Federated.Entities.FederatedIdentityEntityDefinition",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Entities/UserCacheEntryEntityDefinition.cs",
+      "file": "src/Granit.Identity.Federated/Entities/FederatedIdentityEntityDefinition.cs",
       "line": 21,
       "members": [
         {
@@ -24675,6 +24703,15 @@
       ]
     },
     {
+      "name": "FederatedIdentityErasedEvent",
+      "fqn": "Granit.Identity.Federated.Events.FederatedIdentityErasedEvent",
+      "kind": "record",
+      "project": "Granit.Identity.Federated",
+      "file": "src/Granit.Identity.Federated/Events/FederatedIdentityErasedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "IdentityTokenExchangedEto",
       "fqn": "Granit.Identity.Federated.Events.IdentityTokenExchangedEto",
       "kind": "record",
@@ -24711,15 +24748,6 @@
       "members": []
     },
     {
-      "name": "UserCacheEntryErasedEvent",
-      "fqn": "Granit.Identity.Federated.Events.UserCacheEntryErasedEvent",
-      "kind": "record",
-      "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Events/UserCacheEntryErasedEvent.cs",
-      "line": 11,
-      "members": []
-    },
-    {
       "name": "IdentityProviderUnauthorizedException",
       "fqn": "Granit.Identity.Federated.Exceptions.IdentityProviderUnauthorizedException",
       "kind": "class",
@@ -24729,11 +24757,11 @@
       "members": []
     },
     {
-      "name": "UserCacheEntryExportDefinition",
-      "fqn": "Granit.Identity.Federated.Exports.UserCacheEntryExportDefinition",
+      "name": "FederatedIdentityExportDefinition",
+      "fqn": "Granit.Identity.Federated.Exports.FederatedIdentityExportDefinition",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Exports/UserCacheEntryExportDefinition.cs",
+      "file": "src/Granit.Identity.Federated/Exports/FederatedIdentityExportDefinition.cs",
       "line": 6,
       "members": [
         {
@@ -24841,7 +24869,7 @@
           "name": "FindByExternalIdAsync",
           "kind": "method",
           "signature": "FindByExternalIdAsync(string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<UserCacheEntry?>"
+          "returnType": "Task<FederatedIdentity?>"
         }
       ]
     },
@@ -25020,11 +25048,11 @@
       ]
     },
     {
-      "name": "EnabledUserCacheEntryCountMetricDefinition",
-      "fqn": "Granit.Identity.Federated.Metrics.EnabledUserCacheEntryCountMetricDefinition",
+      "name": "EnabledFederatedIdentityCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Metrics.EnabledFederatedIdentityCountMetricDefinition",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Metrics/EnabledUserCacheEntryCountMetricDefinition.cs",
+      "file": "src/Granit.Identity.Federated/Metrics/EnabledFederatedIdentityCountMetricDefinition.cs",
       "line": 13,
       "members": [
         {
@@ -25048,29 +25076,29 @@
         {
           "name": "Selector",
           "kind": "property",
-          "signature": "Expression<Func<UserCacheEntry, int?>>? Selector",
-          "returnType": "Expression<Func<UserCacheEntry, int?>>?"
+          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
+          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
         },
         {
           "name": "BaseFilter",
           "kind": "property",
-          "signature": "Expression<Func<UserCacheEntry, bool>>? BaseFilter",
-          "returnType": "Expression<Func<UserCacheEntry, bool>>?"
+          "signature": "Expression<Func<FederatedIdentity, bool>>? BaseFilter",
+          "returnType": "Expression<Func<FederatedIdentity, bool>>?"
         },
         {
           "name": "PeriodSelector",
           "kind": "property",
-          "signature": "Expression<Func<UserCacheEntry, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<UserCacheEntry, DateTimeOffset>>?"
+          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
         }
       ]
     },
     {
-      "name": "UserCacheEntryCountMetricDefinition",
-      "fqn": "Granit.Identity.Federated.Metrics.UserCacheEntryCountMetricDefinition",
+      "name": "FederatedIdentityCountMetricDefinition",
+      "fqn": "Granit.Identity.Federated.Metrics.FederatedIdentityCountMetricDefinition",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Metrics/UserCacheEntryCountMetricDefinition.cs",
+      "file": "src/Granit.Identity.Federated/Metrics/FederatedIdentityCountMetricDefinition.cs",
       "line": 14,
       "members": [
         {
@@ -25094,14 +25122,14 @@
         {
           "name": "Selector",
           "kind": "property",
-          "signature": "Expression<Func<UserCacheEntry, int?>>? Selector",
-          "returnType": "Expression<Func<UserCacheEntry, int?>>?"
+          "signature": "Expression<Func<FederatedIdentity, int?>>? Selector",
+          "returnType": "Expression<Func<FederatedIdentity, int?>>?"
         },
         {
           "name": "PeriodSelector",
           "kind": "property",
-          "signature": "Expression<Func<UserCacheEntry, DateTimeOffset>>? PeriodSelector",
-          "returnType": "Expression<Func<UserCacheEntry, DateTimeOffset>>?"
+          "signature": "Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector",
+          "returnType": "Expression<Func<FederatedIdentity, DateTimeOffset>>?"
         }
       ]
     },
@@ -25423,11 +25451,11 @@
       ]
     },
     {
-      "name": "UserCacheEntryQueryDefinition",
-      "fqn": "Granit.Identity.Federated.Queries.UserCacheEntryQueryDefinition",
+      "name": "FederatedIdentityQueryDefinition",
+      "fqn": "Granit.Identity.Federated.Queries.FederatedIdentityQueryDefinition",
       "kind": "class",
       "project": "Granit.Identity.Federated",
-      "file": "src/Granit.Identity.Federated/Queries/UserCacheEntryQueryDefinition.cs",
+      "file": "src/Granit.Identity.Federated/Queries/FederatedIdentityQueryDefinition.cs",
       "line": 10,
       "members": [
         {
@@ -25860,6 +25888,28 @@
       ]
     },
     {
+      "name": "IUserDirectoryWriter",
+      "fqn": "Granit.Identity.IUserDirectoryWriter",
+      "kind": "interface",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/IUserDirectoryWriter.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(User user, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid userId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "IUserLookupService",
       "fqn": "Granit.Identity.IUserLookupService",
       "kind": "interface",
@@ -25939,12 +25989,12 @@
       "kind": "class",
       "project": "Granit.Identity.Local.AspNetIdentity",
       "file": "src/Granit.Identity.Local.AspNetIdentity/LocalIdentityManager.cs",
-      "line": 27,
+      "line": 40,
       "members": [
         {
-          "name": "AccessFailedAsync",
+          "name": "CreateAsync",
           "kind": "method",
-          "signature": "AccessFailedAsync(LocalIdentity user)",
+          "signature": "CreateAsync(LocalIdentity user)",
           "returnType": "Task<IdentityResult>"
         }
       ]
@@ -26050,7 +26100,7 @@
       "kind": "class",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Domain/GranitUserGroupMember.cs",
-      "line": 8,
+      "line": 20,
       "members": []
     },
     {
@@ -39873,6 +39923,70 @@
           "kind": "method",
           "signature": "UpdateAsync(Party party, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesIdentityModule",
+      "fqn": "Granit.Parties.Identity.GranitPartiesIdentityModule",
+      "kind": "class",
+      "project": "Granit.Parties.Identity",
+      "file": "src/Granit.Parties.Identity/GranitPartiesIdentityModule.cs",
+      "line": 38,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "EnsurePartyForUserHandler",
+      "fqn": "Granit.Parties.Identity.Handlers.EnsurePartyForUserHandler",
+      "kind": "class",
+      "project": "Granit.Parties.Identity",
+      "file": "src/Granit.Parties.Identity/Handlers/EnsurePartyForUserHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserCreatedEto @event, IPartyReader reader, IPartyWriter writer, IGuidGenerator guidGenerator, IOptions<GranitPartiesIdentityOptions> options, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SyncProfileToPartyHandler",
+      "fqn": "Granit.Parties.Identity.Handlers.SyncProfileToPartyHandler",
+      "kind": "class",
+      "project": "Granit.Parties.Identity",
+      "file": "src/Granit.Parties.Identity/Handlers/SyncProfileToPartyHandler.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(UserProfileChangedEto @event, IPartyReader reader, IPartyWriter writer, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitPartiesIdentityOptions",
+      "fqn": "Granit.Parties.Identity.Options.GranitPartiesIdentityOptions",
+      "kind": "class",
+      "project": "Granit.Parties.Identity",
+      "file": "src/Granit.Parties.Identity/Options/GranitPartiesIdentityOptions.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DefaultCurrency",
+          "kind": "property",
+          "signature": "string DefaultCurrency",
+          "returnType": "string"
         }
       ]
     },

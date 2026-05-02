@@ -33,7 +33,7 @@ public sealed class IdentityFederatedPrivacyDataProviderTests
     {
         _currentTenant.IsAvailable.Returns(false);
         _reader.FindByExternalIdAsync(Arg.Any<string>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>())
-            .Returns((UserCacheEntry?)null);
+            .Returns((FederatedIdentity?)null);
 
         ReadOnlyMemory<byte> result = await Sut().ExportAsync(Guid.NewGuid(), TestContext.Current.CancellationToken);
 
@@ -48,7 +48,7 @@ public sealed class IdentityFederatedPrivacyDataProviderTests
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(tenantId);
 
-        UserCacheEntry entry = new()
+        FederatedIdentity entry = new()
         {
             Id = Guid.NewGuid(),
             ExternalUserId = userId.ToString(),

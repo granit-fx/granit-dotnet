@@ -19,6 +19,9 @@ internal static class EntityCacheKey
     /// <summary>Cache-key prefix for the discovery tree endpoint.</summary>
     public const string DiscoveryPrefix = "entity-discovery";
 
+    /// <summary>Cache-key prefix for the calendar range-query endpoint.</summary>
+    public const string CalendarRangePrefix = "entity-calendar";
+
     /// <summary>
     /// Builds <c>entity-meta:{entityName}:{userPermsHash}:{cultureName}</c>.
     /// </summary>
@@ -40,6 +43,46 @@ internal static class EntityCacheKey
         ArgumentNullException.ThrowIfNull(culture);
 
         return $"{DiscoveryPrefix}:{HashPermissions(user)}:{culture.Name}";
+    }
+
+    /// <summary>
+    /// Builds <c>entity-calendar:{entityName}:{calendarName}:{userPermsHash}:{fromTicks}-{toTicks}</c>.
+    /// The calendar name slot is <c>_default</c> when the request did not pin a
+    /// specific layout (today the framework rejects duplicate calendar layouts,
+    /// so the explicit name is reserved for the day multi-instance layouts ship
+    /// per ADR-042 §4 — same trade-off as the manifest cache key).
+    /// </summary>
+    public static string ForCalendarRange(
+        string entityName,
+        string? calendarName,
+        ClaimsPrincipal user,
+        DateTimeOffset from,
+        DateTimeOffset to)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityName);
+        ArgumentNullException.ThrowIfNull(user);
+
+        string calendarSlot = string.IsNullOrWhiteSpace(calendarName) ? "_default" : calendarName;
+        long fromTicks = from.UtcTicks;
+        long toTicks = to.UtcTicks;
+
+        return string.Create(
+            CultureInfo.InvariantCulture,
+            $"{CalendarRangePrefix}:{entityName}:{calendarSlot}:{HashPermissions(user)}:{fromTicks}-{toTicks}");
+    }
+
+    /// <summary>
+    /// FusionCache eviction tag covering every cached calendar range for one
+    /// entity. The cache layer cannot determine which window a changed row
+    /// falls into without re-running the filter — burst-clearing every window
+    /// for the entity is the cheapest correct behaviour. Wired automatically by
+    /// the EF Core companion package's <c>CalendarRangeCacheInvalidator&lt;T&gt;</c>
+    /// when the entity emits framework lifecycle events (story #1691).
+    /// </summary>
+    public static string EvictionTagForCalendarRange(string entityName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(entityName);
+        return $"calendar:{entityName}";
     }
 
     /// <summary>

@@ -5,7 +5,7 @@ namespace Granit.Identity.Federated.Options;
 /// </summary>
 /// <remarks>
 /// <para>
-/// when <see cref="Granit.Identity.Federated.Domain.UserCacheEntry.Email"/>
+/// when <see cref="Granit.Identity.Federated.Domain.FederatedIdentity.Email"/>
 /// is encrypted, it can no longer be <c>LIKE</c>-searched. The admin path looks up
 /// users via <c>EmailHash = HMAC-SHA256(pepper, lowered-email)</c> instead. The
 /// pepper configured here MUST:

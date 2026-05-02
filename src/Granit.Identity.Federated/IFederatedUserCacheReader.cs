@@ -14,7 +14,7 @@ public interface IFederatedUserCacheReader
     /// Returns the cached mirror for the given external user within a tenant scope,
     /// or <see langword="null"/> if the user has never been cached locally.
     /// </summary>
-    Task<UserCacheEntry?> FindByExternalIdAsync(
+    Task<FederatedIdentity?> FindByExternalIdAsync(
         string externalUserId,
         Guid? tenantId,
         CancellationToken cancellationToken = default);

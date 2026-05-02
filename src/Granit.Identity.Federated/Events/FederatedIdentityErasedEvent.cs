@@ -8,6 +8,6 @@ namespace Granit.Identity.Federated.Events;
 /// </summary>
 /// <param name="ExternalUserId">The identity provider user identifier.</param>
 /// <param name="TenantId">Tenant scope. <c>null</c> for host-level entries.</param>
-public sealed record UserCacheEntryErasedEvent(
+public sealed record FederatedIdentityErasedEvent(
     string ExternalUserId,
     Guid? TenantId) : IDomainEvent;

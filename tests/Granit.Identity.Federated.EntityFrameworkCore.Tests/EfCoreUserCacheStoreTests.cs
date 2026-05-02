@@ -33,7 +33,7 @@ public sealed class EfCoreUserCacheStoreTests
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options);
 
-    private static UserCacheEntry CreateEntry(
+    private static FederatedIdentity CreateEntry(
         string externalUserId = "user-1",
         Guid? tenantId = null,
         string? username = "jdoe",
@@ -58,7 +58,7 @@ public sealed class EfCoreUserCacheStoreTests
         await using TestDbContext context = CreateContext();
         EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
-        UserCacheEntry? result = await store.FindByExternalIdAsync(
+        FederatedIdentity? result = await store.FindByExternalIdAsync(
             "nonexistent", null, TestContext.Current.CancellationToken);
 
         result.ShouldBeNull();
@@ -69,11 +69,11 @@ public sealed class EfCoreUserCacheStoreTests
     {
         await using TestDbContext context = CreateContext();
         EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
-        UserCacheEntry entry = CreateEntry();
+        FederatedIdentity entry = CreateEntry();
 
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
-        UserCacheEntry? found = await store.FindByExternalIdAsync(
+        FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
         found.ShouldNotBeNull();
         found.Username.ShouldBe("jdoe");
@@ -84,13 +84,13 @@ public sealed class EfCoreUserCacheStoreTests
     {
         await using TestDbContext context = CreateContext();
         EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
-        UserCacheEntry entry = CreateEntry();
+        FederatedIdentity entry = CreateEntry();
         await store.UpsertAsync(entry, TestContext.Current.CancellationToken);
 
-        UserCacheEntry updated = CreateEntry(username: "jdoe-updated", email: "updated@test.com");
+        FederatedIdentity updated = CreateEntry(username: "jdoe-updated", email: "updated@test.com");
         await store.UpsertAsync(updated, TestContext.Current.CancellationToken);
 
-        UserCacheEntry? found = await store.FindByExternalIdAsync(
+        FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
         found.ShouldNotBeNull();
         found.Username.ShouldBe("jdoe-updated");
@@ -106,7 +106,7 @@ public sealed class EfCoreUserCacheStoreTests
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.UpsertAsync(CreateEntry("user-2", username: "jane"), TestContext.Current.CancellationToken);
 
-        IReadOnlyList<UserCacheEntry> results = await store.FindByExternalIdsAsync(
+        IReadOnlyList<FederatedIdentity> results = await store.FindByExternalIdsAsync(
             ["user-1", "user-2", "user-3"], null, TestContext.Current.CancellationToken);
 
         results.Count.ShouldBe(2);
@@ -121,7 +121,7 @@ public sealed class EfCoreUserCacheStoreTests
 
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenantId), TestContext.Current.CancellationToken);
 
-        UserCacheEntry? result = await store.FindFirstByExternalIdAsync(
+        FederatedIdentity? result = await store.FindFirstByExternalIdAsync(
             "user-1", TestContext.Current.CancellationToken);
 
         result.ShouldNotBeNull();
@@ -141,9 +141,9 @@ public sealed class EfCoreUserCacheStoreTests
         await store.UpsertAsync(CreateEntry("user-1", tenantId: tenant2, username: "tenant2-jdoe"),
             TestContext.Current.CancellationToken);
 
-        UserCacheEntry? fromTenant1 = await store.FindByExternalIdAsync(
+        FederatedIdentity? fromTenant1 = await store.FindByExternalIdAsync(
             "user-1", tenant1, TestContext.Current.CancellationToken);
-        UserCacheEntry? fromTenant2 = await store.FindByExternalIdAsync(
+        FederatedIdentity? fromTenant2 = await store.FindByExternalIdAsync(
             "user-1", tenant2, TestContext.Current.CancellationToken);
 
         fromTenant1.ShouldNotBeNull();
@@ -162,7 +162,7 @@ public sealed class EfCoreUserCacheStoreTests
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
 
         // Batch with update + new insert
-        List<UserCacheEntry> entries =
+        List<FederatedIdentity> entries =
         [
             CreateEntry("user-1", username: "updated"),
             CreateEntry("user-2", username: "new-user")
@@ -173,7 +173,7 @@ public sealed class EfCoreUserCacheStoreTests
         int count = await store.GetCountAsync(null, TestContext.Current.CancellationToken);
         count.ShouldBe(2);
 
-        UserCacheEntry? user1 = await store.FindByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
+        FederatedIdentity? user1 = await store.FindByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
         user1!.Username.ShouldBe("updated");
     }
 
@@ -196,11 +196,11 @@ public sealed class EfCoreUserCacheStoreTests
         await using TestDbContext context = CreateContext();
         EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
-        UserCacheEntry fresh = CreateEntry("user-fresh");
+        FederatedIdentity fresh = CreateEntry("user-fresh");
         fresh.LastSyncedAt = DateTimeOffset.UtcNow;
         await store.UpsertAsync(fresh, TestContext.Current.CancellationToken);
 
-        UserCacheEntry stale = CreateEntry("user-stale");
+        FederatedIdentity stale = CreateEntry("user-stale");
         stale.LastSyncedAt = DateTimeOffset.UtcNow.AddDays(-2);
         await store.UpsertAsync(stale, TestContext.Current.CancellationToken);
 
@@ -216,11 +216,11 @@ public sealed class EfCoreUserCacheStoreTests
         await using TestDbContext context = CreateContext();
         EfCoreUserCacheStore<TestDbContext> store = CreateStore(context);
 
-        UserCacheEntry old = CreateEntry("user-old");
+        FederatedIdentity old = CreateEntry("user-old");
         old.LastSyncedAt = new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero);
         await store.UpsertAsync(old, TestContext.Current.CancellationToken);
 
-        UserCacheEntry recent = CreateEntry("user-recent");
+        FederatedIdentity recent = CreateEntry("user-recent");
         recent.LastSyncedAt = new DateTimeOffset(2024, 6, 1, 0, 0, 0, TimeSpan.Zero);
         await store.UpsertAsync(recent, TestContext.Current.CancellationToken);
 
@@ -253,7 +253,7 @@ public sealed class EfCoreUserCacheStoreTests
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.DeleteByExternalIdAsync("user-1", null, TestContext.Current.CancellationToken);
 
-        UserCacheEntry? found = await store.FindByExternalIdAsync(
+        FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
         found.ShouldBeNull();
     }
@@ -287,7 +287,7 @@ public sealed class EfCoreUserCacheStoreTests
         await store.UpsertAsync(CreateEntry("user-1"), TestContext.Current.CancellationToken);
         await store.PseudonymizeAsync("user-1", null, TestContext.Current.CancellationToken);
 
-        UserCacheEntry? found = await store.FindByExternalIdAsync(
+        FederatedIdentity? found = await store.FindByExternalIdAsync(
             "user-1", null, TestContext.Current.CancellationToken);
 
         found.ShouldNotBeNull();

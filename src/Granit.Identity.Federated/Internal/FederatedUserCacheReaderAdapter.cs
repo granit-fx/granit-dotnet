@@ -11,7 +11,7 @@ namespace Granit.Identity.Federated.Internal;
 internal sealed class FederatedUserCacheReaderAdapter(IUserCacheStore store)
     : IFederatedUserCacheReader
 {
-    public Task<UserCacheEntry?> FindByExternalIdAsync(
+    public Task<FederatedIdentity?> FindByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default) =>
         store.FindByExternalIdAsync(externalUserId, tenantId, cancellationToken);
 }

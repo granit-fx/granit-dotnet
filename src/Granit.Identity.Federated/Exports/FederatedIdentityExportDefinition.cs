@@ -3,11 +3,11 @@ using Granit.Identity.Federated.Domain;
 
 namespace Granit.Identity.Federated.Exports;
 
-public sealed class UserCacheEntryExportDefinition : ExportDefinition<UserCacheEntry>
+public sealed class FederatedIdentityExportDefinition : ExportDefinition<FederatedIdentity>
 {
-    public override string Name => "Granit.Identity.Federated.UserCacheEntryExport";
+    public override string Name => "Granit.Identity.Federated.FederatedIdentityExport";
 
-    protected override void Configure(ExportDefinitionBuilder<UserCacheEntry> builder)
+    protected override void Configure(ExportDefinitionBuilder<FederatedIdentity> builder)
     {
         builder
             .IncludeId()

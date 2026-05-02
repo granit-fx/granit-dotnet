@@ -1,3 +1,5 @@
+using Granit.Guids;
+using Granit.Identity;
 using Granit.Identity.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Extensions;
 using Granit.Identity.Federated.EntityFrameworkCore.Internal;
@@ -25,6 +27,8 @@ public sealed class IdentityEfCoreDiRegistrationTests
         services.AddSingleton(TimeProvider.System);
         services.AddSingleton(NSubstitute.Substitute.For<ICurrentTenant>());
         services.AddSingleton(NSubstitute.Substitute.For<IUserLookupHasher>());
+        services.AddSingleton(NSubstitute.Substitute.For<IGuidGenerator>());
+        services.AddSingleton(NSubstitute.Substitute.For<IUserDirectoryWriter>());
         services.AddLogging();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 

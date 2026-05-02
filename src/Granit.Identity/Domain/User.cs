@@ -1,12 +1,13 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Identity.Events;
 using Granit.MultiTenancy;
 
 namespace Granit.Identity.Domain;
 
 /// <summary>
 /// Canonical user aggregate per ADR-051. Replaces the dual hierarchy
-/// <c>LocalIdentity</c> (local) / <c>UserCacheEntry</c> (federated) at the
+/// <c>LocalIdentity</c> (local) / <c>FederatedIdentity</c> (federated) at the
 /// "who is this person" level — auth-secret storage and IdP-cache fields
 /// live in their own siblings (<c>LocalIdentity</c> / <c>FederatedIdentity</c>)
 /// that reference <see cref="Id"/> via FK.
@@ -23,7 +24,7 @@ namespace Granit.Identity.Domain;
 /// Implements <see cref="IIdentityUser"/> so existing consumers
 /// (<see cref="IUserLookupService"/>, <see cref="IIdentityUserReader"/>,
 /// audit projections) see it interchangeably with the legacy
-/// <c>LocalIdentity</c> / <c>UserCacheEntry</c> implementations during the
+/// <c>LocalIdentity</c> / <c>FederatedIdentity</c> implementations during the
 /// staged migration.
 /// </para>
 /// </remarks>
@@ -136,6 +137,20 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
             TenantId = tenantId,
             IsEnabled = true,
         };
+
+        // ADR-051 B-step 5 bridge contract: the Granit.Identity.Parties
+        // module subscribes to this event to materialise a Party of
+        // kind Person. Tiny apps without Granit.Parties simply have no
+        // subscriber and the event is a no-op.
+        user.AddDistributedEvent(new UserCreatedEto(
+            UserId: id,
+            DisplayName: displayName,
+            Email: email,
+            FirstName: firstName,
+            LastName: lastName,
+            PhoneNumber: phoneNumber,
+            TenantId: tenantId));
+
         return user;
     }
 
@@ -165,6 +180,20 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
         PhoneNumber = phoneNumber;
         PreferredLocale = preferredLocale;
         Timezone = timezone;
+
+        // ADR-051 B-step 5 bridge contract: keeps the Party in sync.
+        // Bridge subscriber is optional; tiny apps without
+        // Granit.Parties have no subscriber and the event is a no-op.
+        AddDistributedEvent(new UserProfileChangedEto(
+            UserId: Id,
+            DisplayName: DisplayName,
+            Email: Email,
+            FirstName: FirstName,
+            LastName: LastName,
+            PhoneNumber: PhoneNumber,
+            PreferredLocale: PreferredLocale,
+            Timezone: Timezone,
+            TenantId: TenantId));
     }
 
     /// <summary>Enables sign-in for the user.</summary>

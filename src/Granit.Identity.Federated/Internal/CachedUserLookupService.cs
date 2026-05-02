@@ -1,3 +1,5 @@
+using Granit.Guids;
+using Granit.Identity.Domain;
 using Granit.Identity.Federated.Domain;
 using Granit.Identity.Federated.Options;
 using Granit.MultiTenancy;
@@ -16,6 +18,8 @@ internal sealed partial class CachedUserLookupService(
     IIdentityProvider identityProvider,
     ICurrentTenant currentTenant,
     TimeProvider timeProvider,
+    IGuidGenerator guidGenerator,
+    IUserDirectoryWriter userDirectoryWriter,
     IOptions<UserCacheOptions> options,
     ILogger<CachedUserLookupService> logger) : IUserLookupService
 {
@@ -27,7 +31,7 @@ internal sealed partial class CachedUserLookupService(
         string userId, CancellationToken cancellationToken = default)
     {
         // Tenant-scoped or host-context lookup
-        UserCacheEntry? entry = currentTenant.IsAvailable
+        FederatedIdentity? entry = currentTenant.IsAvailable
             ? await store.FindByExternalIdAsync(userId, currentTenant.Id, cancellationToken).ConfigureAwait(false)
             : await store.FindFirstByExternalIdAsync(userId, cancellationToken).ConfigureAwait(false);
 
@@ -44,8 +48,7 @@ internal sealed partial class CachedUserLookupService(
 
             if (providerUser is not null)
             {
-                UserCacheEntry cacheEntry = ToCacheEntry(providerUser);
-                await store.UpsertAsync(cacheEntry, cancellationToken).ConfigureAwait(false);
+                await EnsureCachedAndUserAsync(providerUser, entry, cancellationToken).ConfigureAwait(false);
                 return providerUser;
             }
 
@@ -69,7 +72,7 @@ internal sealed partial class CachedUserLookupService(
         }
 
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        IReadOnlyList<UserCacheEntry> cached = await store.FindByExternalIdsAsync(userIds, tenantId, cancellationToken)
+        IReadOnlyList<FederatedIdentity> cached = await store.FindByExternalIdsAsync(userIds, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         var result = new List<IIdentityUser>(userIds.Count);
@@ -78,7 +81,7 @@ internal sealed partial class CachedUserLookupService(
 
         foreach (string id in userIds)
         {
-            if (cachedDict.TryGetValue(id, out UserCacheEntry? entry) && IsFresh(entry))
+            if (cachedDict.TryGetValue(id, out FederatedIdentity? entry) && IsFresh(entry))
             {
                 result.Add(entry);
             }
@@ -98,7 +101,7 @@ internal sealed partial class CachedUserLookupService(
 
     private async Task FetchMissingUsersAsync(
         List<string> toFetch,
-        Dictionary<string, UserCacheEntry> cachedDict,
+        Dictionary<string, FederatedIdentity> cachedDict,
         List<IIdentityUser> result,
         CancellationToken cancellationToken)
     {
@@ -111,11 +114,11 @@ internal sealed partial class CachedUserLookupService(
 
                 if (providerUser is not null)
                 {
-                    UserCacheEntry cacheEntry = ToCacheEntry(providerUser);
-                    await store.UpsertAsync(cacheEntry, cancellationToken).ConfigureAwait(false);
+                    cachedDict.TryGetValue(id, out FederatedIdentity? existing);
+                    await EnsureCachedAndUserAsync(providerUser, existing, cancellationToken).ConfigureAwait(false);
                     result.Add(providerUser);
                 }
-                else if (cachedDict.TryGetValue(id, out UserCacheEntry? staleEntry))
+                else if (cachedDict.TryGetValue(id, out FederatedIdentity? staleEntry))
                 {
                     result.Add(staleEntry);
                 }
@@ -130,12 +133,12 @@ internal sealed partial class CachedUserLookupService(
 
     private static void AddStaleEntries(
         List<string> ids,
-        Dictionary<string, UserCacheEntry> cachedDict,
+        Dictionary<string, FederatedIdentity> cachedDict,
         List<IIdentityUser> result)
     {
         foreach (string id in ids)
         {
-            if (cachedDict.TryGetValue(id, out UserCacheEntry? staleEntry)
+            if (cachedDict.TryGetValue(id, out FederatedIdentity? staleEntry)
                 && !result.Any(u => u.UserId == id))
             {
                 result.Add(staleEntry);
@@ -148,7 +151,7 @@ internal sealed partial class CachedUserLookupService(
         CancellationToken cancellationToken = default)
     {
         Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
-        (IReadOnlyList<UserCacheEntry> entries, int totalCount) = await store
+        (IReadOnlyList<FederatedIdentity> entries, int totalCount) = await store
             .SearchAsync(searchTerm, tenantId, page, pageSize, cancellationToken)
             .ConfigureAwait(false);
 
@@ -171,8 +174,11 @@ internal sealed partial class CachedUserLookupService(
             return null;
         }
 
-        UserCacheEntry cacheEntry = ToCacheEntry(providerUser);
-        await store.UpsertAsync(cacheEntry, cancellationToken).ConfigureAwait(false);
+        FederatedIdentity? existing = currentTenant.IsAvailable
+            ? await store.FindByExternalIdAsync(userId, currentTenant.Id, cancellationToken).ConfigureAwait(false)
+            : await store.FindFirstByExternalIdAsync(userId, cancellationToken).ConfigureAwait(false);
+
+        await EnsureCachedAndUserAsync(providerUser, existing, cancellationToken).ConfigureAwait(false);
         return providerUser;
     }
 
@@ -181,6 +187,8 @@ internal sealed partial class CachedUserLookupService(
         int synced = 0;
         int offset = 0;
         const int pageSize = 100;
+
+        Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
         while (true)
         {
@@ -192,8 +200,19 @@ internal sealed partial class CachedUserLookupService(
                 break;
             }
 
-            var entries = page.Select(ToCacheEntry).ToList();
-            await store.UpsertManyAsync(entries, cancellationToken).ConfigureAwait(false);
+            // Pre-fetch the existing rows so the joint hydration knows which
+            // entries are inserts (need a User row) vs updates (preserve the
+            // existing Id / UserId pair).
+            var externalIds = page.Select(p => p.UserId).ToList();
+            IReadOnlyList<FederatedIdentity> existingBatch = await store
+                .FindByExternalIdsAsync(externalIds, tenantId, cancellationToken).ConfigureAwait(false);
+            var existingByExternalId = existingBatch.ToDictionary(e => e.ExternalUserId);
+
+            foreach (IIdentityUser providerUser in page)
+            {
+                existingByExternalId.TryGetValue(providerUser.UserId, out FederatedIdentity? existing);
+                await EnsureCachedAndUserAsync(providerUser, existing, cancellationToken).ConfigureAwait(false);
+            }
 
             synced += page.Count;
             offset += page.Count;
@@ -223,12 +242,18 @@ internal sealed partial class CachedUserLookupService(
             IIdentityUser? providerUser = await identityProvider.GetUserAsync(userId, cancellationToken)
                 .ConfigureAwait(false);
 
-            if (providerUser is not null)
+            if (providerUser is null)
             {
-                UserCacheEntry cacheEntry = ToCacheEntry(providerUser);
-                await store.UpsertAsync(cacheEntry, cancellationToken).ConfigureAwait(false);
-                refreshed++;
+                continue;
             }
+
+            // Stale rows are by definition existing — fetch and pass through
+            // so the joint hydration takes the update path (no User auto-create).
+            FederatedIdentity? existing = await store
+                .FindByExternalIdAsync(userId, tenantId, cancellationToken).ConfigureAwait(false);
+
+            await EnsureCachedAndUserAsync(providerUser, existing, cancellationToken).ConfigureAwait(false);
+            refreshed++;
         }
 
         LogRefreshStaleCompleted(refreshed, staleIds.Count);
@@ -253,20 +278,99 @@ internal sealed partial class CachedUserLookupService(
 
     // -- Helpers --
 
-    private bool IsFresh(UserCacheEntry entry) =>
+    /// <summary>
+    /// Joint hydration of <see cref="FederatedIdentity"/> + canonical
+    /// <see cref="User"/> per ADR-051 B-step 3.5. On the insert path the
+    /// canonical user is created first (mirroring the local-side B-step 2.5
+    /// pattern) so admin grids and BI exports see the row immediately.
+    /// On the update path only the federated cache row is touched —
+    /// the canonical user already exists.
+    /// </summary>
+    /// <remarks>
+    /// Compensation: if the <see cref="FederatedIdentity"/> insert fails
+    /// after the <see cref="User"/> row was created, the freshly-created
+    /// user is hard-deleted to keep the canonical directory consistent.
+    /// </remarks>
+    private async Task EnsureCachedAndUserAsync(
+        IIdentityUser providerUser,
+        FederatedIdentity? existing,
+        CancellationToken cancellationToken)
+    {
+        if (existing is not null)
+        {
+            // Update path — preserve the existing identifier pair so the
+            // canonical User row continues to resolve via FederatedIdentity.UserId.
+            FederatedIdentity entry = ToCacheEntry(providerUser);
+            entry.Id = existing.Id;
+            entry.UserId = existing.UserId;
+            await store.UpsertAsync(entry, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        // Insert path — generate one Guid up front, materialise the
+        // canonical User first, then add the federated cache row.
+        FederatedIdentity newEntry = ToCacheEntry(providerUser);
+
+        var canonical = User.Create(
+            id: newEntry.Id,
+            email: providerUser.Email ?? string.Empty,
+            displayName: ResolveDisplayName(providerUser),
+            firstName: providerUser.FirstName,
+            lastName: providerUser.LastName,
+            tenantId: newEntry.TenantId);
+
+        await userDirectoryWriter.CreateAsync(canonical, cancellationToken).ConfigureAwait(false);
+
+        try
+        {
+            await store.UpsertAsync(newEntry, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            await userDirectoryWriter.DeleteAsync(newEntry.Id, cancellationToken).ConfigureAwait(false);
+            throw;
+        }
+    }
+
+    private static string ResolveDisplayName(IIdentityUser providerUser)
+    {
+        string composed = $"{providerUser.FirstName} {providerUser.LastName}".Trim();
+        if (!string.IsNullOrWhiteSpace(composed))
+        {
+            return composed;
+        }
+
+        return !string.IsNullOrWhiteSpace(providerUser.Email)
+            ? providerUser.Email
+            : providerUser.Username ?? providerUser.UserId;
+    }
+
+    private bool IsFresh(FederatedIdentity entry) =>
         timeProvider.GetUtcNow() - entry.LastSyncedAt < _options.StalenessThreshold;
 
-    private UserCacheEntry ToCacheEntry(IIdentityUser user) => new()
+    private FederatedIdentity ToCacheEntry(IIdentityUser user)
     {
-        ExternalUserId = user.UserId,
-        Username = user.Username,
-        Email = user.Email,
-        FirstName = user.FirstName,
-        LastName = user.LastName,
-        Enabled = user.Enabled,
-        LastSyncedAt = timeProvider.GetUtcNow(),
-        TenantId = currentTenant.IsAvailable ? currentTenant.Id : null
-    };
+        // Per ADR-051 B-step 3, pre-assign the Guid so FederatedIdentity.UserId
+        // can be aligned with .Id at construction time. The store preserves
+        // these identifiers on update — only an INSERT path adopts the
+        // freshly-generated value, so the alignment invariant
+        // (FederatedIdentity.Id == FederatedIdentity.UserId == User.Id)
+        // is enforced from the very first row.
+        Guid id = guidGenerator.Create();
+        return new FederatedIdentity
+        {
+            Id = id,
+            UserId = id,
+            ExternalUserId = user.UserId,
+            Username = user.Username,
+            Email = user.Email,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Enabled = user.Enabled,
+            LastSyncedAt = timeProvider.GetUtcNow(),
+            TenantId = currentTenant.IsAvailable ? currentTenant.Id : null,
+        };
+    }
 
     // -- Source-generated log messages --
 

@@ -8,13 +8,13 @@ namespace Granit.Identity.Federated.Metrics;
 /// <summary>
 /// Total number of cached federated user entries — the universe size of the
 /// federated identity cache. Useful paired with
-/// <c>EnabledUserCacheEntryCount</c>: the gap reveals disabled / suspended
+/// <c>EnabledFederatedIdentityCount</c>: the gap reveals disabled / suspended
 /// volume.
 /// </summary>
-public sealed class UserCacheEntryCountMetricDefinition : MetricDefinition<UserCacheEntry, int>
+public sealed class FederatedIdentityCountMetricDefinition : MetricDefinition<FederatedIdentity, int>
 {
     /// <inheritdoc />
-    public override string Name => "Granit.Identity.Federated.UserCacheEntryCountMetric";
+    public override string Name => "Granit.Identity.Federated.FederatedIdentityCountMetric";
 
     /// <inheritdoc />
     public override MetricValueKind ValueKind => MetricValueKind.Count;
@@ -23,9 +23,9 @@ public sealed class UserCacheEntryCountMetricDefinition : MetricDefinition<UserC
     public override AggregateFunction Aggregation => AggregateFunction.Count;
 
     /// <inheritdoc />
-    public override Expression<Func<UserCacheEntry, int?>>? Selector => null;
+    public override Expression<Func<FederatedIdentity, int?>>? Selector => null;
 
     /// <inheritdoc />
-    public override Expression<Func<UserCacheEntry, DateTimeOffset>>? PeriodSelector
+    public override Expression<Func<FederatedIdentity, DateTimeOffset>>? PeriodSelector
         => u => u.LastSyncedAt;
 }

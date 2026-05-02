@@ -5,12 +5,12 @@ using Xunit;
 
 namespace Granit.Identity.Federated.Tests.Entities;
 
-public sealed class UserCacheEntryTests
+public sealed class FederatedIdentityTests
 {
     [Fact]
     public void DefaultConstructor_SetsDefaults()
     {
-        UserCacheEntry entry = new();
+        FederatedIdentity entry = new();
 
         entry.ExternalUserId.ShouldBe(string.Empty);
         entry.Username.ShouldBeNull();
@@ -27,7 +27,7 @@ public sealed class UserCacheEntryTests
         var tenantId = Guid.NewGuid();
         DateTimeOffset syncedAt = DateTimeOffset.UtcNow;
 
-        UserCacheEntry entry = new()
+        FederatedIdentity entry = new()
         {
             ExternalUserId = "ext-123",
             Username = "alice",
@@ -52,7 +52,7 @@ public sealed class UserCacheEntryTests
     [Fact]
     public void InheritsFromAuditedEntity()
     {
-        UserCacheEntry entry = new();
+        FederatedIdentity entry = new();
 
         entry.ShouldBeAssignableTo<AuditedEntity>();
     }
@@ -60,7 +60,7 @@ public sealed class UserCacheEntryTests
     [Fact]
     public void ImplementsIMultiTenant()
     {
-        UserCacheEntry entry = new();
+        FederatedIdentity entry = new();
 
         entry.ShouldBeAssignableTo<IMultiTenant>();
     }
@@ -68,7 +68,7 @@ public sealed class UserCacheEntryTests
     [Fact]
     public void TenantId_CanBeNull()
     {
-        UserCacheEntry entry = new() { TenantId = null };
+        FederatedIdentity entry = new() { TenantId = null };
 
         entry.TenantId.ShouldBeNull();
     }
@@ -77,7 +77,7 @@ public sealed class UserCacheEntryTests
     public void TenantId_CanBeSet()
     {
         var tenantId = Guid.NewGuid();
-        UserCacheEntry entry = new() { TenantId = tenantId };
+        FederatedIdentity entry = new() { TenantId = tenantId };
 
         entry.TenantId.ShouldBe(tenantId);
     }

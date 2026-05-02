@@ -1,6 +1,5 @@
 using Granit.Entities.Endpoints.Internal;
 using Granit.Events;
-using Granit.Persistence;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Granit.Entities.EntityFrameworkCore.Internal;
@@ -34,7 +33,7 @@ internal sealed class CalendarRangeCacheInvalidator<TEntity>(IFusionCache cache)
     where TEntity : class, Granit.Domain.IEmitEntityLifecycleEvents
 {
     private static readonly string EvictionTag =
-        CalendarRangeCacheKey.EvictionTag(typeof(TEntity).Name);
+        EntityCacheKey.EvictionTagForCalendarRange(typeof(TEntity).Name);
 
     public Task HandleAsync(EntityCreatedEvent<TEntity> localEvent, CancellationToken cancellationToken = default) =>
         EvictAsync(cancellationToken);

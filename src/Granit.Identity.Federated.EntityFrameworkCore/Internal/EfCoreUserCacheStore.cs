@@ -15,30 +15,30 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
 {
     // -- Read --
 
-    public Task<UserCacheEntry?> FindByExternalIdAsync(
+    public Task<FederatedIdentity?> FindByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        context.UserCacheEntries
+        context.FederatedIdentities
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 e => e.TenantId == tenantId && e.ExternalUserId == externalUserId,
                 cancellationToken);
 
-    public Task<UserCacheEntry?> FindFirstByExternalIdAsync(
+    public Task<FederatedIdentity?> FindFirstByExternalIdAsync(
         string externalUserId, CancellationToken cancellationToken = default) =>
-        context.UserCacheEntries
+        context.FederatedIdentities
             .AsNoTracking()
             .FirstOrDefaultAsync(
                 e => e.ExternalUserId == externalUserId,
                 cancellationToken);
 
-    public async Task<IReadOnlyList<UserCacheEntry>> FindByExternalIdsAsync(
+    public async Task<IReadOnlyList<FederatedIdentity>> FindByExternalIdsAsync(
         IReadOnlyCollection<string> externalUserIds, Guid? tenantId, CancellationToken cancellationToken = default) =>
-        await context.UserCacheEntries
+        await context.FederatedIdentities
             .AsNoTracking()
             .Where(e => e.TenantId == tenantId && externalUserIds.Contains(e.ExternalUserId))
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-    public async Task<(IReadOnlyList<UserCacheEntry> Items, int TotalCount)> SearchAsync(
+    public async Task<(IReadOnlyList<FederatedIdentity> Items, int TotalCount)> SearchAsync(
         string term, Guid? tenantId, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         // Encrypted columns can't be LIKE-scanned. Admin search now only supports
@@ -55,14 +55,14 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
             return ([], 0);
         }
 
-        IQueryable<UserCacheEntry> query = context.UserCacheEntries
+        IQueryable<FederatedIdentity> query = context.FederatedIdentities
             .AsNoTracking()
             .Where(e => e.TenantId == tenantId && e.EmailHash == hash);
 
         int totalCount = await query.CountAsync(cancellationToken).ConfigureAwait(false);
 
         int skip = (page - 1) * pageSize;
-        List<UserCacheEntry> items = await query
+        List<FederatedIdentity> items = await query
             .OrderBy(e => e.ExternalUserId)
             .Skip(skip)
             .Take(pageSize)
@@ -74,19 +74,19 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
     // -- Diagnostics --
 
     public Task<int> GetCountAsync(Guid? tenantId, CancellationToken cancellationToken = default) =>
-        context.UserCacheEntries
+        context.FederatedIdentities
             .AsNoTracking()
             .CountAsync(e => e.TenantId == tenantId, cancellationToken);
 
     public Task<int> GetStaleCountAsync(
         Guid? tenantId, DateTimeOffset threshold, CancellationToken cancellationToken = default) =>
-        context.UserCacheEntries
+        context.FederatedIdentities
             .AsNoTracking()
             .CountAsync(e => e.TenantId == tenantId && e.LastSyncedAt < threshold, cancellationToken);
 
     public async Task<IReadOnlyList<string>> FindStaleExternalIdsAsync(
         Guid? tenantId, DateTimeOffset threshold, int batchSize, CancellationToken cancellationToken = default) =>
-        await context.UserCacheEntries
+        await context.FederatedIdentities
             .AsNoTracking()
             .Where(e => e.TenantId == tenantId && e.LastSyncedAt < threshold)
             .OrderBy(e => e.LastSyncedAt)
@@ -97,7 +97,7 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
     public async Task<(DateTimeOffset? Oldest, DateTimeOffset? Newest)> GetSyncRangeAsync(
         Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        IQueryable<UserCacheEntry> query = context.UserCacheEntries
+        IQueryable<FederatedIdentity> query = context.FederatedIdentities
             .AsNoTracking()
             .Where(e => e.TenantId == tenantId);
 
@@ -114,21 +114,21 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
 
     // -- Write --
 
-    public async Task UpsertAsync(UserCacheEntry entry, CancellationToken cancellationToken = default)
+    public async Task UpsertAsync(FederatedIdentity entry, CancellationToken cancellationToken = default)
     {
         // Keep EmailHash in sync with Email so admin search finds the row. Callers
         // may pre-compute this (CachedUserLookupService does), but the store also
         // recomputes defensively so direct consumers of UpsertAsync stay correct.
         entry.EmailHash = hasher.ComputeEmailHash(entry.Email);
 
-        UserCacheEntry? existing = await context.UserCacheEntries
+        FederatedIdentity? existing = await context.FederatedIdentities
             .FirstOrDefaultAsync(
                 e => e.TenantId == entry.TenantId && e.ExternalUserId == entry.ExternalUserId,
                 cancellationToken).ConfigureAwait(false);
 
         if (existing is null)
         {
-            context.UserCacheEntries.Add(entry);
+            context.FederatedIdentities.Add(entry);
         }
         else
         {
@@ -145,7 +145,7 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
     }
 
     public async Task UpsertManyAsync(
-        IReadOnlyList<UserCacheEntry> entries, CancellationToken cancellationToken = default)
+        IReadOnlyList<FederatedIdentity> entries, CancellationToken cancellationToken = default)
     {
         if (entries.Count == 0)
         {
@@ -153,7 +153,7 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
         }
 
         // Compute hashes up front so we don't hit the hasher per-entry under lock.
-        foreach (UserCacheEntry entry in entries)
+        foreach (FederatedIdentity entry in entries)
         {
             entry.EmailHash = hasher.ComputeEmailHash(entry.Email);
         }
@@ -161,13 +161,13 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
         var externalIds = entries.Select(e => e.ExternalUserId).ToHashSet();
         Guid? tenantId = entries[0].TenantId;
 
-        Dictionary<string, UserCacheEntry> existingEntries = await context.UserCacheEntries
+        Dictionary<string, FederatedIdentity> existingEntries = await context.FederatedIdentities
             .Where(e => e.TenantId == tenantId && externalIds.Contains(e.ExternalUserId))
             .ToDictionaryAsync(e => e.ExternalUserId, cancellationToken).ConfigureAwait(false);
 
-        foreach (UserCacheEntry entry in entries)
+        foreach (FederatedIdentity entry in entries)
         {
-            if (existingEntries.TryGetValue(entry.ExternalUserId, out UserCacheEntry? existing))
+            if (existingEntries.TryGetValue(entry.ExternalUserId, out FederatedIdentity? existing))
             {
                 existing.Username = entry.Username;
                 existing.Email = entry.Email;
@@ -179,7 +179,7 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
             }
             else
             {
-                context.UserCacheEntries.Add(entry);
+                context.FederatedIdentities.Add(entry);
             }
         }
 
@@ -191,28 +191,28 @@ internal sealed class EfCoreUserCacheStore<TContext>(TContext context, IUserLook
     public async Task DeleteByExternalIdAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        List<UserCacheEntry> entries = await context.UserCacheEntries
+        List<FederatedIdentity> entries = await context.FederatedIdentities
             .Where(e => e.TenantId == tenantId && e.ExternalUserId == externalUserId)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        context.UserCacheEntries.RemoveRange(entries);
+        context.FederatedIdentities.RemoveRange(entries);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task DeleteAllByTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        List<UserCacheEntry> entries = await context.UserCacheEntries
+        List<FederatedIdentity> entries = await context.FederatedIdentities
             .Where(e => e.TenantId == tenantId)
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        context.UserCacheEntries.RemoveRange(entries);
+        context.FederatedIdentities.RemoveRange(entries);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public async Task PseudonymizeAsync(
         string externalUserId, Guid? tenantId, CancellationToken cancellationToken = default)
     {
-        UserCacheEntry? entry = await context.UserCacheEntries
+        FederatedIdentity? entry = await context.FederatedIdentities
             .FirstOrDefaultAsync(
                 e => e.TenantId == tenantId && e.ExternalUserId == externalUserId,
                 cancellationToken).ConfigureAwait(false);

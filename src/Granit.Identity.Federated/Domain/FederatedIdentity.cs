@@ -21,9 +21,27 @@ namespace Granit.Identity.Federated.Domain;
 /// The audit fields on <see cref="AuditedEntity"/> satisfy ISO 27001 requirements for the cache entry itself.
 /// </para>
 /// </remarks>
-public sealed class UserCacheEntry : AuditedEntity, IMultiTenant, IIdentityUser
+public sealed class FederatedIdentity : AuditedEntity, IMultiTenant, IIdentityUser
 {
     private IReadOnlyDictionary<string, string>? _parsedMetadata;
+
+    /// <summary>
+    /// Foreign key to the canonical <see cref="Granit.Identity.Domain.User"/>
+    /// aggregate (per ADR-051 B-step 3). Equal to
+    /// <see cref="Granit.Domain.Entity.Id"/> on greenfield records — the
+    /// cache-aside hydration in <c>CachedUserLookupService</c> creates
+    /// both rows with the same Guid so historical references resolve.
+    /// </summary>
+    /// <remarks>
+    /// The FK is required: a <see cref="FederatedIdentity"/> without a
+    /// corresponding <see cref="Granit.Identity.Domain.User"/> row would
+    /// be unreachable from the canonical-user surfaces (admin grid,
+    /// OData feed, BI exports). Hosts populate this through the
+    /// cache-aside hydration path or, when seeding, by writing both
+    /// rows together with the same Guid.
+    /// </remarks>
+    public Guid UserId { get; set; }
+
     /// <summary>User identifier in the external identity provider (e.g. Keycloak sub). Max 256 characters.</summary>
     public string ExternalUserId { get; set; } = string.Empty;
 

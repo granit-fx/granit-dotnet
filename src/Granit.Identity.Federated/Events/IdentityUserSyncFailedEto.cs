@@ -5,7 +5,7 @@ namespace Granit.Identity.Federated.Events;
 /// <summary>
 /// Integration event raised when the federated identity layer fails to synchronise
 /// a user between the upstream identity provider (Keycloak, Entra ID, Cognito,
-/// Google Cloud, …) and the local <c>UserCacheEntry</c> table. ISO 27001 A.12.4
+/// Google Cloud, …) and the local <c>FederatedIdentity</c> table. ISO 27001 A.12.4
 /// requires drift between the IdP and our user cache to surface to a human
 /// responder rather than only land in a log file.
 /// </summary>

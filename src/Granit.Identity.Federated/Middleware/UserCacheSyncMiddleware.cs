@@ -46,14 +46,14 @@ internal sealed class UserCacheSyncMiddleware(RequestDelegate next)
         {
             Guid? tenantId = currentTenant.IsAvailable ? currentTenant.Id : null;
 
-            UserCacheEntry? existing = await store.FindByExternalIdAsync(userId, tenantId, httpContext.RequestAborted)
+            FederatedIdentity? existing = await store.FindByExternalIdAsync(userId, tenantId, httpContext.RequestAborted)
                 .ConfigureAwait(false);
 
             DateTimeOffset now = timeProvider.GetUtcNow();
 
             if (existing is null || now - existing.LastSyncedAt >= options.Value.StalenessThreshold)
             {
-                var entry = new UserCacheEntry
+                var entry = new FederatedIdentity
                 {
                     ExternalUserId = userId,
                     Username = currentUserService.UserName,
