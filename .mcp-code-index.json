@@ -95,6 +95,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Activities.EntityFrameworkCore",
+      "deps": [
+        "Granit.Activities",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Analytics",
       "deps": [
         "Granit",
@@ -4397,6 +4405,63 @@
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Domain/ActivityStatus.cs",
       "line": 9,
+      "members": []
+    },
+    {
+      "name": "ActivitiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Activities.EntityFrameworkCore.Extensions.ActivitiesEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Activities.EntityFrameworkCore",
+      "file": "src/Granit.Activities.EntityFrameworkCore/Extensions/ActivitiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitActivitiesEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitActivitiesEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "ActivitiesModelBuilderExtensions",
+      "fqn": "Granit.Activities.EntityFrameworkCore.Extensions.ActivitiesModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Activities.EntityFrameworkCore",
+      "file": "src/Granit.Activities.EntityFrameworkCore/Extensions/ActivitiesModelBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureActivitiesModule",
+          "kind": "method",
+          "signature": "ConfigureActivitiesModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitActivitiesDbProperties",
+      "fqn": "Granit.Activities.EntityFrameworkCore.GranitActivitiesDbProperties",
+      "kind": "class",
+      "project": "Granit.Activities.EntityFrameworkCore",
+      "file": "src/Granit.Activities.EntityFrameworkCore/GranitActivitiesDbProperties.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitActivitiesEntityFrameworkCoreModule",
+      "fqn": "Granit.Activities.EntityFrameworkCore.GranitActivitiesEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Activities.EntityFrameworkCore",
+      "file": "src/Granit.Activities.EntityFrameworkCore/GranitActivitiesEntityFrameworkCoreModule.cs",
+      "line": 15,
       "members": []
     },
     {

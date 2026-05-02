@@ -114,6 +114,15 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
     /// <summary>The user who completed or cancelled the activity.</summary>
     public Guid? CompletedByUserId { get; private set; }
 
+    /// <summary>
+    /// Set by the overdue background job (story A8) the first time it
+    /// observes <see cref="Status"/> = <see cref="ActivityStatus.Open"/>
+    /// past <see cref="DueAt"/>. Tracking this on the row keeps the job
+    /// idempotent — re-runs within the polling window do not re-fire the
+    /// overdue notification.
+    /// </summary>
+    public DateTimeOffset? OverdueNotifiedAt { get; private set; }
+
     /// <inheritdoc/>
     public Guid? TenantId { get; private set; }
 
@@ -202,6 +211,22 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
         DateTimeOffset previous = DueAt;
         DueAt = newDueAt;
         AddDomainEvent(new ActivityRescheduledEvent(Id, previous, newDueAt));
+    }
+
+    /// <summary>
+    /// Records that the overdue notification has been sent for this activity
+    /// (story A8). Idempotent — calling on an already-notified row leaves
+    /// <see cref="OverdueNotifiedAt"/> at its first-fire timestamp. Permitted
+    /// even on terminal activities so the BG job can backfill notification
+    /// state on rows that completed mid-poll without raising.
+    /// </summary>
+    public void MarkOverdueNotified(DateTimeOffset at)
+    {
+        if (OverdueNotifiedAt is not null)
+        {
+            return; // already notified — preserve original timestamp
+        }
+        OverdueNotifiedAt = at;
     }
 
     private void EnsureOpen(string operation)

@@ -3,6 +3,7 @@
     "path": "../../Granit.slnx",
     "projects": [
       "src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj",
+      "src/Granit.Activities.EntityFrameworkCore/Granit.Activities.EntityFrameworkCore.csproj",
       "src/Granit.Activities/Granit.Activities.csproj",
       "src/Granit.Analytics.Abstractions/Granit.Analytics.Abstractions.csproj",
       "src/Granit.Analytics.Endpoints/Granit.Analytics.Endpoints.csproj",
@@ -103,6 +104,7 @@
       "src/Granit.Workspaces/Granit.Workspaces.csproj",
       "src/Granit/Granit.csproj",
       "tests/Granit.Activities.Abstractions.Tests/Granit.Activities.Abstractions.Tests.csproj",
+      "tests/Granit.Activities.EntityFrameworkCore.Tests/Granit.Activities.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Activities.Tests/Granit.Activities.Tests.csproj",
       "tests/Granit.Analytics.Abstractions.Tests/Granit.Analytics.Abstractions.Tests.csproj",
       "tests/Granit.Analytics.Endpoints.Tests/Granit.Analytics.Endpoints.Tests.csproj",
