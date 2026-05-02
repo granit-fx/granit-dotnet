@@ -92,4 +92,46 @@ public sealed class RelationAggregateCacheInvalidatorTests
         RelationAggregateInvalidationTargets<SampleRelated> sut = new(["a", "b"]);
         sut.EvictionTags.ShouldBe(["a", "b"]);
     }
+
+    [Fact]
+    public async Task HandleAsync_Bulk_drops_each_tag_once_regardless_of_batch_size()
+    {
+        IFusionCache cache = Substitute.For<IFusionCache>();
+        RelationAggregateInvalidationTargets<SampleRelated> targets = new(
+            ["entity-relation:Granit.Parties.Party:invoices",
+             "entity-relation:Granit.Sales.Account:invoices"]);
+
+        RelationAggregateCacheInvalidator<SampleRelated> sut = new(cache, targets);
+
+        // 100-row batch must collapse to 2 RemoveByTagAsync calls (one per tag),
+        // not 200 — the whole point of EntityBulkUpdatedEvent.
+        IReadOnlyList<SampleRelated> batch = [.. Enumerable.Range(0, 100).Select(_ => new SampleRelated())];
+        await sut.HandleAsync(new EntityBulkUpdatedEvent<SampleRelated>(batch), TestContext.Current.CancellationToken);
+
+        await cache.Received(1).RemoveByTagAsync(
+            "entity-relation:Granit.Parties.Party:invoices",
+            Arg.Any<FusionCacheEntryOptions?>(),
+            Arg.Any<CancellationToken>());
+        await cache.Received(1).RemoveByTagAsync(
+            "entity-relation:Granit.Sales.Account:invoices",
+            Arg.Any<FusionCacheEntryOptions?>(),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_Bulk_empty_batch_is_a_no_op()
+    {
+        IFusionCache cache = Substitute.For<IFusionCache>();
+        RelationAggregateInvalidationTargets<SampleRelated> targets = new(
+            ["entity-relation:Granit.Parties.Party:invoices"]);
+
+        RelationAggregateCacheInvalidator<SampleRelated> sut = new(cache, targets);
+
+        await sut.HandleAsync(new EntityBulkUpdatedEvent<SampleRelated>([]), TestContext.Current.CancellationToken);
+
+        await cache.DidNotReceive().RemoveByTagAsync(
+            Arg.Any<string>(),
+            Arg.Any<FusionCacheEntryOptions?>(),
+            Arg.Any<CancellationToken>());
+    }
 }

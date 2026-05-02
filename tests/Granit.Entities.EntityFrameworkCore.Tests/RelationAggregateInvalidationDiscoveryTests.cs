@@ -87,10 +87,12 @@ public sealed class RelationAggregateInvalidationDiscoveryTests
         Type createdHandler = typeof(ILocalEventHandler<EntityCreatedEvent<Invoice>>);
         Type updatedHandler = typeof(ILocalEventHandler<EntityUpdatedEvent<Invoice>>);
         Type deletedHandler = typeof(ILocalEventHandler<EntityDeletedEvent<Invoice>>);
+        Type bulkHandler = typeof(ILocalEventHandler<EntityBulkUpdatedEvent<Invoice>>);
 
         services.Any(sd => sd.ServiceType == createdHandler).ShouldBeTrue();
         services.Any(sd => sd.ServiceType == updatedHandler).ShouldBeTrue();
         services.Any(sd => sd.ServiceType == deletedHandler).ShouldBeTrue();
+        services.Any(sd => sd.ServiceType == bulkHandler).ShouldBeTrue();
     }
 
     [Fact]

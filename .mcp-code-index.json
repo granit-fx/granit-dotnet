@@ -20662,6 +20662,15 @@
       ]
     },
     {
+      "name": "EntityBulkUpdatedEvent",
+      "fqn": "Granit.Events.EntityBulkUpdatedEvent",
+      "kind": "record",
+      "project": "Granit",
+      "file": "src/Granit/Events/EntityBulkUpdatedEvent.cs",
+      "line": 31,
+      "members": []
+    },
+    {
       "name": "EntityCreatedEto",
       "fqn": "Granit.Events.EntityCreatedEto",
       "kind": "record",

@@ -141,6 +141,26 @@ carry an executable foreign-key predicate yet; cached entries also carry the
 finer per-(source, id) tag for future per-row invalidation when the source row
 itself changes.
 
+#### Batched invalidation for host-side bulk operations
+
+Hosts that mutate many rows in one operation (CSV import, batch archive, mass
+re-assignment) should emit a single `EntityBulkUpdatedEvent<TEntity>` carrying
+the affected rows instead of N per-row events:
+
+```csharp
+await _localEventBus.PublishAsync(
+    new EntityBulkUpdatedEvent<Invoice>(updatedInvoices),
+    cancellationToken);
+```
+
+The same `RelationAggregateCacheInvalidator<TRelated>` consumes the bulk event
+and collapses the eviction to one `RemoveByTagAsync` call per unique tag,
+regardless of batch size. A 1000-row import emits one cache eviction sweep, not
+1000 (story #1794).
+
+Per-row events and bulk events are alternatives, not complements — emit one or
+the other for the same set of rows, never both.
+
 ## Calendar view
 
 A calendar layout reads its rows from a dedicated range-query endpoint that the
