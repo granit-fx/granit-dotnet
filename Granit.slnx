@@ -118,6 +118,7 @@
     <Project Path="src/Granit.Dashboards.Push.WebSockets/Granit.Dashboards.Push.WebSockets.csproj" />
     <Project Path="src/Granit.Dashboards/Granit.Dashboards.csproj" />
     <Project Path="src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj" />
+    <Project Path="src/Granit.Entities.Customization/Granit.Entities.Customization.csproj" />
     <Project Path="src/Granit.Entities.Endpoints/Granit.Entities.Endpoints.csproj" />
     <Project Path="src/Granit.Entities.Views.Abstractions/Granit.Entities.Views.Abstractions.csproj" />
     <Project Path="src/Granit.Entities.Views.Endpoints/Granit.Entities.Views.Endpoints.csproj" />
@@ -487,6 +488,7 @@
     <Project Path="tests/Granit.Dashboards.EntityFrameworkCore.Tests.Integration/Granit.Dashboards.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Dashboards.Tests/Granit.Dashboards.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Abstractions.Tests/Granit.Entities.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Entities.Customization.Tests/Granit.Entities.Customization.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Tests/Granit.Entities.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Endpoints.Tests/Granit.Entities.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Entities.Views.Abstractions.Tests/Granit.Entities.Views.Abstractions.Tests.csproj" />

@@ -971,6 +971,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Entities.Customization",
+      "deps": [
+        "Granit",
+        "Granit.Entities.Abstractions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Entities.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -20833,6 +20841,149 @@
           "kind": "method",
           "signature": "AllowedTypes(params string[] activityTypeNames)",
           "returnType": "ActivitiesOptionsBuilder<TEntity>"
+        }
+      ]
+    },
+    {
+      "name": "HideDelta",
+      "fqn": "Granit.Entities.Customization.Domain.Deltas.HideDelta",
+      "kind": "record",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/Deltas/HideDelta.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "LayoutDelta",
+      "fqn": "Granit.Entities.Customization.Domain.Deltas.LayoutDelta",
+      "kind": "record",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/Deltas/LayoutDelta.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "RegroupDelta",
+      "fqn": "Granit.Entities.Customization.Domain.Deltas.RegroupDelta",
+      "kind": "record",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/Deltas/RegroupDelta.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "ReorderDelta",
+      "fqn": "Granit.Entities.Customization.Domain.Deltas.ReorderDelta",
+      "kind": "record",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/Deltas/ReorderDelta.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "IsAnchorWellFormed",
+          "kind": "property",
+          "signature": "bool IsAnchorWellFormed",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "EntityCustomization",
+      "fqn": "Granit.Entities.Customization.Domain.EntityCustomization",
+      "kind": "class",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/EntityCustomization.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, string entityName, LayoutKind layoutKind, IEnumerable<LayoutDelta> deltas, Guid? tenantId = null)",
+          "returnType": "EntityCustomization"
+        },
+        {
+          "name": "LayoutKind",
+          "kind": "property",
+          "signature": "LayoutKind LayoutKind",
+          "returnType": "LayoutKind"
+        }
+      ]
+    },
+    {
+      "name": "LayoutKind",
+      "fqn": "Granit.Entities.Customization.Domain.LayoutKind",
+      "kind": "enum",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Domain/LayoutKind.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntitiesCustomizationServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Customization.Extensions.EntitiesCustomizationServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/Extensions/EntitiesCustomizationServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitEntitiesCustomization",
+          "kind": "method",
+          "signature": "AddGranitEntitiesCustomization(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitEntitiesCustomizationModule",
+      "fqn": "Granit.Entities.Customization.GranitEntitiesCustomizationModule",
+      "kind": "class",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/GranitEntitiesCustomizationModule.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "IEntityCustomizationReader",
+      "fqn": "Granit.Entities.Customization.IEntityCustomizationReader",
+      "kind": "interface",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/IEntityCustomizationReader.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(string entityName, LayoutKind layoutKind, Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EntityCustomization?>"
+        },
+        {
+          "name": "GetForTenantAsync",
+          "kind": "method",
+          "signature": "GetForTenantAsync(Guid? tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<EntityCustomization>>"
+        }
+      ]
+    },
+    {
+      "name": "IEntityCustomizationWriter",
+      "fqn": "Granit.Entities.Customization.IEntityCustomizationWriter",
+      "kind": "interface",
+      "project": "Granit.Entities.Customization",
+      "file": "src/Granit.Entities.Customization/IEntityCustomizationWriter.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "UpsertAsync",
+          "kind": "method",
+          "signature": "UpsertAsync(EntityCustomization customization, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
