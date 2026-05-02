@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Activity:ToDo": "Te doen",
+    "Activity:Call": "Oproep",
+    "Activity:Meeting": "Vergadering",
+    "Activity:Email": "E-mail"
+  }
+}

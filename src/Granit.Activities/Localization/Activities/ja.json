@@ -1,0 +1,9 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Activity:ToDo": "ToDo",
+    "Activity:Call": "通話",
+    "Activity:Meeting": "会議",
+    "Activity:Email": "メール"
+  }
+}

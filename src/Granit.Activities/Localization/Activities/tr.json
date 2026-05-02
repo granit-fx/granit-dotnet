@@ -1,0 +1,9 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Activity:ToDo": "Yapılacak",
+    "Activity:Call": "Arama",
+    "Activity:Meeting": "Toplantı",
+    "Activity:Email": "E-posta"
+  }
+}

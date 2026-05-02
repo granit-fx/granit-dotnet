@@ -1,0 +1,9 @@
+{
+  "culture": "fr",
+  "texts": {
+    "Activity:ToDo": "À faire",
+    "Activity:Call": "Appel",
+    "Activity:Meeting": "Réunion",
+    "Activity:Email": "E-mail"
+  }
+}

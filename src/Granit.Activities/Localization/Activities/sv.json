@@ -1,0 +1,9 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Activity:ToDo": "Att göra",
+    "Activity:Call": "Samtal",
+    "Activity:Meeting": "Möte",
+    "Activity:Email": "E-post"
+  }
+}
