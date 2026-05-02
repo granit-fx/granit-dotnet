@@ -1,3 +1,4 @@
+using Granit.Documents.Diagnostics;
 using Granit.Documents.Extensions;
 using Granit.Documents.Options;
 using Microsoft.Extensions.Configuration;
@@ -16,6 +17,8 @@ public sealed class GranitDocumentsServiceCollectionExtensionsTests
         // BindConfiguration requires an IConfiguration in DI — provide an empty one
         // so unit tests can resolve options without a host builder.
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        // DocumentsMetrics depends on IMeterFactory.
+        services.AddMetrics();
         return services;
     }
 
@@ -60,5 +63,19 @@ public sealed class GranitDocumentsServiceCollectionExtensionsTests
         IServiceCollection? services = null;
 
         Should.Throw<ArgumentNullException>(() => services!.AddGranitDocuments());
+    }
+
+    [Fact]
+    public void AddGranitDocuments_RegistersDocumentsMetrics_AsSingleton()
+    {
+        ServiceCollection services = NewServices();
+
+        services.AddGranitDocuments();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        DocumentsMetrics first = provider.GetRequiredService<DocumentsMetrics>();
+        DocumentsMetrics second = provider.GetRequiredService<DocumentsMetrics>();
+
+        first.ShouldBeSameAs(second);
     }
 }

@@ -17977,6 +17977,34 @@
       ]
     },
     {
+      "name": "DocumentsMetrics",
+      "fqn": "Granit.Documents.Diagnostics.DocumentsMetrics",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Diagnostics/DocumentsMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordDownload",
+          "kind": "method",
+          "signature": "RecordDownload(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordShareGranted",
+          "kind": "method",
+          "signature": "RecordShareGranted(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordQuotaRejected",
+          "kind": "method",
+          "signature": "RecordQuotaRejected(string? tenantId)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -18039,7 +18067,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocuments",
