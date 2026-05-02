@@ -18,7 +18,13 @@ public sealed class SubscriptionSeat : Entity
             AssignedAt = assignedAt,
         };
 
-    /// <summary>The user assigned to this seat.</summary>
+    /// <summary>
+    /// The canonical <see cref="Granit.Identity.Domain.User.Id"/>
+    /// assigned to this seat per ADR-051. The same Guid resolves
+    /// both <c>LocalIdentity</c> and <c>FederatedIdentity</c> rows
+    /// when the alignment guarantee holds, so a seat is satisfied
+    /// regardless of the user's login path.
+    /// </summary>
     public Guid UserId { get; private set; }
 
     /// <summary>When the seat was assigned.</summary>

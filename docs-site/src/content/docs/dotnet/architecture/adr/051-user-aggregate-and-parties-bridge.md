@@ -1,6 +1,6 @@
 ---
 title: "ADR-051: User aggregate in Granit.Identity + optional Parties bridge"
-description: "Granit consolidates LocalIdentity and FederatedIdentity behind a canonical User aggregate that lives in Granit.Identity (foundation). When the optional Granit.Identity.Parties bridge is loaded, every UserCreated emits a Party of kind Person via Wolverine; the bridge is opt-in, so tiny apps that only need authentication keep zero Parties dependency."
+description: "Granit consolidates LocalIdentity and FederatedIdentity behind a canonical User aggregate that lives in Granit.Identity (foundation). When the optional Granit.Parties.Identity bridge is loaded, every UserCreated emits a Party of kind Person via Wolverine; the bridge is opt-in, so tiny apps that only need authentication keep zero Parties dependency."
 sidebar:
   order: 51
   label: "051 - User aggregate"
@@ -8,9 +8,10 @@ sidebar:
 
 > **Date:** 2026-05-01
 > **Authors:** Jean-Francois Meyers
-> **Scope:** `Granit.Identity` (NEW User aggregate root), `Granit.Identity.Local`, `Granit.Identity.Federated`, `Granit.Authorization`, `Granit.Identity.Parties` (NEW bridge module).
+> **Scope:** `Granit.Identity` (NEW User aggregate root), `Granit.Identity.Local`, `Granit.Identity.Federated`, `Granit.Authorization`, `Granit.Parties.Identity` (NEW bridge module — see [Amendment 1](#amendment-1--bridge-module-naming-pivot-2026-05-02)).
 > **Epic:** [#1366](https://github.com/granit-fx/granit-dotnet/issues/1366) — Business Intelligence (parent of the OData / Entities follow-ups that motivated this).
-> **Status:** Accepted
+> **Status:** Accepted (amended 2026-05-02 — see [Amendments](#amendments))
+> **Implementation:** Shipped across PRs #1708 → #1717, #1719 between 2026-05-01 and 2026-05-02.
 
 ## Context
 
@@ -190,6 +191,98 @@ Tracked as a multi-PR EPIC, each step shippable independently:
 6. **B-step 6** (optional) — FK alignment cleanup on `Subscriptions.Subscription.UserId`, `Party.UserId`.
 
 Each PR ships with: build clean, format clean, shard tests pass, integration tests of the new aggregate, Showcase seed regenerated and verified.
+
+## Amendments
+
+The original decision text above is preserved as written on 2026-05-01.
+The following amendments record changes that emerged during
+implementation between 2026-05-01 and 2026-05-02.
+
+### Amendment 1 — Bridge module naming pivot (2026-05-02)
+
+**Original:** Bridge module was locked as `Granit.Identity.Parties` —
+the "extension *Parties* of Identity" reading.
+
+**Amended:** The bridge ships as **`Granit.Parties.Identity`** instead.
+
+**Why:** The repo already has a precedent for this kind of bridge —
+[`Granit.Parties.MultiTenancy`](https://github.com/granit-fx/granit-dotnet/tree/develop/src/Granit.Parties.MultiTenancy)
+ships the handler that creates a host-scoped `Party` on
+`TenantCreatedEvent`. The convention is "the bridge lives in the
+**consumer's** tier, named after what it consumes" — Parties is the
+consumer (it does the Party creation), Identity / MultiTenancy are
+the events it subscribes to. Naming the new bridge
+`Granit.Parties.Identity` keeps the two bridge modules visually and
+hierarchically grouped under the `Granit.Parties.*` prefix — which
+matters more for the `*.Notifications` / `*.Privacy` pattern this
+codebase has been consistent about.
+
+The contract (3 handlers, opt-in module, no reverse sync) is
+unchanged — only the package name moved.
+
+**Where to adjust your reading:**
+
+- Every reference to `Granit.Identity.Parties` in the body above
+  should be read as `Granit.Parties.Identity`.
+- The diagram in the [Decision](#decision) section keeps the old name
+  for historical accuracy.
+
+### Amendment 2 — Implementation expanded with auto-create steps (2026-05-02)
+
+**Original plan:** Six B-steps (1 → 6), with B-step 1 emitting
+`UserCreatedEto` / `UserProfileChangedEto` directly.
+
+**Amended:** Five intermediate `*.5` steps were inserted to keep each
+PR mechanical and reviewable. The runtime auto-create plumbing
+(joint hydration of `User` alongside `LocalIdentity` /
+`FederatedIdentity`) and the event emission turned out to be
+load-bearing for the bridge and large enough to deserve their own
+focused PRs.
+
+The shipped sequence:
+
+| Step | PR | Title |
+| ---- | -- | ----- |
+| B-0 | [#1708](https://github.com/granit-fx/granit-dotnet/pull/1708) | ADR-051 |
+| B-1 | [#1709](https://github.com/granit-fx/granit-dotnet/pull/1709) | `User` aggregate primitive |
+| **B-1.5** | [#1710](https://github.com/granit-fx/granit-dotnet/pull/1710) | EF Core companion (`IdentityDbContext`, `IUserDirectoryQueryableSource`) |
+| B-2 | [#1711](https://github.com/granit-fx/granit-dotnet/pull/1711) | `GranitUser` → `LocalIdentity` rename + `UserId` FK |
+| **B-2.5** | [#1712](https://github.com/granit-fx/granit-dotnet/pull/1712) | `LocalIdentity` runtime auto-create (`IUserDirectoryWriter` + `LocalIdentityManager.CreateAsync` override) |
+| B-3 | [#1713](https://github.com/granit-fx/granit-dotnet/pull/1713) | `UserCacheEntry` → `FederatedIdentity` rename + `UserId` FK |
+| **B-3.5** | [#1714](https://github.com/granit-fx/granit-dotnet/pull/1714) | `FederatedIdentity` runtime auto-create (joint hydration in `CachedUserLookupService`) |
+| B-4 | [#1715](https://github.com/granit-fx/granit-dotnet/pull/1715) | Authorization repointing (doc-only — alignment guarantee already had the right Guid) |
+| **B-4.5** | [#1716](https://github.com/granit-fx/granit-dotnet/pull/1716) | `User` aggregate emits `UserCreatedEto` / `UserProfileChangedEto` (pre-req for the bridge subscriber) |
+| B-5 | [#1717](https://github.com/granit-fx/granit-dotnet/pull/1717) | `Granit.Parties.Identity` bridge — `EnsurePartyForUserHandler` + `SyncProfileToPartyHandler` |
+| B-6 | [#1719](https://github.com/granit-fx/granit-dotnet/pull/1719) | `UserId` doc cleanup (`SubscriptionSeat`, `AIUsageRecord`, `Party`) |
+
+Why this matters retrospectively:
+
+- **`B-1.5`** — The plan had EF Core wiring as part of B-1. Splitting
+  it kept B-1 a pure abstractions PR and B-1.5 a focused EF
+  companion, both reviewable on their own.
+- **`B-2.5` / `B-3.5`** — Runtime auto-create was implicit in the
+  rename steps (B-2 / B-3) but is the load-bearing piece that makes
+  the rename usable. Splitting them kept the rename PRs mechanical.
+- **`B-4.5`** — The plan assumed `UserCreatedEto` / `UserProfileChangedEto`
+  shipped in B-1. They didn't (the User aggregate had no event
+  raising in B-1), so a separate step inserted the event records and
+  wired them into `User.Create` / `User.UpdateProfile` before B-5
+  could subscribe.
+
+### Amendment 3 — `PartyIdentityLink` entity dropped (2026-05-02)
+
+**Original B-step 5:** Bridge module ships a `PartyIdentityLink`
+entity (or just leverages `Party.UserId` if we keep it as the sync
+target — TBD in ADR).
+
+**Amended:** No `PartyIdentityLink` entity. The bridge writes
+directly to the existing `Party.UserId` Guid column.
+
+**Why:** `Party.UserId` already exists and already enforces the
+"one user → at most one Party" invariant via a partial unique
+index. A separate join entity would duplicate that with no benefit
+— the link is intrinsically 1:1 between the two aggregates. Dropping
+it kept the bridge module to ~150 lines.
 
 ## Cross-references
 
