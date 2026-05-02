@@ -4,6 +4,7 @@
     "projects": [
       "src/Granit.AI/Granit.AI.csproj",
       "src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj",
+      "src/Granit.Activities.BackgroundJobs/Granit.Activities.BackgroundJobs.csproj",
       "src/Granit.Activities.Endpoints/Granit.Activities.Endpoints.csproj",
       "src/Granit.Activities.EntityFrameworkCore/Granit.Activities.EntityFrameworkCore.csproj",
       "src/Granit.Activities.Notifications/Granit.Activities.Notifications.csproj",
@@ -191,6 +192,7 @@
       "src/bundles/Granit.Bundle.Notifications/Granit.Bundle.Notifications.csproj",
       "src/bundles/Granit.Bundle.SaaS/Granit.Bundle.SaaS.csproj",
       "tests/Granit.Activities.Abstractions.Tests/Granit.Activities.Abstractions.Tests.csproj",
+      "tests/Granit.Activities.BackgroundJobs.Tests/Granit.Activities.BackgroundJobs.Tests.csproj",
       "tests/Granit.Activities.Endpoints.Tests/Granit.Activities.Endpoints.Tests.csproj",
       "tests/Granit.Activities.EntityFrameworkCore.Tests/Granit.Activities.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Activities.Notifications.Tests/Granit.Activities.Notifications.Tests.csproj",

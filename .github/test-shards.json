@@ -186,6 +186,7 @@
       "name": "infrastructure",
       "label": "Infrastructure",
       "projects": [
+        "tests/Granit.Activities.BackgroundJobs.Tests",
         "tests/Granit.Activities.Notifications.Tests",
         "tests/Granit.BackgroundJobs.Endpoints.Tests",
         "tests/Granit.BackgroundJobs.EntityFrameworkCore.Tests",

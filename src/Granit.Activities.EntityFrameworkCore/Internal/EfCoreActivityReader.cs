@@ -44,6 +44,35 @@ internal sealed class EfCoreActivityReader(IDbContextFactory<ActivitiesDbContext
             .CountAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    public async Task<IReadOnlyList<Activity>> GetOverdueAwaitingNotificationAsync(
+        DateTimeOffset asOf,
+        CancellationToken cancellationToken = default)
+    {
+        await using ActivitiesDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await context.Activities.AsNoTracking()
+            .Where(a => a.Status == ActivityStatus.Open
+                && a.DueAt < asOf
+                && a.OverdueNotifiedAt == null)
+            .OrderBy(a => a.DueAt)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    public async Task<IReadOnlyList<Activity>> GetOpenDueWithinAsync(
+        DateTimeOffset dayStart,
+        DateTimeOffset dayEnd,
+        CancellationToken cancellationToken = default)
+    {
+        await using ActivitiesDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        return await context.Activities.AsNoTracking()
+            .Where(a => a.Status == ActivityStatus.Open
+                && a.DueAt >= dayStart
+                && a.DueAt < dayEnd)
+            .OrderBy(a => a.DueAt)
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+    }
+
     private static IQueryable<Activity> Apply(IQueryable<Activity> source, ActivityListFilter filter)
     {
         if (filter.EntityType is { Length: > 0 } entityType)

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Activities.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Activities — every 5 minutes scans open activities past due and emits an ActivityOverdueEvent (idempotent via Activity.OverdueNotifiedAt); daily at 08:00 UTC scans activities due tomorrow and emits an ActivityReminderDueEvent. Both events are consumed by Granit.Activities.Notifications to dispatch the user-facing email + in-app messages.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Activities.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Activities\Granit.Activities.csproj" />
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+  </ItemGroup>
+
+</Project>

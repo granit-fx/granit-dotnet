@@ -101,6 +101,7 @@
   </Folder>
   <Folder Name="/src/Application/">
     <Project Path="src/Granit.Activities.Abstractions/Granit.Activities.Abstractions.csproj" />
+    <Project Path="src/Granit.Activities.BackgroundJobs/Granit.Activities.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Activities.Endpoints/Granit.Activities.Endpoints.csproj" />
     <Project Path="src/Granit.Activities.EntityFrameworkCore/Granit.Activities.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Activities.Notifications/Granit.Activities.Notifications.csproj" />
@@ -467,6 +468,7 @@
   </Folder>
   <Folder Name="/tests/Application/">
     <Project Path="tests/Granit.Activities.Abstractions.Tests/Granit.Activities.Abstractions.Tests.csproj" />
+    <Project Path="tests/Granit.Activities.BackgroundJobs.Tests/Granit.Activities.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Activities.Endpoints.Tests/Granit.Activities.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Activities.EntityFrameworkCore.Tests/Granit.Activities.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Activities.Notifications.Tests/Granit.Activities.Notifications.Tests.csproj" />

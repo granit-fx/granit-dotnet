@@ -95,6 +95,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Activities.BackgroundJobs",
+      "deps": [
+        "Granit.Activities",
+        "Granit.BackgroundJobs"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Activities.Endpoints",
       "deps": [
         "Granit.Activities",
@@ -4404,7 +4412,7 @@
       "kind": "record",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 47,
+      "line": 74,
       "members": []
     },
     {
@@ -4413,7 +4421,7 @@
       "kind": "enum",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 60,
+      "line": 87,
       "members": []
     },
     {
@@ -4441,6 +4449,18 @@
           "kind": "method",
           "signature": "CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default)",
           "returnType": "Task<int>"
+        },
+        {
+          "name": "GetOverdueAwaitingNotificationAsync",
+          "kind": "method",
+          "signature": "GetOverdueAwaitingNotificationAsync(DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        },
+        {
+          "name": "GetOpenDueWithinAsync",
+          "kind": "method",
+          "signature": "GetOpenDueWithinAsync(DateTimeOffset dayStart, DateTimeOffset dayEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
         }
       ]
     },
@@ -4481,6 +4501,12 @@
           "kind": "method",
           "signature": "RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        },
+        {
+          "name": "MarkOverdueNotifiedAsync",
+          "kind": "method",
+          "signature": "MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -4492,6 +4518,104 @@
       "file": "src/Granit.Activities.Abstractions/ActivityType.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "GranitActivitiesBackgroundJobsModule",
+      "fqn": "Granit.Activities.BackgroundJobs.GranitActivitiesBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/GranitActivitiesBackgroundJobsModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "MarkOverdueHandler",
+      "fqn": "Granit.Activities.BackgroundJobs.Jobs.MarkOverdueHandler",
+      "kind": "class",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Jobs/MarkOverdueHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(MarkOverdueJob _, MarkOverdueScanService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "MarkOverdueJob",
+      "fqn": "Granit.Activities.BackgroundJobs.Jobs.MarkOverdueJob",
+      "kind": "record",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Jobs/MarkOverdueJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "SendRemindersHandler",
+      "fqn": "Granit.Activities.BackgroundJobs.Jobs.SendRemindersHandler",
+      "kind": "class",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Jobs/SendRemindersHandler.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(SendRemindersJob _, SendRemindersScanService service, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SendRemindersJob",
+      "fqn": "Granit.Activities.BackgroundJobs.Jobs.SendRemindersJob",
+      "kind": "record",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Jobs/SendRemindersJob.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MarkOverdueScanService",
+      "fqn": "Granit.Activities.BackgroundJobs.Services.MarkOverdueScanService",
+      "kind": "class",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Services/MarkOverdueScanService.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "SendRemindersScanService",
+      "fqn": "Granit.Activities.BackgroundJobs.Services.SendRemindersScanService",
+      "kind": "class",
+      "project": "Granit.Activities.BackgroundJobs",
+      "file": "src/Granit.Activities.BackgroundJobs/Services/SendRemindersScanService.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "Activity",
@@ -20448,7 +20572,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 21,
+      "line": 24,
       "members": []
     },
     {
@@ -20655,7 +20779,16 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 63,
+      "line": 84,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarTileActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarTileActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 99,
       "members": []
     },
     {
@@ -20664,7 +20797,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 31,
+      "line": 51,
       "members": []
     },
     {
@@ -20673,7 +20806,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 17,
+      "line": 18,
       "members": []
     },
     {
@@ -20776,12 +20909,30 @@
       "members": []
     },
     {
+      "name": "EntityGalleryCardActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 134,
+      "members": []
+    },
+    {
       "name": "EntityGalleryLayoutManifest",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryLayoutManifest",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 81,
+      "line": 118,
+      "members": []
+    },
+    {
+      "name": "EntityHeaderActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntityHeaderActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 39,
       "members": []
     },
     {
@@ -20799,7 +20950,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 141,
+      "line": 193,
       "members": []
     },
     {
@@ -20808,7 +20959,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 109,
+      "line": 161,
       "members": []
     },
     {
@@ -20817,7 +20968,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 125,
+      "line": 177,
       "members": []
     },
     {
@@ -20826,7 +20977,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 151,
+      "line": 203,
       "members": []
     },
     {
@@ -20835,7 +20986,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 93,
+      "line": 145,
       "members": []
     },
     {
@@ -20844,7 +20995,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 46,
+      "line": 66,
       "members": []
     },
     {
