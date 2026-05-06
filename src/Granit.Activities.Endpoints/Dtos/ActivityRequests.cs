@@ -9,11 +9,19 @@ public sealed record CreateActivityRequest(
     DateTimeOffset DueAt,
     string? Description = null);
 
-/// <summary>Body for <c>POST /api/activities/{id}/complete</c>.</summary>
-public sealed record CompleteActivityRequest(DateTimeOffset CompletedAt);
+/// <summary>
+/// Body for <c>POST /api/activities/{id}/complete</c>. The completion
+/// timestamp and the actor user id are resolved server-side
+/// (<c>IClock</c> + <c>ClaimsPrincipal</c>) for audit integrity.
+/// </summary>
+public sealed record CompleteActivityRequest;
 
-/// <summary>Body for <c>POST /api/activities/{id}/cancel</c>.</summary>
-public sealed record CancelActivityRequest(DateTimeOffset CancelledAt);
+/// <summary>
+/// Body for <c>POST /api/activities/{id}/cancel</c>. The cancellation
+/// timestamp and the actor user id are resolved server-side
+/// (<c>IClock</c> + <c>ClaimsPrincipal</c>) for audit integrity.
+/// </summary>
+public sealed record CancelActivityRequest;
 
 /// <summary>Body for <c>PUT /api/activities/{id}/assignee</c>.</summary>
 public sealed record ReassignActivityRequest(Guid NewAssigneeUserId);

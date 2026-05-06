@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
 namespace Granit.Entities.EntityFrameworkCore.Internal;

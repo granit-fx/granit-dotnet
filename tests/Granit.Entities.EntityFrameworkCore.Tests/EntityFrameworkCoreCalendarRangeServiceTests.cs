@@ -1,5 +1,4 @@
-using Granit.Entities.Endpoints;
-using Granit.Entities.Endpoints.Dtos;
+using Granit.Entities;
 using Granit.Entities.EntityFrameworkCore.Internal;
 using Granit.Entities.Layouts;
 using NSubstitute;

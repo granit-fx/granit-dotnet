@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "O período deve ser um token nomeado (ex.: 'last_30d') ou ambos From e To — não ambos, não nenhum.",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From deve ser estritamente anterior a Period.To.",
     "Granit:Validation:PredicateValidator": "A condição especificada para '{PropertyName}' não foi cumprida.",
+    "Granit:Validation:RegroupGroupKeyRequired": "O delta de reagrupamento requer um GroupKey não vazio.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' não está no formato correto.",
+    "Granit:Validation:ReorderDeltaIllFormed": "O delta de reordenação deve definir exatamente um de BeforeFieldName / AfterFieldName.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' não deve ter mais de {ExpectedPrecision} dígitos no total, dos quais {ExpectedScale} decimais.",
     "Granit:Validation:ScheduledAction:FutureDate": "A data agendada deve ser no futuro.",
+    "Granit:Validation:TooManyDeltas": "Demasiados deltas num único pedido.",
     "Granit:Validation:UrlMustBeHttps": "A URL deve usar HTTPS.",
     "Granit:Validation:ValidToAfterValidFrom": "'Válido até' deve ser posterior a 'Válido desde'."
   }

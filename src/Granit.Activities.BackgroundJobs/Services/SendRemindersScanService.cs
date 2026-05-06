@@ -1,7 +1,8 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Events;
+using Granit.Activities.Persistence;
 using Granit.Events;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ namespace Granit.Activities.BackgroundJobs.Services;
 public sealed partial class SendRemindersScanService(
     IActivityReader reader,
     ILocalEventBus eventBus,
+    ICurrentTenant currentTenant,
     IClock clock,
     ILogger<SendRemindersScanService> logger)
 {
@@ -43,6 +45,10 @@ public sealed partial class SendRemindersScanService(
 
         foreach (Activity activity in dueRows)
         {
+            // VULN-103 — establish the row's tenant context so notification
+            // handlers downstream do not inherit a stale AsyncLocal slot.
+            using IDisposable _ = currentTenant.Change(activity.TenantId);
+
             await eventBus.PublishAsync(new ActivityReminderDueEvent(
                 ActivityId: activity.Id,
                 Type: activity.Type,

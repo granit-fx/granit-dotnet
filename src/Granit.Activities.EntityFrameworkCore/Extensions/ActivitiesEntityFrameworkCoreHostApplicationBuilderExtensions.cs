@@ -1,5 +1,5 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.EntityFrameworkCore.Internal;
+using Granit.Activities.Persistence;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

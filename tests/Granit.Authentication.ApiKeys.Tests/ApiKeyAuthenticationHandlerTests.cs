@@ -23,7 +23,10 @@ public sealed class ApiKeyAuthenticationHandlerTests
     private readonly IClock _clock = Substitute.For<IClock>();
     private readonly IApiKeyCacheService _cacheService = Substitute.For<IApiKeyCacheService>();
     private readonly ApiKeyOptions _options = new();
-    private readonly ApiKeyGenerator _generator = new();
+    private readonly IApiKeyHasher _hasher =
+        new ApiKeyHasher(Microsoft.Extensions.Options.Options.Create(new ApiKeysOptions()));
+    private readonly ApiKeyGenerator _generator = new(
+        new ApiKeyHasher(Microsoft.Extensions.Options.Options.Create(new ApiKeysOptions())));
 
     private static readonly DateTimeOffset Now = new(2026, 1, 15, 12, 0, 0, TimeSpan.Zero);
 
@@ -48,6 +51,7 @@ public sealed class ApiKeyAuthenticationHandlerTests
             loggerFactory,
             UrlEncoder.Default,
             _store,
+            _hasher,
             _clock,
             cacheService);
 

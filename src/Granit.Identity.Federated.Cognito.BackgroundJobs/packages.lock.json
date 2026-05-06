@@ -10,8 +10,8 @@
       },
       "AWSSDK.Core": {
         "type": "Transitive",
-        "resolved": "4.0.4",
-        "contentHash": "RjBk1WDrOCpsSRGn6j2lYhgiyYnXEhMctwJevNnIPIIGpgj49ifbU6FmG1Dk+1M/VSuqeTQ1WVsssziTty7b2w=="
+        "resolved": "4.0.6.1",
+        "contentHash": "rPhyuf5BtxAxI1x4a9DlMfknODiVzr9Kc5QWDjn/thmnmCLT6ggBh0zlpaXlP/MtdpN/mhEpTIODvzMIWrICVQ=="
       },
       "Microsoft.EntityFrameworkCore.Abstractions": {
         "type": "Transitive",
@@ -314,10 +314,10 @@
       "AWSSDK.CognitoIdentityProvider": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.8.2",
-        "contentHash": "yMtPsLO/6+NzvnpztmUFXnLvNzo9GmeoTzQGGro8SUoAVqorFi5Hjo88b/e+Fr3BdRmxcLOhf52cpudVCSeuOg==",
+        "resolved": "4.0.8.3",
+        "contentHash": "sdCEF+yhFbdFFK2yNRAvELAAGHuZUL91YmqN9ow+cMVrugwwlcBLNY1JJqTzl7JlKH0x0N2tIv1Qn2mFCkUHRA==",
         "dependencies": {
-          "AWSSDK.Core": "[4.0.4, 5.0.0)"
+          "AWSSDK.Core": "[4.0.6.1, 5.0.0)"
         }
       },
       "Cronos": {

@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "Perioden måste vara antingen en namngiven token (t.ex. 'last_30d') eller både From och To — inte båda, inte ingen.",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From måste ligga strikt före Period.To.",
     "Granit:Validation:PredicateValidator": "Det angivna villkoret uppfylldes inte för '{PropertyName}'.",
+    "Granit:Validation:RegroupGroupKeyRequired": "Regroup-delta kräver en icke-tom GroupKey.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' har inte korrekt format.",
+    "Granit:Validation:ReorderDeltaIllFormed": "Reorder-delta måste ange exakt en av BeforeFieldName / AfterFieldName.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' får inte ha fler än {ExpectedPrecision} siffror totalt, varav {ExpectedScale} decimaler.",
     "Granit:Validation:ScheduledAction:FutureDate": "Schemalagt datum måste vara i framtiden.",
+    "Granit:Validation:TooManyDeltas": "För många deltan i en enskild begäran.",
     "Granit:Validation:UrlMustBeHttps": "URL:en måste använda HTTPS.",
     "Granit:Validation:ValidToAfterValidFrom": "'Giltig till' måste vara efter 'Giltig från'."
   }

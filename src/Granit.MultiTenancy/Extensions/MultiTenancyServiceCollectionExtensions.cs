@@ -2,6 +2,7 @@ using Granit.DataExchange.Extensions;
 using Granit.MultiTenancy.Diagnostics;
 using Granit.MultiTenancy.Domain;
 using Granit.MultiTenancy.Exports;
+using Granit.MultiTenancy.Internal;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
@@ -35,8 +36,19 @@ public static class MultiTenancyServiceCollectionExtensions
 
         services.TryAddSingleton<IValidateOptions<MultiTenancyOptions>, MultiTenancyOptionsValidator>();
 
-        // Replace the NullTenantContext registered by AddGranit<T>() with the real implementation.
+        // Replace the NullTenantContext registered by AddGranit<T>() with the real
+        // implementation. CurrentTenant uses a dual-backend storage: HttpContext.Features
+        // when a request is active (ties the tenant lifetime to the request itself,
+        // so there is no execution-context state to leak across requests on thread-pool
+        // reuse), and an AsyncLocal fallback for non-HTTP code paths (Wolverine handlers,
+        // background jobs, migrations).
+        services.AddHttpContextAccessor();
         services.Replace(ServiceDescriptor.Singleton<ICurrentTenant, CurrentTenant>());
+
+        // Host-access signal — read by EfStoreBase to distinguish a deliberate
+        // .AllowHostAccess() bypass (origin=host_endpoint) from an unsignaled
+        // tenant-context loss (origin=implicit_unsignaled, alert-worthy).
+        services.TryAddSingleton<IHostAccessContext, HttpContextHostAccessContext>();
 
         // NullTenantReader fallback — replaced by EfCoreTenantStore when
         // Granit.MultiTenancy.EntityFrameworkCore is in the module tree.

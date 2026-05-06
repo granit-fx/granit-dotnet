@@ -4,6 +4,7 @@ using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
+using Granit.Entities.Manifests;
 using Granit.Entities.Relations;
 
 namespace Granit.Entities.Endpoints.Internal;
@@ -372,7 +373,13 @@ internal static class EntityManifestComposer
             .Select(a => new EntityHeaderActionManifest(
                 a.Name, a.DisplayKey, a.Icon, a.ContributorAssemblyName))];
 
-        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts, headerActions);
+        IReadOnlyList<EntitySelectionActionManifest> selectionActions = [.. d.Actions
+            .Where(a => a.ShowOnSelection && (a.RequiresPermission is null || granted.Contains(a.RequiresPermission)))
+            .OrderBy(a => a.Order)
+            .Select(a => new EntitySelectionActionManifest(
+                a.Name, a.DisplayKey, a.Icon, a.ConfirmationKey, a.ContributorAssemblyName))];
+
+        return new EntityCollectionsSection(query, export, metrics, dashboards, defaultViewId, layouts, headerActions, selectionActions);
     }
 
     private static List<EntityListLayoutManifest> ComposeListLayouts(

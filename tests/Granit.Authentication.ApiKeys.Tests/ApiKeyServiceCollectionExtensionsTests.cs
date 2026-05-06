@@ -16,6 +16,8 @@ public sealed class ApiKeyServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
+        services.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration>(
+            new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build());
         services.AddAuthentication();
 
         services.AddGranitApiKeyAuthentication();
@@ -32,6 +34,8 @@ public sealed class ApiKeyServiceCollectionExtensionsTests
     {
         var services = new ServiceCollection();
         services.AddLogging();
+        services.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration>(
+            new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build());
         services.AddAuthentication();
 
         services.AddGranitApiKeyAuthentication();

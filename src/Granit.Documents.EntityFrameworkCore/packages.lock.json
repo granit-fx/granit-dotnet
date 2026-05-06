@@ -198,7 +198,8 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.BlobStorage": "[0.1.0-dev, )"
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )"
         }
       },
       "granit.entities.abstractions": {
@@ -252,6 +253,13 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.taxonomy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )"
         }
       },
       "granit.timing": {

@@ -1,6 +1,6 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Endpoints.Internal;
+using Granit.Activities.Persistence;
 using Granit.Events;
 using NSubstitute;
 using Shouldly;
@@ -14,7 +14,7 @@ public sealed class ActivityCalendarCacheInvalidatorTests
     private static IActivityRegistry RegistryWithToDo()
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = StandardActivityTypes.ToDo;
             return true;

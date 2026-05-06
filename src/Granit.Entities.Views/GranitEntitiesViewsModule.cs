@@ -1,3 +1,4 @@
+using Granit.Entities.Views.Extensions;
 using Granit.Modularity;
 
 namespace Granit.Entities.Views;
@@ -8,5 +9,14 @@ namespace Granit.Entities.Views;
 /// and endpoints ship as siblings (<c>Granit.Entities.Views.EntityFrameworkCore</c>,
 /// <c>Granit.Entities.Views.Endpoints</c>).
 /// </summary>
+/// <remarks>
+/// Registers a default no-op <see cref="IEntityViewReader"/> so hosts that omit the EF
+/// companion still boot. The EF module replaces the binding via <c>services.Replace(...)</c>.
+/// </remarks>
 [DependsOn(typeof(GranitEntitiesViewsAbstractionsModule))]
-public sealed class GranitEntitiesViewsModule : GranitModule;
+public sealed class GranitEntitiesViewsModule : GranitModule
+{
+    /// <inheritdoc />
+    public override void ConfigureServices(ServiceConfigurationContext context) =>
+        context.Services.AddGranitEntitiesViews();
+}

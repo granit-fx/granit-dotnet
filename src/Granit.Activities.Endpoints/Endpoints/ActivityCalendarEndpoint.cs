@@ -1,9 +1,10 @@
 using System.Security.Claims;
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
+using Granit.Activities.Endpoints.Authorization;
 using Granit.Activities.Endpoints.Dtos;
 using Granit.Activities.Endpoints.Internal;
 using Granit.Activities.Endpoints.Options;
+using Granit.Activities.Persistence;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
@@ -51,6 +52,7 @@ internal static class ActivityCalendarEndpoint
         [FromServices] IOptions<ActivitiesEndpointsOptions> options,
         [FromServices] ICurrentTenant currentTenant,
         [FromServices] IClock clock,
+        [FromServices] ActivityHostAuthorizer hostAuthorizer,
         ClaimsPrincipal user,
         HttpContext httpContext,
         CancellationToken cancellationToken)
@@ -76,19 +78,25 @@ internal static class ActivityCalendarEndpoint
                 statusCode: StatusCodes.Status400BadRequest);
         }
 
+        // VULN-204 — snap the window to a fixed grid before the cache key is
+        // composed, so an attacker cannot shift `from`/`to` by one second per
+        // call to defeat the FusionCache TTL.
+        DateTimeOffset snappedFrom = SnapWindow(request.From, opts.CalendarWindowSnapMinutes, roundUp: false);
+        DateTimeOffset snappedTo = SnapWindow(request.To, opts.CalendarWindowSnapMinutes, roundUp: true);
+
         ActivityListFilter filter = new(
             EntityType: request.EntityType,
             EntityId: null,
             AssignedToUserId: assignee,
             Status: request.Status,
-            DueAtFrom: request.From,
-            DueAtTo: request.To);
+            DueAtFrom: snappedFrom,
+            DueAtTo: snappedTo);
 
         HashSet<string>? typeFilter = ParseTypeFilter(request.Type);
 
         string tenantSegment = currentTenant.IsAvailable ? currentTenant.Id?.ToString() ?? "global" : "global";
         string cacheKey = ActivityCalendarCacheKey.Build(
-            tenantSegment, user, request.From, request.To,
+            tenantSegment, user, snappedFrom, snappedTo,
             assigneeFilter: request.Assignee, entityTypeFilter: request.EntityType,
             typeFilter: request.Type, statusFilter: request.Status?.ToString());
         string evictionTag = ActivityCalendarCacheKey.EvictionTag(currentTenant.IsAvailable ? currentTenant.Id : null);
@@ -96,7 +104,7 @@ internal static class ActivityCalendarEndpoint
         DateTimeOffset now = clock.Normalize(clock.Now);
         IReadOnlyList<ActivityCalendarItemResponse> items = await cache.GetOrSetAsync(
             cacheKey,
-            async ct => await ProjectAsync(reader, registry, filter, typeFilter, opts, now, ct).ConfigureAwait(false),
+            async ct => await ProjectAsync(reader, registry, hostAuthorizer, user, filter, typeFilter, opts, now, ct).ConfigureAwait(false),
             new FusionCacheEntryOptions { Duration = opts.CalendarCacheTtl },
             tags: [evictionTag],
             token: cancellationToken)
@@ -117,6 +125,8 @@ internal static class ActivityCalendarEndpoint
     private static async Task<IReadOnlyList<ActivityCalendarItemResponse>> ProjectAsync(
         IActivityReader reader,
         IActivityRegistry registry,
+        ActivityHostAuthorizer hostAuthorizer,
+        ClaimsPrincipal user,
         ActivityListFilter filter,
         HashSet<string>? typeFilter,
         ActivitiesEndpointsOptions opts,
@@ -128,6 +138,9 @@ internal static class ActivityCalendarEndpoint
         // MaxPageSize if a multi-month wall-board is required.
         IReadOnlyList<Activity> rows = await reader.ListAsync(filter, skip: 0, take: opts.MaxPageSize, cancellationToken)
             .ConfigureAwait(false);
+
+        // VULN-202 — drop activities whose host the caller cannot read.
+        rows = await hostAuthorizer.FilterAsync(rows, user, cancellationToken).ConfigureAwait(false);
 
         List<ActivityCalendarItemResponse> result = new(rows.Count);
         foreach (Activity activity in rows)
@@ -178,6 +191,27 @@ internal static class ActivityCalendarEndpoint
             return Guid.TryParse(sub, out Guid id) ? id : null;
         }
         return Guid.TryParse(assignee, out Guid g) ? g : null;
+    }
+
+    // VULN-204 — round the timestamp down (or up) to the nearest snap-minutes
+    // boundary so the cache key is stable across attacker-shifted windows.
+    private static DateTimeOffset SnapWindow(DateTimeOffset value, int snapMinutes, bool roundUp)
+    {
+        if (snapMinutes <= 0)
+        {
+            return value;
+        }
+        long snapTicks = TimeSpan.FromMinutes(snapMinutes).Ticks;
+        long ticks = value.UtcTicks;
+        long remainder = ticks % snapTicks;
+        if (remainder == 0)
+        {
+            return value;
+        }
+        long adjusted = roundUp
+            ? ticks + (snapTicks - remainder)
+            : ticks - remainder;
+        return new DateTimeOffset(adjusted, TimeSpan.Zero).ToOffset(value.Offset);
     }
 
     private static HashSet<string>? ParseTypeFilter(string? typeQuery)

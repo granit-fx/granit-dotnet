@@ -1,4 +1,5 @@
 using Granit.Activities.Events;
+using Granit.DataProtection;
 using Granit.Domain;
 
 namespace Granit.Activities.Domain;
@@ -103,6 +104,7 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
     public DateTimeOffset DueAt { get; private set; }
 
     /// <summary>Optional free-text description from the creator.</summary>
+    [SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
     public string? Description { get; private set; }
 
     /// <summary>Lifecycle status — see <see cref="ActivityStatus"/>.</summary>
@@ -194,6 +196,7 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
         Guid previous = AssignedToUserId;
         AssignedToUserId = newAssigneeUserId;
         AddDomainEvent(new ActivityReassignedEvent(Id, previous, newAssigneeUserId));
+        AddDistributedEvent(new ActivityReassignedEto(Id, previous, newAssigneeUserId, TenantId));
     }
 
     /// <summary>
@@ -211,6 +214,7 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
         DateTimeOffset previous = DueAt;
         DueAt = newDueAt;
         AddDomainEvent(new ActivityRescheduledEvent(Id, previous, newDueAt));
+        AddDistributedEvent(new ActivityRescheduledEto(Id, previous, newDueAt, TenantId));
     }
 
     /// <summary>

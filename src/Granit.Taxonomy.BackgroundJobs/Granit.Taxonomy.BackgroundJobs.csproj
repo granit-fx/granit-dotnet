@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Taxonomy.BackgroundJobs</PackageId>
+    <Description>Background jobs for Granit.Taxonomy. Nightly orphan-assignment cleanup catching tag/category rows that escaped the synchronous T5.1 handler.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Taxonomy.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Taxonomy\Granit.Taxonomy.csproj" />
+  </ItemGroup>
+
+</Project>

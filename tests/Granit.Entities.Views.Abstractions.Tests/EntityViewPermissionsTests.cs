@@ -20,7 +20,7 @@ public sealed class EntityViewPermissionsTests
     [InlineData(nameof(EntityViewPermissions.Create), "Entities.Views.Create")]
     [InlineData(nameof(EntityViewPermissions.Share), "Entities.Views.Share")]
     [InlineData(nameof(EntityViewPermissions.Manage), "Entities.Views.Manage")]
-    [InlineData(nameof(EntityViewPermissions.DeleteAny), "Entities.Views.Delete.Any")]
+    [InlineData(nameof(EntityViewPermissions.DeleteAny), "Entities.Views.DeleteAny")]
     public void EachPermission_FollowsConvention(string fieldName, string expectedValue)
     {
         System.Reflection.FieldInfo field = typeof(EntityViewPermissions)

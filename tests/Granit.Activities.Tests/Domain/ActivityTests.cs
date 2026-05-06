@@ -18,7 +18,7 @@ public sealed class ActivityTests
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
         ActivityType type = StandardActivityTypes.ToDo;
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = type;
             return true;
@@ -54,7 +54,7 @@ public sealed class ActivityTests
     public void Create_throws_when_type_not_in_registry()
     {
         IActivityRegistry empty = Substitute.For<IActivityRegistry>();
-        empty.TryGet(Arg.Any<string>(), out Arg.Any<ActivityType>()).Returns(false);
+        empty.TryGet(Arg.Any<string>(), out Arg.Any<ActivityType?>()).Returns(false);
 
         Should.Throw<ArgumentException>(() => Activity.Create(
             Guid.NewGuid(), SampleEntityType, SampleEntityId,
@@ -125,6 +125,11 @@ public sealed class ActivityTests
         ActivityReassignedEvent reassigned = activity.DomainEvents.OfType<ActivityReassignedEvent>().ShouldHaveSingleItem();
         reassigned.PreviousAssigneeUserId.ShouldBe(SampleAssignee);
         reassigned.NewAssigneeUserId.ShouldBe(newAssignee);
+
+        // VULN-300 — distributed Eto must accompany the local event so cross-service consumers see the reassignment.
+        ActivityReassignedEto eto = activity.IntegrationEvents.OfType<ActivityReassignedEto>().ShouldHaveSingleItem();
+        eto.PreviousAssigneeUserId.ShouldBe(SampleAssignee);
+        eto.NewAssigneeUserId.ShouldBe(newAssignee);
     }
 
     [Fact]
@@ -155,6 +160,11 @@ public sealed class ActivityTests
         ActivityRescheduledEvent ev = activity.DomainEvents.OfType<ActivityRescheduledEvent>().ShouldHaveSingleItem();
         ev.PreviousDueAt.ShouldBe(originalDue);
         ev.NewDueAt.ShouldBe(newDue);
+
+        // VULN-300 — distributed Eto must accompany the local event.
+        ActivityRescheduledEto eto = activity.IntegrationEvents.OfType<ActivityRescheduledEto>().ShouldHaveSingleItem();
+        eto.PreviousDueAt.ShouldBe(originalDue);
+        eto.NewDueAt.ShouldBe(newDue);
     }
 
     [Theory]

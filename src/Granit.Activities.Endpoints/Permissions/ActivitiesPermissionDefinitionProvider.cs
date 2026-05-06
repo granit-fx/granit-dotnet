@@ -24,9 +24,21 @@ internal sealed class ActivitiesPermissionDefinitionProvider : IPermissionDefini
             MultiTenancySides.Both);
 
         group.AddPermission(
+            ActivitiesPermissions.Activities.ReadOthers,
+            LocalizableString.Create<ActivitiesEndpointsLocalizationResource>(
+                "Permission:Activities.Activities.ReadOthers"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
             ActivitiesPermissions.Activities.Manage,
             LocalizableString.Create<ActivitiesEndpointsLocalizationResource>(
                 "Permission:Activities.Activities.Manage"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            ActivitiesPermissions.Activities.Reassign,
+            LocalizableString.Create<ActivitiesEndpointsLocalizationResource>(
+                "Permission:Activities.Activities.Reassign"),
             MultiTenancySides.Both);
 
         group.AddPermission(

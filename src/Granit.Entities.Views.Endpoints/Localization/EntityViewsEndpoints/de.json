@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Persönliche Entitätsansichten erstellen",
     "Permission:Entities.Views.Share": "Entitätsansichten mit Rollen oder Benutzern teilen",
     "Permission:Entities.Views.Manage": "Entitätsansichten verwalten (anheften / Mandanten-Standard festlegen / hochstufen)",
-    "Permission:Entities.Views.Delete.Any": "Beliebige Entitätsansicht löschen (Moderation)"
+    "Permission:Entities.Views.DeleteAny": "Beliebige Entitätsansicht löschen (Moderation)"
   }
 }

@@ -112,6 +112,15 @@
           "Granit": "[0.1.0-dev, )"
         }
       },
+      "granit.entities": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Entities.Abstractions": "[0.1.0-dev, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Logging.Abstractions": "[10.*, )",
+          "Microsoft.Extensions.Options": "[10.*, )"
+        }
+      },
       "granit.entities.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -127,6 +136,7 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Entities": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )"
         }
       },

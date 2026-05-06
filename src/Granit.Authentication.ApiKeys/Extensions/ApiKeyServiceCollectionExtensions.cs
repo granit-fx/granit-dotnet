@@ -22,16 +22,18 @@ public static class ApiKeyServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        // Register the API key generator
+        // Register the API key generator + the versioned hasher it depends on
+        services.TryAddSingleton<IApiKeyHasher, ApiKeyHasher>();
         services.TryAddSingleton<IApiKeyGenerator, ApiKeyGenerator>();
         services.TryAddSingleton<ApiKeysMetrics>();
 
-        // Module-level options (lead time for expiring-soon scanner, etc.).
+        // Module-level options (lead time for expiring-soon scanner, pepper, etc.).
         // The scanner itself ships in Granit.Authentication.ApiKeys.BackgroundJobs;
         // binding here keeps host configuration in one place.
         services.AddOptions<ApiKeysOptions>()
             .BindConfiguration(ApiKeysOptions.SectionName)
             .ValidateDataAnnotations()
+            .Validate(ValidatePepper, "ApiKeys:Pepper must be base64-encoded and decode to at least 32 bytes (256 bits) when configured.")
             .ValidateOnStart();
 
         // Add the authentication scheme
@@ -41,5 +43,23 @@ public static class ApiKeyServiceCollectionExtensions
                 configureOptions);
 
         return services;
+    }
+
+    private static bool ValidatePepper(ApiKeysOptions options)
+    {
+        if (string.IsNullOrEmpty(options.Pepper))
+        {
+            return true;
+        }
+
+        try
+        {
+            byte[] decoded = Convert.FromBase64String(options.Pepper);
+            return decoded.Length >= 32;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
     }
 }

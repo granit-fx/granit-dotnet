@@ -10,6 +10,6 @@ namespace Granit.Activities.EntityFrameworkCore;
 /// <c>AddGranitActivitiesEntityFrameworkCore(opts =&gt; opts.UseNpgsql(...))</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitPersistenceEntityFrameworkCoreModule),
-    typeof(GranitActivitiesModule))]
+    typeof(GranitActivitiesModule),
+    typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitActivitiesEntityFrameworkCoreModule : GranitModule;

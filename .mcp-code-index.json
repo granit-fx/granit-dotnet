@@ -906,7 +906,8 @@
       "name": "Granit.Documents",
       "deps": [
         "Granit",
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Taxonomy"
       ],
       "framework": "net10.0"
     },
@@ -916,6 +917,7 @@
         "Granit.Authorization",
         "Granit.Documents",
         "Granit.Http.ApiDocumentation",
+        "Granit.Taxonomy",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -974,6 +976,7 @@
       "name": "Granit.Entities.Customization",
       "deps": [
         "Granit",
+        "Granit.Entities",
         "Granit.Entities.Abstractions"
       ],
       "framework": "net10.0"
@@ -2680,6 +2683,40 @@
         "Granit.Http.Resilience",
         "Granit.Invoicing",
         "Granit.Tax"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Taxonomy",
+      "deps": [
+        "Granit",
+        "Granit.Persistence"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Taxonomy.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Taxonomy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Taxonomy.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Taxonomy",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Taxonomy.EntityFrameworkCore",
+      "deps": [
+        "Granit.Taxonomy",
+        "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
     },
@@ -4442,110 +4479,6 @@
       ]
     },
     {
-      "name": "ActivityListFilter",
-      "fqn": "Granit.Activities.Abstractions.ActivityListFilter",
-      "kind": "record",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 74,
-      "members": []
-    },
-    {
-      "name": "ActivityStatusFilter",
-      "fqn": "Granit.Activities.Abstractions.ActivityStatusFilter",
-      "kind": "enum",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 87,
-      "members": []
-    },
-    {
-      "name": "IActivityReader",
-      "fqn": "Granit.Activities.Abstractions.IActivityReader",
-      "kind": "interface",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "GetByIdAsync",
-          "kind": "method",
-          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Activity?>"
-        },
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(ActivityListFilter filter, int skip, int take, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        },
-        {
-          "name": "CountAsync",
-          "kind": "method",
-          "signature": "CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        },
-        {
-          "name": "GetOverdueAwaitingNotificationAsync",
-          "kind": "method",
-          "signature": "GetOverdueAwaitingNotificationAsync(DateTimeOffset asOf, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        },
-        {
-          "name": "GetOpenDueWithinAsync",
-          "kind": "method",
-          "signature": "GetOpenDueWithinAsync(DateTimeOffset dayStart, DateTimeOffset dayEnd, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        }
-      ]
-    },
-    {
-      "name": "IActivityWriter",
-      "fqn": "Granit.Activities.Abstractions.IActivityWriter",
-      "kind": "interface",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityWriter.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "CreateAsync",
-          "kind": "method",
-          "signature": "CreateAsync(string entityType, Guid entityId, string type, Guid assignedToUserId, DateTimeOffset dueAt, Guid? createdByUserId = null, string? description = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Activity>"
-        },
-        {
-          "name": "CompleteAsync",
-          "kind": "method",
-          "signature": "CompleteAsync(Guid activityId, Guid completedByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "CancelAsync",
-          "kind": "method",
-          "signature": "CancelAsync(Guid activityId, Guid cancelledByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ReassignAsync",
-          "kind": "method",
-          "signature": "ReassignAsync(Guid activityId, Guid newAssigneeUserId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "RescheduleAsync",
-          "kind": "method",
-          "signature": "RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "MarkOverdueNotifiedAsync",
-          "kind": "method",
-          "signature": "MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "ActivityType",
       "fqn": "Granit.Activities.ActivityType",
       "kind": "record",
@@ -4626,7 +4559,7 @@
       "kind": "class",
       "project": "Granit.Activities.BackgroundJobs",
       "file": "src/Granit.Activities.BackgroundJobs/Services/MarkOverdueScanService.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -4642,7 +4575,7 @@
       "kind": "class",
       "project": "Granit.Activities.BackgroundJobs",
       "file": "src/Granit.Activities.BackgroundJobs/Services/SendRemindersScanService.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -4653,12 +4586,46 @@
       ]
     },
     {
+      "name": "ActivitiesMetrics",
+      "fqn": "Granit.Activities.Diagnostics.ActivitiesMetrics",
+      "kind": "class",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Diagnostics/ActivitiesMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordCompleted",
+          "kind": "method",
+          "signature": "RecordCompleted(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCancelled",
+          "kind": "method",
+          "signature": "RecordCancelled(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOverdueNotified",
+          "kind": "method",
+          "signature": "RecordOverdueNotified(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordReminderSent",
+          "kind": "method",
+          "signature": "RecordReminderSent(string? tenantId, string? type)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "Activity",
       "fqn": "Granit.Activities.Domain.Activity",
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Domain/Activity.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "Create",
@@ -4682,6 +4649,44 @@
       "file": "src/Granit.Activities/Domain/ActivityStatus.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "AllowAllActivityHostAuthorizationProvider",
+      "fqn": "Granit.Activities.Endpoints.Authorization.AllowAllActivityHostAuthorizationProvider",
+      "kind": "class",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Authorization/IActivityHostAuthorizationProvider.cs",
+      "line": 47,
+      "members": [
+        {
+          "name": "EntityType",
+          "kind": "property",
+          "signature": "string EntityType",
+          "returnType": "string"
+        },
+        {
+          "name": "CanReadHostAsync",
+          "kind": "method",
+          "signature": "CanReadHostAsync(Guid entityId, ClaimsPrincipal user, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IActivityHostAuthorizationProvider",
+      "fqn": "Granit.Activities.Endpoints.Authorization.IActivityHostAuthorizationProvider",
+      "kind": "interface",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Authorization/IActivityHostAuthorizationProvider.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "CanReadHostAsync",
+          "kind": "method",
+          "signature": "CanReadHostAsync(Guid entityId, ClaimsPrincipal user, CancellationToken cancellationToken)",
+          "returnType": "string EntityType { get; } ValueTask<bool>"
+        }
+      ]
     },
     {
       "name": "ActivityCalendarItemResponse",
@@ -4725,7 +4730,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 16,
+      "line": 24,
       "members": []
     },
     {
@@ -4734,7 +4739,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {
@@ -4752,7 +4757,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 19,
+      "line": 27,
       "members": []
     },
     {
@@ -4761,7 +4766,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 22,
+      "line": 30,
       "members": []
     },
     {
@@ -4770,12 +4775,12 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Extensions/ActivitiesEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitActivities",
           "kind": "method",
-          "signature": "MapGranitActivities(this IEndpointRouteBuilder endpoints, Action<ActivitiesEndpointsOptions>? configure = null)",
+          "signature": "MapGranitActivities(this IEndpointRouteBuilder endpoints)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -4802,8 +4807,15 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/GranitActivitiesEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ActivitiesEndpointsOptions",
@@ -4848,6 +4860,18 @@
           "kind": "method",
           "signature": "FromMinutes(1)",
           "returnType": "TimeSpan CalendarCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxFutureRescheduleDays",
+          "kind": "property",
+          "signature": "int MaxFutureRescheduleDays",
+          "returnType": "int"
+        },
+        {
+          "name": "CalendarWindowSnapMinutes",
+          "kind": "property",
+          "signature": "int CalendarWindowSnapMinutes",
+          "returnType": "int"
         }
       ]
     },
@@ -4875,7 +4899,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 56,
+      "line": 47,
       "members": []
     },
     {
@@ -4884,7 +4908,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 32,
+      "line": 29,
       "members": []
     },
     {
@@ -4893,7 +4917,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 24,
+      "line": 27,
       "members": []
     },
     {
@@ -4911,7 +4935,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 40,
+      "line": 31,
       "members": []
     },
     {
@@ -4920,7 +4944,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 48,
+      "line": 39,
       "members": []
     },
     {
@@ -5035,6 +5059,15 @@
       "members": []
     },
     {
+      "name": "ActivityReassignedEto",
+      "fqn": "Granit.Activities.Events.ActivityReassignedEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityReassignedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "ActivityReassignedEvent",
       "fqn": "Granit.Activities.Events.ActivityReassignedEvent",
       "kind": "record",
@@ -5050,6 +5083,15 @@
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Events/ActivityReminderDueEvent.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "ActivityRescheduledEto",
+      "fqn": "Granit.Activities.Events.ActivityRescheduledEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityRescheduledEto.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -5083,7 +5125,7 @@
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Extensions/ActivitiesServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitActivities",
@@ -5126,12 +5168,12 @@
       "kind": "interface",
       "project": "Granit.Activities.Abstractions",
       "file": "src/Granit.Activities.Abstractions/IActivityRegistry.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "TryGet",
           "kind": "method",
-          "signature": "TryGet(string name, out ActivityType type)",
+          "signature": "TryGet(string name, [NotNullWhen(true)",
           "returnType": "IReadOnlyDictionary<string, ActivityType> All { get; } bool"
         }
       ]
@@ -5390,7 +5432,14 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityAssignedHandler.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityAssignedEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityOverdueHandler",
@@ -5399,7 +5448,14 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityOverdueHandler.cs",
       "line": 13,
-      "members": []
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityOverdueEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityReminderHandler",
@@ -5408,7 +5464,118 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityReminderHandler.cs",
       "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityReminderDueEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActivityListFilter",
+      "fqn": "Granit.Activities.Persistence.ActivityListFilter",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 74,
       "members": []
+    },
+    {
+      "name": "ActivityStatusFilter",
+      "fqn": "Granit.Activities.Persistence.ActivityStatusFilter",
+      "kind": "enum",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 87,
+      "members": []
+    },
+    {
+      "name": "IActivityReader",
+      "fqn": "Granit.Activities.Persistence.IActivityReader",
+      "kind": "interface",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Activity?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(ActivityListFilter filter, int skip, int take, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        },
+        {
+          "name": "CountAsync",
+          "kind": "method",
+          "signature": "CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "GetOverdueAwaitingNotificationAsync",
+          "kind": "method",
+          "signature": "GetOverdueAwaitingNotificationAsync(DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        },
+        {
+          "name": "GetOpenDueWithinAsync",
+          "kind": "method",
+          "signature": "GetOpenDueWithinAsync(DateTimeOffset dayStart, DateTimeOffset dayEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        }
+      ]
+    },
+    {
+      "name": "IActivityWriter",
+      "fqn": "Granit.Activities.Persistence.IActivityWriter",
+      "kind": "interface",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityWriter.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string entityType, Guid entityId, string type, Guid assignedToUserId, DateTimeOffset dueAt, Guid? createdByUserId = null, string? description = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Activity>"
+        },
+        {
+          "name": "CompleteAsync",
+          "kind": "method",
+          "signature": "CompleteAsync(Guid activityId, Guid completedByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "CancelAsync",
+          "kind": "method",
+          "signature": "CancelAsync(Guid activityId, Guid cancelledByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ReassignAsync",
+          "kind": "method",
+          "signature": "ReassignAsync(Guid activityId, Guid newAssigneeUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RescheduleAsync",
+          "kind": "method",
+          "signature": "RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MarkOverdueNotifiedAsync",
+          "kind": "method",
+          "signature": "MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityQueryDefinition",
@@ -19254,6 +19421,24 @@
       "members": []
     },
     {
+      "name": "DocumentTagAssignmentResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "DocumentTagResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DocumentVersionResponse",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentVersionResponse",
       "kind": "record",
@@ -19278,6 +19463,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/FinalizeUploadRequest.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "ListDocumentTagsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentTagsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -19401,8 +19595,15 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/GranitDocumentsEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 29,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DocumentsEndpointsOptions",
@@ -19651,7 +19852,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitDocuments",
@@ -19667,7 +19868,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/GranitDocumentsModule.cs",
-      "line": 25,
+      "line": 28,
       "members": []
     },
     {
@@ -20782,7 +20983,38 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionBuilder.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "Put",
+          "kind": "method",
+          "signature": "Put(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Delete",
+          "kind": "method",
+          "signature": "Delete(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Patch",
+          "kind": "method",
+          "signature": "Patch(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Get",
+          "kind": "method",
+          "signature": "Get(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "AbsolutePath",
+          "kind": "method",
+          "signature": "AbsolutePath(string urlTemplate)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        }
+      ]
     },
     {
       "name": "EntityActionContributionContext",
@@ -20806,7 +21038,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 24,
+      "line": 25,
       "members": []
     },
     {
@@ -20876,6 +21108,15 @@
           "returnType": "ActivitiesOptionsBuilder<TEntity>"
         }
       ]
+    },
+    {
+      "name": "CalendarItemResponse",
+      "fqn": "Granit.Entities.CalendarItemResponse",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/CalendarItemResponse.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "HideDelta",
@@ -20975,7 +21216,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/Extensions/EntitiesCustomizationEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitEntitiesCustomization",
@@ -20991,7 +21232,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/GranitEntitiesCustomizationEndpointsModule.cs",
-      "line": 35,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21126,8 +21367,15 @@
       "kind": "class",
       "project": "Granit.Entities.Customization",
       "file": "src/Granit.Entities.Customization/GranitEntitiesCustomizationModule.cs",
-      "line": 12,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IEntityCustomizationReader",
@@ -21268,13 +21516,20 @@
       "members": []
     },
     {
-      "name": "CalendarItemResponse",
-      "fqn": "Granit.Entities.Endpoints.Dtos.CalendarItemResponse",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/CalendarItemResponse.cs",
-      "line": 12,
-      "members": []
+      "name": "EntityActivitySource",
+      "fqn": "Granit.Entities.Diagnostics.EntityActivitySource",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Diagnostics/EntityActivitySource.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
     },
     {
       "name": "CalendarRangeRequest",
@@ -21283,87 +21538,6 @@
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/CalendarRangeRequest.cs",
       "line": 15,
-      "members": []
-    },
-    {
-      "name": "EntityActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityActionManifest.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "EntityActivitiesManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityActivitiesManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityActivitiesManifest.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "EntityCalendarLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 84,
-      "members": []
-    },
-    {
-      "name": "EntityCalendarTileActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarTileActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 99,
-      "members": []
-    },
-    {
-      "name": "EntityCollectionReference",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionReference",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 51,
-      "members": []
-    },
-    {
-      "name": "EntityCollectionsSection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionsSection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "EntityDetailManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "EntityDetailSectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 20,
-      "members": []
-    },
-    {
-      "name": "EntityDetailSidePanelManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSidePanelManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 30,
       "members": []
     },
     {
@@ -21403,192 +21577,12 @@
       "members": []
     },
     {
-      "name": "EntityFormFieldManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormFieldManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 53,
-      "members": []
-    },
-    {
-      "name": "EntityFormManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "EntityFormOwnedCollectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormOwnedCollectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 71,
-      "members": []
-    },
-    {
-      "name": "EntityFormSectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormSectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "EntityGalleryCardActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryCardActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 134,
-      "members": []
-    },
-    {
-      "name": "EntityGalleryLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 118,
-      "members": []
-    },
-    {
-      "name": "EntityHeaderActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityHeaderActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 39,
-      "members": []
-    },
-    {
-      "name": "EntityIdentitySection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityIdentitySection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityIdentitySection.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 193,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 161,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardRelationManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardRelationManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 177,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanColumnManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanColumnManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 203,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 145,
-      "members": []
-    },
-    {
-      "name": "EntityListLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityListLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 66,
-      "members": []
-    },
-    {
-      "name": "EntityManifestResponse",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityManifestResponse",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityManifestResponse.cs",
-      "line": 17,
-      "members": []
-    },
-    {
       "name": "EntityModuleGroupResponse",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityModuleGroupResponse",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
       "line": 30,
-      "members": []
-    },
-    {
-      "name": "EntityPermissionsSection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityPermissionsSection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityPermissionsSection.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "EntityProvenance",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenance",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "EntityProvenanceLayers",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenanceLayers",
-      "kind": "class",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "EntityRelationAggregateManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationAggregateManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
-      "line": 35,
-      "members": []
-    },
-    {
-      "name": "EntityRelationManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
-      "line": 18,
       "members": []
     },
     {
@@ -21624,7 +21618,7 @@
       "kind": "class",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Extensions/EntitiesEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitEntitiesEndpoints",
@@ -21647,38 +21641,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ICalendarRangeService",
-      "fqn": "Granit.Entities.Endpoints.ICalendarRangeService",
-      "kind": "interface",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "GetItemsAsync",
-          "kind": "method",
-          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
-          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
-        }
-      ]
-    },
-    {
-      "name": "IManifestCustomizationApplier",
-      "fqn": "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier",
-      "kind": "interface",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Internal/IManifestCustomizationApplier.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "ApplyAsync",
-          "kind": "method",
-          "signature": "ApplyAsync(string entityName, EntityManifestResponse composedManifest, CancellationToken cancellationToken = default)",
-          "returnType": "Task<EntityManifestResponse>"
         }
       ]
     },
@@ -21721,15 +21683,6 @@
           "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
         }
       ]
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Entities.Endpoints.struct",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
-      "line": 34,
-      "members": []
     },
     {
       "name": "EntityDefinition",
@@ -21797,7 +21750,7 @@
       "kind": "class",
       "project": "Granit.Entities.EntityFrameworkCore",
       "file": "src/Granit.Entities.EntityFrameworkCore/Extensions/EntitiesEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitEntitiesEntityFrameworkCore",
@@ -21829,7 +21782,7 @@
       "kind": "class",
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitEntities",
@@ -21942,6 +21895,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ICalendarRangeService",
+      "fqn": "Granit.Entities.ICalendarRangeService",
+      "kind": "interface",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/ICalendarRangeService.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "GetItemsAsync",
+          "kind": "method",
+          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
         }
       ]
     },
@@ -22169,6 +22138,276 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Layouts/CalendarRangeFilterBuilder.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityActionManifest.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "EntityActivitiesManifest",
+      "fqn": "Granit.Entities.Manifests.EntityActivitiesManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityActivitiesManifest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityCalendarLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 107,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarTileActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityCalendarTileActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 122,
+      "members": []
+    },
+    {
+      "name": "EntityCollectionReference",
+      "fqn": "Granit.Entities.Manifests.EntityCollectionReference",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 74,
+      "members": []
+    },
+    {
+      "name": "EntityCollectionsSection",
+      "fqn": "Granit.Entities.Manifests.EntityCollectionsSection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "EntityDetailManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSidePanelManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailSidePanelManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "EntityFormFieldManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormFieldManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "EntityFormManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntityFormOwnedCollectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormOwnedCollectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 71,
+      "members": []
+    },
+    {
+      "name": "EntityFormSectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "EntityGalleryCardActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityGalleryCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 157,
+      "members": []
+    },
+    {
+      "name": "EntityGalleryLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityGalleryLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 141,
+      "members": []
+    },
+    {
+      "name": "EntityHeaderActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityHeaderActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "EntityIdentitySection",
+      "fqn": "Granit.Entities.Manifests.EntityIdentitySection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityIdentitySection.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 216,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 184,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardRelationManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 200,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanColumnManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanColumnManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 226,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 168,
+      "members": []
+    },
+    {
+      "name": "EntityListLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityListLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 89,
+      "members": []
+    },
+    {
+      "name": "EntityManifestResponse",
+      "fqn": "Granit.Entities.Manifests.EntityManifestResponse",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityManifestResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "EntityPermissionsSection",
+      "fqn": "Granit.Entities.Manifests.EntityPermissionsSection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityPermissionsSection.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntityProvenance",
+      "fqn": "Granit.Entities.Manifests.EntityProvenance",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityProvenance.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntityProvenanceLayers",
+      "fqn": "Granit.Entities.Manifests.EntityProvenanceLayers",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityProvenance.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "EntityRelationAggregateManifest",
+      "fqn": "Granit.Entities.Manifests.EntityRelationAggregateManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityRelationsSection.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "EntityRelationManifest",
+      "fqn": "Granit.Entities.Manifests.EntityRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityRelationsSection.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntitySelectionActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntitySelectionActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 61,
       "members": []
     },
     {
@@ -22483,11 +22722,11 @@
       "members": []
     },
     {
-      "name": "EntityViewSharedWithDto",
-      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithDto",
+      "name": "EntityViewSharedWithResponse",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithResponse",
       "kind": "record",
       "project": "Granit.Entities.Views.Endpoints",
-      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithDto.cs",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithResponse.cs",
       "line": 6,
       "members": []
     },
@@ -22524,7 +22763,7 @@
       "kind": "class",
       "project": "Granit.Entities.Views.Endpoints",
       "file": "src/Granit.Entities.Views.Endpoints/Extensions/EntityViewsEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitEntityViewsEndpoints",
@@ -22628,6 +22867,15 @@
       "members": []
     },
     {
+      "name": "EntityViewNotFoundException",
+      "fqn": "Granit.Entities.Views.EntityViewNotFoundException",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewNotFoundException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "EntityViewPermissions",
       "fqn": "Granit.Entities.Views.EntityViewPermissions",
       "kind": "class",
@@ -22671,6 +22919,22 @@
       "members": []
     },
     {
+      "name": "EntitiesViewsServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Views.Extensions.EntitiesViewsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Views",
+      "file": "src/Granit.Entities.Views/Extensions/EntitiesViewsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitEntitiesViews",
+          "kind": "method",
+          "signature": "AddGranitEntitiesViews(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitEntitiesViewsAbstractionsModule",
       "fqn": "Granit.Entities.Views.GranitEntitiesViewsAbstractionsModule",
       "kind": "class",
@@ -22685,8 +22949,15 @@
       "kind": "class",
       "project": "Granit.Entities.Views",
       "file": "src/Granit.Entities.Views/GranitEntitiesViewsModule.cs",
-      "line": 12,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IEntityViewReader",
@@ -22784,6 +23055,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Visibility/VisibilityCondition.cs",
       "line": 32,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.struct",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/ICalendarRangeService.cs",
+      "line": 31,
       "members": []
     },
     {
@@ -35138,14 +35418,8 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/CurrentTenant.cs",
-      "line": 7,
+      "line": 31,
       "members": [
-        {
-          "name": "IsAvailable",
-          "kind": "property",
-          "signature": "bool IsAvailable",
-          "returnType": "bool"
-        },
         {
           "name": "Id",
           "kind": "property",
@@ -35476,7 +35750,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -35517,6 +35791,40 @@
           "returnType": "bool IsAvailable { get; } Guid? Id { get; } string? Name { get; } IDisposable"
         }
       ]
+    },
+    {
+      "name": "IHostAccessContext",
+      "fqn": "Granit.MultiTenancy.IHostAccessContext",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/IHostAccessContext.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "IHostAccessFeature",
+      "fqn": "Granit.MultiTenancy.IHostAccessFeature",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/IHostAccessFeature.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HostModeFeature",
+          "kind": "method",
+          "signature": "HostModeFeature()",
+          "returnType": "bool IsHostAccess { get; } public IHostAccessFeature HostMode { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "ITenantContextFeature",
+      "fqn": "Granit.MultiTenancy.ITenantContextFeature",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/ITenantContextFeature.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "ITenantInfo",
@@ -35567,6 +35875,46 @@
       "file": "src/Granit/MultiTenancy/MultiTenancySides.cs",
       "line": 24,
       "members": []
+    },
+    {
+      "name": "NullTenantContext",
+      "fqn": "Granit.MultiTenancy.NullTenantContext",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/NullTenantContext.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NullTenantContext Instance ="
+        },
+        {
+          "name": "IsAvailable",
+          "kind": "property",
+          "signature": "bool IsAvailable",
+          "returnType": "bool"
+        },
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid? Id",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string? Name",
+          "returnType": "string?"
+        },
+        {
+          "name": "Change",
+          "kind": "method",
+          "signature": "Change(Guid? id, string? name = null)",
+          "returnType": "IDisposable"
+        }
+      ]
     },
     {
       "name": "MultiTenancyOptions",
@@ -45692,7 +46040,14 @@
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Diagnostics/PersistenceMetrics.cs",
       "line": 13,
-      "members": []
+      "members": [
+        {
+          "name": "RecordCrossTenantQuery",
+          "kind": "method",
+          "signature": "RecordCrossTenantQuery(string entityName, string origin)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "EfStoreBase",
@@ -45700,7 +46055,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 42,
+      "line": 40,
       "members": []
     },
     {
@@ -55454,6 +55809,956 @@
       "members": []
     },
     {
+      "name": "AllowAllTaggablePermissionResolver",
+      "fqn": "Granit.Taxonomy.Authorization.AllowAllTaggablePermissionResolver",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Authorization/ITaggablePermissionResolver.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "IsAuthorizedAsync",
+          "kind": "method",
+          "signature": "IsAuthorizedAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ITaggablePermissionResolver",
+      "fqn": "Granit.Taxonomy.Authorization.ITaggablePermissionResolver",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Authorization/ITaggablePermissionResolver.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "IsAuthorizedAsync",
+          "kind": "method",
+          "signature": "IsAuthorizedAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyBackgroundJobsModule",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.GranitTaxonomyBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/GranitTaxonomyBackgroundJobsModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OrphanAssignmentCleanupHandler",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.Jobs.OrphanAssignmentCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/Jobs/OrphanAssignmentCleanupHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OrphanAssignmentCleanupJob _, IOrphanAssignmentSweepService sweepService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OrphanAssignmentCleanupJob",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.Jobs.OrphanAssignmentCleanupJob",
+      "kind": "record",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/Jobs/OrphanAssignmentCleanupJob.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "TaxonomyMetrics",
+      "fqn": "Granit.Taxonomy.Diagnostics.TaxonomyMetrics",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Diagnostics/TaxonomyMetrics.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "RecordTagDeleted",
+          "kind": "method",
+          "signature": "RecordTagDeleted(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAssignmentCreated",
+          "kind": "method",
+          "signature": "RecordAssignmentCreated(string? tenantId, string targetType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAssignmentDeleted",
+          "kind": "method",
+          "signature": "RecordAssignmentDeleted(string? tenantId, string targetType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryCreated",
+          "kind": "method",
+          "signature": "RecordCategoryCreated(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryDeleted",
+          "kind": "method",
+          "signature": "RecordCategoryDeleted(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryAssignmentChanged",
+          "kind": "method",
+          "signature": "RecordCategoryAssignmentChanged(string? tenantId, string targetType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOrphanCleanupDeleted",
+          "kind": "method",
+          "signature": "RecordOrphanCleanupDeleted(string? tenantId, string targetType, int count)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "fqn": "Granit.Taxonomy.Domain.Category",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/Category.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "CreateRoot",
+          "kind": "method",
+          "signature": "CreateRoot(Guid id, Guid? tenantId, string scope, string name, string? iconName = null, bool hideOnEntityCard = false)",
+          "returnType": "Category"
+        },
+        {
+          "name": "ParentId",
+          "kind": "property",
+          "signature": "Guid? ParentId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Path",
+          "kind": "property",
+          "signature": "string Path",
+          "returnType": "string"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "int Depth { get; private set; } public string? IconName { get; private set; } public bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "CategoryAssignment",
+      "fqn": "Granit.Taxonomy.Domain.CategoryAssignment",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/CategoryAssignment.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid categoryId, string targetType, Guid targetId, Guid assignedByUserId, DateTimeOffset assignedAt)",
+          "returnType": "CategoryAssignment"
+        },
+        {
+          "name": "ValidateTargetType",
+          "kind": "method",
+          "signature": "ValidateTargetType(string targetType)",
+          "returnType": "Guid TargetId { get; private set; } public DateTimeOffset AssignedAt { get; private set; } public Guid AssignedByUserId { get; private set; } private void"
+        }
+      ]
+    },
+    {
+      "name": "Tag",
+      "fqn": "Granit.Taxonomy.Domain.Tag",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/Tag.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, string scope, string name, string color, bool hideOnEntityCard = false)",
+          "returnType": "Tag"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Color",
+          "kind": "property",
+          "signature": "string Color",
+          "returnType": "string"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "TagAssignment",
+      "fqn": "Granit.Taxonomy.Domain.TagAssignment",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/TagAssignment.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid tagId, string targetType, Guid targetId, Guid assignedByUserId, DateTimeOffset assignedAt)",
+          "returnType": "TagAssignment"
+        },
+        {
+          "name": "ValidateTargetType",
+          "kind": "method",
+          "signature": "ValidateTargetType(string targetType)",
+          "returnType": "Guid TargetId { get; private set; } public DateTimeOffset AssignedAt { get; private set; } public Guid AssignedByUserId { get; private set; } private void"
+        }
+      ]
+    },
+    {
+      "name": "AssignCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.AssignCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/AssignCategoryRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CategoryAssignmentResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "CategoryDetailResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryDetailResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "CategoryResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CreateCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CreateCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CreateCategoryRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ListCategoriesResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.ListCategoriesResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MoveCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.MoveCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/MoveCategoryRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "UpdateCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.UpdateCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/UpdateCategoryRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxonomyEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Taxonomy.Endpoints.Extensions.TaxonomyEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Extensions/TaxonomyEndpointRouteBuilderExtensions.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "MapGranitTaxonomy",
+          "kind": "method",
+          "signature": "MapGranitTaxonomy(this IEndpointRouteBuilder endpoints, Action<TaxonomyEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyEndpointsModule",
+      "fqn": "Granit.Taxonomy.Endpoints.GranitTaxonomyEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/GranitTaxonomyEndpointsModule.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "TaxonomyEndpointsOptions",
+      "fqn": "Granit.Taxonomy.Endpoints.Options.TaxonomyEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Options/TaxonomyEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Categories",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 27,
+      "members": []
+    },
+    {
+      "name": "Search",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Search",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 43,
+      "members": []
+    },
+    {
+      "name": "Tags",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Tags",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "TaxonomyPermissions",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.TaxonomyPermissions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "SearchHit",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchHit",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "SearchResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "SearchTagItem",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchTagItem",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "AssignTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.AssignTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/AssignTagRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "CreateTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.CreateTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/CreateTagRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ListTagsResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.ListTagsResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/ListTagsResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TagAssignmentResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.TagAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/TagAssignmentResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TagResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.TagResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/TagResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "UpdateTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.UpdateTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/UpdateTagRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.Extensions.TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/Extensions/TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitTaxonomyEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitTaxonomyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TaxonomyModelBuilderExtensions",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.Extensions.TaxonomyModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/Extensions/TaxonomyModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureTaxonomyModule",
+          "kind": "method",
+          "signature": "ConfigureTaxonomyModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyDbProperties",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.GranitTaxonomyDbProperties",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/GranitTaxonomyDbProperties.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyEntityFrameworkCoreModule",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.GranitTaxonomyEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/GranitTaxonomyEntityFrameworkCoreModule.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "CategoryAssignmentChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryAssignmentChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryAssignmentChangedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CategoryCreatedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryCreatedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryDeletedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryDeletedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryMovedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryMovedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryMovedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryRenamedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryRenamedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryTreePathChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryTreePathChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryTreePathChangedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TagCreatedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagCreatedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagDeletedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagDeletedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagHideOnEntityCardChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagHideOnEntityCardChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagHideOnEntityCardChangedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagRecolouredEvent",
+      "fqn": "Granit.Taxonomy.Events.TagRecolouredEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagRecolouredEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagRenamedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagRenamedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TaxonomyServiceCollectionExtensions",
+      "fqn": "Granit.Taxonomy.Extensions.TaxonomyServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Extensions/TaxonomyServiceCollectionExtensions.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "AddGranitTaxonomy",
+          "kind": "method",
+          "signature": "AddGranitTaxonomy(this IServiceCollection services, Action<TaxonomyOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyModule",
+      "fqn": "Granit.Taxonomy.GranitTaxonomyModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/GranitTaxonomyModule.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "ICategoryAssignmentService",
+      "fqn": "Granit.Taxonomy.ICategoryAssignmentService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ICategoryAssignmentService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AssignAsync",
+          "kind": "method",
+          "signature": "AssignAsync(Guid categoryId, string targetType, Guid targetId, Guid assignedByUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CategoryAssignment>"
+        },
+        {
+          "name": "UnassignAsync",
+          "kind": "method",
+          "signature": "UnassignAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetForTargetAsync",
+          "kind": "method",
+          "signature": "GetForTargetAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "RemoveAllAssignmentsAsync",
+          "kind": "method",
+          "signature": "RemoveAllAssignmentsAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "ICategoryService",
+      "fqn": "Granit.Taxonomy.ICategoryService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ICategoryService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string scope, Guid? parentId, string name, string? iconName = null, bool hideOnEntityCard = false, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "MoveAsync",
+          "kind": "method",
+          "signature": "MoveAsync(Guid id, Guid? newParentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "SetIconAsync",
+          "kind": "method",
+          "signature": "SetIconAsync(Guid id, string? iconName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "ToggleHideAsync",
+          "kind": "method",
+          "signature": "ToggleHideAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "GetBreadcrumbAsync",
+          "kind": "method",
+          "signature": "GetBreadcrumbAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
+        },
+        {
+          "name": "ListChildrenAsync",
+          "kind": "method",
+          "signature": "ListChildrenAsync(string scope, Guid? parentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
+        },
+        {
+          "name": "ListByScopeAsync",
+          "kind": "method",
+          "signature": "ListByScopeAsync(string scope, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
+        }
+      ]
+    },
+    {
+      "name": "IOrphanAssignmentSweepService",
+      "fqn": "Granit.Taxonomy.IOrphanAssignmentSweepService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/IOrphanAssignmentSweepService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "ITagAssignmentService",
+      "fqn": "Granit.Taxonomy.ITagAssignmentService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagAssignmentService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "UnassignAsync",
+          "kind": "method",
+          "signature": "UnassignAsync(Guid tagId, string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ListForTargetAsync",
+          "kind": "method",
+          "signature": "ListForTargetAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Tag>>"
+        },
+        {
+          "name": "RemoveAllAssignmentsAsync",
+          "kind": "method",
+          "signature": "RemoveAllAssignmentsAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "ITagSearchService",
+      "fqn": "Granit.Taxonomy.ITagSearchService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(string query, string scope, int skip = 0, int take = 50, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TagSearchResult>"
+        }
+      ]
+    },
+    {
+      "name": "ITagService",
+      "fqn": "Granit.Taxonomy.ITagService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string scope, string name, string color, bool hideOnEntityCard = false, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "RecolourAsync",
+          "kind": "method",
+          "signature": "RecolourAsync(Guid id, string newColor, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "ToggleHideAsync",
+          "kind": "method",
+          "signature": "ToggleHideAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "ListByScopeAsync",
+          "kind": "method",
+          "signature": "ListByScopeAsync(string scope, string? q = null, int skip = 0, int take = 50, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Tag>>"
+        }
+      ]
+    },
+    {
+      "name": "ITaggableExistenceProbe",
+      "fqn": "Granit.Taxonomy.ITaggableExistenceProbe",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITaggableExistenceProbe.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ExistsAsync",
+          "kind": "method",
+          "signature": "ExistsAsync(Guid? tenantId, Guid targetId, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "TaxonomyOptions",
+      "fqn": "Granit.Taxonomy.Options.TaxonomyOptions",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Options/TaxonomyOptions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "TaggableTypeRegistry",
+      "fqn": "Granit.Taxonomy.Registration.TaggableTypeRegistry",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Registration/TaggableTypeRegistry.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(string targetType, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "GetScope",
+          "kind": "method",
+          "signature": "GetScope(string targetType)",
+          "returnType": "string?"
+        },
+        {
+          "name": "ToArray",
+          "kind": "method",
+          "signature": "ToArray()",
+          "returnType": "IReadOnlyDictionary<string, string> Snapshot => _typeToScope."
+        }
+      ]
+    },
+    {
+      "name": "TagSearchHit",
+      "fqn": "Granit.Taxonomy.TagSearchHit",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "TagSearchResult",
+      "fqn": "Granit.Taxonomy.TagSearchResult",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 42,
+      "members": []
+    },
+    {
+      "name": "TagSearchTag",
+      "fqn": "Granit.Taxonomy.TagSearchTag",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 50,
+      "members": []
+    },
+    {
       "name": "AITemplateDataEnricher",
       "fqn": "Granit.Templating.AI.AITemplateDataEnricher",
       "kind": "class",
@@ -60894,7 +62199,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Behaviors/TenantContextBehavior.cs",
-      "line": 27,
+      "line": 33,
       "members": [
         {
           "name": "Before",
@@ -60999,6 +62304,15 @@
       ]
     },
     {
+      "name": "CrossTenantMessageAttribute",
+      "fqn": "Granit.Wolverine.CrossTenantMessageAttribute",
+      "kind": "class",
+      "project": "Granit.Wolverine",
+      "file": "src/Granit.Wolverine/CrossTenantMessageAttribute.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "WolverineMetrics",
       "fqn": "Granit.Wolverine.Diagnostics.WolverineMetrics",
       "kind": "class",
@@ -61028,6 +62342,12 @@
           "name": "RecordClaimCheckRetrieved",
           "kind": "method",
           "signature": "RecordClaimCheckRetrieved(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEnvelopeWithoutTenant",
+          "kind": "method",
+          "signature": "RecordEnvelopeWithoutTenant(string messageType, string outcome)",
           "returnType": "void"
         }
       ]

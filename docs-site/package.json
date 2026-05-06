@@ -15,7 +15,7 @@
     "@fontsource-variable/plus-jakarta-sans": "^5.2.8",
     "@lorenzo_lewis/starlight-utils": "^0.3.2",
     "@tailwindcss/vite": "^4.2.4",
-    "astro": "^6.1.9",
+    "astro": "^6.2.2",
     "astro-mermaid": "^2.0.1",
     "mermaid": "^11.14.0",
     "rehype-external-links": "^3.0.0",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "markdownlint-cli2": "^0.22.1",
     "starlight-image-zoom": "^0.14.1",
-    "starlight-links-validator": "^0.23.0"
+    "starlight-links-validator": "^0.24.0"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -39,10 +39,11 @@
     ],
     "overrides": {
       "dompurify": ">=3.4.0",
-      "fast-xml-parser": ">=5.5.7",
+      "fast-xml-parser": ">=5.7.0",
       "lodash-es": ">=4.18.0",
       "picomatch": ">=4.0.4",
       "smol-toml": ">=1.6.1",
+      "uuid": ">=11.1.1",
       "yaml": ">=2.8.3"
     }
   }

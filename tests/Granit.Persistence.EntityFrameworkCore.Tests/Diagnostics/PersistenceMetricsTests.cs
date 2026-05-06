@@ -60,4 +60,35 @@ public sealed class PersistenceMetricsTests : IDisposable
         snapshot.ShouldHaveSingleItem();
         snapshot[0].Tags["tenant_id"].ShouldBe("global");
     }
+
+    // ──── RecordCrossTenantQuery ────
+
+    [Fact]
+    public void RecordCrossTenantQuery_Implicit_TaggedByEntityAndOrigin()
+    {
+        using var collector = new MetricCollector<long>(
+            _meterFactory, PersistenceMetrics.MeterName, "granit.persistence.cross_tenant_query");
+
+        _metrics.RecordCrossTenantQuery("Invoice", "implicit");
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Value.ShouldBe(1);
+        snapshot[0].Tags["entity"].ShouldBe("Invoice");
+        snapshot[0].Tags["origin"].ShouldBe("implicit");
+    }
+
+    [Fact]
+    public void RecordCrossTenantQuery_Explicit_TaggedByEntityAndOrigin()
+    {
+        using var collector = new MetricCollector<long>(
+            _meterFactory, PersistenceMetrics.MeterName, "granit.persistence.cross_tenant_query");
+
+        _metrics.RecordCrossTenantQuery("Webhook", "explicit");
+
+        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
+        snapshot.ShouldHaveSingleItem();
+        snapshot[0].Tags["entity"].ShouldBe("Webhook");
+        snapshot[0].Tags["origin"].ShouldBe("explicit");
+    }
 }
