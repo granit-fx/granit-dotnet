@@ -55510,6 +55510,22 @@
       "members": []
     },
     {
+      "name": "TaxonomyMetrics",
+      "fqn": "Granit.Taxonomy.Diagnostics.TaxonomyMetrics",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Diagnostics/TaxonomyMetrics.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "RecordTagDeleted",
+          "kind": "method",
+          "signature": "RecordTagDeleted(string? tenantId, string scope)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "Tag",
       "fqn": "Granit.Taxonomy.Domain.Tag",
       "kind": "class",
@@ -55651,7 +55667,7 @@
       "kind": "class",
       "project": "Granit.Taxonomy",
       "file": "src/Granit.Taxonomy/Extensions/TaxonomyServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitTaxonomy",

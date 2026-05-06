@@ -1,5 +1,8 @@
+using Granit.Diagnostics;
+using Granit.Taxonomy.Diagnostics;
 using Granit.Taxonomy.Options;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Taxonomy.Extensions;
@@ -18,14 +21,20 @@ public static class TaxonomyServiceCollectionExtensions
     /// When omitted, options are bound from the <c>"Taxonomy"</c> configuration section.
     /// </param>
     /// <remarks>
-    /// Phase T1 — no-op beyond options binding. Tag and category services are wired
-    /// by <c>Granit.Taxonomy.EntityFrameworkCore</c> in story T1.2.
+    /// Registers options binding plus diagnostics
+    /// (<see cref="TaxonomyMetrics"/> meter and <c>Granit.Taxonomy</c>
+    /// <see cref="System.Diagnostics.ActivitySource"/>). Tag persistence and CRUD
+    /// services are wired by <c>Granit.Taxonomy.EntityFrameworkCore</c>
+    /// (<c>AddGranitTaxonomyEntityFrameworkCore</c>).
     /// </remarks>
     public static IServiceCollection AddGranitTaxonomy(
         this IServiceCollection services,
         Action<TaxonomyOptions>? configure = null)
     {
         ArgumentNullException.ThrowIfNull(services);
+
+        GranitActivitySourceRegistry.Register(TaxonomyActivitySource.Name);
+        services.TryAddSingleton<TaxonomyMetrics>();
 
         OptionsBuilder<TaxonomyOptions> optionsBuilder = services
             .AddOptions<TaxonomyOptions>()

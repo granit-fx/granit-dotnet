@@ -1,8 +1,11 @@
+using System.Diagnostics.Metrics;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Taxonomy.Diagnostics;
 using Granit.Taxonomy.Domain;
 using Granit.Taxonomy.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using NSubstitute;
 using Shouldly;
@@ -45,7 +48,12 @@ public sealed class TagPostgresUniquenessTests :
         currentTenant.IsAvailable.Returns(true);
         currentTenant.Id.Returns(TenantId);
 
-        _sut = new TagService(_factory, currentTenant, new SimpleGuidGenerator());
+        ServiceCollection services = new();
+        services.AddMetrics();
+        var metrics = new TaxonomyMetrics(
+            services.BuildServiceProvider().GetRequiredService<IMeterFactory>());
+
+        _sut = new TagService(_factory, currentTenant, new SimpleGuidGenerator(), metrics);
     }
 
     public ValueTask DisposeAsync() => default;

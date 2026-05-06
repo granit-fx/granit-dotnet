@@ -1,5 +1,6 @@
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Taxonomy.Diagnostics;
 using Granit.Taxonomy.Domain;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,8 @@ namespace Granit.Taxonomy.EntityFrameworkCore.Internal;
 internal sealed class TagService(
     IDbContextFactory<TaxonomyDbContext> contextFactory,
     ICurrentTenant currentTenant,
-    IGuidGenerator guidGenerator) : ITagService
+    IGuidGenerator guidGenerator,
+    TaxonomyMetrics metrics) : ITagService
 {
     /// <inheritdoc />
     public async Task<Tag> CreateAsync(
@@ -57,6 +59,7 @@ internal sealed class TagService(
 
         context.Tags.Add(tag);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        metrics.RecordTagCreated(tenantId?.ToString(), scope);
         return tag;
     }
 
@@ -148,6 +151,7 @@ internal sealed class TagService(
         tag.MarkDeleted();
         context.Tags.Remove(tag);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        metrics.RecordTagDeleted(tag.TenantId?.ToString(), tag.Scope);
         return true;
     }
 
