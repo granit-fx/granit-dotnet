@@ -1052,4 +1052,105 @@ public sealed class EntityManifestComposerTests
 
         manifest.Collections!.HeaderActions.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void Compose_emits_SelectionActions_for_actions_pinned_via_OnSelection()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor archive = new(
+            Name: "archive",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: "Parties:Action.Archive",
+            Icon: "archive",
+            Order: 10,
+            RequiresPermission: null,
+            UrlTemplate: "/api/parties/{id}/archive",
+            HttpMethod: "POST",
+            ConfirmationKey: "Parties:Action.Archive.Confirm",
+            WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnSelection: true);
+
+        Granit.Entities.Actions.EntityActionDescriptor rowOnly = archive with
+        {
+            Name = "void",
+            ShowOnSelection = false,
+            ConfirmationKey = null,
+        };
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor() with
+        { Actions = [archive, rowOnly] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        EntitySelectionActionManifest only = manifest.Collections!
+            .SelectionActions.ShouldHaveSingleItem();
+        only.Name.ShouldBe("archive");
+        only.Icon.ShouldBe("archive");
+        only.DisplayKey.ShouldBe("Parties:Action.Archive");
+        only.ConfirmationKey.ShouldBe("Parties:Action.Archive.Confirm");
+    }
+
+    [Fact]
+    public void Compose_SelectionActions_drops_pinned_action_when_RequiresPermission_not_granted()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor gated = new(
+            Name: "bulk-archive",
+            Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: null, Icon: "archive", Order: 0,
+            RequiresPermission: "Parties.Manage",
+            UrlTemplate: "/api/parties/{id}/archive", HttpMethod: "POST",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null,
+            ShowOnSelection: true);
+
+        EntityDefinitionDescriptor descriptor = BuildDescriptor() with
+        { Actions = [gated] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.SelectionActions.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Compose_SelectionActions_preserves_ascending_Order()
+    {
+        Granit.Entities.Actions.EntityActionDescriptor late = new(
+            Name: "delete-many", Kind: Granit.Entities.Actions.EntityActionKind.ApiCall,
+            DisplayKey: null, Icon: null, Order: 40,
+            RequiresPermission: null,
+            UrlTemplate: "/api/parties/{id}/delete", HttpMethod: "DELETE",
+            ConfirmationKey: null, WorkflowTransitionName: null,
+            ContributorAssemblyName: null, ShowOnSelection: true);
+
+        Granit.Entities.Actions.EntityActionDescriptor middle = late with
+        { Name = "tag", Order = 20 };
+
+        Granit.Entities.Actions.EntityActionDescriptor early = late with
+        { Name = "archive", Order = 10 };
+
+        // Pass them in reverse Order to verify the composer sorts.
+        EntityDefinitionDescriptor descriptor = BuildDescriptor() with
+        { Actions = [late, middle, early] };
+
+        EntityManifestResponse manifest = EntityManifestComposer.Compose(
+            descriptor,
+            EntityPermissionSnapshot.AllPublic,
+            grantedPermissions: new HashSet<string>(StringComparer.Ordinal),
+            EntityFacets.Collections,
+            defaultViewId: null);
+
+        manifest.Collections!.SelectionActions
+            .Select(a => a.Name)
+            .ShouldBe(["archive", "tag", "delete-many"]);
+    }
 }

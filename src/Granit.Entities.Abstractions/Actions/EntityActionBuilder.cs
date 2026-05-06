@@ -29,6 +29,7 @@ public sealed class EntityActionBuilder<TEntity>
     private bool _showOnGalleryCard;
     private bool _showOnCalendarTile;
     private bool _showOnListHeader;
+    private bool _showOnSelection;
 
     // RouteBase composition state — populated by verb shortcuts (Post / Put / Delete /
     // Patch / Get / Download). At Build() time, if no explicit URL was supplied via
@@ -307,6 +308,22 @@ public sealed class EntityActionBuilder<TEntity>
         return this;
     }
 
+    /// <summary>
+    /// Exposes this action on the selection-bar dropdown that appears above
+    /// the list when one or more rows are selected (Odoo's "Action ▼"). The
+    /// renderer reuses the same row URL as the per-row action and fires
+    /// N parallel requests, substituting <c>{id}</c> per selected row
+    /// (concurrency-capped client-side). One declaration, dual surface —
+    /// no separate bulk endpoint and no DRY violation. Mutually exclusive
+    /// with <see cref="OnListHeader"/>: header actions are entity-scope and
+    /// cannot also be selection-scope.
+    /// </summary>
+    public EntityActionBuilder<TEntity> OnSelection()
+    {
+        _showOnSelection = true;
+        return this;
+    }
+
     internal EntityActionDescriptor Build()
     {
         string? resolvedUrl = ResolveUrl();
@@ -338,6 +355,17 @@ public sealed class EntityActionBuilder<TEntity>
                 + "Header actions are entity-scope; remove the placeholder or surface this action on rows / cards instead.");
         }
 
+        // OnListHeader fires once on the entity (no row context); OnSelection
+        // fires per selected row (substitutes {id} per request). Combining
+        // them is contradictory — guard at host startup so the manifest
+        // doesn't ship a nonsensical dual flag.
+        if (_showOnListHeader && _showOnSelection)
+        {
+            throw new InvalidOperationException(
+                $"Action '{_name}' opts into both OnListHeader and OnSelection — these surfaces are mutually exclusive. "
+                + "OnListHeader is entity-scope (no row context); OnSelection fires per selected row. Pick one.");
+        }
+
         return new EntityActionDescriptor(
             Name: _name,
             Kind: _kind,
@@ -353,7 +381,8 @@ public sealed class EntityActionBuilder<TEntity>
             ShowOnKanbanCard: _showOnKanbanCard,
             ShowOnGalleryCard: _showOnGalleryCard,
             ShowOnCalendarTile: _showOnCalendarTile,
-            ShowOnListHeader: _showOnListHeader);
+            ShowOnListHeader: _showOnListHeader,
+            ShowOnSelection: _showOnSelection);
     }
 
     private string? ResolveUrl()

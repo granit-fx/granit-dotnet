@@ -20845,7 +20845,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 24,
+      "line": 25,
       "members": []
     },
     {
@@ -21348,7 +21348,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 84,
+      "line": 107,
       "members": []
     },
     {
@@ -21357,7 +21357,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 99,
+      "line": 122,
       "members": []
     },
     {
@@ -21366,7 +21366,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 51,
+      "line": 74,
       "members": []
     },
     {
@@ -21375,7 +21375,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -21483,7 +21483,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 134,
+      "line": 157,
       "members": []
     },
     {
@@ -21492,7 +21492,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 118,
+      "line": 141,
       "members": []
     },
     {
@@ -21501,7 +21501,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 39,
+      "line": 41,
       "members": []
     },
     {
@@ -21519,7 +21519,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 193,
+      "line": 216,
       "members": []
     },
     {
@@ -21528,7 +21528,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 161,
+      "line": 184,
       "members": []
     },
     {
@@ -21537,7 +21537,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 177,
+      "line": 200,
       "members": []
     },
     {
@@ -21546,7 +21546,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 203,
+      "line": 226,
       "members": []
     },
     {
@@ -21555,7 +21555,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 145,
+      "line": 168,
       "members": []
     },
     {
@@ -21564,7 +21564,7 @@
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 66,
+      "line": 89,
       "members": []
     },
     {
@@ -21628,6 +21628,15 @@
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntitySelectionActionManifest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.EntitySelectionActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
+      "line": 61,
       "members": []
     },
     {

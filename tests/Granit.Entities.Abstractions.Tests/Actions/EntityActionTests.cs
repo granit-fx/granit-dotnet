@@ -305,4 +305,68 @@ public sealed class EntityActionTests
                 .Icon("upload")
                 .OnListHeader());
     }
+
+    [Fact]
+    public void OnSelection_defaults_false_and_opt_in_sets_flag()
+    {
+        EntityDefinitionDescriptor d = new SampleDefinition().Descriptor;
+
+        d.Actions.Single(a => a.Name == "finalize").ShowOnSelection.ShouldBeFalse();
+
+        EntityDefinitionDescriptor pinned = new SelectionPinnedDefinition().Descriptor;
+        pinned.Actions.Single(a => a.Name == "archive").ShowOnSelection.ShouldBeTrue();
+        pinned.Actions.Single(a => a.Name == "void").ShowOnSelection.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void OnSelection_keeps_id_placeholder_in_url_for_per_row_fanout()
+    {
+        // OnSelection actions reuse the per-row URL — the renderer fires N
+        // parallel requests substituting {id} per selected row. So the URL
+        // template MUST keep its {id}, unlike OnListHeader which strips it.
+        EntityDefinitionDescriptor d = new SelectionPinnedDefinition().Descriptor;
+
+        EntityActionDescriptor archive = d.Actions.Single(a => a.Name == "archive");
+        archive.UrlTemplate.ShouldBe("/api/parties/{id}/archive");
+    }
+
+    [Fact]
+    public void OnSelection_combined_with_OnListHeader_throws()
+    {
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            _ = new SelectionAndHeaderDefinition().Descriptor);
+
+        ex.Message.ShouldContain("OnListHeader");
+        ex.Message.ShouldContain("OnSelection");
+        ex.Message.ShouldContain("mutually exclusive");
+    }
+
+    private sealed class SelectionPinnedDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.SelectionPinned";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .RouteBase("/api/parties")
+                .Action("archive", a => a
+                    .Post()
+                    .Icon("archive")
+                    .OnSelection())
+                .Action("void", a => a
+                    .Post()
+                    .Icon("ban"));
+    }
+
+    private sealed class SelectionAndHeaderDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.SelectionAndHeader";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .RouteBase("/api/parties")
+                .Action("contradiction", a => a
+                    .Post()
+                    .OnListHeader()
+                    .OnSelection());
+    }
 }
