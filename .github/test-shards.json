@@ -247,6 +247,7 @@
         "tests/Granit.Settings.Endpoints.Tests",
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
+        "tests/Granit.Taxonomy.EntityFrameworkCore.Tests",
         "tests/Granit.Taxonomy.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
@@ -399,6 +400,7 @@
         "tests/Granit.Parties.Mergeable.Tests.Integration",
         "tests/Granit.QueryEngine.AspNetCore.Tests.Integration",
         "tests/Granit.Subscriptions.EntityFrameworkCore.Tests.Integration",
+        "tests/Granit.Taxonomy.EntityFrameworkCore.Tests.Integration",
         "tests/Granit.Wolverine.Postgresql.Tests.Integration",
         "tests/Granit.Wolverine.SqlServer.Tests.Integration"
       ]

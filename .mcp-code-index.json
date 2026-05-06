@@ -2692,6 +2692,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Taxonomy.EntityFrameworkCore",
+      "deps": [
+        "Granit.Taxonomy",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Templating",
       "deps": [
         "Granit.Timing",
@@ -55493,6 +55501,142 @@
       "members": []
     },
     {
+      "name": "Tag",
+      "fqn": "Granit.Taxonomy.Domain.Tag",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/Tag.cs",
+      "line": 35,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, string scope, string name, string color, bool hideOnEntityCard = false)",
+          "returnType": "Tag"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "Color",
+          "kind": "property",
+          "signature": "string Color",
+          "returnType": "string"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.Extensions.TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/Extensions/TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitTaxonomyEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitTaxonomyEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "TaxonomyModelBuilderExtensions",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.Extensions.TaxonomyModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/Extensions/TaxonomyModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureTaxonomyModule",
+          "kind": "method",
+          "signature": "ConfigureTaxonomyModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyDbProperties",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.GranitTaxonomyDbProperties",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/GranitTaxonomyDbProperties.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyEntityFrameworkCoreModule",
+      "fqn": "Granit.Taxonomy.EntityFrameworkCore.GranitTaxonomyEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.EntityFrameworkCore",
+      "file": "src/Granit.Taxonomy.EntityFrameworkCore/GranitTaxonomyEntityFrameworkCoreModule.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "TagCreatedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagCreatedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagDeletedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagDeletedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagHideOnEntityCardChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagHideOnEntityCardChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagHideOnEntityCardChangedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagRecolouredEvent",
+      "fqn": "Granit.Taxonomy.Events.TagRecolouredEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagRecolouredEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "TagRenamedEvent",
+      "fqn": "Granit.Taxonomy.Events.TagRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/TagRenamedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
       "name": "TaxonomyServiceCollectionExtensions",
       "fqn": "Granit.Taxonomy.Extensions.TaxonomyServiceCollectionExtensions",
       "kind": "class",
@@ -55516,6 +55660,58 @@
       "file": "src/Granit.Taxonomy/GranitTaxonomyModule.cs",
       "line": 23,
       "members": []
+    },
+    {
+      "name": "ITagService",
+      "fqn": "Granit.Taxonomy.ITagService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string scope, string name, string color, bool hideOnEntityCard = false, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "RecolourAsync",
+          "kind": "method",
+          "signature": "RecolourAsync(Guid id, string newColor, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "ToggleHideAsync",
+          "kind": "method",
+          "signature": "ToggleHideAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Tag?>"
+        },
+        {
+          "name": "ListByScopeAsync",
+          "kind": "method",
+          "signature": "ListByScopeAsync(string scope, string? q = null, int skip = 0, int take = 50, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Tag>>"
+        }
+      ]
     },
     {
       "name": "TaxonomyOptions",

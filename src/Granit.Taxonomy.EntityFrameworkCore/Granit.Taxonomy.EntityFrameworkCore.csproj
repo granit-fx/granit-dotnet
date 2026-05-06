@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Taxonomy.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence layer for Granit.Taxonomy. Provides the isolated TaxonomyDbContext, configurable table prefix and schema, and ModelBuilder extensions for embedding the module into a host-owned DbContext. Compatible with SQL Server and PostgreSQL.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Taxonomy.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Taxonomy.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="Granit.Taxonomy.Endpoints" />
+    <InternalsVisibleTo Include="Granit.Taxonomy.Endpoints.Tests" />
+    <InternalsVisibleTo Include="Granit.Taxonomy.BackgroundJobs" />
+    <InternalsVisibleTo Include="Granit.Taxonomy.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Taxonomy\Granit.Taxonomy.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
