@@ -1,6 +1,7 @@
 {
   "culture": "ko",
   "texts": {
+    "Permission:Taxonomy.Search.Read": "모든 엔터티에서 태그 검색",
     "Permission:Taxonomy.Tags.Manage": "태그 생성, 이름 변경, 색상 변경, 삭제",
     "Permission:Taxonomy.Tags.Read": "태그 보기",
     "PermissionGroup:Taxonomy": "분류 체계"

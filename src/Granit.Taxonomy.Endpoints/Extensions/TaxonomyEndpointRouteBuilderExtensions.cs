@@ -1,4 +1,5 @@
 using Granit.Taxonomy.Endpoints.Options;
+using Granit.Taxonomy.Endpoints.Search.Endpoints;
 using Granit.Taxonomy.Endpoints.Tags.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +37,7 @@ public static class TaxonomyEndpointRouteBuilderExtensions
 
         group.MapTagEndpoints();
         group.MapTagAssignmentEndpoints();
+        group.MapTagSearchEndpoints();
 
         return group;
     }

@@ -44,6 +44,7 @@ public sealed class LocalizationFileTests
         content.ShouldContain("\"PermissionGroup:Taxonomy\"");
         content.ShouldContain("\"Permission:Taxonomy.Tags.Read\"");
         content.ShouldContain("\"Permission:Taxonomy.Tags.Manage\"");
+        content.ShouldContain("\"Permission:Taxonomy.Search.Read\"");
     }
 
     public static TheoryData<string> AllCultures()

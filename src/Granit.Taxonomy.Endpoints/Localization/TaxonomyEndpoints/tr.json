@@ -1,6 +1,7 @@
 {
   "culture": "tr",
   "texts": {
+    "Permission:Taxonomy.Search.Read": "Tüm varlıklarda etiket ara",
     "Permission:Taxonomy.Tags.Manage": "Etiketleri oluştur, yeniden adlandır, yeniden renklendir ve sil",
     "Permission:Taxonomy.Tags.Read": "Etiketleri görüntüle",
     "PermissionGroup:Taxonomy": "Taksonomi"

@@ -1,6 +1,7 @@
 {
   "culture": "de",
   "texts": {
+    "Permission:Taxonomy.Search.Read": "Tags entitätsübergreifend suchen",
     "Permission:Taxonomy.Tags.Manage": "Tags erstellen, umbenennen, neu einfärben und löschen",
     "Permission:Taxonomy.Tags.Read": "Tags anzeigen",
     "PermissionGroup:Taxonomy": "Taxonomie"

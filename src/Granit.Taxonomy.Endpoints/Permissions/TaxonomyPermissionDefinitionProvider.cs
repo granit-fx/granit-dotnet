@@ -32,5 +32,11 @@ internal sealed class TaxonomyPermissionDefinitionProvider : IPermissionDefiniti
             LocalizableString.Create<TaxonomyEndpointsLocalizationResource>(
                 "Permission:Taxonomy.Tags.Manage"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            TaxonomyPermissions.Search.Read,
+            LocalizableString.Create<TaxonomyEndpointsLocalizationResource>(
+                "Permission:Taxonomy.Search.Read"),
+            MultiTenancySides.Both);
     }
 }
