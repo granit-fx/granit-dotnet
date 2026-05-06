@@ -35475,12 +35475,6 @@
           "kind": "method",
           "signature": "RecordContextSwitched(string? tenantId)",
           "returnType": "void"
-        },
-        {
-          "name": "RecordMembershipRejected",
-          "kind": "method",
-          "signature": "RecordMembershipRejected()",
-          "returnType": "void"
         }
       ]
     },
@@ -36253,22 +36247,6 @@
           "kind": "method",
           "signature": "DeactivateAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IUserTenantMembershipReader",
-      "fqn": "Granit.MultiTenancy.Stores.IUserTenantMembershipReader",
-      "kind": "interface",
-      "project": "Granit.MultiTenancy",
-      "file": "src/Granit.MultiTenancy/Stores/IUserTenantMembershipReader.cs",
-      "line": 30,
-      "members": [
-        {
-          "name": "IsMemberAsync",
-          "kind": "method",
-          "signature": "IsMemberAsync(string userId, Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
         }
       ]
     },
@@ -62221,7 +62199,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Behaviors/TenantContextBehavior.cs",
-      "line": 30,
+      "line": 33,
       "members": [
         {
           "name": "Before",
