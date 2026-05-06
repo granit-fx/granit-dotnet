@@ -142,7 +142,8 @@ public static class BffEndpointRouteBuilderExtensions
             + "BFF API routes under /bff/ are skipped and handled by the endpoint group.")
         .Produces(StatusCodes.Status200OK, contentType: "application/octet-stream")
         .ProducesProblem(StatusCodes.Status404NotFound)
-        .ExcludeFromDescription();
+        .ExcludeFromDescription()
+        .AllowAnonymous();
     }
 
     internal static string GetContentType(string path) =>

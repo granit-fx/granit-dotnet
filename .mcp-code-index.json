@@ -22867,6 +22867,15 @@
       "members": []
     },
     {
+      "name": "EntityViewNotFoundException",
+      "fqn": "Granit.Entities.Views.EntityViewNotFoundException",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/EntityViewNotFoundException.cs",
+      "line": 7,
+      "members": []
+    },
+    {
       "name": "EntityViewPermissions",
       "fqn": "Granit.Entities.Views.EntityViewPermissions",
       "kind": "class",
@@ -35466,6 +35475,12 @@
           "kind": "method",
           "signature": "RecordContextSwitched(string? tenantId)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordMembershipRejected",
+          "kind": "method",
+          "signature": "RecordMembershipRejected()",
+          "returnType": "void"
         }
       ]
     },
@@ -36238,6 +36253,22 @@
           "kind": "method",
           "signature": "DeactivateAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IUserTenantMembershipReader",
+      "fqn": "Granit.MultiTenancy.Stores.IUserTenantMembershipReader",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Stores/IUserTenantMembershipReader.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "IsMemberAsync",
+          "kind": "method",
+          "signature": "IsMemberAsync(string userId, Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -62190,7 +62221,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Behaviors/TenantContextBehavior.cs",
-      "line": 33,
+      "line": 30,
       "members": [
         {
           "name": "Before",

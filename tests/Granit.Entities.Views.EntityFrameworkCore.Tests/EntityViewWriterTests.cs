@@ -125,6 +125,36 @@ public sealed class EntityViewWriterTests
         pinned.IsPinned.ShouldBeTrue();
     }
 
+    [Fact]
+    public async Task Mutations_OnMissingId_ThrowEntityViewNotFoundException()
+    {
+        using TestFixture fixture = new(
+            userId: OwnerId,
+            grantedPermissions:
+            [
+                EntityViewPermissions.Manage,
+                EntityViewPermissions.DeleteAny,
+                EntityViewPermissions.Share,
+            ]);
+        var missing = Guid.NewGuid();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+
+        EntityViewNotFoundException ex = await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.UpdateAsync(missing, new EntityViewUpdateRequest("n", null, null, new JsonObject()), ct));
+        ex.Id.ShouldBe(missing);
+
+        await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.DeleteAsync(missing, ct));
+        await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.SetPinnedAsync(missing, true, ct));
+        await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.SetTenantDefaultAsync(missing, true, ct));
+        await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.SetPersonalDefaultAsync(missing, true, ct));
+        await Should.ThrowAsync<EntityViewNotFoundException>(() =>
+            fixture.Writer.ShareAsync(missing, new EntityViewSharedWith([], []), ct));
+    }
+
     private static EntityViewCreateRequest NewCreateRequest() =>
         new(
             EntityName: "Granit.Sample.Item",
