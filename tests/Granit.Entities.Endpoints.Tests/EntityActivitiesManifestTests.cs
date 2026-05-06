@@ -41,13 +41,13 @@ public sealed class EntityActivitiesManifestTests
         foreach (string name in knownTypeNames)
         {
             ActivityType captured = dict[name];
-            registry.TryGet(name, out Arg.Any<ActivityType>()).Returns(call =>
+            registry.TryGet(name, out Arg.Any<ActivityType?>()).Returns(call =>
             {
                 call[1] = captured;
                 return true;
             });
         }
-        registry.TryGet(Arg.Is<string>(s => !knownTypeNames.Contains(s, StringComparer.Ordinal)), out Arg.Any<ActivityType>())
+        registry.TryGet(Arg.Is<string>(s => !knownTypeNames.Contains(s, StringComparer.Ordinal)), out Arg.Any<ActivityType?>())
             .Returns(false);
         return registry;
     }

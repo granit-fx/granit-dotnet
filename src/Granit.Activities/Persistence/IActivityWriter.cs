@@ -1,6 +1,6 @@
 using Granit.Activities.Domain;
 
-namespace Granit.Activities.Abstractions;
+namespace Granit.Activities.Persistence;
 
 /// <summary>
 /// Write operations on the activity aggregate. Each method loads the row,

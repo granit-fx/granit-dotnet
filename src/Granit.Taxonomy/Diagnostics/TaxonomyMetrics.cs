@@ -27,6 +27,9 @@ public sealed class TaxonomyMetrics
     private readonly Counter<long> _tagsDeleted;
     private readonly Counter<long> _assignmentsCreated;
     private readonly Counter<long> _assignmentsDeleted;
+    private readonly Counter<long> _categoriesCreated;
+    private readonly Counter<long> _categoriesDeleted;
+    private readonly Counter<long> _categoryAssignmentsChanged;
 
     /// <summary>Initialises the meter and counters.</summary>
     public TaxonomyMetrics(IMeterFactory meterFactory)
@@ -50,6 +53,18 @@ public sealed class TaxonomyMetrics
         _assignmentsDeleted = meter.CreateCounter<long>(
             "granit.taxonomy.assignment.deleted",
             description: "Number of tag assignments removed (includes orphan-cleanup deletions).");
+
+        _categoriesCreated = meter.CreateCounter<long>(
+            "granit.taxonomy.category.created",
+            description: "Number of categories created.");
+
+        _categoriesDeleted = meter.CreateCounter<long>(
+            "granit.taxonomy.category.deleted",
+            description: "Number of categories deleted.");
+
+        _categoryAssignmentsChanged = meter.CreateCounter<long>(
+            "granit.taxonomy.category_assignment.changed",
+            description: "Number of category assignment changes (initial assign, re-assign, unassign).");
     }
 
     /// <summary>Records a tag-creation event in <paramref name="scope"/> for <paramref name="tenantId"/>.</summary>
@@ -67,6 +82,18 @@ public sealed class TaxonomyMetrics
     /// <summary>Records a tag-assignment row deletion.</summary>
     public void RecordAssignmentDeleted(string? tenantId, string targetType) =>
         _assignmentsDeleted.Add(1, CreateAssignmentTags(tenantId, targetType));
+
+    /// <summary>Records a category-creation event in <paramref name="scope"/>.</summary>
+    public void RecordCategoryCreated(string? tenantId, string scope) =>
+        _categoriesCreated.Add(1, CreateTagTags(tenantId, scope));
+
+    /// <summary>Records a category-deletion event.</summary>
+    public void RecordCategoryDeleted(string? tenantId, string scope) =>
+        _categoriesDeleted.Add(1, CreateTagTags(tenantId, scope));
+
+    /// <summary>Records a category-assignment change (assign / re-assign / unassign).</summary>
+    public void RecordCategoryAssignmentChanged(string? tenantId, string targetType) =>
+        _categoryAssignmentsChanged.Add(1, CreateAssignmentTags(tenantId, targetType));
 
     private static TagList CreateTagTags(string? tenantId, string scope) => new()
     {

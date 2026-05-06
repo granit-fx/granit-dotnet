@@ -1,6 +1,6 @@
 using Granit.Activities.Domain;
 
-namespace Granit.Activities.Abstractions;
+namespace Granit.Activities.Persistence;
 
 /// <summary>
 /// Read operations for activities. Hosts wire <c>EfCoreActivityReader</c> via

@@ -9,17 +9,11 @@ namespace Granit.Activities.Notifications.Handlers;
 /// notification to the assignee. The event is raised by the activities
 /// reminder background job (story A8) the day before due-date.
 /// </summary>
-public class ActivityReminderHandler : ILocalEventHandler<ActivityReminderDueEvent>
+public class ActivityReminderHandler(INotificationPublisher publisher)
+    : ILocalEventHandler<ActivityReminderDueEvent>
 {
-    private readonly INotificationPublisher _publisher;
-
-    public ActivityReminderHandler(INotificationPublisher publisher)
-    {
-        _publisher = publisher;
-    }
-
     public async Task HandleAsync(ActivityReminderDueEvent evt, CancellationToken cancellationToken = default) =>
-        await _publisher.PublishAsync(
+        await publisher.PublishAsync(
             ActivityReminderNotificationType.Instance,
             new ActivityReminderNotificationData(
                 evt.ActivityId, evt.Type, evt.DueAt, evt.EntityType, evt.EntityId),

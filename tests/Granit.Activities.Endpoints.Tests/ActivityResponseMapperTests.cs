@@ -12,7 +12,7 @@ public sealed class ActivityResponseMapperTests
     private static IActivityRegistry RegistryWithToDo()
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = StandardActivityTypes.ToDo;
             return true;

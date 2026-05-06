@@ -30,6 +30,9 @@ public static class TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddGranitDbContext<TaxonomyDbContext>(configure);
         builder.Services.AddScoped<ITagService, TagService>();
         builder.Services.AddScoped<ITagAssignmentService, TagAssignmentService>();
+        builder.Services.AddScoped<ITagSearchService, TagSearchService>();
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<ICategoryAssignmentService, CategoryAssignmentService>();
 
         return builder;
     }

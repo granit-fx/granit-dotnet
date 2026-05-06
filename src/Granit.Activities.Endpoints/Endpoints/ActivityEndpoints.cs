@@ -1,11 +1,11 @@
 using System.Security.Claims;
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Endpoints.Authorization;
 using Granit.Activities.Endpoints.Dtos;
 using Granit.Activities.Endpoints.Internal;
 using Granit.Activities.Endpoints.Options;
 using Granit.Activities.Endpoints.Permissions;
+using Granit.Activities.Persistence;
 using Granit.Authorization;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
@@ -113,7 +113,7 @@ internal static class ActivityEndpoints
             : opts.DefaultPageSize;
 
         // VULN-400 — peer-workload lookups require the dedicated permission.
-        Guid? callerId = ResolveUserId(user);
+        Guid? callerId = ResolveCurrentUserId(user);
         if (assignedToUserId is { } target && target != callerId)
         {
             bool granted = await permissionChecker
@@ -176,9 +176,11 @@ internal static class ActivityEndpoints
         [FromServices] IClock clock,
         [FromServices] IOptions<ActivitiesEndpointsOptions> options,
         ClaimsPrincipal user,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
-        if (!TryResolveActor(user, out Guid actorId))
+        Guid? actorId = ResolveCurrentUserId(user);
+        if (actorId is null)
         {
             return TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized);
         }
@@ -198,7 +200,9 @@ internal static class ActivityEndpoints
                 createdByUserId: actorId,
                 description: request.Description,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
-            return TypedResults.Created($"/api/activities/{created.Id}", created.ToResponse());
+
+            string baseUrl = httpContext.Request.PathBase.Add($"/{options.Value.RoutePrefix.Trim('/')}");
+            return TypedResults.Created($"{baseUrl}/{created.Id}", created.ToResponse());
         }
         catch (ArgumentException ex) when (ex.ParamName == "type")
         {
@@ -216,13 +220,14 @@ internal static class ActivityEndpoints
         CancellationToken cancellationToken)
     {
         _ = request;
-        if (!TryResolveActor(user, out Guid actorId))
+        Guid? actorId = ResolveCurrentUserId(user);
+        if (actorId is null)
         {
             return Task.FromResult<Results<Ok<ActivityResponse>, ProblemHttpResult>>(
                 TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized));
         }
         DateTimeOffset at = clock.Normalize(clock.Now);
-        return ApplyMutationAsync(id, ct => writer.CompleteAsync(id, actorId, at, ct), reader, cancellationToken);
+        return ApplyMutationAsync(id, ct => writer.CompleteAsync(id, actorId.Value, at, ct), reader, cancellationToken);
     }
 
     private static Task<Results<Ok<ActivityResponse>, ProblemHttpResult>> CancelAsync(
@@ -235,13 +240,21 @@ internal static class ActivityEndpoints
         CancellationToken cancellationToken)
     {
         _ = request;
-        if (!TryResolveActor(user, out Guid actorId))
+        Guid? actorId = ResolveCurrentUserId(user);
+        if (actorId is null)
         {
             return Task.FromResult<Results<Ok<ActivityResponse>, ProblemHttpResult>>(
                 TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized));
         }
         DateTimeOffset at = clock.Normalize(clock.Now);
-        return ApplyMutationAsync(id, ct => writer.CancelAsync(id, actorId, at, ct), reader, cancellationToken);
+        return ApplyMutationAsync(id, ct => writer.CancelAsync(id, actorId.Value, at, ct), reader, cancellationToken);
+    }
+
+    private static Guid? ResolveCurrentUserId(ClaimsPrincipal user)
+    {
+        string? sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? user.FindFirst("sub")?.Value;
+        return Guid.TryParse(sub, out Guid id) ? id : null;
     }
 
     private static Task<Results<Ok<ActivityResponse>, ProblemHttpResult>> ReassignAsync(
@@ -283,20 +296,6 @@ internal static class ActivityEndpoints
         }
         error = null;
         return true;
-    }
-
-    // VULN-100 — resolve the acting user from the authenticated principal.
-    private static bool TryResolveActor(ClaimsPrincipal user, out Guid actorId)
-    {
-        actorId = ResolveUserId(user) ?? Guid.Empty;
-        return actorId != Guid.Empty;
-    }
-
-    private static Guid? ResolveUserId(ClaimsPrincipal user)
-    {
-        string? sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? user.FindFirst("sub")?.Value;
-        return Guid.TryParse(sub, out Guid id) ? id : null;
     }
 
     // Helper — not a route handler, but the GRAPI003 analyzer treats any
