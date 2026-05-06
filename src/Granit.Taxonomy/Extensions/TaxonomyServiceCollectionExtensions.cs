@@ -95,6 +95,31 @@ public static class TaxonomyServiceCollectionExtensions
             TaxonomyAssignmentCleanupHandler<TAggregate>>();
         return services;
     }
+
+    /// <summary>
+    /// Registers <typeparamref name="TProbe"/> as the
+    /// <see cref="ITaggableExistenceProbe"/> consulted by the orphan-sweep job
+    /// (T5.2) when it sees assignment rows for <typeparamref name="TAggregate"/>.
+    /// </summary>
+    /// <remarks>
+    /// Probes are keyed by <c>typeof(TAggregate).FullName</c> — the same key
+    /// stored in <c>TagAssignment.TargetType</c>. Without a registered probe the
+    /// sweep service falls back to <c>AlwaysExistsProbe</c>, so unregistered
+    /// types are treated as still-alive (safer than risking false-positive
+    /// deletions).
+    /// </remarks>
+    public static IServiceCollection AddTaggableExistenceProbe<TAggregate, TProbe>(
+        this IServiceCollection services)
+        where TAggregate : Entity, IEmitEntityLifecycleEvents
+        where TProbe : class, ITaggableExistenceProbe
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        string targetType = typeof(TAggregate).FullName ?? typeof(TAggregate).Name;
+        services.AddScoped<ITaggableExistenceProbe, TProbe>();
+        services.AddKeyedScoped<ITaggableExistenceProbe, TProbe>(targetType);
+        return services;
+    }
 }
 
 /// <summary>

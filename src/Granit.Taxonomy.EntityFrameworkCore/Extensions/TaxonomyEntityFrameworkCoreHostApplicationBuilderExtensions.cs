@@ -33,6 +33,7 @@ public static class TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<ITagSearchService, TagSearchService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
         builder.Services.AddScoped<ICategoryAssignmentService, CategoryAssignmentService>();
+        builder.Services.AddScoped<IOrphanAssignmentSweepService, OrphanAssignmentSweepService>();
 
         return builder;
     }

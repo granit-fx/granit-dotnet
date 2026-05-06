@@ -2692,6 +2692,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Taxonomy.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Taxonomy"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Taxonomy.Endpoints",
       "deps": [
         "Granit.Authorization",
@@ -55682,6 +55690,47 @@
       ]
     },
     {
+      "name": "GranitTaxonomyBackgroundJobsModule",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.GranitTaxonomyBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/GranitTaxonomyBackgroundJobsModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "OrphanAssignmentCleanupHandler",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.Jobs.OrphanAssignmentCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/Jobs/OrphanAssignmentCleanupHandler.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OrphanAssignmentCleanupJob _, IOrphanAssignmentSweepService sweepService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OrphanAssignmentCleanupJob",
+      "fqn": "Granit.Taxonomy.BackgroundJobs.Jobs.OrphanAssignmentCleanupJob",
+      "kind": "record",
+      "project": "Granit.Taxonomy.BackgroundJobs",
+      "file": "src/Granit.Taxonomy.BackgroundJobs/Jobs/OrphanAssignmentCleanupJob.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "TaxonomyMetrics",
       "fqn": "Granit.Taxonomy.Diagnostics.TaxonomyMetrics",
       "kind": "class",
@@ -55723,6 +55772,12 @@
           "name": "RecordCategoryAssignmentChanged",
           "kind": "method",
           "signature": "RecordCategoryAssignmentChanged(string? tenantId, string targetType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOrphanCleanupDeleted",
+          "kind": "method",
+          "signature": "RecordOrphanCleanupDeleted(string? tenantId, string targetType, int count)",
           "returnType": "void"
         }
       ]
@@ -56361,6 +56416,22 @@
       ]
     },
     {
+      "name": "IOrphanAssignmentSweepService",
+      "fqn": "Granit.Taxonomy.IOrphanAssignmentSweepService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/IOrphanAssignmentSweepService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(CancellationToken cancellationToken)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
       "name": "ITagAssignmentService",
       "fqn": "Granit.Taxonomy.ITagAssignmentService",
       "kind": "interface",
@@ -56453,6 +56524,22 @@
           "kind": "method",
           "signature": "ListByScopeAsync(string scope, string? q = null, int skip = 0, int take = 50, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Tag>>"
+        }
+      ]
+    },
+    {
+      "name": "ITaggableExistenceProbe",
+      "fqn": "Granit.Taxonomy.ITaggableExistenceProbe",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITaggableExistenceProbe.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "ExistsAsync",
+          "kind": "method",
+          "signature": "ExistsAsync(Guid? tenantId, Guid targetId, CancellationToken cancellationToken)",
+          "returnType": "Task<bool>"
         }
       ]
     },

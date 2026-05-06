@@ -294,6 +294,7 @@
       "src/Granit.Tax.EntityFrameworkCore/Granit.Tax.EntityFrameworkCore.csproj",
       "src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj",
       "src/Granit.Tax/Granit.Tax.csproj",
+      "src/Granit.Taxonomy.BackgroundJobs/Granit.Taxonomy.BackgroundJobs.csproj",
       "src/Granit.Taxonomy.Endpoints/Granit.Taxonomy.Endpoints.csproj",
       "src/Granit.Taxonomy.EntityFrameworkCore/Granit.Taxonomy.EntityFrameworkCore.csproj",
       "src/Granit.Taxonomy/Granit.Taxonomy.csproj",

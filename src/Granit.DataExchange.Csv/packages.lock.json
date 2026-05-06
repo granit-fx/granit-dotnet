@@ -11,8 +11,8 @@
       "Sep": {
         "type": "Direct",
         "requested": "[0.*, )",
-        "resolved": "0.13.0",
-        "contentHash": "C7rx/q7K6cF8Z2FVCg6z0z4uIqo+cC2Ge1Yaq9ThMaODQBozJ7FNCwMxiK7JeUC9x9roUUmHUJ1aAnXkdWzjNg==",
+        "resolved": "0.14.0",
+        "contentHash": "CFYZLNTXEYZrJIY1SL8TfjXWkhn9LQK/gxhOxCWA8MDnJkXOgDwG5gluMa1KCiZgCyGWQmF6kRFTGyEGJAnnNw==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }

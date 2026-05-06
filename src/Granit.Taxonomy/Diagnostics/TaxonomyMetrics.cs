@@ -30,6 +30,7 @@ public sealed class TaxonomyMetrics
     private readonly Counter<long> _categoriesCreated;
     private readonly Counter<long> _categoriesDeleted;
     private readonly Counter<long> _categoryAssignmentsChanged;
+    private readonly Counter<long> _orphanCleanupDeleted;
 
     /// <summary>Initialises the meter and counters.</summary>
     public TaxonomyMetrics(IMeterFactory meterFactory)
@@ -65,6 +66,10 @@ public sealed class TaxonomyMetrics
         _categoryAssignmentsChanged = meter.CreateCounter<long>(
             "granit.taxonomy.category_assignment.changed",
             description: "Number of category assignment changes (initial assign, re-assign, unassign).");
+
+        _orphanCleanupDeleted = meter.CreateCounter<long>(
+            "granit.taxonomy.orphan_cleanup.deleted",
+            description: "Number of assignment rows removed by the nightly orphan-sweep job (T5.2).");
     }
 
     /// <summary>Records a tag-creation event in <paramref name="scope"/> for <paramref name="tenantId"/>.</summary>
@@ -94,6 +99,16 @@ public sealed class TaxonomyMetrics
     /// <summary>Records a category-assignment change (assign / re-assign / unassign).</summary>
     public void RecordCategoryAssignmentChanged(string? tenantId, string targetType) =>
         _categoryAssignmentsChanged.Add(1, CreateAssignmentTags(tenantId, targetType));
+
+    /// <summary>Records <paramref name="count"/> assignment rows removed by the orphan-sweep job (T5.2).</summary>
+    public void RecordOrphanCleanupDeleted(string? tenantId, string targetType, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+        _orphanCleanupDeleted.Add(count, CreateAssignmentTags(tenantId, targetType));
+    }
 
     private static TagList CreateTagTags(string? tenantId, string scope) => new()
     {

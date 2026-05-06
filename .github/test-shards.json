@@ -247,6 +247,7 @@
         "tests/Granit.Settings.Endpoints.Tests",
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
+        "tests/Granit.Taxonomy.BackgroundJobs.Tests",
         "tests/Granit.Taxonomy.Endpoints.Tests",
         "tests/Granit.Taxonomy.EntityFrameworkCore.Tests",
         "tests/Granit.Taxonomy.Tests",
