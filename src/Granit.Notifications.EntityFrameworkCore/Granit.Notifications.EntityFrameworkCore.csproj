@@ -6,7 +6,6 @@
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="Granit.Notifications.EntityFrameworkCore.Tests" />
-    <InternalsVisibleTo Include="Issue947.NotificationDeliveryVerify" />
     <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
   </ItemGroup>
   <ItemGroup>
