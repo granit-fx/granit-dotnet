@@ -44,7 +44,13 @@ public sealed class ClassDesignTests
             Architecture, "Granit.",
             // Wolverine requires middleware constructor parameters to be public,
             // even when the interface is an internal implementation detail.
-            "Granit.Wolverine.Internal.IWolverineUserContextSetter");
+            "Granit.Wolverine.Internal.IWolverineUserContextSetter",
+            // ADR-053 §5 layer-4 extension point: Granit.Entities.Customization.Endpoints
+            // replaces the default no-op via services.Replace, which requires the
+            // interface to be visible across assemblies. The framework keeps the
+            // applier name in the Internal namespace because callers should never
+            // resolve it directly — only the composer pipeline does.
+            "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier");
 
     [Fact]
     public void Concrete_exception_classes_should_be_sealed() =>
