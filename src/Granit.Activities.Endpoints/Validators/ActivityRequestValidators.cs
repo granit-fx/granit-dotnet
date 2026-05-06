@@ -21,21 +21,12 @@ public sealed class CreateActivityRequestValidator : AbstractValidator<CreateAct
     }
 }
 
-public sealed class CompleteActivityRequestValidator : AbstractValidator<CompleteActivityRequest>
-{
-    public CompleteActivityRequestValidator()
-    {
-        RuleFor(x => x.CompletedAt).NotEqual(default(DateTimeOffset));
-    }
-}
+// Empty validators — both request bodies carry no fields; the actor user id and
+// timestamp are resolved server-side. The architecture test requires every
+// *Request type to have a corresponding validator, so we ship no-op ones.
+public sealed class CompleteActivityRequestValidator : AbstractValidator<CompleteActivityRequest>;
 
-public sealed class CancelActivityRequestValidator : AbstractValidator<CancelActivityRequest>
-{
-    public CancelActivityRequestValidator()
-    {
-        RuleFor(x => x.CancelledAt).NotEqual(default(DateTimeOffset));
-    }
-}
+public sealed class CancelActivityRequestValidator : AbstractValidator<CancelActivityRequest>;
 
 public sealed class ReassignActivityRequestValidator : AbstractValidator<ReassignActivityRequest>
 {

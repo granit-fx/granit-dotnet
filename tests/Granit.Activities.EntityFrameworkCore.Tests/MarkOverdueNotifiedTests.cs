@@ -11,7 +11,7 @@ public sealed class MarkOverdueNotifiedTests
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
         ActivityType type = StandardActivityTypes.ToDo;
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = type;
             return true;

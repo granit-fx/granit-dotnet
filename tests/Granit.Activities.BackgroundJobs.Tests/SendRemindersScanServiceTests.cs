@@ -1,8 +1,8 @@
 using Granit.Activities;
-using Granit.Activities.Abstractions;
 using Granit.Activities.BackgroundJobs.Services;
 using Granit.Activities.Domain;
 using Granit.Activities.Events;
+using Granit.Activities.Persistence;
 using Granit.Events;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -18,7 +18,7 @@ public sealed class SendRemindersScanServiceTests
     private static IActivityRegistry RegistryWithToDo()
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = StandardActivityTypes.ToDo;
             return true;

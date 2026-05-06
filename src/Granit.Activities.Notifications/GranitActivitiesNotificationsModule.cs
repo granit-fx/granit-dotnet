@@ -16,8 +16,8 @@ namespace Granit.Activities.Notifications;
 /// through <c>Granit.Templating</c>.
 /// </summary>
 [DependsOn(
-    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitActivitiesModule),
+    typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTemplatingModule))]
 public sealed class GranitActivitiesNotificationsModule : GranitModule
 {

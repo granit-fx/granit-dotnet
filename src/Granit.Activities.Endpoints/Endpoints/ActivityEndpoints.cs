@@ -1,9 +1,11 @@
-using Granit.Activities.Abstractions;
+using System.Security.Claims;
 using Granit.Activities.Domain;
 using Granit.Activities.Endpoints.Dtos;
 using Granit.Activities.Endpoints.Internal;
 using Granit.Activities.Endpoints.Options;
 using Granit.Activities.Endpoints.Permissions;
+using Granit.Activities.Persistence;
+using Granit.Timing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -133,8 +135,12 @@ internal static class ActivityEndpoints
     private static async Task<Results<Created<ActivityResponse>, ProblemHttpResult>> CreateAsync(
         CreateActivityRequest request,
         [FromServices] IActivityWriter writer,
+        [FromServices] IOptions<ActivitiesEndpointsOptions> options,
+        ClaimsPrincipal user,
+        HttpContext httpContext,
         CancellationToken cancellationToken)
     {
+        Guid? actorId = ResolveCurrentUserId(user);
         try
         {
             Activity created = await writer.CreateAsync(
@@ -143,10 +149,12 @@ internal static class ActivityEndpoints
                 request.Type,
                 request.AssignedToUserId,
                 request.DueAt,
-                createdByUserId: null,
+                createdByUserId: actorId,
                 description: request.Description,
                 cancellationToken: cancellationToken).ConfigureAwait(false);
-            return TypedResults.Created($"/api/activities/{created.Id}", created.ToResponse());
+
+            string baseUrl = httpContext.Request.PathBase.Add($"/{options.Value.RoutePrefix.Trim('/')}");
+            return TypedResults.Created($"{baseUrl}/{created.Id}", created.ToResponse());
         }
         catch (ArgumentException ex) when (ex.ParamName == "type")
         {
@@ -159,16 +167,45 @@ internal static class ActivityEndpoints
         CompleteActivityRequest request,
         [FromServices] IActivityWriter writer,
         [FromServices] IActivityReader reader,
-        CancellationToken cancellationToken) =>
-        ApplyMutationAsync(id, ct => writer.CompleteAsync(id, completedByUserId: Guid.Empty, request.CompletedAt, ct), reader, cancellationToken);
+        [FromServices] IClock clock,
+        ClaimsPrincipal user,
+        CancellationToken cancellationToken)
+    {
+        Guid? actorId = ResolveCurrentUserId(user);
+        if (actorId is null)
+        {
+            return Task.FromResult<Results<Ok<ActivityResponse>, ProblemHttpResult>>(
+                TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized));
+        }
+        DateTimeOffset at = clock.Normalize(clock.Now);
+        return ApplyMutationAsync(id, ct => writer.CompleteAsync(id, actorId.Value, at, ct), reader, cancellationToken);
+    }
 
     private static Task<Results<Ok<ActivityResponse>, ProblemHttpResult>> CancelAsync(
         Guid id,
         CancelActivityRequest request,
         [FromServices] IActivityWriter writer,
         [FromServices] IActivityReader reader,
-        CancellationToken cancellationToken) =>
-        ApplyMutationAsync(id, ct => writer.CancelAsync(id, cancelledByUserId: Guid.Empty, request.CancelledAt, ct), reader, cancellationToken);
+        [FromServices] IClock clock,
+        ClaimsPrincipal user,
+        CancellationToken cancellationToken)
+    {
+        Guid? actorId = ResolveCurrentUserId(user);
+        if (actorId is null)
+        {
+            return Task.FromResult<Results<Ok<ActivityResponse>, ProblemHttpResult>>(
+                TypedResults.Problem(statusCode: StatusCodes.Status401Unauthorized));
+        }
+        DateTimeOffset at = clock.Normalize(clock.Now);
+        return ApplyMutationAsync(id, ct => writer.CancelAsync(id, actorId.Value, at, ct), reader, cancellationToken);
+    }
+
+    private static Guid? ResolveCurrentUserId(ClaimsPrincipal user)
+    {
+        string? sub = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? user.FindFirst("sub")?.Value;
+        return Guid.TryParse(sub, out Guid id) ? id : null;
+    }
 
     private static Task<Results<Ok<ActivityResponse>, ProblemHttpResult>> ReassignAsync(
         Guid id,

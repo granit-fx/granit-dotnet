@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Granit.Activities;
 
 /// <summary>
@@ -21,5 +23,5 @@ public interface IActivityRegistry
     /// no provider contributed a type with the given name — typically because
     /// the contributing module is not loaded.
     /// </summary>
-    bool TryGet(string name, out ActivityType type);
+    bool TryGet(string name, [NotNullWhen(true)] out ActivityType? type);
 }

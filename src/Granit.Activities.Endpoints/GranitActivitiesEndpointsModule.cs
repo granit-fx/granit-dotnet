@@ -1,7 +1,9 @@
+using Granit.Activities.Endpoints.Options;
 using Granit.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Granit.Activities.Endpoints;
 
@@ -15,8 +17,17 @@ namespace Granit.Activities.Endpoints;
 /// Permission definition providers are auto-discovered by <c>GranitAuthorizationModule</c>.
 /// </remarks>
 [DependsOn(
+    typeof(GranitActivitiesModule),
     typeof(GranitAuthorizationModule),
     typeof(GranitHttpApiDocumentationModule),
-    typeof(GranitActivitiesModule),
     typeof(GranitValidationModule))]
-public sealed class GranitActivitiesEndpointsModule : GranitModule;
+public sealed class GranitActivitiesEndpointsModule : GranitModule
+{
+    public override void ConfigureServices(ServiceConfigurationContext context)
+    {
+        context.Services.AddOptions<ActivitiesEndpointsOptions>()
+            .BindConfiguration(ActivitiesEndpointsOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
+}
