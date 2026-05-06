@@ -3,6 +3,9 @@
 // =============================================================================
 
 using Granit.MultiTenancy;
+using Granit.MultiTenancy.Internal;
+using Microsoft.AspNetCore.Http;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -10,6 +13,11 @@ namespace Granit.MultiTenancy.Tests;
 
 public sealed class CurrentTenantTests
 {
+    /// <summary>
+    /// Default factory: no HttpContextAccessor, so all reads/writes go through the
+    /// AsyncLocal fallback (the legacy non-HTTP code path used by Wolverine,
+    /// background jobs, migrations).
+    /// </summary>
     private static CurrentTenant Create() => new();
 
     [Fact]
@@ -132,5 +140,107 @@ public sealed class CurrentTenantTests
         tenant.Id.ShouldBe(id);
         tenant.Name.ShouldBeNull();
         tenant.IsAvailable.ShouldBeTrue();
+    }
+
+    // ====================================================================
+    // HTTP backend — when an HttpContext is active, the tenant lives on
+    // HttpContext.Features (not on the AsyncLocal). The lifetime is the
+    // request itself, so there is no execution-context state to leak
+    // across requests on thread-pool reuse.
+    // ====================================================================
+
+    [Fact]
+    public void HttpContextActive_Change_Stores_Tenant_On_Features()
+    {
+        IHttpContextAccessor accessor = Substitute.For<IHttpContextAccessor>();
+        DefaultHttpContext httpContext = new();
+        accessor.HttpContext.Returns(httpContext);
+        CurrentTenant tenant = new(accessor);
+        var id = Guid.NewGuid();
+
+        using IDisposable _ = tenant.Change(id, "Acme");
+
+        tenant.Id.ShouldBe(id);
+        tenant.Name.ShouldBe("Acme");
+        // The feature has been written to the request's feature collection,
+        // not to the framework's AsyncLocal.
+        httpContext.Features.Get<ITenantContextFeature>().ShouldNotBeNull();
+        httpContext.Features.Get<ITenantContextFeature>()!.Tenant!.Id.ShouldBe(id);
+    }
+
+    [Fact]
+    public void HttpContextActive_Dispose_Restores_Previous_Feature()
+    {
+        IHttpContextAccessor accessor = Substitute.For<IHttpContextAccessor>();
+        DefaultHttpContext httpContext = new();
+        accessor.HttpContext.Returns(httpContext);
+        CurrentTenant tenant = new(accessor);
+
+        IDisposable scope = tenant.Change(Guid.NewGuid(), "Acme");
+        scope.Dispose();
+
+        tenant.IsAvailable.ShouldBeFalse();
+        httpContext.Features.Get<ITenantContextFeature>().ShouldBeNull();
+    }
+
+    [Fact]
+    public void HttpContextActive_Two_Parallel_Requests_Are_Isolated()
+    {
+        // Core safety property: the tenant value lives on the request's
+        // FeatureCollection, so two parallel HTTP requests cannot read each
+        // other's tenant — by construction, no shared static state.
+        IHttpContextAccessor accessor = Substitute.For<IHttpContextAccessor>();
+        CurrentTenant tenant = new(accessor);
+        var tenantA = Guid.NewGuid();
+        var tenantB = Guid.NewGuid();
+
+        DefaultHttpContext requestA = new();
+        DefaultHttpContext requestB = new();
+        requestA.Features.Set<ITenantContextFeature>(new TenantContextFeature(new TenantInfo(tenantA, "A")));
+        requestB.Features.Set<ITenantContextFeature>(new TenantContextFeature(new TenantInfo(tenantB, "B")));
+
+        accessor.HttpContext.Returns(requestA);
+        tenant.Id.ShouldBe(tenantA);
+
+        accessor.HttpContext.Returns(requestB);
+        tenant.Id.ShouldBe(tenantB);
+
+        accessor.HttpContext.Returns((HttpContext?)null);
+        tenant.IsAvailable.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void HttpContextActive_AsyncLocal_Fallback_Is_Not_Consulted()
+    {
+        // Defense-in-depth: even if the legacy AsyncLocal is set (legitimately
+        // by some deeper non-HTTP code path), the HTTP context wins. The two
+        // backends never alias.
+        IHttpContextAccessor accessor = Substitute.For<IHttpContextAccessor>();
+        DefaultHttpContext httpContext = new();
+        accessor.HttpContext.Returns(httpContext);
+        CurrentTenant httpTenant = new(accessor);
+        CurrentTenant asyncLocalTenant = new();
+
+        var asyncLocalId = Guid.NewGuid();
+        var httpId = Guid.NewGuid();
+
+        using IDisposable _outer = asyncLocalTenant.Change(asyncLocalId, "AsyncLocal");
+        using IDisposable _inner = httpTenant.Change(httpId, "Http");
+
+        httpTenant.Id.ShouldBe(httpId, "HTTP backend reads from HttpContext.Features");
+        asyncLocalTenant.Id.ShouldBe(asyncLocalId, "non-HTTP instance still sees its AsyncLocal value");
+    }
+
+    [Fact]
+    public void HttpContextNull_Falls_Back_To_AsyncLocal()
+    {
+        IHttpContextAccessor accessor = Substitute.For<IHttpContextAccessor>();
+        accessor.HttpContext.Returns((HttpContext?)null);
+        CurrentTenant tenant = new(accessor);
+        var id = Guid.NewGuid();
+
+        using IDisposable _ = tenant.Change(id, "Job");
+
+        tenant.Id.ShouldBe(id, "no HttpContext active → AsyncLocal fallback used");
     }
 }
