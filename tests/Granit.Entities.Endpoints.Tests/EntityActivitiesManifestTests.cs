@@ -2,6 +2,7 @@ using Granit.Activities;
 using Granit.Entities.Activities;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
+using Granit.Entities.Manifests;
 using NSubstitute;
 using Shouldly;
 using Xunit;

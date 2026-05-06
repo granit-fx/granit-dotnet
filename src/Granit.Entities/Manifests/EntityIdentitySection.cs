@@ -1,4 +1,4 @@
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>Identity facet of the per-entity manifest.</summary>
 /// <param name="Name">Wire identifier.</param>

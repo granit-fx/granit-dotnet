@@ -1,13 +1,14 @@
+using Granit.Entities;
 using Granit.Entities.Customization.Domain;
 using Granit.Entities.Customization.Domain.Deltas;
-using Granit.Entities.Customization.Endpoints.Internal;
-using Granit.Entities.Endpoints.Dtos;
+using Granit.Entities.Customization.Internal;
+using Granit.Entities.Manifests;
 using Granit.MultiTenancy;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Entities.Customization.Endpoints.Tests.Internal;
+namespace Granit.Entities.Customization.Tests.Internal;
 
 public sealed class EntityCustomizationManifestApplierTests
 {

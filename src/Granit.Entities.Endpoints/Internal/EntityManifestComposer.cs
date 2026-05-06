@@ -4,6 +4,7 @@ using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Forms;
 using Granit.Entities.Layouts;
+using Granit.Entities.Manifests;
 using Granit.Entities.Relations;
 
 namespace Granit.Entities.Endpoints.Internal;

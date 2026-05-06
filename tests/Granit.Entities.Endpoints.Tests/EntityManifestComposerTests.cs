@@ -2,6 +2,7 @@ using Granit.Entities.Details;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Forms;
+using Granit.Entities.Manifests;
 using Shouldly;
 using Xunit;
 

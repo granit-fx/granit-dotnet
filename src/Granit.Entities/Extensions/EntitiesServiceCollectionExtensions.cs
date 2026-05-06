@@ -44,6 +44,10 @@ public static class EntitiesServiceCollectionExtensions
         services.TryAddSingleton<IEntityDefinitionRegistry, EntityDefinitionRegistry>();
         services.AddHostedService<IntegrityCheckRunner>();
 
+        // Default Layer-4 customization applier (ADR-053 §5) — no-op until the
+        // Granit.Entities.Customization module replaces the registration.
+        services.TryAddScoped<IManifestCustomizationApplier, NullManifestCustomizationApplier>();
+
         GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
 
         return services;

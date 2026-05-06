@@ -1,10 +1,10 @@
 using Granit.Entities.Customization.Domain;
 using Granit.Entities.Customization.Domain.Deltas;
-using Granit.Entities.Endpoints.Dtos;
-using Granit.Entities.Endpoints.Internal;
+using Granit.Entities.Internal;
+using Granit.Entities.Manifests;
 using Granit.MultiTenancy;
 
-namespace Granit.Entities.Customization.Endpoints.Internal;
+namespace Granit.Entities.Customization.Internal;
 
 /// <summary>
 /// Real <see cref="IManifestCustomizationApplier"/> — applies the active

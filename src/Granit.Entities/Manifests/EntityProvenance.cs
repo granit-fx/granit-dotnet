@@ -1,4 +1,4 @@
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// Per-field attribution token added by the manifest composer (ADR-053 §6).

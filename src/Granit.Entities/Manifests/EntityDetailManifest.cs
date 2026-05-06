@@ -1,6 +1,6 @@
 using Granit.Entities.Details;
 
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>One detail-view variant exposed in the manifest.</summary>
 /// <param name="Name">Variant name, unique per entity (e.g. <c>"default"</c>).</param>

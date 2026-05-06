@@ -1,4 +1,4 @@
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// Per-entity manifest payload returned by <c>GET /api/entities/{name}</c>. Every

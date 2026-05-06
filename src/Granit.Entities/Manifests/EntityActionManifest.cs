@@ -1,6 +1,6 @@
 using Granit.Entities.Actions;
 
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// Wire shape for one action exposed on an entity manifest. Mirrors

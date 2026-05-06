@@ -1,4 +1,4 @@
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// Permissions facet — boolean snapshot of which actions the requesting user is

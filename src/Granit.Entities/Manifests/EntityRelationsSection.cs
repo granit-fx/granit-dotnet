@@ -1,6 +1,6 @@
 using Granit.Entities.Relations;
 
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// One relation surfaced in the manifest's Relations facet.

@@ -3,6 +3,7 @@ using Granit.Entities.Customization.Domain.Deltas;
 using Granit.Entities.Customization.Endpoints.Dtos;
 using Granit.Entities.Customization.Endpoints.Internal;
 using Granit.Entities.Customization.Endpoints.Permissions;
+using Granit.Entities.Customization.Internal;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Guids;
 using Granit.MultiTenancy;

@@ -2,7 +2,6 @@ using Granit.Auditing;
 using Granit.Authorization;
 using Granit.Entities.Customization.Endpoints.Internal;
 using Granit.Entities.Endpoints;
-using Granit.Entities.Endpoints.Internal;
 using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
@@ -14,11 +13,10 @@ namespace Granit.Entities.Customization.Endpoints;
 
 /// <summary>
 /// Granit module for the entities-customization HTTP endpoints — exposes the
-/// per-tenant Layer 1 GET / PUT / DELETE per ADR-053. Loading this module also
-/// replaces the manifest endpoint's no-op
-/// <see cref="IManifestCustomizationApplier"/> with the real
-/// <see cref="EntityCustomizationManifestApplier"/> so subsequent manifest
-/// reads honour the tenant's customization deltas (B4).
+/// per-tenant Layer 1 GET / PUT / DELETE per ADR-053. The real
+/// <see cref="IManifestCustomizationApplier"/> is registered by the base
+/// <see cref="GranitEntitiesCustomizationModule"/>; this module only contributes
+/// the HTTP surface and the auditing writer.
 /// </summary>
 /// <remarks>
 /// Map endpoints in your application:
@@ -40,9 +38,6 @@ public sealed class GranitEntitiesCustomizationEndpointsModule : GranitModule
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.TryAddScoped<DescriptorDeltaValidator>();
         context.Services.TryAddScoped<EntityCustomizationAuditWriter>();
-        context.Services.Replace(
-            ServiceDescriptor.Scoped<IManifestCustomizationApplier, EntityCustomizationManifestApplier>());
     }
 }

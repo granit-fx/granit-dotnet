@@ -1,6 +1,6 @@
 using Granit.Entities.Visibility;
 
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>One form variant exposed in the manifest.</summary>
 /// <param name="Name">Variant name, unique per entity (e.g. <c>"default"</c>).</param>

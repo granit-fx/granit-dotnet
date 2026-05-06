@@ -1,6 +1,7 @@
-using Granit.Entities.Endpoints.Dtos;
+using Granit.Entities;
+using Granit.Entities.Manifests;
 
-namespace Granit.Entities.Endpoints.Internal;
+namespace Granit.Entities.Internal;
 
 /// <summary>
 /// Default no-op <see cref="IManifestCustomizationApplier"/> registered by

@@ -1,6 +1,6 @@
 using Granit.Entities.Layouts;
 
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities.Manifests;
 
 /// <summary>
 /// Collections facet — lists the wire identifiers of the queries / exports / dashboards

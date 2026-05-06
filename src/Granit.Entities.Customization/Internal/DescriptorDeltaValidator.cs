@@ -2,7 +2,7 @@ using Granit.Entities.Customization.Domain;
 using Granit.Entities.Customization.Domain.Deltas;
 using Granit.Entities.Forms;
 
-namespace Granit.Entities.Customization.Endpoints.Internal;
+namespace Granit.Entities.Customization.Internal;
 
 /// <summary>
 /// Validates a delta payload against the compiled

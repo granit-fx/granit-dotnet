@@ -1,6 +1,6 @@
-using Granit.Entities.Endpoints.Dtos;
+using Granit.Entities.Manifests;
 
-namespace Granit.Entities.Endpoints.Internal;
+namespace Granit.Entities.Internal;
 
 /// <summary>
 /// Layer 4 of the manifest resolution hierarchy (ADR-053 §5) — the per-tenant
@@ -24,7 +24,7 @@ namespace Granit.Entities.Endpoints.Internal;
 /// <see cref="EntityCacheKey.EvictionTagForManifest"/> tag.
 /// </para>
 /// </remarks>
-public interface IManifestCustomizationApplier
+internal interface IManifestCustomizationApplier
 {
     /// <summary>
     /// Returns a customized copy of <paramref name="composedManifest"/> with

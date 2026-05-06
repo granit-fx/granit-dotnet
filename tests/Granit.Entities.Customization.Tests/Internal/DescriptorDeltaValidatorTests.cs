@@ -1,13 +1,13 @@
 using Granit.Entities;
 using Granit.Entities.Customization.Domain;
 using Granit.Entities.Customization.Domain.Deltas;
-using Granit.Entities.Customization.Endpoints.Internal;
+using Granit.Entities.Customization.Internal;
 using Granit.Entities.Forms;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Entities.Customization.Endpoints.Tests.Internal;
+namespace Granit.Entities.Customization.Tests.Internal;
 
 public sealed class DescriptorDeltaValidatorTests
 {
