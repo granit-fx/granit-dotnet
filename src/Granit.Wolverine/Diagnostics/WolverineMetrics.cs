@@ -48,12 +48,12 @@ public sealed class WolverineMetrics
         _envelopeNoTenant = meter.CreateCounter<long>(
             "granit.wolverine.envelope.no_tenant",
             description:
-                "Number of received envelopes that did not carry an X-Tenant-Id "
-                + "header. Tagged with `message_type` and `outcome` "
-                + "(`allowed` = passed through; `allowed_marked` = passed because "
-                + "the message type is [CrossTenantMessage]; `rejected` = blocked "
-                + "by RequireEnvelopeTenant). Anomalous volume on `allowed` is "
-                + "the migration backlog before flipping RequireEnvelopeTenant=true.");
+                "Number of received envelopes that did not carry an X-Tenant-Id header. "
+                + "Tagged with `message_type` and `outcome` (`marked` = the type carries "
+                + "[CrossTenantMessage]; `unmarked` = no annotation, indicates a producer "
+                + "that did not propagate the tenant or a message type that should be "
+                + "explicitly marked host-scope). Authorization is enforced downstream by "
+                + "per-(user, tenant, action) permission checks at the handler boundary.");
     }
 
     public void RecordMessageDispatched(string? tenantId) =>
@@ -93,11 +93,8 @@ public sealed class WolverineMetrics
     /// </summary>
     /// <param name="messageType">The CLR name of the message type.</param>
     /// <param name="outcome">
-    /// <c>"allowed"</c> when the envelope was processed without a tenant scope,
-    /// <c>"allowed_marked"</c> when the message type is annotated with
-    /// <see cref="CrossTenantMessageAttribute"/>, or <c>"rejected"</c> when
-    /// <see cref="Options.WolverineMessagingOptions.RequireEnvelopeTenant"/>
-    /// is enabled and blocked the dispatch.
+    /// <c>"marked"</c> when the message type carries
+    /// <see cref="CrossTenantMessageAttribute"/>; <c>"unmarked"</c> otherwise.
     /// </param>
     public void RecordEnvelopeWithoutTenant(string messageType, string outcome) =>
         _envelopeNoTenant.Add(1, new TagList

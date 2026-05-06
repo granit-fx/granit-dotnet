@@ -35846,6 +35846,46 @@
       "members": []
     },
     {
+      "name": "NullTenantContext",
+      "fqn": "Granit.MultiTenancy.NullTenantContext",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/NullTenantContext.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NullTenantContext Instance ="
+        },
+        {
+          "name": "IsAvailable",
+          "kind": "property",
+          "signature": "bool IsAvailable",
+          "returnType": "bool"
+        },
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid? Id",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string? Name",
+          "returnType": "string?"
+        },
+        {
+          "name": "Change",
+          "kind": "method",
+          "signature": "Change(Guid? id, string? name = null)",
+          "returnType": "IDisposable"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyOptions",
       "fqn": "Granit.MultiTenancy.Options.MultiTenancyOptions",
       "kind": "class",
@@ -62254,7 +62294,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/CrossTenantMessageAttribute.cs",
-      "line": 26,
+      "line": 24,
       "members": []
     },
     {

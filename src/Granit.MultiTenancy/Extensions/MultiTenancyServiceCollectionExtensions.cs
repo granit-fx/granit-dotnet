@@ -54,13 +54,6 @@ public static class MultiTenancyServiceCollectionExtensions
         // Granit.MultiTenancy.EntityFrameworkCore is in the module tree.
         services.TryAddScoped<ITenantReader, NullTenantReader>();
 
-        // NullUserTenantMembershipReader fallback — permissive (returns true) so
-        // single-tenant deployments and tests are unaffected. Hosts wiring the
-        // membership-check feature must register a concrete reader AND set
-        // MultiTenancyOptions.RequireMembershipCheck = true; the validator at
-        // startup refuses the latter without the former.
-        services.TryAddScoped<IUserTenantMembershipReader, NullUserTenantMembershipReader>();
-
         // Resolvers: CustomDomain (25) → Domain (50) → Header (100) → JWT (200) → QueryString (300)
         // Registered as scoped: DomainTenantResolver depends on ITenantReader (scoped, EF Core).
         // All resolvers aligned to scoped for consistency.

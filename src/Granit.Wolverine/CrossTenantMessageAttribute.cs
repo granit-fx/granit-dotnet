@@ -7,17 +7,15 @@ namespace Granit.Wolverine;
 /// </summary>
 /// <remarks>
 /// <para>
-/// SECURITY: most integration events flow within a single tenant context, and a
-/// missing tenant header is therefore a sign of a producer-side bug or an
-/// envelope-forgery attempt. The
+/// Most integration events flow within a single tenant context. The
 /// <see cref="Behaviors.TenantContextBehavior"/> records every untenanted envelope
-/// as <c>granit.wolverine.envelope.no_tenant</c> for SOC observability, and —
-/// when <see cref="Options.WolverineMessagingOptions.RequireEnvelopeTenant"/> is
-/// enabled — rejects them as an exception.
+/// as <c>granit.wolverine.envelope.no_tenant</c> with <c>outcome=marked</c> when
+/// the type carries this attribute, <c>unmarked</c> otherwise. The attribute is
+/// purely declarative observability — authorization is enforced downstream by
+/// per-(user, tenant, action) permission checks at the handler boundary.
 /// </para>
 /// <para>
-/// Apply this attribute on the message record/class (<see cref="AttributeTargets.Class"/>
-/// or <see cref="AttributeTargets.Struct"/>) only when the message is intentionally
+/// Apply on the message record/class only when the message is intentionally
 /// host-scope — system health checks, configuration broadcasts, scheduling tick
 /// events. The marker is read by reflection at message-receive time.
 /// </para>
