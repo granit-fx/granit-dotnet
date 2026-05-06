@@ -2684,6 +2684,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Taxonomy",
+      "deps": [
+        "Granit",
+        "Granit.Persistence"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Templating",
       "deps": [
         "Granit.Timing",
@@ -55451,6 +55459,40 @@
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/TransactionType.cs",
       "line": 4,
+      "members": []
+    },
+    {
+      "name": "TaxonomyServiceCollectionExtensions",
+      "fqn": "Granit.Taxonomy.Extensions.TaxonomyServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Extensions/TaxonomyServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitTaxonomy",
+          "kind": "method",
+          "signature": "AddGranitTaxonomy(this IServiceCollection services, Action<TaxonomyOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyModule",
+      "fqn": "Granit.Taxonomy.GranitTaxonomyModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/GranitTaxonomyModule.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "TaxonomyOptions",
+      "fqn": "Granit.Taxonomy.Options.TaxonomyOptions",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Options/TaxonomyOptions.cs",
+      "line": 11,
       "members": []
     },
     {

@@ -219,6 +219,7 @@
     <Project Path="src/Granit.Persistence.EntityFrameworkCore.SqlServer/Granit.Persistence.EntityFrameworkCore.SqlServer.csproj" />
     <Project Path="src/Granit.Persistence.EntityFrameworkCore/Granit.Persistence.EntityFrameworkCore.csproj" />
     <Project Path="src/Granit.Persistence/Granit.Persistence.csproj" />
+    <Project Path="src/Granit.Taxonomy/Granit.Taxonomy.csproj" />
     <Project Path="src/Granit.Webhooks.BackgroundJobs/Granit.Webhooks.BackgroundJobs.csproj" />
     <Project Path="src/Granit.Webhooks.Endpoints/Granit.Webhooks.Endpoints.csproj" />
     <Project Path="src/Granit.Webhooks.EntityFrameworkCore/Granit.Webhooks.EntityFrameworkCore.csproj" />
@@ -597,6 +598,7 @@
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests/Granit.Persistence.EntityFrameworkCore.SqlServer.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.EntityFrameworkCore.Tests/Granit.Persistence.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Persistence.Tests/Granit.Persistence.Tests.csproj" />
+    <Project Path="tests/Granit.Taxonomy.Tests/Granit.Taxonomy.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.BackgroundJobs.Tests/Granit.Webhooks.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.Endpoints.Tests/Granit.Webhooks.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Webhooks.EntityFrameworkCore.Tests/Granit.Webhooks.EntityFrameworkCore.Tests.csproj" />
