@@ -3,7 +3,9 @@
   "texts": {
     "PermissionGroup:Activities": "활동",
     "Permission:Activities.Activities.Read": "활동 읽기",
+    "Permission:Activities.Activities.ReadOthers": "다른 사용자의 활동 읽기",
     "Permission:Activities.Activities.Manage": "활동 관리",
+    "Permission:Activities.Activities.Reassign": "활동 재할당",
     "Permission:Activities.Activities.Execute": "활동 완료"
   }
 }

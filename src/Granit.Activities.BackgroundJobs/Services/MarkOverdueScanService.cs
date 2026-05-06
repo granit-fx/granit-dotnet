@@ -2,6 +2,7 @@ using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Events;
 using Granit.Events;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
 
@@ -21,6 +22,7 @@ public sealed partial class MarkOverdueScanService(
     IActivityReader reader,
     IActivityWriter writer,
     ILocalEventBus eventBus,
+    ICurrentTenant currentTenant,
     IClock clock,
     ILogger<MarkOverdueScanService> logger)
 {
@@ -46,6 +48,13 @@ public sealed partial class MarkOverdueScanService(
         foreach (Activity activity in overdueRows)
         {
             int overdueByDays = Math.Max(1, (int)Math.Ceiling((now - activity.DueAt).TotalDays));
+
+            // VULN-103 — establish the row's tenant context for the publish +
+            // stamp pair. Without this, downstream notification handlers run
+            // with whichever tenant happens to be on the AsyncLocal slot, and
+            // the EF writer's tenant interceptor would write to the wrong
+            // tenant if the scanner inherited a stale context.
+            using IDisposable _ = currentTenant.Change(activity.TenantId);
 
             // Publish first, then stamp. If publication fails the stamp is not
             // applied and the next scanner run will re-attempt — preserving

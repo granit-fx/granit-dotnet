@@ -21,21 +21,10 @@ public sealed class CreateActivityRequestValidator : AbstractValidator<CreateAct
     }
 }
 
-public sealed class CompleteActivityRequestValidator : AbstractValidator<CompleteActivityRequest>
-{
-    public CompleteActivityRequestValidator()
-    {
-        RuleFor(x => x.CompletedAt).NotEqual(default(DateTimeOffset));
-    }
-}
+// Empty bodies — completion / cancellation timestamps are server-side (VULN-101).
+public sealed class CompleteActivityRequestValidator : AbstractValidator<CompleteActivityRequest>;
 
-public sealed class CancelActivityRequestValidator : AbstractValidator<CancelActivityRequest>
-{
-    public CancelActivityRequestValidator()
-    {
-        RuleFor(x => x.CancelledAt).NotEqual(default(DateTimeOffset));
-    }
-}
+public sealed class CancelActivityRequestValidator : AbstractValidator<CancelActivityRequest>;
 
 public sealed class ReassignActivityRequestValidator : AbstractValidator<ReassignActivityRequest>
 {

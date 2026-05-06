@@ -4652,7 +4652,7 @@
       "kind": "class",
       "project": "Granit.Activities.BackgroundJobs",
       "file": "src/Granit.Activities.BackgroundJobs/Services/MarkOverdueScanService.cs",
-      "line": 20,
+      "line": 21,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -4668,7 +4668,7 @@
       "kind": "class",
       "project": "Granit.Activities.BackgroundJobs",
       "file": "src/Granit.Activities.BackgroundJobs/Services/SendRemindersScanService.cs",
-      "line": 21,
+      "line": 22,
       "members": [
         {
           "name": "ExecuteAsync",
@@ -4684,7 +4684,7 @@
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Domain/Activity.cs",
-      "line": 26,
+      "line": 27,
       "members": [
         {
           "name": "Create",
@@ -4708,6 +4708,44 @@
       "file": "src/Granit.Activities/Domain/ActivityStatus.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "AllowAllActivityHostAuthorizationProvider",
+      "fqn": "Granit.Activities.Endpoints.Authorization.AllowAllActivityHostAuthorizationProvider",
+      "kind": "class",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Authorization/IActivityHostAuthorizationProvider.cs",
+      "line": 47,
+      "members": [
+        {
+          "name": "EntityType",
+          "kind": "property",
+          "signature": "string EntityType",
+          "returnType": "string"
+        },
+        {
+          "name": "CanReadHostAsync",
+          "kind": "method",
+          "signature": "CanReadHostAsync(Guid entityId, ClaimsPrincipal user, CancellationToken cancellationToken)",
+          "returnType": "ValueTask<bool>"
+        }
+      ]
+    },
+    {
+      "name": "IActivityHostAuthorizationProvider",
+      "fqn": "Granit.Activities.Endpoints.Authorization.IActivityHostAuthorizationProvider",
+      "kind": "interface",
+      "project": "Granit.Activities.Endpoints",
+      "file": "src/Granit.Activities.Endpoints/Authorization/IActivityHostAuthorizationProvider.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "CanReadHostAsync",
+          "kind": "method",
+          "signature": "CanReadHostAsync(Guid entityId, ClaimsPrincipal user, CancellationToken cancellationToken)",
+          "returnType": "string EntityType { get; } ValueTask<bool>"
+        }
+      ]
     },
     {
       "name": "ActivityCalendarItemResponse",
@@ -4828,8 +4866,15 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/GranitActivitiesEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 25,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ActivitiesEndpointsOptions",
@@ -4874,6 +4919,18 @@
           "kind": "method",
           "signature": "FromMinutes(1)",
           "returnType": "TimeSpan CalendarCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxFutureRescheduleDays",
+          "kind": "property",
+          "signature": "int MaxFutureRescheduleDays",
+          "returnType": "int"
+        },
+        {
+          "name": "CalendarWindowSnapMinutes",
+          "kind": "property",
+          "signature": "int CalendarWindowSnapMinutes",
+          "returnType": "int"
         }
       ]
     },
@@ -4901,7 +4958,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 56,
+      "line": 45,
       "members": []
     },
     {
@@ -4910,7 +4967,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 32,
+      "line": 27,
       "members": []
     },
     {
@@ -4919,7 +4976,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 24,
+      "line": 25,
       "members": []
     },
     {
@@ -4937,7 +4994,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 40,
+      "line": 29,
       "members": []
     },
     {
@@ -4946,7 +5003,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 48,
+      "line": 37,
       "members": []
     },
     {
@@ -5061,6 +5118,15 @@
       "members": []
     },
     {
+      "name": "ActivityReassignedEto",
+      "fqn": "Granit.Activities.Events.ActivityReassignedEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityReassignedEto.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "ActivityReassignedEvent",
       "fqn": "Granit.Activities.Events.ActivityReassignedEvent",
       "kind": "record",
@@ -5076,6 +5142,15 @@
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Events/ActivityReminderDueEvent.cs",
       "line": 17,
+      "members": []
+    },
+    {
+      "name": "ActivityRescheduledEto",
+      "fqn": "Granit.Activities.Events.ActivityRescheduledEto",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Events/ActivityRescheduledEto.cs",
+      "line": 9,
       "members": []
     },
     {

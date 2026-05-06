@@ -25,4 +25,22 @@ public sealed class ActivitiesEndpointsOptions
 
     /// <summary>FusionCache TTL for the activities calendar response. Default: 1 minute (sliding).</summary>
     public TimeSpan CalendarCacheTtl { get; set; } = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// Upper bound (in days from now) accepted by Create/Reschedule for
+    /// <see cref="Granit.Activities.Domain.Activity.DueAt"/>. Closes VULN-203 —
+    /// without a bound, callers can mass-mute their inbox by rescheduling every
+    /// open activity to <c>DateTimeOffset.MaxValue</c> (rows then never match
+    /// the overdue scan and remain perpetually <c>Open</c>). Default: 5 years.
+    /// </summary>
+    public int MaxFutureRescheduleDays { get; set; } = 365 * 5;
+
+    /// <summary>
+    /// Window-snap granularity (minutes) applied to the calendar
+    /// <c>from</c>/<c>to</c> parameters before cache-key composition. Closes
+    /// VULN-204 — without snapping, an attacker can shift the window by one
+    /// second per call to defeat <see cref="CalendarCacheTtl"/> and force
+    /// repeated DB scans. Default: 60 minutes (one cache slot per hour).
+    /// </summary>
+    public int CalendarWindowSnapMinutes { get; set; } = 60;
 }
