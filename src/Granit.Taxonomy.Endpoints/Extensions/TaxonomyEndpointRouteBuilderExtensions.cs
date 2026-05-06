@@ -1,3 +1,4 @@
+using Granit.Taxonomy.Endpoints.Categories.Endpoints;
 using Granit.Taxonomy.Endpoints.Options;
 using Granit.Taxonomy.Endpoints.Search.Endpoints;
 using Granit.Taxonomy.Endpoints.Tags.Endpoints;
@@ -38,6 +39,7 @@ public static class TaxonomyEndpointRouteBuilderExtensions
         group.MapTagEndpoints();
         group.MapTagAssignmentEndpoints();
         group.MapTagSearchEndpoints();
+        group.MapCategoryEndpoints();
 
         return group;
     }

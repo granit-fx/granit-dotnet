@@ -1,6 +1,8 @@
 {
   "culture": "hi",
   "texts": {
+    "Permission:Taxonomy.Categories.Manage": "श्रेणियाँ बनाएँ, नाम बदलें, स्थानांतरित करें, छिपाएँ और हटाएँ",
+    "Permission:Taxonomy.Categories.Read": "श्रेणियाँ देखें",
     "Permission:Taxonomy.Search.Read": "सभी एंटिटीज़ में टैग खोजें",
     "Permission:Taxonomy.Tags.Manage": "टैग बनाएँ, नाम बदलें, रंग बदलें और हटाएँ",
     "Permission:Taxonomy.Tags.Read": "टैग देखें",

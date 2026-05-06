@@ -1,6 +1,8 @@
 {
   "culture": "es",
   "texts": {
+    "Permission:Taxonomy.Categories.Manage": "Crear, renombrar, mover, ocultar y eliminar categorías",
+    "Permission:Taxonomy.Categories.Read": "Ver categorías",
     "Permission:Taxonomy.Search.Read": "Buscar etiquetas en todas las entidades",
     "Permission:Taxonomy.Tags.Manage": "Crear, renombrar, recolorear y eliminar etiquetas",
     "Permission:Taxonomy.Tags.Read": "Ver etiquetas",

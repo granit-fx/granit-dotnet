@@ -42,8 +42,9 @@ public interface ICategoryService
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Hard-deletes a category. Throws when descendants exist — callers must move /
-    /// delete descendants first, or use a future <c>DeleteSubtreeAsync</c> overload.
+    /// Hard-deletes a category. Throws when descendants exist OR when one or more
+    /// <c>CategoryAssignment</c> rows still reference it — callers must move /
+    /// delete descendants and reassign / unassign targets first.
     /// </summary>
     Task<bool> DeleteAsync(
         Guid id,
@@ -52,6 +53,26 @@ public interface ICategoryService
     /// <summary>Loads a category by id.</summary>
     Task<Category?> GetByIdAsync(
         Guid id,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Loads the breadcrumb chain for <paramref name="id"/>: the category itself
+    /// plus every ancestor up to (and including) the root, ordered root → leaf.
+    /// Returns an empty list when the category does not exist.
+    /// </summary>
+    Task<IReadOnlyList<Category>> GetBreadcrumbAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Lists categories in <paramref name="scope"/>. When
+    /// <paramref name="parentId"/> is supplied, returns only the direct children of
+    /// that parent. When <paramref name="parentId"/> is <c>null</c>, returns root
+    /// categories. Ordered by name.
+    /// </summary>
+    Task<IReadOnlyList<Category>> ListChildrenAsync(
+        string scope,
+        Guid? parentId,
         CancellationToken cancellationToken = default);
 
     /// <summary>Lists every category in <paramref name="scope"/>, ordered by path.</summary>

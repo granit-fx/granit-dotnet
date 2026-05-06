@@ -23,6 +23,16 @@ public static class TaxonomyPermissions
         public const string Manage = "Taxonomy.Tags.Manage";
     }
 
+    /// <summary>Permissions on hierarchical categories.</summary>
+    public static class Categories
+    {
+        /// <summary>Read categories (get, list, breadcrumb).</summary>
+        public const string Read = "Taxonomy.Categories.Read";
+
+        /// <summary>Manage categories (create, rename, move, hide, delete, assign / unassign on targets).</summary>
+        public const string Manage = "Taxonomy.Categories.Manage";
+    }
+
     /// <summary>Permissions on the cross-entity search endpoint.</summary>
     /// <remarks>
     /// Separate from <see cref="Tags.Read"/> because the search results expose

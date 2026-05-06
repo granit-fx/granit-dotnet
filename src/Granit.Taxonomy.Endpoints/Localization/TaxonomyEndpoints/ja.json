@@ -1,6 +1,8 @@
 {
   "culture": "ja",
   "texts": {
+    "Permission:Taxonomy.Categories.Manage": "カテゴリの作成、名前変更、移動、非表示、削除",
+    "Permission:Taxonomy.Categories.Read": "カテゴリを表示",
     "Permission:Taxonomy.Search.Read": "すべてのエンティティでタグを検索",
     "Permission:Taxonomy.Tags.Manage": "タグの作成、名前変更、色変更、削除",
     "Permission:Taxonomy.Tags.Read": "タグを表示",

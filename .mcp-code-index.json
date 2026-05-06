@@ -55772,12 +55772,84 @@
       ]
     },
     {
+      "name": "AssignCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.AssignCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/AssignCategoryRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CategoryAssignmentResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "CategoryDetailResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryDetailResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "CategoryResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CategoryResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "CreateCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.CreateCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CreateCategoryRequest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "ListCategoriesResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.ListCategoriesResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/CategoryResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "MoveCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.MoveCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/MoveCategoryRequest.cs",
+      "line": 5,
+      "members": []
+    },
+    {
+      "name": "UpdateCategoryRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Categories.Dtos.UpdateCategoryRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Categories/Dtos/UpdateCategoryRequest.cs",
+      "line": 4,
+      "members": []
+    },
+    {
       "name": "TaxonomyEndpointRouteBuilderExtensions",
       "fqn": "Granit.Taxonomy.Endpoints.Extensions.TaxonomyEndpointRouteBuilderExtensions",
       "kind": "class",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Extensions/TaxonomyEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitTaxonomy",
@@ -55819,12 +55891,21 @@
       ]
     },
     {
+      "name": "Categories",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Categories",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 27,
+      "members": []
+    },
+    {
       "name": "Search",
       "fqn": "Granit.Taxonomy.Endpoints.Permissions.Search",
       "kind": "class",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
-      "line": 33,
+      "line": 43,
       "members": []
     },
     {
@@ -56190,6 +56271,18 @@
           "kind": "method",
           "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<Category?>"
+        },
+        {
+          "name": "GetBreadcrumbAsync",
+          "kind": "method",
+          "signature": "GetBreadcrumbAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
+        },
+        {
+          "name": "ListChildrenAsync",
+          "kind": "method",
+          "signature": "ListChildrenAsync(string scope, Guid? parentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
         },
         {
           "name": "ListByScopeAsync",

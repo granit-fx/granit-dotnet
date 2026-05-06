@@ -241,6 +241,15 @@ internal sealed class CategoryService(
                 $"Category {id} has descendants. Move or delete them first.");
         }
 
+        bool hasAssignments = await context.CategoryAssignments
+            .AnyAsync(a => a.CategoryId == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (hasAssignments)
+        {
+            throw new InvalidOperationException(
+                $"Category {id} is still assigned to one or more targets. Reassign or unassign first.");
+        }
+
         category.MarkDeleted();
         context.Categories.Remove(category);
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
@@ -260,6 +269,67 @@ internal sealed class CategoryService(
         return await context.Categories
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Category>> GetBreadcrumbAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await using TaxonomyDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Category? leaf = await context.Categories
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (leaf is null)
+        {
+            return [];
+        }
+
+        // Walk the parent chain; the tree is bounded by MaxPathLength so the depth
+        // is small in practice. A single SQL query that materialises the chain via
+        // path-prefix matching would also work — kept simple here.
+        List<Category> chain = [leaf];
+        Category current = leaf;
+        while (current.ParentId is { } parentId)
+        {
+            Category? parent = await context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == parentId, cancellationToken)
+                .ConfigureAwait(false);
+            if (parent is null)
+            {
+                break;
+            }
+            chain.Add(parent);
+            current = parent;
+        }
+
+        chain.Reverse(); // root first
+        return chain;
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyList<Category>> ListChildrenAsync(
+        string scope,
+        Guid? parentId,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(scope);
+
+        await using TaxonomyDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        return await context.Categories
+            .AsNoTracking()
+            .Where(c => c.Scope == scope && c.ParentId == parentId)
+            .OrderBy(c => c.Name)
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 

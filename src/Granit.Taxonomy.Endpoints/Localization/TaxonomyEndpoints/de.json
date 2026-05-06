@@ -1,6 +1,8 @@
 {
   "culture": "de",
   "texts": {
+    "Permission:Taxonomy.Categories.Manage": "Kategorien erstellen, umbenennen, verschieben, ausblenden und löschen",
+    "Permission:Taxonomy.Categories.Read": "Kategorien anzeigen",
     "Permission:Taxonomy.Search.Read": "Tags entitätsübergreifend suchen",
     "Permission:Taxonomy.Tags.Manage": "Tags erstellen, umbenennen, neu einfärben und löschen",
     "Permission:Taxonomy.Tags.Read": "Tags anzeigen",

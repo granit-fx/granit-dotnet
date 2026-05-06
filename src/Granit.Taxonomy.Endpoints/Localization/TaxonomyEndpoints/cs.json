@@ -1,6 +1,8 @@
 {
   "culture": "cs",
   "texts": {
+    "Permission:Taxonomy.Categories.Manage": "Vytvářet, přejmenovávat, přesouvat, skrývat a odstraňovat kategorie",
+    "Permission:Taxonomy.Categories.Read": "Zobrazit kategorie",
     "Permission:Taxonomy.Search.Read": "Vyhledávat tagy napříč všemi entitami",
     "Permission:Taxonomy.Tags.Manage": "Vytvářet, přejmenovávat, přebarvovat a odstraňovat tagy",
     "Permission:Taxonomy.Tags.Read": "Zobrazit tagy",

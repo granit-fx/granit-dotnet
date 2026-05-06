@@ -11,6 +11,8 @@ public sealed class TaxonomyPermissionDefinitionProviderTests
     {
         TaxonomyPermissions.Tags.Read.ShouldBe("Taxonomy.Tags.Read");
         TaxonomyPermissions.Tags.Manage.ShouldBe("Taxonomy.Tags.Manage");
+        TaxonomyPermissions.Categories.Read.ShouldBe("Taxonomy.Categories.Read");
+        TaxonomyPermissions.Categories.Manage.ShouldBe("Taxonomy.Categories.Manage");
         TaxonomyPermissions.GroupName.ShouldBe("Taxonomy");
     }
 
