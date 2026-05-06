@@ -1,6 +1,9 @@
 using Granit.Diagnostics;
+using Granit.Domain;
+using Granit.Events;
 using Granit.Taxonomy.Authorization;
 using Granit.Taxonomy.Diagnostics;
+using Granit.Taxonomy.Internal;
 using Granit.Taxonomy.Options;
 using Granit.Taxonomy.Registration;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,7 +75,7 @@ public static class TaxonomyServiceCollectionExtensions
     public static IServiceCollection AddTaggableEntity<TAggregate>(
         this IServiceCollection services,
         string scope)
-        where TAggregate : class
+        where TAggregate : Entity, IEmitEntityLifecycleEvents
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentException.ThrowIfNullOrWhiteSpace(scope);
@@ -83,6 +86,13 @@ public static class TaxonomyServiceCollectionExtensions
         // ConfigureServices methods.
         services.AddSingleton<ITaggableRegistration>(
             new TaggableRegistration(typeof(TAggregate).FullName ?? typeof(TAggregate).Name, scope));
+
+        // T5.1 — synchronous orphan cleanup. One closed-generic handler per
+        // taggable type lets the local event bus dispatch directly without a
+        // reflection-based fan-out at the call site.
+        services.AddScoped<
+            ILocalEventHandler<EntityDeletedEvent<TAggregate>>,
+            TaxonomyAssignmentCleanupHandler<TAggregate>>();
         return services;
     }
 }

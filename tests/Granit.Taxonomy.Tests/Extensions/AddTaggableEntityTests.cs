@@ -1,3 +1,4 @@
+using Granit.Domain;
 using Granit.Taxonomy.Extensions;
 using Granit.Taxonomy.Registration;
 using Microsoft.Extensions.Configuration;
@@ -9,8 +10,8 @@ namespace Granit.Taxonomy.Tests.Extensions;
 
 public sealed class AddTaggableEntityTests
 {
-    private sealed class FakeAggregateA;
-    private sealed class FakeAggregateB;
+    private sealed class FakeAggregateA : Entity, IEmitEntityLifecycleEvents;
+    private sealed class FakeAggregateB : Entity, IEmitEntityLifecycleEvents;
 
     [Fact]
     public void AddTaggableEntity_RegistersAggregate_TypeFullNameIsTargetType()

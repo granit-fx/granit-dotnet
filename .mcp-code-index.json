@@ -56237,7 +56237,7 @@
       "kind": "class",
       "project": "Granit.Taxonomy",
       "file": "src/Granit.Taxonomy/Extensions/TaxonomyServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitTaxonomy",
@@ -56470,7 +56470,7 @@
       "fqn": "Granit.Taxonomy.Registration.TaggableTypeRegistry",
       "kind": "class",
       "project": "Granit.Taxonomy",
-      "file": "src/Granit.Taxonomy/Registration/TaggableTypeRegistration.cs",
+      "file": "src/Granit.Taxonomy/Registration/TaggableTypeRegistry.cs",
       "line": 14,
       "members": [
         {

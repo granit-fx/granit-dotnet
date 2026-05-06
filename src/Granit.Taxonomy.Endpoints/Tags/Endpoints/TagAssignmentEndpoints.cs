@@ -108,7 +108,7 @@ internal static class TagAssignmentEndpoints
             : TypedResults.Ok(response);
     }
 
-    private static async Task<Results<NoContent, NotFound, ForbidHttpResult>> UnassignAsync(
+    private static async Task<Results<NoContent, NotFound, ForbidHttpResult, ProblemHttpResult>> UnassignAsync(
         Guid id,
         string targetType,
         Guid targetId,
