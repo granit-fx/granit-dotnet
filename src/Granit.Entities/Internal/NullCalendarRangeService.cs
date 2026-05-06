@@ -1,7 +1,6 @@
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
-namespace Granit.Entities.Endpoints.Internal;
+namespace Granit.Entities.Internal;
 
 /// <summary>
 /// No-op implementation registered by default. Returns an empty result —

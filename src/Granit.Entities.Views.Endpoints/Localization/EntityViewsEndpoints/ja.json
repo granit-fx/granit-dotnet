@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "個人用エンティティビューを作成",
     "Permission:Entities.Views.Share": "エンティティビューをロールまたはユーザーと共有",
     "Permission:Entities.Views.Manage": "エンティティビューを管理（ピン留め / テナントの既定を設定 / 昇格）",
-    "Permission:Entities.Views.Delete.Any": "任意のエンティティビューを削除（モデレーション）"
+    "Permission:Entities.Views.DeleteAny": "任意のエンティティビューを削除（モデレーション）"
   }
 }

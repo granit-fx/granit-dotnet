@@ -1,4 +1,3 @@
-using Granit.Entities.Views.Endpoints.Endpoints;
 using Granit.Entities.Views.Endpoints.Options;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;

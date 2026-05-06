@@ -1,6 +1,4 @@
 using System.Linq.Expressions;
-using Granit.Entities.Endpoints;
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 using Granit.QueryEngine;
 using Microsoft.EntityFrameworkCore;

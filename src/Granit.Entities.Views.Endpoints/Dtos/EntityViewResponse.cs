@@ -14,7 +14,7 @@ public sealed record EntityViewResponse(
     JsonObject State,
     EntityViewVisibility Visibility,
     Guid? OwnerId,
-    EntityViewSharedWithDto? SharedWith,
+    EntityViewSharedWithResponse? SharedWith,
     bool IsPinned,
     bool IsDefault,
     bool IsPersonalDefault,
@@ -35,7 +35,7 @@ public sealed record EntityViewResponse(
             descriptor.OwnerId,
             descriptor.SharedWith is null
                 ? null
-                : new EntityViewSharedWithDto(descriptor.SharedWith.Roles, descriptor.SharedWith.Users),
+                : new EntityViewSharedWithResponse(descriptor.SharedWith.Roles, descriptor.SharedWith.Users),
             descriptor.IsPinned,
             descriptor.IsDefault,
             descriptor.IsPersonalDefault,

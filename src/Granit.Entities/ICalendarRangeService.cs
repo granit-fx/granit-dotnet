@@ -1,7 +1,6 @@
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
-namespace Granit.Entities.Endpoints;
+namespace Granit.Entities;
 
 /// <summary>
 /// Resolves calendar items for one entity within a time window. The default
@@ -9,12 +8,10 @@ namespace Granit.Entities.Endpoints;
 /// EF Core executor (story #1689) by replacing this registration.
 /// </summary>
 /// <remarks>
-/// <para>
-/// The interface lives in <c>.Endpoints</c> rather than the abstractions
-/// package so the wire DTO (<see cref="CalendarItemResponse"/>) stays adjacent
-/// to its only producer / consumer. Same placement rule as
-/// <c>IRelationAggregateService</c>.
-/// </para>
+/// Lives in the runtime base module alongside <see cref="CalendarItemResponse"/>
+/// and the null implementation so a non-HTTP host (e.g. a projector) can
+/// resolve calendar items without pulling <c>Granit.Entities.Endpoints</c>.
+/// Same placement rule as <c>IRelationAggregateService</c>.
 /// </remarks>
 public interface ICalendarRangeService
 {

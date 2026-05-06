@@ -11,8 +11,8 @@ public sealed class EntitiesCustomizationEndpointsOptions
     /// <summary>Route prefix for all customization endpoints. Default: <c>"entities"</c>.</summary>
     public string RoutePrefix { get; set; } = "entities";
 
-    /// <summary>OpenAPI tag name for grouping endpoints in Scalar / Swagger UI. Default: <c>"Customization"</c>.</summary>
-    public string TagName { get; set; } = "Customization";
+    /// <summary>OpenAPI tag name for grouping endpoints in Scalar / Swagger UI. Default: <c>"Entities - Customization"</c>.</summary>
+    public string TagName { get; set; } = "Entities - Customization";
 
     /// <summary>
     /// Maximum number of deltas accepted in a single PUT. Default: <c>100</c>.

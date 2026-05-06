@@ -3,6 +3,7 @@ using Granit.Authorization;
 using Granit.Entities.Customization.Endpoints.Internal;
 using Granit.Entities.Endpoints;
 using Granit.Entities.Endpoints.Internal;
+using Granit.Guids;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
 using Granit.Validation;
@@ -27,9 +28,11 @@ namespace Granit.Entities.Customization.Endpoints;
 [DependsOn(
     typeof(GranitAuditingModule),
     typeof(GranitAuthorizationModule),
+    typeof(GranitEntitiesAbstractionsModule),
     typeof(GranitEntitiesCustomizationModule),
     typeof(GranitEntitiesEndpointsModule),
     typeof(GranitEntitiesModule),
+    typeof(GranitGuidsModule),
     typeof(GranitHttpApiDocumentationModule),
     typeof(GranitValidationModule))]
 public sealed class GranitEntitiesCustomizationEndpointsModule : GranitModule

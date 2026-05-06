@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Entities.Customization.Endpoints.Endpoints;
+namespace Granit.Entities.Customization.Endpoints;
 
 /// <summary>
 /// CRUD endpoints for the per-tenant Layer 1 customization on each
@@ -30,6 +30,7 @@ internal static class EntityCustomizationEndpoints
             .WithSummary("Returns the tenant's customization for the given (entity, layout) pair.")
             .WithDescription("Returns 200 with the persisted deltas, or 404 when the tenant has not customized that layout (compiled defaults apply).")
             .Produces<EntityCustomizationResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPut("/{entityName}/customization/{layoutKind}", PutAsync)
@@ -39,6 +40,7 @@ internal static class EntityCustomizationEndpoints
             .WithDescription("Full-replace semantics — the previous delta list is discarded. Validates each FieldName + group key against the compiled descriptor; rejects unknown names with 400. ISO 27001 audit entry written via IAuditingWriter on success.")
             .Produces<EntityCustomizationResponse>()
             .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{entityName}/customization/{layoutKind}", DeleteAsync)
@@ -46,7 +48,8 @@ internal static class EntityCustomizationEndpoints
             .WithName("DeleteEntityCustomization")
             .WithSummary("Reverts the tenant to the compiled defaults for the given (entity, layout) pair.")
             .WithDescription("Hard-deletes the persisted customization row. Idempotent — deleting a non-existent customization returns 204. ISO 27001 audit entry written on actual deletion only.")
-            .Produces(StatusCodes.Status204NoContent);
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden);
 
         return group;
     }

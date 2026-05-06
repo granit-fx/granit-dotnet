@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Persoonlijke entiteitsweergaven maken",
     "Permission:Entities.Views.Share": "Entiteitsweergaven delen met rollen of gebruikers",
     "Permission:Entities.Views.Manage": "Entiteitsweergaven beheren (vastmaken / tenant-standaard instellen / promoveren)",
-    "Permission:Entities.Views.Delete.Any": "Elke entiteitsweergave verwijderen (moderatie)"
+    "Permission:Entities.Views.DeleteAny": "Elke entiteitsweergave verwijderen (moderatie)"
   }
 }

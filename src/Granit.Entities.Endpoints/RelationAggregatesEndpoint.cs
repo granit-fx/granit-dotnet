@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Claims;
-using Granit.Entities.Endpoints.Diagnostics;
+using Granit.Entities.Diagnostics;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Entities.Endpoints.Endpoints;
+namespace Granit.Entities.Endpoints;
 
 /// <summary>
 /// <c>POST /api/entities/{name}/{id}/relations/aggregates</c> — returns the

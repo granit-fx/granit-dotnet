@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.Entities.Views.Endpoints.Endpoints;
+namespace Granit.Entities.Views.Endpoints;
 
 /// <summary>
 /// Minimal API handlers for the EntityView surface (per ADR-047 §6).
@@ -37,53 +37,65 @@ internal static class EntityViewsEndpoints
             .Produces(StatusCodes.Status204NoContent);
 
         group.MapPost("/", CreateAsync)
+            .RequireAuthorization(EntityViewPermissions.Create)
             .WithName("CreateEntityView")
             .WithSummary("Creates a Personal saved view for the current user.")
             .WithDescription("Requires the Entities.Views.Create permission. The created view is owned by the caller and bound to the supplied compiled collection (BasedOn) and kind. Returns 201 with the created descriptor.")
             .Produces<EntityViewResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesValidationProblem();
 
         group.MapPut("/{id:guid}", UpdateAsync)
+            .RequireAuthorization(EntityViewPermissions.Manage)
             .WithName("UpdateEntityView")
             .WithSummary("Updates the name / description / icon / state of a saved view.")
             .WithDescription("Requires ownership for Personal / Shared views, or Entities.Views.Manage for Tenant views. BasedOn and Kind are immutable post-creation and rejected if changed.")
             .Produces<EntityViewResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
 
         group.MapDelete("/{id:guid}", DeleteAsync)
+            .RequireAuthorization(EntityViewPermissions.DeleteAny)
             .WithName("DeleteEntityView")
             .WithSummary("Deletes a saved view.")
-            .WithDescription("The owner can delete their own views; moderation deletes require Entities.Views.Delete.Any. Returns 204 on success.")
+            .WithDescription("The owner can delete their own views; moderation deletes require Entities.Views.DeleteAny. Returns 204 on success.")
             .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/{id:guid}/pin", SetPinnedAsync)
+            .RequireAuthorization(EntityViewPermissions.Manage)
             .WithName("ToggleEntityViewPinned")
             .WithSummary("Pins or unpins a saved view in the workspace tab strip.")
             .WithDescription("Requires Entities.Views.Manage. The pinned flag is independent from IsDefault / IsPersonalDefault.")
             .Produces<EntityViewResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/{id:guid}/set-default", SetTenantDefaultAsync)
+            .RequireAuthorization(EntityViewPermissions.Manage)
             .WithName("ToggleEntityViewTenantDefault")
             .WithSummary("Sets or clears the tenant-default flag.")
             .WithDescription("Requires Entities.Views.Manage. At most one IsDefault view per (entity, tenant) — setting one clears any existing tenant default.")
             .Produces<EntityViewResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/{id:guid}/star", SetPersonalDefaultAsync)
             .WithName("ToggleEntityViewPersonalDefault")
             .WithSummary("Sets or clears the personal-default flag for the current user.")
-            .WithDescription("Requires the caller to own the view. At most one IsPersonalDefault view per (entity, user) — setting one clears any existing personal default.")
+            .WithDescription("Requires the caller to own the view (group-level Read permission suffices — ownership is enforced in the writer). At most one IsPersonalDefault view per (entity, user) — setting one clears any existing personal default.")
             .Produces<EntityViewResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/{id:guid}/share", ShareAsync)
+            .RequireAuthorization(EntityViewPermissions.Share)
             .WithName("ShareEntityView")
             .WithSummary("Promotes a Personal view to Shared with the given audience.")
             .WithDescription("Requires Entities.Views.Share. The audience must include at least one role or user — empty audiences are rejected.")
             .Produces<EntityViewResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesValidationProblem();
 

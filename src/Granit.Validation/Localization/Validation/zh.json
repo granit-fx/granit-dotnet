@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "周期必须是命名令牌(如 'last_30d')或同时包含 From 和 To,不能两者皆是或都为空。",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From 必须严格早于 Period.To。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' 的指定条件未满足。",
+    "Granit:Validation:RegroupGroupKeyRequired": "重新分组增量需要非空的 GroupKey。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' 的格式不正确。",
+    "Granit:Validation:ReorderDeltaIllFormed": "重新排序增量必须仅设置 BeforeFieldName 或 AfterFieldName 之一。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' 总共不能超过 {ExpectedPrecision} 位数字，其中允许 {ExpectedScale} 位小数。",
     "Granit:Validation:ScheduledAction:FutureDate": "计划日期必须是将来的日期。",
+    "Granit:Validation:TooManyDeltas": "单个请求中的增量过多。",
     "Granit:Validation:UrlMustBeHttps": "URL 必须使用 HTTPS。",
     "Granit:Validation:ValidToAfterValidFrom": "'有效截止日期' 必须晚于 '有效起始日期'。"
   }
