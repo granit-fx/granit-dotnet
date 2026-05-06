@@ -480,7 +480,8 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
-          "Granit.BlobStorage": "[0.1.0-dev, )"
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )"
         }
       },
       "granit.documents.entityframeworkcore": {
@@ -543,6 +544,22 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.DataLookup.Abstractions": "[0.1.0-dev, )"
+        }
+      },
+      "granit.taxonomy": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Persistence": "[0.1.0-dev, )"
+        }
+      },
+      "granit.taxonomy.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Granit.Taxonomy": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",
+          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )"
         }
       },
       "granit.timing": {

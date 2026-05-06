@@ -40,6 +40,7 @@ public static class DocumentsEndpointRouteBuilderExtensions
 
         group.MapFolderEndpoints();
         group.MapDocumentEndpoints();
+        group.MapDocumentTagProxyEndpoints();
 
         return group;
     }

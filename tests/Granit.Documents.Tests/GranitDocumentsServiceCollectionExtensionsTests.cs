@@ -1,6 +1,8 @@
 using Granit.Documents.Diagnostics;
+using Granit.Documents.Domain;
 using Granit.Documents.Extensions;
 using Granit.Documents.Options;
+using Granit.Taxonomy.Registration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -77,5 +79,19 @@ public sealed class GranitDocumentsServiceCollectionExtensionsTests
         DocumentsMetrics second = provider.GetRequiredService<DocumentsMetrics>();
 
         first.ShouldBeSameAs(second);
+    }
+
+    [Fact]
+    public void AddGranitDocuments_RegistersDocumentAsTaggable_UnderDocumentsScope()
+    {
+        ServiceCollection services = NewServices();
+
+        services.AddGranitDocuments();
+
+        ServiceProvider provider = services.BuildServiceProvider();
+        TaggableTypeRegistry registry = provider.GetRequiredService<TaggableTypeRegistry>();
+
+        registry.IsRegistered(typeof(Document).FullName!).ShouldBeTrue();
+        registry.GetScope(typeof(Document).FullName!).ShouldBe("documents");
     }
 }

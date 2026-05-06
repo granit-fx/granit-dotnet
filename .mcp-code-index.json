@@ -906,7 +906,8 @@
       "name": "Granit.Documents",
       "deps": [
         "Granit",
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Taxonomy"
       ],
       "framework": "net10.0"
     },
@@ -916,6 +917,7 @@
         "Granit.Authorization",
         "Granit.Documents",
         "Granit.Http.ApiDocumentation",
+        "Granit.Taxonomy",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -19418,6 +19420,24 @@
       "members": []
     },
     {
+      "name": "DocumentTagAssignmentResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "DocumentTagResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DocumentVersionResponse",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentVersionResponse",
       "kind": "record",
@@ -19442,6 +19462,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/FinalizeUploadRequest.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "ListDocumentTagsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentTagsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -19565,8 +19594,15 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/GranitDocumentsEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 29,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DocumentsEndpointsOptions",
@@ -19815,7 +19851,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitDocuments",
@@ -19831,7 +19867,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/GranitDocumentsModule.cs",
-      "line": 25,
+      "line": 28,
       "members": []
     },
     {
@@ -21073,15 +21109,6 @@
       ]
     },
     {
-      "name": "CalendarItemResponse",
-      "fqn": "Granit.Entities.CalendarItemResponse",
-      "kind": "record",
-      "project": "Granit.Entities",
-      "file": "src/Granit.Entities/CalendarItemResponse.cs",
-      "line": 12,
-      "members": []
-    },
-    {
       "name": "HideDelta",
       "fqn": "Granit.Entities.Customization.Domain.Deltas.HideDelta",
       "kind": "record",
@@ -21195,7 +21222,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/GranitEntitiesCustomizationEndpointsModule.cs",
-      "line": 38,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21472,20 +21499,13 @@
       "members": []
     },
     {
-      "name": "EntityActivitySource",
-      "fqn": "Granit.Entities.Diagnostics.EntityActivitySource",
-      "kind": "class",
-      "project": "Granit.Entities",
-      "file": "src/Granit.Entities/Diagnostics/EntityActivitySource.cs",
-      "line": 14,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(Name)",
-          "returnType": "ActivitySource Source ="
-        }
-      ]
+      "name": "CalendarItemResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.CalendarItemResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/CalendarItemResponse.cs",
+      "line": 12,
+      "members": []
     },
     {
       "name": "CalendarRangeRequest",
@@ -21871,6 +21891,22 @@
       ]
     },
     {
+      "name": "ICalendarRangeService",
+      "fqn": "Granit.Entities.Endpoints.ICalendarRangeService",
+      "kind": "interface",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "GetItemsAsync",
+          "kind": "method",
+          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
+        }
+      ]
+    },
+    {
       "name": "IManifestCustomizationApplier",
       "fqn": "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier",
       "kind": "interface",
@@ -21925,6 +21961,15 @@
           "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
         }
       ]
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.Endpoints.struct",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
+      "line": 34,
+      "members": []
     },
     {
       "name": "EntityDefinition",
@@ -21992,7 +22037,7 @@
       "kind": "class",
       "project": "Granit.Entities.EntityFrameworkCore",
       "file": "src/Granit.Entities.EntityFrameworkCore/Extensions/EntitiesEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitEntitiesEntityFrameworkCore",
@@ -22024,7 +22069,7 @@
       "kind": "class",
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 14,
       "members": [
         {
           "name": "AddGranitEntities",
@@ -22137,22 +22182,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "ICalendarRangeService",
-      "fqn": "Granit.Entities.ICalendarRangeService",
-      "kind": "interface",
-      "project": "Granit.Entities",
-      "file": "src/Granit.Entities/ICalendarRangeService.cs",
-      "line": 16,
-      "members": [
-        {
-          "name": "GetItemsAsync",
-          "kind": "method",
-          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
-          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
         }
       ]
     },
@@ -22694,11 +22723,11 @@
       "members": []
     },
     {
-      "name": "EntityViewSharedWithResponse",
-      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithResponse",
+      "name": "EntityViewSharedWithDto",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithDto",
       "kind": "record",
       "project": "Granit.Entities.Views.Endpoints",
-      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithResponse.cs",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithDto.cs",
       "line": 6,
       "members": []
     },
@@ -22882,22 +22911,6 @@
       "members": []
     },
     {
-      "name": "EntitiesViewsServiceCollectionExtensions",
-      "fqn": "Granit.Entities.Views.Extensions.EntitiesViewsServiceCollectionExtensions",
-      "kind": "class",
-      "project": "Granit.Entities.Views",
-      "file": "src/Granit.Entities.Views/Extensions/EntitiesViewsServiceCollectionExtensions.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "AddGranitEntitiesViews",
-          "kind": "method",
-          "signature": "AddGranitEntitiesViews(this IServiceCollection services)",
-          "returnType": "IServiceCollection"
-        }
-      ]
-    },
-    {
       "name": "GranitEntitiesViewsAbstractionsModule",
       "fqn": "Granit.Entities.Views.GranitEntitiesViewsAbstractionsModule",
       "kind": "class",
@@ -22912,15 +22925,8 @@
       "kind": "class",
       "project": "Granit.Entities.Views",
       "file": "src/Granit.Entities.Views/GranitEntitiesViewsModule.cs",
-      "line": 17,
-      "members": [
-        {
-          "name": "ConfigureServices",
-          "kind": "method",
-          "signature": "ConfigureServices(ServiceConfigurationContext context)",
-          "returnType": "void"
-        }
-      ]
+      "line": 12,
+      "members": []
     },
     {
       "name": "IEntityViewReader",
@@ -23018,15 +23024,6 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Visibility/VisibilityCondition.cs",
       "line": 32,
-      "members": []
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Entities.struct",
-      "kind": "record",
-      "project": "Granit.Entities",
-      "file": "src/Granit.Entities/ICalendarRangeService.cs",
-      "line": 31,
       "members": []
     },
     {
