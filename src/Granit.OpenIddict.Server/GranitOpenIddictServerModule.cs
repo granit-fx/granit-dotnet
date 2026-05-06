@@ -1,9 +1,12 @@
 using Granit.Authentication;
 using Granit.Authentication.DPoP;
+using Granit.Authentication.DPoP.Options;
 using Granit.Modularity;
 using Granit.OpenIddict.Server.Handlers;
+using Granit.OpenIddict.Server.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace Granit.OpenIddict.Server;
 
@@ -25,5 +28,8 @@ public sealed class GranitOpenIddictServerModule : GranitModule
     {
         context.Services.TryAddScoped<ClientSideAuthorizationHandler>();
         context.Services.TryAddScoped<DPoPTokenBindingHandler>();
+
+        context.Services.TryAddEnumerable(
+            ServiceDescriptor.Singleton<IPostConfigureOptions<DPoPValidationOptions>, Fapi2DPoPOptionsConfigurator>());
     }
 }
