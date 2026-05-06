@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Wolverine.Encryption" />
     <InternalsVisibleTo Include="Granit.Wolverine.Postgresql" />
     <InternalsVisibleTo Include="Granit.Wolverine.SqlServer" />
     <InternalsVisibleTo Include="Granit.Wolverine.Tests" />

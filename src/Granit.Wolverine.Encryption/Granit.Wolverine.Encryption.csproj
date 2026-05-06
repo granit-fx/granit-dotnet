@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Wolverine.Encryption</PackageId>
+    <Description>Field-level encryption for Wolverine envelopes and sagas: scans System.Text.Json type metadata for [Encrypted] string properties and applies a transparent encrypt/decrypt converter backed by IStringEncryptionService. Closes the cleartext-PII gap on the outbox/saga store for messages that travel between processes or across deployments.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Wolverine.Encryption.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WolverineFx" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Encryption\Granit.Encryption.csproj" />
+    <ProjectReference Include="..\Granit.Wolverine\Granit.Wolverine.csproj" />
+  </ItemGroup>
+
+</Project>

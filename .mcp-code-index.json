@@ -3005,6 +3005,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Wolverine.Encryption",
+      "deps": [
+        "Granit.Encryption",
+        "Granit.Wolverine"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Wolverine.Postgresql",
       "deps": [
         "Granit.Wolverine",
@@ -62348,6 +62356,38 @@
           "name": "RecordEnvelopeWithoutTenant",
           "kind": "method",
           "signature": "RecordEnvelopeWithoutTenant(string messageType, string outcome)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "WolverineEncryptionOptionsExtensions",
+      "fqn": "Granit.Wolverine.Encryption.Extensions.WolverineEncryptionOptionsExtensions",
+      "kind": "class",
+      "project": "Granit.Wolverine.Encryption",
+      "file": "src/Granit.Wolverine.Encryption/Extensions/WolverineEncryptionOptionsExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "UseEncryptedSensitiveData",
+          "kind": "method",
+          "signature": "UseEncryptedSensitiveData(this WolverineOptions options, IStringEncryptionService encryption)",
+          "returnType": "WolverineOptions"
+        }
+      ]
+    },
+    {
+      "name": "GranitWolverineEncryptionModule",
+      "fqn": "Granit.Wolverine.Encryption.GranitWolverineEncryptionModule",
+      "kind": "class",
+      "project": "Granit.Wolverine.Encryption",
+      "file": "src/Granit.Wolverine.Encryption/GranitWolverineEncryptionModule.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
         }
       ]
