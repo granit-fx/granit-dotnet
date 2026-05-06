@@ -13,7 +13,7 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="DisplayKey">i18n key for the user-facing label.</param>
 /// <param name="Icon">Icon name from the catalog.</param>
 /// <param name="Order">Display order among the entity's actions.</param>
-/// <param name="UrlTemplate">URL template with <c>{id}</c> placeholder. <see langword="null"/> for WorkflowTransition.</param>
+/// <param name="UrlTemplate">URL template with <c>{id}</c> placeholder. <see langword="null"/> for WorkflowTransition, OpenDrawer (without explicit URL — renderer falls back to <c>details["default"]</c>) and OpenModal (without explicit URL — renderer falls back to <c>forms["default"]</c>).</param>
 /// <param name="HttpMethod">HTTP verb for ApiCall (POST / PUT / DELETE). <see langword="null"/> otherwise.</param>
 /// <param name="ConfirmationKey">Optional i18n key for the confirmation modal.</param>
 /// <param name="WorkflowTransitionName">Name of the target workflow state for WorkflowTransition.</param>

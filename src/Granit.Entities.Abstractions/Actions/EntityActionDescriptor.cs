@@ -12,7 +12,7 @@ namespace Granit.Entities.Actions;
 /// <param name="Icon">Icon name from the icon catalog.</param>
 /// <param name="Order">Display order among the entity's actions.</param>
 /// <param name="RequiresPermission">Optional permission gate — drops the action from the manifest payload when the user does not hold it (defense in depth, never just hidden).</param>
-/// <param name="UrlTemplate">URL template with <c>{id}</c> placeholder. Required for ApiCall, Download and Navigate; <see langword="null"/> for WorkflowTransition.</param>
+/// <param name="UrlTemplate">URL template with <c>{id}</c> placeholder. Required for ApiCall, Download and Navigate; <see langword="null"/> for WorkflowTransition. Optional for <see cref="EntityActionKind.OpenDrawer"/> and <see cref="EntityActionKind.OpenModal"/> — when <see langword="null"/>, the renderer falls back to the entity's default detail / form layout.</param>
 /// <param name="HttpMethod">HTTP verb for ApiCall (POST / PUT / DELETE). <see langword="null"/> otherwise.</param>
 /// <param name="ConfirmationKey">Optional i18n key for the confirmation modal shown before invoking the action.</param>
 /// <param name="WorkflowTransitionName">Name of the target workflow state for <see cref="EntityActionKind.WorkflowTransition"/>.</param>

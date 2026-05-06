@@ -96,6 +96,36 @@ public sealed class EntityActionBuilder<TEntity>
         return this;
     }
 
+    /// <summary>
+    /// Configures the action as a pure-frontend "open the side drawer" command.
+    /// When <paramref name="urlTemplate"/> is <see langword="null"/> (default),
+    /// the renderer opens the drawer on the entity's <c>details["default"]</c>
+    /// layout for the row. Pass an explicit template only when the drawer must
+    /// render a non-default detail surface or fetch a custom payload.
+    /// </summary>
+    public EntityActionBuilder<TEntity> OpenDrawer(string? urlTemplate = null)
+    {
+        _kind = EntityActionKind.OpenDrawer;
+        _httpMethod = null;
+        _urlTemplate = urlTemplate;
+        return this;
+    }
+
+    /// <summary>
+    /// Configures the action as a pure-frontend "open a modal dialog" command.
+    /// When <paramref name="urlTemplate"/> is <see langword="null"/> (default),
+    /// the renderer opens the modal on the entity's <c>forms["default"]</c>
+    /// layout for the row (typical inline-edit case). Pass an explicit template
+    /// for wizard-style modals (Import / Export, etc.).
+    /// </summary>
+    public EntityActionBuilder<TEntity> OpenModal(string? urlTemplate = null)
+    {
+        _kind = EntityActionKind.OpenModal;
+        _httpMethod = null;
+        _urlTemplate = urlTemplate;
+        return this;
+    }
+
     /// <summary>i18n key for the user-facing label.</summary>
     public EntityActionBuilder<TEntity> DisplayKey(string displayKey)
     {
@@ -199,12 +229,17 @@ public sealed class EntityActionBuilder<TEntity>
     {
         // Kind-specific guards: invariants the fluent shortcuts can't catch on
         // their own (e.g. someone configures DisplayKey + Order without ever
-        // calling ApiCall/Download/Navigate/WorkflowTransition).
-        if (_kind != EntityActionKind.WorkflowTransition && _urlTemplate is null)
+        // calling ApiCall/Download/Navigate/WorkflowTransition/OpenDrawer/OpenModal).
+        // OpenDrawer / OpenModal are pure-frontend kinds — a null URL is valid
+        // (the renderer falls back to the entity's default detail / form layout).
+        if (_urlTemplate is null
+            && _kind is not EntityActionKind.WorkflowTransition
+            && _kind is not EntityActionKind.OpenDrawer
+            && _kind is not EntityActionKind.OpenModal)
         {
             throw new InvalidOperationException(
-                $"Action '{_name}' must declare a URL via ApiCall(...) / Download(...) / Navigate(...) "
-                + "or be a WorkflowTransition. Bare actions are not allowed.");
+                $"Action '{_name}' must declare a URL via ApiCall(...) / Download(...) / Navigate(...), "
+                + "be a WorkflowTransition, or use OpenDrawer() / OpenModal(). Bare actions are not allowed.");
         }
 
         // List-header actions are entity-scope — a {id} placeholder would

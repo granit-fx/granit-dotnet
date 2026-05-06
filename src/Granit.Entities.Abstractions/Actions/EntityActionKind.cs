@@ -23,4 +23,22 @@ public enum EntityActionKind
     /// <c>WorkflowTransitionName</c> carries the target state name.
     /// </summary>
     WorkflowTransition = 3,
+
+    /// <summary>
+    /// Pure-frontend action that opens the entity's side drawer (peek). When
+    /// <c>UrlTemplate</c> is <see langword="null"/>, the renderer falls back to
+    /// the manifest's <c>details["default"]</c> layout for the row. When set,
+    /// the renderer fetches the URL and renders the result inside the drawer
+    /// (escape hatch for non-default detail surfaces).
+    /// </summary>
+    OpenDrawer = 4,
+
+    /// <summary>
+    /// Pure-frontend action that opens a modal dialog. When
+    /// <c>UrlTemplate</c> is <see langword="null"/>, the renderer falls back
+    /// to the manifest's <c>forms["default"]</c> layout for the row (typical
+    /// inline-edit case). When set, the renderer fetches the URL and renders
+    /// the result inside the modal (e.g. import / export wizards).
+    /// </summary>
+    OpenModal = 5,
 }
