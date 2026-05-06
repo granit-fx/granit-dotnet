@@ -22,5 +22,5 @@ public static class EntityViewPermissions
     public const string Manage = "Entities.Views.Manage";
 
     /// <summary>Delete any view (moderation). Intended for tenant admins only.</summary>
-    public const string DeleteAny = "Entities.Views.Delete.Any";
+    public const string DeleteAny = "Entities.Views.DeleteAny";
 }

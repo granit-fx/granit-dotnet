@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "Dönem ya bir adlandırılmış jeton (ör. 'last_30d') ya da hem From hem To olmalıdır — ikisi birden ya da hiçbiri olmaz.",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To'dan kesinlikle önce olmalıdır.",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' için belirtilen koşul karşılanmadı.",
+    "Granit:Validation:RegroupGroupKeyRequired": "Yeniden gruplama deltası boş olmayan bir GroupKey gerektirir.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' doğru biçimde değil.",
+    "Granit:Validation:ReorderDeltaIllFormed": "Yeniden sıralama deltası BeforeFieldName veya AfterFieldName'den yalnızca birini ayarlamalıdır.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' toplamda {ExpectedPrecision} basamaktan fazla olmamalı ve {ExpectedScale} ondalık basamağa izin verilmelidir.",
     "Granit:Validation:ScheduledAction:FutureDate": "Planlanan tarih gelecekte olmalıdır.",
+    "Granit:Validation:TooManyDeltas": "Tek bir istekte çok fazla delta var.",
     "Granit:Validation:UrlMustBeHttps": "URL, HTTPS kullanmalıdır.",
     "Granit:Validation:ValidToAfterValidFrom": "'Geçerlilik bitiş tarihi', 'Geçerlilik başlangıç tarihi'nden sonra olmalıdır."
   }

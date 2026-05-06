@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Skapa personliga entitetsvyer",
     "Permission:Entities.Views.Share": "Dela entitetsvyer med roller eller användare",
     "Permission:Entities.Views.Manage": "Hantera entitetsvyer (fäst / ange tenant-standard / befordra)",
-    "Permission:Entities.Views.Delete.Any": "Ta bort valfri entitetsvy (moderering)"
+    "Permission:Entities.Views.DeleteAny": "Ta bort valfri entitetsvy (moderering)"
   }
 }

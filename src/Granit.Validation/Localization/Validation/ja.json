@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "期間は名前付きトークン(例: 'last_30d')または From と To の両方である必要があります — 両方や両方なしは不可。",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From は Period.To より厳密に前である必要があります。",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' に対する指定された条件が満たされていません。",
+    "Granit:Validation:RegroupGroupKeyRequired": "再グループ化デルタには空でない GroupKey が必要です。",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' の形式が正しくありません。",
+    "Granit:Validation:ReorderDeltaIllFormed": "並べ替えデルタは BeforeFieldName または AfterFieldName のいずれか1つだけを設定する必要があります。",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' は合計 {ExpectedPrecision} 桁以内で、うち小数部は {ExpectedScale} 桁以内である必要があります。",
     "Granit:Validation:ScheduledAction:FutureDate": "スケジュール日は将来の日付である必要があります。",
+    "Granit:Validation:TooManyDeltas": "1つのリクエストにデルタが多すぎます。",
     "Granit:Validation:UrlMustBeHttps": "URL は HTTPS を使用する必要があります。",
     "Granit:Validation:ValidToAfterValidFrom": "'有効終了日' は '有効開始日' より後でなければなりません。"
   }

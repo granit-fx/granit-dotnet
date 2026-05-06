@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Kişisel varlık görünümleri oluştur",
     "Permission:Entities.Views.Share": "Varlık görünümlerini rollerle veya kullanıcılarla paylaş",
     "Permission:Entities.Views.Manage": "Varlık görünümlerini yönet (sabitle / kiracı varsayılanı ayarla / yükselt)",
-    "Permission:Entities.Views.Delete.Any": "Herhangi bir varlık görünümünü sil (moderasyon)"
+    "Permission:Entities.Views.DeleteAny": "Herhangi bir varlık görünümünü sil (moderasyon)"
   }
 }

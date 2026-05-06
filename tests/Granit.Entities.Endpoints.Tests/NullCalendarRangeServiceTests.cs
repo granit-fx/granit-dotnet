@@ -1,6 +1,5 @@
 using Granit.Entities;
-using Granit.Entities.Endpoints.Dtos;
-using Granit.Entities.Endpoints.Internal;
+using Granit.Entities.Internal;
 using Granit.Entities.Layouts;
 using Shouldly;
 using Xunit;

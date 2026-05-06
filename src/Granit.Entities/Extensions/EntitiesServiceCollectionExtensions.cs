@@ -1,3 +1,5 @@
+using Granit.Diagnostics;
+using Granit.Entities.Diagnostics;
 using Granit.Entities.Internal;
 using Granit.Entities.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +43,8 @@ public static class EntitiesServiceCollectionExtensions
 
         services.TryAddSingleton<IEntityDefinitionRegistry, EntityDefinitionRegistry>();
         services.AddHostedService<IntegrityCheckRunner>();
+
+        GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
 
         return services;
     }

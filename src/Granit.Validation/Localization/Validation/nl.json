@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "Periode moet ofwel een benoemd token zijn (bijv. 'last_30d') ofwel From en To bevatten — niet beide, niet geen van beide.",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From moet strikt vóór Period.To liggen.",
     "Granit:Validation:PredicateValidator": "Aan de opgegeven voorwaarde voor '{PropertyName}' is niet voldaan.",
+    "Granit:Validation:RegroupGroupKeyRequired": "Regroup-delta vereist een niet-lege GroupKey.",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' heeft niet het juiste formaat.",
+    "Granit:Validation:ReorderDeltaIllFormed": "Reorder-delta moet precies één van BeforeFieldName / AfterFieldName instellen.",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' mag niet meer dan {ExpectedPrecision} cijfers bevatten, waarvan {ExpectedScale} decimalen.",
     "Granit:Validation:ScheduledAction:FutureDate": "De geplande datum moet in de toekomst liggen.",
+    "Granit:Validation:TooManyDeltas": "Te veel delta's in een enkel verzoek.",
     "Granit:Validation:UrlMustBeHttps": "De URL moet HTTPS gebruiken.",
     "Granit:Validation:ValidToAfterValidFrom": "'Geldig tot' moet na 'Geldig vanaf' liggen."
   }

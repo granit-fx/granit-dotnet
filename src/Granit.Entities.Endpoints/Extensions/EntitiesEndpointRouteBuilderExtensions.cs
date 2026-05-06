@@ -1,7 +1,6 @@
-using Granit.Entities.Endpoints.Diagnostics;
-using Granit.Entities.Endpoints.Endpoints;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
+using Granit.Entities.Internal;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -73,7 +72,6 @@ public static class EntitiesEndpointRouteBuilderExtensions
         // Granit.Entities.Customization.Endpoints when that package is loaded.
         services.TryAddScoped<IManifestCustomizationApplier, NullManifestCustomizationApplier>();
         services.AddOptions<EntitiesEndpointsOptions>();
-        Granit.Diagnostics.GranitActivitySourceRegistry.Register(EntityActivitySource.Name);
         return services;
     }
 }
