@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Entities.Endpoints.Endpoints;
+namespace Granit.Entities.Endpoints;
 
 /// <summary>
 /// Range-query handler for the calendar list-view layout. Mounted under

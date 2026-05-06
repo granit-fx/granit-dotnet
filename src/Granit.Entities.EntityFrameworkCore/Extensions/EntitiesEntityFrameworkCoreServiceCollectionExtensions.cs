@@ -1,4 +1,3 @@
-using Granit.Entities.Endpoints;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.EntityFrameworkCore.Internal;
 using Granit.Entities.Layouts;

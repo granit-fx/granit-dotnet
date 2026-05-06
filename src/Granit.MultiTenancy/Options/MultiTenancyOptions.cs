@@ -104,27 +104,4 @@ public sealed class MultiTenancyOptions
     /// No trailing slash.
     /// </summary>
     public string? FallbackBaseUrl { get; set; }
-
-    /// <summary>
-    /// When <see langword="true"/>, the middleware verifies that the authenticated
-    /// user is recorded as a member of the resolved tenant before activating the
-    /// context. Mismatches return 403 Forbidden.
-    /// </summary>
-    /// <remarks>
-    /// <para>
-    /// SECURITY: the JWT <c>tenant_id</c> claim is otherwise trusted implicitly.
-    /// If an upstream identity provider lets the user set their own claim value,
-    /// that user can pivot to any tenant. Enabling this flag adds a server-side
-    /// membership lookup via <see cref="Stores.IUserTenantMembershipReader"/>.
-    /// </para>
-    /// <para>
-    /// Default: <see langword="false"/>. When set to <see langword="true"/>, the
-    /// host MUST register a concrete <see cref="Stores.IUserTenantMembershipReader"/>;
-    /// otherwise the
-    /// <see cref="Stores.NullUserTenantMembershipReader"/> fallback would silently
-    /// accept every membership claim. Misconfiguration is detected at startup by
-    /// <see cref="MultiTenancyOptionsValidator"/>.
-    /// </para>
-    /// </remarks>
-    public bool RequireMembershipCheck { get; set; }
 }

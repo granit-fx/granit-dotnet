@@ -7,9 +7,10 @@ namespace Granit.MultiTenancy;
 /// when included in the module tree. <c>IsAvailable</c> is always false;
 /// <c>Change()</c> is a no-op.
 /// </summary>
-internal sealed class NullTenantContext : ICurrentTenant
+public sealed class NullTenantContext : ICurrentTenant
 {
-    internal static readonly NullTenantContext Instance = new();
+    /// <summary>Canonical instance used by <c>AddGranit&lt;T&gt;()</c> as the default registration.</summary>
+    public static readonly NullTenantContext Instance = new();
 
     public bool IsAvailable => false;
     public Guid? Id => null;

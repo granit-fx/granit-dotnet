@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Creare viste personali delle entità",
     "Permission:Entities.Views.Share": "Condividere le viste delle entità con ruoli o utenti",
     "Permission:Entities.Views.Manage": "Gestire le viste delle entità (fissare / impostare predefinita del tenant / promuovere)",
-    "Permission:Entities.Views.Delete.Any": "Eliminare qualsiasi vista di entità (moderazione)"
+    "Permission:Entities.Views.DeleteAny": "Eliminare qualsiasi vista di entità (moderazione)"
   }
 }

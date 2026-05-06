@@ -45,7 +45,7 @@ internal sealed class EntityViewsPermissionDefinitionProvider : IPermissionDefin
         group.AddPermission(
             EntityViewPermissions.DeleteAny,
             LocalizableString.Create<EntityViewsEndpointsLocalizationResource>(
-                "Permission:Entities.Views.Delete.Any"),
+                "Permission:Entities.Views.DeleteAny"),
             MultiTenancySides.Both);
     }
 }

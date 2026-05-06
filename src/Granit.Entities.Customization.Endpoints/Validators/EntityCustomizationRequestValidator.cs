@@ -2,6 +2,7 @@ using FluentValidation;
 using Granit.Entities.Customization.Domain.Deltas;
 using Granit.Entities.Customization.Endpoints.Dtos;
 using Granit.Entities.Customization.Endpoints.Options;
+using Granit.Validation.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Entities.Customization.Endpoints.Validators;
@@ -23,24 +24,19 @@ internal sealed class EntityCustomizationRequestValidator : AbstractValidator<En
 
         RuleFor(x => x.Deltas)
             .Must(d => d.Count <= maxDeltas)
-            .WithMessage($"At most {maxDeltas} deltas may be sent in a single request.");
+            .WithErrorCodeAndMessage("Granit:Validation:TooManyDeltas");
 
         RuleForEach(x => x.Deltas).ChildRules(child =>
         {
             child.RuleFor(d => d.FieldName).NotEmpty();
-            child.RuleFor(d => d).Custom((delta, ctx) =>
-            {
-                if (delta is ReorderDelta reorder && !reorder.IsAnchorWellFormed)
-                {
-                    ctx.AddFailure(
-                        nameof(ReorderDelta),
-                        $"ReorderDelta for '{reorder.FieldName}' must set exactly one of BeforeFieldName / AfterFieldName.");
-                }
-                if (delta is RegroupDelta regroup && string.IsNullOrWhiteSpace(regroup.GroupKey))
-                {
-                    ctx.AddFailure(nameof(RegroupDelta.GroupKey), "GroupKey is required.");
-                }
-            });
+
+            child.RuleFor(d => d)
+                .Must(d => d is not ReorderDelta r || r.IsAnchorWellFormed)
+                .WithErrorCodeAndMessage("Granit:Validation:ReorderDeltaIllFormed");
+
+            child.RuleFor(d => d)
+                .Must(d => d is not RegroupDelta r || !string.IsNullOrWhiteSpace(r.GroupKey))
+                .WithErrorCodeAndMessage("Granit:Validation:RegroupGroupKeyRequired");
         });
     }
 }

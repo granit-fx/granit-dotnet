@@ -33,16 +33,13 @@ public sealed class TenantResolutionMiddlewareTests
         TenantResolverPipeline pipeline,
         bool isEnabled = true,
         TenantHeaderTrustMode headerTrustMode = TenantHeaderTrustMode.Unrestricted,
-        bool validateTenantExistence = false,
-        bool requireMembershipCheck = false,
-        IUserTenantMembershipReader? membershipReader = null)
+        bool validateTenantExistence = false)
     {
         IOptions<MultiTenancyOptions> options = Microsoft.Extensions.Options.Options.Create(new MultiTenancyOptions
         {
             IsEnabled = isEnabled,
             HeaderTrustMode = headerTrustMode,
             ValidateTenantExistence = validateTenantExistence,
-            RequireMembershipCheck = requireMembershipCheck,
         });
         ITenantReader tenantReader = Substitute.For<ITenantReader>();
         tenantReader.ExistsAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>())
@@ -51,7 +48,6 @@ public sealed class TenantResolutionMiddlewareTests
             currentTenant,
             pipeline,
             tenantReader,
-            membershipReader ?? new NullUserTenantMembershipReader(),
             CreateMetrics(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
@@ -212,131 +208,8 @@ public sealed class TenantResolutionMiddlewareTests
             currentTenant,
             pipeline,
             tenantReader,
-            new NullUserTenantMembershipReader(),
             CreateMetrics(),
             options,
             NullLogger<TenantResolutionMiddleware>.Instance);
-    }
-
-    // ── Membership check ──────────────────────────────────────────────
-
-    private static DefaultHttpContext AuthenticatedContext(string subject)
-    {
-        DefaultHttpContext context = new();
-        var identity = new System.Security.Claims.ClaimsIdentity("test");
-        identity.AddClaim(new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.NameIdentifier, subject));
-        context.User = new System.Security.Claims.ClaimsPrincipal(identity);
-        return context;
-    }
-
-    [Fact]
-    public async Task RequireMembershipCheck_Off_DoesNotConsultReader()
-    {
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
-        IUserTenantMembershipReader reader = Substitute.For<IUserTenantMembershipReader>();
-        TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(Guid.NewGuid()));
-        TenantResolutionMiddleware middleware = CreateMiddleware(
-            currentTenant, pipeline,
-            requireMembershipCheck: false, membershipReader: reader);
-        DefaultHttpContext context = AuthenticatedContext("alice");
-
-        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
-
-        await reader.DidNotReceive().IsMemberAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
-        context.Response.StatusCode.ShouldBe(StatusCodes.Status200OK);
-    }
-
-    [Fact]
-    public async Task RequireMembershipCheck_On_AnonymousRequest_BypassesCheck()
-    {
-        // Anonymous flows (login, public webhooks) reach the middleware without
-        // an authenticated user. The check is skipped — no claim to validate.
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
-        IUserTenantMembershipReader reader = Substitute.For<IUserTenantMembershipReader>();
-        TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(Guid.NewGuid()));
-        TenantResolutionMiddleware middleware = CreateMiddleware(
-            currentTenant, pipeline,
-            requireMembershipCheck: true, membershipReader: reader);
-        DefaultHttpContext context = new();
-
-        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
-
-        await reader.DidNotReceive().IsMemberAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task RequireMembershipCheck_On_AuthenticatedMember_PassesThrough()
-    {
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        IDisposable scope = Substitute.For<IDisposable>();
-        currentTenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(scope);
-        IUserTenantMembershipReader reader = Substitute.For<IUserTenantMembershipReader>();
-        reader.IsMemberAsync("alice", Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(true));
-        var tenantId = Guid.NewGuid();
-        TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(tenantId));
-        TenantResolutionMiddleware middleware = CreateMiddleware(
-            currentTenant, pipeline,
-            requireMembershipCheck: true, membershipReader: reader);
-        DefaultHttpContext context = AuthenticatedContext("alice");
-        bool nextCalled = false;
-
-        await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
-
-        await reader.Received(1).IsMemberAsync("alice", tenantId, Arg.Any<CancellationToken>());
-        nextCalled.ShouldBeTrue();
-        currentTenant.Received(1).Change(tenantId, Arg.Any<string?>());
-    }
-
-    [Fact]
-    public async Task RequireMembershipCheck_On_AuthenticatedNonMember_Returns403()
-    {
-        // Core defense: the JWT carried a tenant_id claim that the JwtClaimTenantResolver
-        // honored, but the user is not actually a member of that tenant. Rejected.
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        IUserTenantMembershipReader reader = Substitute.For<IUserTenantMembershipReader>();
-        reader.IsMemberAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(false));
-        var tenantId = Guid.NewGuid();
-        TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(tenantId));
-        TenantResolutionMiddleware middleware = CreateMiddleware(
-            currentTenant, pipeline,
-            requireMembershipCheck: true, membershipReader: reader);
-        DefaultHttpContext context = AuthenticatedContext("mallory");
-        bool nextCalled = false;
-
-        await middleware.InvokeAsync(context, _ => { nextCalled = true; return Task.CompletedTask; });
-
-        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        nextCalled.ShouldBeFalse();
-        currentTenant.DidNotReceive().Change(Arg.Any<Guid?>(), Arg.Any<string?>());
-    }
-
-    [Fact]
-    public async Task RequireMembershipCheck_On_AuthenticatedWithoutSubClaim_Returns403()
-    {
-        // No `sub` / NameIdentifier claim — we have no user identity to check
-        // membership against. Fail-closed.
-        ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
-        IUserTenantMembershipReader reader = Substitute.For<IUserTenantMembershipReader>();
-        reader.IsMemberAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>())
-            .Returns(Task.FromResult(true));
-        TenantResolverPipeline pipeline = PipelineReturning(new TenantInfo(Guid.NewGuid()));
-        TenantResolutionMiddleware middleware = CreateMiddleware(
-            currentTenant, pipeline,
-            requireMembershipCheck: true, membershipReader: reader);
-        DefaultHttpContext context = new();
-        // Authenticated but without NameIdentifier or sub claim.
-        context.User = new System.Security.Claims.ClaimsPrincipal(
-            new System.Security.Claims.ClaimsIdentity("test"));
-
-        await middleware.InvokeAsync(context, _ => Task.CompletedTask);
-
-        context.Response.StatusCode.ShouldBe(StatusCodes.Status403Forbidden);
-        await reader.DidNotReceive().IsMemberAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
     }
 }

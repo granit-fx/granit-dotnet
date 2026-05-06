@@ -2,9 +2,9 @@
 // Tests - TenantContextBehavior
 // =============================================================================
 // Verifies that X-Tenant-Id header is correctly restored to ICurrentTenant in
-// incoming Wolverine envelopes, that the scope is disposed on After(), and
-// that envelopes without a tenant header are observable / fail-closed when
-// requested.
+// incoming Wolverine envelopes, that the scope is disposed on After(), that
+// envelopes without a tenant header emit an observability metric, and that the
+// behavior short-circuits in single-tenant deployments.
 // =============================================================================
 
 using System.Diagnostics.Metrics;
@@ -12,10 +12,8 @@ using Granit.MultiTenancy;
 using Granit.Wolverine.Behaviors;
 using Granit.Wolverine.Diagnostics;
 using Granit.Wolverine.Middleware;
-using Granit.Wolverine.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Metrics.Testing;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Shouldly;
 using Wolverine;
@@ -40,14 +38,8 @@ public sealed class TenantContextBehaviorTests : IDisposable
 
     public void Dispose() => _sp.Dispose();
 
-    private TenantContextBehavior CreateBehavior(
-        ICurrentTenant currentTenant,
-        bool requireEnvelopeTenant = false)
-    {
-        IOptions<WolverineMessagingOptions> options = Microsoft.Extensions.Options.Options.Create(
-            new WolverineMessagingOptions { RequireEnvelopeTenant = requireEnvelopeTenant });
-        return new TenantContextBehavior(currentTenant, _metrics, options);
-    }
+    private TenantContextBehavior CreateBehavior(ICurrentTenant currentTenant) =>
+        new(currentTenant, _metrics);
 
     private MetricCollector<long> NoTenantCollector() =>
         new(_meterFactory, WolverineMetrics.MeterName, "granit.wolverine.envelope.no_tenant");
@@ -70,11 +62,10 @@ public sealed class TenantContextBehaviorTests : IDisposable
     }
 
     [Fact]
-    public void Before_WithMissingHeader_PassesThrough_AndRecordsMetric()
+    public void Before_WithMissingHeader_RecordsUnmarked()
     {
-        // Default behavior is permissive: handler runs without scope. The metric
-        // makes the occurrence visible so SOC can quantify the migration backlog
-        // before flipping RequireEnvelopeTenant.
+        // Envelope without tenant header for a regular message: observability only.
+        // Authorization is the handler's responsibility (per-(user, tenant) permission check).
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         TenantContextBehavior behavior = CreateBehavior(tenant);
         using MetricCollector<long> collector = NoTenantCollector();
@@ -85,12 +76,12 @@ public sealed class TenantContextBehaviorTests : IDisposable
         tenant.DidNotReceive().Change(Arg.Any<Guid?>());
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
-        snapshot[0].Tags["outcome"].ShouldBe("allowed");
+        snapshot[0].Tags["outcome"].ShouldBe("unmarked");
         snapshot[0].Tags["message_type"].ShouldBe(nameof(TenantScopedMessage));
     }
 
     [Fact]
-    public void Before_WithInvalidGuidHeader_PassesThrough_AndRecordsMetric()
+    public void Before_WithInvalidGuidHeader_RecordsUnmarked()
     {
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
         TenantContextBehavior behavior = CreateBehavior(tenant);
@@ -105,11 +96,12 @@ public sealed class TenantContextBehaviorTests : IDisposable
     }
 
     [Fact]
-    public void Before_WithCrossTenantMessage_NoHeader_AllowedMarked()
+    public void Before_WithCrossTenantMessage_NoHeader_RecordsMarked()
     {
-        // System-wide messages opt out of the gate via [CrossTenantMessage].
+        // Messages legitimately host-scope opt in via [CrossTenantMessage].
+        // Distinct outcome tag so dashboards can suppress them from leak alerts.
         ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        TenantContextBehavior behavior = CreateBehavior(tenant, requireEnvelopeTenant: true);
+        TenantContextBehavior behavior = CreateBehavior(tenant);
         using MetricCollector<long> collector = NoTenantCollector();
         Envelope envelope = new() { Message = new SystemBroadcastMessage() };
 
@@ -118,25 +110,23 @@ public sealed class TenantContextBehaviorTests : IDisposable
         tenant.DidNotReceive().Change(Arg.Any<Guid?>());
         IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
         snapshot.ShouldHaveSingleItem();
-        snapshot[0].Tags["outcome"].ShouldBe("allowed_marked");
+        snapshot[0].Tags["outcome"].ShouldBe("marked");
         snapshot[0].Tags["message_type"].ShouldBe(nameof(SystemBroadcastMessage));
     }
 
     [Fact]
-    public void Before_WhenRequireEnvelopeTenant_NoHeader_NotMarked_Throws()
+    public void Before_NonMultiTenantApp_ShortCircuits()
     {
-        // With the gate enabled, untenanted envelopes for tenant-scoped messages
-        // must throw — they signal a producer-side bug or an envelope forgery.
-        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
-        TenantContextBehavior behavior = CreateBehavior(tenant, requireEnvelopeTenant: true);
+        // Single-tenant / non-MT deployment: ICurrentTenant resolves to
+        // NullTenantContext. The behavior must not record observability noise
+        // for a signal that does not apply.
+        TenantContextBehavior behavior = CreateBehavior(NullTenantContext.Instance);
         using MetricCollector<long> collector = NoTenantCollector();
         Envelope envelope = new() { Message = new TenantScopedMessage() };
 
-        Should.Throw<InvalidOperationException>(() => behavior.Before(envelope))
-            .Message.ShouldContain(nameof(CrossTenantMessageAttribute));
-        IReadOnlyList<CollectedMeasurement<long>> snapshot = collector.GetMeasurementSnapshot();
-        snapshot.ShouldHaveSingleItem();
-        snapshot[0].Tags["outcome"].ShouldBe("rejected");
+        behavior.Before(envelope);
+
+        collector.GetMeasurementSnapshot().ShouldBeEmpty();
     }
 
     [Fact]

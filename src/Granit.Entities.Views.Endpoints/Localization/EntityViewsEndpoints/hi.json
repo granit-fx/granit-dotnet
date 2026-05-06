@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "व्यक्तिगत एंटिटी व्यू बनाएँ",
     "Permission:Entities.Views.Share": "एंटिटी व्यू को भूमिकाओं या उपयोगकर्ताओं के साथ साझा करें",
     "Permission:Entities.Views.Manage": "एंटिटी व्यू प्रबंधित करें (पिन करें / टेनेंट डिफ़ॉल्ट सेट करें / प्रमोट करें)",
-    "Permission:Entities.Views.Delete.Any": "कोई भी एंटिटी व्यू हटाएँ (मॉडरेशन)"
+    "Permission:Entities.Views.DeleteAny": "कोई भी एंटिटी व्यू हटाएँ (मॉडरेशन)"
   }
 }

@@ -21206,7 +21206,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/Extensions/EntitiesCustomizationEndpointRouteBuilderExtensions.cs",
-      "line": 15,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitEntitiesCustomization",
@@ -21864,7 +21864,7 @@
       "kind": "class",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Extensions/EntitiesEndpointRouteBuilderExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitEntitiesEndpoints",
@@ -22764,7 +22764,7 @@
       "kind": "class",
       "project": "Granit.Entities.Views.Endpoints",
       "file": "src/Granit.Entities.Views.Endpoints/Extensions/EntityViewsEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 12,
       "members": [
         {
           "name": "MapGranitEntityViewsEndpoints",
@@ -35435,12 +35435,6 @@
           "kind": "method",
           "signature": "RecordContextSwitched(string? tenantId)",
           "returnType": "void"
-        },
-        {
-          "name": "RecordMembershipRejected",
-          "kind": "method",
-          "signature": "RecordMembershipRejected()",
-          "returnType": "void"
         }
       ]
     },
@@ -35843,6 +35837,46 @@
       "members": []
     },
     {
+      "name": "NullTenantContext",
+      "fqn": "Granit.MultiTenancy.NullTenantContext",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/NullTenantContext.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NullTenantContext Instance ="
+        },
+        {
+          "name": "IsAvailable",
+          "kind": "property",
+          "signature": "bool IsAvailable",
+          "returnType": "bool"
+        },
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid? Id",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string? Name",
+          "returnType": "string?"
+        },
+        {
+          "name": "Change",
+          "kind": "method",
+          "signature": "Change(Guid? id, string? name = null)",
+          "returnType": "IDisposable"
+        }
+      ]
+    },
+    {
       "name": "MultiTenancyOptions",
       "fqn": "Granit.MultiTenancy.Options.MultiTenancyOptions",
       "kind": "class",
@@ -36173,22 +36207,6 @@
           "kind": "method",
           "signature": "DeactivateAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task"
-        }
-      ]
-    },
-    {
-      "name": "IUserTenantMembershipReader",
-      "fqn": "Granit.MultiTenancy.Stores.IUserTenantMembershipReader",
-      "kind": "interface",
-      "project": "Granit.MultiTenancy",
-      "file": "src/Granit.MultiTenancy/Stores/IUserTenantMembershipReader.cs",
-      "line": 30,
-      "members": [
-        {
-          "name": "IsMemberAsync",
-          "kind": "method",
-          "signature": "IsMemberAsync(string userId, Guid tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<bool>"
         }
       ]
     },
@@ -62141,7 +62159,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Behaviors/TenantContextBehavior.cs",
-      "line": 30,
+      "line": 33,
       "members": [
         {
           "name": "Before",
@@ -62251,7 +62269,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/CrossTenantMessageAttribute.cs",
-      "line": 26,
+      "line": 24,
       "members": []
     },
     {

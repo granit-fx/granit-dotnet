@@ -1,4 +1,4 @@
-namespace Granit.Entities.Endpoints.Dtos;
+namespace Granit.Entities;
 
 /// <summary>
 /// One event positioned on the calendar's time axis. The renderer
