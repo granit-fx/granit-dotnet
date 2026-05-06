@@ -172,7 +172,7 @@ internal static class EntityViewsEndpoints
                 cancellationToken).ConfigureAwait(false);
             return TypedResults.Ok(EntityViewResponse.FromDescriptor(updated));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.Ordinal))
+        catch (EntityViewNotFoundException ex)
         {
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }
@@ -189,7 +189,7 @@ internal static class EntityViewsEndpoints
             await writer.DeleteAsync(id, cancellationToken).ConfigureAwait(false);
             return TypedResults.NoContent();
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.Ordinal))
+        catch (EntityViewNotFoundException ex)
         {
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }
@@ -234,7 +234,7 @@ internal static class EntityViewsEndpoints
                 cancellationToken).ConfigureAwait(false);
             return TypedResults.Ok(EntityViewResponse.FromDescriptor(updated));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.Ordinal))
+        catch (EntityViewNotFoundException ex)
         {
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }
@@ -251,7 +251,7 @@ internal static class EntityViewsEndpoints
             EntityViewDescriptor updated = await action(id, body.Value, cancellationToken).ConfigureAwait(false);
             return TypedResults.Ok(EntityViewResponse.FromDescriptor(updated));
         }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("not found", StringComparison.Ordinal))
+        catch (EntityViewNotFoundException ex)
         {
             return TypedResults.Problem(detail: ex.Message, statusCode: StatusCodes.Status404NotFound);
         }

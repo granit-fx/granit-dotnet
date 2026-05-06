@@ -171,8 +171,7 @@ internal sealed class EntityViewWriter(
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
-        return view ?? throw new InvalidOperationException(
-            $"EntityView '{id}' not found in the current tenant.");
+        return view ?? throw new EntityViewNotFoundException(id);
     }
 
     private async Task RequireMutationAuthorityAsync(EntityView view, CancellationToken cancellationToken)
