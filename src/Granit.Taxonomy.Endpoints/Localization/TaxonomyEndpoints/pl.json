@@ -1,0 +1,8 @@
+{
+  "culture": "pl",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Twórz, zmieniaj nazwy, zmieniaj kolory i usuwaj tagi",
+    "Permission:Taxonomy.Tags.Read": "Wyświetl tagi",
+    "PermissionGroup:Taxonomy": "Taksonomia"
+  }
+}

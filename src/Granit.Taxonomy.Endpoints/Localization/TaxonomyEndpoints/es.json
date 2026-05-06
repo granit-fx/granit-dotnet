@@ -1,0 +1,8 @@
+{
+  "culture": "es",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Crear, renombrar, recolorear y eliminar etiquetas",
+    "Permission:Taxonomy.Tags.Read": "Ver etiquetas",
+    "PermissionGroup:Taxonomy": "Taxonomía"
+  }
+}

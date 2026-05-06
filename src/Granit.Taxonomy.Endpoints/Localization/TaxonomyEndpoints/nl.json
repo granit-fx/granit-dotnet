@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Tags maken, hernoemen, herkleuren en verwijderen",
+    "Permission:Taxonomy.Tags.Read": "Tags bekijken",
+    "PermissionGroup:Taxonomy": "Taxonomie"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Etiketleri oluştur, yeniden adlandır, yeniden renklendir ve sil",
+    "Permission:Taxonomy.Tags.Read": "Etiketleri görüntüle",
+    "PermissionGroup:Taxonomy": "Taksonomi"
+  }
+}

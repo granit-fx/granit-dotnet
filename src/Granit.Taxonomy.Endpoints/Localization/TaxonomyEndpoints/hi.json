@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "टैग बनाएँ, नाम बदलें, रंग बदलें और हटाएँ",
+    "Permission:Taxonomy.Tags.Read": "टैग देखें",
+    "PermissionGroup:Taxonomy": "वर्गीकरण"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "en",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Create, rename, recolour, and delete tags",
+    "Permission:Taxonomy.Tags.Read": "View tags",
+    "PermissionGroup:Taxonomy": "Taxonomy"
+  }
+}

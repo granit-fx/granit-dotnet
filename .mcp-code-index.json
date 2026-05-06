@@ -2692,6 +2692,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Taxonomy.Endpoints",
+      "deps": [
+        "Granit.Authorization",
+        "Granit.Http.ApiDocumentation",
+        "Granit.Taxonomy",
+        "Granit.Validation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Taxonomy.EntityFrameworkCore",
       "deps": [
         "Granit.Taxonomy",
@@ -55558,6 +55568,107 @@
           "returnType": "bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
         }
       ]
+    },
+    {
+      "name": "TaxonomyEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Taxonomy.Endpoints.Extensions.TaxonomyEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Extensions/TaxonomyEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitTaxonomy",
+          "kind": "method",
+          "signature": "MapGranitTaxonomy(this IEndpointRouteBuilder endpoints, Action<TaxonomyEndpointsOptions>? configure = null)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitTaxonomyEndpointsModule",
+      "fqn": "Granit.Taxonomy.Endpoints.GranitTaxonomyEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/GranitTaxonomyEndpointsModule.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "TaxonomyEndpointsOptions",
+      "fqn": "Granit.Taxonomy.Endpoints.Options.TaxonomyEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Options/TaxonomyEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "Tags",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Tags",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "TaxonomyPermissions",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.TaxonomyPermissions",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "CreateTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.CreateTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/CreateTagRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "ListTagsResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.ListTagsResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/ListTagsResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TagResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.TagResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/TagResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "UpdateTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.UpdateTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/UpdateTagRequest.cs",
+      "line": 10,
+      "members": []
     },
     {
       "name": "TaxonomyEntityFrameworkCoreHostApplicationBuilderExtensions",

@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "タグの作成、名前変更、色変更、削除",
+    "Permission:Taxonomy.Tags.Read": "タグを表示",
+    "PermissionGroup:Taxonomy": "タクソノミー"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Permission:Taxonomy.Tags.Manage": "Vytvářet, přejmenovávat, přebarvovat a odstraňovat tagy",
+    "Permission:Taxonomy.Tags.Read": "Zobrazit tagy",
+    "PermissionGroup:Taxonomy": "Taxonomie"
+  }
+}
