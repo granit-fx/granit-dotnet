@@ -30,7 +30,7 @@ public sealed class NotificationDeliveryAttemptTests
         attempt.OccurredAt.ShouldBe(default);
         attempt.DurationMs.ShouldBe(0);
         attempt.ErrorMessage.ShouldBeNull();
-        attempt.IsSuccess.ShouldBeFalse();
+        attempt.IsSuccess.ShouldBeNull();
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public sealed class NotificationDeliveryAttemptTests
         attempt.OccurredAt.ShouldBe(now);
         attempt.DurationMs.ShouldBe(150);
         attempt.ErrorMessage.ShouldBeNull();
-        attempt.IsSuccess.ShouldBeTrue();
+        attempt.IsSuccess.ShouldBe(true);
     }
 
     [Fact]
@@ -76,7 +76,7 @@ public sealed class NotificationDeliveryAttemptTests
             ErrorMessage = "SMTP timeout",
         };
 
-        attempt.IsSuccess.ShouldBeFalse();
+        attempt.IsSuccess.ShouldBe(false);
         attempt.ErrorMessage.ShouldBe("SMTP timeout");
     }
 }

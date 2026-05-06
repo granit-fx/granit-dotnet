@@ -38,6 +38,9 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
 
     public NotificationDeliveryHandlerTests()
     {
+        _deliveryWriter.TryAcquireDeliveryAttemptAsync(Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
         _activityListener = new ActivityListener
         {
             ShouldListenTo = source => source.Name == "Granit.Notifications",
@@ -70,7 +73,7 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
         Func<Task> act = () => handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
-        await _deliveryWriter.DidNotReceive().RecordAsync(
+        await _deliveryWriter.DidNotReceive().TryAcquireDeliveryAttemptAsync(
             Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>());
     }
 
@@ -96,8 +99,11 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
 
         await handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
-        await _deliveryWriter.Received(1).RecordAsync(
-            Arg.Is<NotificationDeliveryAttempt>(r => r.IsSuccess),
+        await _deliveryWriter.Received(1).CompleteDeliveryAttemptAsync(
+            command.DeliveryId,
+            true,
+            Arg.Any<long>(),
+            null,
             Arg.Any<CancellationToken>());
     }
 
@@ -113,8 +119,11 @@ public sealed class NotificationDeliveryHandlerTests : IDisposable
         Func<Task> act = () => handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         await Should.ThrowAsync<NotificationDeliveryException>(act);
-        await _deliveryWriter.Received(1).RecordAsync(
-            Arg.Is<NotificationDeliveryAttempt>(r => !r.IsSuccess),
+        await _deliveryWriter.Received(1).CompleteDeliveryAttemptAsync(
+            command.DeliveryId,
+            false,
+            Arg.Any<long>(),
+            Arg.Is<string?>(m => !string.IsNullOrEmpty(m)),
             Arg.Any<CancellationToken>());
     }
 

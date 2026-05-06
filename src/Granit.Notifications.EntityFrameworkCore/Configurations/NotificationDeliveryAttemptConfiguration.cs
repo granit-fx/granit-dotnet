@@ -17,6 +17,7 @@ internal sealed class NotificationDeliveryAttemptConfiguration : IEntityTypeConf
         builder.Property(x => x.ChannelName).HasMaxLength(64).IsRequired();
         builder.Property(x => x.RecipientUserId).HasMaxLength(256).IsRequired();
         builder.Property(x => x.ErrorMessage).HasMaxLength(2048);
+        builder.Property(x => x.IsSuccess).IsRequired(false);
 
         builder.HasIndex(x => x.DeliveryId)
             .IsUnique()

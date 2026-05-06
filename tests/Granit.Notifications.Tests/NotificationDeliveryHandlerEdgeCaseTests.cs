@@ -33,6 +33,9 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
 
         _clock = Substitute.For<IClock>();
         _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
+
+        _deliveryWriter.TryAcquireDeliveryAttemptAsync(Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>())
+            .Returns(true);
     }
 
     public void Dispose() => _sp.Dispose();
@@ -54,9 +57,11 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
         await Should.ThrowAsync<OperationCanceledException>(
             () => handler.HandleAsync(command, TestContext.Current.CancellationToken));
 
-        // No failure should be recorded for cancellation
-        await _deliveryWriter.DidNotReceive().RecordAsync(
-            Arg.Is<NotificationDeliveryAttempt>(r => !r.IsSuccess),
+        await _deliveryWriter.Received(1).CompleteDeliveryAttemptAsync(
+            command.DeliveryId,
+            false,
+            Arg.Any<long>(),
+            Arg.Any<string?>(),
             Arg.Any<CancellationToken>());
     }
 
@@ -67,12 +72,12 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
         INotificationChannel channel = Substitute.For<INotificationChannel>();
         channel.Name.Returns(NotificationChannels.InApp);
 
-        NotificationDeliveryAttempt? captured = null;
-        _deliveryWriter.RecordAsync(Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>())
+        NotificationDeliveryAttempt? claimed = null;
+        _deliveryWriter.TryAcquireDeliveryAttemptAsync(Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>())
             .Returns(callInfo =>
             {
-                captured = callInfo.Arg<NotificationDeliveryAttempt>();
-                return Task.CompletedTask;
+                claimed = callInfo.Arg<NotificationDeliveryAttempt>();
+                return Task.FromResult(true);
             });
 
         NotificationDeliveryHandler handler = new(
@@ -83,13 +88,13 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
         await handler.HandleAsync(command, TestContext.Current.CancellationToken);
 
         // Assert
-        captured.ShouldNotBeNull();
-        captured!.DeliveryId.ShouldBe(command.DeliveryId);
-        captured.NotificationId.ShouldBe(command.NotificationId);
-        captured.NotificationTypeName.ShouldBe(command.NotificationTypeName);
-        captured.ChannelName.ShouldBe(command.ChannelName);
-        captured.RecipientUserId.ShouldBe(command.RecipientUserId);
-        captured.TenantId.ShouldBe(command.TenantId);
+        claimed.ShouldNotBeNull();
+        claimed!.DeliveryId.ShouldBe(command.DeliveryId);
+        claimed.NotificationId.ShouldBe(command.NotificationId);
+        claimed.NotificationTypeName.ShouldBe(command.NotificationTypeName);
+        claimed.ChannelName.ShouldBe(command.ChannelName);
+        claimed.RecipientUserId.ShouldBe(command.RecipientUserId);
+        claimed.TenantId.ShouldBe(command.TenantId);
     }
 
     [Fact]
@@ -100,14 +105,6 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
         channel.Name.Returns(NotificationChannels.InApp);
         channel.SendAsync(Arg.Any<NotificationDeliveryContext>(), Arg.Any<CancellationToken>())
             .Returns<Task>(_ => throw new InvalidOperationException("Network failure"));
-
-        NotificationDeliveryAttempt? captured = null;
-        _deliveryWriter.RecordAsync(Arg.Any<NotificationDeliveryAttempt>(), Arg.Any<CancellationToken>())
-            .Returns(callInfo =>
-            {
-                captured = callInfo.Arg<NotificationDeliveryAttempt>();
-                return Task.CompletedTask;
-            });
 
         NotificationDeliveryHandler handler = new(
             [channel], _deliveryWriter, new SimpleGuidGenerator(), _clock, NullLogger<NotificationDeliveryHandler>.Instance, _metrics);
@@ -124,9 +121,12 @@ public sealed class NotificationDeliveryHandlerEdgeCaseTests : IDisposable
         }
 
         // Assert
-        captured.ShouldNotBeNull();
-        captured!.IsSuccess.ShouldBeFalse();
-        captured.ErrorMessage.ShouldBe("Network failure");
+        await _deliveryWriter.Received(1).CompleteDeliveryAttemptAsync(
+            command.DeliveryId,
+            false,
+            Arg.Any<long>(),
+            "Network failure",
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -1,8 +1,8 @@
 // =============================================================================
 // Tests - NullNotificationDeliveryWriter
 // =============================================================================
-// Verifies the no-op delivery store used in development: RecordAsync completes
-// without error and does not throw for any valid input.
+// Verifies the no-op delivery store used in development: acquire/complete are
+// inert yet complete successfully (no persisted idempotency).
 // =============================================================================
 
 using Granit.Notifications.Domain;
@@ -17,46 +17,39 @@ public sealed class NullNotificationDeliveryWriterTests
     private readonly NullNotificationDeliveryWriter _store = new();
 
     [Fact]
-    public async Task RecordAsync_CompletesSuccessfully()
+    public async Task TryAcquireDeliveryAttemptAsync_CompletesSuccessfully()
     {
-        NotificationDeliveryAttempt attempt = BuildAttempt(isSuccess: true);
+        NotificationDeliveryAttempt claim = BuildClaim();
 
-        Func<Task> act = () => _store.RecordAsync(attempt, TestContext.Current.CancellationToken);
+        bool acquired = await _store.TryAcquireDeliveryAttemptAsync(claim, TestContext.Current.CancellationToken);
+
+        acquired.ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task CompleteDeliveryAttemptAsync_CompletesSuccessfully()
+    {
+        Func<Task> act = () => _store.CompleteDeliveryAttemptAsync(
+            Guid.NewGuid(),
+            success: true,
+            durationMilliseconds: 10,
+            errorMessage: null,
+            TestContext.Current.CancellationToken);
 
         await Should.NotThrowAsync(act);
     }
 
     [Fact]
-    public async Task RecordAsync_WithFailedAttempt_CompletesSuccessfully()
-    {
-        NotificationDeliveryAttempt attempt = BuildAttempt(isSuccess: false, errorMessage: "Channel error");
-
-        Func<Task> act = () => _store.RecordAsync(attempt, TestContext.Current.CancellationToken);
-
-        await Should.NotThrowAsync(act);
-    }
-
-    [Fact]
-    public async Task RecordAsync_ReturnsCompletedTask()
-    {
-        NotificationDeliveryAttempt attempt = BuildAttempt(isSuccess: true);
-
-        Task result = _store.RecordAsync(attempt, TestContext.Current.CancellationToken);
-
-        result.IsCompleted.ShouldBeTrue();
-        await result;
-    }
-
-    [Fact]
-    public async Task RecordAsync_MultipleCallsDoNotThrow()
+    public async Task MultipleAcquireCalls_AllReturnTrue()
     {
         for (int i = 0; i < 10; i++)
         {
-            NotificationDeliveryAttempt attempt = BuildAttempt(isSuccess: i % 2 == 0);
-            await _store.RecordAsync(attempt, TestContext.Current.CancellationToken);
+            bool acquired = await _store.TryAcquireDeliveryAttemptAsync(
+                BuildClaim(), TestContext.Current.CancellationToken);
+
+            acquired.ShouldBeTrue();
         }
 
-        // Null store is a no-op — verify it remains functional after multiple calls
         _store.ShouldNotBeNull();
     }
 
@@ -82,18 +75,17 @@ public sealed class NullNotificationDeliveryWriterTests
     // Helpers
     // -------------------------------------------------------------------------
 
-    private static NotificationDeliveryAttempt BuildAttempt(
-        bool isSuccess,
-        string? errorMessage = null) => new()
-        {
-            DeliveryId = Guid.NewGuid(),
-            NotificationId = Guid.NewGuid(),
-            NotificationTypeName = "test.notification",
-            ChannelName = NotificationChannels.InApp,
-            RecipientUserId = "user-1",
-            OccurredAt = DateTimeOffset.UtcNow,
-            DurationMs = 42,
-            IsSuccess = isSuccess,
-            ErrorMessage = errorMessage,
-        };
+    private static NotificationDeliveryAttempt BuildClaim() => new()
+    {
+        Id = Guid.NewGuid(),
+        DeliveryId = Guid.NewGuid(),
+        NotificationId = Guid.NewGuid(),
+        NotificationTypeName = "test.notification",
+        ChannelName = NotificationChannels.InApp,
+        RecipientUserId = "user-1",
+        OccurredAt = DateTimeOffset.UtcNow,
+        DurationMs = 0,
+        IsSuccess = null,
+        ErrorMessage = null,
+    };
 }
