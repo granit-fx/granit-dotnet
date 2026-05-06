@@ -30,4 +30,30 @@ public sealed class WolverineMessagingOptions
     /// Must be ≥ 1. Default: 3.
     /// </summary>
     public int MaxRetryAttempts { get; set; } = 3;
+
+    /// <summary>
+    /// When <see langword="true"/>, the
+    /// <see cref="Behaviors.TenantContextBehavior"/> rejects incoming envelopes
+    /// that lack an <c>X-Tenant-Id</c> header unless the message type carries
+    /// <see cref="CrossTenantMessageAttribute"/>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// SECURITY: closes the cross-tenant code path that opens when a Wolverine
+    /// handler runs without a tenant scope and falls through to
+    /// <c>EfStoreBase</c>'s implicit cross-tenant query branch. Producer-side
+    /// bugs (forgot to propagate the tenant) and forged envelopes both surface
+    /// as <see cref="InvalidOperationException"/> instead of silent
+    /// cross-tenant data access.
+    /// </para>
+    /// <para>
+    /// Default: <see langword="false"/>. The metric
+    /// <c>granit.wolverine.envelope.no_tenant</c> is emitted regardless, so SOC
+    /// can quantify the migration burden before flipping the gate. Once the
+    /// metric is steady at 0 (excluding events legitimately tagged
+    /// <see cref="CrossTenantMessageAttribute"/>), the option can be set to
+    /// <see langword="true"/> safely.
+    /// </para>
+    /// </remarks>
+    public bool RequireEnvelopeTenant { get; set; }
 }

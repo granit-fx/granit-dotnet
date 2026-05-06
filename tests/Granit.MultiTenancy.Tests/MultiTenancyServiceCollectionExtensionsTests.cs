@@ -4,6 +4,7 @@
 
 using Granit.MultiTenancy;
 using Granit.MultiTenancy.Extensions;
+using Granit.MultiTenancy.Internal;
 using Granit.MultiTenancy.Middleware;
 using Granit.MultiTenancy.Options;
 using Granit.MultiTenancy.Pipeline;
@@ -18,11 +19,12 @@ namespace Granit.MultiTenancy.Tests;
 
 public sealed class MultiTenancyServiceCollectionExtensionsTests
 {
-    private static ServiceProvider BuildProvider()
+    private static ServiceProvider BuildProvider(IDictionary<string, string?>? config = null)
     {
         ServiceCollection services = new();
-        // BindConfiguration requires IConfiguration in the container
-        IConfiguration configuration = new ConfigurationBuilder().Build();
+        IConfiguration configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(config ?? new Dictionary<string, string?>())
+            .Build();
         services.AddSingleton(configuration);
         services.AddLogging();
         services.AddMetrics();

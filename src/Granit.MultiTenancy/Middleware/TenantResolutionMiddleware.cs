@@ -22,6 +22,7 @@ public sealed partial class TenantResolutionMiddleware(
     ICurrentTenant currentTenant,
     TenantResolverPipeline pipeline,
     ITenantReader tenantReader,
+    IUserTenantMembershipReader membershipReader,
     MultiTenancyMetrics metrics,
     IOptions<MultiTenancyOptions> options,
     ILogger<TenantResolutionMiddleware> logger) : IMiddleware
@@ -29,6 +30,7 @@ public sealed partial class TenantResolutionMiddleware(
     private readonly ICurrentTenant _currentTenant = currentTenant;
     private readonly TenantResolverPipeline _pipeline = pipeline;
     private readonly ITenantReader _tenantReader = tenantReader;
+    private readonly IUserTenantMembershipReader _membershipReader = membershipReader;
     private readonly MultiTenancyMetrics _metrics = metrics;
     private readonly MultiTenancyOptions _options = options.Value;
     private readonly ILogger _logger = logger;
@@ -76,6 +78,27 @@ public sealed partial class TenantResolutionMiddleware(
                 return;
             }
 
+            // Server-side membership check. Without it, an authenticated user whose
+            // identity provider lets them set their own `tenant_id` claim could pivot
+            // to any tenant. The check is opt-in via RequireMembershipCheck and only
+            // runs when the request is actually authenticated — anonymous flows
+            // (login, public webhooks) are unaffected.
+            if (_options.RequireMembershipCheck
+                && result.Tenant.Id.HasValue
+                && context.User.Identity?.IsAuthenticated == true)
+            {
+                string? userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? context.User.FindFirstValue("sub");
+                if (string.IsNullOrEmpty(userId)
+                    || !await _membershipReader.IsMemberAsync(userId, result.Tenant.Id.Value, context.RequestAborted).ConfigureAwait(false))
+                {
+                    _metrics.RecordMembershipRejected();
+                    LogMembershipRejected(userId ?? "(no sub claim)", result.Tenant.Id.Value, result.ResolverType);
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return;
+                }
+            }
+
             _metrics.RecordResolutionSucceeded(result.Tenant.Id.ToString()!, result.ResolverType);
 
             using IDisposable _ = _currentTenant.Change(result.Tenant.Id, result.Tenant.Name);
@@ -93,4 +116,7 @@ public sealed partial class TenantResolutionMiddleware(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Phantom tenant rejected: resolved tenant {TenantId} via {ResolverType} does not exist in the tenant store.")]
     private partial void LogPhantomTenant(Guid tenantId, string resolverType);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Membership check rejected user {UserId} for tenant {TenantId} (resolver: {ResolverType}). Possible tenant-claim spoofing attempt.")]
+    private partial void LogMembershipRejected(string userId, Guid tenantId, string resolverType);
 }

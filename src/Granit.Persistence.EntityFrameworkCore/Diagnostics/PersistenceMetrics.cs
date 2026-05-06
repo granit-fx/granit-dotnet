@@ -17,7 +17,11 @@ public sealed class PersistenceMetrics
     private const string TagTenantId = "tenant_id";
     private const string DefaultTenant = "global";
 
+    private const string TagEntity = "entity";
+    private const string TagOrigin = "origin";
+
     private readonly Counter<long> _entitiesPurged;
+    private readonly Counter<long> _crossTenantQueries;
 
     public PersistenceMetrics(IMeterFactory meterFactory)
     {
@@ -26,11 +30,39 @@ public sealed class PersistenceMetrics
         _entitiesPurged = meter.CreateCounter<long>(
             "granit.persistence.entity.purged",
             description: "Number of soft-deleted entities permanently purged.");
+
+        _crossTenantQueries = meter.CreateCounter<long>(
+            "granit.persistence.cross_tenant_query",
+            description:
+                "Number of EfStoreBase queries that bypassed the multi-tenant filter. "
+                + "Tagged with `entity` (CLR name) and `origin` (`host_endpoint` = served "
+                + "via a route marked .AllowHostAccess(); `explicit` = caller used "
+                + "QueryAcrossTenants(); `implicit_unsignaled` = bypass without host-access "
+                + "signal — alert-worthy, may indicate a tenant-context leak in flight).");
     }
 
     public void RecordEntitiesPurged(string? tenantId, int count) =>
         _entitiesPurged.Add(count, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    /// <summary>
+    /// Records a query that bypassed the <c>MultiTenant</c> named filter.
+    /// </summary>
+    /// <param name="entityName">The CLR name of the queried entity.</param>
+    /// <param name="origin">
+    /// <c>"host_endpoint"</c> when the bypass is served via a route marked
+    /// <c>.AllowHostAccess()</c> (signal observed on <c>HttpContext.Features</c>);
+    /// <c>"explicit"</c> when the caller invoked
+    /// <see cref="EfStoreBase{TEntity, TContext}.QueryAcrossTenants(TContext, string, string, int)"/>;
+    /// <c>"implicit_unsignaled"</c> when the bypass occurred without any host-access
+    /// signal — this is the alert-worthy origin that may indicate a tenant-context leak.
+    /// </param>
+    public void RecordCrossTenantQuery(string entityName, string origin) =>
+        _crossTenantQueries.Add(1, new TagList
+        {
+            { TagEntity, entityName },
+            { TagOrigin, origin },
         });
 }

@@ -19,6 +19,7 @@ public sealed class WolverineMetrics
     private readonly Counter<long> _retriesExhausted;
     private readonly Counter<long> _claimCheckStored;
     private readonly Counter<long> _claimCheckRetrieved;
+    private readonly Counter<long> _envelopeNoTenant;
 
     public WolverineMetrics(IMeterFactory meterFactory)
     {
@@ -43,6 +44,16 @@ public sealed class WolverineMetrics
         _claimCheckRetrieved = meter.CreateCounter<long>(
             "granit.wolverine.claimcheck.retrieved",
             description: "Number of payloads retrieved via the claim check pattern.");
+
+        _envelopeNoTenant = meter.CreateCounter<long>(
+            "granit.wolverine.envelope.no_tenant",
+            description:
+                "Number of received envelopes that did not carry an X-Tenant-Id "
+                + "header. Tagged with `message_type` and `outcome` "
+                + "(`allowed` = passed through; `allowed_marked` = passed because "
+                + "the message type is [CrossTenantMessage]; `rejected` = blocked "
+                + "by RequireEnvelopeTenant). Anomalous volume on `allowed` is "
+                + "the migration backlog before flipping RequireEnvelopeTenant=true.");
     }
 
     public void RecordMessageDispatched(string? tenantId) =>
@@ -75,5 +86,23 @@ public sealed class WolverineMetrics
         _claimCheckRetrieved.Add(1, new TagList
         {
             { TagTenantId, tenantId ?? DefaultTenant },
+        });
+
+    /// <summary>
+    /// Records an incoming envelope that did not carry an <c>X-Tenant-Id</c> header.
+    /// </summary>
+    /// <param name="messageType">The CLR name of the message type.</param>
+    /// <param name="outcome">
+    /// <c>"allowed"</c> when the envelope was processed without a tenant scope,
+    /// <c>"allowed_marked"</c> when the message type is annotated with
+    /// <see cref="CrossTenantMessageAttribute"/>, or <c>"rejected"</c> when
+    /// <see cref="Options.WolverineMessagingOptions.RequireEnvelopeTenant"/>
+    /// is enabled and blocked the dispatch.
+    /// </param>
+    public void RecordEnvelopeWithoutTenant(string messageType, string outcome) =>
+        _envelopeNoTenant.Add(1, new TagList
+        {
+            { "message_type", messageType },
+            { "outcome", outcome },
         });
 }

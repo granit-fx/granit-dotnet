@@ -21065,6 +21065,15 @@
       ]
     },
     {
+      "name": "CalendarItemResponse",
+      "fqn": "Granit.Entities.CalendarItemResponse",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/CalendarItemResponse.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "HideDelta",
       "fqn": "Granit.Entities.Customization.Domain.Deltas.HideDelta",
       "kind": "record",
@@ -21178,7 +21187,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/GranitEntitiesCustomizationEndpointsModule.cs",
-      "line": 35,
+      "line": 38,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21455,13 +21464,20 @@
       "members": []
     },
     {
-      "name": "CalendarItemResponse",
-      "fqn": "Granit.Entities.Endpoints.Dtos.CalendarItemResponse",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/CalendarItemResponse.cs",
-      "line": 12,
-      "members": []
+      "name": "EntityActivitySource",
+      "fqn": "Granit.Entities.Diagnostics.EntityActivitySource",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Diagnostics/EntityActivitySource.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
     },
     {
       "name": "CalendarRangeRequest",
@@ -21847,22 +21863,6 @@
       ]
     },
     {
-      "name": "ICalendarRangeService",
-      "fqn": "Granit.Entities.Endpoints.ICalendarRangeService",
-      "kind": "interface",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
-      "line": 19,
-      "members": [
-        {
-          "name": "GetItemsAsync",
-          "kind": "method",
-          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
-          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
-        }
-      ]
-    },
-    {
       "name": "IManifestCustomizationApplier",
       "fqn": "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier",
       "kind": "interface",
@@ -21917,15 +21917,6 @@
           "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
         }
       ]
-    },
-    {
-      "name": "struct",
-      "fqn": "Granit.Entities.Endpoints.struct",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/ICalendarRangeService.cs",
-      "line": 34,
-      "members": []
     },
     {
       "name": "EntityDefinition",
@@ -21993,7 +21984,7 @@
       "kind": "class",
       "project": "Granit.Entities.EntityFrameworkCore",
       "file": "src/Granit.Entities.EntityFrameworkCore/Extensions/EntitiesEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitEntitiesEntityFrameworkCore",
@@ -22025,7 +22016,7 @@
       "kind": "class",
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitEntities",
@@ -22138,6 +22129,22 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ICalendarRangeService",
+      "fqn": "Granit.Entities.ICalendarRangeService",
+      "kind": "interface",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/ICalendarRangeService.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "GetItemsAsync",
+          "kind": "method",
+          "signature": "GetItemsAsync(EntityDefinitionDescriptor entity, CalendarLayoutDescriptor layout, CalendarRange range, CancellationToken cancellationToken)",
+          "returnType": "Task<IReadOnlyList<CalendarItemResponse>>"
         }
       ]
     },
@@ -22679,11 +22686,11 @@
       "members": []
     },
     {
-      "name": "EntityViewSharedWithDto",
-      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithDto",
+      "name": "EntityViewSharedWithResponse",
+      "fqn": "Granit.Entities.Views.Endpoints.Dtos.EntityViewSharedWithResponse",
       "kind": "record",
       "project": "Granit.Entities.Views.Endpoints",
-      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithDto.cs",
+      "file": "src/Granit.Entities.Views.Endpoints/Dtos/EntityViewSharedWithResponse.cs",
       "line": 6,
       "members": []
     },
@@ -22867,6 +22874,22 @@
       "members": []
     },
     {
+      "name": "EntitiesViewsServiceCollectionExtensions",
+      "fqn": "Granit.Entities.Views.Extensions.EntitiesViewsServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Entities.Views",
+      "file": "src/Granit.Entities.Views/Extensions/EntitiesViewsServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitEntitiesViews",
+          "kind": "method",
+          "signature": "AddGranitEntitiesViews(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
       "name": "GranitEntitiesViewsAbstractionsModule",
       "fqn": "Granit.Entities.Views.GranitEntitiesViewsAbstractionsModule",
       "kind": "class",
@@ -22881,8 +22904,15 @@
       "kind": "class",
       "project": "Granit.Entities.Views",
       "file": "src/Granit.Entities.Views/GranitEntitiesViewsModule.cs",
-      "line": 12,
-      "members": []
+      "line": 17,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IEntityViewReader",
@@ -22980,6 +23010,15 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Visibility/VisibilityCondition.cs",
       "line": 32,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Entities.struct",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/ICalendarRangeService.cs",
+      "line": 31,
       "members": []
     },
     {
@@ -35334,14 +35373,8 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/CurrentTenant.cs",
-      "line": 7,
+      "line": 31,
       "members": [
-        {
-          "name": "IsAvailable",
-          "kind": "property",
-          "signature": "bool IsAvailable",
-          "returnType": "bool"
-        },
         {
           "name": "Id",
           "kind": "property",
@@ -35396,6 +35429,12 @@
           "name": "RecordContextSwitched",
           "kind": "method",
           "signature": "RecordContextSwitched(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordMembershipRejected",
+          "kind": "method",
+          "signature": "RecordMembershipRejected()",
           "returnType": "void"
         }
       ]
@@ -35672,7 +35711,7 @@
       "kind": "class",
       "project": "Granit.MultiTenancy",
       "file": "src/Granit.MultiTenancy/Extensions/MultiTenancyServiceCollectionExtensions.cs",
-      "line": 22,
+      "line": 23,
       "members": [
         {
           "name": "AddGranitMultiTenancy",
@@ -35713,6 +35752,40 @@
           "returnType": "bool IsAvailable { get; } Guid? Id { get; } string? Name { get; } IDisposable"
         }
       ]
+    },
+    {
+      "name": "IHostAccessContext",
+      "fqn": "Granit.MultiTenancy.IHostAccessContext",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/IHostAccessContext.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "IHostAccessFeature",
+      "fqn": "Granit.MultiTenancy.IHostAccessFeature",
+      "kind": "interface",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/IHostAccessFeature.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HostModeFeature",
+          "kind": "method",
+          "signature": "HostModeFeature()",
+          "returnType": "bool IsHostAccess { get; } public IHostAccessFeature HostMode { get; } ="
+        }
+      ]
+    },
+    {
+      "name": "ITenantContextFeature",
+      "fqn": "Granit.MultiTenancy.ITenantContextFeature",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/ITenantContextFeature.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "ITenantInfo",
@@ -36095,6 +36168,22 @@
           "kind": "method",
           "signature": "DeactivateAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IUserTenantMembershipReader",
+      "fqn": "Granit.MultiTenancy.Stores.IUserTenantMembershipReader",
+      "kind": "interface",
+      "project": "Granit.MultiTenancy",
+      "file": "src/Granit.MultiTenancy/Stores/IUserTenantMembershipReader.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "IsMemberAsync",
+          "kind": "method",
+          "signature": "IsMemberAsync(string userId, Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -45888,7 +45977,14 @@
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/Diagnostics/PersistenceMetrics.cs",
       "line": 13,
-      "members": []
+      "members": [
+        {
+          "name": "RecordCrossTenantQuery",
+          "kind": "method",
+          "signature": "RecordCrossTenantQuery(string entityName, string origin)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "EfStoreBase",
@@ -45896,7 +45992,7 @@
       "kind": "class",
       "project": "Granit.Persistence.EntityFrameworkCore",
       "file": "src/Granit.Persistence.EntityFrameworkCore/EfStoreBase.cs",
-      "line": 42,
+      "line": 40,
       "members": []
     },
     {
@@ -61961,7 +62057,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/Behaviors/TenantContextBehavior.cs",
-      "line": 27,
+      "line": 30,
       "members": [
         {
           "name": "Before",
@@ -62066,6 +62162,15 @@
       ]
     },
     {
+      "name": "CrossTenantMessageAttribute",
+      "fqn": "Granit.Wolverine.CrossTenantMessageAttribute",
+      "kind": "class",
+      "project": "Granit.Wolverine",
+      "file": "src/Granit.Wolverine/CrossTenantMessageAttribute.cs",
+      "line": 26,
+      "members": []
+    },
+    {
       "name": "WolverineMetrics",
       "fqn": "Granit.Wolverine.Diagnostics.WolverineMetrics",
       "kind": "class",
@@ -62095,6 +62200,12 @@
           "name": "RecordClaimCheckRetrieved",
           "kind": "method",
           "signature": "RecordClaimCheckRetrieved(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordEnvelopeWithoutTenant",
+          "kind": "method",
+          "signature": "RecordEnvelopeWithoutTenant(string messageType, string outcome)",
           "returnType": "void"
         }
       ]

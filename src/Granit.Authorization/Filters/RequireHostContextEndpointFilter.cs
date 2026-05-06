@@ -53,6 +53,11 @@ internal sealed class RequireHostContextEndpointFilter : IEndpointFilter
                     statusCode: StatusCodes.Status401Unauthorized));
         }
 
+        // Signal the data layer that the cross-tenant read about to happen is a
+        // legitimate host-access path, not an accidental tenant-context loss.
+        // EfStoreBase reads this feature to tag its metric origin=host_endpoint.
+        context.HttpContext.Features.Set(IHostAccessFeature.HostMode);
+
         return next(context);
     }
 }
