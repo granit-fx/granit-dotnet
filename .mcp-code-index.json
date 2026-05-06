@@ -4468,110 +4468,6 @@
       ]
     },
     {
-      "name": "ActivityListFilter",
-      "fqn": "Granit.Activities.Abstractions.ActivityListFilter",
-      "kind": "record",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 74,
-      "members": []
-    },
-    {
-      "name": "ActivityStatusFilter",
-      "fqn": "Granit.Activities.Abstractions.ActivityStatusFilter",
-      "kind": "enum",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 87,
-      "members": []
-    },
-    {
-      "name": "IActivityReader",
-      "fqn": "Granit.Activities.Abstractions.IActivityReader",
-      "kind": "interface",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityReader.cs",
-      "line": 9,
-      "members": [
-        {
-          "name": "GetByIdAsync",
-          "kind": "method",
-          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Activity?>"
-        },
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(ActivityListFilter filter, int skip, int take, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        },
-        {
-          "name": "CountAsync",
-          "kind": "method",
-          "signature": "CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default)",
-          "returnType": "Task<int>"
-        },
-        {
-          "name": "GetOverdueAwaitingNotificationAsync",
-          "kind": "method",
-          "signature": "GetOverdueAwaitingNotificationAsync(DateTimeOffset asOf, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        },
-        {
-          "name": "GetOpenDueWithinAsync",
-          "kind": "method",
-          "signature": "GetOpenDueWithinAsync(DateTimeOffset dayStart, DateTimeOffset dayEnd, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<Activity>>"
-        }
-      ]
-    },
-    {
-      "name": "IActivityWriter",
-      "fqn": "Granit.Activities.Abstractions.IActivityWriter",
-      "kind": "interface",
-      "project": "Granit.Activities",
-      "file": "src/Granit.Activities/Abstractions/IActivityWriter.cs",
-      "line": 18,
-      "members": [
-        {
-          "name": "CreateAsync",
-          "kind": "method",
-          "signature": "CreateAsync(string entityType, Guid entityId, string type, Guid assignedToUserId, DateTimeOffset dueAt, Guid? createdByUserId = null, string? description = null, CancellationToken cancellationToken = default)",
-          "returnType": "Task<Activity>"
-        },
-        {
-          "name": "CompleteAsync",
-          "kind": "method",
-          "signature": "CompleteAsync(Guid activityId, Guid completedByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "CancelAsync",
-          "kind": "method",
-          "signature": "CancelAsync(Guid activityId, Guid cancelledByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "ReassignAsync",
-          "kind": "method",
-          "signature": "ReassignAsync(Guid activityId, Guid newAssigneeUserId, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "RescheduleAsync",
-          "kind": "method",
-          "signature": "RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "MarkOverdueNotifiedAsync",
-          "kind": "method",
-          "signature": "MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "ActivityType",
       "fqn": "Granit.Activities.ActivityType",
       "kind": "record",
@@ -4679,6 +4575,40 @@
       ]
     },
     {
+      "name": "ActivitiesMetrics",
+      "fqn": "Granit.Activities.Diagnostics.ActivitiesMetrics",
+      "kind": "class",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Diagnostics/ActivitiesMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordCompleted",
+          "kind": "method",
+          "signature": "RecordCompleted(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCancelled",
+          "kind": "method",
+          "signature": "RecordCancelled(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordOverdueNotified",
+          "kind": "method",
+          "signature": "RecordOverdueNotified(string? tenantId, string? type)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordReminderSent",
+          "kind": "method",
+          "signature": "RecordReminderSent(string? tenantId, string? type)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "Activity",
       "fqn": "Granit.Activities.Domain.Activity",
       "kind": "class",
@@ -4751,7 +4681,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 16,
+      "line": 24,
       "members": []
     },
     {
@@ -4760,7 +4690,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 13,
+      "line": 17,
       "members": []
     },
     {
@@ -4778,7 +4708,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 19,
+      "line": 27,
       "members": []
     },
     {
@@ -4787,7 +4717,7 @@
       "kind": "record",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Dtos/ActivityRequests.cs",
-      "line": 22,
+      "line": 30,
       "members": []
     },
     {
@@ -4796,12 +4726,12 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Extensions/ActivitiesEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 16,
       "members": [
         {
           "name": "MapGranitActivities",
           "kind": "method",
-          "signature": "MapGranitActivities(this IEndpointRouteBuilder endpoints, Action<ActivitiesEndpointsOptions>? configure = null)",
+          "signature": "MapGranitActivities(this IEndpointRouteBuilder endpoints)",
           "returnType": "RouteGroupBuilder"
         }
       ]
@@ -4828,8 +4758,15 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/GranitActivitiesEndpointsModule.cs",
-      "line": 22,
-      "members": []
+      "line": 24,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ActivitiesEndpointsOptions",
@@ -4901,7 +4838,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 56,
+      "line": 47,
       "members": []
     },
     {
@@ -4910,7 +4847,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 32,
+      "line": 29,
       "members": []
     },
     {
@@ -4919,7 +4856,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 24,
+      "line": 27,
       "members": []
     },
     {
@@ -4937,7 +4874,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 40,
+      "line": 31,
       "members": []
     },
     {
@@ -4946,7 +4883,7 @@
       "kind": "class",
       "project": "Granit.Activities.Endpoints",
       "file": "src/Granit.Activities.Endpoints/Validators/ActivityRequestValidators.cs",
-      "line": 48,
+      "line": 39,
       "members": []
     },
     {
@@ -5109,7 +5046,7 @@
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Extensions/ActivitiesServiceCollectionExtensions.cs",
-      "line": 17,
+      "line": 20,
       "members": [
         {
           "name": "AddGranitActivities",
@@ -5152,12 +5089,12 @@
       "kind": "interface",
       "project": "Granit.Activities.Abstractions",
       "file": "src/Granit.Activities.Abstractions/IActivityRegistry.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "TryGet",
           "kind": "method",
-          "signature": "TryGet(string name, out ActivityType type)",
+          "signature": "TryGet(string name, [NotNullWhen(true)",
           "returnType": "IReadOnlyDictionary<string, ActivityType> All { get; } bool"
         }
       ]
@@ -5416,7 +5353,14 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityAssignedHandler.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityAssignedEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityOverdueHandler",
@@ -5425,7 +5369,14 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityOverdueHandler.cs",
       "line": 13,
-      "members": []
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityOverdueEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityReminderHandler",
@@ -5434,7 +5385,118 @@
       "project": "Granit.Activities.Notifications",
       "file": "src/Granit.Activities.Notifications/Handlers/ActivityReminderHandler.cs",
       "line": 12,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ActivityReminderDueEvent evt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ActivityListFilter",
+      "fqn": "Granit.Activities.Persistence.ActivityListFilter",
+      "kind": "record",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 74,
       "members": []
+    },
+    {
+      "name": "ActivityStatusFilter",
+      "fqn": "Granit.Activities.Persistence.ActivityStatusFilter",
+      "kind": "enum",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 87,
+      "members": []
+    },
+    {
+      "name": "IActivityReader",
+      "fqn": "Granit.Activities.Persistence.IActivityReader",
+      "kind": "interface",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityReader.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Activity?>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(ActivityListFilter filter, int skip, int take, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        },
+        {
+          "name": "CountAsync",
+          "kind": "method",
+          "signature": "CountAsync(ActivityListFilter filter, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "GetOverdueAwaitingNotificationAsync",
+          "kind": "method",
+          "signature": "GetOverdueAwaitingNotificationAsync(DateTimeOffset asOf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        },
+        {
+          "name": "GetOpenDueWithinAsync",
+          "kind": "method",
+          "signature": "GetOpenDueWithinAsync(DateTimeOffset dayStart, DateTimeOffset dayEnd, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Activity>>"
+        }
+      ]
+    },
+    {
+      "name": "IActivityWriter",
+      "fqn": "Granit.Activities.Persistence.IActivityWriter",
+      "kind": "interface",
+      "project": "Granit.Activities",
+      "file": "src/Granit.Activities/Persistence/IActivityWriter.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string entityType, Guid entityId, string type, Guid assignedToUserId, DateTimeOffset dueAt, Guid? createdByUserId = null, string? description = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Activity>"
+        },
+        {
+          "name": "CompleteAsync",
+          "kind": "method",
+          "signature": "CompleteAsync(Guid activityId, Guid completedByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "CancelAsync",
+          "kind": "method",
+          "signature": "CancelAsync(Guid activityId, Guid cancelledByUserId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ReassignAsync",
+          "kind": "method",
+          "signature": "ReassignAsync(Guid activityId, Guid newAssigneeUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "RescheduleAsync",
+          "kind": "method",
+          "signature": "RescheduleAsync(Guid activityId, DateTimeOffset newDueAt, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "MarkOverdueNotifiedAsync",
+          "kind": "method",
+          "signature": "MarkOverdueNotifiedAsync(Guid activityId, DateTimeOffset at, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
     },
     {
       "name": "ActivityQueryDefinition",

@@ -1,6 +1,6 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Events;
+using Granit.Activities.Persistence;
 using Granit.Events;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;

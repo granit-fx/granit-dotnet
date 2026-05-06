@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace Granit.Activities.Internal;
 
 /// <summary>
@@ -36,9 +38,9 @@ internal sealed class ActivityRegistry : IActivityRegistry
     public IReadOnlyDictionary<string, ActivityType> All => _byName;
 
     /// <inheritdoc/>
-    public bool TryGet(string name, out ActivityType type)
+    public bool TryGet(string name, [NotNullWhen(true)] out ActivityType? type)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
-        return _byName.TryGetValue(name, out type!);
+        return _byName.TryGetValue(name, out type);
     }
 }

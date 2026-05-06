@@ -1,5 +1,6 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
+using Granit.Activities.Persistence;
+using Granit.Guids;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Activities.EntityFrameworkCore.Internal;
@@ -12,7 +13,8 @@ namespace Granit.Activities.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class EfCoreActivityWriter(
     IDbContextFactory<ActivitiesDbContext> contextFactory,
-    IActivityRegistry registry) : IActivityWriter
+    IActivityRegistry registry,
+    IGuidGenerator guidGenerator) : IActivityWriter
 {
     public async Task<Activity> CreateAsync(
         string entityType,
@@ -28,7 +30,7 @@ internal sealed class EfCoreActivityWriter(
             .CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
         var activity = Activity.Create(
-            id: Guid.CreateVersion7(),
+            id: guidGenerator.Create(),
             entityType: entityType,
             entityId: entityId,
             type: type,

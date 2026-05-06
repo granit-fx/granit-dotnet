@@ -1,9 +1,9 @@
 using System.Security.Claims;
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
 using Granit.Activities.Endpoints.Dtos;
 using Granit.Activities.Endpoints.Internal;
 using Granit.Activities.Endpoints.Options;
+using Granit.Activities.Persistence;
 using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.AspNetCore.Builder;

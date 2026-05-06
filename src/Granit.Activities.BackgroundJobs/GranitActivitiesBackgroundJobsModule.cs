@@ -13,8 +13,8 @@ namespace Granit.Activities.BackgroundJobs;
 /// each <see cref="IBackgroundJob"/> record.
 /// </summary>
 [DependsOn(
-    typeof(GranitBackgroundJobsModule),
-    typeof(GranitActivitiesModule))]
+    typeof(GranitActivitiesModule),
+    typeof(GranitBackgroundJobsModule))]
 public sealed class GranitActivitiesBackgroundJobsModule : GranitModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)

@@ -1,5 +1,5 @@
-using Granit.Activities.Abstractions;
 using Granit.Activities.Domain;
+using Granit.Activities.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace Granit.Activities.EntityFrameworkCore.Internal;

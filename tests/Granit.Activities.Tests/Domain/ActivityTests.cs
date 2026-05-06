@@ -18,7 +18,7 @@ public sealed class ActivityTests
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
         ActivityType type = StandardActivityTypes.ToDo;
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = type;
             return true;
@@ -54,7 +54,7 @@ public sealed class ActivityTests
     public void Create_throws_when_type_not_in_registry()
     {
         IActivityRegistry empty = Substitute.For<IActivityRegistry>();
-        empty.TryGet(Arg.Any<string>(), out Arg.Any<ActivityType>()).Returns(false);
+        empty.TryGet(Arg.Any<string>(), out Arg.Any<ActivityType?>()).Returns(false);
 
         Should.Throw<ArgumentException>(() => Activity.Create(
             Guid.NewGuid(), SampleEntityType, SampleEntityId,
