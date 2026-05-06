@@ -92,6 +92,7 @@
       "src/Granit.Settings.Endpoints/Granit.Settings.Endpoints.csproj",
       "src/Granit.Settings.EntityFrameworkCore/Granit.Settings.EntityFrameworkCore.csproj",
       "src/Granit.Settings/Granit.Settings.csproj",
+      "src/Granit.Taxonomy/Granit.Taxonomy.csproj",
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
@@ -160,6 +161,7 @@
       "tests/Granit.Settings.Endpoints.Tests/Granit.Settings.Endpoints.Tests.csproj",
       "tests/Granit.Settings.EntityFrameworkCore.Tests/Granit.Settings.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Settings.Tests/Granit.Settings.Tests.csproj",
+      "tests/Granit.Taxonomy.Tests/Granit.Taxonomy.Tests.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests/Granit.Wolverine.Postgresql.Tests.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests/Granit.Wolverine.SqlServer.Tests.csproj",
       "tests/Granit.Wolverine.Tests/Granit.Wolverine.Tests.csproj"

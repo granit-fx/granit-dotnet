@@ -247,6 +247,7 @@
         "tests/Granit.Settings.Endpoints.Tests",
         "tests/Granit.Settings.EntityFrameworkCore.Tests",
         "tests/Granit.Settings.Tests",
+        "tests/Granit.Taxonomy.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
         "tests/Granit.Wolverine.Tests"
