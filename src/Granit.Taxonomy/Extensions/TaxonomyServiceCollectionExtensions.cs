@@ -1,6 +1,8 @@
 using Granit.Diagnostics;
+using Granit.Taxonomy.Authorization;
 using Granit.Taxonomy.Diagnostics;
 using Granit.Taxonomy.Options;
+using Granit.Taxonomy.Registration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -35,6 +37,16 @@ public static class TaxonomyServiceCollectionExtensions
 
         GranitActivitySourceRegistry.Register(TaxonomyActivitySource.Name);
         services.TryAddSingleton<TaxonomyMetrics>();
+        services.TryAddSingleton<TaggableTypeRegistry>(static sp =>
+        {
+            TaggableTypeRegistry registry = new();
+            foreach (ITaggableRegistration reg in sp.GetServices<ITaggableRegistration>())
+            {
+                registry.Register(reg.TargetType, reg.Scope);
+            }
+            return registry;
+        });
+        services.TryAddSingleton<ITaggablePermissionResolver, AllowAllTaggablePermissionResolver>();
 
         OptionsBuilder<TaxonomyOptions> optionsBuilder = services
             .AddOptions<TaxonomyOptions>()
@@ -47,4 +59,43 @@ public static class TaxonomyServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Registers <typeparamref name="TAggregate"/> as a taggable target under
+    /// <paramref name="scope"/>. The full type name is used as the polymorphic
+    /// <c>TargetType</c> discriminator on <c>TagAssignment</c> rows.
+    /// </summary>
+    /// <typeparam name="TAggregate">Aggregate root type to taggable.</typeparam>
+    /// <param name="services">The DI service collection.</param>
+    /// <param name="scope">Tag scope under which tags applied to this aggregate are managed (e.g. <c>"documents"</c>).</param>
+    /// <returns>The same <paramref name="services"/> for chaining.</returns>
+    public static IServiceCollection AddTaggableEntity<TAggregate>(
+        this IServiceCollection services,
+        string scope)
+        where TAggregate : class
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentException.ThrowIfNullOrWhiteSpace(scope);
+
+        // The registry is a singleton — register a startup callback that mutates it
+        // on first resolution. Eager registration during DI configuration would race
+        // with potentially multiple AddTaggableEntity calls in different module
+        // ConfigureServices methods.
+        services.AddSingleton<ITaggableRegistration>(
+            new TaggableRegistration(typeof(TAggregate).FullName ?? typeof(TAggregate).Name, scope));
+        return services;
+    }
 }
+
+/// <summary>
+/// Marker captured by DI for each <c>AddTaggableEntity&lt;T&gt;</c> call. Resolved into
+/// the singleton <see cref="TaggableTypeRegistry"/> when the registry is first created.
+/// </summary>
+internal interface ITaggableRegistration
+{
+    string TargetType { get; }
+    string Scope { get; }
+}
+
+internal sealed record TaggableRegistration(string TargetType, string Scope) : ITaggableRegistration;
+

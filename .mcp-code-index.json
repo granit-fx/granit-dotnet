@@ -55520,6 +55520,38 @@
       "members": []
     },
     {
+      "name": "AllowAllTaggablePermissionResolver",
+      "fqn": "Granit.Taxonomy.Authorization.AllowAllTaggablePermissionResolver",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Authorization/ITaggablePermissionResolver.cs",
+      "line": 31,
+      "members": [
+        {
+          "name": "IsAuthorizedAsync",
+          "kind": "method",
+          "signature": "IsAuthorizedAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
+      "name": "ITaggablePermissionResolver",
+      "fqn": "Granit.Taxonomy.Authorization.ITaggablePermissionResolver",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Authorization/ITaggablePermissionResolver.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "IsAuthorizedAsync",
+          "kind": "method",
+          "signature": "IsAuthorizedAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        }
+      ]
+    },
+    {
       "name": "TaxonomyMetrics",
       "fqn": "Granit.Taxonomy.Diagnostics.TaxonomyMetrics",
       "kind": "class",
@@ -55531,6 +55563,18 @@
           "name": "RecordTagDeleted",
           "kind": "method",
           "signature": "RecordTagDeleted(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAssignmentCreated",
+          "kind": "method",
+          "signature": "RecordAssignmentCreated(string? tenantId, string targetType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAssignmentDeleted",
+          "kind": "method",
+          "signature": "RecordAssignmentDeleted(string? tenantId, string targetType)",
           "returnType": "void"
         }
       ]
@@ -55566,6 +55610,28 @@
           "kind": "method",
           "signature": "Rename(string newName)",
           "returnType": "bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "TagAssignment",
+      "fqn": "Granit.Taxonomy.Domain.TagAssignment",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/TagAssignment.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid tagId, string targetType, Guid targetId, Guid assignedByUserId, DateTimeOffset assignedAt)",
+          "returnType": "TagAssignment"
+        },
+        {
+          "name": "ValidateTargetType",
+          "kind": "method",
+          "signature": "ValidateTargetType(string targetType)",
+          "returnType": "Guid TargetId { get; private set; } public DateTimeOffset AssignedAt { get; private set; } public Guid AssignedByUserId { get; private set; } private void"
         }
       ]
     },
@@ -55635,6 +55701,15 @@
       "members": []
     },
     {
+      "name": "AssignTagRequest",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.AssignTagRequest",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/AssignTagRequest.cs",
+      "line": 8,
+      "members": []
+    },
+    {
       "name": "CreateTagRequest",
       "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.CreateTagRequest",
       "kind": "record",
@@ -55649,6 +55724,15 @@
       "kind": "record",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/ListTagsResponse.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "TagAssignmentResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Tags.Dtos.TagAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Tags/Dtos/TagAssignmentResponse.cs",
       "line": 4,
       "members": []
     },
@@ -55778,7 +55862,7 @@
       "kind": "class",
       "project": "Granit.Taxonomy",
       "file": "src/Granit.Taxonomy/Extensions/TaxonomyServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitTaxonomy",
@@ -55796,6 +55880,34 @@
       "file": "src/Granit.Taxonomy/GranitTaxonomyModule.cs",
       "line": 23,
       "members": []
+    },
+    {
+      "name": "ITagAssignmentService",
+      "fqn": "Granit.Taxonomy.ITagAssignmentService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagAssignmentService.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "UnassignAsync",
+          "kind": "method",
+          "signature": "UnassignAsync(Guid tagId, string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ListForTargetAsync",
+          "kind": "method",
+          "signature": "ListForTargetAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Tag>>"
+        },
+        {
+          "name": "RemoveAllAssignmentsAsync",
+          "kind": "method",
+          "signature": "RemoveAllAssignmentsAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
     },
     {
       "name": "ITagService",
@@ -55857,6 +55969,34 @@
       "file": "src/Granit.Taxonomy/Options/TaxonomyOptions.cs",
       "line": 11,
       "members": []
+    },
+    {
+      "name": "TaggableTypeRegistry",
+      "fqn": "Granit.Taxonomy.Registration.TaggableTypeRegistry",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Registration/TaggableTypeRegistration.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Register",
+          "kind": "method",
+          "signature": "Register(string targetType, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "GetScope",
+          "kind": "method",
+          "signature": "GetScope(string targetType)",
+          "returnType": "string?"
+        },
+        {
+          "name": "ToArray",
+          "kind": "method",
+          "signature": "ToArray()",
+          "returnType": "IReadOnlyDictionary<string, string> Snapshot => _typeToScope."
+        }
+      ]
     },
     {
       "name": "AITemplateDataEnricher",

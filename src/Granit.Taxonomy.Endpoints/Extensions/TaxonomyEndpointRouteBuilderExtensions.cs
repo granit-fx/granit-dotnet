@@ -35,6 +35,7 @@ public static class TaxonomyEndpointRouteBuilderExtensions
         }
 
         group.MapTagEndpoints();
+        group.MapTagAssignmentEndpoints();
 
         return group;
     }

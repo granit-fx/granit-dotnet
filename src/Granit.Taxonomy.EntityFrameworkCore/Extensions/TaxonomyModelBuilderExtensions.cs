@@ -16,6 +16,7 @@ public static class TaxonomyModelBuilderExtensions
     {
         ArgumentNullException.ThrowIfNull(modelBuilder);
         modelBuilder.ApplyConfiguration(new TagConfiguration());
+        modelBuilder.ApplyConfiguration(new TagAssignmentConfiguration());
         return modelBuilder;
     }
 }

@@ -23,6 +23,13 @@ internal sealed class TaxonomyDbContext(
     /// <summary>Tenant-scoped tags. Uniqueness enforced on <c>(TenantId, Scope, Name)</c>.</summary>
     public DbSet<Tag> Tags { get; set; } = null!;
 
+    /// <summary>
+    /// Polymorphic tag assignments — links tags to target aggregates via
+    /// <c>(TargetType, TargetId)</c>. Uniqueness enforced on
+    /// <c>(TenantId, TagId, TargetType, TargetId)</c>.
+    /// </summary>
+    public DbSet<TagAssignment> TagAssignments { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
