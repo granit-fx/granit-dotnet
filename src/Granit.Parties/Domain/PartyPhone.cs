@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 
 namespace Granit.Parties.Domain;
 
@@ -38,6 +39,7 @@ public sealed class PartyPhone : Entity
     /// outbound calls / SMS, audit. The dedup-friendly form lives in
     /// <see cref="CanonicalNumber"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string Number { get; private set; } = string.Empty;
 
     /// <summary>The canonical (dedup-friendly) E.164 form of <see cref="Number"/>. Computed by
@@ -45,6 +47,12 @@ public sealed class PartyPhone : Entity
     /// or the input is missing a country code prefix. Indexed for Tier-1 deterministic
     /// duplicate detection (Epic #1280).</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    // [Encrypted] omitted: Tier1DeterministicMatcher dedup query uses
+    // `canonicalPhones.Contains(ph.CanonicalNumber)` which translates to
+    // SQL `IN (…)` — non-deterministic AES-CBC encryption (random IV)
+    // makes that lookup unmatchable. Tracked in the SensitiveDataEncryptionConventionTests
+    // exemption list as [BACKLOG]; the migration introduces a parallel
+    // CanonicalNumberHash column following the IUserLookupHasher pattern.
     public string? CanonicalNumber { get; private set; }
 
     /// <summary>Whether this is the party's primary phone.</summary>

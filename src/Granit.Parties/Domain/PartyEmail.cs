@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 
 namespace Granit.Parties.Domain;
 
@@ -33,6 +34,7 @@ public sealed class PartyEmail : Entity
     /// outbound mail, audit, and GDPR rectification. The dedup-friendly form lives in
     /// <see cref="CanonicalEmail"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string Address { get; private set; } = string.Empty;
 
     /// <summary>The canonical (dedup-friendly) form of <see cref="Address"/>. Computed by
@@ -40,6 +42,12 @@ public sealed class PartyEmail : Entity
     /// trim). Null when canonicalisation produces no usable key. Indexed for Tier-1
     /// deterministic duplicate detection (Epic #1280).</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    // [Encrypted] omitted: Tier1DeterministicMatcher dedup query uses
+    // `canonicalEmails.Contains(e.CanonicalEmail)` which translates to
+    // SQL `IN (…)` — non-deterministic AES-CBC encryption (random IV)
+    // makes that lookup unmatchable. Tracked in the SensitiveDataEncryptionConventionTests
+    // exemption list as [BACKLOG]; the migration introduces a parallel
+    // CanonicalEmailHash column following the IUserLookupHasher pattern.
     public string? CanonicalEmail { get; private set; }
 
     /// <summary>Whether this is the party's primary email.</summary>

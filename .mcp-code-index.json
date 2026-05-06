@@ -4633,7 +4633,7 @@
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Domain/Activity.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "Create",
@@ -26739,7 +26739,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityUserCreatedEto.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -26775,7 +26775,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/UserCreatedEto.cs",
-      "line": 39,
+      "line": 40,
       "members": []
     },
     {
@@ -26784,7 +26784,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/UserProfileChangedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -29203,7 +29203,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/AccountLockedEto.cs",
-      "line": 30,
+      "line": 31,
       "members": []
     },
     {
@@ -29212,7 +29212,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/EmailChangeRequestedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -29221,7 +29221,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/EmailConfirmationRequestedEto.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -29239,7 +29239,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/PasswordResetRequestedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -41538,7 +41538,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/PartyEmail.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Create",
@@ -41623,7 +41623,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/PartyPhone.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Create",
@@ -42386,7 +42386,7 @@
       "kind": "record",
       "project": "Granit.Parties.Abstractions",
       "file": "src/Granit.Parties.Abstractions/Events/PartySuspendedEto.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -47597,7 +47597,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeferredEto.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -47642,7 +47642,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/PersonalDataDeletionRequestedEto.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -47713,7 +47713,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/PersonalDataDeletionSaga.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "Id",
@@ -55277,7 +55277,7 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "Create",

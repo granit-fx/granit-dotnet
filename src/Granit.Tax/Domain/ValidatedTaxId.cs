@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Tax.Domain.ValueObjects;
 
@@ -79,6 +80,7 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
 
     /// <summary>Company address returned by the tax authority.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string? CompanyAddress { get; private set; }
 
     /// <summary>Consultation number for audit trail (e.g., VIES request identifier).</summary>
