@@ -55576,6 +55576,80 @@
           "kind": "method",
           "signature": "RecordAssignmentDeleted(string? tenantId, string targetType)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryCreated",
+          "kind": "method",
+          "signature": "RecordCategoryCreated(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryDeleted",
+          "kind": "method",
+          "signature": "RecordCategoryDeleted(string? tenantId, string scope)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordCategoryAssignmentChanged",
+          "kind": "method",
+          "signature": "RecordCategoryAssignmentChanged(string? tenantId, string targetType)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "fqn": "Granit.Taxonomy.Domain.Category",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/Category.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "CreateRoot",
+          "kind": "method",
+          "signature": "CreateRoot(Guid id, Guid? tenantId, string scope, string name, string? iconName = null, bool hideOnEntityCard = false)",
+          "returnType": "Category"
+        },
+        {
+          "name": "ParentId",
+          "kind": "property",
+          "signature": "Guid? ParentId",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Path",
+          "kind": "property",
+          "signature": "string Path",
+          "returnType": "string"
+        },
+        {
+          "name": "Rename",
+          "kind": "method",
+          "signature": "Rename(string newName)",
+          "returnType": "int Depth { get; private set; } public string? IconName { get; private set; } public bool HideOnEntityCard { get; private set; } public uint RowVersion { get; private set; } public void"
+        }
+      ]
+    },
+    {
+      "name": "CategoryAssignment",
+      "fqn": "Granit.Taxonomy.Domain.CategoryAssignment",
+      "kind": "class",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Domain/CategoryAssignment.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid categoryId, string targetType, Guid targetId, Guid assignedByUserId, DateTimeOffset assignedAt)",
+          "returnType": "CategoryAssignment"
+        },
+        {
+          "name": "ValidateTargetType",
+          "kind": "method",
+          "signature": "ValidateTargetType(string targetType)",
+          "returnType": "Guid TargetId { get; private set; } public DateTimeOffset AssignedAt { get; private set; } public Guid AssignedByUserId { get; private set; } private void"
         }
       ]
     },
@@ -55848,6 +55922,60 @@
       "members": []
     },
     {
+      "name": "CategoryAssignmentChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryAssignmentChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryAssignmentChangedEvent.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "CategoryCreatedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryCreatedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryCreatedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryDeletedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryDeletedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryMovedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryMovedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryMovedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryRenamedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryRenamedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryRenamedEvent.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "CategoryTreePathChangedEvent",
+      "fqn": "Granit.Taxonomy.Events.CategoryTreePathChangedEvent",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/Events/CategoryTreePathChangedEvent.cs",
+      "line": 11,
+      "members": []
+    },
+    {
       "name": "TagCreatedEvent",
       "fqn": "Granit.Taxonomy.Events.TagCreatedEvent",
       "kind": "record",
@@ -55916,6 +56044,98 @@
       "file": "src/Granit.Taxonomy/GranitTaxonomyModule.cs",
       "line": 23,
       "members": []
+    },
+    {
+      "name": "ICategoryAssignmentService",
+      "fqn": "Granit.Taxonomy.ICategoryAssignmentService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ICategoryAssignmentService.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AssignAsync",
+          "kind": "method",
+          "signature": "AssignAsync(Guid categoryId, string targetType, Guid targetId, Guid assignedByUserId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<CategoryAssignment>"
+        },
+        {
+          "name": "UnassignAsync",
+          "kind": "method",
+          "signature": "UnassignAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetForTargetAsync",
+          "kind": "method",
+          "signature": "GetForTargetAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "RemoveAllAssignmentsAsync",
+          "kind": "method",
+          "signature": "RemoveAllAssignmentsAsync(string targetType, Guid targetId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        }
+      ]
+    },
+    {
+      "name": "ICategoryService",
+      "fqn": "Granit.Taxonomy.ICategoryService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ICategoryService.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string scope, Guid? parentId, string name, string? iconName = null, bool hideOnEntityCard = false, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category>"
+        },
+        {
+          "name": "RenameAsync",
+          "kind": "method",
+          "signature": "RenameAsync(Guid id, string newName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "MoveAsync",
+          "kind": "method",
+          "signature": "MoveAsync(Guid id, Guid? newParentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "SetIconAsync",
+          "kind": "method",
+          "signature": "SetIconAsync(Guid id, string? iconName, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "ToggleHideAsync",
+          "kind": "method",
+          "signature": "ToggleHideAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "DeleteAsync",
+          "kind": "method",
+          "signature": "DeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "GetByIdAsync",
+          "kind": "method",
+          "signature": "GetByIdAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Category?>"
+        },
+        {
+          "name": "ListByScopeAsync",
+          "kind": "method",
+          "signature": "ListByScopeAsync(string scope, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<Category>>"
+        }
+      ]
     },
     {
       "name": "ITagAssignmentService",
