@@ -4,10 +4,9 @@ namespace Granit.Taxonomy.Endpoints.Permissions;
 /// Permission constants exposed by <c>Granit.Taxonomy.Endpoints</c>.
 /// </summary>
 /// <remarks>
-/// T2.1 ships only the Tag permissions. Category permissions
-/// (<c>Taxonomy.Categories.Read</c> / <c>...Manage</c>) and the cross-entity
-/// search permission (<c>Taxonomy.Search.Read</c>) arrive with their respective
-/// stories (T4 and T3).
+/// Tag permissions ship in T2.1, the cross-entity search permission lands in T3.1.
+/// Category permissions (<c>Taxonomy.Categories.Read</c> / <c>...Manage</c>) arrive
+/// with story T4.
 /// </remarks>
 public static class TaxonomyPermissions
 {
@@ -22,5 +21,18 @@ public static class TaxonomyPermissions
 
         /// <summary>Manage tags (create, rename, recolour, hide, delete).</summary>
         public const string Manage = "Taxonomy.Tags.Manage";
+    }
+
+    /// <summary>Permissions on the cross-entity search endpoint.</summary>
+    /// <remarks>
+    /// Separate from <see cref="Tags.Read"/> because the search results expose
+    /// <c>TargetId</c>s the caller may not have per-entity read on. Hosts that
+    /// grant <c>Taxonomy.Search.Read</c> MUST combine the result with their
+    /// own per-entity ACL when rendering.
+    /// </remarks>
+    public static class Search
+    {
+        /// <summary>Run cross-entity tag searches that expose target ids across modules.</summary>
+        public const string Read = "Taxonomy.Search.Read";
     }
 }

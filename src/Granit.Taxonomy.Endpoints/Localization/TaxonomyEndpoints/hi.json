@@ -1,6 +1,7 @@
 {
   "culture": "hi",
   "texts": {
+    "Permission:Taxonomy.Search.Read": "सभी एंटिटीज़ में टैग खोजें",
     "Permission:Taxonomy.Tags.Manage": "टैग बनाएँ, नाम बदलें, रंग बदलें और हटाएँ",
     "Permission:Taxonomy.Tags.Read": "टैग देखें",
     "PermissionGroup:Taxonomy": "वर्गीकरण"

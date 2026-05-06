@@ -1,6 +1,7 @@
 {
   "culture": "pt",
   "texts": {
+    "Permission:Taxonomy.Search.Read": "Pesquisar tags em todas as entidades",
     "Permission:Taxonomy.Tags.Manage": "Criar, renomear, recolorir e excluir tags",
     "Permission:Taxonomy.Tags.Read": "Ver tags",
     "PermissionGroup:Taxonomy": "Taxonomia"

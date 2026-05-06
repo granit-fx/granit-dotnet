@@ -55641,7 +55641,7 @@
       "kind": "class",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Extensions/TaxonomyEndpointRouteBuilderExtensions.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "MapGranitTaxonomy",
@@ -55683,12 +55683,21 @@
       ]
     },
     {
+      "name": "Search",
+      "fqn": "Granit.Taxonomy.Endpoints.Permissions.Search",
+      "kind": "class",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 33,
+      "members": []
+    },
+    {
       "name": "Tags",
       "fqn": "Granit.Taxonomy.Endpoints.Permissions.Tags",
       "kind": "class",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
-      "line": 18,
+      "line": 17,
       "members": []
     },
     {
@@ -55697,7 +55706,34 @@
       "kind": "class",
       "project": "Granit.Taxonomy.Endpoints",
       "file": "src/Granit.Taxonomy.Endpoints/Permissions/TaxonomyPermissions.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "SearchHit",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchHit",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "SearchResponse",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchResponse",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "SearchTagItem",
+      "fqn": "Granit.Taxonomy.Endpoints.Search.Dtos.SearchTagItem",
+      "kind": "record",
+      "project": "Granit.Taxonomy.Endpoints",
+      "file": "src/Granit.Taxonomy.Endpoints/Search/Dtos/SearchResponse.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -55910,6 +55946,22 @@
       ]
     },
     {
+      "name": "ITagSearchService",
+      "fqn": "Granit.Taxonomy.ITagSearchService",
+      "kind": "interface",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "SearchAsync",
+          "kind": "method",
+          "signature": "SearchAsync(string query, string scope, int skip = 0, int take = 50, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TagSearchResult>"
+        }
+      ]
+    },
+    {
       "name": "ITagService",
       "fqn": "Granit.Taxonomy.ITagService",
       "kind": "interface",
@@ -55997,6 +56049,33 @@
           "returnType": "IReadOnlyDictionary<string, string> Snapshot => _typeToScope."
         }
       ]
+    },
+    {
+      "name": "TagSearchHit",
+      "fqn": "Granit.Taxonomy.TagSearchHit",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "TagSearchResult",
+      "fqn": "Granit.Taxonomy.TagSearchResult",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 42,
+      "members": []
+    },
+    {
+      "name": "TagSearchTag",
+      "fqn": "Granit.Taxonomy.TagSearchTag",
+      "kind": "record",
+      "project": "Granit.Taxonomy",
+      "file": "src/Granit.Taxonomy/ITagSearchService.cs",
+      "line": 50,
+      "members": []
     },
     {
       "name": "AITemplateDataEnricher",
