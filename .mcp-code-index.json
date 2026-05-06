@@ -20790,7 +20790,38 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionBuilder.cs",
       "line": 12,
-      "members": []
+      "members": [
+        {
+          "name": "Put",
+          "kind": "method",
+          "signature": "Put(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Delete",
+          "kind": "method",
+          "signature": "Delete(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Patch",
+          "kind": "method",
+          "signature": "Patch(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "Get",
+          "kind": "method",
+          "signature": "Get(string? path = null)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        },
+        {
+          "name": "AbsolutePath",
+          "kind": "method",
+          "signature": "AbsolutePath(string urlTemplate)",
+          "returnType": "EntityActionBuilder<TEntity>"
+        }
+      ]
     },
     {
       "name": "EntityActionContributionContext",
