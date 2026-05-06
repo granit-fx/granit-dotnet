@@ -1,5 +1,4 @@
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Granit.Authentication.ApiKeys.Internal;
 
@@ -9,11 +8,15 @@ namespace Granit.Authentication.ApiKeys.Internal;
 /// <remarks>
 /// Key format: <c>gk_{environment}_{typeCode}_{random}</c> where <c>random</c>
 /// is 32 bytes of <see cref="RandomNumberGenerator"/> output encoded as base62.
+/// The persisted hash is delegated to <see cref="IApiKeyHasher"/> and is
+/// versioned (<c>v1$</c> = SHA-256 only, <c>v2$</c> = HMAC-SHA256 with pepper).
 /// </remarks>
-internal sealed class ApiKeyGenerator : IApiKeyGenerator
+internal sealed class ApiKeyGenerator(IApiKeyHasher hasher) : IApiKeyGenerator
 {
     private const int RandomByteCount = 32;
     private const string Base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    private readonly IApiKeyHasher _hasher = hasher;
 
     /// <inheritdoc/>
     public ApiKeyGenerationResult Generate(ApiKeyType type, string environment)
@@ -23,16 +26,10 @@ internal sealed class ApiKeyGenerator : IApiKeyGenerator
         string prefix = $"gk_{environment}_{GetTypeCode(type)}_";
         string random = GenerateRandomBase62(RandomByteCount);
         string rawSecret = $"{prefix}{random}";
-        string hashedKey = ComputeSha256(rawSecret);
+        string hashedKey = _hasher.ComputeCurrentHash(rawSecret);
         string lastFour = rawSecret[^4..];
 
         return new ApiKeyGenerationResult(rawSecret, hashedKey, prefix, lastFour);
-    }
-
-    internal static string ComputeSha256(string input)
-    {
-        byte[] hash = SHA256.HashData(Encoding.UTF8.GetBytes(input));
-        return Convert.ToHexStringLower(hash);
     }
 
     private static string GetTypeCode(ApiKeyType type) => type switch

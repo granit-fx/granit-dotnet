@@ -77,9 +77,12 @@
     "Granit:Validation:PeriodSpecBoundsCode": "अवधि या तो एक नामित टोकन (जैसे 'last_30d') होनी चाहिए या From और To दोनों — दोनों नहीं, कोई नहीं नहीं।",
     "Granit:Validation:PeriodSpecOrderingCode": "Period.From, Period.To से सख्ती से पहले होना चाहिए।",
     "Granit:Validation:PredicateValidator": "'{PropertyName}' के लिए निर्दिष्ट शर्त पूरी नहीं हुई।",
+    "Granit:Validation:RegroupGroupKeyRequired": "रीग्रुप डेल्टा के लिए गैर-रिक्त GroupKey आवश्यक है।",
     "Granit:Validation:RegularExpressionValidator": "'{PropertyName}' सही प्रारूप में नहीं है।",
+    "Granit:Validation:ReorderDeltaIllFormed": "रीऑर्डर डेल्टा को BeforeFieldName / AfterFieldName में से ठीक एक सेट करना चाहिए।",
     "Granit:Validation:ScalePrecisionValidator": "'{PropertyName}' कुल {ExpectedPrecision} अंकों से अधिक नहीं होना चाहिए, {ExpectedScale} दशमलव की अनुमति के साथ।",
     "Granit:Validation:ScheduledAction:FutureDate": "निर्धारित तिथि भविष्य में होनी चाहिए।",
+    "Granit:Validation:TooManyDeltas": "एकल अनुरोध में बहुत अधिक डेल्टा।",
     "Granit:Validation:UrlMustBeHttps": "URL को HTTPS का उपयोग करना चाहिए।",
     "Granit:Validation:ValidToAfterValidFrom": "'मान्य तक' 'मान्य से' के बाद होना चाहिए।"
   }

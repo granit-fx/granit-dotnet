@@ -1,9 +1,10 @@
 using Granit.Activities;
-using Granit.Activities.Abstractions;
 using Granit.Activities.BackgroundJobs.Services;
 using Granit.Activities.Domain;
 using Granit.Activities.Events;
+using Granit.Activities.Persistence;
 using Granit.Events;
+using Granit.MultiTenancy;
 using Granit.Timing;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -19,7 +20,7 @@ public sealed class MarkOverdueScanServiceTests
     private static IActivityRegistry RegistryWithToDo()
     {
         IActivityRegistry registry = Substitute.For<IActivityRegistry>();
-        registry.TryGet("ToDo", out Arg.Any<ActivityType>()).Returns(call =>
+        registry.TryGet("ToDo", out Arg.Any<ActivityType?>()).Returns(call =>
         {
             call[1] = StandardActivityTypes.ToDo;
             return true;
@@ -52,7 +53,9 @@ public sealed class MarkOverdueScanServiceTests
         IClock clock = Substitute.For<IClock>();
         clock.Now.Returns(Now);
         clock.Normalize(Arg.Any<DateTimeOffset>()).Returns(call => call.Arg<DateTimeOffset>());
-        return (new MarkOverdueScanService(reader, writer, bus, clock, NullLogger<MarkOverdueScanService>.Instance), reader, writer, bus, clock);
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.Change(Arg.Any<Guid?>(), Arg.Any<string?>()).Returns(_ => Substitute.For<IDisposable>());
+        return (new MarkOverdueScanService(reader, writer, bus, tenant, clock, NullLogger<MarkOverdueScanService>.Instance), reader, writer, bus, clock);
     }
 
     [Fact]

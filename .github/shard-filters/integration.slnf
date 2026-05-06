@@ -82,6 +82,8 @@
       "src/Granit.Settings/Granit.Settings.csproj",
       "src/Granit.Subscriptions.EntityFrameworkCore/Granit.Subscriptions.EntityFrameworkCore.csproj",
       "src/Granit.Subscriptions/Granit.Subscriptions.csproj",
+      "src/Granit.Taxonomy.EntityFrameworkCore/Granit.Taxonomy.EntityFrameworkCore.csproj",
+      "src/Granit.Taxonomy/Granit.Taxonomy.csproj",
       "src/Granit.Testing.EntityFrameworkCore/Granit.Testing.EntityFrameworkCore.csproj",
       "src/Granit.Testing/Granit.Testing.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
@@ -109,6 +111,7 @@
       "tests/Granit.Parties.Mergeable.Tests.Integration/Granit.Parties.Mergeable.Tests.Integration.csproj",
       "tests/Granit.QueryEngine.AspNetCore.Tests.Integration/Granit.QueryEngine.AspNetCore.Tests.Integration.csproj",
       "tests/Granit.Subscriptions.EntityFrameworkCore.Tests.Integration/Granit.Subscriptions.EntityFrameworkCore.Tests.Integration.csproj",
+      "tests/Granit.Taxonomy.EntityFrameworkCore.Tests.Integration/Granit.Taxonomy.EntityFrameworkCore.Tests.Integration.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests.Integration/Granit.Wolverine.Postgresql.Tests.Integration.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests.Integration/Granit.Wolverine.SqlServer.Tests.Integration.csproj"
     ]

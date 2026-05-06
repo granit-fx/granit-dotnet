@@ -11,11 +11,17 @@ public static class ActivitiesPermissions
     /// <summary>Permissions for the activities resource.</summary>
     public static class Activities
     {
-        /// <summary>List + get-by-id.</summary>
+        /// <summary>List + get-by-id (own activities — assignee == caller or 'me' filter).</summary>
         public const string Read = "Activities.Activities.Read";
 
-        /// <summary>Create / cancel / reassign / reschedule.</summary>
+        /// <summary>List activities assigned to other users — separate gate for peer-workload queries.</summary>
+        public const string ReadOthers = "Activities.Activities.ReadOthers";
+
+        /// <summary>Create / cancel / reschedule.</summary>
         public const string Manage = "Activities.Activities.Manage";
+
+        /// <summary>Reassign — separate gate so least-privilege roles cannot move work to other users.</summary>
+        public const string Reassign = "Activities.Activities.Reassign";
 
         /// <summary>Complete (typically held by the assignee in addition to <see cref="Read"/>).</summary>
         public const string Execute = "Activities.Activities.Execute";

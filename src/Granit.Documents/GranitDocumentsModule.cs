@@ -1,5 +1,6 @@
 using Granit.BlobStorage;
 using Granit.Modularity;
+using Granit.Taxonomy;
 
 namespace Granit.Documents;
 
@@ -21,5 +22,7 @@ namespace Granit.Documents;
 /// of the tracking Epic.
 /// </para>
 /// </remarks>
-[DependsOn(typeof(GranitBlobStorageModule))]
+[DependsOn(
+    typeof(GranitBlobStorageModule),
+    typeof(GranitTaxonomyModule))]
 public sealed class GranitDocumentsModule : GranitModule;

@@ -1,5 +1,3 @@
-using Granit.Entities.Endpoints;
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
 namespace Granit.Entities.EntityFrameworkCore.Internal;
@@ -20,7 +18,7 @@ namespace Granit.Entities.EntityFrameworkCore.Internal;
 /// shape predictable for the React shell, matching <c>NullCalendarRangeService</c>.
 /// </remarks>
 internal sealed class EntityFrameworkCoreCalendarRangeService(
-    IEnumerable<ICalendarRangeRunner> runners) : ICalendarRangeService
+    IEnumerable<ICalendarRangeRunner> runners) : Granit.Entities.ICalendarRangeService
 {
     private readonly Dictionary<string, ICalendarRangeRunner> _byEntity =
         runners.ToDictionary(r => r.EntityName, StringComparer.Ordinal);
@@ -28,7 +26,7 @@ internal sealed class EntityFrameworkCoreCalendarRangeService(
     public Task<IReadOnlyList<CalendarItemResponse>> GetItemsAsync(
         EntityDefinitionDescriptor entity,
         CalendarLayoutDescriptor layout,
-        CalendarRange range,
+        Granit.Entities.CalendarRange range,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(entity);

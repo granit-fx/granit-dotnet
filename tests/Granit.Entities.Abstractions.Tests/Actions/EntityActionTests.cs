@@ -82,6 +82,80 @@ public sealed class EntityActionTests
     }
 
     [Fact]
+    public void Action_opendrawer_without_url_falls_back_to_default_layout()
+    {
+        EntityDefinitionDescriptor d = new FrontendActionsDefinition().Descriptor;
+
+        EntityActionDescriptor peek = d.Actions.Single(a => a.Name == "peek");
+        peek.Kind.ShouldBe(EntityActionKind.OpenDrawer);
+        peek.UrlTemplate.ShouldBeNull();
+        peek.HttpMethod.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Action_opendrawer_with_explicit_url_keeps_it()
+    {
+        EntityDefinitionDescriptor d = new FrontendActionsDefinition().Descriptor;
+
+        EntityActionDescriptor preview = d.Actions.Single(a => a.Name == "preview");
+        preview.Kind.ShouldBe(EntityActionKind.OpenDrawer);
+        preview.UrlTemplate.ShouldBe("/w/orders/{id}/preview");
+        preview.HttpMethod.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Action_openmodal_without_url_falls_back_to_default_form()
+    {
+        EntityDefinitionDescriptor d = new FrontendActionsDefinition().Descriptor;
+
+        EntityActionDescriptor edit = d.Actions.Single(a => a.Name == "edit");
+        edit.Kind.ShouldBe(EntityActionKind.OpenModal);
+        edit.UrlTemplate.ShouldBeNull();
+        edit.HttpMethod.ShouldBeNull();
+    }
+
+    [Fact]
+    public void Action_openmodal_with_explicit_url_keeps_it()
+    {
+        EntityDefinitionDescriptor d = new FrontendActionsDefinition().Descriptor;
+
+        EntityActionDescriptor import = d.Actions.Single(a => a.Name == "import");
+        import.Kind.ShouldBe(EntityActionKind.OpenModal);
+        import.UrlTemplate.ShouldBe("/w/orders/import");
+        import.HttpMethod.ShouldBeNull();
+        import.ShowOnListHeader.ShouldBeTrue();
+    }
+
+    private sealed class FrontendActionsDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.FrontendActions";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .Action("peek", a => a
+                    .OpenDrawer()
+                    .DisplayKey("Orders:Action.Peek")
+                    .Icon("eye")
+                    .Order(10))
+                .Action("preview", a => a
+                    .OpenDrawer("/w/orders/{id}/preview")
+                    .DisplayKey("Orders:Action.Preview")
+                    .Icon("eye-open")
+                    .Order(20))
+                .Action("edit", a => a
+                    .OpenModal()
+                    .DisplayKey("Orders:Action.Edit")
+                    .Icon("pencil")
+                    .Order(30))
+                .Action("import", a => a
+                    .OpenModal("/w/orders/import")
+                    .DisplayKey("Orders:Action.Import")
+                    .Icon("upload")
+                    .Order(40)
+                    .OnListHeader());
+    }
+
+    [Fact]
     public void Build_rejects_duplicate_action_names()
     {
         InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
@@ -230,5 +304,69 @@ public sealed class EntityActionTests
                 .ApiCall("POST", "/api/v1/orders/{id}/import")  // {id} not allowed for header
                 .Icon("upload")
                 .OnListHeader());
+    }
+
+    [Fact]
+    public void OnSelection_defaults_false_and_opt_in_sets_flag()
+    {
+        EntityDefinitionDescriptor d = new SampleDefinition().Descriptor;
+
+        d.Actions.Single(a => a.Name == "finalize").ShowOnSelection.ShouldBeFalse();
+
+        EntityDefinitionDescriptor pinned = new SelectionPinnedDefinition().Descriptor;
+        pinned.Actions.Single(a => a.Name == "archive").ShowOnSelection.ShouldBeTrue();
+        pinned.Actions.Single(a => a.Name == "void").ShowOnSelection.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void OnSelection_keeps_id_placeholder_in_url_for_per_row_fanout()
+    {
+        // OnSelection actions reuse the per-row URL — the renderer fires N
+        // parallel requests substituting {id} per selected row. So the URL
+        // template MUST keep its {id}, unlike OnListHeader which strips it.
+        EntityDefinitionDescriptor d = new SelectionPinnedDefinition().Descriptor;
+
+        EntityActionDescriptor archive = d.Actions.Single(a => a.Name == "archive");
+        archive.UrlTemplate.ShouldBe("/api/parties/{id}/archive");
+    }
+
+    [Fact]
+    public void OnSelection_combined_with_OnListHeader_throws()
+    {
+        InvalidOperationException ex = Should.Throw<InvalidOperationException>(() =>
+            _ = new SelectionAndHeaderDefinition().Descriptor);
+
+        ex.Message.ShouldContain("OnListHeader");
+        ex.Message.ShouldContain("OnSelection");
+        ex.Message.ShouldContain("mutually exclusive");
+    }
+
+    private sealed class SelectionPinnedDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.SelectionPinned";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .RouteBase("/api/parties")
+                .Action("archive", a => a
+                    .Post()
+                    .Icon("archive")
+                    .OnSelection())
+                .Action("void", a => a
+                    .Post()
+                    .Icon("ban"));
+    }
+
+    private sealed class SelectionAndHeaderDefinition : EntityDefinition<SampleEntity>
+    {
+        public override string Name => "Granit.Sample.SelectionAndHeader";
+
+        protected override void Configure(EntityDefinitionBuilder<SampleEntity> builder) =>
+            builder
+                .RouteBase("/api/parties")
+                .Action("contradiction", a => a
+                    .Post()
+                    .OnListHeader()
+                    .OnSelection());
     }
 }

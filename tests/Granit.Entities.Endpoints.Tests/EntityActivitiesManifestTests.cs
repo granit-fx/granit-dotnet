@@ -2,6 +2,7 @@ using Granit.Activities;
 using Granit.Entities.Activities;
 using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Endpoints.Internal;
+using Granit.Entities.Manifests;
 using NSubstitute;
 using Shouldly;
 using Xunit;
@@ -41,13 +42,13 @@ public sealed class EntityActivitiesManifestTests
         foreach (string name in knownTypeNames)
         {
             ActivityType captured = dict[name];
-            registry.TryGet(name, out Arg.Any<ActivityType>()).Returns(call =>
+            registry.TryGet(name, out Arg.Any<ActivityType?>()).Returns(call =>
             {
                 call[1] = captured;
                 return true;
             });
         }
-        registry.TryGet(Arg.Is<string>(s => !knownTypeNames.Contains(s, StringComparer.Ordinal)), out Arg.Any<ActivityType>())
+        registry.TryGet(Arg.Is<string>(s => !knownTypeNames.Contains(s, StringComparer.Ordinal)), out Arg.Any<ActivityType?>())
             .Returns(false);
         return registry;
     }

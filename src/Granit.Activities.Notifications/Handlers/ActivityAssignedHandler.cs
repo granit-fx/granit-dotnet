@@ -9,17 +9,11 @@ namespace Granit.Activities.Notifications.Handlers;
 /// notification to the assignee. Local-bus dispatch — fires within the same
 /// scope as the originating Create / Reassign.
 /// </summary>
-public class ActivityAssignedHandler : ILocalEventHandler<ActivityAssignedEvent>
+public class ActivityAssignedHandler(INotificationPublisher publisher)
+    : ILocalEventHandler<ActivityAssignedEvent>
 {
-    private readonly INotificationPublisher _publisher;
-
-    public ActivityAssignedHandler(INotificationPublisher publisher)
-    {
-        _publisher = publisher;
-    }
-
     public async Task HandleAsync(ActivityAssignedEvent evt, CancellationToken cancellationToken = default) =>
-        await _publisher.PublishAsync(
+        await publisher.PublishAsync(
             ActivityAssignedNotificationType.Instance,
             new ActivityAssignedNotificationData(
                 evt.ActivityId, evt.Type, evt.DueAt, evt.EntityType, evt.EntityId),

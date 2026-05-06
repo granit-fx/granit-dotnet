@@ -27,7 +27,7 @@ namespace Granit.Documents.Domain;
 /// detects concurrent overwrites and surfaces them as <c>DbUpdateConcurrencyException</c>.
 /// </para>
 /// </remarks>
-public sealed class Document : AggregateRoot, IMultiTenant
+public sealed class Document : AggregateRoot, IMultiTenant, IEmitEntityLifecycleEvents
 {
     /// <summary>Maximum length, in characters, of a document <see cref="Name"/>.</summary>
     public const int MaxNameLength = 255;

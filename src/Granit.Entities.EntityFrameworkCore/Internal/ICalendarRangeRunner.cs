@@ -1,4 +1,3 @@
-using Granit.Entities.Endpoints.Dtos;
 using Granit.Entities.Layouts;
 
 namespace Granit.Entities.EntityFrameworkCore.Internal;
@@ -19,7 +18,7 @@ internal interface ICalendarRangeRunner
     /// <summary>Runs the calendar query and projects the rows into <see cref="CalendarItemResponse"/>.</summary>
     Task<IReadOnlyList<CalendarItemResponse>> ExecuteAsync(
         CalendarLayoutDescriptor layout,
-        Endpoints.CalendarRange range,
+        CalendarRange range,
         string? displayProperty,
         CancellationToken cancellationToken);
 }

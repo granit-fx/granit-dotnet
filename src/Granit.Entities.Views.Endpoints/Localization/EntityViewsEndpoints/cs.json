@@ -6,6 +6,6 @@
     "Permission:Entities.Views.Create": "Vytvářet osobní pohledy na entity",
     "Permission:Entities.Views.Share": "Sdílet pohledy na entity s rolemi nebo uživateli",
     "Permission:Entities.Views.Manage": "Spravovat pohledy na entity (připnout / nastavit výchozí pro tenant / povýšit)",
-    "Permission:Entities.Views.Delete.Any": "Smazat libovolný pohled na entitu (moderace)"
+    "Permission:Entities.Views.DeleteAny": "Smazat libovolný pohled na entitu (moderace)"
   }
 }

@@ -45,7 +45,7 @@ public sealed class EntityCustomizationRequestValidatorTests
 
         ValidationResult result = Sut().Validate(request);
         result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.ErrorMessage.Contains("BeforeFieldName"));
+        result.Errors.ShouldContain(e => e.ErrorCode == "Granit:Validation:ReorderDeltaIllFormed");
     }
 
     [Fact]
@@ -84,6 +84,6 @@ public sealed class EntityCustomizationRequestValidatorTests
 
         ValidationResult result = Sut(maxDeltas: 3).Validate(request);
         result.IsValid.ShouldBeFalse();
-        result.Errors.ShouldContain(e => e.ErrorMessage.Contains('3'));
+        result.Errors.ShouldContain(e => e.ErrorCode == "Granit:Validation:TooManyDeltas");
     }
 }

@@ -1,4 +1,4 @@
-using Granit.Activities.Abstractions;
+using Granit.Activities.Persistence;
 
 namespace Granit.Activities.Endpoints.Dtos;
 

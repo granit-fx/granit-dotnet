@@ -24,6 +24,8 @@
     <ProjectReference Include="..\..\src\Granit.Documents\Granit.Documents.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents.EntityFrameworkCore\Granit.Documents.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy\Granit.Taxonomy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy.EntityFrameworkCore\Granit.Taxonomy.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
 </Project>

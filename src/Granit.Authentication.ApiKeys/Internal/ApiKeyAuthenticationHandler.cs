@@ -29,10 +29,13 @@ internal sealed partial class ApiKeyAuthenticationHandler(
     ILoggerFactory logger,
     UrlEncoder encoder,
     IApiKeyStore store,
+    IApiKeyHasher hasher,
     IClock clock,
     IApiKeyCacheService? cacheService = null)
     : AuthenticationHandler<ApiKeyOptions>(options, logger, encoder)
 {
+    private readonly IApiKeyHasher _hasher = hasher;
+
     /// <inheritdoc/>
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -50,11 +53,18 @@ internal sealed partial class ApiKeyAuthenticationHandler(
             return AuthenticateResult.NoResult();
         }
 
-        string hashedKey = ApiKeyGenerator.ComputeSha256(token);
-
-        // Lookup: cache first (if available), then store
-        ApiKeyEntry? apiKey = await ResolveApiKeyAsync(hashedKey, Context.RequestAborted)
-            .ConfigureAwait(false);
+        // Try every accepted hash variant (v2-then-v1 when peppered, v1 only otherwise).
+        // Returns on the first hit so the cache absorbs the common case to a single lookup.
+        ApiKeyEntry? apiKey = null;
+        foreach (string candidate in _hasher.ComputeCandidateHashes(token))
+        {
+            apiKey = await ResolveApiKeyAsync(candidate, Context.RequestAborted)
+                .ConfigureAwait(false);
+            if (apiKey is not null)
+            {
+                break;
+            }
+        }
 
         if (apiKey is null)
         {

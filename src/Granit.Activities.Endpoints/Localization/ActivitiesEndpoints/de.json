@@ -3,7 +3,9 @@
   "texts": {
     "PermissionGroup:Activities": "Aktivitäten",
     "Permission:Activities.Activities.Read": "Aktivitäten lesen",
+    "Permission:Activities.Activities.ReadOthers": "Aktivitäten anderer lesen",
     "Permission:Activities.Activities.Manage": "Aktivitäten verwalten",
+    "Permission:Activities.Activities.Reassign": "Aktivitäten neu zuweisen",
     "Permission:Activities.Activities.Execute": "Aktivitäten abschließen"
   }
 }

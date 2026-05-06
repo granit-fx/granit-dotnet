@@ -21,6 +21,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
     private string? _permissionGroup;
     private string? _displayProperty;
     private string? _subtitleProperty;
+    private string? _routeBase;
 
     private Type? _queryDefinitionType;
     private Type? _exportDefinitionType;
@@ -148,6 +149,28 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         where TWorkflowDefinition : class
     {
         _workflowDefinitionType = typeof(TWorkflowDefinition);
+        return this;
+    }
+
+    /// <summary>
+    /// Declares the entity's API route prefix (e.g. <c>"/api/parties"</c>). Once set,
+    /// action verb shortcuts (<see cref="EntityActionBuilder{TEntity}.Post"/>,
+    /// <see cref="EntityActionBuilder{TEntity}.Get"/>,
+    /// <see cref="EntityActionBuilder{TEntity}.Download"/>, …) compose URLs as
+    /// <c>{RouteBase}/{id}/{actionName}</c> (or <c>{RouteBase}/{actionName}</c> for
+    /// <see cref="EntityActionBuilder{TEntity}.OnListHeader"/> actions). Eliminates
+    /// the need to repeat the same prefix on every action declaration.
+    /// </summary>
+    /// <remarks>
+    /// Optional. Hosts can keep using the verbose escape hatches
+    /// (<see cref="EntityActionBuilder{TEntity}.ApiCall"/> with a full URL, or
+    /// <see cref="EntityActionBuilder{TEntity}.AbsolutePath"/>) when an action lives
+    /// outside the entity's primary route prefix.
+    /// </remarks>
+    public EntityDefinitionBuilder<TEntity> RouteBase(string routeBase)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(routeBase);
+        _routeBase = routeBase;
         return this;
     }
 
@@ -303,7 +326,7 @@ public sealed class EntityDefinitionBuilder<TEntity> where TEntity : class
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
         ArgumentNullException.ThrowIfNull(configure);
 
-        EntityActionBuilder<TEntity> builder = new(name);
+        EntityActionBuilder<TEntity> builder = new(name, routeBase: _routeBase);
         configure(builder);
         _actions.Add(builder.Build());
         return this;
