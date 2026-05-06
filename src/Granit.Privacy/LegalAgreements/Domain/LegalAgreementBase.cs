@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 
 namespace Granit.Privacy.LegalAgreements.Domain;
 
@@ -29,5 +30,6 @@ public abstract class LegalAgreementBase : CreationAuditedEntity
     /// IP address of the user at the time of acceptance (pseudonymized — last octet masked, GDPR).
     /// </summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string? IpAddress { get; set; }
 }

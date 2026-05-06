@@ -1,3 +1,4 @@
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataDeletion;
 using Granit.Privacy.EntityFrameworkCore.DataDeletion.Internal;
@@ -136,9 +137,19 @@ public sealed class EfDeletionRequestTrackerTests : IAsyncDisposable
     {
         public ICurrentTenant Tenant { get; } = Substitute.For<ICurrentTenant>();
 
-        public PrivacyDbContext CreateDbContext() => new(options, Tenant);
+        // Round-trip identity encryption for the in-memory test DB. Real round-trip
+        // is exercised by Granit.Encryption.EntityFrameworkCore.Tests.
+        private static readonly IStringEncryptionService Encryption = new PassthroughEncryption();
+
+        public PrivacyDbContext CreateDbContext() => new(options, Encryption, Tenant);
 
         public Task<PrivacyDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new PrivacyDbContext(options, Tenant));
+            Task.FromResult(new PrivacyDbContext(options, Encryption, Tenant));
+
+        private sealed class PassthroughEncryption : IStringEncryptionService
+        {
+            public string Encrypt(string plainText) => plainText;
+            public string? Decrypt(string cipherText) => cipherText;
+        }
     }
 }

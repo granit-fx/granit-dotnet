@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.Privacy.DataDeletion;
 
 namespace Granit.Privacy.EntityFrameworkCore.Entities;
@@ -20,6 +21,7 @@ public sealed class DeletionRequestEntity : Entity, IMultiTenant
 
     /// <summary>Free-text justification captured from the user — may contain personal data.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string Reason { get; set; } = string.Empty;
 
     /// <summary>UTC timestamp when the user submitted the deletion request.</summary>

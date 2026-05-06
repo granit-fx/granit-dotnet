@@ -1268,7 +1268,6 @@
       "deps": [
         "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
-        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Guids",
         "Granit.Identity",
         "Granit.Localization",
@@ -2356,6 +2355,7 @@
     {
       "name": "Granit.Privacy.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Guids",
         "Granit.Privacy",
         "Granit.Persistence.EntityFrameworkCore"
@@ -20608,11 +20608,11 @@
     },
     {
       "name": "EncryptedAttribute",
-      "fqn": "Granit.Encryption.EntityFrameworkCore.EncryptedAttribute",
+      "fqn": "Granit.Encryption.EncryptedAttribute",
       "kind": "class",
-      "project": "Granit.Encryption.EntityFrameworkCore",
-      "file": "src/Granit.Encryption.EntityFrameworkCore/EncryptedAttribute.cs",
-      "line": 30,
+      "project": "Granit",
+      "file": "src/Granit/Encryption/EncryptedAttribute.cs",
+      "line": 34,
       "members": []
     },
     {
@@ -48295,7 +48295,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/DeletionRequestEntity.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "UserId",
@@ -48447,7 +48447,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Domain/LegalAgreementBase.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "UserId",
