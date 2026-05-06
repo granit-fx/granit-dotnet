@@ -15,6 +15,7 @@ namespace Granit.Entities.Endpoints.Dtos;
 /// <param name="DefaultViewId">Resolved default <c>EntityView</c> id per ADR-049's 5-tier resolver, or <see langword="null"/> when none applies.</param>
 /// <param name="ListLayouts">Alternative list-view layouts (kanban, …) the entity exposes — drives the EntityListViewSwitcher tabs.</param>
 /// <param name="HeaderActions">Compact references to actions the entity opted into the list-page header via <c>OnListHeader()</c>. Pinned above the layout tabs (Odoo-style action bar) — entity-scope, no <c>{id}</c> placeholder. Already permission-filtered.</param>
+/// <param name="SelectionActions">Compact references to actions the entity opted into the selection-bar dropdown via <c>OnSelection()</c>. Surfaced when one or more rows are selected (Odoo's "Action ▼"). The renderer fires the action's row URL N times in parallel, substituting <c>{id}</c> per selected row. Already permission-filtered.</param>
 public sealed record EntityCollectionsSection(
     EntityCollectionReference? Query,
     EntityCollectionReference? Export,
@@ -22,7 +23,8 @@ public sealed record EntityCollectionsSection(
     IReadOnlyList<EntityCollectionReference> Dashboards,
     Guid? DefaultViewId,
     IReadOnlyList<EntityListLayoutManifest> ListLayouts,
-    IReadOnlyList<EntityHeaderActionManifest> HeaderActions);
+    IReadOnlyList<EntityHeaderActionManifest> HeaderActions,
+    IReadOnlyList<EntitySelectionActionManifest> SelectionActions);
 
 /// <summary>
 /// Compact reference to one action pinned on the list-page header
@@ -40,6 +42,27 @@ public sealed record EntityHeaderActionManifest(
     string Name,
     string? DisplayKey,
     string? Icon,
+    string? ContributorAssemblyName);
+
+/// <summary>
+/// Compact reference to one action surfaced on the selection-bar dropdown
+/// (rendered above the list once at least one row is selected — Odoo's
+/// "Action ▼"). The renderer iterates the selected ids and fires N parallel
+/// requests against the action's row URL with <c>{id}</c> substituted.
+/// <see cref="ConfirmationKey"/> is carried inline (rather than looked up in
+/// the entity's <c>Actions</c> facet) because confirmation on a multi-row
+/// destructive operation is a UX-critical fast path.
+/// </summary>
+/// <param name="Name">Stable action name — matches the entry in the entity's <c>Actions</c> facet.</param>
+/// <param name="DisplayKey">i18n key for the dropdown item label.</param>
+/// <param name="Icon">Icon name from the catalog.</param>
+/// <param name="ConfirmationKey">i18n key for the confirmation prompt shown before firing the bulk fan-out, or <see langword="null"/> for no confirmation.</param>
+/// <param name="ContributorAssemblyName">Contributing assembly. <see langword="null"/> for intra-module declarations.</param>
+public sealed record EntitySelectionActionManifest(
+    string Name,
+    string? DisplayKey,
+    string? Icon,
+    string? ConfirmationKey,
     string? ContributorAssemblyName);
 
 /// <summary>
