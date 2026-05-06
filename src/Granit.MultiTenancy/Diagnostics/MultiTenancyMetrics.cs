@@ -14,7 +14,6 @@ public sealed class MultiTenancyMetrics
     private readonly Counter<long> _resolutionsSucceeded;
     private readonly Counter<long> _resolutionsFailed;
     private readonly Counter<long> _contextSwitches;
-    private readonly Counter<long> _membershipRejected;
 
     public MultiTenancyMetrics(IMeterFactory meterFactory)
     {
@@ -31,13 +30,6 @@ public sealed class MultiTenancyMetrics
         _contextSwitches = meter.CreateCounter<long>(
             "granit.multi_tenancy.context.switched",
             description: "Number of explicit tenant context switches.");
-
-        _membershipRejected = meter.CreateCounter<long>(
-            "granit.multi_tenancy.membership.rejected",
-            description:
-                "Number of requests rejected by the membership check "
-                + "(authenticated user is not a member of the resolved tenant). "
-                + "Anomalous volume signals tenant-claim spoofing attempts.");
     }
 
     public void RecordResolutionSucceeded(string tenantId, string resolverType) =>
@@ -58,7 +50,4 @@ public sealed class MultiTenancyMetrics
         {
             { "tenant_id", tenantId ?? "global" },
         });
-
-    public void RecordMembershipRejected() =>
-        _membershipRejected.Add(1);
 }

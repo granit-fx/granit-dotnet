@@ -1,6 +1,8 @@
 using Granit.Diagnostics;
 using Granit.Documents.Diagnostics;
+using Granit.Documents.Domain;
 using Granit.Documents.Options;
+using Granit.Taxonomy.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -35,6 +37,16 @@ public static class DocumentsServiceCollectionExtensions
 
         GranitActivitySourceRegistry.Register(DocumentsActivitySource.Name);
         services.TryAddSingleton<DocumentsMetrics>();
+
+        // T6.1 — wire the Documents → Taxonomy cross-module link. AddGranitTaxonomy
+        // is idempotent (TryAdd internally) so calling it here just guarantees the
+        // registry is present even when the host forgets to call it explicitly.
+        // AddTaggableEntity<Document> registers the closed-generic T5.1 cleanup
+        // handler for EntityDeletedEvent<Document>, so trash / permanent-delete
+        // drops every TagAssignment + CategoryAssignment row pointing at the
+        // document.
+        services.AddGranitTaxonomy();
+        services.AddTaggableEntity<Document>(scope: "documents");
 
         OptionsBuilder<GranitDocumentsOptions> optionsBuilder = services
             .AddOptions<GranitDocumentsOptions>()

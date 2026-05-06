@@ -906,7 +906,8 @@
       "name": "Granit.Documents",
       "deps": [
         "Granit",
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.Taxonomy"
       ],
       "framework": "net10.0"
     },
@@ -916,6 +917,7 @@
         "Granit.Authorization",
         "Granit.Documents",
         "Granit.Http.ApiDocumentation",
+        "Granit.Taxonomy",
         "Granit.Validation"
       ],
       "framework": "net10.0"
@@ -974,6 +976,7 @@
       "name": "Granit.Entities.Customization",
       "deps": [
         "Granit",
+        "Granit.Entities",
         "Granit.Entities.Abstractions"
       ],
       "framework": "net10.0"
@@ -19418,6 +19421,24 @@
       "members": []
     },
     {
+      "name": "DocumentTagAssignmentResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagAssignmentResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "DocumentTagResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentTagResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "DocumentVersionResponse",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.DocumentVersionResponse",
       "kind": "record",
@@ -19442,6 +19463,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/FinalizeUploadRequest.cs",
       "line": 11,
+      "members": []
+    },
+    {
+      "name": "ListDocumentTagsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentTagsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentTagResponse.cs",
+      "line": 20,
       "members": []
     },
     {
@@ -19565,8 +19595,15 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/GranitDocumentsEndpointsModule.cs",
-      "line": 21,
-      "members": []
+      "line": 29,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "DocumentsEndpointsOptions",
@@ -19815,7 +19852,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 13,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitDocuments",
@@ -19831,7 +19868,7 @@
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/GranitDocumentsModule.cs",
-      "line": 25,
+      "line": 28,
       "members": []
     },
     {
@@ -21195,7 +21232,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/GranitEntitiesCustomizationEndpointsModule.cs",
-      "line": 38,
+      "line": 36,
       "members": [
         {
           "name": "ConfigureServices",
@@ -21330,8 +21367,15 @@
       "kind": "class",
       "project": "Granit.Entities.Customization",
       "file": "src/Granit.Entities.Customization/GranitEntitiesCustomizationModule.cs",
-      "line": 12,
-      "members": []
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "IEntityCustomizationReader",
@@ -21497,87 +21541,6 @@
       "members": []
     },
     {
-      "name": "EntityActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityActionManifest.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "EntityActivitiesManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityActivitiesManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityActivitiesManifest.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "EntityCalendarLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 107,
-      "members": []
-    },
-    {
-      "name": "EntityCalendarTileActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCalendarTileActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 122,
-      "members": []
-    },
-    {
-      "name": "EntityCollectionReference",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionReference",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 74,
-      "members": []
-    },
-    {
-      "name": "EntityCollectionsSection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityCollectionsSection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 19,
-      "members": []
-    },
-    {
-      "name": "EntityDetailManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 9,
-      "members": []
-    },
-    {
-      "name": "EntityDetailSectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 20,
-      "members": []
-    },
-    {
-      "name": "EntityDetailSidePanelManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityDetailSidePanelManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityDetailManifest.cs",
-      "line": 30,
-      "members": []
-    },
-    {
       "name": "EntityDiscoveryItemResponse",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityDiscoveryItemResponse",
       "kind": "record",
@@ -21614,201 +21577,12 @@
       "members": []
     },
     {
-      "name": "EntityFormFieldManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormFieldManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 53,
-      "members": []
-    },
-    {
-      "name": "EntityFormManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "EntityFormOwnedCollectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormOwnedCollectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 71,
-      "members": []
-    },
-    {
-      "name": "EntityFormSectionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityFormSectionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityFormManifest.cs",
-      "line": 29,
-      "members": []
-    },
-    {
-      "name": "EntityGalleryCardActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryCardActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 157,
-      "members": []
-    },
-    {
-      "name": "EntityGalleryLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityGalleryLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 141,
-      "members": []
-    },
-    {
-      "name": "EntityHeaderActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityHeaderActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 41,
-      "members": []
-    },
-    {
-      "name": "EntityIdentitySection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityIdentitySection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityIdentitySection.cs",
-      "line": 11,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 216,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 184,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanCardRelationManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanCardRelationManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 200,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanColumnManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanColumnManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 226,
-      "members": []
-    },
-    {
-      "name": "EntityKanbanLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityKanbanLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 168,
-      "members": []
-    },
-    {
-      "name": "EntityListLayoutManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityListLayoutManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 89,
-      "members": []
-    },
-    {
-      "name": "EntityManifestResponse",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityManifestResponse",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityManifestResponse.cs",
-      "line": 17,
-      "members": []
-    },
-    {
       "name": "EntityModuleGroupResponse",
       "fqn": "Granit.Entities.Endpoints.Dtos.EntityModuleGroupResponse",
       "kind": "record",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Dtos/EntityDiscoveryItemResponse.cs",
       "line": 30,
-      "members": []
-    },
-    {
-      "name": "EntityPermissionsSection",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityPermissionsSection",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityPermissionsSection.cs",
-      "line": 16,
-      "members": []
-    },
-    {
-      "name": "EntityProvenance",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenance",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "EntityProvenanceLayers",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityProvenanceLayers",
-      "kind": "class",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityProvenance.cs",
-      "line": 21,
-      "members": []
-    },
-    {
-      "name": "EntityRelationAggregateManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationAggregateManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
-      "line": 35,
-      "members": []
-    },
-    {
-      "name": "EntityRelationManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntityRelationManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityRelationsSection.cs",
-      "line": 18,
-      "members": []
-    },
-    {
-      "name": "EntitySelectionActionManifest",
-      "fqn": "Granit.Entities.Endpoints.Dtos.EntitySelectionActionManifest",
-      "kind": "record",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Dtos/EntityCollectionsSection.cs",
-      "line": 61,
       "members": []
     },
     {
@@ -21867,22 +21641,6 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
-        }
-      ]
-    },
-    {
-      "name": "IManifestCustomizationApplier",
-      "fqn": "Granit.Entities.Endpoints.Internal.IManifestCustomizationApplier",
-      "kind": "interface",
-      "project": "Granit.Entities.Endpoints",
-      "file": "src/Granit.Entities.Endpoints/Internal/IManifestCustomizationApplier.cs",
-      "line": 27,
-      "members": [
-        {
-          "name": "ApplyAsync",
-          "kind": "method",
-          "signature": "ApplyAsync(string entityName, EntityManifestResponse composedManifest, CancellationToken cancellationToken = default)",
-          "returnType": "Task<EntityManifestResponse>"
         }
       ]
     },
@@ -22380,6 +22138,276 @@
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Layouts/CalendarRangeFilterBuilder.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityActionManifest.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "EntityActivitiesManifest",
+      "fqn": "Granit.Entities.Manifests.EntityActivitiesManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityActivitiesManifest.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityCalendarLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 107,
+      "members": []
+    },
+    {
+      "name": "EntityCalendarTileActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityCalendarTileActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 122,
+      "members": []
+    },
+    {
+      "name": "EntityCollectionReference",
+      "fqn": "Granit.Entities.Manifests.EntityCollectionReference",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 74,
+      "members": []
+    },
+    {
+      "name": "EntityCollectionsSection",
+      "fqn": "Granit.Entities.Manifests.EntityCollectionsSection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 19,
+      "members": []
+    },
+    {
+      "name": "EntityDetailManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EntityDetailSidePanelManifest",
+      "fqn": "Granit.Entities.Manifests.EntityDetailSidePanelManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityDetailManifest.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "EntityFormFieldManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormFieldManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "EntityFormManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntityFormOwnedCollectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormOwnedCollectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 71,
+      "members": []
+    },
+    {
+      "name": "EntityFormSectionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityFormSectionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityFormManifest.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "EntityGalleryCardActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityGalleryCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 157,
+      "members": []
+    },
+    {
+      "name": "EntityGalleryLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityGalleryLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 141,
+      "members": []
+    },
+    {
+      "name": "EntityHeaderActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityHeaderActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 41,
+      "members": []
+    },
+    {
+      "name": "EntityIdentitySection",
+      "fqn": "Granit.Entities.Manifests.EntityIdentitySection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityIdentitySection.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 216,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 184,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanCardRelationManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanCardRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 200,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanColumnManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanColumnManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 226,
+      "members": []
+    },
+    {
+      "name": "EntityKanbanLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityKanbanLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 168,
+      "members": []
+    },
+    {
+      "name": "EntityListLayoutManifest",
+      "fqn": "Granit.Entities.Manifests.EntityListLayoutManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 89,
+      "members": []
+    },
+    {
+      "name": "EntityManifestResponse",
+      "fqn": "Granit.Entities.Manifests.EntityManifestResponse",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityManifestResponse.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "EntityPermissionsSection",
+      "fqn": "Granit.Entities.Manifests.EntityPermissionsSection",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityPermissionsSection.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "EntityProvenance",
+      "fqn": "Granit.Entities.Manifests.EntityProvenance",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityProvenance.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntityProvenanceLayers",
+      "fqn": "Granit.Entities.Manifests.EntityProvenanceLayers",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityProvenance.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "EntityRelationAggregateManifest",
+      "fqn": "Granit.Entities.Manifests.EntityRelationAggregateManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityRelationsSection.cs",
+      "line": 35,
+      "members": []
+    },
+    {
+      "name": "EntityRelationManifest",
+      "fqn": "Granit.Entities.Manifests.EntityRelationManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityRelationsSection.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "EntitySelectionActionManifest",
+      "fqn": "Granit.Entities.Manifests.EntitySelectionActionManifest",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Manifests/EntityCollectionsSection.cs",
+      "line": 61,
       "members": []
     },
     {
@@ -35853,6 +35881,46 @@
       "file": "src/Granit/MultiTenancy/MultiTenancySides.cs",
       "line": 24,
       "members": []
+    },
+    {
+      "name": "NullTenantContext",
+      "fqn": "Granit.MultiTenancy.NullTenantContext",
+      "kind": "class",
+      "project": "Granit",
+      "file": "src/Granit/MultiTenancy/NullTenantContext.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "NullTenantContext Instance ="
+        },
+        {
+          "name": "IsAvailable",
+          "kind": "property",
+          "signature": "bool IsAvailable",
+          "returnType": "bool"
+        },
+        {
+          "name": "Id",
+          "kind": "property",
+          "signature": "Guid? Id",
+          "returnType": "Guid?"
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string? Name",
+          "returnType": "string?"
+        },
+        {
+          "name": "Change",
+          "kind": "method",
+          "signature": "Change(Guid? id, string? name = null)",
+          "returnType": "IDisposable"
+        }
+      ]
     },
     {
       "name": "MultiTenancyOptions",
@@ -62263,7 +62331,7 @@
       "kind": "class",
       "project": "Granit.Wolverine",
       "file": "src/Granit.Wolverine/CrossTenantMessageAttribute.cs",
-      "line": 26,
+      "line": 24,
       "members": []
     },
     {
