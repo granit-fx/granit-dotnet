@@ -2030,6 +2030,7 @@
       "name": "Granit.OpenIddict.Server",
       "deps": [
         "Granit.Authentication",
+        "Granit.Authentication.DPoP",
         "Granit.OpenIddict"
       ],
       "framework": "net10.0"
@@ -40884,7 +40885,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 14,
+      "line": 18,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40901,6 +40902,28 @@
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
       "line": 38,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictServerHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictServerHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessSignInContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
+      "name": "DPoPTokenBindingHandler",
+      "fqn": "Granit.OpenIddict.Server.Handlers.DPoPTokenBindingHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Handlers/DPoPTokenBindingHandler.cs",
+      "line": 35,
       "members": [
         {
           "name": "Descriptor",

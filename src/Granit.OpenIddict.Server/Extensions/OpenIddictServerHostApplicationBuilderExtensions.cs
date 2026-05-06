@@ -169,6 +169,12 @@ public static class OpenIddictServerHostApplicationBuilderExtensions
             // at sign-in: host-only clients reject tenant users, tenant-only clients
             // reject host users. See ClientSideAuthorizationHandler for semantics.
             options.AddEventHandler(ClientSideAuthorizationHandler.Descriptor);
+
+            // Validates the DPoP proof presented at /connect/token and stamps the
+            // resulting JWK Thumbprint as the cnf.jkt confirmation claim on the issued
+            // access token (RFC 9449 §6). In FAPI 2.0, a missing DPoP header rejects
+            // the request — see DPoPTokenBindingHandler for semantics.
+            options.AddEventHandler(DPoPTokenBindingHandler.Descriptor);
         });
 
         // ──── Validation — token validation for resource servers ────
