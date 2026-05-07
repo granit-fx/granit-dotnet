@@ -64,7 +64,6 @@ public sealed class SensitiveDataEncryptionConventionTests
         "Granit.Identity.Domain.User.PhoneNumber",                          // potential SMS-OTP / passwordless lookup. Same pattern as Email.
         "Granit.Parties.Domain.PartyEmail.CanonicalEmail",                  // Tier1DeterministicMatcher dedup index.
         "Granit.Parties.Domain.PartyPhone.CanonicalNumber",                 // Tier1DeterministicMatcher dedup index.
-        "Granit.Tax.Domain.ValidatedTaxId.TaxId",                           // EfValidatedTaxIdStore.FirstOrDefaultAsync(v => v.TaxId == taxId).
     };
 
     [Fact]

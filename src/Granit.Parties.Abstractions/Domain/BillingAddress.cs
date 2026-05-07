@@ -87,7 +87,14 @@ public sealed class BillingAddress : ValueObject
     public string Country { get; private set; } = string.Empty;
 
     /// <summary>VAT number for B2B reverse charge (e.g., <c>"BE0123456789"</c>).</summary>
-    [SensitiveData(Level = Sensitivity.Confidential)]
+    /// <remarks>
+    /// Classified <see cref="Sensitivity.Internal"/> — VAT numbers are public
+    /// registration data: they appear on every invoice the company issues, are
+    /// searchable in national registries (KBO/BCE, Companies House) and in VIES,
+    /// and the field exists precisely because the value is publicly required for
+    /// B2B reverse charge. No at-rest encryption mandate.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string? VatNumber { get; private set; }
 
     /// <inheritdoc />
