@@ -1259,6 +1259,7 @@
     {
       "name": "Granit.Identity.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Identity",
         "Granit.Persistence.EntityFrameworkCore"
       ],
@@ -26263,7 +26264,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Domain/User.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "DisplayName",
@@ -26278,9 +26279,9 @@
           "returnType": "string"
         },
         {
-          "name": "FirstName",
+          "name": "EmailHash",
           "kind": "property",
-          "signature": "string? FirstName",
+          "signature": "string? EmailHash",
           "returnType": "string?"
         },
         {
@@ -26649,7 +26650,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
@@ -26690,7 +26691,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
@@ -30567,6 +30568,15 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
       "line": 22,
+      "members": []
+    },
+    {
+      "name": "UserLookupHasherOptions",
+      "fqn": "Granit.Identity.Options.UserLookupHasherOptions",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Options/UserLookupHasherOptions.cs",
+      "line": 9,
       "members": []
     },
     {

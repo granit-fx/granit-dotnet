@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.Identity.Events;
 using Granit.MultiTenancy;
 
@@ -49,9 +50,18 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
     /// Login email and primary contact. Required at creation (used by
     /// recovery flows). Sync-target of <see cref="IIdentityUser.Username"/>
     /// where the local backend imposes a username-equals-email convention.
+    /// Encrypted at rest; equality lookups go through <see cref="EmailHash"/>.
     /// </summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string Email { get; private set; } = string.Empty;
+
+    /// <summary>HMAC-SHA256 lookup digest of <see cref="Email"/> (lower-case
+    /// hex). Indexed for admin-grid exact-match search since AES-CBC ciphertext
+    /// on <see cref="Email"/> is non-deterministic and cannot serve equality
+    /// lookups. Computed by the EF lookup-hash interceptor in lockstep with
+    /// <see cref="Email"/>.</summary>
+    public string? EmailHash { get; private set; }
 
     /// <summary>Given name (optional).</summary>
     [SensitiveData]
@@ -61,9 +71,18 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
     [SensitiveData]
     public string? LastName { get; private set; }
 
-    /// <summary>E.164 phone number (optional).</summary>
+    /// <summary>E.164 phone number (optional). Encrypted at rest; equality
+    /// lookups go through <see cref="PhoneNumberHash"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string? PhoneNumber { get; private set; }
+
+    /// <summary>HMAC-SHA256 lookup digest of <see cref="PhoneNumber"/>
+    /// (lower-case hex, separators stripped). Indexed for admin-grid exact-match
+    /// search since AES-CBC ciphertext on <see cref="PhoneNumber"/> is
+    /// non-deterministic. Computed by the EF lookup-hash interceptor in
+    /// lockstep with <see cref="PhoneNumber"/>.</summary>
+    public string? PhoneNumberHash { get; private set; }
 
     /// <summary>BCP-47 culture preferred by the user (e.g. <c>"en-GB"</c>, <c>"fr"</c>).</summary>
     public string? PreferredLocale { get; private set; }
@@ -201,4 +220,17 @@ public sealed class User : AuditedAggregateRoot, IIdentityUser, IMultiTenant
 
     /// <summary>Disables sign-in for the user. Linked <c>LocalIdentity</c> and <c>FederatedIdentity</c> records survive — only the gate flips.</summary>
     public void Disable() => IsEnabled = false;
+
+    /// <summary>
+    /// Sets the lookup digests of <see cref="Email"/> and <see cref="PhoneNumber"/>.
+    /// Called exclusively by the EF lookup-hash interceptor at save time — never by
+    /// aggregate logic, since the digests are derived values recomputable from the
+    /// plaintext columns. Pair update guarantees the hash never drifts from the
+    /// encrypted value when a single column is rewritten in isolation.
+    /// </summary>
+    internal void SetLookupHashes(string? emailHash, string? phoneNumberHash)
+    {
+        EmailHash = emailHash;
+        PhoneNumberHash = phoneNumberHash;
+    }
 }

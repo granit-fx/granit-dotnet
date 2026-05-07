@@ -1,3 +1,4 @@
+using Granit.Encryption.EntityFrameworkCore;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ namespace Granit.Identity.EntityFrameworkCore;
 /// (no migrations live inside framework packages).
 /// </remarks>
 [DependsOn(
+    typeof(GranitEncryptionEntityFrameworkCoreModule),
     typeof(GranitIdentityModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitIdentityEntityFrameworkCoreModule : GranitModule;

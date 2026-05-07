@@ -59,9 +59,6 @@ public sealed class SensitiveDataEncryptionConventionTests
         "Granit.Webhooks.Domain.WebhookSigningKey.ProtectedSecret",         // opaque protected value; format owned by IWebhookSecretProtector (rotates independently).
         "Granit.Webhooks.Domain.WebhookSubscription.SigningSecret",         // legacy column populated only via the same protector path as ProtectedSecret.
 
-        // [BACKLOG] — equality-lookup key, needs companion lookup-hash column
-        "Granit.Identity.Domain.User.Email",                                // FindByEmailAsync (login). Refactor: introduce User.EmailHash via IUserLookupHasher.
-        "Granit.Identity.Domain.User.PhoneNumber",                          // potential SMS-OTP / passwordless lookup. Same pattern as Email.
     };
 
     [Fact]

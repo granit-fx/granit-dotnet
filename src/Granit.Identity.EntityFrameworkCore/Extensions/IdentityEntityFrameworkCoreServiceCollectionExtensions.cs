@@ -1,5 +1,8 @@
 using Granit.Identity.EntityFrameworkCore.Internal;
+using Granit.Identity.Internal;
+using Granit.Identity.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
+using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -35,6 +38,22 @@ public static class IdentityEntityFrameworkCoreServiceCollectionExtensions
 
         services.TryAddScoped<IUserDirectoryQueryableSource, EfUserDirectoryQueryableSource>();
         services.TryAddScoped<IUserDirectoryWriter, EfUserDirectoryWriter>();
+
+        // Lookup hasher backing User.EmailHash / User.PhoneNumberHash. Pepper
+        // validated at first resolution (HmacUserLookupHasher ctor) — fail-fast
+        // on missing configuration so production deployments cannot run with a
+        // known-zero key.
+        services.AddOptions<UserLookupHasherOptions>()
+            .BindConfiguration(UserLookupHasherOptions.SectionName);
+        services.TryAddSingleton<IUserLookupHasher, HmacUserLookupHasher>();
+
+        // Save-time interceptor that recomputes the digests in lockstep with
+        // the encrypted plaintext columns. Registered via IGranitAutoInterceptor
+        // (same pattern as AuditingChangeTrackingInterceptor) so any DbContext
+        // wired through AddGranitDbContext picks it up.
+        services.AddScoped<UserLookupHashInterceptor>();
+        services.AddScoped<IGranitAutoInterceptor>(sp =>
+            sp.GetRequiredService<UserLookupHashInterceptor>());
 
         return services;
     }

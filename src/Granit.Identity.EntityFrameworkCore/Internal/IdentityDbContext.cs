@@ -1,4 +1,6 @@
 using Granit.DataFiltering;
+using Granit.Encryption;
+using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.Identity.Domain;
 using Granit.Identity.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
@@ -22,10 +24,12 @@ namespace Granit.Identity.EntityFrameworkCore.Internal;
 /// </remarks>
 internal sealed class IdentityDbContext(
     DbContextOptions<IdentityDbContext> options,
+    IStringEncryptionService encryption,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)
 {
+    private readonly IStringEncryptionService _encryption = encryption;
     private readonly ICurrentTenant? _currentTenant = currentTenant;
     private readonly IDataFilter? _dataFilter = dataFilter;
 
@@ -40,5 +44,6 @@ internal sealed class IdentityDbContext(
 
         modelBuilder.ConfigureGranitIdentityModule();
         modelBuilder.ApplyGranitConventions(_currentTenant, _dataFilter);
+        modelBuilder.ApplyEncryptionConventions(_encryption);
     }
 }
