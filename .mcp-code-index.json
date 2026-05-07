@@ -120,6 +120,7 @@
       "name": "Granit.Activities.EntityFrameworkCore",
       "deps": [
         "Granit.Activities",
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -2104,6 +2105,7 @@
     {
       "name": "Granit.Parties.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.Abstractions"
@@ -2672,6 +2674,7 @@
     {
       "name": "Granit.Tax.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
@@ -5010,7 +5013,7 @@
       "kind": "class",
       "project": "Granit.Activities.EntityFrameworkCore",
       "file": "src/Granit.Activities.EntityFrameworkCore/GranitActivitiesEntityFrameworkCoreModule.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -42238,7 +42241,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesEntityFrameworkCoreModule.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
@@ -55498,7 +55501,7 @@
       "kind": "class",
       "project": "Granit.Tax.EntityFrameworkCore",
       "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxEntityFrameworkCoreModule.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {

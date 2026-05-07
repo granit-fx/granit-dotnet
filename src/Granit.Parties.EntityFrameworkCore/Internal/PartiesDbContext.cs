@@ -1,4 +1,6 @@
 using Granit.DataFiltering;
+using Granit.Encryption;
+using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Parties.Domain;
 using Granit.Parties.EntityFrameworkCore.Deduplication;
@@ -12,6 +14,7 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 /// <summary>Dedicated EF Core <see cref="DbContext"/> for the central <see cref="Party"/> aggregate.</summary>
 internal sealed class PartiesDbContext(
     DbContextOptions<PartiesDbContext> options,
+    IStringEncryptionService encryption,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)
@@ -25,5 +28,6 @@ internal sealed class PartiesDbContext(
         base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigurePartiesModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
+        modelBuilder.ApplyEncryptionConventions(encryption);
     }
 }

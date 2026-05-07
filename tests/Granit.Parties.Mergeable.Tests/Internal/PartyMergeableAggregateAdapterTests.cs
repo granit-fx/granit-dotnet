@@ -99,9 +99,15 @@ public sealed class PartyMergeableAggregateAdapterTests
                     w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
                 .Options;
 
-        public PartiesDbContext CreateDbContext() => new(_options);
+        public PartiesDbContext CreateDbContext() => new(_options, new PassthroughEncryption());
 
         public Task<PartiesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new PartiesDbContext(_options));
+            Task.FromResult(new PartiesDbContext(_options, new PassthroughEncryption()));
+    }
+
+    private sealed class PassthroughEncryption : Granit.Encryption.IStringEncryptionService
+    {
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
     }
 }

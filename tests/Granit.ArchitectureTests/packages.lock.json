@@ -1480,6 +1480,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Activities": "[0.1.0-dev, )",
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )"
         }
@@ -2611,7 +2612,6 @@
         "dependencies": {
           "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",
@@ -3342,6 +3342,7 @@
         "type": "Project",
         "dependencies": {
           "Granit.Authentication": "[0.1.0-dev, )",
+          "Granit.Authentication.DPoP": "[0.1.0-dev, )",
           "Granit.OpenIddict": "[0.1.0-dev, )",
           "OpenIddict": "[7.*, )",
           "OpenIddict.Server.AspNetCore": "[7.*, )",
@@ -3416,6 +3417,7 @@
       "granit.parties.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Parties": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
@@ -3653,6 +3655,7 @@
       "granit.privacy.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Privacy": "[0.1.0-dev, )",
@@ -3945,6 +3948,7 @@
       "granit.tax.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Parties": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Tax": "[0.1.0-dev, )",
@@ -4390,8 +4394,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.22.2",
-        "contentHash": "RYBhoTFlMRq2tiqv/8FfSRFkNz0OCY2U5AbwH5PWpI/XhI3eQp34ujVAT9gD9DqOUHKDaQvJegauypUSO6wkjQ==",
+        "resolved": "4.0.23",
+        "contentHash": "yPvCj0ITnniE8j2YVVCrTfutOfaw+a9CememSzqYL2Y7zQaKLZL6F5385zI8NqnCpw26OzU5cwmKzAC6xssbGw==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.6.1, 5.0.0)"
         }

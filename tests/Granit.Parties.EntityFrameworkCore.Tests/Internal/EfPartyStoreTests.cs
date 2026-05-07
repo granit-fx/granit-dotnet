@@ -232,10 +232,10 @@ public sealed class EfContactStoreTests : IAsyncDisposable
     {
         public ICurrentTenant Tenant { get; } = Substitute.For<ICurrentTenant>();
 
-        public PartiesDbContext CreateDbContext() => new(options);
+        public PartiesDbContext CreateDbContext() => new(options, new PassthroughEncryption());
 
         public Task<PartiesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new PartiesDbContext(options));
+            Task.FromResult(new PartiesDbContext(options, new PassthroughEncryption()));
     }
 }
 

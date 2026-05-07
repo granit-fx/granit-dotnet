@@ -37,6 +37,7 @@ public sealed class PartyCanonicalisationInterceptorTests : IAsyncDisposable
                 .EnableServiceProviderCaching(false)
                 .AddInterceptors(new PartyCanonicalisationInterceptor())
                 .Options,
+            new PassthroughEncryption(),
             _tenant,
             _filter);
 
