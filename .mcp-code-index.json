@@ -41577,7 +41577,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "string? CanonicalEmail { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalEmail { get; private set; } public string? CanonicalEmailHash { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -41662,7 +41662,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "string? CanonicalNumber { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalNumber { get; private set; } public string? CanonicalNumberHash { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -42194,7 +42194,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPartiesEntityFrameworkCore",
@@ -42243,6 +42243,15 @@
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesEntityFrameworkCoreModule.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "PartyLookupHasherOptions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Options.PartyLookupHasherOptions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Options/PartyLookupHasherOptions.cs",
+      "line": 9,
       "members": []
     },
     {

@@ -62,8 +62,6 @@ public sealed class SensitiveDataEncryptionConventionTests
         // [BACKLOG] — equality-lookup key, needs companion lookup-hash column
         "Granit.Identity.Domain.User.Email",                                // FindByEmailAsync (login). Refactor: introduce User.EmailHash via IUserLookupHasher.
         "Granit.Identity.Domain.User.PhoneNumber",                          // potential SMS-OTP / passwordless lookup. Same pattern as Email.
-        "Granit.Parties.Domain.PartyEmail.CanonicalEmail",                  // Tier1DeterministicMatcher dedup index.
-        "Granit.Parties.Domain.PartyPhone.CanonicalNumber",                 // Tier1DeterministicMatcher dedup index.
     };
 
     [Fact]

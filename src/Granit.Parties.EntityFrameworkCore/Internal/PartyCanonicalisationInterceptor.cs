@@ -11,15 +11,20 @@ namespace Granit.Parties.EntityFrameworkCore.Internal;
 /// EF Core interceptor that populates the dedup-friendly canonical projections of party
 /// identity fields on every save:
 /// <list type="bullet">
-///   <item><see cref="PartyEmail.CanonicalEmail"/> — derived from <see cref="PartyEmail.Address"/></item>
-///   <item><see cref="PartyPhone.CanonicalNumber"/> — derived from <see cref="PartyPhone.Number"/></item>
+///   <item><see cref="PartyEmail.CanonicalEmail"/> + <see cref="PartyEmail.CanonicalEmailHash"/>
+///         — derived from <see cref="PartyEmail.Address"/></item>
+///   <item><see cref="PartyPhone.CanonicalNumber"/> + <see cref="PartyPhone.CanonicalNumberHash"/>
+///         — derived from <see cref="PartyPhone.Number"/></item>
 ///   <item><see cref="Party.TaxId"/> — overwritten in place with the canonical form (single
 ///         column by design — TaxId has a legal canonical shape, no display ambiguity)</item>
 /// </list>
-/// Powers Tier-1 deterministic duplicate detection (Epic #1280). Auto-wired via
-/// <see cref="IGranitAutoInterceptor"/> through the same path as <c>AuditingChangeTrackingInterceptor</c>.
+/// Powers Tier-1 deterministic duplicate detection (Epic #1280). The hash columns are
+/// indexed because the canonical columns themselves are encrypted at rest (random-IV
+/// AES) and cannot serve equality lookups; the hasher is keyed off a pepper distinct
+/// from the encryption key. Auto-wired via <see cref="IGranitAutoInterceptor"/>.
 /// </summary>
-internal sealed class PartyCanonicalisationInterceptor : SaveChangesInterceptor, IGranitAutoInterceptor
+internal sealed class PartyCanonicalisationInterceptor(IPartyLookupHasher hasher)
+    : SaveChangesInterceptor, IGranitAutoInterceptor
 {
     /// <inheritdoc/>
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -40,7 +45,7 @@ internal sealed class PartyCanonicalisationInterceptor : SaveChangesInterceptor,
         return result;
     }
 
-    private static void Apply(DbContextEventData eventData)
+    private void Apply(DbContextEventData eventData)
     {
         if (eventData.Context is null)
         {
@@ -89,24 +94,28 @@ internal sealed class PartyCanonicalisationInterceptor : SaveChangesInterceptor,
     // Email — preserved verbatim on Address; canonical projected to CanonicalEmail. UX
     // cost of overwriting Address would be too high (admin would see "alice+x@gmail.com"
     // collapse to "alice@gmail.com" and think the system corrupted their input).
-    private static void ApplyToEmail(PartyEmail email)
+    private void ApplyToEmail(PartyEmail email)
     {
         string? canonical = EmailCanonicaliser.Canonicalise(email.Address);
-        if (!string.Equals(canonical, email.CanonicalEmail, StringComparison.Ordinal))
+        string? hash = hasher.ComputeHash(canonical);
+        if (!string.Equals(canonical, email.CanonicalEmail, StringComparison.Ordinal)
+            || !string.Equals(hash, email.CanonicalEmailHash, StringComparison.Ordinal))
         {
-            email.SetCanonicalEmail(canonical);
+            email.SetCanonicalEmail(canonical, hash);
         }
     }
 
     // Phone — preserved verbatim on Number; canonical (E.164) projected to CanonicalNumber.
     // Same UX rationale as email: a Belgian admin recognises "+32 470 12 34 56" and would
     // be surprised to see it rewritten as "+3247012345678".
-    private static void ApplyToPhone(PartyPhone phone)
+    private void ApplyToPhone(PartyPhone phone)
     {
         string? canonical = PhoneCanonicaliser.Canonicalise(phone.Number);
-        if (!string.Equals(canonical, phone.CanonicalNumber, StringComparison.Ordinal))
+        string? hash = hasher.ComputeHash(canonical);
+        if (!string.Equals(canonical, phone.CanonicalNumber, StringComparison.Ordinal)
+            || !string.Equals(hash, phone.CanonicalNumberHash, StringComparison.Ordinal))
         {
-            phone.SetCanonicalNumber(canonical);
+            phone.SetCanonicalNumber(canonical, hash);
         }
     }
 }

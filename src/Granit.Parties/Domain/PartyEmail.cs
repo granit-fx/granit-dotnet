@@ -39,16 +39,19 @@ public sealed class PartyEmail : Entity
 
     /// <summary>The canonical (dedup-friendly) form of <see cref="Address"/>. Computed by
     /// the EF canonicalisation interceptor on save (Gmail dot/plus-tag stripping, lower-case,
-    /// trim). Null when canonicalisation produces no usable key. Indexed for Tier-1
-    /// deterministic duplicate detection (Epic #1280).</summary>
+    /// trim). Null when canonicalisation produces no usable key. Encrypted at rest;
+    /// Tier-1 dedup queries go through <see cref="CanonicalEmailHash"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
-    // [Encrypted] omitted: Tier1DeterministicMatcher dedup query uses
-    // `canonicalEmails.Contains(e.CanonicalEmail)` which translates to
-    // SQL `IN (…)` — non-deterministic AES-CBC encryption (random IV)
-    // makes that lookup unmatchable. Tracked in the SensitiveDataEncryptionConventionTests
-    // exemption list as [BACKLOG]; the migration introduces a parallel
-    // CanonicalEmailHash column following the IUserLookupHasher pattern.
+    [Encrypted]
     public string? CanonicalEmail { get; private set; }
+
+    /// <summary>HMAC-SHA256 lookup digest of <see cref="CanonicalEmail"/>
+    /// (lower-case hex). Indexed for Tier-1 deterministic duplicate detection
+    /// (Epic #1280) since AES-CBC ciphertext on <see cref="CanonicalEmail"/> is
+    /// non-deterministic and cannot serve <c>WHERE … IN (…)</c> equality
+    /// lookups. Computed by the EF canonicalisation interceptor in lockstep
+    /// with <see cref="CanonicalEmail"/>.</summary>
+    public string? CanonicalEmailHash { get; private set; }
 
     /// <summary>Whether this is the party's primary email.</summary>
     public bool IsPrimary { get; private set; }
@@ -66,9 +69,13 @@ public sealed class PartyEmail : Entity
     }
 
     /// <summary>
-    /// Sets the canonical form. Called exclusively by the EF canonicalisation interceptor
-    /// at save time — never by aggregate logic, since the canonical form is a derived value
-    /// recomputable from <see cref="Address"/>.
+    /// Sets the canonical form and its lookup hash. Called exclusively by the EF
+    /// canonicalisation interceptor at save time — never by aggregate logic, since
+    /// the canonical form is a derived value recomputable from <see cref="Address"/>.
     /// </summary>
-    internal void SetCanonicalEmail(string? canonicalEmail) => CanonicalEmail = canonicalEmail;
+    internal void SetCanonicalEmail(string? canonicalEmail, string? canonicalEmailHash)
+    {
+        CanonicalEmail = canonicalEmail;
+        CanonicalEmailHash = canonicalEmailHash;
+    }
 }

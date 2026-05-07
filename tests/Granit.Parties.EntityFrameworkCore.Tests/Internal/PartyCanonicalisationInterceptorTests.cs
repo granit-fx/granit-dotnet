@@ -35,7 +35,7 @@ public sealed class PartyCanonicalisationInterceptorTests : IAsyncDisposable
                 .UseInMemoryDatabase(_dbName, _dbRoot)
                 .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.InMemoryEventId.TransactionIgnoredWarning))
                 .EnableServiceProviderCaching(false)
-                .AddInterceptors(new PartyCanonicalisationInterceptor())
+                .AddInterceptors(new PartyCanonicalisationInterceptor(new IdentityHasher()))
                 .Options,
             new PassthroughEncryption(),
             _tenant,
@@ -153,5 +153,13 @@ public sealed class PartyCanonicalisationInterceptorTests : IAsyncDisposable
         await using PartiesDbContext readBack = NewContext();
         Party reloaded = await readBack.Parties.Include(x => x.Emails).FirstAsync(x => x.Id == p.Id, ct);
         reloaded.Emails.ShouldContain(e => e.Address == "Carol+Tag@GMAIL.com" && e.CanonicalEmail == "carol@gmail.com");
+    }
+
+    /// <summary>Identity hasher — for canonicalisation tests we just need a deterministic
+    /// digest function. Production uses peppered HMAC-SHA256.</summary>
+    private sealed class IdentityHasher : IPartyLookupHasher
+    {
+        public string? ComputeHash(string? canonical) =>
+            string.IsNullOrEmpty(canonical) ? null : $"hash:{canonical}";
     }
 }

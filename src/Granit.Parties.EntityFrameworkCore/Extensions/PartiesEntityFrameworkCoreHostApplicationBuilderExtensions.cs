@@ -1,5 +1,6 @@
 using Granit.Parties.EntityFrameworkCore.Deduplication;
 using Granit.Parties.EntityFrameworkCore.Internal;
+using Granit.Parties.EntityFrameworkCore.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Persistence.EntityFrameworkCore.Interceptors;
 using Granit.QueryEngine;
@@ -36,6 +37,14 @@ public static class PartiesEntityFrameworkCoreHostApplicationBuilderExtensions
         builder.Services.AddScoped<PartyCanonicalisationInterceptor>();
         builder.Services.AddScoped<IGranitAutoInterceptor>(sp =>
             sp.GetRequiredService<PartyCanonicalisationInterceptor>());
+
+        // Lookup hasher backing the CanonicalEmailHash / CanonicalNumberHash columns.
+        // Pepper validated at first resolution (HmacPartyLookupHasher ctor) — fail-fast
+        // on missing configuration so production deployments cannot run with a known-zero
+        // key.
+        builder.Services.AddOptions<PartyLookupHasherOptions>()
+            .Bind(builder.Configuration.GetSection(PartyLookupHasherOptions.SectionName));
+        builder.Services.TryAddSingleton<IPartyLookupHasher, HmacPartyLookupHasher>();
 
         // Tier-2 / Tier-3 thresholds — bound from the "Granit:Parties:Deduplication"
         // configuration section so apps can tune per-environment without recompiling.

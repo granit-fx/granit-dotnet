@@ -18,7 +18,7 @@ public sealed class Tier1DeterministicMatcherTests : IAsyncDisposable
     public Tier1DeterministicMatcherTests()
     {
         _factory = new InMemoryPartiesDbContextFactory($"tier1-{Guid.NewGuid()}", _tenant, _filter);
-        _matcher = new Tier1DeterministicMatcher(_factory);
+        _matcher = new Tier1DeterministicMatcher(_factory, new IdentityHasher());
     }
 
     public async ValueTask DisposeAsync()

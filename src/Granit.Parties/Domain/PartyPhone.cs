@@ -44,16 +44,19 @@ public sealed class PartyPhone : Entity
 
     /// <summary>The canonical (dedup-friendly) E.164 form of <see cref="Number"/>. Computed by
     /// the EF canonicalisation interceptor on save via libphonenumber. Null when parsing fails
-    /// or the input is missing a country code prefix. Indexed for Tier-1 deterministic
-    /// duplicate detection (Epic #1280).</summary>
+    /// or the input is missing a country code prefix. Encrypted at rest; Tier-1 dedup queries
+    /// go through <see cref="CanonicalNumberHash"/>.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
-    // [Encrypted] omitted: Tier1DeterministicMatcher dedup query uses
-    // `canonicalPhones.Contains(ph.CanonicalNumber)` which translates to
-    // SQL `IN (…)` — non-deterministic AES-CBC encryption (random IV)
-    // makes that lookup unmatchable. Tracked in the SensitiveDataEncryptionConventionTests
-    // exemption list as [BACKLOG]; the migration introduces a parallel
-    // CanonicalNumberHash column following the IUserLookupHasher pattern.
+    [Encrypted]
     public string? CanonicalNumber { get; private set; }
+
+    /// <summary>HMAC-SHA256 lookup digest of <see cref="CanonicalNumber"/>
+    /// (lower-case hex). Indexed for Tier-1 deterministic duplicate detection
+    /// (Epic #1280) since AES-CBC ciphertext on <see cref="CanonicalNumber"/>
+    /// is non-deterministic and cannot serve <c>WHERE … IN (…)</c> equality
+    /// lookups. Computed by the EF canonicalisation interceptor in lockstep
+    /// with <see cref="CanonicalNumber"/>.</summary>
+    public string? CanonicalNumberHash { get; private set; }
 
     /// <summary>Whether this is the party's primary phone.</summary>
     public bool IsPrimary { get; private set; }
@@ -72,9 +75,13 @@ public sealed class PartyPhone : Entity
     }
 
     /// <summary>
-    /// Sets the canonical E.164 form. Called exclusively by the EF canonicalisation interceptor
-    /// at save time — never by aggregate logic, since the canonical form is a derived value
-    /// recomputable from <see cref="Number"/>.
+    /// Sets the canonical E.164 form and its lookup hash. Called exclusively by the EF
+    /// canonicalisation interceptor at save time — never by aggregate logic, since the
+    /// canonical form is a derived value recomputable from <see cref="Number"/>.
     /// </summary>
-    internal void SetCanonicalNumber(string? canonicalNumber) => CanonicalNumber = canonicalNumber;
+    internal void SetCanonicalNumber(string? canonicalNumber, string? canonicalNumberHash)
+    {
+        CanonicalNumber = canonicalNumber;
+        CanonicalNumberHash = canonicalNumberHash;
+    }
 }
