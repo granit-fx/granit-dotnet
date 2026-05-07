@@ -1823,6 +1823,7 @@
     {
       "name": "Granit.Notifications.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Notifications",
         "Granit.Notifications.MobilePush",
         "Granit.Persistence.EntityFrameworkCore"
@@ -37474,34 +37475,6 @@
       "members": []
     },
     {
-      "name": "MobilePushTokenEntity",
-      "fqn": "Granit.Notifications.EntityFrameworkCore.Entities.MobilePushTokenEntity",
-      "kind": "class",
-      "project": "Granit.Notifications.EntityFrameworkCore",
-      "file": "src/Granit.Notifications.EntityFrameworkCore/Entities/MobilePushTokenEntity.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "UserId",
-          "kind": "property",
-          "signature": "string UserId",
-          "returnType": "string"
-        },
-        {
-          "name": "DeviceToken",
-          "kind": "property",
-          "signature": "string DeviceToken",
-          "returnType": "string"
-        },
-        {
-          "name": "ToTokenInfo",
-          "kind": "method",
-          "signature": "ToTokenInfo()",
-          "returnType": "MobilePlatform Platform { get; set; } public Guid? TenantId { get; set; } internal MobilePushTokenInfo"
-        }
-      ]
-    },
-    {
       "name": "NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Notifications.EntityFrameworkCore.Extensions.NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -37555,7 +37528,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 20,
       "members": []
     },
     {
@@ -38005,6 +37978,34 @@
       ]
     },
     {
+      "name": "MobilePushToken",
+      "fqn": "Granit.Notifications.MobilePush.Domain.MobilePushToken",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush",
+      "file": "src/Granit.Notifications.MobilePush/Domain/MobilePushToken.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string userId, string deviceToken, string deviceTokenHash, MobilePlatform platform, Guid? tenantId = null)",
+          "returnType": "MobilePushToken"
+        },
+        {
+          "name": "DeviceToken",
+          "kind": "property",
+          "signature": "string DeviceToken",
+          "returnType": "string"
+        },
+        {
+          "name": "DeviceTokenHash",
+          "kind": "property",
+          "signature": "string DeviceTokenHash",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "MobilePushNotificationsServiceCollectionExtensions",
       "fqn": "Granit.Notifications.MobilePush.Extensions.MobilePushNotificationsServiceCollectionExtensions",
       "kind": "class",
@@ -38126,13 +38127,13 @@
       "kind": "interface",
       "project": "Granit.Notifications.MobilePush",
       "file": "src/Granit.Notifications.MobilePush/IMobilePushTokenReader.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "GetTokensAsync",
           "kind": "method",
           "signature": "GetTokensAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<MobilePushTokenInfo>>"
+          "returnType": "Task<IReadOnlyList<MobilePushToken>>"
         }
       ]
     },
@@ -38147,7 +38148,7 @@
         {
           "name": "RegisterAsync",
           "kind": "method",
-          "signature": "RegisterAsync(MobilePushTokenInfo tokenInfo, CancellationToken cancellationToken = default)",
+          "signature": "RegisterAsync(string userId, string deviceToken, MobilePlatform platform, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -38177,15 +38178,6 @@
       "members": []
     },
     {
-      "name": "MobilePushTokenInfo",
-      "fqn": "Granit.Notifications.MobilePush.MobilePushTokenInfo",
-      "kind": "record",
-      "project": "Granit.Notifications.MobilePush",
-      "file": "src/Granit.Notifications.MobilePush/MobilePushTokenInfo.cs",
-      "line": 4,
-      "members": []
-    },
-    {
       "name": "MobilePushTokenInvalidated",
       "fqn": "Granit.Notifications.MobilePush.MobilePushTokenInvalidated",
       "kind": "record",
@@ -38209,6 +38201,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "MobilePushTokenHasherOptions",
+      "fqn": "Granit.Notifications.MobilePush.Options.MobilePushTokenHasherOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush",
+      "file": "src/Granit.Notifications.MobilePush/Options/MobilePushTokenHasherOptions.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "NotificationChannels",

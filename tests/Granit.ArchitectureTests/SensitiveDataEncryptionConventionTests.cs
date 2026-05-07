@@ -65,7 +65,6 @@ public sealed class SensitiveDataEncryptionConventionTests
         "Granit.Parties.Domain.PartyEmail.CanonicalEmail",                  // Tier1DeterministicMatcher dedup index.
         "Granit.Parties.Domain.PartyPhone.CanonicalNumber",                 // Tier1DeterministicMatcher dedup index.
         "Granit.Tax.Domain.ValidatedTaxId.TaxId",                           // EfValidatedTaxIdStore.FirstOrDefaultAsync(v => v.TaxId == taxId).
-        "Granit.Notifications.EntityFrameworkCore.Entities.MobilePushTokenEntity.DeviceToken", // EfCoreMobilePushTokenStore upsert key.
     };
 
     [Fact]

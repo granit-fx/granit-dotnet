@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Granit.Encryption;
 using Granit.Notifications.EntityFrameworkCore.Internal;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -36,7 +37,7 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbCo
         DbContextOptions<NotificationsDbContext> options = optionsBuilder.Options;
 
         // Create the schema
-        using (NotificationsDbContext db = new(options))
+        using (NotificationsDbContext db = new(options, new PassthroughEncryption()))
         {
             db.Database.EnsureCreated();
         }
@@ -44,9 +45,15 @@ internal sealed class TestDbContextFactory : IDbContextFactory<NotificationsDbCo
         return new TestDbContextFactory(connection, options);
     }
 
-    public NotificationsDbContext CreateDbContext() => new(_options);
+    public NotificationsDbContext CreateDbContext() => new(_options, new PassthroughEncryption());
 
     public void Dispose() => _connection.Dispose();
+
+    private sealed class PassthroughEncryption : IStringEncryptionService
+    {
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
+    }
 }
 
 /// <summary>

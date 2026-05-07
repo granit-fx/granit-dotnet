@@ -1,4 +1,5 @@
 using Granit.Notifications.MobilePush;
+using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Internal;
 using Shouldly;
 using Xunit;
@@ -7,15 +8,14 @@ namespace Granit.Notifications.MobilePush.Tests;
 
 public sealed class InMemoryMobilePushTokenStoreTests
 {
-    private readonly InMemoryMobilePushTokenStore _store = new();
+    private readonly InMemoryMobilePushTokenStore _store = new(new FakeHasher());
 
     [Fact]
     public async Task RegisterAsync_ThenGetTokensAsync_ReturnsToken()
     {
-        var token = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Android };
-        await _store.RegisterAsync(token, TestContext.Current.CancellationToken);
+        await _store.RegisterAsync("user-1", "device-token-1", MobilePlatform.Android, tenantId: null, TestContext.Current.CancellationToken);
 
-        IReadOnlyList<MobilePushTokenInfo> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
+        IReadOnlyList<MobilePushToken> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
         result.ShouldHaveSingleItem();
         result[0].DeviceToken.ShouldBe("device-token-1");
     }
@@ -23,23 +23,20 @@ public sealed class InMemoryMobilePushTokenStoreTests
     [Fact]
     public async Task RemoveAsync_RemovesToken()
     {
-        var token = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Ios };
-        await _store.RegisterAsync(token, TestContext.Current.CancellationToken);
+        await _store.RegisterAsync("user-1", "device-token-1", MobilePlatform.Ios, tenantId: null, TestContext.Current.CancellationToken);
         await _store.RemoveAsync("device-token-1", "user-1", null, TestContext.Current.CancellationToken);
 
-        IReadOnlyList<MobilePushTokenInfo> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
+        IReadOnlyList<MobilePushToken> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
         result.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task RegisterAsync_SameToken_Upserts()
     {
-        var v1 = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Android };
-        var v2 = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Ios };
-        await _store.RegisterAsync(v1, TestContext.Current.CancellationToken);
-        await _store.RegisterAsync(v2, TestContext.Current.CancellationToken);
+        await _store.RegisterAsync("user-1", "device-token-1", MobilePlatform.Android, tenantId: null, TestContext.Current.CancellationToken);
+        await _store.RegisterAsync("user-1", "device-token-1", MobilePlatform.Ios, tenantId: null, TestContext.Current.CancellationToken);
 
-        IReadOnlyList<MobilePushTokenInfo> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
+        IReadOnlyList<MobilePushToken> result = await _store.GetTokensAsync("user-1", null, TestContext.Current.CancellationToken);
         result.ShouldHaveSingleItem();
         result[0].Platform.ShouldBe(MobilePlatform.Ios);
     }
@@ -47,10 +44,17 @@ public sealed class InMemoryMobilePushTokenStoreTests
     [Fact]
     public async Task GetTokensAsync_DifferentUser_ReturnsEmpty()
     {
-        var token = new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "device-token-1", Platform = MobilePlatform.Android };
-        await _store.RegisterAsync(token, TestContext.Current.CancellationToken);
+        await _store.RegisterAsync("user-1", "device-token-1", MobilePlatform.Android, tenantId: null, TestContext.Current.CancellationToken);
 
-        IReadOnlyList<MobilePushTokenInfo> result = await _store.GetTokensAsync("user-2", null, TestContext.Current.CancellationToken);
+        IReadOnlyList<MobilePushToken> result = await _store.GetTokensAsync("user-2", null, TestContext.Current.CancellationToken);
         result.ShouldBeEmpty();
+    }
+
+    /// <summary>Identity hasher — for the in-memory store, uniqueness is the
+    /// only contract that matters; collision-resistance is not.</summary>
+    private sealed class FakeHasher : IMobilePushTokenHasher
+    {
+        public string? ComputeHash(string? deviceToken) =>
+            string.IsNullOrEmpty(deviceToken) ? null : $"hash:{deviceToken}";
     }
 }

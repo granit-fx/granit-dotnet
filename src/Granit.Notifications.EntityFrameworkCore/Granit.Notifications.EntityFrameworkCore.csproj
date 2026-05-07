@@ -12,6 +12,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Encryption.EntityFrameworkCore\Granit.Encryption.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Granit.Notifications\Granit.Notifications.csproj" />
     <ProjectReference Include="..\Granit.Notifications.MobilePush\Granit.Notifications.MobilePush.csproj" />
     <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />

@@ -18,11 +18,15 @@ public static class MobilePushNotificationsServiceCollectionExtensions
             .BindConfiguration(MobilePushChannelOptions.SectionName)
             .ValidateOnStart();
 
+        services.AddOptions<MobilePushTokenHasherOptions>()
+            .BindConfiguration(MobilePushTokenHasherOptions.SectionName);
+
         if (configure is not null)
         {
             services.Configure(configure);
         }
 
+        services.TryAddSingleton<IMobilePushTokenHasher, HmacMobilePushTokenHasher>();
         services.TryAddSingleton<IMobilePushTokenReader, InMemoryMobilePushTokenStore>();
         services.TryAddSingleton<IMobilePushTokenWriter, InMemoryMobilePushTokenStore>();
         services.TryAddScoped<IMobilePushEventPublisher, NullMobilePushEventPublisher>();

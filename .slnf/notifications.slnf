@@ -15,6 +15,7 @@
       "src/Granit.DataExchange.Abstractions/Granit.DataExchange.Abstractions.csproj",
       "src/Granit.DataLookup.Abstractions/Granit.DataLookup.Abstractions.csproj",
       "src/Granit.Diagnostics/Granit.Diagnostics.csproj",
+      "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Events/Granit.Events.csproj",

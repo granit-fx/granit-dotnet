@@ -1,3 +1,4 @@
+using Granit.Encryption.EntityFrameworkCore;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ namespace Granit.Notifications.EntityFrameworkCore;
 /// instead of using this module directly when custom DbContext options are needed.
 /// </remarks>
 [DependsOn(
+    typeof(GranitEncryptionEntityFrameworkCoreModule),
     typeof(GranitNotificationsModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitNotificationsEntityFrameworkCoreModule : GranitModule
