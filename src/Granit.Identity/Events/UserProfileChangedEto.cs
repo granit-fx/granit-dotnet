@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 using Granit.Identity.Domain;
 
@@ -28,15 +29,15 @@ namespace Granit.Identity.Events;
 /// <param name="TenantId">Tenant scope, or <see langword="null"/> for host-level users.</param>
 public sealed record UserProfileChangedEto(
     Guid UserId,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask), Encrypted]
     string DisplayName,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Omit), Encrypted]
     string Email,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask), Encrypted]
     string? FirstName,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask), Encrypted]
     string? LastName,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Omit), Encrypted]
     string? PhoneNumber,
     string? PreferredLocale,
     string? Timezone,

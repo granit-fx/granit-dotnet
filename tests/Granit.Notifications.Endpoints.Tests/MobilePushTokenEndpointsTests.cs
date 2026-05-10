@@ -7,7 +7,7 @@ using Granit.Notifications.Endpoints;
 using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Endpoints;
 using Granit.Notifications.MobilePush;
-using Granit.Timing;
+using Granit.Notifications.MobilePush.Domain;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +28,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     private readonly IMobilePushTokenWriter _tokenWriter = Substitute.For<IMobilePushTokenWriter>();
     private readonly IMobilePushTokenReader _tokenReader = Substitute.For<IMobilePushTokenReader>();
     private readonly ICurrentTenant _currentTenant = Substitute.For<ICurrentTenant>();
-    private readonly IClock _clock = Substitute.For<IClock>();
     private readonly WebApplication _app;
     private readonly HttpClient _authClient;
     private readonly HttpClient _anonClient;
@@ -36,7 +35,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     public MobilePushTokenEndpointsTests()
     {
         _currentTenant.IsAvailable.Returns(false);
-        _clock.Now.Returns(new DateTimeOffset(2026, 3, 5, 12, 0, 0, TimeSpan.Zero));
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
@@ -51,7 +49,6 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         builder.Services.AddSingleton(_tokenWriter);
         builder.Services.AddSingleton(_tokenReader);
         builder.Services.AddSingleton(_currentTenant);
-        builder.Services.AddSingleton(_clock);
 
         _app = builder.Build();
         _app.MapGranitMobilePushTokens();
@@ -69,7 +66,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     public async Task RegisterToken_NewToken_Returns201Created()
     {
         _tokenReader.GetTokensAsync("user-456", null, Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<MobilePushTokenInfo>());
+            .Returns(Array.Empty<MobilePushToken>());
 
         var request = new MobilePushTokenRegisterRequest
         {
@@ -81,11 +78,10 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         await _tokenWriter.Received(1).RegisterAsync(
-            Arg.Is<MobilePushTokenInfo>(t =>
-                t.UserId == "user-456" &&
-                t.DeviceToken == "fcm-token-abc" &&
-                t.Platform == MobilePlatform.Android &&
-                t.TenantId == null),
+            "user-456",
+            "fcm-token-abc",
+            MobilePlatform.Android,
+            tenantId: null,
             Arg.Any<CancellationToken>());
     }
 
@@ -94,13 +90,8 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task RegisterToken_ExistingToken_Returns200Ok()
     {
-        var existing = new MobilePushTokenInfo
-        {
-            UserId = "user-456",
-            DeviceToken = "fcm-token-abc",
-            Platform = MobilePlatform.Android,
-            CreatedAt = DateTimeOffset.UtcNow,
-        };
+        var existing = MobilePushToken.Create(
+            "user-456", "fcm-token-abc", deviceTokenHash: "hash-fcm-token-abc", MobilePlatform.Android);
         _tokenReader.GetTokensAsync("user-456", null, Arg.Any<CancellationToken>())
             .Returns([existing]);
 
@@ -157,22 +148,10 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
     [Fact]
     public async Task GetTokens_ReturnsTokenList()
     {
-        var tokens = new List<MobilePushTokenInfo>
+        var tokens = new List<MobilePushToken>
         {
-            new()
-            {
-                UserId = "user-456",
-                DeviceToken = "token-1",
-                Platform = MobilePlatform.Android,
-                CreatedAt = new DateTimeOffset(2026, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            },
-            new()
-            {
-                UserId = "user-456",
-                DeviceToken = "token-2",
-                Platform = MobilePlatform.Ios,
-                CreatedAt = new DateTimeOffset(2026, 2, 1, 0, 0, 0, TimeSpan.Zero),
-            },
+            MobilePushToken.Create("user-456", "token-1", deviceTokenHash: "hash-1", MobilePlatform.Android),
+            MobilePushToken.Create("user-456", "token-2", deviceTokenHash: "hash-2", MobilePlatform.Ios),
         };
         _tokenReader.GetTokensAsync("user-456", null, Arg.Any<CancellationToken>())
             .Returns(tokens);
@@ -207,7 +186,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(tenantId);
         _tokenReader.GetTokensAsync("user-456", tenantId, Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<MobilePushTokenInfo>());
+            .Returns(Array.Empty<MobilePushToken>());
 
         var request = new MobilePushTokenRegisterRequest
         {
@@ -219,8 +198,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
 
         response.StatusCode.ShouldBe(HttpStatusCode.Created);
         await _tokenWriter.Received(1).RegisterAsync(
-            Arg.Is<MobilePushTokenInfo>(t => t.TenantId == tenantId),
-            Arg.Any<CancellationToken>());
+            Arg.Any<string>(), Arg.Any<string>(), Arg.Any<MobilePlatform>(), tenantId, Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -244,7 +222,7 @@ public sealed class MobilePushTokenEndpointsTests : IAsyncDisposable
         _currentTenant.IsAvailable.Returns(true);
         _currentTenant.Id.Returns(tenantId);
         _tokenReader.GetTokensAsync("user-456", tenantId, Arg.Any<CancellationToken>())
-            .Returns(Array.Empty<MobilePushTokenInfo>());
+            .Returns(Array.Empty<MobilePushToken>());
 
         HttpResponseMessage response = await _authClient.GetAsync(Prefix, TestContext.Current.CancellationToken);
 

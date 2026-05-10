@@ -1,6 +1,7 @@
 using Granit.Activities.Events;
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 
 namespace Granit.Activities.Domain;
 
@@ -105,6 +106,7 @@ public sealed class Activity : FullAuditedAggregateRoot, IMultiTenant, IEmitEnti
 
     /// <summary>Optional free-text description from the creator.</summary>
     [SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    [Encrypted]
     public string? Description { get; private set; }
 
     /// <summary>Lifecycle status — see <see cref="ActivityStatus"/>.</summary>

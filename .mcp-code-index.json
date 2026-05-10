@@ -120,6 +120,7 @@
       "name": "Granit.Activities.EntityFrameworkCore",
       "deps": [
         "Granit.Activities",
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Persistence.EntityFrameworkCore"
       ],
       "framework": "net10.0"
@@ -1258,6 +1259,7 @@
     {
       "name": "Granit.Identity.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Identity",
         "Granit.Persistence.EntityFrameworkCore"
       ],
@@ -1268,7 +1270,6 @@
       "deps": [
         "Granit.Analytics",
         "Granit.DataExchange.Abstractions",
-        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Guids",
         "Granit.Identity",
         "Granit.Localization",
@@ -1823,6 +1824,7 @@
     {
       "name": "Granit.Notifications.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Notifications",
         "Granit.Notifications.MobilePush",
         "Granit.Persistence.EntityFrameworkCore"
@@ -2031,6 +2033,7 @@
       "name": "Granit.OpenIddict.Server",
       "deps": [
         "Granit.Authentication",
+        "Granit.Authentication.DPoP",
         "Granit.OpenIddict"
       ],
       "framework": "net10.0"
@@ -2104,6 +2107,7 @@
     {
       "name": "Granit.Parties.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.QueryEngine.Abstractions"
@@ -2356,6 +2360,7 @@
     {
       "name": "Granit.Privacy.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Guids",
         "Granit.Privacy",
         "Granit.Persistence.EntityFrameworkCore"
@@ -2671,6 +2676,7 @@
     {
       "name": "Granit.Tax.EntityFrameworkCore",
       "deps": [
+        "Granit.Encryption.EntityFrameworkCore",
         "Granit.Parties",
         "Granit.Persistence.EntityFrameworkCore",
         "Granit.Tax"
@@ -3001,6 +3007,14 @@
         "Granit",
         "Granit.Validation",
         "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Wolverine.Encryption",
+      "deps": [
+        "Granit.Encryption",
+        "Granit.Wolverine"
       ],
       "framework": "net10.0"
     },
@@ -4625,7 +4639,7 @@
       "kind": "class",
       "project": "Granit.Activities",
       "file": "src/Granit.Activities/Domain/Activity.cs",
-      "line": 27,
+      "line": 28,
       "members": [
         {
           "name": "Create",
@@ -5001,7 +5015,7 @@
       "kind": "class",
       "project": "Granit.Activities.EntityFrameworkCore",
       "file": "src/Granit.Activities.EntityFrameworkCore/GranitActivitiesEntityFrameworkCoreModule.cs",
-      "line": 15,
+      "line": 17,
       "members": []
     },
     {
@@ -20608,11 +20622,11 @@
     },
     {
       "name": "EncryptedAttribute",
-      "fqn": "Granit.Encryption.EntityFrameworkCore.EncryptedAttribute",
+      "fqn": "Granit.Encryption.EncryptedAttribute",
       "kind": "class",
-      "project": "Granit.Encryption.EntityFrameworkCore",
-      "file": "src/Granit.Encryption.EntityFrameworkCore/EncryptedAttribute.cs",
-      "line": 30,
+      "project": "Granit",
+      "file": "src/Granit/Encryption/EncryptedAttribute.cs",
+      "line": 34,
       "members": []
     },
     {
@@ -26250,7 +26264,7 @@
       "kind": "class",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Domain/User.cs",
-      "line": 31,
+      "line": 32,
       "members": [
         {
           "name": "DisplayName",
@@ -26265,9 +26279,9 @@
           "returnType": "string"
         },
         {
-          "name": "FirstName",
+          "name": "EmailHash",
           "kind": "property",
-          "signature": "string? FirstName",
+          "signature": "string? EmailHash",
           "returnType": "string?"
         },
         {
@@ -26636,7 +26650,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/Extensions/IdentityEntityFrameworkCoreServiceCollectionExtensions.cs",
-      "line": 12,
+      "line": 15,
       "members": [
         {
           "name": "AddGranitIdentityEntityFrameworkCore",
@@ -26677,7 +26691,7 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityEntityFrameworkCoreModule.cs",
-      "line": 20,
+      "line": 22,
       "members": []
     },
     {
@@ -26731,7 +26745,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/IdentityUserCreatedEto.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -26767,7 +26781,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/UserCreatedEto.cs",
-      "line": 39,
+      "line": 40,
       "members": []
     },
     {
@@ -26776,7 +26790,7 @@
       "kind": "record",
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Events/UserProfileChangedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -29195,7 +29209,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/AccountLockedEto.cs",
-      "line": 30,
+      "line": 31,
       "members": []
     },
     {
@@ -29204,7 +29218,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/EmailChangeRequestedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -29213,7 +29227,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/EmailConfirmationRequestedEto.cs",
-      "line": 18,
+      "line": 19,
       "members": []
     },
     {
@@ -29231,7 +29245,7 @@
       "kind": "record",
       "project": "Granit.Identity.Local",
       "file": "src/Granit.Identity.Local/Events/PasswordResetRequestedEto.cs",
-      "line": 29,
+      "line": 30,
       "members": []
     },
     {
@@ -30554,6 +30568,15 @@
       "project": "Granit.Identity",
       "file": "src/Granit.Identity/Models/IdentityUserUpdate.cs",
       "line": 22,
+      "members": []
+    },
+    {
+      "name": "UserLookupHasherOptions",
+      "fqn": "Granit.Identity.Options.UserLookupHasherOptions",
+      "kind": "class",
+      "project": "Granit.Identity",
+      "file": "src/Granit.Identity/Options/UserLookupHasherOptions.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -37462,34 +37485,6 @@
       "members": []
     },
     {
-      "name": "MobilePushTokenEntity",
-      "fqn": "Granit.Notifications.EntityFrameworkCore.Entities.MobilePushTokenEntity",
-      "kind": "class",
-      "project": "Granit.Notifications.EntityFrameworkCore",
-      "file": "src/Granit.Notifications.EntityFrameworkCore/Entities/MobilePushTokenEntity.cs",
-      "line": 10,
-      "members": [
-        {
-          "name": "UserId",
-          "kind": "property",
-          "signature": "string UserId",
-          "returnType": "string"
-        },
-        {
-          "name": "DeviceToken",
-          "kind": "property",
-          "signature": "string DeviceToken",
-          "returnType": "string"
-        },
-        {
-          "name": "ToTokenInfo",
-          "kind": "method",
-          "signature": "ToTokenInfo()",
-          "returnType": "MobilePlatform Platform { get; set; } public Guid? TenantId { get; set; } internal MobilePushTokenInfo"
-        }
-      ]
-    },
-    {
       "name": "NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Notifications.EntityFrameworkCore.Extensions.NotificationsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -37543,7 +37538,7 @@
       "kind": "class",
       "project": "Granit.Notifications.EntityFrameworkCore",
       "file": "src/Granit.Notifications.EntityFrameworkCore/GranitNotificationsEntityFrameworkCoreModule.cs",
-      "line": 18,
+      "line": 20,
       "members": []
     },
     {
@@ -37993,6 +37988,34 @@
       ]
     },
     {
+      "name": "MobilePushToken",
+      "fqn": "Granit.Notifications.MobilePush.Domain.MobilePushToken",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush",
+      "file": "src/Granit.Notifications.MobilePush/Domain/MobilePushToken.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(string userId, string deviceToken, string deviceTokenHash, MobilePlatform platform, Guid? tenantId = null)",
+          "returnType": "MobilePushToken"
+        },
+        {
+          "name": "DeviceToken",
+          "kind": "property",
+          "signature": "string DeviceToken",
+          "returnType": "string"
+        },
+        {
+          "name": "DeviceTokenHash",
+          "kind": "property",
+          "signature": "string DeviceTokenHash",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "MobilePushNotificationsServiceCollectionExtensions",
       "fqn": "Granit.Notifications.MobilePush.Extensions.MobilePushNotificationsServiceCollectionExtensions",
       "kind": "class",
@@ -38114,13 +38137,13 @@
       "kind": "interface",
       "project": "Granit.Notifications.MobilePush",
       "file": "src/Granit.Notifications.MobilePush/IMobilePushTokenReader.cs",
-      "line": 4,
+      "line": 6,
       "members": [
         {
           "name": "GetTokensAsync",
           "kind": "method",
           "signature": "GetTokensAsync(string userId, Guid? tenantId, CancellationToken cancellationToken = default)",
-          "returnType": "Task<IReadOnlyList<MobilePushTokenInfo>>"
+          "returnType": "Task<IReadOnlyList<MobilePushToken>>"
         }
       ]
     },
@@ -38135,7 +38158,7 @@
         {
           "name": "RegisterAsync",
           "kind": "method",
-          "signature": "RegisterAsync(MobilePushTokenInfo tokenInfo, CancellationToken cancellationToken = default)",
+          "signature": "RegisterAsync(string userId, string deviceToken, MobilePlatform platform, Guid? tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -38165,15 +38188,6 @@
       "members": []
     },
     {
-      "name": "MobilePushTokenInfo",
-      "fqn": "Granit.Notifications.MobilePush.MobilePushTokenInfo",
-      "kind": "record",
-      "project": "Granit.Notifications.MobilePush",
-      "file": "src/Granit.Notifications.MobilePush/MobilePushTokenInfo.cs",
-      "line": 4,
-      "members": []
-    },
-    {
       "name": "MobilePushTokenInvalidated",
       "fqn": "Granit.Notifications.MobilePush.MobilePushTokenInvalidated",
       "kind": "record",
@@ -38197,6 +38211,15 @@
           "returnType": "string"
         }
       ]
+    },
+    {
+      "name": "MobilePushTokenHasherOptions",
+      "fqn": "Granit.Notifications.MobilePush.Options.MobilePushTokenHasherOptions",
+      "kind": "class",
+      "project": "Granit.Notifications.MobilePush",
+      "file": "src/Granit.Notifications.MobilePush/Options/MobilePushTokenHasherOptions.cs",
+      "line": 8,
+      "members": []
     },
     {
       "name": "NotificationChannels",
@@ -40876,7 +40899,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/GranitOpenIddictServerModule.cs",
-      "line": 14,
+      "line": 21,
       "members": [
         {
           "name": "ConfigureServices",
@@ -40893,6 +40916,28 @@
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Handlers/ClientSideAuthorizationHandler.cs",
       "line": 38,
+      "members": [
+        {
+          "name": "Descriptor",
+          "kind": "property",
+          "signature": "OpenIddictServerHandlerDescriptor Descriptor",
+          "returnType": "OpenIddictServerHandlerDescriptor"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(ProcessSignInContext context)",
+          "returnType": "ValueTask"
+        }
+      ]
+    },
+    {
+      "name": "DPoPTokenBindingHandler",
+      "fqn": "Granit.OpenIddict.Server.Handlers.DPoPTokenBindingHandler",
+      "kind": "class",
+      "project": "Granit.OpenIddict.Server",
+      "file": "src/Granit.OpenIddict.Server/Handlers/DPoPTokenBindingHandler.cs",
+      "line": 35,
       "members": [
         {
           "name": "Descriptor",
@@ -41530,7 +41575,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/PartyEmail.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Create",
@@ -41542,7 +41587,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "string? CanonicalEmail { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalEmail { get; private set; } public string? CanonicalEmailHash { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -41615,7 +41660,7 @@
       "kind": "class",
       "project": "Granit.Parties",
       "file": "src/Granit.Parties/Domain/PartyPhone.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "Create",
@@ -41627,7 +41672,7 @@
           "name": "MarkPrimary",
           "kind": "method",
           "signature": "MarkPrimary(bool isPrimary)",
-          "returnType": "string? CanonicalNumber { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
+          "returnType": "string? CanonicalNumber { get; private set; } public string? CanonicalNumberHash { get; private set; } public bool IsPrimary { get; private set; } public string? Label { get; private set; } internal void"
         }
       ]
     },
@@ -42159,7 +42204,7 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/Extensions/PartiesEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitPartiesEntityFrameworkCore",
@@ -42207,7 +42252,16 @@
       "kind": "class",
       "project": "Granit.Parties.EntityFrameworkCore",
       "file": "src/Granit.Parties.EntityFrameworkCore/GranitPartiesEntityFrameworkCoreModule.cs",
-      "line": 10,
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "PartyLookupHasherOptions",
+      "fqn": "Granit.Parties.EntityFrameworkCore.Options.PartyLookupHasherOptions",
+      "kind": "class",
+      "project": "Granit.Parties.EntityFrameworkCore",
+      "file": "src/Granit.Parties.EntityFrameworkCore/Options/PartyLookupHasherOptions.cs",
+      "line": 9,
       "members": []
     },
     {
@@ -42378,7 +42432,7 @@
       "kind": "record",
       "project": "Granit.Parties.Abstractions",
       "file": "src/Granit.Parties.Abstractions/Events/PartySuspendedEto.cs",
-      "line": 8,
+      "line": 9,
       "members": []
     },
     {
@@ -47589,7 +47643,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/DeletionDeferredEto.cs",
-      "line": 11,
+      "line": 12,
       "members": []
     },
     {
@@ -47634,7 +47688,7 @@
       "kind": "record",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/Events/PersonalDataDeletionRequestedEto.cs",
-      "line": 10,
+      "line": 11,
       "members": []
     },
     {
@@ -47705,7 +47759,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/DataDeletion/PersonalDataDeletionSaga.cs",
-      "line": 32,
+      "line": 33,
       "members": [
         {
           "name": "Id",
@@ -48295,7 +48349,7 @@
       "kind": "class",
       "project": "Granit.Privacy.EntityFrameworkCore",
       "file": "src/Granit.Privacy.EntityFrameworkCore/Entities/DeletionRequestEntity.cs",
-      "line": 13,
+      "line": 14,
       "members": [
         {
           "name": "UserId",
@@ -48447,7 +48501,7 @@
       "kind": "class",
       "project": "Granit.Privacy",
       "file": "src/Granit.Privacy/LegalAgreements/Domain/LegalAgreementBase.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "UserId",
@@ -55269,7 +55323,7 @@
       "kind": "class",
       "project": "Granit.Tax",
       "file": "src/Granit.Tax/Domain/ValidatedTaxId.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "Create",
@@ -55467,7 +55521,7 @@
       "kind": "class",
       "project": "Granit.Tax.EntityFrameworkCore",
       "file": "src/Granit.Tax.EntityFrameworkCore/GranitTaxEntityFrameworkCoreModule.cs",
-      "line": 10,
+      "line": 12,
       "members": []
     },
     {
@@ -62348,6 +62402,38 @@
           "name": "RecordEnvelopeWithoutTenant",
           "kind": "method",
           "signature": "RecordEnvelopeWithoutTenant(string messageType, string outcome)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "WolverineEncryptionOptionsExtensions",
+      "fqn": "Granit.Wolverine.Encryption.Extensions.WolverineEncryptionOptionsExtensions",
+      "kind": "class",
+      "project": "Granit.Wolverine.Encryption",
+      "file": "src/Granit.Wolverine.Encryption/Extensions/WolverineEncryptionOptionsExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "UseEncryptedSensitiveData",
+          "kind": "method",
+          "signature": "UseEncryptedSensitiveData(this WolverineOptions options, IStringEncryptionService encryption)",
+          "returnType": "WolverineOptions"
+        }
+      ]
+    },
+    {
+      "name": "GranitWolverineEncryptionModule",
+      "fqn": "Granit.Wolverine.Encryption.GranitWolverineEncryptionModule",
+      "kind": "class",
+      "project": "Granit.Wolverine.Encryption",
+      "file": "src/Granit.Wolverine.Encryption/GranitWolverineEncryptionModule.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
         }
       ]

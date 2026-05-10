@@ -30,7 +30,9 @@ namespace Granit.Parties.Deduplication.Internal;
 /// background-job or HTTP-request scopes interchangeably.
 /// </para>
 /// </remarks>
-internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbContext> contextFactory)
+internal sealed class Tier1DeterministicMatcher(
+    IDbContextFactory<PartiesDbContext> contextFactory,
+    IPartyLookupHasher hasher)
 {
     public async Task<IReadOnlyList<DuplicateCandidate>> MatchAsync(
         PartyDraft draft,
@@ -39,11 +41,14 @@ internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbConte
         ArgumentNullException.ThrowIfNull(draft);
 
         // No canonical inputs → no Tier-1 hits possible. Skip the DB round-trip.
+        // Email / phone canonical columns are encrypted at rest; equality lookups
+        // route through the parallel CanonicalEmailHash / CanonicalNumberHash
+        // index columns (peppered HMAC).
         string? canonicalTaxId = TaxIdCanonicaliser.Canonicalise(draft.TaxId);
-        List<string> canonicalEmails = CanonicaliseAll(draft.Emails, EmailCanonicaliser.Canonicalise);
-        List<string> canonicalPhones = CanonicaliseAll(draft.Phones, PhoneCanonicaliser.Canonicalise);
+        List<string> emailHashes = HashAll(draft.Emails, EmailCanonicaliser.Canonicalise);
+        List<string> phoneHashes = HashAll(draft.Phones, PhoneCanonicaliser.Canonicalise);
 
-        if (canonicalTaxId is null && canonicalEmails.Count == 0 && canonicalPhones.Count == 0)
+        if (canonicalTaxId is null && emailHashes.Count == 0 && phoneHashes.Count == 0)
         {
             return [];
         }
@@ -75,13 +80,14 @@ internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbConte
         }
 
         // ── Email — joined via the parent Party so we can apply the tenant filter on the
-        // parent (the child has no tenant column).
-        if (canonicalEmails.Count > 0)
+        // parent (the child has no tenant column). Query keyed on CanonicalEmailHash
+        // because the encrypted CanonicalEmail column cannot serve IN (…) lookups.
+        if (emailHashes.Count > 0)
         {
             List<Guid> emailMatches = await db.Parties
                 .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
                 .Where(p => p.TenantId == draftTenantId
-                    && p.Emails.Any(e => e.CanonicalEmail != null && canonicalEmails.Contains(e.CanonicalEmail)))
+                    && p.Emails.Any(e => e.CanonicalEmailHash != null && emailHashes.Contains(e.CanonicalEmailHash)))
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
@@ -91,13 +97,13 @@ internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbConte
             }
         }
 
-        // ── Phone — same shape as email.
-        if (canonicalPhones.Count > 0)
+        // ── Phone — same shape as email, keyed on CanonicalNumberHash.
+        if (phoneHashes.Count > 0)
         {
             List<Guid> phoneMatches = await db.Parties
                 .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
                 .Where(p => p.TenantId == draftTenantId
-                    && p.Phones.Any(ph => ph.CanonicalNumber != null && canonicalPhones.Contains(ph.CanonicalNumber)))
+                    && p.Phones.Any(ph => ph.CanonicalNumberHash != null && phoneHashes.Contains(ph.CanonicalNumberHash)))
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken).ConfigureAwait(false);
 
@@ -115,7 +121,7 @@ internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbConte
                 Signals: kv.Value))];
     }
 
-    private static List<string> CanonicaliseAll(
+    private List<string> HashAll(
         IReadOnlyList<string>? inputs,
         Func<string?, string?> canonicaliser)
     {
@@ -127,10 +133,10 @@ internal sealed class Tier1DeterministicMatcher(IDbContextFactory<PartiesDbConte
         List<string> result = new(inputs.Count);
         foreach (string raw in inputs)
         {
-            string? canonical = canonicaliser(raw);
-            if (canonical is not null)
+            string? hash = hasher.ComputeHash(canonicaliser(raw));
+            if (hash is not null)
             {
-                result.Add(canonical);
+                result.Add(hash);
             }
         }
 

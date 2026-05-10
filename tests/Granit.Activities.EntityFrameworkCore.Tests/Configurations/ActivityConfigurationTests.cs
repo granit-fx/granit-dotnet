@@ -1,6 +1,7 @@
 using Granit.Activities.Domain;
 using Granit.Activities.EntityFrameworkCore;
 using Granit.Activities.EntityFrameworkCore.Internal;
+using Granit.Encryption;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Shouldly;
@@ -15,9 +16,15 @@ public sealed class ActivityConfigurationTests
         DbContextOptions<ActivitiesDbContext> options = new DbContextOptionsBuilder<ActivitiesDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-        using ActivitiesDbContext ctx = new(options);
+        using ActivitiesDbContext ctx = new(options, new PassthroughEncryption());
         return ctx.Model.FindEntityType(typeof(Activity))
             ?? throw new InvalidOperationException("Activity entity type missing from model");
+    }
+
+    private sealed class PassthroughEncryption : IStringEncryptionService
+    {
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
     }
 
     [Fact]

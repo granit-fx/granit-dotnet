@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 
 namespace Granit.Identity.Local.Events;
@@ -29,10 +30,10 @@ namespace Granit.Identity.Local.Events;
 #pragma warning disable GRSEC003 // ResetToken is a transient token parameter, not a stored secret
 public sealed record AccountLockedEto(
     Guid UserId,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string Email,
     int FailedAttempts,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string ResetToken,
     DateTimeOffset LockoutEndUtc,
     Guid? TenantId) : IIntegrationEvent;

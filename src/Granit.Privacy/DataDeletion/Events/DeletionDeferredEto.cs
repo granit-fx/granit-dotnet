@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 using Wolverine.Persistence.Sagas;
 
@@ -11,10 +12,10 @@ namespace Granit.Privacy.DataDeletion.Events;
 public sealed record DeletionDeferredEto(
     [property: SagaIdentity] Guid RequestId,
     Guid UserId,
-    [property: SensitiveData(Level = Sensitivity.Confidential)]
+    [property: SensitiveData(Level = Sensitivity.Confidential), Encrypted]
     string RequestedBy,
     DateTimeOffset RequestedAt,
-    [property: SensitiveData(Level = Sensitivity.Confidential)]
+    [property: SensitiveData(Level = Sensitivity.Confidential), Encrypted]
     string Reason,
     DateTimeOffset ScheduledDeletionAt,
     string Regulation,

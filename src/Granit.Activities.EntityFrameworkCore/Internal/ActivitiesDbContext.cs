@@ -1,6 +1,8 @@
 using Granit.Activities.Domain;
 using Granit.Activities.EntityFrameworkCore.Extensions;
 using Granit.DataFiltering;
+using Granit.Encryption;
+using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +17,7 @@ namespace Granit.Activities.EntityFrameworkCore.Internal;
 /// </summary>
 internal sealed class ActivitiesDbContext(
     DbContextOptions<ActivitiesDbContext> options,
+    IStringEncryptionService encryption,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)
@@ -28,5 +31,6 @@ internal sealed class ActivitiesDbContext(
         base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigureActivitiesModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
+        modelBuilder.ApplyEncryptionConventions(encryption);
     }
 }

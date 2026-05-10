@@ -251,6 +251,7 @@
         "tests/Granit.Taxonomy.Endpoints.Tests",
         "tests/Granit.Taxonomy.EntityFrameworkCore.Tests",
         "tests/Granit.Taxonomy.Tests",
+        "tests/Granit.Wolverine.Encryption.Tests",
         "tests/Granit.Wolverine.Postgresql.Tests",
         "tests/Granit.Wolverine.SqlServer.Tests",
         "tests/Granit.Wolverine.Tests"

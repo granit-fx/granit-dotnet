@@ -20,7 +20,7 @@ public sealed class EfDefaultContactResolverTests : IAsyncDisposable
     public async ValueTask DisposeAsync()
     {
         StubCurrentTenant t = new();
-        await using PartiesDbContext db = new(BuildOptions(), t, _filter);
+        await using PartiesDbContext db = new(BuildOptions(), new PassthroughEncryption(), t, _filter);
         await db.Database.EnsureDeletedAsync();
     }
 

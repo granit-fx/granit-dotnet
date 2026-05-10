@@ -1,3 +1,4 @@
+using Granit.Encryption;
 using Granit.Parties.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ namespace Granit.Parties.Mergeable.Tests.Integration;
 internal sealed class TestPartiesDbContextFactory : IDbContextFactory<PartiesDbContext>, IAsyncDisposable
 {
     private readonly DbContextOptions<PartiesDbContext> _options;
+    private readonly IStringEncryptionService _encryption = new PassthroughEncryption();
 
     public TestPartiesDbContextFactory(string connectionString)
     {
@@ -20,10 +22,16 @@ internal sealed class TestPartiesDbContextFactory : IDbContextFactory<PartiesDbC
             .Options;
     }
 
-    public PartiesDbContext CreateDbContext() => new(_options);
+    public PartiesDbContext CreateDbContext() => new(_options, _encryption);
 
     public Task<PartiesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PartiesDbContext(_options));
+        Task.FromResult(new PartiesDbContext(_options, _encryption));
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+    private sealed class PassthroughEncryption : IStringEncryptionService
+    {
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
+    }
 }

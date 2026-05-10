@@ -116,8 +116,18 @@ internal sealed class PartyEmailConfiguration : IEntityTypeConfiguration<PartyEm
 
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Address).HasMaxLength(320).IsRequired();
-        builder.Property(e => e.CanonicalEmail).HasMaxLength(320);
+        // Address / CanonicalEmail are encrypted at rest. Ciphertext is longer than
+        // plaintext (AES + base64 overhead); 4096 holds an RFC-5321-cap email (320 chars)
+        // wrapped as ciphertext.
+        builder.Property(e => e.Address).HasMaxLength(4096).IsRequired();
+        builder.Property(e => e.CanonicalEmail).HasMaxLength(4096);
+
+        // CanonicalEmailHash is an HMAC-SHA256 digest (32 bytes → 64 hex chars). It is
+        // NOT a secret and NOT a plain hash (peppered HMAC). Indexed for Tier-1
+        // deterministic duplicate detection since the encrypted CanonicalEmail column
+        // is non-deterministic and cannot serve WHERE … IN (…) equality lookups.
+        builder.Property(e => e.CanonicalEmailHash).HasMaxLength(64);
+
         builder.Property(e => e.IsPrimary).IsRequired();
         builder.Property(e => e.Label).HasMaxLength(64);
 
@@ -126,7 +136,7 @@ internal sealed class PartyEmailConfiguration : IEntityTypeConfiguration<PartyEm
         // Tier-1 deterministic duplicate detection (Epic #1280): non-unique because two
         // legitimately distinct parties may share an email (household, family). Tenant
         // filtering happens via JOIN on the parent Party in the dedup engine.
-        builder.HasIndex(e => e.CanonicalEmail);
+        builder.HasIndex(e => e.CanonicalEmailHash);
     }
 }
 
@@ -141,8 +151,18 @@ internal sealed class PartyPhoneConfiguration : IEntityTypeConfiguration<PartyPh
         builder.HasKey(p => p.Id);
 
         builder.Property(p => p.Kind).IsRequired();
-        builder.Property(p => p.Number).HasMaxLength(64).IsRequired();
-        builder.Property(p => p.CanonicalNumber).HasMaxLength(20);
+
+        // Number / CanonicalNumber are encrypted at rest. Ciphertext is longer than
+        // plaintext; 4096 comfortably holds the longest international phone format
+        // (E.164 max 15 digits) wrapped as ciphertext.
+        builder.Property(p => p.Number).HasMaxLength(4096).IsRequired();
+        builder.Property(p => p.CanonicalNumber).HasMaxLength(4096);
+
+        // CanonicalNumberHash is an HMAC-SHA256 digest (32 bytes → 64 hex chars).
+        // Indexed for Tier-1 deterministic duplicate detection since the encrypted
+        // CanonicalNumber column cannot serve equality lookups.
+        builder.Property(p => p.CanonicalNumberHash).HasMaxLength(64);
+
         builder.Property(p => p.IsPrimary).IsRequired();
         builder.Property(p => p.Label).HasMaxLength(64);
 
@@ -150,7 +170,7 @@ internal sealed class PartyPhoneConfiguration : IEntityTypeConfiguration<PartyPh
 
         // Tier-1 deterministic duplicate detection (Epic #1280): non-unique because two
         // legitimately distinct parties may share a phone (family, shared landline).
-        builder.HasIndex(p => p.CanonicalNumber);
+        builder.HasIndex(p => p.CanonicalNumberHash);
     }
 }
 

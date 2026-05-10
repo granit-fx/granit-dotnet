@@ -4,7 +4,7 @@ using Granit.Notifications.Endpoints.Dtos;
 using Granit.Notifications.Endpoints.Options;
 using Granit.Notifications.Endpoints.Permissions;
 using Granit.Notifications.MobilePush;
-using Granit.Timing;
+using Granit.Notifications.MobilePush.Domain;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -67,27 +67,23 @@ public static class MobilePushTokenEndpoints
         [FromServices] IMobilePushTokenReader tokenReader,
         ClaimsPrincipal user,
         [FromServices] ICurrentTenant tenant,
-        [FromServices] IClock clock,
         CancellationToken cancellationToken)
     {
         string userId = GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
-        // Check if token already exists (upsert)
-        IReadOnlyList<MobilePushTokenInfo> existing = await tokenReader
+        // Check if token already exists (upsert) — equality is on the encrypted
+        // plaintext at the abstraction level; the store routes the comparison
+        // through the lookup hash internally.
+        IReadOnlyList<MobilePushToken> existing = await tokenReader
             .GetTokensAsync(userId, tenantId, cancellationToken)
             .ConfigureAwait(false);
 
         bool isUpdate = existing.Any(t => t.DeviceToken == request.DeviceToken);
 
-        await tokenWriter.RegisterAsync(new MobilePushTokenInfo
-        {
-            UserId = userId,
-            DeviceToken = request.DeviceToken,
-            Platform = request.Platform,
-            TenantId = tenantId,
-            CreatedAt = clock.Now,
-        }, cancellationToken).ConfigureAwait(false);
+        await tokenWriter
+            .RegisterAsync(userId, request.DeviceToken, request.Platform, tenantId, cancellationToken)
+            .ConfigureAwait(false);
 
         return isUpdate
             ? TypedResults.Ok()
@@ -118,7 +114,7 @@ public static class MobilePushTokenEndpoints
         string userId = GetUserId(user);
         Guid? tenantId = tenant.IsAvailable ? tenant.Id : null;
 
-        IReadOnlyList<MobilePushTokenInfo> tokens = await tokenReader
+        IReadOnlyList<MobilePushToken> tokens = await tokenReader
             .GetTokensAsync(userId, tenantId, cancellationToken)
             .ConfigureAwait(false);
 

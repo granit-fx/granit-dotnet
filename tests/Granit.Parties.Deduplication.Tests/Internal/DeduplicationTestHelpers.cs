@@ -38,7 +38,7 @@ internal sealed class InMemoryPartiesDbContextFactory : IDbContextFactory<Partie
     private readonly DbContextOptions<PartiesDbContext> _options;
     private readonly StubCurrentTenant _tenant;
     private readonly DataFilter _filter;
-    private readonly PartyCanonicalisationInterceptor _canonicaliser = new();
+    private readonly PartyCanonicalisationInterceptor _canonicaliser = new(new IdentityHasher());
 
     public InMemoryPartiesDbContextFactory(string databaseName, StubCurrentTenant tenant, DataFilter filter)
     {
@@ -54,8 +54,20 @@ internal sealed class InMemoryPartiesDbContextFactory : IDbContextFactory<Partie
             .Options;
     }
 
-    public PartiesDbContext CreateDbContext() => new(_options, _tenant, _filter);
+    public PartiesDbContext CreateDbContext() => new(_options, new PassthroughEncryption(), _tenant, _filter);
 
     public Task<PartiesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PartiesDbContext(_options, _tenant, _filter));
+        Task.FromResult(new PartiesDbContext(_options, new PassthroughEncryption(), _tenant, _filter));
+}
+
+internal sealed class PassthroughEncryption : Granit.Encryption.IStringEncryptionService
+{
+    public string Encrypt(string plainText) => plainText;
+    public string? Decrypt(string cipherText) => cipherText;
+}
+
+internal sealed class IdentityHasher : Granit.Parties.EntityFrameworkCore.Internal.IPartyLookupHasher
+{
+    public string? ComputeHash(string? canonical) =>
+        string.IsNullOrEmpty(canonical) ? null : $"hash:{canonical}";
 }

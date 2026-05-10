@@ -1,3 +1,4 @@
+using Granit.Encryption.EntityFrameworkCore;
 using Granit.Modularity;
 using Granit.Persistence.EntityFrameworkCore;
 
@@ -11,5 +12,6 @@ namespace Granit.Activities.EntityFrameworkCore;
 /// </summary>
 [DependsOn(
     typeof(GranitActivitiesModule),
+    typeof(GranitEncryptionEntityFrameworkCoreModule),
     typeof(GranitPersistenceEntityFrameworkCoreModule))]
 public sealed class GranitActivitiesEntityFrameworkCoreModule : GranitModule;

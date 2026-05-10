@@ -1,4 +1,5 @@
 using Granit.Notifications.Abstractions;
+using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ internal sealed partial class MobilePushNotificationChannel(
     /// <inheritdoc />
     public async Task SendAsync(NotificationDeliveryContext context, CancellationToken cancellationToken = default)
     {
-        IReadOnlyList<MobilePushTokenInfo> tokens = await tokenReader
+        IReadOnlyList<MobilePushToken> tokens = await tokenReader
             .GetTokensAsync(context.RecipientUserId, context.TenantId, cancellationToken)
             .ConfigureAwait(false);
 

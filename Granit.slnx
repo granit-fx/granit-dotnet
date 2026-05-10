@@ -347,7 +347,9 @@
     <Project Path="src/Granit.Tax.Stripe/Granit.Tax.Stripe.csproj" />
     <Project Path="src/Granit.Tax/Granit.Tax.csproj" />
   </Folder>
-  <Folder Name="/src/" />
+  <Folder Name="/src/">
+    <Project Path="src/Granit.Wolverine.Encryption/Granit.Wolverine.Encryption.csproj" />
+  </Folder>
   <Folder Name="/src/AI/">
     <Project Path="src/Granit.AI.AzureOpenAI/Granit.AI.AzureOpenAI.csproj" />
     <Project Path="src/Granit.AI.Endpoints/Granit.AI.Endpoints.csproj" />
@@ -740,6 +742,7 @@
     <Project Path="tests/Granit.Parties.MultiTenancy.Tests/Granit.Parties.MultiTenancy.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Privacy.Tests/Granit.Parties.Privacy.Tests.csproj" />
     <Project Path="tests/Granit.Parties.Tests/Granit.Parties.Tests.csproj" />
+    <Project Path="tests/Granit.Wolverine.Encryption.Tests/Granit.Wolverine.Encryption.Tests.csproj" />
   </Folder>
   <Folder Name="/tests/AI/">
     <Project Path="tests/Granit.AI.AzureOpenAI.Tests/Granit.AI.AzureOpenAI.Tests.csproj" />

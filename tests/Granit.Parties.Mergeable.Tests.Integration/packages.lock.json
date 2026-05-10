@@ -492,6 +492,15 @@
           "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
         }
       },
+      "granit.encryption.entityframeworkcore": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Encryption": "[0.1.0-dev, )",
+          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
+          "Microsoft.EntityFrameworkCore": "[10.*, )"
+        }
+      },
       "granit.entities.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -581,6 +590,7 @@
       "granit.parties.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Parties": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",

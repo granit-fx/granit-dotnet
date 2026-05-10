@@ -236,10 +236,16 @@ public sealed class EfTaxRateProviderTests : IAsyncDisposable
     private sealed class TestFactory(DbContextOptions<TaxDbContext> options)
         : IDbContextFactory<TaxDbContext>
     {
-        public TaxDbContext CreateDbContext() => new(options);
+        public TaxDbContext CreateDbContext() => new(options, new PassthroughEncryption());
 
         public Task<TaxDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new TaxDbContext(options));
+            Task.FromResult(new TaxDbContext(options, new PassthroughEncryption()));
+    }
+
+    private sealed class PassthroughEncryption : Granit.Encryption.IStringEncryptionService
+    {
+        public string Encrypt(string plainText) => plainText;
+        public string? Decrypt(string cipherText) => cipherText;
     }
 }
 

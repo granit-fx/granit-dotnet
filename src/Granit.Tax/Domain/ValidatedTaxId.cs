@@ -1,5 +1,6 @@
 using Granit.DataProtection;
 using Granit.Domain;
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Tax.Domain.ValueObjects;
 
@@ -55,7 +56,16 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
     }
 
     /// <summary>The validated tax ID (e.g., "BE0123456789").</summary>
-    [SensitiveData(Level = Sensitivity.Confidential)]
+    /// <remarks>
+    /// Classified <see cref="Sensitivity.Internal"/> — not direct PII. VAT/tax IDs
+    /// are public registration data: they appear on every invoice, are searchable
+    /// in national company registries (KBO/BCE, Companies House, VIES), and the
+    /// online validation cache exists precisely because the value is public.
+    /// Sole-proprietor cases where the number doubles as the personal tax number
+    /// are still subject to publication in VIES once the business is registered.
+    /// Logged / audited as low-sensitivity — no at-rest encryption mandate.
+    /// </remarks>
+    [SensitiveData(Level = Sensitivity.Internal)]
     public string TaxId { get; private set; } = string.Empty;
 
     /// <summary>ISO 3166-1 alpha-2 country code.</summary>
@@ -79,6 +89,7 @@ public sealed class ValidatedTaxId : Entity, IMultiTenant
 
     /// <summary>Company address returned by the tax authority.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string? CompanyAddress { get; private set; }
 
     /// <summary>Consultation number for audit trail (e.g., VIES request identifier).</summary>

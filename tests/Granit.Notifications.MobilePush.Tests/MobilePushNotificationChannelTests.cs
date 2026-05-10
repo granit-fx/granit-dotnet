@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Granit.Notifications.Abstractions;
 using Granit.Notifications.MobilePush;
+using Granit.Notifications.MobilePush.Domain;
 using Granit.Notifications.MobilePush.Internal;
 using Granit.Notifications.MobilePush.Options;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,7 +42,7 @@ public sealed class MobilePushNotificationChannelTests
     public async Task SendAsync_WithRegisteredTokens_SendsPush()
     {
         NotificationDeliveryContext context = BuildContext();
-        SetupTokens("user-1", null, [new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "token-abc", Platform = MobilePlatform.Android }]);
+        SetupTokens("user-1", null, [BuildToken("user-1", "token-abc", MobilePlatform.Android)]);
 
         await _channel.SendAsync(context, TestContext.Current.CancellationToken);
 
@@ -66,8 +67,8 @@ public sealed class MobilePushNotificationChannelTests
     {
         NotificationDeliveryContext context = BuildContext();
         SetupTokens("user-1", null, [
-            new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "token-1", Platform = MobilePlatform.Android },
-            new MobilePushTokenInfo { UserId = "user-1", DeviceToken = "token-2", Platform = MobilePlatform.Ios },
+            BuildToken("user-1", "token-1", MobilePlatform.Android),
+            BuildToken("user-1", "token-2", MobilePlatform.Ios),
         ]);
 
         await _channel.SendAsync(context, TestContext.Current.CancellationToken);
@@ -78,8 +79,11 @@ public sealed class MobilePushNotificationChannelTests
     [Fact]
     public void Name_ReturnsMobilePush() => _channel.Name.ShouldBe(NotificationChannels.MobilePush);
 
-    private void SetupTokens(string userId, Guid? tenantId, IReadOnlyList<MobilePushTokenInfo> tokens) =>
+    private void SetupTokens(string userId, Guid? tenantId, IReadOnlyList<MobilePushToken> tokens) =>
         _tokenReader.GetTokensAsync(userId, tenantId, Arg.Any<CancellationToken>()).Returns(tokens);
+
+    private static MobilePushToken BuildToken(string userId, string deviceToken, MobilePlatform platform) =>
+        MobilePushToken.Create(userId, deviceToken, deviceTokenHash: $"hash-{deviceToken}", platform);
 
     private static NotificationDeliveryContext BuildContext() => new()
     {

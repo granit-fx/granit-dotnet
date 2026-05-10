@@ -29,7 +29,7 @@ public sealed class DefaultPartyDuplicateDetectorTests : IAsyncDisposable
         _factory = new InMemoryPartiesDbContextFactory($"composer-{Guid.NewGuid()}", _tenant, _filter);
         IOptions<PartyDeduplicationOptions> options = Options.Create(new PartyDeduplicationOptions());
 
-        Tier1DeterministicMatcher tier1 = new(_factory);
+        Tier1DeterministicMatcher tier1 = new(_factory, new IdentityHasher());
         Tier2TrigramBlocker tier2 = new(_factory, options);
         Tier3WeightedScorer tier3 = new(_factory);
 

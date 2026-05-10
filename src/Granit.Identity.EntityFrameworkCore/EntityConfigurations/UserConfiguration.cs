@@ -28,18 +28,30 @@ internal sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.TenantId)
             .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}users_tenant_id");
 
-        // Email index — point lookups via IUserLookupService (case-insensitive
-        // search lives at the consumer, but the index supports the underlying
-        // equality probe). Not unique — Odoo-style: multiple Users may legitimately
-        // share an email (corporate inbox shared across role accounts).
-        builder.HasIndex(u => u.Email)
-            .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}users_email");
+        // EmailHash index — point lookups via IUserLookupService keyed on the
+        // peppered HMAC digest, since the Email column itself is encrypted at rest
+        // (random-IV AES) and cannot serve `WHERE col = ?` equality probes. Not
+        // unique — Odoo-style: multiple Users may legitimately share an email
+        // (corporate inbox shared across role accounts).
+        builder.HasIndex(u => u.EmailHash)
+            .HasDatabaseName($"ix_{GranitIdentityDbProperties.DbTablePrefix}users_email_hash");
 
         builder.Property(u => u.DisplayName).HasMaxLength(256).IsRequired();
-        builder.Property(u => u.Email).HasMaxLength(320).IsRequired();    // RFC 5321 max local + @ + domain
+
+        // Email + PhoneNumber are encrypted at rest. Ciphertext is longer than
+        // plaintext (AES + base64 overhead); 4096 holds the RFC-5321 email max
+        // (320 chars) and any plausible international phone format.
+        builder.Property(u => u.Email).HasMaxLength(4096).IsRequired();
+        builder.Property(u => u.PhoneNumber).HasMaxLength(4096);
+
+        // *Hash columns are HMAC-SHA256 digests (32 bytes → 64 hex chars). NOT a
+        // secret and NOT a plain hash (peppered HMAC). Indexed for the email
+        // lookup; phone hash is currently unindexed (no exact-match lookup yet).
+        builder.Property(u => u.EmailHash).HasMaxLength(64);
+        builder.Property(u => u.PhoneNumberHash).HasMaxLength(64);
+
         builder.Property(u => u.FirstName).HasMaxLength(128);
         builder.Property(u => u.LastName).HasMaxLength(128);
-        builder.Property(u => u.PhoneNumber).HasMaxLength(32);            // E.164 max
         builder.Property(u => u.PreferredLocale).HasMaxLength(20);        // BCP-47 worst case
         builder.Property(u => u.Timezone).HasMaxLength(64);               // IANA tz worst case
         builder.Property(u => u.IsEnabled).IsRequired();

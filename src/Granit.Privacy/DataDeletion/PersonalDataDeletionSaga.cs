@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Privacy.DataDeletion.Events;
 using Granit.Privacy.Diagnostics;
 using Granit.Privacy.Options;
@@ -39,10 +40,12 @@ public sealed class PersonalDataDeletionSaga : Saga
 
     /// <summary>Who requested the deletion (email or identifier).</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string RequestedBy { get; set; } = string.Empty;
 
     /// <summary>Reason provided by the user for deletion.</summary>
     [SensitiveData(Level = Sensitivity.Confidential)]
+    [Encrypted]
     public string Reason { get; set; } = string.Empty;
 
     /// <summary>When the deletion was originally requested.</summary>

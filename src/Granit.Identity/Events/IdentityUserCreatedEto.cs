@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 
 namespace Granit.Identity.Events;
@@ -17,7 +18,7 @@ namespace Granit.Identity.Events;
 /// <param name="Email">The email of the created user (may be null).</param>
 public sealed record IdentityUserCreatedEto(
     string UserId,
-    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask)]
+    [property: SensitiveData(Level = Sensitivity.Confidential, Mode = SensitiveDataMode.Mask), Encrypted]
     string? Username,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string? Email) : IIntegrationEvent;

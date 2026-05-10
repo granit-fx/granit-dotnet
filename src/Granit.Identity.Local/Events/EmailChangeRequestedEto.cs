@@ -1,4 +1,5 @@
 using Granit.DataProtection;
+using Granit.Encryption;
 using Granit.Events;
 
 namespace Granit.Identity.Local.Events;
@@ -28,11 +29,11 @@ namespace Granit.Identity.Local.Events;
 #pragma warning disable GRSEC003 // Token is a transient token parameter, not a stored secret
 public sealed record EmailChangeRequestedEto(
     Guid UserId,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string CurrentEmail,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string NewEmail,
-    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit)]
+    [property: SensitiveData(Level = Sensitivity.Restricted, Mode = SensitiveDataMode.Omit), Encrypted]
     string Token,
     Guid? TenantId) : IIntegrationEvent;
 #pragma warning restore GRSEC003

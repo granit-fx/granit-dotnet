@@ -41,7 +41,7 @@ public sealed class EfContactStoreScopeTests : IAsyncDisposable
         // Each test scope creates its own context; cleanup is per-test via the unique DB name.
         StubCurrentTenant t = new();
         DbContextOptions<PartiesDbContext> opts = BuildOptions();
-        await using PartiesDbContext db = new(opts, t, _filter);
+        await using PartiesDbContext db = new(opts, new PassthroughEncryption(), t, _filter);
         await db.Database.EnsureDeletedAsync();
     }
 

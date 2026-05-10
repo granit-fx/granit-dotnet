@@ -1,5 +1,6 @@
 using System.Diagnostics.Metrics;
 using Granit.DataFiltering;
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Parties.Diagnostics;
 using Granit.Parties.EntityFrameworkCore.Internal;
@@ -68,8 +69,14 @@ internal sealed class ScopedFactory(
     ICurrentTenant tenant,
     IDataFilter filter) : IDbContextFactory<PartiesDbContext>
 {
-    public PartiesDbContext CreateDbContext() => new(options, tenant, filter);
+    public PartiesDbContext CreateDbContext() => new(options, new PassthroughEncryption(), tenant, filter);
 
     public Task<PartiesDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(new PartiesDbContext(options, tenant, filter));
+        Task.FromResult(new PartiesDbContext(options, new PassthroughEncryption(), tenant, filter));
+}
+
+internal sealed class PassthroughEncryption : IStringEncryptionService
+{
+    public string Encrypt(string plainText) => plainText;
+    public string? Decrypt(string cipherText) => cipherText;
 }

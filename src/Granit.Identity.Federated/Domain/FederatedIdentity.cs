@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using Granit.DataProtection;
 using Granit.Domain;
-using Granit.Encryption.EntityFrameworkCore;
+using Granit.Encryption;
 
 namespace Granit.Identity.Federated.Domain;
 

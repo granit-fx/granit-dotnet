@@ -1,3 +1,4 @@
+using Granit.Encryption;
 using Granit.MultiTenancy;
 using Granit.Privacy.DataExport;
 using Granit.Privacy.EntityFrameworkCore.DataExport.Internal;
@@ -125,10 +126,18 @@ public sealed class EfExportRequestTrackerTests : IAsyncDisposable
     {
         public ICurrentTenant Tenant { get; } = Substitute.For<ICurrentTenant>();
 
-        public PrivacyDbContext CreateDbContext() => new(options, Tenant);
+        private static readonly IStringEncryptionService Encryption = new PassthroughEncryption();
+
+        public PrivacyDbContext CreateDbContext() => new(options, Encryption, Tenant);
 
         public Task<PrivacyDbContext> CreateDbContextAsync(CancellationToken cancellationToken = default) =>
-            Task.FromResult(new PrivacyDbContext(options, Tenant));
+            Task.FromResult(new PrivacyDbContext(options, Encryption, Tenant));
+
+        private sealed class PassthroughEncryption : IStringEncryptionService
+        {
+            public string Encrypt(string plainText) => plainText;
+            public string? Decrypt(string cipherText) => cipherText;
+        }
     }
 
     private sealed class FakeTimeProvider(DateTimeOffset now) : TimeProvider

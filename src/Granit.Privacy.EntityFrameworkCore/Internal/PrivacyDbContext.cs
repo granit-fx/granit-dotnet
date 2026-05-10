@@ -1,4 +1,6 @@
 using Granit.DataFiltering;
+using Granit.Encryption;
+using Granit.Encryption.EntityFrameworkCore.Extensions;
 using Granit.MultiTenancy;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Granit.Privacy.EntityFrameworkCore.DataDeletion;
@@ -12,6 +14,7 @@ namespace Granit.Privacy.EntityFrameworkCore.Internal;
 
 internal sealed class PrivacyDbContext(
     DbContextOptions<PrivacyDbContext> options,
+    IStringEncryptionService encryption,
     ICurrentTenant? currentTenant = null,
     IDataFilter? dataFilter = null)
     : DbContext(options)
@@ -27,5 +30,9 @@ internal sealed class PrivacyDbContext(
         base.OnModelCreating(modelBuilder);
         modelBuilder.ConfigurePrivacyModule();
         modelBuilder.ApplyGranitConventions(currentTenant, dataFilter);
+        // Encrypts every string property carrying [Encrypted] (DeletionRequestEntity.Reason
+        // for now). New entities inheriting LegalAgreementBase pick up encryption on
+        // IpAddress automatically.
+        modelBuilder.ApplyEncryptionConventions(encryption);
     }
 }

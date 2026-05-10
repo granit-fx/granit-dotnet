@@ -28,6 +28,7 @@
       "src/Granit.Documents.Endpoints/Granit.Documents.Endpoints.csproj",
       "src/Granit.Documents.EntityFrameworkCore/Granit.Documents.EntityFrameworkCore.csproj",
       "src/Granit.Documents/Granit.Documents.csproj",
+      "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",
       "src/Granit.Encryption/Granit.Encryption.csproj",
       "src/Granit.Entities.Abstractions/Granit.Entities.Abstractions.csproj",
       "src/Granit.Events.Wolverine/Granit.Events.Wolverine.csproj",
@@ -99,6 +100,7 @@
       "src/Granit.Templating/Granit.Templating.csproj",
       "src/Granit.Timing/Granit.Timing.csproj",
       "src/Granit.Validation/Granit.Validation.csproj",
+      "src/Granit.Wolverine.Encryption/Granit.Wolverine.Encryption.csproj",
       "src/Granit.Wolverine.Postgresql/Granit.Wolverine.Postgresql.csproj",
       "src/Granit.Wolverine.SqlServer/Granit.Wolverine.SqlServer.csproj",
       "src/Granit.Wolverine/Granit.Wolverine.csproj",
@@ -168,6 +170,7 @@
       "tests/Granit.Taxonomy.Endpoints.Tests/Granit.Taxonomy.Endpoints.Tests.csproj",
       "tests/Granit.Taxonomy.EntityFrameworkCore.Tests/Granit.Taxonomy.EntityFrameworkCore.Tests.csproj",
       "tests/Granit.Taxonomy.Tests/Granit.Taxonomy.Tests.csproj",
+      "tests/Granit.Wolverine.Encryption.Tests/Granit.Wolverine.Encryption.Tests.csproj",
       "tests/Granit.Wolverine.Postgresql.Tests/Granit.Wolverine.Postgresql.Tests.csproj",
       "tests/Granit.Wolverine.SqlServer.Tests/Granit.Wolverine.SqlServer.Tests.csproj",
       "tests/Granit.Wolverine.Tests/Granit.Wolverine.Tests.csproj"
