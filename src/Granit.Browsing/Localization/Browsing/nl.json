@@ -1,0 +1,19 @@
+{
+  "culture": "nl",
+  "texts": {
+    "PermissionGroup:Granit.Browsing": "Headless browsing",
+    "Permission:Granit.Browsing.Pages.Acquire": "Een browserpagina uit de pool overnemen",
+    "Permission:Granit.Browsing.Pages.Navigate": "Een browserpagina naar een URL navigeren",
+    "Permission:Granit.Browsing.Pages.InjectScript": "Scripts injecteren of JavaScript evalueren in een browserpagina",
+    "Permission:Granit.Browsing.Pages.BypassCsp": "Content-Security-Policy-headers op een browserpagina omzeilen",
+    "Permission:Granit.Browsing.Pages.UseFileScheme": "Het file://-schema voor browsernavigatie gebruiken",
+    "Sandbox:CspBypassDenied": "Omzeilen van Content-Security-Policy geweigerd door het actieve sandboxprofiel.",
+    "Sandbox:ScriptInjectionDenied": "Scriptinjectie geweigerd door het actieve sandboxprofiel.",
+    "Sandbox:ExecutablePathRejected": "Browser-uitvoerbaar pad '{0}' valt buiten de toegestane prefix '{1}'.",
+    "Sandbox:PrivilegedFlagRefused": "Geprivilegieerde browservlag '{0}' geweigerd buiten een toegestane containercontext.",
+    "Sandbox:RenderTimeoutExceeded": "Renderbewerking overschreed de sandbox-MaxRenderDuration van {0}.",
+    "Sandbox:ConsoleSecretRedacted": "Een consolebericht met een waarschijnlijk geheim is geredigeerd.",
+    "Validation:RoutePatternMalformed": "Routepatroon '{0}' is misvormd.",
+    "Validation:UrlSafetyViolation": "URL-veiligheidscontrole weigerde '{0}': {1}."
+  }
+}

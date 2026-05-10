@@ -1,9 +1,11 @@
+using Granit.Authorization;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Sandbox;
 using Granit.Diagnostics;
 using Granit.Http.Security;
 using Granit.IO;
 using Granit.Modularity;
+using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -21,8 +23,10 @@ namespace Granit.Browsing;
 /// + capability bindings.
 /// </remarks>
 [DependsOn(
+    typeof(GranitAuthorizationModule),
     typeof(GranitHttpSecurityModule),
-    typeof(GranitIoModule))]
+    typeof(GranitIoModule),
+    typeof(GranitTimingModule))]
 public sealed class GranitBrowsingModule : GranitModule
 {
     /// <inheritdoc/>

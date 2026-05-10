@@ -1,0 +1,19 @@
+{
+  "culture": "fr",
+  "texts": {
+    "PermissionGroup:Granit.Browsing": "Navigation headless",
+    "Permission:Granit.Browsing.Pages.Acquire": "Acquérir une page du pool de navigateurs",
+    "Permission:Granit.Browsing.Pages.Navigate": "Naviguer une page vers une URL",
+    "Permission:Granit.Browsing.Pages.InjectScript": "Injecter des scripts ou évaluer du JavaScript dans une page",
+    "Permission:Granit.Browsing.Pages.BypassCsp": "Contourner les en-têtes Content-Security-Policy d'une page",
+    "Permission:Granit.Browsing.Pages.UseFileScheme": "Utiliser le schéma file:// pour la navigation",
+    "Sandbox:CspBypassDenied": "Contournement de Content-Security-Policy refusé par le profil sandbox actif.",
+    "Sandbox:ScriptInjectionDenied": "Injection de script refusée par le profil sandbox actif.",
+    "Sandbox:ExecutablePathRejected": "Le chemin de l'exécutable du navigateur '{0}' est en dehors du préfixe autorisé '{1}'.",
+    "Sandbox:PrivilegedFlagRefused": "Drapeau privilégié '{0}' refusé en dehors d'un contexte conteneur autorisé.",
+    "Sandbox:RenderTimeoutExceeded": "L'opération de rendu a dépassé la durée maximale du sandbox de {0}.",
+    "Sandbox:ConsoleSecretRedacted": "Un message console contenant un secret probable a été masqué.",
+    "Validation:RoutePatternMalformed": "Le motif de route '{0}' est mal formé.",
+    "Validation:UrlSafetyViolation": "Le contrôle de sûreté d'URL a rejeté '{0}' : {1}."
+  }
+}

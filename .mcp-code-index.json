@@ -589,9 +589,11 @@
       "name": "Granit.Browsing",
       "deps": [
         "Granit",
+        "Granit.Authorization",
         "Granit.Http.Security",
         "Granit.IO",
-        "Granit.MultiTenancy"
+        "Granit.MultiTenancy",
+        "Granit.Timing"
       ],
       "framework": "net10.0"
     },
@@ -13371,6 +13373,33 @@
       "members": []
     },
     {
+      "name": "BrowserPageAcquiredEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserPageAcquiredEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserPageAcquiredEvent.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "BrowserScriptInjectedEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserScriptInjectedEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserScriptInjectedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "BrowserUrlNavigatedEvent",
+      "fqn": "Granit.Browsing.Diagnostics.BrowserUrlNavigatedEvent",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowserUrlNavigatedEvent.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "BrowsingMetrics",
       "fqn": "Granit.Browsing.Diagnostics.BrowsingMetrics",
       "kind": "class",
@@ -13405,12 +13434,28 @@
       ]
     },
     {
+      "name": "ConsoleRedactor",
+      "fqn": "Granit.Browsing.Diagnostics.ConsoleRedactor",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/ConsoleRedactor.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "Redact",
+          "kind": "method",
+          "signature": "Redact(string? input)",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "GranitBrowsingModule",
       "fqn": "Granit.Browsing.GranitBrowsingModule",
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/GranitBrowsingModule.cs",
-      "line": 26,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
@@ -13779,6 +13824,24 @@
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
       "line": 13,
+      "members": []
+    },
+    {
+      "name": "BrowsingPermissions",
+      "fqn": "Granit.Browsing.Permissions.BrowsingPermissions",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissions.cs",
+      "line": 8,
+      "members": []
+    },
+    {
+      "name": "Pages",
+      "fqn": "Granit.Browsing.Permissions.Pages",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Permissions/BrowsingPermissions.cs",
+      "line": 14,
       "members": []
     },
     {
