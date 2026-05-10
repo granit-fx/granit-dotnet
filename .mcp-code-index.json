@@ -2404,7 +2404,8 @@
       "name": "Granit.Privacy.BlobStorage",
       "deps": [
         "Granit.Privacy",
-        "Granit.BlobStorage"
+        "Granit.BlobStorage",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
@@ -49860,7 +49861,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/DataExport/ExportArchiveAssemblyHandler.cs",
-      "line": 45,
+      "line": 46,
       "members": [
         {
           "name": "HandleAsync",
@@ -49926,7 +49927,7 @@
       "kind": "class",
       "project": "Granit.Privacy.BlobStorage",
       "file": "src/Granit.Privacy.BlobStorage/GranitPrivacyBlobStorageModule.cs",
-      "line": 15,
+      "line": 17,
       "members": [
         {
           "name": "ConfigureServices",

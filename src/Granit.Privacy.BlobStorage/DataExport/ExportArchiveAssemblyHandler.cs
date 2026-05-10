@@ -5,6 +5,7 @@ using System.Text.Json;
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
 using Granit.BlobStorage.Options;
+using Granit.IO;
 using Granit.Privacy.BlobStorage.DataExport.Exceptions;
 using Granit.Privacy.BlobStorage.DataExport.Internal;
 using Granit.Privacy.DataExport;
@@ -49,6 +50,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
     IOptions<GranitPrivacyOptions> options,
     TimeProvider timeProvider,
     PrivacyMetrics metrics,
+    ITempFileFactory tempFileFactory,
     ILogger<ExportArchiveAssemblyHandler> logger)
 {
     /// <summary>Named <see cref="HttpClient"/> used for fragment downloads and archive uploads.</summary>
@@ -62,7 +64,6 @@ public sealed partial class ExportArchiveAssemblyHandler(
         long maxBytes = (long)opts.ExportMaxSizeMb * 1024L * 1024L;
         var downloadTtl = TimeSpan.FromMinutes(opts.ArchiveAssemblyDownloadUrlExpiryMinutes);
 
-        string tempPath = Path.Combine(Path.GetTempPath(), $"granit-privacy-export-{@event.RequestId}.zip");
         long startTimestamp = Stopwatch.GetTimestamp();
         using Activity? activity = PrivacyActivitySource.Source.StartActivity(
             PrivacyActivitySource.ArchiveAssemble, ActivityKind.Internal);
@@ -73,10 +74,15 @@ public sealed partial class ExportArchiveAssemblyHandler(
         List<string> emptyProviders = [];
         List<ExportManifestFragment> manifestFragments = [];
 
+        // Temp file: 0600 on Linux/macOS, NTFS ACL restricted to current user on Windows,
+        // FileOptions.DeleteOnClose. Tenant-partitioned under the Granit.IO root.
+        // Privacy export ZIPs contain personal data — GDPR Art. 32 demands strict access control.
+        await using ITempFile tempFile = await tempFileFactory
+            .CreateAsync("privacy-export", "zip", cancellationToken).ConfigureAwait(false);
+
         try
         {
-            await using (FileStream tempStream = new(tempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-            await using (CountingStream countingStream = new(tempStream, maxBytes))
+            await using (CountingStream countingStream = new(tempFile.Stream, maxBytes))
             {
                 using (ZipArchive zip = new(countingStream, ZipArchiveMode.Create, leaveOpen: true))
                 {
@@ -109,8 +115,8 @@ public sealed partial class ExportArchiveAssemblyHandler(
 
                 await countingStream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-                tempStream.Position = 0;
-                await UploadArchiveAsync(@event.RequestId, tempStream, httpClient, cancellationToken)
+                tempFile.Stream.Position = 0;
+                await UploadArchiveAsync(@event.RequestId, tempFile.Stream, httpClient, cancellationToken)
                     .ConfigureAwait(false);
             }
 
@@ -147,10 +153,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
                 duration,
                 @event.Regulation);
         }
-        finally
-        {
-            TryDeleteTempFile(tempPath);
-        }
+        // tempFile disposal (await using) handles secure deletion via FileOptions.DeleteOnClose.
     }
 
     private async Task<string> ResolveEntryNameAsync(
@@ -218,7 +221,7 @@ public sealed partial class ExportArchiveAssemblyHandler(
     }
 
     private async Task UploadArchiveAsync(
-        Guid requestId, FileStream archiveStream, HttpClient httpClient, CancellationToken cancellationToken)
+        Guid requestId, Stream archiveStream, HttpClient httpClient, CancellationToken cancellationToken)
     {
         PresignedUploadTicket ticket = await blobStorage.InitiateUploadAsync(
             PrivacyExportContainerNames.FragmentContainer,
@@ -250,25 +253,6 @@ public sealed partial class ExportArchiveAssemblyHandler(
             .ConfigureAwait(false);
     }
 
-    private void TryDeleteTempFile(string tempPath)
-    {
-        try
-        {
-            if (File.Exists(tempPath))
-            {
-                File.Delete(tempPath);
-            }
-        }
-        catch (IOException ex)
-        {
-            LogTempFileCleanupFailed(logger, tempPath, ex.Message);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            LogTempFileCleanupFailed(logger, tempPath, ex.Message);
-        }
-    }
-
     private static string ExtensionFor(string contentType) => contentType switch
     {
         "application/json" => ".json",
@@ -296,7 +280,4 @@ public sealed partial class ExportArchiveAssemblyHandler(
         Message = "Privacy export {RequestId}: archive exceeded size limit of {MaxBytes} bytes (observed {ObservedBytes}); marking SizeLimitExceeded")]
     private static partial void LogSizeLimitExceeded(ILogger logger, Guid requestId, long maxBytes, long observedBytes);
 
-    [LoggerMessage(Level = LogLevel.Warning,
-        Message = "Privacy export: failed to delete temp archive {TempPath}: {Reason}")]
-    private static partial void LogTempFileCleanupFailed(ILogger logger, string tempPath, string reason);
 }
