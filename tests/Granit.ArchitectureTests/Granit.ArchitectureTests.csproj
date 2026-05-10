@@ -129,13 +129,18 @@
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Excel\Granit.DocumentGeneration.Excel.csproj" />
     <ProjectReference Include="..\..\src\Granit.DocumentGeneration.Pdf\Granit.DocumentGeneration.Pdf.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents\Granit.Documents.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents.BackgroundJobs\Granit.Documents.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents.Endpoints\Granit.Documents.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents.EntityFrameworkCore\Granit.Documents.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents.Notifications\Granit.Documents.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.BackgroundJobs\Granit.Encryption.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.EntityFrameworkCore\Granit.Encryption.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities\Granit.Entities.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities.Customization\Granit.Entities.Customization.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities.Customization.Endpoints\Granit.Entities.Customization.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities.Customization.EntityFrameworkCore\Granit.Entities.Customization.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Endpoints\Granit.Entities.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.EntityFrameworkCore\Granit.Entities.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Entities.Views\Granit.Entities.Views.csproj" />
@@ -324,6 +329,10 @@
     <ProjectReference Include="..\..\src\Granit.Templating.Mjml\Granit.Templating.Mjml.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating.Scriban\Granit.Templating.Scriban.csproj" />
     <ProjectReference Include="..\..\src\Granit.Templating.Workflow\Granit.Templating.Workflow.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy\Granit.Taxonomy.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy.BackgroundJobs\Granit.Taxonomy.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy.Endpoints\Granit.Taxonomy.Endpoints.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Taxonomy.EntityFrameworkCore\Granit.Taxonomy.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing\Granit.Testing.csproj" />
     <ProjectReference Include="..\..\src\Granit.Testing.EntityFrameworkCore\Granit.Testing.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Timeline\Granit.Timeline.csproj" />
@@ -350,6 +359,7 @@
     <ProjectReference Include="..\..\src\Granit.Webhooks.Notifications\Granit.Webhooks.Notifications.csproj" />
     <ProjectReference Include="..\..\src\Granit.Webhooks.Wolverine\Granit.Webhooks.Wolverine.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine\Granit.Wolverine.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Wolverine.Encryption\Granit.Wolverine.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine.Postgresql\Granit.Wolverine.Postgresql.csproj" />
     <ProjectReference Include="..\..\src\Granit.Wolverine.SqlServer\Granit.Wolverine.SqlServer.csproj" />
     <ProjectReference Include="..\..\src\Granit.Workflow\Granit.Workflow.csproj" />
