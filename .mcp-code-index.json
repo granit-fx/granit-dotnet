@@ -13367,7 +13367,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 127,
+      "line": 113,
       "members": []
     },
     {
@@ -13431,7 +13431,7 @@
         {
           "name": "NavigateAsync",
           "kind": "method",
-          "signature": "NavigateAsync(string url, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
+          "signature": "NavigateAsync(Uri url, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
           "returnType": "string EngineName { get; } Task"
         },
         {
@@ -13485,7 +13485,7 @@
         {
           "name": "RouteAsync",
           "kind": "method",
-          "signature": "RouteAsync(string urlPattern, RouteHandler handler, CancellationToken cancellationToken = default)",
+          "signature": "RouteAsync(RoutePattern pattern, Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         }
       ]
@@ -13544,40 +13544,12 @@
       ]
     },
     {
-      "name": "IRouteContext",
-      "fqn": "Granit.Browsing.IRouteContext",
-      "kind": "interface",
-      "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 102,
-      "members": [
-        {
-          "name": "ContinueAsync",
-          "kind": "method",
-          "signature": "ContinueAsync(CancellationToken cancellationToken = default)",
-          "returnType": "string Url { get; } string Method { get; } IReadOnlyDictionary<string, string> Headers { get; } Task"
-        },
-        {
-          "name": "AbortAsync",
-          "kind": "method",
-          "signature": "AbortAsync(string errorCode = \"failed\", CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        },
-        {
-          "name": "FulfillAsync",
-          "kind": "method",
-          "signature": "FulfillAsync(int statusCode, IReadOnlyDictionary<string, string>? headers, byte[]? body, CancellationToken cancellationToken = default)",
-          "returnType": "Task"
-        }
-      ]
-    },
-    {
       "name": "LoadState",
       "fqn": "Granit.Browsing.LoadState",
       "kind": "enum",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 80,
+      "line": 98,
       "members": []
     },
     {
@@ -13608,7 +13580,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 57,
+      "line": 54,
       "members": []
     },
     {
@@ -13650,6 +13622,12 @@
           "returnType": "TimeSpan AcquireTimeout { get; set; } = TimeSpan."
         },
         {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan DrainTimeout { get; set; } = TimeSpan."
+        },
+        {
           "name": "new",
           "kind": "method",
           "signature": "new()",
@@ -13679,13 +13657,13 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
-      "line": 58,
+      "line": 66,
       "members": [
         {
           "name": "FromSeconds",
           "kind": "method",
           "signature": "FromSeconds(30)",
-          "returnType": "int? MaxMemoryMb { get; set; } public TimeSpan? MaxRenderDuration { get; set; } = TimeSpan."
+          "returnType": "TimeSpan? MaxRenderDuration { get; set; } = TimeSpan."
         }
       ]
     },
@@ -13729,7 +13707,7 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
-      "line": 45,
+      "line": 42,
       "members": []
     },
     {
@@ -13738,7 +13716,69 @@
       "kind": "record",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/IBrowserPage.cs",
-      "line": 132,
+      "line": 118,
+      "members": []
+    },
+    {
+      "name": "RouteDecision",
+      "fqn": "Granit.Browsing.Pages.RouteDecision",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "RouteDecisionKind Kind { get; init; } public string? ErrorCode { get; init; } public int StatusCode { get; init; } public IReadOnlyDictionary<string, string>? Headers { get; init; } public byte[]? Body { get; init; } public RouteDecision Continue { get; } ="
+        },
+        {
+          "name": "Abort",
+          "kind": "method",
+          "signature": "Abort(string errorCode = \"failed\")",
+          "returnType": "RouteDecision"
+        },
+        {
+          "name": "Fulfill",
+          "kind": "method",
+          "signature": "Fulfill(int statusCode, IReadOnlyDictionary<string, string>? headers = null, byte[]? body = null)",
+          "returnType": "RouteDecision"
+        }
+      ]
+    },
+    {
+      "name": "RouteDecisionKind",
+      "fqn": "Granit.Browsing.Pages.RouteDecisionKind",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteDecision.cs",
+      "line": 50,
+      "members": []
+    },
+    {
+      "name": "RoutePattern",
+      "fqn": "Granit.Browsing.Pages.RoutePattern",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RoutePattern.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "Parse",
+          "kind": "method",
+          "signature": "Parse(string glob)",
+          "returnType": "RoutePattern"
+        }
+      ]
+    },
+    {
+      "name": "RouteRequest",
+      "fqn": "Granit.Browsing.Pages.RouteRequest",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pages/RouteRequest.cs",
+      "line": 13,
       "members": []
     },
     {

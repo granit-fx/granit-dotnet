@@ -23,9 +23,6 @@ public sealed record BrowserPageOptions
     /// <summary>Disables JavaScript execution on the page when <c>false</c>.</summary>
     public bool JavaScriptEnabled { get; init; } = true;
 
-    /// <summary>Bypasses the page's <c>Content-Security-Policy</c> headers when <c>true</c> — required for some script injection scenarios.</summary>
-    public bool BypassCsp { get; init; }
-
     /// <summary>Extra headers attached to every request originating from the page.</summary>
     public IReadOnlyDictionary<string, string>? ExtraHeaders { get; init; }
 

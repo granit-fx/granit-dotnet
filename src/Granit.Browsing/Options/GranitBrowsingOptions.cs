@@ -50,6 +50,14 @@ public sealed class GranitBrowsingOptions
     [Range(typeof(TimeSpan), "00:00:01", "00:05:00")]
     public TimeSpan AcquireTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
+    /// <summary>
+    /// Maximum time <see cref="IHeadlessBrowserPool.DrainAsync"/> may wait for in-flight
+    /// pages to be released before force-disposing the underlying browsers. Default 30
+    /// seconds. Closes VULN-200 (unbounded shutdown).
+    /// </summary>
+    [Range(typeof(TimeSpan), "00:00:05", "00:05:00")]
+    public TimeSpan DrainTimeout { get; set; } = TimeSpan.FromSeconds(30);
+
     /// <summary>Per-page resource limits enforced by the provider where supported.</summary>
     public ResourceLimits ResourceLimits { get; set; } = new();
 }
@@ -57,14 +65,6 @@ public sealed class GranitBrowsingOptions
 /// <summary>Per-page resource limits.</summary>
 public sealed class ResourceLimits
 {
-    /// <summary>
-    /// Soft cap on resident memory for the underlying browser process, in megabytes.
-    /// Implemented by providers that can hook into a process supervisor; ignored
-    /// otherwise.
-    /// </summary>
-    [Range(64, 16_384)]
-    public int? MaxMemoryMb { get; set; }
-
     /// <summary>
     /// Hard timeout for any single render operation (navigate, screenshot, PDF, etc.).
     /// Defaults to 30 seconds — surfaces as a <see cref="TimeoutException"/> on the

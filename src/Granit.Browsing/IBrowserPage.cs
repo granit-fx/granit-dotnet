@@ -1,8 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pages;
 
 namespace Granit.Browsing;
 
@@ -28,7 +28,12 @@ public interface IBrowserPage : IAsyncDisposable
     string EngineName { get; }
 
     /// <summary>Navigates the page to <paramref name="url"/>.</summary>
-    Task NavigateAsync(string url, NavigationOptions? options = null, CancellationToken cancellationToken = default);
+    /// <remarks>
+    /// Providers validate the URL through <c>Granit.Http.Security.IUrlSafetyValidator</c>
+    /// before issuing the engine request. A blocked URL surfaces as
+    /// <see cref="Sandbox.SandboxViolationException"/>.
+    /// </remarks>
+    Task NavigateAsync(Uri url, NavigationOptions? options = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Replaces the page's document with <paramref name="html"/>. Useful for HTML→PDF and
@@ -62,12 +67,25 @@ public interface IBrowserPage : IAsyncDisposable
     Task<byte[]> ScreenshotAsync(ScreenshotOptions options, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Routes requests matching <paramref name="urlPattern"/> through <paramref name="handler"/>.
-    /// Used to block tracker domains, mock API responses for offline rendering, or sandbox
-    /// untrusted content.
+    /// Registers <paramref name="handler"/> against <paramref name="pattern"/>. When an
+    /// intercepted request matches, the handler returns a <see cref="RouteDecision"/> the
+    /// provider applies to the engine-native request.
     /// </summary>
-    /// <remarks>Requires <see cref="BrowserCapabilities.NetworkInterception"/> on the parent browser.</remarks>
-    Task RouteAsync(string urlPattern, RouteHandler handler, CancellationToken cancellationToken = default);
+    /// <remarks>
+    /// <para>
+    /// Multiple handlers may be registered; the request router evaluates them in
+    /// registration order after every sandbox rule has been applied. Sandbox always wins —
+    /// a handler can refine policy but never widen it.
+    /// </para>
+    /// <para>
+    /// Requires <see cref="BrowserCapabilities.NetworkInterception"/> on the parent
+    /// browser.
+    /// </para>
+    /// </remarks>
+    Task RouteAsync(
+        RoutePattern pattern,
+        Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler,
+        CancellationToken cancellationToken = default);
 
     /// <summary>Console messages observed while the page was alive (info/warn/error).</summary>
     IObservable<ConsoleMessage> ConsoleMessages { get; }
@@ -87,38 +105,6 @@ public enum LoadState
 
     /// <summary>No network requests for at least 500 ms (engine-defined idle window).</summary>
     NetworkIdle,
-}
-
-/// <summary>
-/// Asynchronous handler for an intercepted request. Implementations choose to fulfill,
-/// abort, continue, or redirect the request through the provider-neutral
-/// <see cref="IRouteContext"/> surface.
-/// </summary>
-/// <param name="context">Operation surface tied to the intercepted request.</param>
-/// <param name="cancellationToken">Cancellation token.</param>
-public delegate Task RouteHandler(IRouteContext context, CancellationToken cancellationToken);
-
-/// <summary>Operation surface for a single intercepted request handled by a <see cref="RouteHandler"/>.</summary>
-public interface IRouteContext
-{
-    /// <summary>The request URL.</summary>
-    string Url { get; }
-
-    /// <summary>The HTTP method (GET / POST / …).</summary>
-    string Method { get; }
-
-    /// <summary>Request headers (case-insensitive lookup is the provider's responsibility).</summary>
-    IReadOnlyDictionary<string, string> Headers { get; }
-
-    /// <summary>Lets the request continue to the network unmodified.</summary>
-    Task ContinueAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>Aborts the request with the supplied error string (provider-defined codes).</summary>
-    Task AbortAsync(string errorCode = "failed", CancellationToken cancellationToken = default);
-
-    /// <summary>Fulfills the request with a synthetic response.</summary>
-    Task FulfillAsync(int statusCode, IReadOnlyDictionary<string, string>? headers, byte[]? body,
-        CancellationToken cancellationToken = default);
 }
 
 /// <summary>A console message observed in the rendered page.</summary>
