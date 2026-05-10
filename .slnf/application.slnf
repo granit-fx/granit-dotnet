@@ -36,6 +36,8 @@
       "src/Granit.Http.ApiDocumentation/Granit.Http.ApiDocumentation.csproj",
       "src/Granit.Http.ApiVersioning/Granit.Http.ApiVersioning.csproj",
       "src/Granit.Http.ExceptionHandling/Granit.Http.ExceptionHandling.csproj",
+      "src/Granit.Http.Security/Granit.Http.Security.csproj",
+      "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Localization.AI/Granit.Localization.AI.csproj",
       "src/Granit.Localization.Endpoints/Granit.Localization.Endpoints.csproj",

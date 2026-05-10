@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Granit\Granit.csproj" />
+    <ProjectReference Include="..\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
     <ProjectReference Include="..\Granit.MultiTenancy\Granit.MultiTenancy.csproj" />
   </ItemGroup>
 
