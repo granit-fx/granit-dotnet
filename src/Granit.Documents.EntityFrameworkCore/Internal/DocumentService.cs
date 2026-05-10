@@ -652,4 +652,90 @@ internal sealed class DocumentService(
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return document;
     }
+
+    /// <inheritdoc />
+    public async Task<Document?> PermanentlyDeleteAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null || document.Status != DocumentStatus.Trashed)
+        {
+            return null;
+        }
+
+        // Snapshot every version before mutation — soft-delete each blob via
+        // BlobStorage, sum the bytes for the quota release.
+        List<DocumentVersion> versions = await context.DocumentVersions
+            .Where(v => v.DocumentId == document.Id)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        long releasedBytes = versions.Sum(v => v.SizeBytes);
+
+        foreach (DocumentVersion version in versions)
+        {
+            // BlobStorage.DeleteAsync transitions the descriptor to Deleted and physically
+            // removes the S3 object; the audit row is retained per BlobStorage's own
+            // retention policy. Idempotent: re-running is a no-op on already-deleted blobs.
+            await blobStorage
+                .DeleteAsync(
+                    ContainerName,
+                    version.BlobDescriptorId,
+                    deletionReason: $"Granit.Documents permanent delete of document {document.Id}",
+                    cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        document.PermanentlyDelete(releasedBytes, clock.Now);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        if (releasedBytes > 0 && currentTenant.IsAvailable && currentTenant.Id is { } tid)
+        {
+            await quotas.DecrementAsync(tid, releasedBytes, cancellationToken).ConfigureAwait(false);
+        }
+
+        return document;
+    }
+
+    /// <inheritdoc />
+    public async Task<TrashedDocumentPage> ListTrashedAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        IQueryable<Document> query = context.Documents
+            .Where(d => d.Status == DocumentStatus.Trashed);
+
+        long totalCount = await query.LongCountAsync(cancellationToken).ConfigureAwait(false);
+
+        // Materialise the trashed set then sort + page in memory: SQLite cannot translate
+        // ORDER BY on DateTimeOffset, and the trashed set is bounded by the retention
+        // window so the in-memory cost is negligible. Postgres would happily sort the
+        // DateTimeOffset directly, but keeping the pipeline provider-agnostic avoids a
+        // fork in the service for what is fundamentally a trash bin (not a hot path).
+        List<TrashedDocumentRow> all = await query
+            .Select(d => new TrashedDocumentRow(
+                d.Id, d.FolderId, d.Name, d.OwnerUserId, d.TrashedAt!.Value))
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        List<TrashedDocumentRow> rows = [.. all
+            .OrderByDescending(r => r.TrashedAt)
+            .ThenBy(r => r.Id)
+            .Skip(skip)
+            .Take(take)];
+
+        return new TrashedDocumentPage(rows, totalCount);
+    }
 }

@@ -1,15 +1,19 @@
 using Granit.BlobStorage;
+using Granit.Documents;
 using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Dtos;
 using Granit.Documents.Endpoints.Documents.Mapping;
 using Granit.Documents.Endpoints.Permissions;
 using Granit.Documents.Exceptions;
+using Granit.Documents.Options;
+using Granit.Timing;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Documents.Endpoints.Documents.Endpoints;
 
@@ -89,6 +93,18 @@ internal static class DocumentEndpoints
                 "permission", DocumentsPermissions.Documents.Read))
             .Produces<ListDocumentVersionsResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        documents.MapGet("/trash", ListTrashedAsync)
+            .WithName("ListTrashedDocuments")
+            .WithSummary("Lists trashed documents for the current tenant (F8.2).")
+            .WithDescription(
+                "Returns a paged slice of trashed documents ordered by `TrashedAt` "
+                + "descending. Each row carries `daysUntilPermanentDeletion`, derived from "
+                + "the trash retention window (`GranitDocumentsOptions.TrashRetentionDays`, "
+                + "default 30 days). Defaults are `skip=0` and `take=50` (max 200).")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Read))
+            .Produces<ListTrashedDocumentsResponse>();
 
         documents.MapDocumentMutationEndpoints();
 
@@ -213,6 +229,39 @@ internal static class DocumentEndpoints
             statusCode: StatusCodes.Status403Forbidden,
             type: "https://granit.dev/problems/quota-exceeded",
             title: "Tenant storage quota exceeded");
+
+    private static async Task<Ok<ListTrashedDocumentsResponse>> ListTrashedAsync(
+        [FromServices] IDocumentService documents,
+        [FromServices] IClock clock,
+        [FromServices] IOptions<GranitDocumentsOptions> options,
+        CancellationToken cancellationToken,
+        [FromQuery] int? skip = null,
+        [FromQuery] int? take = null)
+    {
+        const int DefaultTake = 50;
+        const int MaxTake = 200;
+
+        int effectiveSkip = Math.Max(0, skip ?? 0);
+        int effectiveTake = Math.Clamp(take ?? DefaultTake, 1, MaxTake);
+
+        TrashedDocumentPage page = await documents
+            .ListTrashedAsync(effectiveSkip, effectiveTake, cancellationToken)
+            .ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+        int retentionDays = options.Value.TrashRetentionDays;
+
+        TrashedDocumentResponse[] mapped = [.. page.Documents.Select(d =>
+        {
+            DateTimeOffset deletionAt = d.TrashedAt.AddDays(retentionDays);
+            int daysLeft = Math.Max(0, (int)Math.Ceiling((deletionAt - now).TotalDays));
+            return new TrashedDocumentResponse(
+                d.Id, d.FolderId, d.Name, d.OwnerUserId, d.TrashedAt, daysLeft);
+        })];
+
+        return TypedResults.Ok(new ListTrashedDocumentsResponse(
+            mapped, page.TotalCount, effectiveSkip, effectiveTake));
+    }
 
     private static async Task<Results<Ok<ListDocumentVersionsResponse>, ProblemHttpResult>> ListVersionsAsync(
         Guid id,

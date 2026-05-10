@@ -88,6 +88,22 @@ internal static class DocumentMutationEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
+        documents.MapDelete("/{id:guid}/permanent", PermanentlyDeleteAsync)
+            .WithName("PermanentlyDeleteDocument")
+            .WithSummary("Permanently deletes a trashed document (F8.2).")
+            .WithDescription(
+                "Soft-deletes every version's `BlobDescriptor` (the bytes are removed; "
+                + "the audit row is retained per `Granit.BlobStorage`'s 3-year retention), "
+                + "decrements the tenant's storage quota by the released bytes, and "
+                + "promotes the document to `Status = PermanentlyDeleted` (tombstone for "
+                + "the GDPR / ISO 27001 audit trail). Emits `DocumentPermanentlyDeletedEvent`. "
+                + "Returns 204 on success, 404 when the document is missing or not "
+                + "currently trashed.")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces(StatusCodes.Status204NoContent)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         return documents;
     }
 
@@ -208,6 +224,23 @@ internal static class DocumentMutationEndpoints
         {
             return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
+    }
+
+    private static async Task<Results<NoContent, ProblemHttpResult>> PermanentlyDeleteAsync(
+        Guid id,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        Document? document = await documents
+            .PermanentlyDeleteAsync(id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null)
+        {
+            return TypedResults.Problem(
+                $"Document '{id}' was not found or is not currently trashed.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+        return TypedResults.NoContent();
     }
 
     private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> RestoreAsync(

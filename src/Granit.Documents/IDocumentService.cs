@@ -157,4 +157,23 @@ public interface IDocumentService
     /// folder is itself trashed (callers must restore the folder first).
     /// </summary>
     Task<Document?> RestoreAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Permanently deletes a trashed document (F8.2). Soft-deletes every
+    /// <c>DocumentVersion</c>'s <c>BlobDescriptor</c> through
+    /// <see cref="IBlobStorage.DeleteAsync"/> (the bytes are removed; the audit row
+    /// stays for the configured retention), decrements the tenant's storage quota, and
+    /// promotes the document to <c>Status = PermanentlyDeleted</c>. Returns the deleted
+    /// aggregate, or <c>null</c> when not found / not trashed.
+    /// </summary>
+    Task<Document?> PermanentlyDeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns a paged slice of the tenant's trashed documents (F8.2), ordered by
+    /// <c>TrashedAt</c> descending so the most recently trashed appear first.
+    /// </summary>
+    Task<TrashedDocumentPage> ListTrashedAsync(
+        int skip,
+        int take,
+        CancellationToken cancellationToken = default);
 }

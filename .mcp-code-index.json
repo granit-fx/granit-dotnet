@@ -19576,6 +19576,24 @@
       ]
     },
     {
+      "name": "TrashedDocumentPage",
+      "fqn": "Granit.Documents.Domain.TrashedDocumentPage",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/TrashedDocumentPage.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "TrashedDocumentRow",
+      "fqn": "Granit.Documents.Domain.TrashedDocumentRow",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/TrashedDocumentPage.cs",
+      "line": 17,
+      "members": []
+    },
+    {
       "name": "AppendVersionRequest",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.AppendVersionRequest",
       "kind": "record",
@@ -19657,6 +19675,15 @@
       "members": []
     },
     {
+      "name": "ListTrashedDocumentsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListTrashedDocumentsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/TrashedDocumentResponse.cs",
+      "line": 24,
+      "members": []
+    },
+    {
       "name": "MoveDocumentRequest",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.MoveDocumentRequest",
       "kind": "record",
@@ -19672,6 +19699,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/RenameDocumentRequest.cs",
       "line": 18,
+      "members": []
+    },
+    {
+      "name": "TrashedDocumentResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.TrashedDocumentResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/TrashedDocumentResponse.cs",
+      "line": 15,
       "members": []
     },
     {
@@ -20018,6 +20054,15 @@
       "members": []
     },
     {
+      "name": "DocumentPermanentlyDeletedEvent",
+      "fqn": "Granit.Documents.Events.DocumentPermanentlyDeletedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentPermanentlyDeletedEvent.cs",
+      "line": 18,
+      "members": []
+    },
+    {
       "name": "DocumentRenamedEvent",
       "fqn": "Granit.Documents.Events.DocumentRenamedEvent",
       "kind": "record",
@@ -20257,6 +20302,18 @@
           "kind": "method",
           "signature": "RestoreAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<Document?>"
+        },
+        {
+          "name": "PermanentlyDeleteAsync",
+          "kind": "method",
+          "signature": "PermanentlyDeleteAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
+        },
+        {
+          "name": "ListTrashedAsync",
+          "kind": "method",
+          "signature": "ListTrashedAsync(int skip, int take, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TrashedDocumentPage>"
         }
       ]
     },

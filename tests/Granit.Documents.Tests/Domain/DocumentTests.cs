@@ -293,4 +293,47 @@ public sealed class DocumentTests
 
         Should.Throw<InvalidOperationException>(() => doc.Restore());
     }
+
+    [Fact]
+    public void PermanentlyDelete_FromTrash_BecomesTombstone_AndEmitsEvent()
+    {
+        Folder root = NewRoot();
+        Folder folder = NewFolder(root, "F");
+        var doc = Document.Create(Guid.NewGuid(), folder, OwnerId, "F.pdf");
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        doc.Trash(now);
+
+        doc.PermanentlyDelete(releasedBytes: 4096, deletedAt: now.AddSeconds(1));
+
+        doc.Status.ShouldBe(DocumentStatus.PermanentlyDeleted);
+        Granit.Documents.Events.DocumentPermanentlyDeletedEvent ev = doc.DomainEvents
+            .OfType<Granit.Documents.Events.DocumentPermanentlyDeletedEvent>()
+            .ShouldHaveSingleItem();
+        ev.ReleasedBytes.ShouldBe(4096);
+        ev.DeletedAt.ShouldBe(now.AddSeconds(1));
+    }
+
+    [Fact]
+    public void PermanentlyDelete_Active_Throws()
+    {
+        Folder root = NewRoot();
+        Folder folder = NewFolder(root, "F");
+        var doc = Document.Create(Guid.NewGuid(), folder, OwnerId, "F.pdf");
+
+        Should.Throw<InvalidOperationException>(() =>
+            doc.PermanentlyDelete(0, DateTimeOffset.UtcNow));
+    }
+
+    [Fact]
+    public void PermanentlyDelete_AlreadyPermanentlyDeleted_Throws()
+    {
+        Folder root = NewRoot();
+        Folder folder = NewFolder(root, "F");
+        var doc = Document.Create(Guid.NewGuid(), folder, OwnerId, "F.pdf");
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        doc.Trash(now);
+        doc.PermanentlyDelete(0, now);
+
+        Should.Throw<InvalidOperationException>(() => doc.PermanentlyDelete(0, now));
+    }
 }

@@ -248,6 +248,34 @@ public sealed class Document : AggregateRoot, IMultiTenant, IEmitEntityLifecycle
         AddDomainEvent(new DocumentRestoredEvent(Id, TenantId));
     }
 
+    /// <summary>
+    /// Promotes a trashed document to <see cref="DocumentStatus.PermanentlyDeleted"/>
+    /// (F8.2). The aggregate row stays for the GDPR / ISO 27001 audit trail; the bytes
+    /// are transitioned to <c>BlobStatus.Deleted</c> by the service layer.
+    /// </summary>
+    /// <param name="releasedBytes">
+    /// Sum of <see cref="DocumentVersion.SizeBytes"/> released by this deletion — used by
+    /// the emitted <see cref="DocumentPermanentlyDeletedEvent"/> to drive the F7 quota
+    /// decrement downstream consumers may want to react to.
+    /// </param>
+    /// <param name="deletedAt">UTC instant the deletion is recorded.</param>
+    /// <exception cref="InvalidOperationException">
+    /// When the document is not currently trashed (only trashed documents can be
+    /// permanently deleted; active documents must be trashed first).
+    /// </exception>
+    public void PermanentlyDelete(long releasedBytes, DateTimeOffset deletedAt)
+    {
+        if (Status != DocumentStatus.Trashed)
+        {
+            throw new InvalidOperationException(
+                $"Document {Id} cannot be permanently deleted (status: {Status}). Trash it first.");
+        }
+
+        Status = DocumentStatus.PermanentlyDeleted;
+        RowVersion++;
+        AddDomainEvent(new DocumentPermanentlyDeletedEvent(Id, TenantId, deletedAt, releasedBytes));
+    }
+
     private void ThrowIfNotActive(string operation)
     {
         if (Status != DocumentStatus.Active)
