@@ -146,6 +146,7 @@
       "src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj",
       "src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj",
       "src/Granit.Http.UrlSafety/Granit.Http.UrlSafety.csproj",
+      "src/Granit.IO/Granit.IO.csproj",
       "src/Granit.Identity.Endpoints/Granit.Identity.Endpoints.csproj",
       "src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj",
       "src/Granit.Identity.Federated.Cognito.BackgroundJobs/Granit.Identity.Federated.Cognito.BackgroundJobs.csproj",

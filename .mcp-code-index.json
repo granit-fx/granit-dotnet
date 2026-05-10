@@ -1287,6 +1287,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.IO",
+      "deps": [
+        "Granit",
+        "Granit.MultiTenancy"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity",
       "deps": [
         "Granit",
@@ -28122,6 +28130,146 @@
           "kind": "method",
           "signature": "Invalid(UrlSafetyViolation v)",
           "returnType": "UrlSafetyResult"
+        }
+      ]
+    },
+    {
+      "name": "IoMetrics",
+      "fqn": "Granit.IO.Diagnostics.IoMetrics",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Diagnostics/IoMetrics.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "RecordDeleted",
+          "kind": "method",
+          "signature": "RecordDeleted(string category, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordBytes",
+          "kind": "method",
+          "signature": "RecordBytes(string category, string? tenantId, long bytes)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordJanitorPurged",
+          "kind": "method",
+          "signature": "RecordJanitorPurged(string reason)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IoServiceCollectionExtensions",
+      "fqn": "Granit.IO.Extensions.IoServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Extensions/IoServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitTempFiles",
+          "kind": "method",
+          "signature": "AddGranitTempFiles(this IServiceCollection services, Action<TempFileOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitIoModule",
+      "fqn": "Granit.IO.GranitIoModule",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/GranitIoModule.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ITempFile",
+      "fqn": "Granit.IO.ITempFile",
+      "kind": "interface",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/ITempFile.cs",
+      "line": 22,
+      "members": []
+    },
+    {
+      "name": "ITempFileFactory",
+      "fqn": "Granit.IO.ITempFileFactory",
+      "kind": "interface",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/ITempFileFactory.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "CreateAsync",
+          "kind": "method",
+          "signature": "CreateAsync(string category, string extension, CancellationToken ct = default)",
+          "returnType": "ValueTask<ITempFile>"
+        }
+      ]
+    },
+    {
+      "name": "IoLocalizationResource",
+      "fqn": "Granit.IO.IoLocalizationResource",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/IoLocalizationResource.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "TempFileOptions",
+      "fqn": "Granit.IO.Options.TempFileOptions",
+      "kind": "class",
+      "project": "Granit.IO",
+      "file": "src/Granit.IO/Options/TempFileOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RootDirectory",
+          "kind": "property",
+          "signature": "string? RootDirectory",
+          "returnType": "string?"
+        },
+        {
+          "name": "FromHours",
+          "kind": "method",
+          "signature": "FromHours(1)",
+          "returnType": "TimeSpan MaxLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "MaxSizeBytes",
+          "kind": "property",
+          "signature": "long MaxSizeBytes",
+          "returnType": "long"
+        },
+        {
+          "name": "TenantPartition",
+          "kind": "property",
+          "signature": "bool TenantPartition",
+          "returnType": "bool"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan JanitorInterval { get; set; } = TimeSpan."
+        },
+        {
+          "name": "RunJanitor",
+          "kind": "property",
+          "signature": "bool RunJanitor",
+          "returnType": "bool"
         }
       ]
     },
