@@ -19303,6 +19303,47 @@
       ]
     },
     {
+      "name": "DocumentPrincipal",
+      "fqn": "Granit.Documents.Authorization.DocumentPrincipal",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/DocumentPrincipal.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "ForUser",
+          "kind": "method",
+          "signature": "ForUser(Guid userId)",
+          "returnType": "DocumentPrincipal"
+        }
+      ]
+    },
+    {
+      "name": "EffectivePermissionLevel",
+      "fqn": "Granit.Documents.Authorization.EffectivePermissionLevel",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/EffectivePermissionLevel.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "IEffectivePermissionResolver",
+      "fqn": "Granit.Documents.Authorization.IEffectivePermissionResolver",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/IEffectivePermissionResolver.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "GetDocumentPermissionAsync",
+          "kind": "method",
+          "signature": "GetDocumentPermissionAsync(Guid documentId, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EffectivePermissionLevel>"
+        }
+      ]
+    },
+    {
       "name": "DocumentsMetrics",
       "fqn": "Granit.Documents.Diagnostics.DocumentsMetrics",
       "kind": "class",
@@ -36601,7 +36642,7 @@
       "kind": "interface",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/Abstractions/INotificationDeliveryWriter.cs",
-      "line": 13,
+      "line": 19,
       "members": [
         {
           "name": "HasBeenDeliveredAsync",
@@ -36610,9 +36651,15 @@
           "returnType": "Task<bool>"
         },
         {
-          "name": "RecordAsync",
+          "name": "TryAcquireDeliveryAttemptAsync",
           "kind": "method",
-          "signature": "RecordAsync(NotificationDeliveryAttempt attempt, CancellationToken cancellationToken = default)",
+          "signature": "TryAcquireDeliveryAttemptAsync(NotificationDeliveryAttempt claim, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "CompleteDeliveryAttemptAsync",
+          "kind": "method",
+          "signature": "CompleteDeliveryAttemptAsync(Guid deliveryId, bool success, long durationMilliseconds, string? errorMessage, CancellationToken cancellationToken = default)",
           "returnType": "Task"
         },
         {
@@ -36933,7 +36980,7 @@
       "kind": "class",
       "project": "Granit.Notifications.Abstractions",
       "file": "src/Granit.Notifications.Abstractions/Domain/NotificationDeliveryAttempt.cs",
-      "line": 9,
+      "line": 19,
       "members": [
         {
           "name": "DeliveryId",

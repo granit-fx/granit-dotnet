@@ -57,6 +57,11 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // in on top in subsequent stories.
         builder.Services.AddScoped<IDocumentShareService, DocumentShareService>();
 
+        // Effective-permission resolver (F6.2): resolves a DocumentPrincipal against a
+        // document via the ADR-052 path-prefix permission resolution model. F6.3 will
+        // wrap this with FusionCache for hot reads.
+        builder.Services.AddScoped<Authorization.IEffectivePermissionResolver, EffectivePermissionResolver>();
+
         return builder;
     }
 }
