@@ -61,6 +61,10 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // in on top in subsequent stories.
         builder.Services.AddScoped<IDocumentShareService, DocumentShareService>();
 
+        // Tenant storage quota service (F7.1): lazy creation + atomic increment / decrement.
+        // Enforcement on upload (F7.2) + admin read endpoint (F7.3) layer on top.
+        builder.Services.AddScoped<ITenantQuotaService, TenantQuotaService>();
+
         // Effective-permission resolver (F6.2 + F6.3). The concrete EffectivePermissionResolver
         // is registered first so the cache decorator can delegate to it; the public
         // IEffectivePermissionResolver registration depends on whether the FusionCache layer

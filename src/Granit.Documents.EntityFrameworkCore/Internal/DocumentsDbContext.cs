@@ -38,6 +38,9 @@ internal sealed class DocumentsDbContext(
     /// <summary>ACL grants on folders and documents (F6.1 — see ADR-052 §Permission resolution model).</summary>
     public DbSet<DocumentShare> DocumentShares { get; set; } = null!;
 
+    /// <summary>One row per tenant tracking documents storage usage versus the limit (F7.1).</summary>
+    public DbSet<TenantStorageQuota> TenantStorageQuotas { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -21,6 +21,7 @@ public static class DocumentsModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentVersionConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentShareConfiguration());
+        modelBuilder.ApplyConfiguration(new TenantStorageQuotaConfiguration());
         return modelBuilder;
     }
 }

@@ -19560,6 +19560,22 @@
       "members": []
     },
     {
+      "name": "TenantStorageQuota",
+      "fqn": "Granit.Documents.Domain.TenantStorageQuota",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/TenantStorageQuota.cs",
+      "line": 26,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, long limitBytes, DateTimeOffset now)",
+          "returnType": "TenantStorageQuota"
+        }
+      ]
+    },
+    {
       "name": "AppendVersionRequest",
       "fqn": "Granit.Documents.Endpoints.Documents.Dtos.AppendVersionRequest",
       "kind": "record",
@@ -19955,6 +19971,40 @@
       "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsEntityFrameworkCoreModule.cs",
       "line": 28,
       "members": []
+    },
+    {
+      "name": "ITenantQuotaService",
+      "fqn": "Granit.Documents.EntityFrameworkCore.Internal.ITenantQuotaService",
+      "kind": "interface",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/Internal/ITenantQuotaService.cs",
+      "line": 17,
+      "members": [
+        {
+          "name": "EnsureTenantQuotaAsync",
+          "kind": "method",
+          "signature": "EnsureTenantQuotaAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantStorageQuota>"
+        },
+        {
+          "name": "IncrementAsync",
+          "kind": "method",
+          "signature": "IncrementAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DecrementAsync",
+          "kind": "method",
+          "signature": "DecrementAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetAsync",
+          "kind": "method",
+          "signature": "GetAsync(Guid tenantId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<TenantStorageQuota?>"
+        }
+      ]
     },
     {
       "name": "DocumentCreatedEvent",
