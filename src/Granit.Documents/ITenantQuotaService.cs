@@ -52,4 +52,20 @@ public interface ITenantQuotaService
     /// zero is a no-op that always returns <c>true</c>.
     /// </remarks>
     Task<bool> TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically increments <see cref="TenantStorageQuota.RenditionUsageBytes"/> by
+    /// <paramref name="delta"/>. Mirrors <see cref="IncrementAsync"/> for the rendition-side
+    /// counter — never gated by <see cref="TenantStorageQuota.LimitBytes"/>, since renditions
+    /// are framework-generated derivatives and rejecting them would break feature parity.
+    /// </summary>
+    Task IncrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically decrements <see cref="TenantStorageQuota.RenditionUsageBytes"/> by
+    /// <paramref name="delta"/>, clamping at zero. Invoked when renditions are dropped
+    /// (cascading permanent-delete of the parent document, or when an old rendition is
+    /// superseded by a fresh one for a newer version).
+    /// </summary>
+    Task DecrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default);
 }

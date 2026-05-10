@@ -29,9 +29,9 @@ internal sealed class DocumentService(
     /// <summary>
     /// Container name used for every blob created by Granit.Documents. Hosts can layer
     /// per-tenant prefixes via <c>IBlobKeyStrategy</c> in <c>BlobStorage</c>; the
-    /// container itself is constant.
+    /// container itself is constant. Mirrors <see cref="DocumentBlobContainers.Documents"/>.
     /// </summary>
-    internal const string ContainerName = "documents";
+    internal const string ContainerName = DocumentBlobContainers.Documents;
 
     /// <inheritdoc />
     public async Task<PresignedUploadTicket> RequestUploadTicketAsync(
@@ -204,6 +204,7 @@ internal sealed class DocumentService(
                 version.Id,
                 version.VersionNumber,
                 version.BlobDescriptorId,
+                version.ContentType,
                 version.SizeBytes,
                 version.UploadedByUserId),
             cancellationToken).ConfigureAwait(false);
@@ -387,6 +388,7 @@ internal sealed class DocumentService(
                 version.Id,
                 version.VersionNumber,
                 version.BlobDescriptorId,
+                version.ContentType,
                 version.SizeBytes,
                 version.UploadedByUserId),
             cancellationToken).ConfigureAwait(false);

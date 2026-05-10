@@ -15,7 +15,7 @@ namespace Granit.Authentication.ApiKeys.BackgroundJobs;
 [DependsOn(
     typeof(GranitAuthenticationApiKeysModule),
     typeof(GranitBackgroundJobsModule))]
-public sealed class GranitApiKeysBackgroundJobsModule : GranitModule
+public sealed class GranitAuthenticationApiKeysBackgroundJobsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

@@ -107,14 +107,18 @@ public sealed partial class NotificationDeliveryHandler(
         }
         catch (OperationCanceledException oce)
         {
-            // Claim already persisted — finalize so the row cannot block transport retries as stuck "pending".
+            // Claim already persisted — finalize so the row cannot block transport retries as
+            // stuck "pending". MUST use CancellationToken.None: the inbound token is already
+            // cancelled, and propagating it would cause ExecuteUpdateAsync to throw immediately,
+            // leaving the audit row at IsSuccess=null and recreating the very stuck-pending state
+            // this handler is trying to avoid.
             stopwatch.Stop();
             await TryFinalizeAuditAsync(
                 command,
                 success: false,
                 stopwatch.ElapsedMilliseconds,
                 errorMessage: oce.Message,
-                cancellationToken).ConfigureAwait(false);
+                CancellationToken.None).ConfigureAwait(false);
             throw;
         }
         catch (Exception ex)
