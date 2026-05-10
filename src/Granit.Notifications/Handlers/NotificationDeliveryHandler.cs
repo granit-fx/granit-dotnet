@@ -35,7 +35,7 @@ public sealed partial class NotificationDeliveryHandler(
         activity?.SetTag("notifications.notification_id", command.NotificationId.ToString());
         activity?.SetTag("notifications.type", command.NotificationTypeName);
 
-        // Idempotency: skip if this delivery was already successfully sent (Wolverine retry safety)
+        // Idempotency: skip if this delivery was already successfully finalized (retry safety).
         if (await deliveryWriter.HasBeenDeliveredAsync(command.DeliveryId, cancellationToken)
                 .ConfigureAwait(false))
         {
@@ -48,6 +48,27 @@ public sealed partial class NotificationDeliveryHandler(
         if (channel is null)
         {
             LogChannelNotRegistered(command.ChannelName, command.DeliveryId, command.NotificationId);
+            return;
+        }
+
+        NotificationDeliveryAttempt claim = new()
+        {
+            Id = guidGenerator.Create(),
+            DeliveryId = command.DeliveryId,
+            NotificationId = command.NotificationId,
+            NotificationTypeName = command.NotificationTypeName,
+            ChannelName = command.ChannelName,
+            RecipientUserId = command.RecipientUserId,
+            TenantId = command.TenantId,
+            OccurredAt = clock.Now,
+            DurationMs = 0,
+            IsSuccess = null,
+            ErrorMessage = null,
+        };
+
+        if (!await deliveryWriter.TryAcquireDeliveryAttemptAsync(claim, cancellationToken).ConfigureAwait(false))
+        {
+            LogConcurrentDeliverySkipped(command.ChannelName, command.DeliveryId, command.NotificationId);
             return;
         }
 
@@ -84,7 +105,19 @@ public sealed partial class NotificationDeliveryHandler(
 
             LogNotificationDelivered(command.ChannelName, command.DeliveryId, command.NotificationId);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch (OperationCanceledException oce)
+        {
+            // Claim already persisted — finalize so the row cannot block transport retries as stuck "pending".
+            stopwatch.Stop();
+            await TryFinalizeAuditAsync(
+                command,
+                success: false,
+                stopwatch.ElapsedMilliseconds,
+                errorMessage: oce.Message,
+                cancellationToken).ConfigureAwait(false);
+            throw;
+        }
+        catch (Exception ex)
         {
             stopwatch.Stop();
             activity?.SetTag("notifications.success", false);
@@ -102,36 +135,43 @@ public sealed partial class NotificationDeliveryHandler(
                 $"Failed to deliver notification {command.NotificationId} via {command.ChannelName}", ex));
         }
 
-        // Record the delivery attempt AFTER the send — audit failures must NOT
-        // trigger a retry of the send (which would cause duplicate emails).
-        try
-        {
-            await deliveryWriter.RecordAsync(new NotificationDeliveryAttempt
-            {
-                Id = guidGenerator.Create(),
-                DeliveryId = command.DeliveryId,
-                NotificationId = command.NotificationId,
-                NotificationTypeName = command.NotificationTypeName,
-                ChannelName = command.ChannelName,
-                RecipientUserId = command.RecipientUserId,
-                TenantId = command.TenantId,
-                OccurredAt = clock.Now,
-                DurationMs = stopwatch.ElapsedMilliseconds,
-                IsSuccess = sent,
-                ErrorMessage = errorMessage,
-            }, cancellationToken).ConfigureAwait(false);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            // Audit persistence failure must not mask a successful send or trigger retry.
-            LogAuditRecordFailed(ex, command.ChannelName, command.DeliveryId);
-        }
+        await TryFinalizeAuditAsync(
+            command,
+            sent,
+            stopwatch.ElapsedMilliseconds,
+            errorMessage,
+            cancellationToken).ConfigureAwait(false);
 
         failure?.Throw();
     }
 
+    private async Task TryFinalizeAuditAsync(
+        DeliverNotificationCommand command,
+        bool success,
+        long durationMilliseconds,
+        string? errorMessage,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await deliveryWriter.CompleteDeliveryAttemptAsync(
+                command.DeliveryId,
+                success,
+                durationMilliseconds,
+                errorMessage,
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogAuditFinalizeFailed(ex, command.ChannelName, command.DeliveryId);
+        }
+    }
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "Duplicate delivery {DeliveryId} skipped for notification {NotificationId} via '{ChannelName}' (already delivered)")]
     private partial void LogDuplicateDeliverySkipped(string channelName, Guid deliveryId, Guid notificationId);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Delivery {DeliveryId} for notification {NotificationId} via '{ChannelName}' skipped — another worker claimed or is executing this outbound attempt")]
+    private partial void LogConcurrentDeliverySkipped(string channelName, Guid deliveryId, Guid notificationId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Notification channel '{ChannelName}' is not registered — skipping delivery {DeliveryId} for notification {NotificationId}")]
     private partial void LogChannelNotRegistered(string channelName, Guid deliveryId, Guid notificationId);
@@ -142,6 +182,6 @@ public sealed partial class NotificationDeliveryHandler(
     [LoggerMessage(Level = LogLevel.Warning, Message = "Notification delivery failed via '{ChannelName}' for delivery {DeliveryId} notification {NotificationId}")]
     private partial void LogNotificationDeliveryFailed(Exception exception, string channelName, Guid deliveryId, Guid notificationId);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to record delivery audit for '{ChannelName}' delivery {DeliveryId} — the notification was sent but the audit trail is incomplete")]
-    private partial void LogAuditRecordFailed(Exception exception, string channelName, Guid deliveryId);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to finalize delivery audit for '{ChannelName}' delivery {DeliveryId} — the outbound message may already have been transmitted")]
+    private partial void LogAuditFinalizeFailed(Exception exception, string channelName, Guid deliveryId);
 }
