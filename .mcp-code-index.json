@@ -28415,8 +28415,15 @@
       "kind": "class",
       "project": "Granit.Identity.EntityFrameworkCore",
       "file": "src/Granit.Identity.EntityFrameworkCore/GranitIdentityDbProperties.cs",
-      "line": 8,
-      "members": []
+      "line": 15,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
     },
     {
       "name": "GranitIdentityEntityFrameworkCoreModule",

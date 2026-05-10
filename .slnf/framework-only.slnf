@@ -114,6 +114,7 @@
       "src/Granit.Http.Resilience/Granit.Http.Resilience.csproj",
       "src/Granit.Http.ResponseCompression/Granit.Http.ResponseCompression.csproj",
       "src/Granit.Http.SecurityHeaders/Granit.Http.SecurityHeaders.csproj",
+      "src/Granit.Identity.EntityFrameworkCore/Granit.Identity.EntityFrameworkCore.csproj",
       "src/Granit.Identity/Granit.Identity.csproj",
       "src/Granit.Invoicing.Abstractions/Granit.Invoicing.Abstractions.csproj",
       "src/Granit.Invoicing.BackgroundJobs/Granit.Invoicing.BackgroundJobs.csproj",
