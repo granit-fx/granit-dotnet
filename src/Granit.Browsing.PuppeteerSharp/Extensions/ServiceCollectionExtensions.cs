@@ -18,6 +18,11 @@ public static class ServiceCollectionExtensions
     /// <see cref="IAccessibilityCapability"/>). Also wires the first-run Chromium
     /// provisioning service.
     /// </summary>
+    /// <remarks>
+    /// A single host registers exactly one Granit.Browsing provider — calling both this
+    /// extension and <c>AddGranitBrowsingPlaywright</c> in the same DI container is not
+    /// supported (the second registration is silently dropped by <c>TryAdd</c>).
+    /// </remarks>
     /// <param name="services">DI service collection.</param>
     /// <param name="configureBrowsing">Optional override for the engine-agnostic <see cref="GranitBrowsingOptions"/>.</param>
     /// <param name="configurePuppeteer">Optional override for the PuppeteerSharp-specific <see cref="PuppeteerSharpOptions"/>.</param>
