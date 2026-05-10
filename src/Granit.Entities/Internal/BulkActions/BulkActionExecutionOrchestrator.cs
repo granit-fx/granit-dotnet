@@ -12,7 +12,7 @@ namespace Granit.Entities.Internal.BulkActions;
 /// </summary>
 internal sealed class BulkActionExecutionOrchestrator
 {
-    public Task<BulkActionResult> ExecuteAsync<TEntity>(
+    public static Task<BulkActionResult> ExecuteAsync<TEntity>(
         EntityActionDescriptor descriptor,
         IReadOnlyList<string> entityIds,
         JsonElement payload,
