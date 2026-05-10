@@ -1,0 +1,228 @@
+---
+title: "Adding Authentication with Keycloak in Granit"
+date: 2026-05-06
+authors:
+  - jfmeyers
+tags:
+  - tutorial
+  - security
+  - api
+description: "Wire Keycloak JWT Bearer authentication into a Granit API in five minutes — claims transformation, role mapping, back-channel logout, and an Admin authorization policy, all from one DependsOn."
+excerpt: >
+  Wire Keycloak JWT Bearer authentication into a Granit API in five minutes —
+  claims transformation, role mapping, back-channel logout, and an Admin
+  authorization policy, all from one DependsOn.
+---
+
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
+Keycloak is the default open-source identity provider for self-hosted .NET deployments. The JWT structure it issues, however, does not look like an ASP.NET Core developer expects: roles live in `realm_access.roles` or `resource_access.{client}.roles`, never in the `role` claim. The `name` claim is the human-readable display name, not a stable identifier. Without translation, `[Authorize(Roles = "admin")]` returns 403 even with a valid admin token.
+
+`Granit.Authentication.JwtBearer.Keycloak` is the thin module that handles this. One `[DependsOn]`, one config block — JWT validation, claims transformation, back-channel logout, and an `Admin` policy all wire up. This article walks through the full setup.
+
+## What you get
+
+- **JWT Bearer validation** against your Keycloak realm's discovery document.
+- **Claims transformation** — `realm_access.roles` and `resource_access.{ClientId}.roles` mapped to `ClaimTypes.Role` so `[Authorize(Roles = "admin")]` works.
+- **NameClaimType = `preferred_username`** — `User.Identity.Name` returns the Keycloak username instead of the GUID `sub`.
+- **Back-channel logout** — when a session is revoked at Keycloak, your API rejects the token immediately.
+- **Pluggable role source** — switch between realm and client roles via a single config key.
+
+## The Keycloak side
+
+You need three things in your realm:
+
+1. A **client** for your API (`my-backend` in the examples below). Set `Access Type: confidential` if you'll need a client secret, otherwise `bearer-only`.
+2. The **realm or client roles** your API will check (`admin`, `doctor`, `support`...).
+3. **Role assignments** for your test users.
+
+If you also have a public client (SPA, mobile app), configure it separately to obtain tokens — the API itself only validates them.
+
+## Wire it into your Granit module
+
+```csharp title="AppModule.cs"
+[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]
+public sealed class AppModule : GranitModule
+{
+    public override void OnApplicationInitialization(
+        ApplicationInitializationContext context)
+    {
+        context.App.UseAuthentication();
+        context.App.UseAuthorization();
+
+        // Optional: enables OIDC back-channel logout
+        context.App.MapGranitBackChannelLogout();
+    }
+}
+```
+
+That is the entire C# setup. The module declares `[DependsOn(GranitAuthenticationJwtBearerModule)]` itself, so the generic JWT Bearer middleware is registered transitively.
+
+## Configure the realm
+
+```json title="appsettings.json"
+{
+  "Authentication": {
+    "Authority": "https://keycloak.example.com/realms/clinic",
+    "Audience": "my-backend",
+    "RequireHttpsMetadata": true,
+    "BackChannelLogout": {
+      "Enabled": true,
+      "EndpointPath": "/auth/back-channel-logout",
+      "SessionRevocationTtl": "01:00:00"
+    }
+  },
+  "Keycloak": {
+    "Authority": "https://keycloak.example.com/realms/clinic",
+    "ClientId": "my-backend",
+    "RoleClaimsSource": "realm_access"
+  }
+}
+```
+
+The `Keycloak` section overrides the generic JWT Bearer values via `PostConfigure<JwtBearerOptions>`. You can keep both blocks or set everything under `Keycloak` — the module reads from there at resolution time.
+
+| Key                    | Purpose                                                |
+| ---------------------- | ------------------------------------------------------ |
+| `Authority`            | OIDC issuer URL — the realm endpoint                   |
+| `ClientId`             | Keycloak client name — defaults the audience           |
+| `Audience`             | Expected `aud` claim (defaults to `ClientId`)          |
+| `RoleClaimsSource`     | `realm_access` (default) or `resource_access`          |
+| `RequireHttpsMetadata` | Set to `false` only for local dev with HTTP Keycloak   |
+
+:::caution
+Never store `ClientSecret` in plain text. Granit integrates with HashiCorp Vault and AWS Secrets Manager — point the value at a secret reference (`vault:secret/data/keycloak#client-secret`) and let the configuration layer resolve it at startup.
+:::
+
+## What the claims transformation does
+
+A typical Keycloak access token payload looks like this:
+
+```json
+{
+  "sub": "8f45a91b-3c12-4f6d-a5e0-3c9c1e1f0a44",
+  "preferred_username": "alice@clinic.example.com",
+  "realm_access": {
+    "roles": ["admin", "doctor"]
+  },
+  "resource_access": {
+    "my-backend": {
+      "roles": ["manage-patients"]
+    }
+  }
+}
+```
+
+`KeycloakClaimsTransformation` runs on every authenticated request. It reads the JSON `realm_access.roles` array (or `resource_access.{ClientId}.roles` if you set `RoleClaimsSource = "resource_access"`) and emits one `ClaimTypes.Role` per entry:
+
+```csharp
+// After transformation, the principal carries:
+new Claim(ClaimTypes.Role, "admin")
+new Claim(ClaimTypes.Role, "doctor")
+new Claim(ClaimTypes.Role, "manage-patients") // if RoleClaimsSource = resource_access
+```
+
+The standard ASP.NET Core authorization stack now works:
+
+```csharp title="PatientEndpoints.cs"
+patients.MapGet("/", ListPatientsAsync)
+    .RequireAuthorization() // Any authenticated user
+    .WithName("ListPatients");
+
+patients.MapDelete("/{id:guid}", DeletePatientAsync)
+    .RequireAuthorization(policy => policy.RequireRole("admin"))
+    .WithName("DeletePatient");
+```
+
+## Realm roles vs client roles — which to use?
+
+| Source            | When                                                              | Trade-off                                                    |
+| ----------------- | ----------------------------------------------------------------- | ------------------------------------------------------------ |
+| `realm_access`    | Roles meaningful across the whole realm (e.g. `admin`, `support`) | Simpler, but every API in the realm sees the same role names |
+| `resource_access` | Roles scoped to one API (e.g. `manage-patients` on `my-backend`)  | Better isolation, more administrative work in Keycloak       |
+
+For multi-API realms, **prefer `resource_access`**. It scopes role names to your client, so a `manage-patients` role on the clinic API does not collide with a `manage-patients` role on a billing API.
+
+## Reading the current user
+
+`Granit.Authentication.JwtBearer` registers `ICurrentUserService` — a clean abstraction over `IHttpContextAccessor` that you inject anywhere:
+
+```csharp title="AuditService.cs"
+public class AuditService(ICurrentUserService currentUser, IClock clock)
+{
+    public AuditEntry Capture(string action)
+    {
+        return new AuditEntry
+        {
+            UserId = currentUser.UserId,           // sub claim
+            UserName = currentUser.UserName,        // preferred_username
+            Roles = currentUser.Roles.ToArray(),    // ClaimTypes.Role values
+            OccurredAt = clock.Now,
+            Action = action,
+        };
+    }
+}
+```
+
+Tests substitute `ICurrentUserService` with a fake — no `HttpContext` plumbing.
+
+## Back-channel logout — closing the gap
+
+Token expiry is not enough. If an admin revokes a user at the Keycloak admin console, that user's token remains valid until it expires, sometimes 30 minutes later. For regulated environments (healthcare, finance), that gap is unacceptable.
+
+OIDC defines [back-channel logout](https://openid.net/specs/openid-connect-backchannel-1_0.html) for exactly this. Keycloak POSTs a signed logout token to your API; you record the revoked session in distributed cache and reject any subsequent token bound to it.
+
+Granit ships the endpoint and the validation:
+
+```csharp
+context.App.MapGranitBackChannelLogout();
+```
+
+This wires `POST /auth/back-channel-logout` (anonymous — Keycloak calls it directly), validates the logout token signature against the realm JWKS, extracts the `sid` claim, and stores it in `IDistributedCache` for `SessionRevocationTtl`. The JWT Bearer events handler checks this cache on every authenticated request and returns 401 for revoked sessions.
+
+In the Keycloak admin console, configure your client's **Backchannel Logout URL** to `https://your-api.example.com/auth/back-channel-logout`.
+
+## Try it locally
+
+The fastest path to a working setup:
+
+```bash
+docker run --rm -p 8080:8080 \
+  -e KEYCLOAK_ADMIN=admin \
+  -e KEYCLOAK_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak:25.0 start-dev
+```
+
+Open `http://localhost:8080`, create a realm `clinic`, a client `my-backend`, a role `admin`, and a user with that role. Then point your API at it:
+
+```json
+{
+  "Authentication": {
+    "Authority": "http://localhost:8080/realms/clinic",
+    "Audience": "my-backend",
+    "RequireHttpsMetadata": false
+  },
+  "Keycloak": {
+    "Authority": "http://localhost:8080/realms/clinic",
+    "ClientId": "my-backend"
+  }
+}
+```
+
+Grab a token from `/realms/clinic/protocol/openid-connect/token` (Direct Access Grants) and call your API with `Authorization: Bearer <token>`. Roles flow through, `[Authorize(Roles = "admin")]` works, and `User.Identity.Name` is the Keycloak username.
+
+## Key takeaways
+
+- One `[DependsOn(typeof(GranitAuthenticationJwtBearerKeycloakModule))]` registers JWT Bearer, claims transformation, and the audit-friendly `ICurrentUserService`.
+- `realm_access.roles` and `resource_access.{ClientId}.roles` map to `ClaimTypes.Role` automatically — `[Authorize(Roles = "...")]` just works.
+- `NameClaimType = "preferred_username"` makes `User.Identity.Name` the Keycloak username.
+- Back-channel logout closes the token-revocation gap; enable it for any compliance-sensitive deployment.
+- Switching to Entra ID, Cognito, or Google Cloud is a one-line change — the surrounding code stays identical.
+
+## Further reading
+
+- [Authentication overview](/dotnet/security/authentication/)
+- [OIDC client primitives](/dotnet/security/authentication-oidc/)
+- [Authorization and permissions](/dotnet/security/authorization/)
+- [Identity module](/dotnet/security/identity/)
+- [API keys for service-to-service](/dotnet/security/api-keys/)
