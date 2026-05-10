@@ -7,9 +7,11 @@ namespace Granit.Browsing.Diagnostics;
 /// </summary>
 /// <remarks>
 /// Registered via <c>GranitActivitySourceRegistry</c> by <c>GranitBrowsingModule</c>;
-/// <c>Granit.Observability</c> picks it up automatically.
+/// <c>Granit.Observability</c> picks it up automatically. Internal — provider packages
+/// see it through <c>InternalsVisibleTo</c>; external consumers subscribe by
+/// <see cref="Name"/>.
 /// </remarks>
-public static class BrowsingActivitySource
+internal static class BrowsingActivitySource
 {
     /// <summary>The name of the Granit.Browsing <see cref="ActivitySource"/>.</summary>
     public const string Name = "Granit.Browsing";

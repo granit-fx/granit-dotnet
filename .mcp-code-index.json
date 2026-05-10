@@ -588,7 +588,22 @@
     {
       "name": "Granit.Browsing",
       "deps": [
-        "Granit"
+        "Granit",
+        "Granit.MultiTenancy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Browsing.Playwright",
+      "deps": [
+        "Granit.Browsing"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Browsing.PuppeteerSharp",
+      "deps": [
+        "Granit.Browsing"
       ],
       "framework": "net10.0"
     },
@@ -13337,22 +13352,6 @@
       "members": []
     },
     {
-      "name": "BrowsingActivitySource",
-      "fqn": "Granit.Browsing.Diagnostics.BrowsingActivitySource",
-      "kind": "class",
-      "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/Diagnostics/BrowsingActivitySource.cs",
-      "line": 12,
-      "members": [
-        {
-          "name": "new",
-          "kind": "method",
-          "signature": "new(Name)",
-          "returnType": "ActivitySource Source ="
-        }
-      ]
-    },
-    {
       "name": "BrowsingMetrics",
       "fqn": "Granit.Browsing.Diagnostics.BrowsingMetrics",
       "kind": "class",
@@ -13360,12 +13359,6 @@
       "file": "src/Granit.Browsing/Diagnostics/BrowsingMetrics.cs",
       "line": 14,
       "members": [
-        {
-          "name": "RecordPageAcquired",
-          "kind": "method",
-          "signature": "RecordPageAcquired(string engine, string? tenantId)",
-          "returnType": "void"
-        },
         {
           "name": "RecordPageReleased",
           "kind": "method",
@@ -13375,19 +13368,19 @@
         {
           "name": "RecordAcquireDuration",
           "kind": "method",
-          "signature": "RecordAcquireDuration(string engine, System.TimeSpan duration)",
+          "signature": "RecordAcquireDuration(string engine, string? tenantId, System.TimeSpan duration)",
           "returnType": "void"
         },
         {
           "name": "RecordRenderDuration",
           "kind": "method",
-          "signature": "RecordRenderDuration(string engine, string operation, System.TimeSpan duration)",
+          "signature": "RecordRenderDuration(string engine, string? tenantId, string operation, System.TimeSpan duration)",
           "returnType": "void"
         },
         {
           "name": "RecordError",
           "kind": "method",
-          "signature": "RecordError(string engine, string errorType)",
+          "signature": "RecordError(string engine, string? tenantId, string errorType)",
           "returnType": "void"
         }
       ]
@@ -13730,13 +13723,124 @@
       "members": []
     },
     {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Browsing.Playwright.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Extensions/ServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitBrowsingPlaywright",
+          "kind": "method",
+          "signature": "AddGranitBrowsingPlaywright(this IServiceCollection services, Action<GranitBrowsingOptions>? configureBrowsing = null, Action<PlaywrightOptions>? configurePlaywright = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitBrowsingPlaywrightModule",
+      "fqn": "Granit.Browsing.Playwright.GranitBrowsingPlaywrightModule",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/GranitBrowsingPlaywrightModule.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "BrowserEngine",
+      "fqn": "Granit.Browsing.Playwright.Options.BrowserEngine",
+      "kind": "enum",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
+      "line": 30,
+      "members": []
+    },
+    {
+      "name": "PlaywrightOptions",
+      "fqn": "Granit.Browsing.Playwright.Options.PlaywrightOptions",
+      "kind": "class",
+      "project": "Granit.Browsing.Playwright",
+      "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Engine",
+          "kind": "property",
+          "signature": "BrowserEngine Engine",
+          "returnType": "BrowserEngine"
+        },
+        {
+          "name": "ExecutablePath",
+          "kind": "property",
+          "signature": "string? ExecutablePath",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
       "name": "PoolStats",
       "fqn": "Granit.Browsing.PoolStats",
       "kind": "record",
       "project": "Granit.Browsing",
-      "file": "src/Granit.Browsing/IHeadlessBrowserPool.cs",
-      "line": 36,
+      "file": "src/Granit.Browsing/PoolStats.cs",
+      "line": 9,
       "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Browsing.PuppeteerSharp.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/Extensions/ServiceCollectionExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "AddGranitBrowsingPuppeteerSharp",
+          "kind": "method",
+          "signature": "AddGranitBrowsingPuppeteerSharp(this IServiceCollection services, Action<GranitBrowsingOptions>? configureBrowsing = null, Action<PuppeteerSharpOptions>? configurePuppeteer = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitBrowsingPuppeteerSharpModule",
+      "fqn": "Granit.Browsing.PuppeteerSharp.GranitBrowsingPuppeteerSharpModule",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/GranitBrowsingPuppeteerSharpModule.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "PuppeteerSharpOptions",
+      "fqn": "Granit.Browsing.PuppeteerSharp.Options.PuppeteerSharpOptions",
+      "kind": "class",
+      "project": "Granit.Browsing.PuppeteerSharp",
+      "file": "src/Granit.Browsing.PuppeteerSharp/Options/PuppeteerSharpOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "ChromiumExecutablePath",
+          "kind": "property",
+          "signature": "string? ChromiumExecutablePath",
+          "returnType": "string?"
+        }
+      ]
     },
     {
       "name": "AesCacheValueEncryptor",

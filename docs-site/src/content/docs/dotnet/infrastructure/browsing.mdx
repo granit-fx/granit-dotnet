@@ -1,0 +1,197 @@
+---
+title: "Browsing — Headless Browser Abstraction"
+description: Provider-agnostic IHeadlessBrowser with capability discovery (PDF generation, native PDF viewer rendering, screenshots, network interception, accessibility tree, tracing, HAR recording). Implementations ship for PuppeteerSharp (Chromium) and Microsoft.Playwright (Chromium / Firefox / WebKit).
+sidebar:
+  label: Browsing
+  order: 12
+---
+
+import { FileTree } from "@astrojs/starlight/components";
+
+`Granit.Browsing` is the framework's headless-browser abstraction. It plays the
+same role for browser-driven workloads (HTML→PDF generation, page screenshots,
+PDF rasterisation, accessibility audits) that `Granit.BlobStorage` plays for
+storage and `Granit.Imaging` plays for image processing: a contracts package
+plus interchangeable provider implementations.
+
+Typical workloads:
+
+- HTML → PDF generation (server-side rendered invoices, contracts, reports)
+  through `IPdfCapability`.
+- PDF → image rasterisation (thumbnails, previews) through
+  `IPdfViewerCapability` — loads the PDF in Chromium's native viewer and
+  screenshots per page.
+- Web-page screenshotting and accessibility audits through `IBrowserPage` +
+  `IAccessibilityCapability`.
+
+## Package structure
+
+<FileTree>
+- src
+  - Granit.Browsing                       contracts (this package)
+    - IHeadlessBrowser.cs
+    - IBrowserPage.cs
+    - BrowserCapabilities.cs              [Flags] enum
+    - IHeadlessBrowserPool.cs
+    - IBrowserSandboxProfile.cs
+    - Capabilities/
+      - IPdfCapability.cs                 Chromium-only
+      - IPdfViewerCapability.cs           Chromium-only
+      - IAccessibilityCapability.cs
+      - ITracingCapability.cs             Playwright-only
+      - IHarRecordingCapability.cs        Playwright-only
+    - Options/
+      - GranitBrowsingOptions.cs          MaxBrowsers, MaxPagesPerBrowser, …
+      - BrowserPageOptions.cs             per-page viewport / UA / locale / cookies
+      - NavigationOptions.cs
+      - ScreenshotOptions.cs
+    - Diagnostics/
+      - BrowsingMetrics.cs                meter `Granit.Browsing`
+      - BrowsingActivitySource.cs         source `Granit.Browsing`
+  - Granit.Browsing.PuppeteerSharp        Chromium provider
+  - Granit.Browsing.Playwright            Chromium / Firefox / WebKit provider
+</FileTree>
+
+## Capability matrix
+
+The provider ecosystem is asymmetric — engines differ. Capabilities are advertised
+through the `BrowserCapabilities` flags enum at the `IHeadlessBrowser` level, and
+optional functionality lives behind capability interfaces (`IPdfCapability`,
+`IPdfViewerCapability`, …) registered in DI only when the active provider supports
+them. A consumer that injects `IPdfCapability` against an unsupported provider
+fails at boot with a descriptive message rather than at first request.
+
+| Capability | Chromium (PuppeteerSharp) | Chromium (Playwright) | Firefox (Playwright) | WebKit (Playwright) |
+| --- | --- | --- | --- | --- |
+| `Screenshot` | ✓ | ✓ | ✓ | ✓ |
+| `PdfGeneration` | ✓ | ✓ | — | — |
+| `PdfViewerNative` | ✓ | ✓ | — | — |
+| `NetworkInterception` | ✓ (CDP full) | ✓ | partial | partial |
+| `JavaScriptInjection` | ✓ | ✓ | ✓ | ✓ |
+| `EmulateDevice` | ✓ | ✓ | ✓ | ✓ |
+| `EmulateMedia` | ✓ | ✓ | ✓ | ✓ |
+| `AccessibilityTree` | ✓ | — *(deprecated upstream)* | — | — |
+| `TraceRecording` | — | ✓ | ✓ | ✓ |
+| `HarRecording` | partial | ✓ | ✓ | ✓ |
+
+The `AccessibilityTree` row is intentionally narrow on Playwright: the .NET
+client deprecated its tree-export API in favour of ARIA snapshots. Hosts that
+need the full tree should run on the PuppeteerSharp provider.
+
+## Provider selection
+
+Choose **one** provider per host. Both can technically coexist, but the
+contracts are registered as singletons — last writer wins.
+
+```csharp
+// PuppeteerSharp — recommended for PDF-heavy workloads (DocumentGeneration,
+// Documents.Renditions). Bundled Chromium auto-downloaded on first boot.
+services.AddGranitBrowsingPuppeteerSharp(
+    configureBrowsing: opts =>
+    {
+        opts.MaxBrowsers = 2;
+        opts.MaxPagesPerBrowser = 8;
+    },
+    configurePuppeteer: opts =>
+    {
+        opts.DisableSandbox = false;            // keep the sandbox unless your container can't
+        // opts.ChromiumExecutablePath = "/usr/bin/chromium";
+        // opts.SkipChromiumDownload = true;    // when bundling Chromium in the image
+    });
+```
+
+```csharp
+// Microsoft.Playwright — multi-engine, adds tracing + HAR recording.
+services.AddGranitBrowsingPlaywright(
+    configurePlaywright: opts =>
+    {
+        opts.Engine = BrowserEngine.Chromium;   // or Firefox / Webkit
+        // opts.SkipBrowserInstall = true;      // skip `playwright install` at boot
+    });
+```
+
+## Pool tuning
+
+`GranitBrowsingOptions` drives both providers. Keep these in mind:
+
+- **`MaxBrowsers`** (default 2). Each Chromium instance carries 200–300 MB of
+  resident memory. Bump only when concurrency demands it.
+- **`MaxPagesPerBrowser`** (default 8). Pages are cheap; raise this when many
+  short renders contend for browsers.
+- **`PageMaxLifetime`** (default 30 min). Hard cap on a page's age before the
+  pool recycles it. Mitigates Chromium memory leaks accumulating over long
+  uptimes.
+- **`PageIdleTimeout`** (default 5 min). Idle pages older than this are recycled
+  out-of-band.
+- **`AcquireTimeout`** (default 30 s). `AcquirePageAsync` surfaces a
+  `TimeoutException` past this window.
+
+## Sandboxing untrusted content
+
+When rendering host-trusted HTML (server-generated invoices, reports), no
+extra sandboxing is needed. When rendering untrusted content (user-uploaded
+HTML, third-party PDF, web-archive playback), register an
+`IBrowserSandboxProfile`:
+
+```csharp
+services.AddSingleton<IBrowserSandboxProfile>(new RestrictedSandboxProfile
+{
+    DisableJavaScript = true,
+    BlockNetworkRequests = true,
+    DisableImages = false,
+    BlockedUrlPatterns = ["googletagmanager.com", "doubleclick.net"],
+});
+```
+
+Both providers honour the profile through native interception. Providers can
+co-exist with non-sandboxed consumers — the profile is a per-host policy.
+
+## Observability
+
+- **Meter** `Granit.Browsing` — counters `granit.browsing.pages.acquired.count`,
+  `granit.browsing.pages.released.count`, `granit.browsing.errors.count`;
+  histograms `granit.browsing.pool.acquire.duration`,
+  `granit.browsing.render.duration`. Tags: `engine`, `operation`, `error_type`,
+  `tenant_id`.
+- **ActivitySource** `Granit.Browsing` — every page acquisition / navigate /
+  screenshot / PDF render / PDF viewer page is a span. Naming follows
+  `browsing.{operation}` (`browsing.page.acquire`, `browsing.pdf.render`, …).
+
+Both are auto-registered by `Granit.Observability` through
+`GranitActivitySourceRegistry`.
+
+## First-run browser provisioning
+
+PuppeteerSharp ships a hosted service (`PuppeteerChromiumProvisionService`)
+that runs `BrowserFetcher.DownloadAsync()` at boot when no executable path is
+configured. Playwright runs `playwright install <engine>` through
+`PlaywrightProvisionService`.
+
+In containerised production, prefer pre-bundling browsers in the image:
+
+```dockerfile
+# Dockerfile
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium fonts-liberation libxss1 libgbm1 \
+    && rm -rf /var/lib/apt/lists/*
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+```
+
+```jsonc
+// appsettings.Production.json
+{
+  "Browsing": {
+    "PuppeteerSharp": {
+      "ChromiumExecutablePath": "/usr/bin/chromium",
+      "SkipChromiumDownload": true,
+      "DisableSandbox": true     // common in Docker containers without user namespaces
+    }
+  }
+}
+```
+
+## Related
+
+- [`Granit.BlobStorage`](/dotnet/data/blob-storage/) — same abstraction-then-provider
+  pattern for binary storage.
+- [`Granit.Imaging`](/dotnet/data/imaging/) — same pattern for image processing.
