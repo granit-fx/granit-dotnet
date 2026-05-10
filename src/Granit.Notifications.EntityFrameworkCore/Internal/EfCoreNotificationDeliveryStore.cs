@@ -91,16 +91,24 @@ internal sealed class EfCoreNotificationDeliveryStore(
     // the prior failed attempt are intentionally preserved: CompleteDeliveryAttemptAsync overwrites
     // them with the outcome of the new attempt, so the row always reflects the LAST attempt — never
     // a half-zeroed state that would mislead operators investigating ISO 27001 audit trails.
+    //
+    // OccurredAt is rewritten to "now" because it is the freshness signal the in-flight TTL
+    // depends on. Without this bump, a resume of a long-stale failed row would leave OccurredAt
+    // far in the past — a concurrent worker arriving milliseconds later would see the TTL as
+    // already expired and double-claim, regressing the duplicate-send guarantee from #947.
     private Task<bool> ResumeFailedOrStuckDeliveryAsync(Guid deliveryId, CancellationToken cancellationToken) =>
         WriteAsync(
             async db =>
             {
-                DateTimeOffset stuckCutoff = clock.Now - InFlightClaimTimeout;
+                DateTimeOffset now = clock.Now;
+                DateTimeOffset stuckCutoff = now - InFlightClaimTimeout;
                 int updated = await Query(db)
                     .Where(a => a.DeliveryId == deliveryId
                         && (a.IsSuccess == false || (a.IsSuccess == null && a.OccurredAt < stuckCutoff)))
                     .ExecuteUpdateAsync(
-                        setters => setters.SetProperty(a => a.IsSuccess, (bool?)null),
+                        setters => setters
+                            .SetProperty(a => a.IsSuccess, (bool?)null)
+                            .SetProperty(a => a.OccurredAt, now),
                         cancellationToken)
                     .ConfigureAwait(false);
                 return updated == 1;

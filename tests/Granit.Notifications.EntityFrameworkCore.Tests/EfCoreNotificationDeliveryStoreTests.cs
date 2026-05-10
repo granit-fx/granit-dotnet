@@ -177,6 +177,40 @@ public sealed class EfCoreNotificationDeliveryStoreTests : IDisposable
     }
 
     [Fact]
+    public async Task Resume_of_long_stale_failed_row_bumps_OccurredAt_to_block_immediate_reacquire()
+    {
+        // Regression guard for the resume / TTL race: if OccurredAt is not refreshed when a
+        // failed row is resumed, a concurrent worker arriving moments later evaluates the in-flight
+        // TTL against the *original* OccurredAt and double-claims — re-introducing the duplicate
+        // SMTP send that #947 set out to eliminate.
+        DateTimeOffset t0 = new(2026, 5, 11, 12, 0, 0, TimeSpan.Zero);
+        _now = t0;
+
+        NotificationDeliveryAttempt initial = BuildClaim(occurredAt: t0, isSuccess: null);
+        (await _store.TryAcquireDeliveryAttemptAsync(initial, TestContext.Current.CancellationToken)).ShouldBeTrue();
+        await _store.CompleteDeliveryAttemptAsync(
+            initial.DeliveryId,
+            success: false,
+            durationMilliseconds: 5,
+            errorMessage: "channel down",
+            TestContext.Current.CancellationToken);
+
+        // Fast-forward well past the in-flight TTL — the failed row is now "long stale".
+        _now = t0 + TimeSpan.FromMinutes(30);
+
+        NotificationDeliveryAttempt retryA = BuildClaim(deliveryId: initial.DeliveryId, isSuccess: null);
+        (await _store.TryAcquireDeliveryAttemptAsync(retryA, TestContext.Current.CancellationToken)).ShouldBeTrue();
+
+        // Concurrent worker arrives 1 second later. With the regression, OccurredAt is still t0
+        // → TTL check passes → double-claim. With the fix, OccurredAt was bumped to t0+30min
+        // → TTL check fails → second acquire returns false.
+        _now += TimeSpan.FromSeconds(1);
+
+        NotificationDeliveryAttempt retryB = BuildClaim(deliveryId: initial.DeliveryId, isSuccess: null);
+        (await _store.TryAcquireDeliveryAttemptAsync(retryB, TestContext.Current.CancellationToken)).ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task Stuck_in_flight_row_within_timeout_window_blocks_reacquire()
     {
         DateTimeOffset t0 = new(2026, 5, 11, 12, 0, 0, TimeSpan.Zero);
