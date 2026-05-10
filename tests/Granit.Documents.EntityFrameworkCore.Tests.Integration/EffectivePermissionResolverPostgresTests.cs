@@ -135,8 +135,16 @@ public sealed class EffectivePermissionResolverPostgresTests :
             """;
 
         // Query the plan via the underlying connection so we can capture the textual rows.
+        // Disable seqscan for this connection: with only ~200 rows the planner sometimes
+        // prefers a seq scan despite the filtered index. The test guards index *eligibility*
+        // — i.e., that the predicate shape lines up with ix_documents_shares_grantee_folder
+        // — not the planner's cost calibration.
         await using Npgsql.NpgsqlConnection conn = new(_postgres.ConnectionString);
         await conn.OpenAsync(TestContext.Current.CancellationToken);
+        await using (Npgsql.NpgsqlCommand setup = new("SET enable_seqscan = OFF;", conn))
+        {
+            await setup.ExecuteNonQueryAsync(TestContext.Current.CancellationToken);
+        }
         await using Npgsql.NpgsqlCommand cmd = new(explainSql, conn);
         cmd.Parameters.AddWithValue("tenant", TenantId);
         cmd.Parameters.AddWithValue("grantees", new[] { user });

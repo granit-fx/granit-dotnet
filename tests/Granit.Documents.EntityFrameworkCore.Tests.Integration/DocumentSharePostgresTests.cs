@@ -135,10 +135,16 @@ public sealed class DocumentSharePostgresTests :
         Folder folder = await SeedFolderAsync();
         DateTimeOffset now = new(2026, 5, 10, 12, 0, 0, TimeSpan.Zero);
 
-        // Manually craft a clock whose Now advances per call so CreatedAt diverges.
+        // Manually craft a clock whose Now advances per call so CreatedAt diverges. The
+        // queue holds one entry per expected access — three for the grant calls below plus
+        // a "listing time" value used after the grants. NSubstitute's `Returns(...)` on a
+        // property reads the property value first, which would dequeue an extra slot, so we
+        // can't override the function-based stub mid-test; instead we let the queue carry
+        // the listing-time value too.
         IClock clock = Substitute.For<IClock>();
-        var queue = new Queue<DateTimeOffset>([now, now.AddSeconds(1), now.AddSeconds(2)]);
-        clock.Now.Returns(_ => queue.Dequeue());
+        var queue = new Queue<DateTimeOffset>(
+            [now, now.AddSeconds(1), now.AddSeconds(2), now.AddSeconds(10)]);
+        clock.Now.Returns(_ => queue.Count > 1 ? queue.Dequeue() : queue.Peek());
 
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.Id.Returns(TenantId);
@@ -149,18 +155,20 @@ public sealed class DocumentSharePostgresTests :
             folder.Id, ShareGranteeType.User, GranteeId, SharePermissionLevel.Read,
             isDefault: true, OwnerId, expiresAt: null,
             TestContext.Current.CancellationToken))!;
+        // expired's createdAt is dequeued as now+1s by the service — its expiresAt must be
+        // strictly greater than that (DocumentShare invariant) yet still in the past relative
+        // to the listing call below (now+10s).
         DocumentShare expired = (await sut.GrantOnFolderAsync(
             folder.Id, ShareGranteeType.User, Guid.NewGuid(), SharePermissionLevel.Read,
-            isDefault: true, OwnerId, expiresAt: now.AddMilliseconds(500),
+            isDefault: true, OwnerId, expiresAt: now.AddSeconds(5),
             TestContext.Current.CancellationToken))!;
         DocumentShare c = (await sut.GrantOnFolderAsync(
             folder.Id, ShareGranteeType.Role, Guid.NewGuid(), SharePermissionLevel.Edit,
             isDefault: true, OwnerId, expiresAt: null,
             TestContext.Current.CancellationToken))!;
 
-        // List uses the service's clock; align it to "after the expired share".
-        clock.Now.Returns(now.AddSeconds(10));
-
+        // List uses the service's clock; the queue's last entry (now+10s, peeked from now
+        // on) puts us safely past `expired.ExpiresAt`.
         IReadOnlyList<DocumentShare> rows = await sut
             .ListForFolderAsync(folder.Id, TestContext.Current.CancellationToken);
 
@@ -179,7 +187,20 @@ public sealed class DocumentSharePostgresTests :
             "TRUNCATE TABLE documents_shares;",
             TestContext.Current.CancellationToken);
 
-        await Should.ThrowAsync<DbUpdateException>(async () =>
+        // Pass parameters via the IEnumerable<object> overload so the CancellationToken
+        // doesn't get folded into the params array (which would trigger an
+        // InvalidOperationException about parameter binding before the constraint can fire).
+        object[] parameters =
+        [
+            new Npgsql.NpgsqlParameter("id", Guid.NewGuid()),
+            new Npgsql.NpgsqlParameter("tenant", TenantId),
+            new Npgsql.NpgsqlParameter("grantee", GranteeId),
+            new Npgsql.NpgsqlParameter("creator", OwnerId),
+        ];
+        // ExecuteSqlRawAsync propagates the provider exception directly (no DbUpdateException
+        // wrap — that is reserved for SaveChanges). A failed CHECK constraint surfaces as a
+        // Npgsql PostgresException with SqlState 23514.
+        await Should.ThrowAsync<Npgsql.PostgresException>(async () =>
         {
             await db.Database.ExecuteSqlRawAsync(
                 """
@@ -192,11 +213,8 @@ public sealed class DocumentSharePostgresTests :
                      'User', @grantee, 'Read', TRUE,
                      NULL, NOW(), @creator);
                 """,
-                TestContext.Current.CancellationToken,
-                new Npgsql.NpgsqlParameter("id", Guid.NewGuid()),
-                new Npgsql.NpgsqlParameter("tenant", TenantId),
-                new Npgsql.NpgsqlParameter("grantee", GranteeId),
-                new Npgsql.NpgsqlParameter("creator", OwnerId));
+                parameters,
+                TestContext.Current.CancellationToken);
         });
     }
 
