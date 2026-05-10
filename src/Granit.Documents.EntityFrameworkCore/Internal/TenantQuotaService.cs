@@ -155,6 +155,65 @@ internal sealed class TenantQuotaService(
     }
 
     /// <inheritdoc />
+    public async Task IncrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)
+    {
+        if (delta < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(delta), "Increment must be non-negative.");
+        }
+        if (delta == 0)
+        {
+            return;
+        }
+
+        // Lazy-create the row so the atomic UPDATE has a target. Mirrors the user-side
+        // IncrementAsync path; rendition increments never reject (renditions aren't gated).
+        await EnsureTenantQuotaAsync(tenantId, cancellationToken).ConfigureAwait(false);
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+        await context.TenantStorageQuotas
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(q => q.TenantId == tenantId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(q => q.RenditionUsageBytes, q => q.RenditionUsageBytes + delta)
+                .SetProperty(q => q.UpdatedAt, _ => now),
+                cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task DecrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)
+    {
+        if (delta < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(delta), "Decrement must be non-negative.");
+        }
+        if (delta == 0)
+        {
+            return;
+        }
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+        await context.TenantStorageQuotas
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(q => q.TenantId == tenantId)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(q => q.RenditionUsageBytes,
+                    q => q.RenditionUsageBytes - delta < 0 ? 0 : q.RenditionUsageBytes - delta)
+                .SetProperty(q => q.UpdatedAt, _ => now),
+                cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async Task<TenantStorageQuota?> GetAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         await using DocumentsDbContext context = await contextFactory

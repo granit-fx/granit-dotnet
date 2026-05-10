@@ -65,6 +65,16 @@ public sealed class TenantStorageQuota : AggregateRoot, IMultiTenant
     /// <summary>Sum of all active version <c>SizeBytes</c> rows for the tenant.</summary>
     public long UsageBytes { get; private set; }
 
+    /// <summary>
+    /// Sum of bytes consumed by <c>DocumentRendition</c> outputs (thumbnails, web /
+    /// print derivatives) generated for the tenant. Tracked separately from
+    /// <see cref="UsageBytes"/>: rendition bytes are framework-generated and never
+    /// gate user uploads — a regenerable derivative shouldn't reject a user write.
+    /// Operators still see them through this column; the total billable footprint is
+    /// <c>UsageBytes + RenditionUsageBytes</c>.
+    /// </summary>
+    public long RenditionUsageBytes { get; private set; }
+
     /// <summary>UTC instant of the last increment, decrement, or limit change.</summary>
     public DateTimeOffset UpdatedAt { get; private set; }
 
@@ -98,6 +108,34 @@ public sealed class TenantStorageQuota : AggregateRoot, IMultiTenant
             throw new ArgumentOutOfRangeException(nameof(delta), "Decrement must be non-negative.");
         }
         UsageBytes = Math.Max(0, UsageBytes - delta);
+        UpdatedAt = now;
+    }
+
+    /// <summary>
+    /// Increments <see cref="RenditionUsageBytes"/> by <paramref name="delta"/>.
+    /// Mirrors <see cref="Increment"/> for the rendition-side counter.
+    /// </summary>
+    public void IncrementRendition(long delta, DateTimeOffset now)
+    {
+        if (delta < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(delta), "Increment must be non-negative.");
+        }
+        RenditionUsageBytes += delta;
+        UpdatedAt = now;
+    }
+
+    /// <summary>
+    /// Decrements <see cref="RenditionUsageBytes"/> by <paramref name="delta"/>,
+    /// clamping at zero. Mirrors <see cref="Decrement"/> for the rendition-side counter.
+    /// </summary>
+    public void DecrementRendition(long delta, DateTimeOffset now)
+    {
+        if (delta < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(delta), "Decrement must be non-negative.");
+        }
+        RenditionUsageBytes = Math.Max(0, RenditionUsageBytes - delta);
         UpdatedAt = now;
     }
 

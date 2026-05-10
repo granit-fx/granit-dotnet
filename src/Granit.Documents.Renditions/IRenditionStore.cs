@@ -17,6 +17,13 @@ public interface IRenditionStore
         Guid documentVersionId, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Lists every rendition attached to the given document (across versions). Used by
+    /// the cascade-on-permanent-delete handler to enumerate the blobs to soft-delete.
+    /// </summary>
+    Task<IReadOnlyList<DocumentRendition>> ListForDocumentAsync(
+        Guid documentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Looks up a single rendition by its triple key. Returns <c>null</c> when no row
     /// exists yet — the caller decides whether to insert a Pending row.
     /// </summary>

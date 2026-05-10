@@ -985,6 +985,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Renditions",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -21361,6 +21370,18 @@
           "kind": "method",
           "signature": "TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
           "returnType": "Task<bool>"
+        },
+        {
+          "name": "IncrementRenditionAsync",
+          "kind": "method",
+          "signature": "IncrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "DecrementRenditionAsync",
+          "kind": "method",
+          "signature": "DecrementRenditionAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
         }
       ]
     },
@@ -21877,6 +21898,79 @@
       "members": []
     },
     {
+      "name": "RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Extensions.RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Extensions/RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "RenditionsModelBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Extensions.RenditionsModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Extensions/RenditionsModelBuilderExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "ConfigureRenditionsModule",
+          "kind": "method",
+          "signature": "ConfigureRenditionsModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.GranitDocumentsRenditionsEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/GranitDocumentsRenditionsEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "GranitRenditionsDbProperties",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.GranitRenditionsDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/GranitRenditionsDbProperties.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "DocumentPermanentlyDeletedRenditionHandler",
+      "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Internal.DocumentPermanentlyDeletedRenditionHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.EntityFrameworkCore",
+      "file": "src/Granit.Documents.Renditions.EntityFrameworkCore/Internal/DocumentPermanentlyDeletedRenditionHandler.cs",
+      "line": 24,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentPermanentlyDeletedEvent evt, IRenditionStore renditionStore, IBlobStorage blobStorage, ITenantQuotaService quotas, ILogger<DocumentPermanentlyDeletedRenditionHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "RenditionFailedEvent",
       "fqn": "Granit.Documents.Renditions.Events.RenditionFailedEvent",
       "kind": "record",
@@ -21947,6 +22041,12 @@
           "name": "ListForVersionAsync",
           "kind": "method",
           "signature": "ListForVersionAsync(Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentRendition>>"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<DocumentRendition>>"
         },
         {
