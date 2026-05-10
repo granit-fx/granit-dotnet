@@ -189,6 +189,41 @@ public sealed class CachedEffectivePermissionResolverTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetDocumentPermissionsAsync_WarmsIndividualEntries_AndReusesThemOnSecondCall()
+    {
+        (Folder folder, Document docA, Guid user) = await SeedAsync();
+        Document docB = await SeedAdditionalDocumentAsync(folder, "doc-b.pdf");
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, folder.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+
+        // First batch — both ids miss; decorator warms two individual cache entries.
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> first = await _sut
+            .GetDocumentPermissionsAsync([docA.Id, docB.Id],
+                DocumentPrincipal.ForUser(user),
+                TestContext.Current.CancellationToken);
+        first[docA.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        first[docB.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        _meter.Misses.ShouldBe(2);
+        _meter.Hits.ShouldBe(0);
+
+        // Second batch — both should hit. Single-target call on docA also serves from cache.
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> second = await _sut
+            .GetDocumentPermissionsAsync([docA.Id, docB.Id],
+                DocumentPrincipal.ForUser(user),
+                TestContext.Current.CancellationToken);
+        second[docA.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        second[docB.Id].ShouldBe(EffectivePermissionLevel.Edit);
+
+        EffectivePermissionLevel singleTargetHit = await _sut.GetDocumentPermissionAsync(
+            docA.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+        singleTargetHit.ShouldBe(EffectivePermissionLevel.Edit);
+
+        _meter.Hits.ShouldBe(3); // two from second batch + one from single-target call
+        _meter.Misses.ShouldBe(2); // unchanged from the first batch
+    }
+
+    [Fact]
     public async Task FolderPathChanged_BulkInvalidatesTenantEntries()
     {
         (Folder folder, Document doc, Guid user) = await SeedAsync();
@@ -225,6 +260,16 @@ public sealed class CachedEffectivePermissionResolverTests : IAsyncLifetime
         db.Documents.Add(doc);
         await db.SaveChangesAsync();
         return (folder, doc, user);
+    }
+
+    private async Task<Document> SeedAdditionalDocumentAsync(Folder folder, string name)
+    {
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync();
+        Folder reloaded = await db.Folders.SingleAsync(f => f.Id == folder.Id);
+        var doc = Document.Create(Guid.NewGuid(), reloaded, OwnerId, name);
+        db.Documents.Add(doc);
+        await db.SaveChangesAsync();
+        return doc;
     }
 
     private async Task SeedShareAsync(DocumentShare share)

@@ -9,6 +9,11 @@ namespace Granit.Documents.Endpoints.Documents.Dtos;
 /// <param name="CurrentVersionId">Identifier of the active <c>DocumentVersion</c>; <c>null</c> if none yet.</param>
 /// <param name="Status">Lifecycle status as a string (<c>Active</c> / <c>Trashed</c> / <c>PermanentlyDeleted</c>).</param>
 /// <param name="TrashedAt">UTC instant the document was trashed; <c>null</c> while active.</param>
+/// <param name="Permission">
+/// Effective permission the calling principal holds on the document, resolved via the
+/// share ACL (F6.5). One of <c>None</c> / <c>Read</c> / <c>Edit</c> / <c>Manage</c>.
+/// <c>null</c> when the caller did not request permission resolution.
+/// </param>
 public sealed record DocumentResponse(
     Guid Id,
     Guid FolderId,
@@ -17,4 +22,5 @@ public sealed record DocumentResponse(
     Guid OwnerUserId,
     Guid? CurrentVersionId,
     string Status,
-    DateTimeOffset? TrashedAt);
+    DateTimeOffset? TrashedAt,
+    string? Permission = null);

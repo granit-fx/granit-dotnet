@@ -1,4 +1,5 @@
 using Granit.Authorization;
+using Granit.Documents.Authorization;
 using Granit.Documents.Endpoints.Authorization;
 using Granit.Http.ApiDocumentation;
 using Granit.Modularity;
@@ -32,6 +33,7 @@ public sealed class GranitDocumentsEndpointsModule : GranitModule
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         context.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        context.Services.TryAddScoped<IDocumentPrincipalAccessor, HttpContextDocumentPrincipalAccessor>();
         context.Services.Replace(ServiceDescriptor.Singleton<
             ITaggablePermissionResolver,
             DocumentTaggablePermissionResolver>());

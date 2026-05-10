@@ -167,6 +167,73 @@ public sealed class EffectivePermissionResolverPostgresTests :
         _ = doc; // doc is reused only to anchor the seeded data graph.
     }
 
+    [Fact]
+    public async Task GetDocumentPermissionsAsync_ResolvesMixedPermissions_AcrossPageOf10()
+    {
+        // F6.5 acceptance — a single batch call resolves the per-document permission for
+        // a folder of 10 documents with a mix of:
+        //   - direct doc Manage grant
+        //   - direct doc Read grant
+        //   - ancestor folder Edit grant (covers the rest of the page)
+        //   - one expired direct grant (must fall back to the inherited Edit)
+        //   - one document outside the shared folder (must resolve to None)
+        var bootstrap = new DocumentBootstrapService(_factory, new SimpleGuidGenerator());
+        Guid rootId = await bootstrap.EnsureTenantRootAsync(TenantId, OwnerId, TestContext.Current.CancellationToken);
+
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Folder root = await db.Folders.SingleAsync(f => f.Id == rootId, TestContext.Current.CancellationToken);
+        var shared = Folder.Create(Guid.NewGuid(), root, "Shared", OwnerId);
+        var other = Folder.Create(Guid.NewGuid(), root, "Other", OwnerId);
+        db.Folders.Add(shared);
+        db.Folders.Add(other);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var docs = new Document[10];
+        for (int i = 0; i < 9; i++)
+        {
+            docs[i] = Document.Create(Guid.NewGuid(), shared, OwnerId, $"doc-{i}.pdf");
+            db.Documents.Add(docs[i]);
+        }
+        // doc 9 sits in the unrelated folder.
+        docs[9] = Document.Create(Guid.NewGuid(), other, OwnerId, "outside.pdf");
+        db.Documents.Add(docs[9]);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var user = Guid.NewGuid();
+        // Folder share: Edit on /Shared — covers docs 0..8.
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, shared.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+        // Direct Manage on doc 0 — wins over inherited Edit.
+        await SeedShareAsync(DocumentShare.ShareToDocument(
+            Guid.NewGuid(), TenantId, docs[0].Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, OwnerId, Now));
+        // Direct Read on doc 1 — does NOT win (caller still gets the inherited Edit).
+        await SeedShareAsync(DocumentShare.ShareToDocument(
+            Guid.NewGuid(), TenantId, docs[1].Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Read, OwnerId, Now));
+        // Expired Manage on doc 2 — must be filtered; doc 2 falls back to inherited Edit.
+        await SeedShareAsync(DocumentShare.ShareToDocument(
+            Guid.NewGuid(), TenantId, docs[2].Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, OwnerId,
+            createdAt: Now.AddDays(-2),
+            expiresAt: Now.AddDays(-1)));
+
+        Guid[] ids = [.. docs.Select(d => d.Id)];
+
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetDocumentPermissionsAsync(ids, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+
+        result[docs[0].Id].ShouldBe(EffectivePermissionLevel.Manage);
+        result[docs[1].Id].ShouldBe(EffectivePermissionLevel.Edit);
+        result[docs[2].Id].ShouldBe(EffectivePermissionLevel.Edit);
+        for (int i = 3; i < 9; i++)
+        {
+            result[docs[i].Id].ShouldBe(EffectivePermissionLevel.Edit);
+        }
+        result[docs[9].Id].ShouldBe(EffectivePermissionLevel.None);
+    }
+
     private async Task<(Folder, Document, Guid user)> SeedAsync()
     {
         var user = Guid.NewGuid();

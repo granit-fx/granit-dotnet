@@ -87,4 +87,86 @@ internal sealed class CachedEffectivePermissionResolver(
 
         return resolved.Permission;
     }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>> GetDocumentPermissionsAsync(
+        IReadOnlyCollection<Guid> documentIds,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(documentIds);
+        ArgumentNullException.ThrowIfNull(principal);
+
+        Dictionary<Guid, EffectivePermissionLevel> output = new(documentIds.Count);
+        if (documentIds.Count == 0)
+        {
+            return output;
+        }
+        if (principal.AllGranteeIds.Count == 0)
+        {
+            foreach (Guid id in documentIds)
+            {
+                output[id] = EffectivePermissionLevel.None;
+            }
+            return output;
+        }
+
+        GranitDocumentsOptions opts = options.Value;
+        string tenantTag = currentTenant.IsAvailable
+            ? currentTenant.Id!.Value.ToString("N")
+            : "global";
+        FusionCacheEntryOptions entryOptions = cache.CreateEntryOptions(
+            o => o.SetDuration(opts.AclCacheTtl),
+            duration: opts.AclCacheTtl);
+
+        // Phase 1 — try-get every id from cache; track which ones missed so the inner
+        // batch resolution only pays for the cold rows.
+        List<Guid> misses = [];
+        Dictionary<Guid, string> keyByDocId = new(documentIds.Count);
+        foreach (Guid documentId in documentIds)
+        {
+            string key = AclCacheKeys.Document(documentId, principal);
+            keyByDocId[documentId] = key;
+            MaybeValue<EffectivePermissionLevel> hit = await cache
+                .TryGetAsync<EffectivePermissionLevel>(key, options: entryOptions, token: cancellationToken)
+                .ConfigureAwait(false);
+            if (hit.HasValue)
+            {
+                metrics.RecordAclCacheHit(tenantTag);
+                output[documentId] = hit.Value;
+            }
+            else
+            {
+                metrics.RecordAclCacheMiss(tenantTag);
+                misses.Add(documentId);
+            }
+        }
+
+        if (misses.Count == 0)
+        {
+            return output;
+        }
+
+        // Phase 2 — single batched DB resolution for the misses, then warm each cache
+        // entry with its proper tag set (per-doc ancestor folder ids).
+        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await inner
+            .ResolveDocumentsAsync(misses, principal, cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (Guid documentId in misses)
+        {
+            DocumentResolutionResult r = resolved.TryGetValue(documentId, out DocumentResolutionResult v)
+                ? v
+                : new DocumentResolutionResult(EffectivePermissionLevel.None, []);
+            output[documentId] = r.Permission;
+            await cache.SetAsync(
+                keyByDocId[documentId],
+                r.Permission,
+                options: entryOptions,
+                tags: AclCacheKeys.BuildEntryTags(documentId, r.AncestorFolderIds),
+                token: cancellationToken).ConfigureAwait(false);
+        }
+
+        return output;
+    }
 }

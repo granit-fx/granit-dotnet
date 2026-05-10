@@ -1,3 +1,4 @@
+using Granit.Documents.Authorization;
 using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Dtos;
 using Granit.Documents.Endpoints.Documents.Mapping;
@@ -84,6 +85,8 @@ internal static class DocumentMutationEndpoints
     private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] IDocumentService documents,
+        [FromServices] IDocumentPrincipalAccessor principalAccessor,
+        [FromServices] IEffectivePermissionResolver permissionResolver,
         CancellationToken cancellationToken)
     {
         Document? document = await documents.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
@@ -93,7 +96,16 @@ internal static class DocumentMutationEndpoints
                 $"Document '{id}' was not found.",
                 statusCode: StatusCodes.Status404NotFound);
         }
-        return TypedResults.Ok(document.ToResponse());
+
+        EffectivePermissionLevel? permission = null;
+        DocumentPrincipal? principal = principalAccessor.GetCurrent();
+        if (principal is not null)
+        {
+            permission = await permissionResolver
+                .GetDocumentPermissionAsync(document.Id, principal, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        return TypedResults.Ok(document.ToResponse(permission));
     }
 
     private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> RenameAsync(

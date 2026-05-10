@@ -260,6 +260,52 @@ public sealed class EffectivePermissionResolverTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetDocumentPermissionsAsync_ReturnsEntryForEveryRequestedId()
+    {
+        (Folder folder, Document doc) = await SeedDocumentInFolderAsync("/Contracts");
+        var user = Guid.NewGuid();
+        var unknown = Guid.NewGuid();
+
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, folder.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetDocumentPermissionsAsync([doc.Id, unknown],
+                DocumentPrincipal.ForUser(user),
+                TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(2);
+        result[doc.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        result[unknown].ShouldBe(EffectivePermissionLevel.None);
+    }
+
+    [Fact]
+    public async Task GetDocumentPermissionsAsync_EmptyPrincipal_ReturnsNoneForAll()
+    {
+        (_, Document doc) = await SeedDocumentInFolderAsync("/Contracts");
+        DocumentPrincipal empty = new(Guid.Empty, [], []);
+
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetDocumentPermissionsAsync([doc.Id],
+                empty,
+                TestContext.Current.CancellationToken);
+
+        result[doc.Id].ShouldBe(EffectivePermissionLevel.None);
+    }
+
+    [Fact]
+    public async Task GetDocumentPermissionsAsync_EmptyIds_ReturnsEmptyDictionary()
+    {
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetDocumentPermissionsAsync([],
+                DocumentPrincipal.ForUser(Guid.NewGuid()),
+                TestContext.Current.CancellationToken);
+
+        result.Count.ShouldBe(0);
+    }
+
+    [Fact]
     public async Task DifferentTenant_IsExcluded()
     {
         // Seed a doc in our TenantId, but a share row whose TenantId is different — even

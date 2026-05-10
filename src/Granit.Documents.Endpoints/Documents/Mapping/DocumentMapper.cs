@@ -1,4 +1,5 @@
 using Granit.BlobStorage;
+using Granit.Documents.Authorization;
 using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Dtos;
 
@@ -28,7 +29,7 @@ internal static class DocumentMapper
             skip,
             take);
 
-    public static DocumentResponse ToResponse(this Document document) =>
+    public static DocumentResponse ToResponse(this Document document, EffectivePermissionLevel? permission = null) =>
         new(
             document.Id,
             document.FolderId,
@@ -37,7 +38,8 @@ internal static class DocumentMapper
             document.OwnerUserId,
             document.CurrentVersionId,
             document.Status.ToString(),
-            document.TrashedAt);
+            document.TrashedAt,
+            permission?.ToString());
 
     public static UploadTicketResponse ToResponse(this PresignedUploadTicket ticket) =>
         new(

@@ -19335,6 +19335,22 @@
       "members": []
     },
     {
+      "name": "IDocumentPrincipalAccessor",
+      "fqn": "Granit.Documents.Authorization.IDocumentPrincipalAccessor",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Authorization/IDocumentPrincipalAccessor.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "GetCurrent",
+          "kind": "method",
+          "signature": "GetCurrent()",
+          "returnType": "DocumentPrincipal?"
+        }
+      ]
+    },
+    {
       "name": "IEffectivePermissionResolver",
       "fqn": "Granit.Documents.Authorization.IEffectivePermissionResolver",
       "kind": "interface",
@@ -19347,6 +19363,12 @@
           "kind": "method",
           "signature": "GetDocumentPermissionAsync(Guid documentId, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
           "returnType": "Task<EffectivePermissionLevel>"
+        },
+        {
+          "name": "GetDocumentPermissionsAsync",
+          "kind": "method",
+          "signature": "GetDocumentPermissionsAsync(IReadOnlyCollection<Guid> documentIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>>"
         }
       ]
     },
@@ -19540,7 +19562,7 @@
       "kind": "record",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/DocumentResponse.cs",
-      "line": 12,
+      "line": 17,
       "members": []
     },
     {
@@ -19718,7 +19740,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/GranitDocumentsEndpointsModule.cs",
-      "line": 29,
+      "line": 30,
       "members": [
         {
           "name": "ConfigureServices",
