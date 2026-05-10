@@ -921,6 +921,7 @@
     {
       "name": "Granit.DocumentGeneration.Pdf",
       "deps": [
+        "Granit.Browsing",
         "Granit.DocumentGeneration"
       ],
       "framework": "net10.0"
@@ -19868,7 +19869,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Extensions/ServiceCollectionExtensions.cs",
-      "line": 11,
+      "line": 13,
       "members": [
         {
           "name": "AddGranitDocumentGenerationPdf",
@@ -19884,7 +19885,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/GranitDocumentGenerationPdfModule.cs",
-      "line": 24,
+      "line": 19,
       "members": [
         {
           "name": "ConfigureServices",
@@ -19900,7 +19901,7 @@
       "kind": "class",
       "project": "Granit.DocumentGeneration.Pdf",
       "file": "src/Granit.DocumentGeneration.Pdf/Options/PdfRenderOptions.cs",
-      "line": 9,
+      "line": 15,
       "members": [
         {
           "name": "PaperFormat",
@@ -19945,15 +19946,9 @@
           "returnType": "bool"
         },
         {
-          "name": "ChromiumExecutablePath",
+          "name": "RenderTimeoutMs",
           "kind": "property",
-          "signature": "string? ChromiumExecutablePath",
-          "returnType": "string?"
-        },
-        {
-          "name": "MaxConcurrentPages",
-          "kind": "property",
-          "signature": "int MaxConcurrentPages",
+          "signature": "int RenderTimeoutMs",
           "returnType": "int"
         }
       ]

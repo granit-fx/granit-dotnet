@@ -1345,11 +1345,6 @@
           "Weasel.Core": "8.15.1"
         }
       },
-      "WebDriverBiDi": {
-        "type": "Transitive",
-        "resolved": "0.0.49",
-        "contentHash": "KXTJjGny4f4yO+HJGMMgX+qaWqweQvcrtMQPkUw+lw2nUQpJV0VfE3oW4t25bgXOq62cdE9yVEVSjssKRBa98A=="
-      },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
         "resolved": "5.39.0",
@@ -1999,6 +1994,13 @@
           "Granit.BlobStorage": "[0.1.0-dev, )"
         }
       },
+      "granit.browsing": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.MultiTenancy": "[0.1.0-dev, )"
+        }
+      },
       "granit.caching": {
         "type": "Project",
         "dependencies": {
@@ -2297,8 +2299,8 @@
       "granit.documentgeneration.pdf": {
         "type": "Project",
         "dependencies": {
-          "Granit.DocumentGeneration": "[0.1.0-dev, )",
-          "PuppeteerSharp": "[24.*, )"
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "Granit.DocumentGeneration": "[0.1.0-dev, )"
         }
       },
       "granit.documents": {
@@ -5129,16 +5131,6 @@
         "contentHash": "vFO4Fj/dXkoVNGo/nhoGpO2zYQmZwr4jTID7oRGo+XlQ8LqksyZjUXQ4p39RfUvTID7IzzL8Qe71tW7CcAFymA==",
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
-        }
-      },
-      "PuppeteerSharp": {
-        "type": "CentralTransitive",
-        "requested": "[24.*, )",
-        "resolved": "24.42.0",
-        "contentHash": "t019+FnCRx4aH9bTRqwcDrhjqcuJ3+Da3ijmYw/dmH/3UzPbcdhjRxESG725Kz6o1W0sL5AjPRQwwo0n/cX1Uw==",
-        "dependencies": {
-          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
-          "WebDriverBiDi": "0.0.49"
         }
       },
       "Scalar.AspNetCore": {

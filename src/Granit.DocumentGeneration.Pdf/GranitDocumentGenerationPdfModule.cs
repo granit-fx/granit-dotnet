@@ -1,3 +1,4 @@
+using Granit.Browsing;
 using Granit.DocumentGeneration.Pdf.Extensions;
 using Granit.Modularity;
 using Microsoft.Extensions.DependencyInjection;
@@ -5,22 +6,16 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Granit.DocumentGeneration.Pdf;
 
 /// <summary>
-/// Granit module that registers the PuppeteerSharp PDF renderer.
+/// Granit module that registers the HTML → PDF renderer on top of
+/// <c>Granit.Browsing</c>.
 /// </summary>
 /// <remarks>
-/// Registers:
-/// <list type="bullet">
-///   <item>
-///     <c>PuppeteerSharpRenderer</c> as <c>IDocumentRenderer</c> (singleton).
-///     Converts rendered HTML into PDF using headless Chromium.
-///   </item>
-///   <item>
-///     <c>ChromiumLifetimeService</c> as <c>IHostedService</c> (singleton).
-///     Manages the Chromium browser lifecycle.
-///   </item>
-/// </list>
+/// Composes with <see cref="GranitBrowsingModule"/> for the abstraction; a concrete
+/// provider module (<c>Granit.Browsing.PuppeteerSharp</c> or
+/// <c>Granit.Browsing.Playwright</c>) MUST also be loaded by the host so that
+/// <c>IHeadlessBrowser</c> + <c>IPdfCapability</c> resolve.
 /// </remarks>
-[DependsOn(typeof(GranitDocumentGenerationModule))]
+[DependsOn(typeof(GranitBrowsingModule), typeof(GranitDocumentGenerationModule))]
 public sealed class GranitDocumentGenerationPdfModule : GranitModule
 {
     /// <inheritdoc/>
