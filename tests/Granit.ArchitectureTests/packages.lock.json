@@ -1207,8 +1207,8 @@
       },
       "System.ComponentModel.Annotations": {
         "type": "Transitive",
-        "resolved": "4.6.0",
-        "contentHash": "pOd+UhZ3X8xfwKDlgAzowUJNjp8VYVmOHZm++vCd0kq1HZ0zK3mNo2yRXjYgv7Ik/Xi43fmJfND2PLEsQSALCg=="
+        "resolved": "5.0.0",
+        "contentHash": "dMkqfy2el8A8/I76n2Hi1oBFEbG1SfxD2l5nhwXV3XjlnOmwxJlQbYpJH4W51odnU9sARCSAgv7S3CyAFMkpYg=="
       },
       "System.Composition": {
         "type": "Transitive",
@@ -1344,6 +1344,11 @@
           "Microsoft.Data.SqlClient": "6.1.3",
           "Weasel.Core": "8.15.1"
         }
+      },
+      "WebDriverBiDi": {
+        "type": "Transitive",
+        "resolved": "0.0.49",
+        "contentHash": "KXTJjGny4f4yO+HJGMMgX+qaWqweQvcrtMQPkUw+lw2nUQpJV0VfE3oW4t25bgXOq62cdE9yVEVSjssKRBa98A=="
       },
       "WolverineFx.RDBMS": {
         "type": "Transitive",
@@ -1999,6 +2004,20 @@
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
           "Granit.MultiTenancy": "[0.1.0-dev, )"
+        }
+      },
+      "granit.browsing.playwright": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "Microsoft.Playwright": "[1.*, )"
+        }
+      },
+      "granit.browsing.puppeteersharp": {
+        "type": "Project",
+        "dependencies": {
+          "Granit.Browsing": "[0.1.0-dev, )",
+          "PuppeteerSharp": "[24.*, )"
         }
       },
       "granit.caching": {
@@ -4943,6 +4962,16 @@
         "resolved": "3.0.1",
         "contentHash": "s/s20YTVY9r9TPfTrN5g8zPF1YhwxyqO6PxUkrYTGI2B+OGPe9AdajWZrLhFqXIvqIW23fnUE4+ztrUWNU1+9g=="
       },
+      "Microsoft.Playwright": {
+        "type": "CentralTransitive",
+        "requested": "[1.*, )",
+        "resolved": "1.59.0",
+        "contentHash": "igqHbZMmXI6cYNPg1X1o5/51U3CQp83lvvov/d/zmus2wlG1LjvpEL6i1Jx51pRahPtSyppvwq+ZoBfxeSjiew==",
+        "dependencies": {
+          "Microsoft.Bcl.AsyncInterfaces": "6.0.0",
+          "System.ComponentModel.Annotations": "5.0.0"
+        }
+      },
       "MimeKit": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
@@ -5131,6 +5160,16 @@
         "contentHash": "vFO4Fj/dXkoVNGo/nhoGpO2zYQmZwr4jTID7oRGo+XlQ8LqksyZjUXQ4p39RfUvTID7IzzL8Qe71tW7CcAFymA==",
         "dependencies": {
           "OpenTelemetry.Api.ProviderBuilderExtensions": "[1.15.3, 2.0.0)"
+        }
+      },
+      "PuppeteerSharp": {
+        "type": "CentralTransitive",
+        "requested": "[24.*, )",
+        "resolved": "24.42.0",
+        "contentHash": "t019+FnCRx4aH9bTRqwcDrhjqcuJ3+Da3ijmYw/dmH/3UzPbcdhjRxESG725Kz6o1W0sL5AjPRQwwo0n/cX1Uw==",
+        "dependencies": {
+          "Microsoft.IO.RecyclableMemoryStream": "3.0.1",
+          "WebDriverBiDi": "0.0.49"
         }
       },
       "Scalar.AspNetCore": {

@@ -101,6 +101,9 @@
     <ProjectReference Include="..\..\src\Granit.BlobStorage.GoogleCloud\Granit.BlobStorage.GoogleCloud.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.Proxy\Granit.BlobStorage.Proxy.csproj" />
     <ProjectReference Include="..\..\src\Granit.BlobStorage.S3\Granit.BlobStorage.S3.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Browsing\Granit.Browsing.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Browsing.PuppeteerSharp\Granit.Browsing.PuppeteerSharp.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Browsing.Playwright\Granit.Browsing.Playwright.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching\Granit.Caching.csproj" />
     <ProjectReference Include="..\..\src\Granit.Caching.StackExchangeRedis\Granit.Caching.StackExchangeRedis.csproj" />
     <ProjectReference Include="..\..\src\Granit.Catalog\Granit.Catalog.csproj" />
