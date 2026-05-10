@@ -6772,6 +6772,28 @@
       "members": []
     },
     {
+      "name": "EvaluateAsyncStringInterpolationAnalyzer",
+      "fqn": "Granit.Analyzers.EvaluateAsyncStringInterpolationAnalyzer",
+      "kind": "class",
+      "project": "Granit.Analyzers",
+      "file": "src/Granit.Analyzers/EvaluateAsyncStringInterpolationAnalyzer.cs",
+      "line": 36,
+      "members": [
+        {
+          "name": "SupportedDiagnostics",
+          "kind": "property",
+          "signature": "ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics",
+          "returnType": "ImmutableArray<DiagnosticDescriptor>"
+        },
+        {
+          "name": "Initialize",
+          "kind": "method",
+          "signature": "Initialize(AnalysisContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "GranitMigrationAnalyzerBase",
       "fqn": "Granit.Analyzers.GranitMigrationAnalyzerBase",
       "kind": "class",
