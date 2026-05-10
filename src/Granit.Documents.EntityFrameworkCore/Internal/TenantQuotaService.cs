@@ -118,6 +118,42 @@ internal sealed class TenantQuotaService(
     }
 
     /// <inheritdoc />
+    public async Task<bool> TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)
+    {
+        if (delta < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(delta), "Reservation must be non-negative.");
+        }
+        if (delta == 0)
+        {
+            return true;
+        }
+
+        // Lazy-create so the conditional UPDATE has a row to match. The bootstrap also
+        // seeds LimitBytes from options.
+        await EnsureTenantQuotaAsync(tenantId, cancellationToken).ConfigureAwait(false);
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+        // Conditional atomic update — the WHERE clause guards against quota overshoot
+        // when several concurrent finalisations from the same tenant race. Returns the
+        // affected row count: 0 means the predicate failed (would-exceed); 1 means we
+        // reserved the bytes.
+        int affected = await context.TenantStorageQuotas
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .Where(q => q.TenantId == tenantId && q.UsageBytes + delta <= q.LimitBytes)
+            .ExecuteUpdateAsync(s => s
+                .SetProperty(q => q.UsageBytes, q => q.UsageBytes + delta)
+                .SetProperty(q => q.UpdatedAt, _ => now),
+                cancellationToken)
+            .ConfigureAwait(false);
+        return affected == 1;
+    }
+
+    /// <inheritdoc />
     public async Task<TenantStorageQuota?> GetAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         await using DocumentsDbContext context = await contextFactory

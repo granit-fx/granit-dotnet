@@ -76,6 +76,44 @@ public sealed class TenantQuotaServicePostgresTests :
     }
 
     [Fact]
+    public async Task TryReserveAsync_RejectsWhenWouldExceedLimit_AcceptsWithinLimit()
+    {
+        // F7.2 acceptance: tenant at 99% quota uploads 100 MB → rejected;
+        // tenant at 50% uploads 100 MB → accepted.
+        var tenantA = Guid.NewGuid();
+        var tenantB = Guid.NewGuid();
+        const long limit = 1_000_000_000; // 1 GB for this test (overrides default)
+        const long uploadBytes = 100_000_000; // 100 MB
+
+        // Bootstrap quota row + override LimitBytes via direct EF Core update.
+        await _sut.EnsureTenantQuotaAsync(tenantA, TestContext.Current.CancellationToken);
+        await _sut.EnsureTenantQuotaAsync(tenantB, TestContext.Current.CancellationToken);
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        await db.TenantStorageQuotas
+            .Where(q => q.TenantId == tenantA || q.TenantId == tenantB)
+            .ExecuteUpdateAsync(s => s.SetProperty(q => q.LimitBytes, _ => limit), TestContext.Current.CancellationToken);
+
+        // Tenant A at 99% — IncrementAsync directly (already rounded under limit).
+        await _sut.IncrementAsync(tenantA, 990_000_000, TestContext.Current.CancellationToken);
+        // Tenant B at 50%.
+        await _sut.IncrementAsync(tenantB, 500_000_000, TestContext.Current.CancellationToken);
+
+        bool aReserved = await _sut.TryReserveAsync(tenantA, uploadBytes, TestContext.Current.CancellationToken);
+        bool bReserved = await _sut.TryReserveAsync(tenantB, uploadBytes, TestContext.Current.CancellationToken);
+
+        aReserved.ShouldBeFalse();
+        bReserved.ShouldBeTrue();
+
+        // Tenant B's usage advanced; tenant A's usage unchanged (no race).
+        TenantStorageQuota? a = await _sut.GetAsync(tenantA, TestContext.Current.CancellationToken);
+        TenantStorageQuota? b = await _sut.GetAsync(tenantB, TestContext.Current.CancellationToken);
+        a.ShouldNotBeNull();
+        b.ShouldNotBeNull();
+        a.UsageBytes.ShouldBe(990_000_000);
+        b.UsageBytes.ShouldBe(600_000_000);
+    }
+
+    [Fact]
     public async Task EnsureTenantQuotaAsync_ConcurrentBootstrap_ConvergesOnSingleRow()
     {
         var tenant = Guid.NewGuid();

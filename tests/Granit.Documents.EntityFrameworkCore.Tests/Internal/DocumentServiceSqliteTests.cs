@@ -52,6 +52,12 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         _bootstrap = new DocumentBootstrapService(_factory, new SimpleGuidGenerator());
 
         _blobStorage = Substitute.For<IBlobStorage>();
+        // Default descriptor stub so the F7.2 pre-confirm quota lookup doesn't error out
+        // for tests that only stub ConfirmUploadAsync. Tests overriding the descriptor —
+        // e.g. to test quota over-reservation release — substitute their own.
+        _blobStorage.GetDescriptorAsync(
+                DocumentService.ContainerName, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(ci => StubDescriptor((Guid)ci[1], maxAllowedBytes: long.MaxValue));
         _localEventBus = new CapturingLocalEventBus();
 
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
@@ -65,6 +71,10 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         ServiceProvider provider = services.BuildServiceProvider();
         var metrics = new DocumentsMetrics(provider.GetRequiredService<System.Diagnostics.Metrics.IMeterFactory>());
 
+        ITenantQuotaService quotas = Substitute.For<ITenantQuotaService>();
+        quotas.TryReserveAsync(Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
         _sut = new DocumentService(
             _factory,
             _bootstrap,
@@ -73,10 +83,20 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
             new SimpleGuidGenerator(),
             clock,
             _localEventBus,
-            metrics);
+            metrics,
+            quotas);
     }
 
     public ValueTask DisposeAsync() => _holdOpen.DisposeAsync();
+
+    private static BlobDescriptor StubDescriptor(Guid blobId, long maxAllowedBytes) =>
+        BlobDescriptor.Create(
+            blobId,
+            tenantId: TenantId,
+            containerName: DocumentService.ContainerName,
+            objectKey: $"docs/{blobId:N}",
+            request: new BlobUploadRequest("file.pdf", "application/pdf", maxAllowedBytes),
+            createdAt: DateTimeOffset.UtcNow);
 
     [Fact]
     public async Task RequestUploadTicketAsync_DelegatesToBlobStorage()
@@ -138,6 +158,97 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         ev.DocumentId.ShouldBe(doc.Id);
         ev.VersionNumber.ShouldBe(1);
         ev.BlobDescriptorId.ShouldBe(blobId);
+    }
+
+    [Fact]
+    public async Task FinalizeUploadAsync_QuotaExceeded_Throws_AndDoesNotConfirmBlob()
+    {
+        // F7.2: when the tenant quota is exhausted, finalize must throw the quota-exceeded
+        // exception, leave the blob in Pending status (no ConfirmUploadAsync call), and
+        // record the quota.rejected counter.
+        var blobId = Guid.NewGuid();
+        _blobStorage.GetDescriptorAsync(
+                DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(StubDescriptor(blobId, maxAllowedBytes: 1_000_000));
+
+        // Override the quota stub built in InitializeAsync — caller-specific instance.
+        ITenantQuotaService quotas = Substitute.For<ITenantQuotaService>();
+        quotas.TryReserveAsync(Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<CancellationToken>())
+            .Returns(false); // quota would be exceeded
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(true);
+        tenant.Id.Returns(TenantId);
+
+        ServiceCollection services = new();
+        services.AddMetrics();
+        ServiceProvider provider = services.BuildServiceProvider();
+        var metrics = new DocumentsMetrics(provider.GetRequiredService<System.Diagnostics.Metrics.IMeterFactory>());
+
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(DateTimeOffset.UtcNow);
+
+        var sut = new DocumentService(
+            _factory, _bootstrap, _blobStorage, tenant,
+            new SimpleGuidGenerator(), clock, _localEventBus, metrics, quotas);
+
+        Granit.Documents.Exceptions.TenantStorageQuotaExceededException ex =
+            await Should.ThrowAsync<Granit.Documents.Exceptions.TenantStorageQuotaExceededException>(async () =>
+                await sut.FinalizeUploadAsync(
+                    blobId, null, OwnerId, "F.pdf", null, null, TestContext.Current.CancellationToken));
+        ex.TenantId.ShouldBe(TenantId);
+        ex.RequestedBytes.ShouldBe(1_000_000);
+
+        await _blobStorage.DidNotReceive()
+            .ConfirmUploadAsync(Arg.Any<string>(), Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+
+        // No document row created.
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        (await db.Documents.AnyAsync(TestContext.Current.CancellationToken)).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task FinalizeUploadAsync_OverReservation_IsReleasedAfterConfirm()
+    {
+        // F7.2 release path: declared MaxAllowedBytes (1 MB) but real SizeBytes (100 KB)
+        // means the service must Decrement the slack so UsageBytes ends up at the actual
+        // size, not the declared upper bound.
+        var blobId = Guid.NewGuid();
+        _blobStorage.GetDescriptorAsync(
+                DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(StubDescriptor(blobId, maxAllowedBytes: 1_000_000));
+        _blobStorage.ConfirmUploadAsync(
+                DocumentService.ContainerName, blobId, Arg.Any<CancellationToken>())
+            .Returns(new BlobConfirmationResult(
+                IsValid: true, Status: BlobStatus.Valid,
+                VerifiedContentType: "application/pdf",
+                SizeBytes: 100_000, RejectionReason: null));
+
+        ITenantQuotaService quotas = Substitute.For<ITenantQuotaService>();
+        quotas.TryReserveAsync(Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
+        ICurrentTenant tenant = Substitute.For<ICurrentTenant>();
+        tenant.IsAvailable.Returns(true);
+        tenant.Id.Returns(TenantId);
+
+        ServiceCollection services = new();
+        services.AddMetrics();
+        ServiceProvider provider = services.BuildServiceProvider();
+        var metrics = new DocumentsMetrics(provider.GetRequiredService<System.Diagnostics.Metrics.IMeterFactory>());
+
+        IClock clock = Substitute.For<IClock>();
+        clock.Now.Returns(DateTimeOffset.UtcNow);
+
+        var sut = new DocumentService(
+            _factory, _bootstrap, _blobStorage, tenant,
+            new SimpleGuidGenerator(), clock, _localEventBus, metrics, quotas);
+
+        await sut.FinalizeUploadAsync(
+            blobId, null, OwnerId, "F.pdf", null, null, TestContext.Current.CancellationToken);
+
+        await quotas.Received(1).TryReserveAsync(TenantId, 1_000_000, Arg.Any<CancellationToken>());
+        await quotas.Received(1).DecrementAsync(TenantId, 900_000, Arg.Any<CancellationToken>());
     }
 
     [Fact]

@@ -50,6 +50,16 @@ public sealed class DocumentVersionsListPostgresTests :
         var bootstrap = new DocumentBootstrapService(_factory, new SimpleGuidGenerator());
 
         _blobStorage = Substitute.For<IBlobStorage>();
+        // F7.2 quota path requires GetDescriptorAsync to return a blob with
+        // MaxAllowedBytes; default to a permissive descriptor so the existing tests don't
+        // need to stub it explicitly.
+        _blobStorage.GetDescriptorAsync(
+                DocumentService.ContainerName, Arg.Any<Guid>(), Arg.Any<CancellationToken>())
+            .Returns(ci => BlobDescriptor.Create(
+                (Guid)ci[1], TenantId, DocumentService.ContainerName,
+                $"docs/{(Guid)ci[1]:N}",
+                new BlobUploadRequest("file.pdf", "application/pdf", long.MaxValue),
+                DateTimeOffset.UtcNow));
 
         ICurrentTenant currentTenant = Substitute.For<ICurrentTenant>();
         currentTenant.Id.Returns(TenantId);
@@ -64,9 +74,13 @@ public sealed class DocumentVersionsListPostgresTests :
 
         ILocalEventBus localEventBus = Substitute.For<ILocalEventBus>();
 
+        ITenantQuotaService quotas = Substitute.For<ITenantQuotaService>();
+        quotas.TryReserveAsync(Arg.Any<Guid>(), Arg.Any<long>(), Arg.Any<CancellationToken>())
+            .Returns(true);
+
         _sut = new DocumentService(
             _factory, bootstrap, _blobStorage, currentTenant,
-            new SimpleGuidGenerator(), clock, localEventBus, metrics);
+            new SimpleGuidGenerator(), clock, localEventBus, metrics, quotas);
     }
 
     public ValueTask DisposeAsync() => default;

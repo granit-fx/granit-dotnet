@@ -1,7 +1,9 @@
 using Granit.BlobStorage;
+using Granit.BlobStorage.Domain;
 using Granit.Documents.Diagnostics;
 using Granit.Documents.Domain;
 using Granit.Documents.Events;
+using Granit.Documents.Exceptions;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
@@ -21,7 +23,8 @@ internal sealed class DocumentService(
     IGuidGenerator guidGenerator,
     IClock clock,
     ILocalEventBus localEventBus,
-    DocumentsMetrics metrics) : IDocumentService
+    DocumentsMetrics metrics,
+    ITenantQuotaService quotas) : IDocumentService
 {
     /// <summary>
     /// Container name used for every blob created by Granit.Documents. Hosts can layer
@@ -63,28 +66,95 @@ internal sealed class DocumentService(
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
 
-        // 1. Confirm the blob with BlobStorage — runs validators (size + magic-bytes), then
-        //    transitions Pending → Valid (or Rejected). Idempotent only across the
-        //    Pending → Uploading transition; subsequent calls on a Valid blob throw
-        //    BlobNotValidException with status Valid, which is the signal we want.
-        BlobConfirmationResult confirmation = await blobStorage
-            .ConfirmUploadAsync(ContainerName, blobId, cancellationToken)
-            .ConfigureAwait(false);
-        if (!confirmation.IsValid)
+        // 1. Pre-confirm quota check (F7.2). Use the upload ticket's declared
+        //    MaxAllowedBytes as the conservative reservation: the actual SizeBytes is
+        //    only known post-confirmation, but reserving up-front leaves the
+        //    BlobDescriptor in Pending status on rejection so the orphan-cleanup job
+        //    can reclaim the bytes (the issue's "NOT promoted to Valid" requirement).
+        //    Over-reservation is released after the confirm succeeds.
+        BlobDescriptor? descriptor = await blobStorage
+            .GetDescriptorAsync(ContainerName, blobId, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                $"Blob {blobId} was not found in container '{ContainerName}'.");
+        long reservedBytes = descriptor.MaxAllowedBytes;
+
+        bool reserved = false;
+        if (currentTenant.IsAvailable && currentTenant.Id is { } tid)
         {
-            metrics.RecordQuotaRejected(currentTenant.Id?.ToString());
-            throw new InvalidOperationException(
-                $"Blob {blobId} did not pass validation: {confirmation.RejectionReason ?? "unknown"}.");
+            reserved = await quotas
+                .TryReserveAsync(tid, reservedBytes, cancellationToken)
+                .ConfigureAwait(false);
+            if (!reserved)
+            {
+                metrics.RecordQuotaRejected(tid.ToString());
+                throw new TenantStorageQuotaExceededException(tid, reservedBytes);
+            }
         }
 
-        long sizeBytes = confirmation.SizeBytes
-            ?? throw new InvalidOperationException(
-                $"Blob {blobId} validated successfully but BlobStorage returned no size.");
-        string contentType = confirmation.VerifiedContentType
-            ?? throw new InvalidOperationException(
-                $"Blob {blobId} validated successfully but BlobStorage returned no content type.");
+        try
+        {
+            // 2. Confirm the blob with BlobStorage — runs validators (size + magic-bytes), then
+            //    transitions Pending → Valid (or Rejected). Idempotent only across the
+            //    Pending → Uploading transition; subsequent calls on a Valid blob throw
+            //    BlobNotValidException with status Valid, which is the signal we want.
+            BlobConfirmationResult confirmation = await blobStorage
+                .ConfirmUploadAsync(ContainerName, blobId, cancellationToken)
+                .ConfigureAwait(false);
+            if (!confirmation.IsValid)
+            {
+                throw new InvalidOperationException(
+                    $"Blob {blobId} did not pass validation: {confirmation.RejectionReason ?? "unknown"}.");
+            }
 
-        // 2. Open a fresh DocumentsDbContext and resolve the target folder, defaulting to
+            long sizeBytes = confirmation.SizeBytes
+                ?? throw new InvalidOperationException(
+                    $"Blob {blobId} validated successfully but BlobStorage returned no size.");
+            string contentType = confirmation.VerifiedContentType
+                ?? throw new InvalidOperationException(
+                    $"Blob {blobId} validated successfully but BlobStorage returned no content type.");
+
+            // Release over-reservation: declared MaxAllowedBytes is an upper bound, the
+            // real SizeBytes is typically smaller. Release the slack so the next
+            // finalisation sees an accurate UsageBytes.
+            if (reserved && reservedBytes > sizeBytes)
+            {
+                await quotas
+                    .DecrementAsync(currentTenant.Id!.Value, reservedBytes - sizeBytes, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
+            return await PersistDocumentAsync(
+                blobId, folderId, ownerUserId, name, description, commitMessage,
+                sizeBytes, contentType, cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            // Anything fails between the reservation and the document persistence — fully
+            // release the reservation. The blob is either still Pending (orphan cleanup)
+            // or Valid-but-orphaned (the F9.1 OrphanDocumentCleanupJob picks it up).
+            if (reserved && currentTenant.IsAvailable && currentTenant.Id is { } releasedTid)
+            {
+                await quotas
+                    .DecrementAsync(releasedTid, reservedBytes, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            throw;
+        }
+    }
+
+    private async Task<Document> PersistDocumentAsync(
+        Guid blobId,
+        Guid? folderId,
+        Guid ownerUserId,
+        string name,
+        string? description,
+        string? commitMessage,
+        long sizeBytes,
+        string contentType,
+        CancellationToken cancellationToken)
+    {
+        // 3. Open a fresh DocumentsDbContext and resolve the target folder, defaulting to
         //    the tenant root via the bootstrap service.
         await using DocumentsDbContext context = await contextFactory
             .CreateDbContextAsync(cancellationToken)
@@ -150,27 +220,68 @@ internal sealed class DocumentService(
         string? commitMessage = null,
         CancellationToken cancellationToken = default)
     {
-        // 1. Confirm the blob — runs validators and transitions Pending → Valid. Done
-        //    outside the retry loop because the transition is non-idempotent past Valid:
-        //    re-calling ConfirmUploadAsync on a Valid blob throws BlobNotValidException.
-        BlobConfirmationResult confirmation = await blobStorage
-            .ConfirmUploadAsync(ContainerName, blobId, cancellationToken)
-            .ConfigureAwait(false);
-        if (!confirmation.IsValid)
+        // 1. Pre-confirm quota check (F7.2) — see FinalizeUploadAsync for the rationale
+        //    behind reserving on MaxAllowedBytes and releasing the slack post-confirmation.
+        BlobDescriptor? descriptor = await blobStorage
+            .GetDescriptorAsync(ContainerName, blobId, cancellationToken)
+            .ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                $"Blob {blobId} was not found in container '{ContainerName}'.");
+        long reservedBytes = descriptor.MaxAllowedBytes;
+
+        bool reserved = false;
+        if (currentTenant.IsAvailable && currentTenant.Id is { } tid)
         {
-            metrics.RecordQuotaRejected(currentTenant.Id?.ToString());
-            throw new InvalidOperationException(
-                $"Blob {blobId} did not pass validation: {confirmation.RejectionReason ?? "unknown"}.");
+            reserved = await quotas
+                .TryReserveAsync(tid, reservedBytes, cancellationToken)
+                .ConfigureAwait(false);
+            if (!reserved)
+            {
+                metrics.RecordQuotaRejected(tid.ToString());
+                throw new TenantStorageQuotaExceededException(tid, reservedBytes);
+            }
         }
 
-        long sizeBytes = confirmation.SizeBytes
-            ?? throw new InvalidOperationException(
-                $"Blob {blobId} validated successfully but BlobStorage returned no size.");
-        string contentType = confirmation.VerifiedContentType
-            ?? throw new InvalidOperationException(
-                $"Blob {blobId} validated successfully but BlobStorage returned no content type.");
+        long sizeBytes;
+        string contentType;
+        try
+        {
+            // 2. Confirm the blob — runs validators and transitions Pending → Valid.
+            BlobConfirmationResult confirmation = await blobStorage
+                .ConfirmUploadAsync(ContainerName, blobId, cancellationToken)
+                .ConfigureAwait(false);
+            if (!confirmation.IsValid)
+            {
+                throw new InvalidOperationException(
+                    $"Blob {blobId} did not pass validation: {confirmation.RejectionReason ?? "unknown"}.");
+            }
 
-        // 2. Append loop — at most 2 attempts. The unique index on
+            sizeBytes = confirmation.SizeBytes
+                ?? throw new InvalidOperationException(
+                    $"Blob {blobId} validated successfully but BlobStorage returned no size.");
+            contentType = confirmation.VerifiedContentType
+                ?? throw new InvalidOperationException(
+                    $"Blob {blobId} validated successfully but BlobStorage returned no content type.");
+
+            if (reserved && reservedBytes > sizeBytes)
+            {
+                await quotas
+                    .DecrementAsync(currentTenant.Id!.Value, reservedBytes - sizeBytes, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+        catch
+        {
+            if (reserved && currentTenant.IsAvailable && currentTenant.Id is { } releasedTid)
+            {
+                await quotas
+                    .DecrementAsync(releasedTid, reservedBytes, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            throw;
+        }
+
+        // 3. Append loop — at most 2 attempts. The unique index on
         //    (DocumentId, VersionNumber) plus the optimistic-concurrency token on
         //    Document.RowVersion together guarantee that two parallel callers cannot
         //    both succeed with the same VersionNumber: the second writer either trips
@@ -178,22 +289,41 @@ internal sealed class DocumentService(
         //    (DbUpdateConcurrencyException). Either way we re-read and retry once;
         //    a second collision propagates as the original exception.
         const int MaxAttempts = 2;
-        for (int attempt = 1; attempt <= MaxAttempts; attempt++)
+        try
         {
-            try
+            for (int attempt = 1; attempt <= MaxAttempts; attempt++)
             {
-                return await TryAppendVersionAsync(
-                    documentId, blobId, uploadedByUserId, sizeBytes, contentType, commitMessage,
-                    cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    DocumentVersion? appended = await TryAppendVersionAsync(
+                        documentId, blobId, uploadedByUserId, sizeBytes, contentType, commitMessage,
+                        cancellationToken).ConfigureAwait(false);
+                    if (appended is null && reserved && currentTenant.Id is { } missingTid)
+                    {
+                        // Target document missing — release the bytes; caller sees null.
+                        await quotas.DecrementAsync(missingTid, sizeBytes, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
+                    return appended;
+                }
+                catch (DbUpdateConcurrencyException) when (attempt < MaxAttempts)
+                {
+                    // RowVersion drifted under us — reload and try again.
+                }
+                catch (DbUpdateException) when (attempt < MaxAttempts)
+                {
+                    // Unique-index collision on (DocumentId, VersionNumber) — reload and retry.
+                }
             }
-            catch (DbUpdateConcurrencyException) when (attempt < MaxAttempts)
+        }
+        catch
+        {
+            if (reserved && currentTenant.Id is { } persistFailedTid)
             {
-                // RowVersion drifted under us — reload and try again.
+                await quotas.DecrementAsync(persistFailedTid, sizeBytes, cancellationToken)
+                    .ConfigureAwait(false);
             }
-            catch (DbUpdateException) when (attempt < MaxAttempts)
-            {
-                // Unique-index collision on (DocumentId, VersionNumber) — reload and retry.
-            }
+            throw;
         }
 
         // Unreachable: the loop either returns inside the try, or the final attempt's

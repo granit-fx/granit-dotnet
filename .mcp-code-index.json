@@ -20003,6 +20003,12 @@
           "kind": "method",
           "signature": "GetAsync(Guid tenantId, CancellationToken cancellationToken = default)",
           "returnType": "Task<TenantStorageQuota?>"
+        },
+        {
+          "name": "TryReserveAsync",
+          "kind": "method",
+          "signature": "TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
         }
       ]
     },
@@ -20157,6 +20163,15 @@
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Events/FolderTreePathChangedEvent.cs",
       "line": 24,
+      "members": []
+    },
+    {
+      "name": "TenantStorageQuotaExceededException",
+      "fqn": "Granit.Documents.Exceptions.TenantStorageQuotaExceededException",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Exceptions/TenantStorageQuotaExceededException.cs",
+      "line": 9,
       "members": []
     },
     {

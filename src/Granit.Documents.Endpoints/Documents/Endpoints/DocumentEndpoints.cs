@@ -3,6 +3,7 @@ using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Documents.Dtos;
 using Granit.Documents.Endpoints.Documents.Mapping;
 using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,7 @@ internal static class DocumentEndpoints
             .RequireAuthorization(p => p.RequireClaim(
                 "permission", DocumentsPermissions.Documents.Manage))
             .Produces<DocumentResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
@@ -69,6 +71,7 @@ internal static class DocumentEndpoints
             .RequireAuthorization(p => p.RequireClaim(
                 "permission", DocumentsPermissions.Documents.Manage))
             .Produces<DocumentVersionResponse>(StatusCodes.Status201Created)
+            .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status422UnprocessableEntity)
             .ProducesValidationProblem();
@@ -148,11 +151,14 @@ internal static class DocumentEndpoints
 
             return TypedResults.Created($"/documents/{document.Id}", document.ToResponse());
         }
+        catch (TenantStorageQuotaExceededException ex)
+        {
+            return QuotaExceededProblem(ex);
+        }
         catch (InvalidOperationException ex)
         {
-            // Catches both validation failures (blob rejected) and missing-target-folder.
-            // Status code is the right granularity here: 422 fits both for v1; F7 will
-            // refine the quota path to 403.
+            // Validation failures (blob rejected) and missing-target-folder. Status 422
+            // is the right granularity here for both.
             return TypedResults.Problem(
                 ex.Message,
                 statusCode: StatusCodes.Status422UnprocessableEntity);
@@ -183,6 +189,10 @@ internal static class DocumentEndpoints
                 $"/documents/{id}/versions/{version.Id}",
                 version.ToResponse(isCurrent: true));
         }
+        catch (TenantStorageQuotaExceededException ex)
+        {
+            return QuotaExceededProblem(ex);
+        }
         catch (InvalidOperationException ex)
         {
             // Blob validation failure or trashed-document append.
@@ -191,6 +201,18 @@ internal static class DocumentEndpoints
                 statusCode: StatusCodes.Status422UnprocessableEntity);
         }
     }
+
+    /// <summary>
+    /// Builds the RFC 7807 problem document returned when an upload would push the tenant
+    /// past its storage quota (F7.2). The <c>type</c> URI is the stable identifier the
+    /// frontend matches on to render a quota-specific error UI.
+    /// </summary>
+    private static ProblemHttpResult QuotaExceededProblem(TenantStorageQuotaExceededException ex) =>
+        TypedResults.Problem(
+            detail: ex.Message,
+            statusCode: StatusCodes.Status403Forbidden,
+            type: "https://granit.dev/problems/quota-exceeded",
+            title: "Tenant storage quota exceeded");
 
     private static async Task<Results<Ok<ListDocumentVersionsResponse>, ProblemHttpResult>> ListVersionsAsync(
         Guid id,

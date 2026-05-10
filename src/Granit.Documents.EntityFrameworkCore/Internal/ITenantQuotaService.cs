@@ -39,4 +39,17 @@ public interface ITenantQuotaService
 
     /// <summary>Returns the current quota row for the tenant, or <c>null</c> when not yet created.</summary>
     Task<TenantStorageQuota?> GetAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically reserves <paramref name="delta"/> bytes against the tenant's quota: the
+    /// underlying SQL is a conditional <c>UPDATE … WHERE UsageBytes + @delta &lt;= LimitBytes</c>
+    /// and returns <c>true</c> only when the reservation succeeded. Used by upload finalize
+    /// (F7.2) so concurrent finalisations from the same tenant cannot collectively exceed
+    /// the limit through a read-then-increment race.
+    /// </summary>
+    /// <remarks>
+    /// Lazy-creates the row on first use. <paramref name="delta"/> must be non-negative;
+    /// zero is a no-op that always returns <c>true</c>.
+    /// </remarks>
+    Task<bool> TryReserveAsync(Guid tenantId, long delta, CancellationToken cancellationToken = default);
 }
