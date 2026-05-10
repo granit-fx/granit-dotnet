@@ -15,7 +15,7 @@ public sealed class ActionResultTests
     public void ActionResult_Success_Creates_IsSuccessTrue()
     {
         // Act
-        var result = ActionResult.Success();
+        ActionResult result = ActionResult.Success();
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -26,7 +26,7 @@ public sealed class ActionResultTests
     public void ActionResult_Failure_Creates_IsSuccessFalse()
     {
         // Act
-        var result = ActionResult.Failure("Granit:Validation:Error");
+        ActionResult result = ActionResult.Failure("Granit:Validation:Error");
 
         // Assert
         Assert.False(result.IsSuccess);
@@ -44,7 +44,7 @@ public sealed class ActionResultTests
     public void BulkActionResult_Success_NoFailures()
     {
         // Act
-        var result = BulkActionResult.Success(5);
+        BulkActionResult result = BulkActionResult.Success(5);
 
         // Assert
         Assert.Equal(5, result.AffectedCount);
@@ -55,11 +55,11 @@ public sealed class ActionResultTests
     public void BulkActionResult_WithFailures_IncludesFailureDetails()
     {
         // Arrange
-        var f1 = new BulkFailure("entity-1", "Error A");
-        var f2 = new BulkFailure("entity-2", "Error B");
+        BulkFailure f1 = new BulkFailure("entity-1", "Error A");
+        BulkFailure f2 = new BulkFailure("entity-2", "Error B");
 
         // Act
-        var result = BulkActionResult.WithFailures(3, f1, f2);
+        BulkActionResult result = BulkActionResult.WithFailures(3, f1, f2);
 
         // Assert
         Assert.Equal(3, result.AffectedCount);
@@ -80,7 +80,7 @@ public sealed class ActionResultTests
     public void BulkFailure_StoresIdAndMessage()
     {
         // Act
-        var failure = new BulkFailure("entity-123", "Permission denied");
+        BulkFailure failure = new BulkFailure("entity-123", "Permission denied");
 
         // Assert
         Assert.Equal("entity-123", failure.EntityId);
@@ -119,7 +119,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
     public void ServerExecutor_SetsRequiresServerExecutionFlag()
     {
         // Arrange
-        var builder = new EntityActionBuilder<TestEntity>("testAction");
+        EntityActionBuilder<TestEntity> builder = new EntityActionBuilder<TestEntity>("testAction");
 
         // Act
         builder
@@ -127,7 +127,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
             .DisplayKey("Test.Action")
             .ServerExecutor<DummyExecutor>();
 
-        var descriptor = builder.Build();
+        EntityActionDescriptor descriptor = builder.Build();
 
         // Assert
         Assert.True(descriptor.RequiresServerExecution);
@@ -139,10 +139,10 @@ public sealed class EntityActionBuilderExecutorExtensionTests
     public void BulkExecutor_RequiresServerExecutorToBeSet()
     {
         // Arrange
-        var builder = new EntityActionBuilder<TestEntity>("testAction");
+        EntityActionBuilder<TestEntity> builder = new EntityActionBuilder<TestEntity>("testAction");
 
         // Act & Assert
-        var ex = Assert.Throws<InvalidOperationException>(
+        InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
             () => builder
                 .Post()
                 .DisplayKey("Test.Action")
@@ -155,7 +155,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
     public void BulkExecutor_RegistersTypeAfterServerExecutor()
     {
         // Arrange
-        var builder = new EntityActionBuilder<TestEntity>("testAction");
+        EntityActionBuilder<TestEntity> builder = new EntityActionBuilder<TestEntity>("testAction");
 
         // Act
         builder
@@ -164,7 +164,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
             .ServerExecutor<DummyExecutor>()
             .BulkExecutor<DummyBulkExecutor>();
 
-        var descriptor = builder.Build();
+        EntityActionDescriptor descriptor = builder.Build();
 
         // Assert
         Assert.True(descriptor.RequiresServerExecution);
