@@ -1,9 +1,9 @@
-namespace Granit.Http.Security.Internal;
+namespace Granit.Http.Security;
 
 /// <summary>
 /// Detects reserved / never-publicly-resolvable TLDs (RFC 6761, RFC 7686, mDNS).
 /// </summary>
-internal static class ReservedTldClassifier
+public static class ReservedTldClassifier
 {
     private static readonly string[] Reserved =
     [

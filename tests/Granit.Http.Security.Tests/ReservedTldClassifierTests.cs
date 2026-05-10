@@ -1,4 +1,4 @@
-using Granit.Http.Security.Internal;
+using Granit.Http.Security;
 using Shouldly;
 using Xunit;
 

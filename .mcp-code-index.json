@@ -3007,6 +3007,7 @@
         "Granit.DataExchange.Abstractions",
         "Granit.Guids",
         "Granit.Http.Resilience",
+        "Granit.Http.Security",
         "Granit.Encryption",
         "Granit.Localization",
         "Granit.QueryEngine.Abstractions",
@@ -27875,6 +27876,38 @@
       "file": "src/Granit.Http.Security/Localization/HttpSecurityLocalizationResource.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "PrivateNetworkClassifier",
+      "fqn": "Granit.Http.Security.PrivateNetworkClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/PrivateNetworkClassifier.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "IsBlocked",
+          "kind": "method",
+          "signature": "IsBlocked(IPAddress ip)",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ReservedTldClassifier",
+      "fqn": "Granit.Http.Security.ReservedTldClassifier",
+      "kind": "class",
+      "project": "Granit.Http.Security",
+      "file": "src/Granit.Http.Security/ReservedTldClassifier.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "IsReserved",
+          "kind": "method",
+          "signature": "IsReserved(string host, out string tld)",
+          "returnType": "bool"
+        }
+      ]
     },
     {
       "name": "UrlSafetyOptions",
@@ -63562,7 +63595,7 @@
       "kind": "class",
       "project": "Granit.Webhooks.Endpoints",
       "file": "src/Granit.Webhooks.Endpoints/Validators/WebhookTargetUrlValidatorExtensions.cs",
-      "line": 13,
+      "line": 21,
       "members": []
     },
     {
@@ -63780,7 +63813,7 @@
       "kind": "class",
       "project": "Granit.Webhooks",
       "file": "src/Granit.Webhooks/GranitWebhooksModule.cs",
-      "line": 33,
+      "line": 35,
       "members": [
         {
           "name": "ConfigureServices",

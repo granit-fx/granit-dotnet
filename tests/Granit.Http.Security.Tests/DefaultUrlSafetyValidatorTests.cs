@@ -1,4 +1,5 @@
 using System.Net;
+using Granit.Http.Security;
 using Granit.Http.Security.Internal;
 using Microsoft.Extensions.Options;
 using Shouldly;

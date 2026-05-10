@@ -1,13 +1,17 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Granit.Http.Security.Internal;
+namespace Granit.Http.Security;
 
 /// <summary>
-/// Classifies IP addresses into SSRF-relevant categories.
+/// Classifies IP addresses into SSRF-relevant categories. Used by
+/// <see cref="IUrlSafetyValidator"/> for URL-level validation and exposed publicly so
+/// callers operating below the URL layer (e.g. <c>SocketsHttpHandler.ConnectCallback</c>
+/// in <c>Granit.Webhooks</c>) can re-check resolved IPs at connect time without
+/// duplicating the rule set.
 /// </summary>
 /// <remarks>
-/// Expanded from <c>Granit.Webhooks.Internal.WebhookSsrfGuard</c> with:
+/// Covers:
 /// <list type="bullet">
 ///   <item>Distinct <see cref="UrlSafetyViolationKind.MetadataEndpoint"/> for 169.254.169.254,
 ///   <c>fd00:ec2::254</c>, <c>fe80::a9fe:a9fe</c> (AWS IMDS / GCP / Azure)</item>
@@ -16,8 +20,13 @@ namespace Granit.Http.Security.Internal;
 ///   <item>IPv4-mapped-IPv6 unwrap then re-classify</item>
 /// </list>
 /// </remarks>
-internal static class PrivateNetworkClassifier
+public static class PrivateNetworkClassifier
 {
+    /// <summary>
+    /// Returns <c>true</c> when the address falls in a non-routable / sensitive range.
+    /// </summary>
+    public static bool IsBlocked(IPAddress ip) => Classify(ip, out _);
+
     // AWS IMDSv1/v2 IPv6: fd00:ec2::254 → fd 00 0e c2 00 00 00 00 00 00 00 00 00 00 02 54.
     private static readonly byte[] AwsIPv6Metadata =
         [0xfd, 0x00, 0x0e, 0xc2, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x54];
