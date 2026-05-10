@@ -1,0 +1,8 @@
+{
+  "culture": "de",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Dokumente",
+    "Metric:Granit.Documents.FolderCountMetric": "Ordner",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Belegter Speicher"
+  }
+}

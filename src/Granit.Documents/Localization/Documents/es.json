@@ -1,0 +1,8 @@
+{
+  "culture": "es",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Documentos",
+    "Metric:Granit.Documents.FolderCountMetric": "Carpetas",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Almacenamiento utilizado"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "culture": "cs",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Dokumenty",
+    "Metric:Granit.Documents.FolderCountMetric": "Složky",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Využité úložiště"
+  }
+}

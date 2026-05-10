@@ -65,6 +65,10 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // Enforcement on upload (F7.2) + admin read endpoint (F7.3) layer on top.
         builder.Services.AddScoped<ITenantQuotaService, TenantQuotaService>();
 
+        // Maintenance service (F9): cross-tenant orphan cleanup, empty-trash, quota
+        // recompute. Consumed by the Granit.Documents.BackgroundJobs handlers.
+        builder.Services.AddScoped<IDocumentMaintenanceService, DocumentMaintenanceService>();
+
         // Effective-permission resolver (F6.2 + F6.3). The concrete EffectivePermissionResolver
         // is registered first so the cache decorator can delegate to it; the public
         // IEffectivePermissionResolver registration depends on whether the FusionCache layer

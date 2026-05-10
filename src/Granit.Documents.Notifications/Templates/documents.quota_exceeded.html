@@ -1,0 +1,4 @@
+<title>Storage quota exceeded</title>
+<p>Hi,</p>
+<p>An upload of <strong>{{ model.attempted_bytes | format_bytes }}</strong> was rejected because your tenant has exhausted its allocated document storage ({{ model.usage_bytes | format_bytes }} of {{ model.limit_bytes | format_bytes }}).</p>
+<p>Please permanently delete unused documents from the trash to free up space, or contact your administrator to request a quota increase.</p>

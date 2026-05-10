@@ -1,0 +1,8 @@
+{
+  "culture": "ko",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "문서",
+    "Metric:Granit.Documents.FolderCountMetric": "폴더",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "사용 중인 저장 공간"
+  }
+}

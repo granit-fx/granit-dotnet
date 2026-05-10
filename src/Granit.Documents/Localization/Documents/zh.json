@@ -1,0 +1,8 @@
+{
+  "culture": "zh",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "文档",
+    "Metric:Granit.Documents.FolderCountMetric": "文件夹",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "已用存储"
+  }
+}

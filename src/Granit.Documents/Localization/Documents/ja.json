@@ -1,0 +1,8 @@
+{
+  "culture": "ja",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "ドキュメント",
+    "Metric:Granit.Documents.FolderCountMetric": "フォルダ",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "使用ストレージ"
+  }
+}

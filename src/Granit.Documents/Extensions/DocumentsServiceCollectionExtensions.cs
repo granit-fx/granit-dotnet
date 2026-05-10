@@ -1,7 +1,13 @@
+using Granit.Analytics.Extensions;
+using Granit.DataExchange.Extensions;
 using Granit.Diagnostics;
 using Granit.Documents.Diagnostics;
 using Granit.Documents.Domain;
+using Granit.Documents.Exports;
+using Granit.Documents.Metrics;
 using Granit.Documents.Options;
+using Granit.Documents.Queries;
+using Granit.QueryEngine.Extensions;
 using Granit.Taxonomy.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -47,6 +53,19 @@ public static class DocumentsServiceCollectionExtensions
         // document.
         services.AddGranitTaxonomy();
         services.AddTaggableEntity<Document>(scope: "documents");
+
+        // F11 — declarative definitions (ADR-020 placement: base module).
+        services.AddQueryDefinition<Document, DocumentQueryDefinition>();
+        services.AddQueryDefinition<Folder, FolderQueryDefinition>();
+        services.AddQueryDefinition<TenantStorageQuota, TenantStorageQuotaQueryDefinition>();
+
+        services.AddExportDefinition<Document, DocumentExportDefinition>();
+        services.AddExportDefinition<Folder, FolderExportDefinition>();
+        services.AddExportDefinition<TenantStorageQuota, TenantStorageQuotaExportDefinition>();
+
+        services.AddMetricDefinition<Document, int, DocumentCountMetricDefinition>();
+        services.AddMetricDefinition<Folder, int, FolderCountMetricDefinition>();
+        services.AddMetricDefinition<TenantStorageQuota, long, TotalStorageUsedMetricDefinition>();
 
         OptionsBuilder<GranitDocumentsOptions> optionsBuilder = services
             .AddOptions<GranitDocumentsOptions>()

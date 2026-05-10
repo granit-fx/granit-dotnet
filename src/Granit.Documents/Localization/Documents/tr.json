@@ -1,0 +1,8 @@
+{
+  "culture": "tr",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Belgeler",
+    "Metric:Granit.Documents.FolderCountMetric": "Klasörler",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Kullanılan depolama"
+  }
+}

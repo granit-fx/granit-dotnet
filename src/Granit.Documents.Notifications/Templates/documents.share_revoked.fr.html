@@ -1,0 +1,5 @@
+<title>Votre accès à un document a été révoqué</title>
+<p>Bonjour,</p>
+<p>Votre accès au {{ if model.target_type == "Folder" }}dossier{{ else }}document{{ end }}{{ if model.target_name }} <strong>{{ model.target_name }}</strong>{{ end }} a été révoqué.</p>
+<p>Si vous pensez qu'il s'agit d'une erreur, veuillez contacter le propriétaire du document.</p>
+<p>Référence : <code>{{ model.share_id }}</code></p>

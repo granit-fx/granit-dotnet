@@ -1,0 +1,5 @@
+<title>Your access to a document has been revoked</title>
+<p>Hi,</p>
+<p>Your access to {{ if model.target_type == "Folder" }}folder{{ else }}document{{ end }}{{ if model.target_name }} <strong>{{ model.target_name }}</strong>{{ end }} has been revoked.</p>
+<p>If you believe this is an error, please contact the document owner.</p>
+<p>Reference: <code>{{ model.share_id }}</code></p>

@@ -907,8 +907,20 @@
       "name": "Granit.Documents",
       "deps": [
         "Granit",
+        "Granit.Analytics",
         "Granit.BlobStorage",
+        "Granit.DataExchange.Abstractions",
+        "Granit.Localization",
+        "Granit.QueryEngine.Abstractions",
         "Granit.Taxonomy"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents"
       ],
       "framework": "net10.0"
     },
@@ -929,6 +941,15 @@
         "Granit.Caching",
         "Granit.Documents",
         "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
+      "name": "Granit.Documents.Notifications",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Notifications.Abstractions",
+        "Granit.Templating"
       ],
       "framework": "net10.0"
     },
@@ -19385,6 +19406,90 @@
       ]
     },
     {
+      "name": "GranitDocumentsBackgroundJobsModule",
+      "fqn": "Granit.Documents.BackgroundJobs.GranitDocumentsBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/GranitDocumentsBackgroundJobsModule.cs",
+      "line": 20,
+      "members": []
+    },
+    {
+      "name": "EmptyTrashHandler",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.EmptyTrashHandler",
+      "kind": "class",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/EmptyTrashHandler.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(EmptyTrashJob _, IDocumentMaintenanceService maintenance, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "EmptyTrashJob",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.EmptyTrashJob",
+      "kind": "record",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/EmptyTrashJob.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "OrphanDocumentCleanupHandler",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.OrphanDocumentCleanupHandler",
+      "kind": "class",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/OrphanDocumentCleanupHandler.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(OrphanDocumentCleanupJob _, IDocumentMaintenanceService maintenance, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "OrphanDocumentCleanupJob",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.OrphanDocumentCleanupJob",
+      "kind": "record",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/OrphanDocumentCleanupJob.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "QuotaRecomputeHandler",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.QuotaRecomputeHandler",
+      "kind": "class",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/QuotaRecomputeHandler.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(QuotaRecomputeJob _, IDocumentMaintenanceService maintenance, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "QuotaRecomputeJob",
+      "fqn": "Granit.Documents.BackgroundJobs.Jobs.QuotaRecomputeJob",
+      "kind": "record",
+      "project": "Granit.Documents.BackgroundJobs",
+      "file": "src/Granit.Documents.BackgroundJobs/Jobs/QuotaRecomputeJob.cs",
+      "line": 12,
+      "members": []
+    },
+    {
       "name": "DocumentsMetrics",
       "fqn": "Granit.Documents.Diagnostics.DocumentsMetrics",
       "kind": "class",
@@ -20189,12 +20294,60 @@
       "members": []
     },
     {
+      "name": "DocumentExportDefinition",
+      "fqn": "Granit.Documents.Exports.DocumentExportDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Exports/DocumentExportDefinition.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "FolderExportDefinition",
+      "fqn": "Granit.Documents.Exports.FolderExportDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Exports/FolderExportDefinition.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "TenantStorageQuotaExportDefinition",
+      "fqn": "Granit.Documents.Exports.TenantStorageQuotaExportDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Exports/TenantStorageQuotaExportDefinition.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
       "name": "DocumentsServiceCollectionExtensions",
       "fqn": "Granit.Documents.Extensions.DocumentsServiceCollectionExtensions",
       "kind": "class",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Extensions/DocumentsServiceCollectionExtensions.cs",
-      "line": 15,
+      "line": 21,
       "members": [
         {
           "name": "AddGranitDocuments",
@@ -20226,6 +20379,34 @@
           "kind": "method",
           "signature": "EnsureTenantRootAsync(Guid? tenantId, Guid ownerUserId, CancellationToken cancellationToken = default)",
           "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IDocumentMaintenanceService",
+      "fqn": "Granit.Documents.IDocumentMaintenanceService",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/IDocumentMaintenanceService.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "CleanupOrphanBlobsAsync",
+          "kind": "method",
+          "signature": "CleanupOrphanBlobsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "EmptyTrashAsync",
+          "kind": "method",
+          "signature": "EmptyTrashAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
+        },
+        {
+          "name": "RecomputeQuotasAsync",
+          "kind": "method",
+          "signature": "RecomputeQuotasAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<int>"
         }
       ]
     },
@@ -20456,6 +20637,334 @@
       ]
     },
     {
+      "name": "DocumentCountMetricDefinition",
+      "fqn": "Granit.Documents.Metrics.DocumentCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Metrics/DocumentCountMetricDefinition.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Document, int?>>? Selector",
+          "returnType": "Expression<Func<Document, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Document, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Document, bool>>?"
+        }
+      ]
+    },
+    {
+      "name": "FolderCountMetricDefinition",
+      "fqn": "Granit.Documents.Metrics.FolderCountMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Metrics/FolderCountMetricDefinition.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<Folder, int?>>? Selector",
+          "returnType": "Expression<Func<Folder, int?>>?"
+        },
+        {
+          "name": "BaseFilter",
+          "kind": "property",
+          "signature": "Expression<Func<Folder, bool>>? BaseFilter",
+          "returnType": "Expression<Func<Folder, bool>>?"
+        }
+      ]
+    },
+    {
+      "name": "TotalStorageUsedMetricDefinition",
+      "fqn": "Granit.Documents.Metrics.TotalStorageUsedMetricDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Metrics/TotalStorageUsedMetricDefinition.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "ValueKind",
+          "kind": "property",
+          "signature": "MetricValueKind ValueKind",
+          "returnType": "MetricValueKind"
+        },
+        {
+          "name": "Aggregation",
+          "kind": "property",
+          "signature": "AggregateFunction Aggregation",
+          "returnType": "AggregateFunction"
+        },
+        {
+          "name": "Selector",
+          "kind": "property",
+          "signature": "Expression<Func<TenantStorageQuota, long?>>? Selector",
+          "returnType": "Expression<Func<TenantStorageQuota, long?>>?"
+        },
+        {
+          "name": "IsHigherBetter",
+          "kind": "property",
+          "signature": "bool IsHigherBetter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "DocumentShareRevokedNotificationData",
+      "fqn": "Granit.Documents.Notifications.DocumentShareRevokedNotificationData",
+      "kind": "record",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/DocumentShareRevokedNotificationType.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "DocumentShareRevokedNotificationType",
+      "fqn": "Granit.Documents.Notifications.DocumentShareRevokedNotificationType",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/DocumentShareRevokedNotificationType.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "DocumentShareRevokedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
+        }
+      ]
+    },
+    {
+      "name": "DocumentSharedNotificationData",
+      "fqn": "Granit.Documents.Notifications.DocumentSharedNotificationData",
+      "kind": "record",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/DocumentSharedNotificationType.cs",
+      "line": 32,
+      "members": []
+    },
+    {
+      "name": "DocumentSharedNotificationType",
+      "fqn": "Granit.Documents.Notifications.DocumentSharedNotificationType",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/DocumentSharedNotificationType.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "DocumentSharedNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsNotificationsModule",
+      "fqn": "Granit.Documents.Notifications.GranitDocumentsNotificationsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/GranitDocumentsNotificationsModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentShareRevokedHandler",
+      "fqn": "Granit.Documents.Notifications.Handlers.DocumentShareRevokedHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/Handlers/DocumentShareRevokedHandler.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareRevokedEvent evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "DocumentSharedHandler",
+      "fqn": "Granit.Documents.Notifications.Handlers.DocumentSharedHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/Handlers/DocumentSharedHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareGrantedEvent evt, INotificationPublisher publisher, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "QuotaExceededNotificationData",
+      "fqn": "Granit.Documents.Notifications.QuotaExceededNotificationData",
+      "kind": "record",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/QuotaExceededNotificationType.cs",
+      "line": 28,
+      "members": []
+    },
+    {
+      "name": "QuotaExceededNotificationType",
+      "fqn": "Granit.Documents.Notifications.QuotaExceededNotificationType",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/QuotaExceededNotificationType.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "QuotaExceededNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
+      "name": "QuotaWarningNotificationData",
+      "fqn": "Granit.Documents.Notifications.QuotaWarningNotificationData",
+      "kind": "record",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/QuotaWarningNotificationType.cs",
+      "line": 29,
+      "members": []
+    },
+    {
+      "name": "QuotaWarningNotificationType",
+      "fqn": "Granit.Documents.Notifications.QuotaWarningNotificationType",
+      "kind": "class",
+      "project": "Granit.Documents.Notifications",
+      "file": "src/Granit.Documents.Notifications/QuotaWarningNotificationType.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "QuotaWarningNotificationType Instance ="
+        },
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "DefaultChannels",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DefaultChannels",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "DefaultSeverity",
+          "kind": "property",
+          "signature": "NotificationSeverity DefaultSeverity",
+          "returnType": "NotificationSeverity"
+        }
+      ]
+    },
+    {
       "name": "GranitDocumentsOptions",
       "fqn": "Granit.Documents.Options.GranitDocumentsOptions",
       "kind": "class",
@@ -20486,6 +20995,72 @@
           "kind": "property",
           "signature": "bool AclCacheEnabled",
           "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "DocumentQueryDefinition",
+      "fqn": "Granit.Documents.Queries.DocumentQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Queries/DocumentQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(DocumentsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
+        }
+      ]
+    },
+    {
+      "name": "FolderQueryDefinition",
+      "fqn": "Granit.Documents.Queries.FolderQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Queries/FolderQueryDefinition.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(DocumentsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
+        }
+      ]
+    },
+    {
+      "name": "TenantStorageQuotaQueryDefinition",
+      "fqn": "Granit.Documents.Queries.TenantStorageQuotaQueryDefinition",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Queries/TenantStorageQuotaQueryDefinition.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "Name",
+          "kind": "property",
+          "signature": "string Name",
+          "returnType": "string"
+        },
+        {
+          "name": "typeof",
+          "kind": "method",
+          "signature": "typeof(DocumentsLocalizationResource)",
+          "returnType": "Type? LocalizationResourceType =>"
         }
       ]
     },

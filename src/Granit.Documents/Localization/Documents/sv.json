@@ -1,0 +1,8 @@
+{
+  "culture": "sv",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Dokument",
+    "Metric:Granit.Documents.FolderCountMetric": "Mappar",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Använt lagringsutrymme"
+  }
+}

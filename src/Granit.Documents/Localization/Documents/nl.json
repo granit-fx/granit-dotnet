@@ -1,0 +1,8 @@
+{
+  "culture": "nl",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "Documenten",
+    "Metric:Granit.Documents.FolderCountMetric": "Mappen",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Gebruikte opslag"
+  }
+}

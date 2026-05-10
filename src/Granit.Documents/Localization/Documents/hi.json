@@ -1,0 +1,8 @@
+{
+  "culture": "hi",
+  "texts": {
+    "Metric:Granit.Documents.DocumentCountMetric": "दस्तावेज़",
+    "Metric:Granit.Documents.FolderCountMetric": "फ़ोल्डर",
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "उपयोग किया गया संग्रहण"
+  }
+}

@@ -1,0 +1,4 @@
+<title>Storage usage warning</title>
+<p>Hi,</p>
+<p>Your tenant's document storage is at <strong>{{ model.usage_percent }}%</strong> of its allocated quota ({{ model.usage_bytes | format_bytes }} of {{ model.limit_bytes | format_bytes }}).</p>
+<p>Consider archiving or permanently deleting unused documents before the limit is reached. New uploads will be rejected once the quota is exhausted.</p>

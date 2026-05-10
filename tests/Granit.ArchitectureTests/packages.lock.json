@@ -2305,7 +2305,11 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",
+          "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
+          "Granit.Localization": "[0.1.0-dev, )",
+          "Granit.QueryEngine.Abstractions": "[0.1.0-dev, )",
           "Granit.Taxonomy": "[0.1.0-dev, )"
         }
       },
@@ -5074,8 +5078,8 @@
       "Sep": {
         "type": "CentralTransitive",
         "requested": "[0.*, )",
-        "resolved": "0.14.0",
-        "contentHash": "CFYZLNTXEYZrJIY1SL8TfjXWkhn9LQK/gxhOxCWA8MDnJkXOgDwG5gluMa1KCiZgCyGWQmF6kRFTGyEGJAnnNw==",
+        "resolved": "0.14.1",
+        "contentHash": "yliFcwYWxcLXwCR+XI0IviKCChtMWP6Tx4DWs3rW9QYhj147zW7ZLKQteg5v7T9zIB/Ki0Bo2FM0F4ndcaPP+A==",
         "dependencies": {
           "csFastFloat": "4.1.5"
         }

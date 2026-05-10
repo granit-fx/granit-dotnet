@@ -156,6 +156,10 @@ internal sealed class ScribanTemplateEngine(
             globals.SetValue("to_user_time", new UserTimeFunction(clock), readOnly: true);
         }
 
+        // Register {{ bytes | format_bytes }} human-readable byte size filter
+        // (B / KB / MB / GB / TB / PB, 1024-based).
+        globals.SetValue("format_bytes", new FormatBytesFunction(), readOnly: true);
+
         TemplateContext templateContext = new()
         {
             // Sandboxing: no bypass of member visibility restrictions
