@@ -203,6 +203,7 @@
         "tests/Granit.Documents.Endpoints.Tests",
         "tests/Granit.Documents.EntityFrameworkCore.Tests",
         "tests/Granit.Documents.Notifications.Tests",
+        "tests/Granit.Documents.Renditions.Tests",
         "tests/Granit.Documents.Tests",
         "tests/Granit.Events.Tests",
         "tests/Granit.Events.Wolverine.Tests",
