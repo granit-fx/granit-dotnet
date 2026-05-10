@@ -78,9 +78,3 @@ public class DocumentPermanentlyDeletedRenditionHandler
         LogCascadeMessage(logger, count, releasedBytes, documentId, null);
 }
 
-/// <summary>Container names used by <c>Granit.Documents.Renditions</c> when writing to <c>IBlobStorage</c>.</summary>
-internal static class DocumentRenditionContainers
-{
-    /// <summary>Container hosting rendition blobs.</summary>
-    public const string Renditions = "document-renditions";
-}

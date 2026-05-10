@@ -985,6 +985,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents.Renditions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.Renditions.Endpoints",
       "deps": [
         "Granit.Documents",
@@ -20277,6 +20285,15 @@
       ]
     },
     {
+      "name": "DocumentBlobContainers",
+      "fqn": "Granit.Documents.DocumentBlobContainers",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/DocumentBlobContainers.cs",
+      "line": 9,
+      "members": []
+    },
+    {
       "name": "DocumentVersionPage",
       "fqn": "Granit.Documents.DocumentVersionPage",
       "kind": "record",
@@ -21824,6 +21841,134 @@
       ]
     },
     {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsBackgroundJobs",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsBackgroundJobs(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsBackgroundJobsModule",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.GranitDocumentsRenditionsBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/GranitDocumentsRenditionsBackgroundJobsModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentVersionAddedRenditionsHandler",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Handlers.DocumentVersionAddedRenditionsHandler",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Handlers/DocumentVersionAddedRenditionsHandler.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IRenditionTypePolicy policy, IRenditionGenerationService generationService, ILogger<DocumentVersionAddedRenditionsHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionGenerationService",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionGenerationService",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionGenerationService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GenerateAsync",
+          "kind": "method",
+          "signature": "GenerateAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, RenditionTarget target, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionResultUploader",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionResultUploader",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionResultUploader.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "UploadAsync",
+          "kind": "method",
+          "signature": "UploadAsync(RenditionResult result, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Guid>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionSourceFetcher",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.IRenditionSourceFetcher",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/IRenditionSourceFetcher.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "OpenSourceAsync",
+          "kind": "method",
+          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        }
+      ]
+    },
+    {
+      "name": "DefaultRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.DefaultRenditionTypePolicy",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/DefaultRenditionTypePolicy.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionTypePolicy",
+      "fqn": "Granit.Documents.Renditions.BackgroundJobs.Policies.IRenditionTypePolicy",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions.BackgroundJobs",
+      "file": "src/Granit.Documents.Renditions.BackgroundJobs/Policies/IRenditionTypePolicy.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ResolveTargets",
+          "kind": "method",
+          "signature": "ResolveTargets(string sourceContentType)",
+          "returnType": "IReadOnlyList<RenditionTarget>"
+        }
+      ]
+    },
+    {
       "name": "RenditionsActivitySource",
       "fqn": "Granit.Documents.Renditions.Diagnostics.RenditionsActivitySource",
       "kind": "class",
@@ -21866,6 +22011,15 @@
           "returnType": "void"
         }
       ]
+    },
+    {
+      "name": "DocumentRenditionContainers",
+      "fqn": "Granit.Documents.Renditions.DocumentRenditionContainers",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/DocumentRenditionContainers.cs",
+      "line": 7,
+      "members": []
     },
     {
       "name": "DocumentRendition",
