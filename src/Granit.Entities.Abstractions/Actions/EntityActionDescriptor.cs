@@ -22,6 +22,9 @@ namespace Granit.Entities.Actions;
 /// <param name="ShowOnCalendarTile">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's calendar tile. Off by default — calendar tiles are smaller than kanban cards so curate carefully.</param>
 /// <param name="ShowOnListHeader">When <see langword="true"/>, the action is pinned on the list-page header (above the list / kanban / gallery / calendar tabs), not on individual rows. Use for entity-scope actions like <c>Import</c>, <c>Export</c>, <c>BulkArchive</c> — the URL template must NOT carry a <c>{id}</c> placeholder since no row is selected. Mirrors Odoo's top-of-list action bar.</param>
 /// <param name="ShowOnSelection">When <see langword="true"/>, the action is exposed on the selection-bar dropdown that appears above the list when at least one row is selected (Odoo's "Action ▼"). Same row URL as the per-row action — the renderer fires N parallel requests, substituting <c>{id}</c> per selected row (concurrency-capped client-side). Mutually exclusive with <see cref="ShowOnListHeader"/>: header actions are entity-scope and cannot also be selection-scope.</param>
+/// <param name="RequiresServerExecution">When <see langword="true"/>, this action requires server-side execution via <see cref="Execution.IEntityActionExecutor{TEntity}"/>. Used by the bulk action endpoint to determine if an action can be dispatched server-side; off-by-default for backward compatibility with pure-frontend actions.</param>
+/// <param name="ServerExecutorType">CLR type implementing <see cref="Execution.IEntityActionExecutor{TEntity}"/> for this action. <see langword="null"/> for actions without server execution.</param>
+/// <param name="BulkExecutorType">Optional CLR type implementing <see cref="Execution.IBulkActionExecutor{TEntity}"/> for batch-optimized execution. <see langword="null"/> means the framework falls back to per-entity executor calls.</param>
 public sealed record EntityActionDescriptor(
     string Name,
     EntityActionKind Kind,
@@ -38,4 +41,7 @@ public sealed record EntityActionDescriptor(
     bool ShowOnGalleryCard = false,
     bool ShowOnCalendarTile = false,
     bool ShowOnListHeader = false,
-    bool ShowOnSelection = false);
+    bool ShowOnSelection = false,
+    bool RequiresServerExecution = false,
+    Type? ServerExecutorType = null,
+    Type? BulkExecutorType = null);
