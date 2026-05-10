@@ -208,6 +208,7 @@
         "tests/Granit.Documents.Renditions.BackgroundJobs.Tests",
         "tests/Granit.Documents.Renditions.Endpoints.Tests",
         "tests/Granit.Documents.Renditions.Imaging.Tests",
+        "tests/Granit.Documents.Renditions.Pdf.Tests",
         "tests/Granit.Documents.Renditions.EntityFrameworkCore.Tests",
         "tests/Granit.Documents.Renditions.Tests",
         "tests/Granit.Documents.Tests",

@@ -1029,6 +1029,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.Pdf",
+      "deps": [
+        "Granit.Browsing",
+        "Granit.Documents.Renditions"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -22744,6 +22752,38 @@
           "kind": "property",
           "signature": "int Quality",
           "returnType": "int"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Pdf.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Pdf",
+      "file": "src/Granit.Documents.Renditions.Pdf/Extensions/ServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsPdf",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsPdf(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsPdfModule",
+      "fqn": "Granit.Documents.Renditions.Pdf.GranitDocumentsRenditionsPdfModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Pdf",
+      "file": "src/Granit.Documents.Renditions.Pdf/GranitDocumentsRenditionsPdfModule.cs",
+      "line": 21,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },
