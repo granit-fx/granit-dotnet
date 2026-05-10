@@ -58,17 +58,4 @@ public sealed class PdfRenderOptionsAdditionalTests
         options.PrintBackground.ShouldBeFalse();
     }
 
-    [Fact]
-    public void CanSet_ChromiumExecutablePath()
-    {
-        PdfRenderOptions options = new() { ChromiumExecutablePath = "/usr/bin/chromium" };
-        options.ChromiumExecutablePath.ShouldBe("/usr/bin/chromium");
-    }
-
-    [Fact]
-    public void CanSet_MaxConcurrentPages()
-    {
-        PdfRenderOptions options = new() { MaxConcurrentPages = 16 };
-        options.MaxConcurrentPages.ShouldBe(16);
-    }
 }

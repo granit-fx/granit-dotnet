@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <PackageId>Granit.DocumentGeneration.Pdf</PackageId>
-    <Description>PDF document generation for Granit via PuppeteerSharp (headless Chromium). Converts rendered HTML into PDF documents with configurable page layout, margins, headers and footers.</Description>
+    <Description>PDF document generation for Granit. Renders HTML to PDF through Granit.Browsing's IPdfCapability — register a provider package (Granit.Browsing.PuppeteerSharp or Granit.Browsing.Playwright with the Chromium engine) before AddGranitDocumentGenerationPdf().</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
@@ -13,13 +13,13 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
-    <PackageReference Include="PuppeteerSharp" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Granit.Browsing\Granit.Browsing.csproj" />
     <ProjectReference Include="..\Granit.DocumentGeneration\Granit.DocumentGeneration.csproj" />
   </ItemGroup>
 

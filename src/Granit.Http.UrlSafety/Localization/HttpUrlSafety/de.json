@@ -1,0 +1,18 @@
+{
+  "culture": "de",
+  "texts": {
+    "UrlSafety:SchemeNotAllowed": "Das URL-Schema '{0}' ist nicht erlaubt.",
+    "UrlSafety:HostBlocked": "Host '{0}' ist gesperrt.",
+    "UrlSafety:PrivateNetwork": "Host '{0}' wird zu einer privaten Netzwerkadresse aufgelöst.",
+    "UrlSafety:Loopback": "Host '{0}' wird zu einer Loopback-Adresse aufgelöst.",
+    "UrlSafety:LinkLocal": "Host '{0}' wird zu einer Link-Local-Adresse aufgelöst.",
+    "UrlSafety:MetadataEndpoint": "Host '{0}' wird zu einem Cloud-Metadaten-Endpunkt aufgelöst.",
+    "UrlSafety:IPv6UniqueLocal": "Host '{0}' wird zu einer IPv6-Unique-Local-Adresse aufgelöst.",
+    "UrlSafety:ReservedTld": "Host '{0}' verwendet das reservierte TLD '{1}'.",
+    "UrlSafety:MalformedUrl": "Die URL ist fehlerhaft.",
+    "UrlSafety:UrlTooLong": "Die URL überschreitet die maximale Länge von {0}.",
+    "UrlSafety:HostPatternDenied": "Host '{0}' entspricht einem verweigerten Muster.",
+    "UrlSafety:HostPatternNotAllowed": "Host '{0}' steht nicht auf der Liste erlaubter Muster.",
+    "UrlSafety:DnsResolutionFailed": "DNS-Auflösung für Host '{0}' fehlgeschlagen."
+  }
+}

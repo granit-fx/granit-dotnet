@@ -1,6 +1,6 @@
 ---
 title: "Document Generation \u2014 PDF & Excel from Templates"
-description: Binary document generation pipeline — HTML to PDF via headless Chromium (PuppeteerSharp), Excel via ClosedXML, and PDF/A-3b conversion for archival and electronic invoicing.
+description: Binary document generation pipeline — HTML to PDF through the Granit.Browsing abstraction (Chromium-backed), Excel via ClosedXML, and PDF/A-3b conversion for archival and electronic invoicing.
 sidebar:
   label: Document Generation
   order: 14
@@ -29,14 +29,14 @@ in several EU countries.
 
 <FileTree>
 - Granit.DocumentGeneration/ IDocumentGenerator facade, 2-stage pipeline (text render + binary conversion)
-  - Granit.DocumentGeneration.Pdf PuppeteerSharp headless Chromium, PdfRenderOptions, PDF/A-3b
+  - Granit.DocumentGeneration.Pdf HTML→PDF via Granit.Browsing's IPdfCapability, PdfRenderOptions, PDF/A-3b
   - Granit.DocumentGeneration.Excel ClosedXML engine, Base64-encoded XLSX templates
 </FileTree>
 
 | Package | Role | Depends on |
 | ------- | ---- | ---------- |
 | `Granit.DocumentGeneration` | `IDocumentGenerator` facade, `IDocumentRenderer` abstraction | `Granit.Templating` |
-| `Granit.DocumentGeneration.Pdf` | PuppeteerSharp PDF renderer, `IPdfAConverter` | `Granit.DocumentGeneration` |
+| `Granit.DocumentGeneration.Pdf` | HTML→PDF renderer (consumes `IPdfCapability`), `IPdfAConverter` | `Granit.DocumentGeneration`, `Granit.Browsing` |
 | `Granit.DocumentGeneration.Excel` | ClosedXML `ITemplateEngine` (direct binary output) | `Granit.Templating` |
 
 ## Setup
@@ -283,5 +283,6 @@ instruments for every generation call:
 ## See also
 
 - [Templating module](/dotnet/business/templating/) -- Scriban pipeline, enrichers, resolvers, template lifecycle
+- [Browsing module](/dotnet/infrastructure/browsing/) -- Headless-browser abstraction (PuppeteerSharp / Playwright) consumed by the PDF renderer for HTML → PDF
 - [Background Jobs module](/dotnet/infrastructure/background-jobs/) -- Schedule document generation as background jobs
 - [Wolverine module](/dotnet/infrastructure/wolverine-messaging/) -- Durable messaging for async document generation
