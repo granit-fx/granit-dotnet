@@ -5,7 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Sandbox;
+using Granit.IO;
+using Granit.IO.Options;
 using Granit.MultiTenancy;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using UglyToad.PdfPig;
 using BrowsingScreenshotFormat = Granit.Browsing.Options.ScreenshotFormat;
 using BrowsingScreenshotOptions = Granit.Browsing.Options.ScreenshotOptions;
 
@@ -13,10 +19,17 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 
 /// <summary>
 /// PuppeteerSharp implementation of <see cref="IPdfViewerCapability"/>. Loads the PDF in
-/// Chromium's built-in PDF viewer and rasters individual pages by setting the viewport
-/// to match the requested dimensions and screenshotting the viewer.
+/// Chromium's built-in PDF viewer via a <c>file://</c> URL pointing at a securely-staged
+/// temp file (VULN-102) and counts pages with PdfPig instead of the fragile substring
+/// heuristic.
 /// </summary>
-internal sealed class PuppeteerPdfViewerCapability(BrowsingMetrics metrics, ICurrentTenant? currentTenant = null) : IPdfViewerCapability
+internal sealed partial class PuppeteerPdfViewerCapability(
+    BrowsingMetrics metrics,
+    ITempFileFactory tempFileFactory,
+    IOptions<TempFileOptions> tempFileOptions,
+    IBrowserSandboxProfile sandbox,
+    ILogger<PuppeteerPdfViewerCapability> logger,
+    ICurrentTenant? currentTenant = null) : IPdfViewerCapability
 {
     private const string Engine = "chromium-puppeteer";
 
@@ -31,65 +44,108 @@ internal sealed class PuppeteerPdfViewerCapability(BrowsingMetrics metrics, ICur
                 $"PuppeteerPdfViewerCapability requires a page produced by {nameof(PuppeteerHeadlessBrowser)}; got {page.GetType().Name}.");
         }
 
+        _ = sandbox; // referenced via fields, keeps readability for future profile checks.
+
         using Activity? activity = BrowsingActivitySource.Source.StartActivity(BrowsingActivitySource.PdfViewerOpen);
 
-        // Buffer the bytes so the underlying viewer can request them via a data URL —
-        // robust across providers and avoids holding the original stream open.
         using MemoryStream buffer = new();
         await pdf.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         byte[] bytes = buffer.ToArray();
 
-        // The Chromium PDF viewer is loaded via a data URL. PageCount is derived from the
-        // PDF trailer — we use a lightweight heuristic by counting "/Type /Page" markers.
-        int pageCount = CountPdfPages(bytes);
-        if (pageCount <= 0)
+        ValidatePdfMagic(bytes);
+
+        int pageCount = CountPages(bytes);
+
+        // Stage to a securely-created temp file with restrictive perms.
+        ITempFile tempFile = await tempFileFactory
+            .CreateAsync("pdf-viewer", "pdf", cancellationToken)
+            .ConfigureAwait(false);
+
+        bool fileOwned = true;
+        try
         {
-            pageCount = 1;
-        }
+            await tempFile.Stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+            await tempFile.Stream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-        string dataUrl = "data:application/pdf;base64," + System.Convert.ToBase64String(bytes);
-        await puppeteerPage.NavigateAsync(dataUrl, options: null, cancellationToken).ConfigureAwait(false);
-        await puppeteerPage.WaitForLoadStateAsync(LoadState.Load, timeout: System.TimeSpan.FromSeconds(15),
-            cancellationToken).ConfigureAwait(false);
-
-        return new PuppeteerPdfDocumentPage(puppeteerPage, pageCount, metrics, currentTenant);
-    }
-
-    private static int CountPdfPages(byte[] bytes)
-    {
-        // Conservative scan over the raw PDF — sufficient for the ~80% case and avoids
-        // bundling a PDF parser in the contract layer. Providers wanting an exact count
-        // can override the impl.
-        string text = System.Text.Encoding.Latin1.GetString(bytes);
-        int idx = 0;
-        int count = 0;
-        const string marker = "/Type /Page";
-        while ((idx = text.IndexOf(marker, idx, System.StringComparison.Ordinal)) >= 0)
-        {
-            // Skip "/Type /Pages" containers (the catalog, not a leaf page).
-            int after = idx + marker.Length;
-            if (after < text.Length && text[after] == 's')
+            // Defence-in-depth: the resolved file path must live under the configured temp root.
+            string resolvedPath = Path.GetFullPath(tempFile.Path);
+            string root = Path.GetFullPath(
+                string.IsNullOrWhiteSpace(tempFileOptions.Value.RootDirectory)
+                    ? Path.Combine(Path.GetTempPath(), "granit")
+                    : tempFileOptions.Value.RootDirectory!);
+            if (!resolvedPath.StartsWith(root, StringComparison.Ordinal))
             {
-                idx = after;
-                continue;
+                throw new SandboxViolationException(
+                    SandboxViolationKind.HostBlocked,
+                    $"Temp PDF path '{resolvedPath}' is outside the temp-file root '{root}'.");
             }
-            count++;
-            idx = after;
+
+            Uri fileUri = new(resolvedPath);
+
+            await puppeteerPage.NavigateAsync(fileUri, options: null, cancellationToken).ConfigureAwait(false);
+            await puppeteerPage.WaitForLoadStateAsync(LoadState.Load, timeout: TimeSpan.FromSeconds(15),
+                cancellationToken).ConfigureAwait(false);
+
+            var result = new PuppeteerPdfDocumentPage(puppeteerPage, pageCount, metrics, tempFile, logger, currentTenant);
+            fileOwned = false; // ownership transfers
+            return result;
         }
-        return count;
+        finally
+        {
+            if (fileOwned)
+            {
+                try
+                {
+                    await tempFile.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogTempCleanupFailure(ex);
+                }
+            }
+        }
     }
+
+    internal static void ValidatePdfMagic(byte[] bytes)
+    {
+        // %PDF-1.x at the start of file. PDF spec allows up to 1024 bytes of preamble but
+        // browsers (and our viewer) require the magic at offset 0.
+        const string magic = "%PDF-1.";
+        if (bytes.Length < magic.Length + 1)
+        {
+            throw new InvalidDataException("PDF stream is shorter than the magic-byte header.");
+        }
+        for (int i = 0; i < magic.Length; i++)
+        {
+            if (bytes[i] != (byte)magic[i])
+            {
+                throw new InvalidDataException($"PDF stream does not start with '{magic}x'.");
+            }
+        }
+    }
+
+    private static int CountPages(byte[] bytes)
+    {
+        using var doc = PdfDocument.Open(bytes);
+        return doc.NumberOfPages;
+    }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to clean up a staged PDF temp file.")]
+    private partial void LogTempCleanupFailure(Exception exception);
 }
 
-internal sealed class PuppeteerPdfDocumentPage(
+internal sealed partial class PuppeteerPdfDocumentPage(
     PuppeteerBrowserPage page,
     int pageCount,
     BrowsingMetrics metrics,
+    ITempFile tempFile,
+    ILogger logger,
     ICurrentTenant? currentTenant) : IPdfDocumentPage
 {
     private const string Engine = "chromium-puppeteer";
 
     private string? CurrentTenantId =>
-        currentTenant is { IsAvailable: true } t ? t.Id?.ToString() : null;
+        currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public int PageCount { get; } = pageCount;
@@ -104,8 +160,6 @@ internal sealed class PuppeteerPdfDocumentPage(
         using Activity? activity = BrowsingActivitySource.Source.StartActivity(BrowsingActivitySource.PdfViewerRenderPage);
         var sw = Stopwatch.StartNew();
 
-        // Drive the viewer to the requested page and resize the viewport to the target
-        // dimensions; the viewer respects the viewport for its internal rendering.
         await page.UnderlyingPage.SetViewportAsync(new global::PuppeteerSharp.ViewPortOptions
         {
             Width = dimensions.Width,
@@ -116,8 +170,7 @@ internal sealed class PuppeteerPdfDocumentPage(
             $"(async () => {{ try {{ window.location.hash = '#page={pageIndex + 1}'; return true; }} catch {{ return false; }} }})()",
             cancellationToken).ConfigureAwait(false);
 
-        // Settle paint before capturing.
-        await Task.Delay(System.TimeSpan.FromMilliseconds(150), cancellationToken).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromMilliseconds(150), cancellationToken).ConfigureAwait(false);
 
         byte[] png = await page.ScreenshotAsync(new BrowsingScreenshotOptions
         {
@@ -129,5 +182,18 @@ internal sealed class PuppeteerPdfDocumentPage(
     }
 
     /// <inheritdoc/>
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await tempFile.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            LogTempCleanupFailure(logger, ex);
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to clean up a staged PDF temp file on viewer disposal.")]
+    private static partial void LogTempCleanupFailure(ILogger logger, Exception exception);
 }

@@ -1,8 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Internal;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pages;
+using Granit.Browsing.Pool;
+using Granit.Browsing.Sandbox;
+using Granit.Events;
+using Granit.Http.Security;
+using Granit.Timing;
+using Microsoft.Extensions.Logging;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using BrowsingNavigationOptions = Granit.Browsing.Options.NavigationOptions;
@@ -16,16 +27,61 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 
 /// <summary>
 /// PuppeteerSharp-backed <see cref="IBrowserPage"/>. Disposing returns the page to the
-/// pool by invoking the release callback supplied at construction.
+/// pool by invoking the release callback supplied at construction. The page owns a
+/// <see cref="PuppeteerRequestRouter"/> that funnels every intercepted request through
+/// the sandbox + user-handler chain.
 /// </summary>
-internal sealed class PuppeteerBrowserPage(
-    IPuppeteerPage page,
-    System.Action onReleased) : IBrowserPage
+internal sealed partial class PuppeteerBrowserPage : IBrowserPage
 {
-    private readonly SimpleObservable<ConsoleMessage> _consoleMessages = new();
-    private readonly SimpleObservable<PageError> _pageErrors = new();
+    private readonly IPuppeteerPage _page;
+    private readonly Action _onReleased;
+    private readonly PuppeteerRequestRouter _router;
+    private readonly IBrowserSandboxProfile _sandbox;
+    private readonly IUrlSafetyValidator _urlValidator;
+    private readonly TimeSpan? _maxRenderDuration;
+    private readonly ILocalEventBus? _eventBus;
+    private readonly IClock _clock;
+    private readonly ILogger<PuppeteerBrowserPage> _logger;
+    private readonly Guid _pageId;
+    private readonly SimpleObservable<ConsoleMessage> _consoleMessages;
+    private readonly SimpleObservable<PageError> _pageErrors;
     private bool _wired;
     private bool _disposed;
+
+    public PuppeteerBrowserPage(
+        IPuppeteerPage page,
+        Action onReleased,
+        PuppeteerRequestRouter router,
+        IBrowserSandboxProfile sandbox,
+        IUrlSafetyValidator urlValidator,
+        TimeSpan? maxRenderDuration,
+        IClock clock,
+        ILogger<PuppeteerBrowserPage> logger,
+        Guid pageId,
+        ILocalEventBus? eventBus = null)
+    {
+        ArgumentNullException.ThrowIfNull(page);
+        ArgumentNullException.ThrowIfNull(onReleased);
+        ArgumentNullException.ThrowIfNull(router);
+        ArgumentNullException.ThrowIfNull(sandbox);
+        ArgumentNullException.ThrowIfNull(urlValidator);
+        ArgumentNullException.ThrowIfNull(clock);
+        ArgumentNullException.ThrowIfNull(logger);
+
+        _page = page;
+        _onReleased = onReleased;
+        _router = router;
+        _sandbox = sandbox;
+        _urlValidator = urlValidator;
+        _maxRenderDuration = maxRenderDuration;
+        _clock = clock;
+        _logger = logger;
+        _pageId = pageId;
+        _eventBus = eventBus;
+
+        _consoleMessages = new SimpleObservable<ConsoleMessage>(logger);
+        _pageErrors = new SimpleObservable<PageError>(logger);
+    }
 
     /// <inheritdoc/>
     public string EngineName => "chromium-puppeteer";
@@ -56,33 +112,72 @@ internal sealed class PuppeteerBrowserPage(
         {
             return;
         }
-        page.Console += (_, e) => _consoleMessages.Publish(new ConsoleMessage(e.Message.Type.ToString(), e.Message.Text));
-        page.PageError += (_, e) => _pageErrors.Publish(new PageError(e.Message, StackTrace: null));
+        _page.Console += (_, e) =>
+        {
+            string text = e.Message.Text;
+            if (_sandbox.RedactConsoleMessages)
+            {
+                text = ConsoleRedactor.Redact(text);
+            }
+            _consoleMessages.Publish(new ConsoleMessage(e.Message.Type.ToString(), text));
+        };
+        _page.PageError += (_, e) =>
+        {
+            string message = e.Message;
+            if (_sandbox.RedactConsoleMessages)
+            {
+                message = ConsoleRedactor.Redact(message);
+            }
+            _pageErrors.Publish(new PageError(message, StackTrace: null));
+        };
         _wired = true;
     }
 
     /// <inheritdoc/>
-    public async Task NavigateAsync(string url, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
+    public async Task NavigateAsync(Uri url, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(url);
+
+        UrlSafetyResult safety = await _urlValidator
+            .ValidateAsync(url, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (!safety.IsValid)
+        {
+            string reason = safety.Violation?.Reason ?? "url_safety_violation";
+            await PublishNavigatedAsync(url, blocked: true, reason, cancellationToken).ConfigureAwait(false);
+            throw new SandboxViolationException(SandboxViolationKind.UrlSafetyViolation, reason);
+        }
+
+        await _router.EnsureSubscribedAsync().ConfigureAwait(false);
+
         PuppeteerNavigationOptions nav = ToPuppeteerNavigation(options);
         nav.Referer = options?.Referer;
-        await page.GoToAsync(url, nav).ConfigureAwait(false);
-        _ = cancellationToken;
+
+        await BrowsingTimeout.RunAsync(
+            ct => _page.GoToAsync(url.ToString(), nav),
+            _maxRenderDuration,
+            cancellationToken).ConfigureAwait(false);
+
+        await PublishNavigatedAsync(url, blocked: false, reason: null, cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc/>
-    public async Task SetContentAsync(string html, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
+    public Task SetContentAsync(string html, BrowsingNavigationOptions? options = null, CancellationToken cancellationToken = default)
     {
-        await page.SetContentAsync(html, ToPuppeteerNavigation(options)).ConfigureAwait(false);
-        _ = cancellationToken;
+        ArgumentNullException.ThrowIfNull(html);
+        return BrowsingTimeout.RunAsync(
+            ct => _page.SetContentAsync(html, ToPuppeteerNavigation(options)),
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
     public Task<string> GetCurrentUrlAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(page.Url);
+        Task.FromResult(_page.Url);
 
     /// <inheritdoc/>
-    public async Task WaitForLoadStateAsync(LoadState state, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+    public Task WaitForLoadStateAsync(LoadState state, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
         WaitUntilNavigation waitUntil = state switch
         {
@@ -91,58 +186,90 @@ internal sealed class PuppeteerBrowserPage(
             LoadState.NetworkIdle => WaitUntilNavigation.Networkidle0,
             _ => WaitUntilNavigation.Load,
         };
-        await page.WaitForNavigationAsync(new PuppeteerNavigationOptions
-        {
-            WaitUntil = [waitUntil],
-            Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
-        }).ConfigureAwait(false);
-        _ = cancellationToken;
+        return BrowsingTimeout.RunAsync(
+            ct => _page.WaitForNavigationAsync(new PuppeteerNavigationOptions
+            {
+                WaitUntil = [waitUntil],
+                Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
+            }),
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task WaitForSelectorAsync(string selector, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+    public Task WaitForSelectorAsync(string selector, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
-        await page.WaitForSelectorAsync(selector, new WaitForSelectorOptions
-        {
-            Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
-        }).ConfigureAwait(false);
-        _ = cancellationToken;
+        ArgumentException.ThrowIfNullOrEmpty(selector);
+        return BrowsingTimeout.RunAsync(
+            async ct =>
+            {
+                await _page.WaitForSelectorAsync(selector, new WaitForSelectorOptions
+                {
+                    Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
+                }).ConfigureAwait(false);
+            },
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task WaitForFunctionAsync(string jsExpression, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+    public Task WaitForFunctionAsync(string jsExpression, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
     {
-        await page.WaitForFunctionAsync(jsExpression, new WaitForFunctionOptions
-        {
-            Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
-        }).ConfigureAwait(false);
-        _ = cancellationToken;
+        ArgumentException.ThrowIfNullOrEmpty(jsExpression);
+        PublishScriptInjected("evaluate", jsExpression);
+        return BrowsingTimeout.RunAsync(
+            async ct =>
+            {
+                await _page.WaitForFunctionAsync(jsExpression, new WaitForFunctionOptions
+                {
+                    Timeout = (int?)timeout?.TotalMilliseconds ?? 30_000,
+                }).ConfigureAwait(false);
+            },
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<TResult?> EvaluateAsync<TResult>(string jsExpression, CancellationToken cancellationToken = default)
+    public Task<TResult?> EvaluateAsync<TResult>(string jsExpression, CancellationToken cancellationToken = default)
     {
-        TResult result = await page.EvaluateExpressionAsync<TResult>(jsExpression).ConfigureAwait(false);
-        _ = cancellationToken;
-        return result;
+        ArgumentException.ThrowIfNullOrEmpty(jsExpression);
+        PublishScriptInjected("evaluate", jsExpression);
+        return BrowsingTimeout.RunAsync<TResult?>(
+            async ct => await _page.EvaluateExpressionAsync<TResult>(jsExpression).ConfigureAwait(false),
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task AddStyleTagAsync(string css, CancellationToken cancellationToken = default)
+    public Task AddStyleTagAsync(string css, CancellationToken cancellationToken = default)
     {
-        await page.AddStyleTagAsync(new AddTagOptions { Content = css }).ConfigureAwait(false);
-        _ = cancellationToken;
+        ArgumentException.ThrowIfNullOrEmpty(css);
+        PublishScriptInjected("style", css);
+        return BrowsingTimeout.RunAsync(
+            async ct =>
+            {
+                await _page.AddStyleTagAsync(new AddTagOptions { Content = css }).ConfigureAwait(false);
+            },
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task AddScriptTagAsync(string js, CancellationToken cancellationToken = default)
+    public Task AddScriptTagAsync(string js, CancellationToken cancellationToken = default)
     {
-        await page.AddScriptTagAsync(new AddTagOptions { Content = js }).ConfigureAwait(false);
-        _ = cancellationToken;
+        ArgumentException.ThrowIfNullOrEmpty(js);
+        PublishScriptInjected("script", js);
+        return BrowsingTimeout.RunAsync(
+            async ct =>
+            {
+                await _page.AddScriptTagAsync(new AddTagOptions { Content = js }).ConfigureAwait(false);
+            },
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task<byte[]> ScreenshotAsync(BrowsingScreenshotOptions options, CancellationToken cancellationToken = default)
+    public Task<byte[]> ScreenshotAsync(BrowsingScreenshotOptions options, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(options);
 
@@ -175,27 +302,30 @@ internal sealed class PuppeteerBrowserPage(
             };
         }
 
-        return await page.ScreenshotDataAsync(puppeteerOpts).ConfigureAwait(false);
+        return BrowsingTimeout.RunAsync(
+            ct => _page.ScreenshotDataAsync(puppeteerOpts),
+            _maxRenderDuration,
+            cancellationToken);
     }
 
     /// <inheritdoc/>
-    public async Task RouteAsync(string urlPattern, RouteHandler handler, CancellationToken cancellationToken = default)
+    public async Task RouteAsync(
+        RoutePattern pattern,
+        Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>> handler,
+        CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(pattern);
         ArgumentNullException.ThrowIfNull(handler);
-        await page.SetRequestInterceptionAsync(true).ConfigureAwait(false);
-        page.Request += async (_, e) =>
-        {
-            if (!e.Request.Url.Contains(urlPattern, StringComparison.OrdinalIgnoreCase))
-            {
-                await e.Request.ContinueAsync().ConfigureAwait(false);
-                return;
-            }
-            await handler(new PuppeteerRouteContext(e.Request), cancellationToken).ConfigureAwait(false);
-        };
+
+        _router.Router.Register(pattern, handler);
+        await _router.EnsureSubscribedAsync().ConfigureAwait(false);
     }
 
     /// <summary>Internal accessor for capability implementations.</summary>
-    internal IPuppeteerPage UnderlyingPage => page;
+    internal IPuppeteerPage UnderlyingPage => _page;
+
+    /// <summary>Internal accessor — sandbox profile applied to this page.</summary>
+    internal IBrowserSandboxProfile Sandbox => _sandbox;
 
     /// <inheritdoc/>
     public async ValueTask DisposeAsync()
@@ -205,15 +335,78 @@ internal sealed class PuppeteerBrowserPage(
             return;
         }
         _disposed = true;
+
         try
         {
-            await page.CloseAsync().ConfigureAwait(false);
+            await _router.DisposeAsync().ConfigureAwait(false);
         }
-        catch
+        catch (Exception ex)
         {
-            // Page may already be closed (e.g. browser disposed). Swallow — release is what matters.
+            LogRouterDisposeFailure(ex);
         }
-        onReleased();
+
+        try
+        {
+            await _page.CloseAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            LogPageCloseFailure(ex);
+        }
+
+        _onReleased();
+    }
+
+    private void PublishScriptInjected(string kind, string script)
+    {
+        if (_eventBus is null)
+        {
+            return;
+        }
+
+        string hash = Convert.ToHexString(
+            SHA256.HashData(Encoding.UTF8.GetBytes(script))).ToLowerInvariant();
+
+        try
+        {
+            _ = _eventBus.PublishAsync(
+                new BrowserScriptInjectedEvent(
+                    PageId: _pageId,
+                    EngineName: EngineName,
+                    Kind: kind,
+                    ScriptHash: hash,
+                    InjectedAt: _clock.Now),
+                CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            LogScriptInjectedPublishFailure(ex);
+        }
+    }
+
+    private async Task PublishNavigatedAsync(Uri url, bool blocked, string? reason, CancellationToken cancellationToken)
+    {
+        if (_eventBus is null)
+        {
+            return;
+        }
+
+        try
+        {
+            await _eventBus.PublishAsync(
+                new BrowserUrlNavigatedEvent(
+                    PageId: _pageId,
+                    EngineName: EngineName,
+                    Url: url.ToString(),
+                    BlockedBySandbox: blocked,
+                    BlockReason: reason,
+                    NavigatedAt: _clock.Now),
+                cancellationToken).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            LogNavigatedPublishFailure(ex);
+        }
     }
 
     private static PuppeteerNavigationOptions ToPuppeteerNavigation(BrowsingNavigationOptions? options)
@@ -230,45 +423,16 @@ internal sealed class PuppeteerBrowserPage(
             Timeout = (int?)options?.Timeout?.TotalMilliseconds ?? 30_000,
         };
     }
-}
 
-/// <summary>Naïve in-process <see cref="IObservable{T}"/> used for console / page error feeds.</summary>
-internal sealed class SimpleObservable<T> : IObservable<T>
-{
-    private readonly object _gate = new();
-    private readonly List<IObserver<T>> _observers = [];
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to dispose request router.")]
+    private partial void LogRouterDisposeFailure(Exception exception);
 
-    public IDisposable Subscribe(IObserver<T> observer)
-    {
-        ArgumentNullException.ThrowIfNull(observer);
-        lock (_gate)
-        {
-            _observers.Add(observer);
-        }
-        return new Subscription(this, observer);
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to close page on dispose.")]
+    private partial void LogPageCloseFailure(Exception exception);
 
-    public void Publish(T value)
-    {
-        IObserver<T>[] snapshot;
-        lock (_gate)
-        {
-            snapshot = [.. _observers];
-        }
-        foreach (IObserver<T> obs in snapshot)
-        {
-            obs.OnNext(value);
-        }
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to publish BrowserScriptInjectedEvent.")]
+    private partial void LogScriptInjectedPublishFailure(Exception exception);
 
-    private sealed class Subscription(SimpleObservable<T> owner, IObserver<T> observer) : IDisposable
-    {
-        public void Dispose()
-        {
-            lock (owner._gate)
-            {
-                owner._observers.Remove(observer);
-            }
-        }
-    }
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to publish BrowserUrlNavigatedEvent.")]
+    private partial void LogNavigatedPublishFailure(Exception exception);
 }

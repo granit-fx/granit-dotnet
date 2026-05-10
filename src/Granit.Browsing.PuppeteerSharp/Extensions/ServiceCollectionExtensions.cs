@@ -1,11 +1,11 @@
 using System;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pool;
 using Granit.Browsing.PuppeteerSharp.Internal;
 using Granit.Browsing.PuppeteerSharp.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Browsing.PuppeteerSharp.Extensions;
 
@@ -52,13 +52,19 @@ public static class ServiceCollectionExtensions
         }
 
         services.TryAddSingleton<PuppeteerHeadlessBrowser>();
-        services.TryAddSingleton<IHeadlessBrowser>(sp => sp.GetRequiredService<PuppeteerHeadlessBrowser>());
+        services.TryAddSingleton<TenantAwareHeadlessBrowser>(sp =>
+            ActivatorUtilities.CreateInstance<TenantAwareHeadlessBrowser>(
+                sp,
+                sp.GetRequiredService<PuppeteerHeadlessBrowser>()));
+
+        services.TryAddSingleton<IHeadlessBrowser>(sp => sp.GetRequiredService<TenantAwareHeadlessBrowser>());
         services.TryAddSingleton<IHeadlessBrowserPool>(sp => sp.GetRequiredService<PuppeteerHeadlessBrowser>());
 
         services.TryAddSingleton<IPdfCapability, PuppeteerPdfCapability>();
         services.TryAddSingleton<IPdfViewerCapability, PuppeteerPdfViewerCapability>();
         services.TryAddSingleton<IAccessibilityCapability, PuppeteerAccessibilityCapability>();
 
+        services.TryAddSingleton<PuppeteerBrowserFetcherIntegrity>();
         services.AddHostedService<PuppeteerChromiumProvisionService>();
 
         return services;

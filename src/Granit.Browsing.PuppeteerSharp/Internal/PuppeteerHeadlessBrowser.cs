@@ -5,8 +5,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pages;
+using Granit.Browsing.Pool;
 using Granit.Browsing.PuppeteerSharp.Options;
+using Granit.Browsing.Sandbox;
+using Granit.Events;
+using Granit.Guids;
+using Granit.Http.Security;
 using Granit.MultiTenancy;
+using Granit.Timing;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PuppeteerSharp;
@@ -22,37 +30,75 @@ namespace Granit.Browsing.PuppeteerSharp.Internal;
 /// Owns a single persistent browser instance plus a pool of pages capped by
 /// <c>GranitBrowsingOptions.MaxBrowsers × GranitBrowsingOptions.MaxPagesPerBrowser</c>.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Phase A keeps the topology simple: one browser process, multiple pages multiplexed on
-/// it through a semaphore. Phase B (Playwright provider) and a future Phase B follow-up
-/// can lift the multi-browser pool when memory pressure / parallelism demands it; the
-/// public surface stays unchanged.
-/// </para>
-/// </remarks>
-internal sealed partial class PuppeteerHeadlessBrowser(
-    IOptions<GranitBrowsingOptions> browsingOptions,
-    IOptions<PuppeteerSharpOptions> puppeteerOptions,
-    BrowsingMetrics metrics,
-    ILogger<PuppeteerHeadlessBrowser> logger,
-    ICurrentTenant? currentTenant = null,
-    IBrowserSandboxProfile? sandbox = null)
-    : IHeadlessBrowser, IHeadlessBrowserPool, IAsyncDisposable
+internal sealed partial class PuppeteerHeadlessBrowser : IHeadlessBrowser, IHeadlessBrowserPool, IAsyncDisposable
 {
     private const string Engine = "chromium-puppeteer";
 
-    private string? CurrentTenantId =>
-        currentTenant is { IsAvailable: true } t ? t.Id?.ToString() : null;
+    private readonly IOptions<GranitBrowsingOptions> _browsingOptions;
+    private readonly IOptions<PuppeteerSharpOptions> _puppeteerOptions;
+    private readonly BrowsingMetrics _metrics;
+    private readonly ILogger<PuppeteerHeadlessBrowser> _logger;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IBrowserSandboxProfile _sandbox;
+    private readonly IUrlSafetyValidator _urlValidator;
+    private readonly IHostEnvironment _hostEnvironment;
+    private readonly IClock _clock;
+    private readonly IGuidGenerator _guidGenerator;
+    private readonly ICurrentTenant? _currentTenant;
+    private readonly ILocalEventBus? _eventBus;
 
     private readonly SemaphoreSlim _initLock = new(1, 1);
-    private readonly SemaphoreSlim _pageSemaphore = new(
-        browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser,
-        browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser);
-    private IPuppeteerBrowser? _browser;
+    private readonly SemaphoreSlim _pageSemaphore;
+    private volatile IPuppeteerBrowser? _browser;
     private int _activePages;
     private int _waitingAcquisitions;
     private long _totalAcquisitions;
     private bool _drained;
+
+    public PuppeteerHeadlessBrowser(
+        IOptions<GranitBrowsingOptions> browsingOptions,
+        IOptions<PuppeteerSharpOptions> puppeteerOptions,
+        BrowsingMetrics metrics,
+        ILogger<PuppeteerHeadlessBrowser> logger,
+        ILoggerFactory loggerFactory,
+        IBrowserSandboxProfile sandbox,
+        IUrlSafetyValidator urlValidator,
+        IHostEnvironment hostEnvironment,
+        IClock clock,
+        IGuidGenerator guidGenerator,
+        ICurrentTenant? currentTenant = null,
+        ILocalEventBus? eventBus = null)
+    {
+        ArgumentNullException.ThrowIfNull(browsingOptions);
+        ArgumentNullException.ThrowIfNull(puppeteerOptions);
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(sandbox);
+        ArgumentNullException.ThrowIfNull(urlValidator);
+        ArgumentNullException.ThrowIfNull(hostEnvironment);
+        ArgumentNullException.ThrowIfNull(clock);
+        ArgumentNullException.ThrowIfNull(guidGenerator);
+
+        _browsingOptions = browsingOptions;
+        _puppeteerOptions = puppeteerOptions;
+        _metrics = metrics;
+        _logger = logger;
+        _loggerFactory = loggerFactory;
+        _sandbox = sandbox;
+        _urlValidator = urlValidator;
+        _hostEnvironment = hostEnvironment;
+        _clock = clock;
+        _guidGenerator = guidGenerator;
+        _currentTenant = currentTenant;
+        _eventBus = eventBus;
+
+        int permits = browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser;
+        _pageSemaphore = new SemaphoreSlim(permits, permits);
+    }
+
+    private string? CurrentTenantId =>
+        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public string EngineName => Engine;
@@ -104,7 +150,7 @@ internal sealed partial class PuppeteerHeadlessBrowser(
         try
         {
             using var acquireCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            acquireCts.CancelAfter(browsingOptions.Value.AcquireTimeout);
+            acquireCts.CancelAfter(_browsingOptions.Value.AcquireTimeout);
 
             try
             {
@@ -112,9 +158,9 @@ internal sealed partial class PuppeteerHeadlessBrowser(
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
             {
-                metrics.RecordError(Engine, CurrentTenantId, "acquire_timeout");
+                _metrics.RecordError(Engine, CurrentTenantId, "acquire_timeout");
                 throw new TimeoutException(
-                    $"Acquiring a Granit.Browsing page exceeded {browsingOptions.Value.AcquireTimeout}.");
+                    $"Acquiring a Granit.Browsing page exceeded {_browsingOptions.Value.AcquireTimeout}.");
             }
         }
         finally
@@ -127,16 +173,58 @@ internal sealed partial class PuppeteerHeadlessBrowser(
             await EnsureBrowserStartedAsync(cancellationToken).ConfigureAwait(false);
 
             IPuppeteerPage puppeteerPage = await _browser!.NewPageAsync().ConfigureAwait(false);
-            await ApplyPageOptionsAsync(puppeteerPage, options, cancellationToken).ConfigureAwait(false);
-            await ApplySandboxAsync(puppeteerPage, cancellationToken).ConfigureAwait(false);
+
+            // Disable JS before navigation when sandbox/options require it (VULN-202).
+            await PuppeteerJsContextGuard.ApplyAsync(
+                puppeteerPage,
+                pageJsEnabled: options?.JavaScriptEnabled ?? true,
+                sandboxDisablesJs: _sandbox.DisableJavaScript).ConfigureAwait(false);
+
+            await ApplyPageOptionsAsync(puppeteerPage, options).ConfigureAwait(false);
+
+            Guid pageId = _guidGenerator.Create();
+            TimeSpan? maxRender = _sandbox.MaxRenderDuration
+                ?? _browsingOptions.Value.ResourceLimits.MaxRenderDuration;
+
+            var router = new RequestRouter(
+                _sandbox,
+                _urlValidator,
+                _metrics,
+                _loggerFactory.CreateLogger<RequestRouter>(),
+                _clock,
+                Engine,
+                pageId,
+                _eventBus);
+
+            var puppeteerRouter = new PuppeteerRequestRouter(
+                puppeteerPage,
+                router,
+                _loggerFactory.CreateLogger<PuppeteerRequestRouter>());
+
+            // Pre-subscribe interception when the sandbox requires it. Otherwise the
+            // router subscribes lazily on the first RouteAsync / NavigateAsync.
+            if (RequiresEagerInterception(_sandbox))
+            {
+                await puppeteerRouter.EnsureSubscribedAsync().ConfigureAwait(false);
+            }
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
             string? tenantId = CurrentTenantId;
-            metrics.RecordPageAcquired(Engine, tenantId);
-            metrics.RecordAcquireDuration(Engine, tenantId, stopwatch.Elapsed);
+            _metrics.RecordPageAcquired(Engine, tenantId);
+            _metrics.RecordAcquireDuration(Engine, tenantId, stopwatch.Elapsed);
 
-            return new PuppeteerBrowserPage(puppeteerPage, OnPageReleased);
+            return new PuppeteerBrowserPage(
+                puppeteerPage,
+                OnPageReleased,
+                puppeteerRouter,
+                _sandbox,
+                _urlValidator,
+                maxRender,
+                _clock,
+                _loggerFactory.CreateLogger<PuppeteerBrowserPage>(),
+                pageId,
+                _eventBus);
         }
         catch
         {
@@ -145,11 +233,20 @@ internal sealed partial class PuppeteerHeadlessBrowser(
         }
     }
 
+    private static bool RequiresEagerInterception(IBrowserSandboxProfile sandbox) =>
+        sandbox.BlockNetworkRequests
+        || sandbox.DisableImages
+        || (sandbox.BlockedUrlPatterns?.Count ?? 0) > 0
+        || (sandbox.AllowedHostPatterns?.Count ?? 0) > 0
+        || (sandbox.DeniedHostPatterns?.Count ?? 0) > 0
+        || sandbox.BlockPrivateNetworks
+        || sandbox.AllowedSchemes is { Count: > 0 };
+
     private void OnPageReleased()
     {
         Interlocked.Decrement(ref _activePages);
         _pageSemaphore.Release();
-        metrics.RecordPageReleased(Engine, CurrentTenantId);
+        _metrics.RecordPageReleased(Engine, CurrentTenantId);
     }
 
     private async Task EnsureBrowserStartedAsync(CancellationToken cancellationToken)
@@ -169,11 +266,22 @@ internal sealed partial class PuppeteerHeadlessBrowser(
             if (_browser is not null)
             {
                 // Crashed Chromium — drop the dead handle and re-launch.
-                try { await _browser.DisposeAsync().ConfigureAwait(false); } catch { /* ignore */ }
+                try
+                {
+                    await _browser.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogDisposeFailure(ex);
+                }
                 _browser = null;
             }
 
-            PuppeteerSharpOptions opts = puppeteerOptions.Value;
+            PuppeteerSharpOptions opts = _puppeteerOptions.Value;
+
+            // VULN-103: refuse privileged flags outside a vetted container.
+            PrivilegedFlagGuard.EnsureSafe(opts.DisableSandbox, opts.ExtraArgs, _logger);
+
             List<string> args =
             [
                 "--disable-dev-shm-usage",
@@ -188,14 +296,19 @@ internal sealed partial class PuppeteerHeadlessBrowser(
             }
             args.AddRange(opts.ExtraArgs);
 
+            // VULN-205: refuse a Chromium binary outside the sandbox-allowed prefix.
+            string? executablePath = PuppeteerExecutablePathValidator.Validate(
+                opts.ChromiumExecutablePath,
+                _sandbox.AllowedExecutablePathPrefix);
+
             PuppeteerLaunchOptions launch = new()
             {
                 Headless = true,
                 Args = [.. args],
             };
-            if (!string.IsNullOrEmpty(opts.ChromiumExecutablePath))
+            if (!string.IsNullOrEmpty(executablePath))
             {
-                launch.ExecutablePath = System.IO.Path.GetFullPath(opts.ChromiumExecutablePath);
+                launch.ExecutablePath = executablePath;
             }
 
             LogStartingChromium();
@@ -210,8 +323,7 @@ internal sealed partial class PuppeteerHeadlessBrowser(
 
     private static async Task ApplyPageOptionsAsync(
         IPuppeteerPage page,
-        BrowserPageOptions? options,
-        CancellationToken cancellationToken)
+        BrowserPageOptions? options)
     {
         if (options is null)
         {
@@ -239,69 +351,12 @@ internal sealed partial class PuppeteerHeadlessBrowser(
             await page.SetExtraHttpHeadersAsync(dict).ConfigureAwait(false);
         }
 
-        if (!options.JavaScriptEnabled)
-        {
-            await page.SetJavaScriptEnabledAsync(false).ConfigureAwait(false);
-        }
-
-        if (options.BypassCsp)
-        {
-            await page.SetBypassCSPAsync(true).ConfigureAwait(false);
-        }
-
         if (!string.IsNullOrEmpty(options.MediaType))
         {
             await page.EmulateMediaTypeAsync(options.MediaType.Equals("print", StringComparison.OrdinalIgnoreCase)
                 ? global::PuppeteerSharp.Media.MediaType.Print
                 : global::PuppeteerSharp.Media.MediaType.Screen).ConfigureAwait(false);
         }
-
-        _ = cancellationToken;
-    }
-
-    private async Task ApplySandboxAsync(IPuppeteerPage page, CancellationToken cancellationToken)
-    {
-        if (sandbox is null)
-        {
-            return;
-        }
-
-        if (sandbox.DisableJavaScript)
-        {
-            await page.SetJavaScriptEnabledAsync(false).ConfigureAwait(false);
-        }
-
-        if (sandbox.BlockNetworkRequests || sandbox.DisableImages || (sandbox.BlockedUrlPatterns?.Count ?? 0) > 0)
-        {
-            await page.SetRequestInterceptionAsync(true).ConfigureAwait(false);
-            page.Request += async (_, e) =>
-            {
-                if (sandbox.BlockNetworkRequests)
-                {
-                    await e.Request.AbortAsync().ConfigureAwait(false);
-                    return;
-                }
-                if (sandbox.DisableImages && e.Request.ResourceType == ResourceType.Image)
-                {
-                    await e.Request.AbortAsync().ConfigureAwait(false);
-                    return;
-                }
-                if (sandbox.BlockedUrlPatterns is { Count: > 0 } patterns)
-                {
-                    foreach (string pattern in patterns)
-                    {
-                        if (e.Request.Url.Contains(pattern, StringComparison.OrdinalIgnoreCase))
-                        {
-                            await e.Request.AbortAsync().ConfigureAwait(false);
-                            return;
-                        }
-                    }
-                }
-                await e.Request.ContinueAsync().ConfigureAwait(false);
-            };
-        }
-
-        _ = cancellationToken;
     }
 
     /// <inheritdoc/>
@@ -309,7 +364,7 @@ internal sealed partial class PuppeteerHeadlessBrowser(
     {
         _drained = true;
         // Wait for in-flight pages to complete by acquiring all permits.
-        int total = browsingOptions.Value.MaxBrowsers * browsingOptions.Value.MaxPagesPerBrowser;
+        int total = _browsingOptions.Value.MaxBrowsers * _browsingOptions.Value.MaxPagesPerBrowser;
         for (int i = 0; i < total; i++)
         {
             await _pageSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -317,7 +372,14 @@ internal sealed partial class PuppeteerHeadlessBrowser(
 
         if (_browser is not null)
         {
-            await _browser.DisposeAsync().ConfigureAwait(false);
+            try
+            {
+                await _browser.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                LogDisposeFailure(ex);
+            }
             _browser = null;
         }
     }
@@ -327,7 +389,14 @@ internal sealed partial class PuppeteerHeadlessBrowser(
     {
         if (_browser is not null)
         {
-            await _browser.DisposeAsync().ConfigureAwait(false);
+            try
+            {
+                await _browser.DisposeAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                LogDisposeFailure(ex);
+            }
             _browser = null;
         }
         _pageSemaphore.Dispose();
@@ -347,4 +416,7 @@ internal sealed partial class PuppeteerHeadlessBrowser(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Granit.Browsing.PuppeteerSharp launching with the Chromium sandbox disabled — only acceptable in containerised environments.")]
     private partial void LogSandboxDisabled();
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.PuppeteerSharp failed to dispose a stale Chromium browser handle.")]
+    private partial void LogDisposeFailure(Exception exception);
 }

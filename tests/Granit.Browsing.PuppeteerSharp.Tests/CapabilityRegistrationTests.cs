@@ -1,10 +1,21 @@
 using Granit.Browsing;
 using Granit.Browsing.Capabilities;
-using Granit.Browsing.PuppeteerSharp;
+using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Pool;
 using Granit.Browsing.PuppeteerSharp.Extensions;
 using Granit.Browsing.PuppeteerSharp.Internal;
+using Granit.Browsing.Sandbox;
+using Granit.Guids;
+using Granit.Http.Security;
+using Granit.Http.Security.Extensions;
+using Granit.IO.Extensions;
+using Granit.MultiTenancy;
+using Granit.Timing;
+using Granit.Timing.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -18,19 +29,30 @@ public sealed class CapabilityRegistrationTests
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         services.AddLogging();
         services.AddMetrics();
-        services.AddSingleton<Granit.Browsing.Diagnostics.BrowsingMetrics>();
+        services.AddSingleton<IHostEnvironment>(new TestHostEnvironment());
+        services.AddSingleton<BrowsingMetrics>();
+        services.AddSingleton<IBrowserSandboxProfile>(new SandboxProfile());
+        // The DI container can't reach DefaultUrlSafetyValidator's internal ctor from a
+        // foreign test assembly; substitute the validator so registration succeeds.
+        services.AddSingleton(Substitute.For<IUrlSafetyValidator>());
+        services.AddGranitUrlSafety();
+        services.AddGranitTempFiles();
+        services.AddSingleton<ICurrentTenant>(new Granit.MultiTenancy.NullTenantContext());
+        services.AddSingleton(TimeProvider.System);
+        services.AddGranitTiming();
+        services.AddSingleton<IGuidGenerator, UuidV7GuidGenerator>();
         services.AddGranitBrowsingPuppeteerSharp(
             configurePuppeteer: opts => opts.SkipChromiumDownload = true);
         return services.BuildServiceProvider();
     }
 
     [Fact]
-    public void IHeadlessBrowser_should_resolve_to_Puppeteer_provider()
+    public void IHeadlessBrowser_should_resolve_to_tenant_aware_decorator()
     {
         ServiceProvider provider = BuildProvider();
         IHeadlessBrowser browser = provider.GetRequiredService<IHeadlessBrowser>();
 
-        browser.ShouldBeOfType<PuppeteerHeadlessBrowser>();
+        browser.ShouldBeOfType<TenantAwareHeadlessBrowser>();
         browser.EngineName.ShouldBe("chromium-puppeteer");
     }
 
@@ -60,11 +82,18 @@ public sealed class CapabilityRegistrationTests
     }
 
     [Fact]
-    public void Pool_singleton_should_be_same_instance_as_browser()
+    public void Pool_should_resolve_to_underlying_puppeteer_browser()
     {
         ServiceProvider provider = BuildProvider();
-        IHeadlessBrowser browser = provider.GetRequiredService<IHeadlessBrowser>();
         IHeadlessBrowserPool pool = provider.GetRequiredService<IHeadlessBrowserPool>();
-        ReferenceEquals(browser, pool).ShouldBeTrue();
+        pool.ShouldBeOfType<PuppeteerHeadlessBrowser>();
+    }
+
+    private sealed class TestHostEnvironment : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = "Development";
+        public string ApplicationName { get; set; } = "tests";
+        public string ContentRootPath { get; set; } = System.IO.Path.GetTempPath();
+        public Microsoft.Extensions.FileProviders.IFileProvider ContentRootFileProvider { get; set; } = new Microsoft.Extensions.FileProviders.NullFileProvider();
     }
 }
