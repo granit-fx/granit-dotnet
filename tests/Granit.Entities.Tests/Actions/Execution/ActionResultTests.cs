@@ -3,6 +3,8 @@ using Granit.Entities.Actions.Execution;
 using System.Text.Json;
 using Xunit;
 
+#pragma warning disable IDE0007, IDE0008
+
 namespace Granit.Entities.Tests.Actions.Execution;
 
 /// <summary>
