@@ -985,6 +985,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.Endpoints",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Endpoints",
+        "Granit.Documents.Renditions",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.Renditions.EntityFrameworkCore",
       "deps": [
         "Granit.Documents",
@@ -21898,6 +21908,58 @@
       "members": []
     },
     {
+      "name": "ListRenditionsResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.ListRenditionsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 25,
+      "members": []
+    },
+    {
+      "name": "RenditionDownloadUrlResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.RenditionDownloadUrlResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "RenditionResponse",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Dtos.RenditionResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Dtos/RenditionResponse.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "RenditionsEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.Renditions.Endpoints.Extensions.RenditionsEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/Extensions/RenditionsEndpointRouteBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "MapGranitDocumentsRenditions",
+          "kind": "method",
+          "signature": "MapGranitDocumentsRenditions(this RouteGroupBuilder group)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsEndpointsModule",
+      "fqn": "Granit.Documents.Renditions.Endpoints.GranitDocumentsRenditionsEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Endpoints",
+      "file": "src/Granit.Documents.Renditions.Endpoints/GranitDocumentsRenditionsEndpointsModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
       "name": "RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.Renditions.EntityFrameworkCore.Extensions.RenditionsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -22026,6 +22088,28 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IRenditionService",
+      "fqn": "Granit.Documents.Renditions.IRenditionService",
+      "kind": "interface",
+      "project": "Granit.Documents.Renditions",
+      "file": "src/Granit.Documents.Renditions/IRenditionService.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentRendition>?>"
+        },
+        {
+          "name": "GetDownloadUrlAsync",
+          "kind": "method",
+          "signature": "GetDownloadUrlAsync(Guid documentId, RenditionType type, string? format, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedDownloadUrl?>"
         }
       ]
     },

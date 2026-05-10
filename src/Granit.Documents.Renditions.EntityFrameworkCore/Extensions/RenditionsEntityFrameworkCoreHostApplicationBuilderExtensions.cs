@@ -29,6 +29,7 @@ public static class RenditionsEntityFrameworkCoreHostApplicationBuilderExtension
 
         builder.Services.AddGranitDbContext<RenditionsDbContext>(configure);
         builder.Services.TryAddScoped<IRenditionStore, RenditionStore>();
+        builder.Services.TryAddScoped<IRenditionService, RenditionService>();
 
         return builder;
     }
