@@ -19369,6 +19369,18 @@
           "kind": "method",
           "signature": "GetDocumentPermissionsAsync(IReadOnlyCollection<Guid> documentIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>>"
+        },
+        {
+          "name": "GetFolderPermissionAsync",
+          "kind": "method",
+          "signature": "GetFolderPermissionAsync(Guid folderId, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<EffectivePermissionLevel>"
+        },
+        {
+          "name": "GetFolderPermissionsAsync",
+          "kind": "method",
+          "signature": "GetFolderPermissionsAsync(IReadOnlyCollection<Guid> folderIds, DocumentPrincipal principal, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>>"
         }
       ]
     },
@@ -19704,7 +19716,7 @@
       "kind": "record",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Folders/Dtos/FolderResponse.cs",
-      "line": 17,
+      "line": 22,
       "members": []
     },
     {

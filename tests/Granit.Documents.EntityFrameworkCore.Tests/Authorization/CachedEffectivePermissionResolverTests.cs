@@ -224,6 +224,55 @@ public sealed class CachedEffectivePermissionResolverTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetFolderPermissionAsync_HitsCacheOnSecondCall()
+    {
+        (Folder folder, _, Guid user) = await SeedAsync();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, folder.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, isDefault: true, OwnerId, Now));
+
+        EffectivePermissionLevel first = await _sut.GetFolderPermissionAsync(
+            folder.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+        EffectivePermissionLevel second = await _sut.GetFolderPermissionAsync(
+            folder.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+
+        first.ShouldBe(EffectivePermissionLevel.Manage);
+        second.ShouldBe(EffectivePermissionLevel.Manage);
+        _meter.Misses.ShouldBe(1);
+        _meter.Hits.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task FolderShareGrantedOnAncestor_InvalidatesFolderPermissionEntry()
+    {
+        (Folder folder, _, Guid user) = await SeedAsync();
+
+        // Cold call — no shares yet, resolves to None and caches the entry tagged with
+        // the folder's own id (it's the only ancestor in /Contracts).
+        await _sut.GetFolderPermissionAsync(
+            folder.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+
+        // Grant on the same folder + emit the event the production decorator subscribes to.
+        var share = DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, folder.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, isDefault: true, OwnerId, Now);
+        await SeedShareAsync(share);
+        await AclCacheInvalidationHandler.HandleAsync(
+            new Events.DocumentShareGrantedEvent(
+                share.Id, TenantId, share.TargetType, share.FolderId, share.DocumentId,
+                share.GranteeType, share.GranteeId, share.Permission, share.IsDefault, share.ExpiresAt),
+            _cache, TestContext.Current.CancellationToken);
+
+        // Next call must miss (entry was tagged acl:folder:{folderId} → invalidated) and
+        // resolve to Manage.
+        EffectivePermissionLevel after = await _sut.GetFolderPermissionAsync(
+            folder.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+        after.ShouldBe(EffectivePermissionLevel.Manage);
+
+        _meter.Misses.ShouldBe(2);
+    }
+
+    [Fact]
     public async Task FolderPathChanged_BulkInvalidatesTenantEntries()
     {
         (Folder folder, Document doc, Guid user) = await SeedAsync();

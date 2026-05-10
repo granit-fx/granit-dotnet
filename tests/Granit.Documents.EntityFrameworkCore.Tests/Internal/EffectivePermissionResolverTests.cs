@@ -295,6 +295,72 @@ public sealed class EffectivePermissionResolverTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetFolderPermissionAsync_AppliesAncestorShare()
+    {
+        // /A (Edit) > /A/B > resolved on /A/B → Edit (inherited).
+        Folder root = await GetOrCreateRootAsync();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(ct);
+        Folder reloadedRoot = await db.Folders.SingleAsync(f => f.Id == root.Id, ct);
+
+        var a = Folder.Create(Guid.NewGuid(), reloadedRoot, "A", OwnerId);
+        db.Folders.Add(a);
+        await db.SaveChangesAsync(ct);
+        var b = Folder.Create(Guid.NewGuid(), a, "B", OwnerId);
+        db.Folders.Add(b);
+        await db.SaveChangesAsync(ct);
+
+        var user = Guid.NewGuid();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, a.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+
+        EffectivePermissionLevel result = await _sut.GetFolderPermissionAsync(
+            b.Id, DocumentPrincipal.ForUser(user), ct);
+
+        result.ShouldBe(EffectivePermissionLevel.Edit);
+    }
+
+    [Fact]
+    public async Task GetFolderPermissionsAsync_BatchResolvesMixedTargets()
+    {
+        // /Root + /A (Edit) + /B (Manage) + /C (no share) — batch must return correct
+        // per-folder permissions and folders missing from the DB resolve to None.
+        Folder root = await GetOrCreateRootAsync();
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(ct);
+        Folder reloadedRoot = await db.Folders.SingleAsync(f => f.Id == root.Id, ct);
+
+        var a = Folder.Create(Guid.NewGuid(), reloadedRoot, "A", OwnerId);
+        var bRoot = Folder.Create(Guid.NewGuid(), reloadedRoot, "B", OwnerId);
+        var c = Folder.Create(Guid.NewGuid(), reloadedRoot, "C", OwnerId);
+        db.Folders.Add(a);
+        db.Folders.Add(bRoot);
+        db.Folders.Add(c);
+        await db.SaveChangesAsync(ct);
+
+        var user = Guid.NewGuid();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, a.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, bRoot.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, isDefault: true, OwnerId, Now));
+
+        var unknown = Guid.NewGuid();
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetFolderPermissionsAsync(
+                [a.Id, bRoot.Id, c.Id, unknown],
+                DocumentPrincipal.ForUser(user),
+                ct);
+
+        result[a.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        result[bRoot.Id].ShouldBe(EffectivePermissionLevel.Manage);
+        result[c.Id].ShouldBe(EffectivePermissionLevel.None);
+        result[unknown].ShouldBe(EffectivePermissionLevel.None);
+    }
+
+    [Fact]
     public async Task GetDocumentPermissionsAsync_EmptyIds_ReturnsEmptyDictionary()
     {
         IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut

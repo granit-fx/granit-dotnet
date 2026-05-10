@@ -14,6 +14,11 @@ namespace Granit.Documents.Endpoints.Folders.Dtos;
 /// <param name="OwnerUserId">Identifier of the user who owns the folder.</param>
 /// <param name="Status">Lifecycle status (<c>Active</c> or <c>Trashed</c>).</param>
 /// <param name="TrashedAt">UTC instant the folder was trashed; <c>null</c> while active.</param>
+/// <param name="Permission">
+/// Effective permission the calling principal holds on the folder, resolved via the share
+/// ACL (F6.5b). One of <c>None</c> / <c>Read</c> / <c>Edit</c> / <c>Manage</c>. <c>null</c>
+/// when the caller did not request permission resolution.
+/// </param>
 public sealed record FolderResponse(
     Guid Id,
     Guid? ParentFolderId,
@@ -22,4 +27,5 @@ public sealed record FolderResponse(
     int Depth,
     Guid OwnerUserId,
     string Status,
-    DateTimeOffset? TrashedAt);
+    DateTimeOffset? TrashedAt,
+    string? Permission = null);

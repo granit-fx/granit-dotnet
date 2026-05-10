@@ -47,4 +47,25 @@ public interface IEffectivePermissionResolver
         IReadOnlyCollection<Guid> documentIds,
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the effective permission the principal holds on the folder identified by
+    /// <paramref name="folderId"/>. Resolution scans the folder's own shares plus every
+    /// ancestor folder share via the same path-prefix model used for documents (F6.5b).
+    /// </summary>
+    Task<EffectivePermissionLevel> GetFolderPermissionAsync(
+        Guid folderId,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Batched counterpart of <see cref="GetFolderPermissionAsync"/> — used by folder list
+    /// endpoints to populate the <c>permission</c> field on each row without N+1 queries.
+    /// Returns an entry for every requested id; missing rows / no-matching-grant resolve to
+    /// <see cref="EffectivePermissionLevel.None"/>.
+    /// </summary>
+    Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>> GetFolderPermissionsAsync(
+        IReadOnlyCollection<Guid> folderIds,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default);
 }

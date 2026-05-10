@@ -234,6 +234,58 @@ public sealed class EffectivePermissionResolverPostgresTests :
         result[docs[9].Id].ShouldBe(EffectivePermissionLevel.None);
     }
 
+    [Fact]
+    public async Task GetFolderPermissionsAsync_ResolvesMixedPermissions_AcrossFolderListing()
+    {
+        // F6.5b acceptance — single batch resolves the per-folder permission for a
+        // listing of 5 folders with mixed direct / inherited / no shares.
+        var bootstrap = new DocumentBootstrapService(_factory, new SimpleGuidGenerator());
+        Guid rootId = await bootstrap.EnsureTenantRootAsync(TenantId, OwnerId, TestContext.Current.CancellationToken);
+
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Folder root = await db.Folders.SingleAsync(f => f.Id == rootId, TestContext.Current.CancellationToken);
+
+        // /Shared has an Edit share for the user; /Shared/Inner inherits.
+        var shared = Folder.Create(Guid.NewGuid(), root, "Shared", OwnerId);
+        db.Folders.Add(shared);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var inner = Folder.Create(Guid.NewGuid(), shared, "Inner", OwnerId);
+        // /Direct gets a direct Manage share; /Other has nothing.
+        var direct = Folder.Create(Guid.NewGuid(), root, "Direct", OwnerId);
+        var other = Folder.Create(Guid.NewGuid(), root, "Other", OwnerId);
+        // /Expired holds only an expired Read share — must resolve to None.
+        var expired = Folder.Create(Guid.NewGuid(), root, "Expired", OwnerId);
+        db.Folders.Add(inner);
+        db.Folders.Add(direct);
+        db.Folders.Add(other);
+        db.Folders.Add(expired);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var user = Guid.NewGuid();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, shared.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, direct.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Manage, isDefault: true, OwnerId, Now));
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, expired.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Read, isDefault: true, OwnerId,
+            createdAt: Now.AddDays(-2), expiresAt: Now.AddDays(-1)));
+
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel> result = await _sut
+            .GetFolderPermissionsAsync(
+                [shared.Id, inner.Id, direct.Id, other.Id, expired.Id],
+                DocumentPrincipal.ForUser(user),
+                TestContext.Current.CancellationToken);
+
+        result[shared.Id].ShouldBe(EffectivePermissionLevel.Edit);
+        result[inner.Id].ShouldBe(EffectivePermissionLevel.Edit); // inherited
+        result[direct.Id].ShouldBe(EffectivePermissionLevel.Manage);
+        result[other.Id].ShouldBe(EffectivePermissionLevel.None);
+        result[expired.Id].ShouldBe(EffectivePermissionLevel.None);
+    }
+
     private async Task<(Folder, Document, Guid user)> SeedAsync()
     {
         var user = Guid.NewGuid();

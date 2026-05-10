@@ -1,3 +1,4 @@
+using Granit.Documents.Authorization;
 using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Folders.Dtos;
 using Granit.Documents.Endpoints.Folders.Mapping;
@@ -119,19 +120,37 @@ internal static class FolderEndpoints
     private static async Task<Ok<ListFoldersResponse>> ListChildrenAsync(
         [FromQuery] Guid? parentId,
         [FromServices] IFolderService folders,
+        [FromServices] IDocumentPrincipalAccessor principalAccessor,
+        [FromServices] IEffectivePermissionResolver permissionResolver,
         CancellationToken cancellationToken)
     {
         IReadOnlyList<Folder> children = await folders
             .ListChildrenAsync(parentId, cancellationToken)
             .ConfigureAwait(false);
 
-        FolderResponse[] mapped = [.. children.Select(f => f.ToResponse())];
+        // F6.5b — populate the per-row Permission via a single batch call when an
+        // authenticated principal is available; unauthenticated calls leave it null.
+        IReadOnlyDictionary<Guid, EffectivePermissionLevel>? permissions = null;
+        DocumentPrincipal? principal = principalAccessor.GetCurrent();
+        if (principal is not null && children.Count > 0)
+        {
+            permissions = await permissionResolver
+                .GetFolderPermissionsAsync([.. children.Select(f => f.Id)], principal, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        FolderResponse[] mapped = [.. children.Select(f => f.ToResponse(
+            permissions is not null && permissions.TryGetValue(f.Id, out EffectivePermissionLevel p)
+                ? p
+                : null))];
         return TypedResults.Ok(new ListFoldersResponse(mapped));
     }
 
     private static async Task<Results<Ok<FolderResponse>, ProblemHttpResult>> GetByIdAsync(
         Guid id,
         [FromServices] IFolderService folders,
+        [FromServices] IDocumentPrincipalAccessor principalAccessor,
+        [FromServices] IEffectivePermissionResolver permissionResolver,
         CancellationToken cancellationToken)
     {
         Folder? folder = await folders.GetByIdAsync(id, cancellationToken).ConfigureAwait(false);
@@ -141,7 +160,16 @@ internal static class FolderEndpoints
                 $"Folder '{id}' was not found.",
                 statusCode: StatusCodes.Status404NotFound);
         }
-        return TypedResults.Ok(folder.ToResponse());
+
+        EffectivePermissionLevel? permission = null;
+        DocumentPrincipal? principal = principalAccessor.GetCurrent();
+        if (principal is not null)
+        {
+            permission = await permissionResolver
+                .GetFolderPermissionAsync(folder.Id, principal, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        return TypedResults.Ok(folder.ToResponse(permission));
     }
 
     private static async Task<Results<Ok<FolderBreadcrumbResponse>, ProblemHttpResult>> GetBreadcrumbAsync(

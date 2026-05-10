@@ -169,4 +169,133 @@ internal sealed class CachedEffectivePermissionResolver(
 
         return output;
     }
+
+    /// <inheritdoc />
+    public async Task<EffectivePermissionLevel> GetFolderPermissionAsync(
+        Guid folderId,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(principal);
+
+        if (principal.AllGranteeIds.Count == 0)
+        {
+            return EffectivePermissionLevel.None;
+        }
+
+        GranitDocumentsOptions opts = options.Value;
+        string tenantTag = currentTenant.IsAvailable
+            ? currentTenant.Id!.Value.ToString("N")
+            : "global";
+        string key = AclCacheKeys.Folder(folderId, principal);
+
+        FusionCacheEntryOptions entryOptions = cache.CreateEntryOptions(
+            o => o.SetDuration(opts.AclCacheTtl),
+            duration: opts.AclCacheTtl);
+
+        MaybeValue<EffectivePermissionLevel> hit = await cache
+            .TryGetAsync<EffectivePermissionLevel>(key, options: entryOptions, token: cancellationToken)
+            .ConfigureAwait(false);
+        if (hit.HasValue)
+        {
+            metrics.RecordAclCacheHit(tenantTag);
+            return hit.Value;
+        }
+
+        metrics.RecordAclCacheMiss(tenantTag);
+
+        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await inner
+            .ResolveFoldersAsync([folderId], principal, cancellationToken)
+            .ConfigureAwait(false);
+        DocumentResolutionResult r = resolved.TryGetValue(folderId, out DocumentResolutionResult v)
+            ? v
+            : new DocumentResolutionResult(EffectivePermissionLevel.None, []);
+
+        await cache.SetAsync(
+            key,
+            r.Permission,
+            options: entryOptions,
+            tags: AclCacheKeys.BuildFolderEntryTags(r.AncestorFolderIds),
+            token: cancellationToken).ConfigureAwait(false);
+
+        return r.Permission;
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>> GetFolderPermissionsAsync(
+        IReadOnlyCollection<Guid> folderIds,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(folderIds);
+        ArgumentNullException.ThrowIfNull(principal);
+
+        Dictionary<Guid, EffectivePermissionLevel> output = new(folderIds.Count);
+        if (folderIds.Count == 0)
+        {
+            return output;
+        }
+        if (principal.AllGranteeIds.Count == 0)
+        {
+            foreach (Guid id in folderIds)
+            {
+                output[id] = EffectivePermissionLevel.None;
+            }
+            return output;
+        }
+
+        GranitDocumentsOptions opts = options.Value;
+        string tenantTag = currentTenant.IsAvailable
+            ? currentTenant.Id!.Value.ToString("N")
+            : "global";
+        FusionCacheEntryOptions entryOptions = cache.CreateEntryOptions(
+            o => o.SetDuration(opts.AclCacheTtl),
+            duration: opts.AclCacheTtl);
+
+        List<Guid> misses = [];
+        Dictionary<Guid, string> keyByFolderId = new(folderIds.Count);
+        foreach (Guid folderId in folderIds)
+        {
+            string key = AclCacheKeys.Folder(folderId, principal);
+            keyByFolderId[folderId] = key;
+            MaybeValue<EffectivePermissionLevel> hit = await cache
+                .TryGetAsync<EffectivePermissionLevel>(key, options: entryOptions, token: cancellationToken)
+                .ConfigureAwait(false);
+            if (hit.HasValue)
+            {
+                metrics.RecordAclCacheHit(tenantTag);
+                output[folderId] = hit.Value;
+            }
+            else
+            {
+                metrics.RecordAclCacheMiss(tenantTag);
+                misses.Add(folderId);
+            }
+        }
+
+        if (misses.Count == 0)
+        {
+            return output;
+        }
+
+        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await inner
+            .ResolveFoldersAsync(misses, principal, cancellationToken)
+            .ConfigureAwait(false);
+
+        foreach (Guid folderId in misses)
+        {
+            DocumentResolutionResult r = resolved.TryGetValue(folderId, out DocumentResolutionResult v)
+                ? v
+                : new DocumentResolutionResult(EffectivePermissionLevel.None, []);
+            output[folderId] = r.Permission;
+            await cache.SetAsync(
+                keyByFolderId[folderId],
+                r.Permission,
+                options: entryOptions,
+                tags: AclCacheKeys.BuildFolderEntryTags(r.AncestorFolderIds),
+                token: cancellationToken).ConfigureAwait(false);
+        }
+
+        return output;
+    }
 }

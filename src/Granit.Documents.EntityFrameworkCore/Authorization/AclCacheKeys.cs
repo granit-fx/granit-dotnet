@@ -73,6 +73,36 @@ internal static class AclCacheKeys
         return Convert.ToHexString(hash[..8]);
     }
 
+    /// <summary>
+    /// Cache-key segment for "principal P resolves on folder F" (F6.5b). Distinct prefix
+    /// from <see cref="Document"/> so a folder and a document with the same id can never
+    /// collide.
+    /// </summary>
+    public static string Folder(Guid folderId, DocumentPrincipal principal) =>
+        $"acl:folder-perm:{folderId.ToString("N", CultureInfo.InvariantCulture)}"
+        + $":user:{principal.UserId.ToString("N", CultureInfo.InvariantCulture)}"
+        + $":{HashGranteeSet(principal)}";
+
+    /// <summary>
+    /// Builds the tag set attached to a cached folder-permission entry: the target folder
+    /// and every ancestor that participated in the path-prefix scan, plus the tenant-wide
+    /// tag for bulk wipes. Mirrors <see cref="BuildEntryTags(Guid, IReadOnlyList{Guid})"/>
+    /// without the <c>acl:doc:</c> tag (folder entries don't depend on a document id).
+    /// </summary>
+    public static string[] BuildFolderEntryTags(IReadOnlyList<Guid> folderIds)
+    {
+        ArgumentNullException.ThrowIfNull(folderIds);
+
+        string[] tags = new string[folderIds.Count + 1];
+        int i = 0;
+        foreach (Guid folderId in folderIds)
+        {
+            tags[i++] = FolderTag(folderId);
+        }
+        tags[i] = AllTag;
+        return tags;
+    }
+
     /// <summary>Tag attached to entries resolved against a specific document.</summary>
     public static string DocumentTag(Guid documentId) =>
         $"acl:doc:{documentId.ToString("N", CultureInfo.InvariantCulture)}";

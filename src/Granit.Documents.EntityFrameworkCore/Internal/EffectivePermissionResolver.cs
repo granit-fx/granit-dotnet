@@ -66,6 +66,36 @@ internal sealed class EffectivePermissionResolver(
         return result;
     }
 
+    /// <inheritdoc />
+    public async Task<EffectivePermissionLevel> GetFolderPermissionAsync(
+        Guid folderId,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await ResolveFoldersAsync(
+            [folderId], principal, cancellationToken).ConfigureAwait(false);
+        return resolved.TryGetValue(folderId, out DocumentResolutionResult r)
+            ? r.Permission
+            : EffectivePermissionLevel.None;
+    }
+
+    /// <inheritdoc />
+    public async Task<IReadOnlyDictionary<Guid, EffectivePermissionLevel>> GetFolderPermissionsAsync(
+        IReadOnlyCollection<Guid> folderIds,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        IReadOnlyDictionary<Guid, DocumentResolutionResult> resolved = await ResolveFoldersAsync(
+            folderIds, principal, cancellationToken).ConfigureAwait(false);
+
+        Dictionary<Guid, EffectivePermissionLevel> result = new(resolved.Count);
+        foreach ((Guid id, DocumentResolutionResult r) in resolved)
+        {
+            result[id] = r.Permission;
+        }
+        return result;
+    }
+
     /// <summary>
     /// Resolves the effective permission AND returns the ancestor folder ids visited during
     /// resolution. The cache decorator (F6.3) uses the folder ids to tag the cached entry,
@@ -367,6 +397,153 @@ internal sealed class EffectivePermissionResolver(
                     _ => EffectivePermissionLevel.None,
                 };
             output[info.Id] = new DocumentResolutionResult(level, ancestorFolderIds);
+        }
+
+        return output;
+    }
+
+    /// <summary>
+    /// Folder counterpart of <see cref="ResolveDocumentsAsync"/> — same path-prefix scan,
+    /// minus the direct-document-share branch (folders never receive document shares). Used
+    /// by the F6.5b folder list endpoint to populate the <c>permission</c> field in batch.
+    /// </summary>
+    /// <remarks>
+    /// The result type <see cref="DocumentResolutionResult"/> is reused as a generic
+    /// "(permission, contributing folder ids)" carrier — the cache decorator tags each
+    /// entry with the contributing folder ids so a folder share change invalidates exactly
+    /// the entries that depended on it.
+    /// </remarks>
+    internal async Task<IReadOnlyDictionary<Guid, DocumentResolutionResult>> ResolveFoldersAsync(
+        IReadOnlyCollection<Guid> folderIds,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(folderIds);
+        ArgumentNullException.ThrowIfNull(principal);
+
+        Dictionary<Guid, DocumentResolutionResult> output = new(folderIds.Count);
+        if (folderIds.Count == 0)
+        {
+            return output;
+        }
+
+        DocumentResolutionResult empty = new(EffectivePermissionLevel.None, []);
+        foreach (Guid id in folderIds)
+        {
+            output[id] = empty;
+        }
+
+        List<Guid> granteeIds = [.. principal.AllGranteeIds];
+        if (granteeIds.Count == 0)
+        {
+            return output;
+        }
+
+        List<Guid> idList = [.. folderIds];
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        // Step 1 — fetch (Id, TenantId, Path) for every requested folder.
+        var folderInfos = await context.Folders
+            .Where(f => idList.Contains(f.Id))
+            .Select(f => new { f.Id, f.TenantId, f.Path })
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+        if (folderInfos.Count == 0)
+        {
+            return output;
+        }
+
+        Guid tenantId = folderInfos[0].TenantId!.Value;
+
+        // Step 2 — union of self+ancestor paths across the page.
+        Dictionary<Guid, List<string>> folderPaths = new(folderInfos.Count);
+        HashSet<string> uniquePaths = [];
+        foreach (var info in folderInfos)
+        {
+            List<string> paths = ExpandSelfAndAncestorPaths(info.Path);
+            folderPaths[info.Id] = paths;
+            foreach (string p in paths)
+            {
+                uniquePaths.Add(p);
+            }
+        }
+
+        // Step 3 — resolve all unique paths to folder ids in one query.
+        Dictionary<string, Guid> pathToFolderId = uniquePaths.Count == 0
+            ? []
+            : await context.Folders
+                .Where(f => f.TenantId == tenantId && uniquePaths.Contains(f.Path))
+                .Select(f => new { f.Id, f.Path })
+                .ToDictionaryAsync(x => x.Path, x => x.Id, cancellationToken)
+                .ConfigureAwait(false);
+
+        List<Guid?> allAncestorFolderIds = [.. pathToFolderId.Values.Select(id => (Guid?)id)];
+
+        // Step 4 — folder shares matching any folder in the union of ancestor sets.
+        var folderShares = allAncestorFolderIds.Count == 0
+            ? []
+            : await context.DocumentShares
+                .Where(s => s.TenantId == tenantId
+                    && granteeIds.Contains(s.GranteeId)
+                    && s.TargetType == ShareTargetType.Folder
+                    && allAncestorFolderIds.Contains(s.FolderId))
+                .Select(s => new { s.FolderId, s.Permission, s.ExpiresAt })
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+        DateTimeOffset now = clock.Now;
+
+        Dictionary<Guid, List<SharePermissionLevel>> folderShareIndex = [];
+        foreach (var fs in folderShares)
+        {
+            if (fs.ExpiresAt is { } exp && exp <= now)
+            {
+                continue;
+            }
+            if (fs.FolderId is not { } fid)
+            {
+                continue;
+            }
+            if (!folderShareIndex.TryGetValue(fid, out List<SharePermissionLevel>? bucket))
+            {
+                bucket = [];
+                folderShareIndex[fid] = bucket;
+            }
+            bucket.Add(fs.Permission);
+        }
+
+        // Step 5 — compose the per-folder effective permission.
+        foreach (var info in folderInfos)
+        {
+            List<string> paths = folderPaths[info.Id];
+            List<Guid> contributingFolderIds = [];
+            List<SharePermissionLevel> matches = [];
+            foreach (string path in paths)
+            {
+                if (!pathToFolderId.TryGetValue(path, out Guid fid))
+                {
+                    continue;
+                }
+                contributingFolderIds.Add(fid);
+                if (folderShareIndex.TryGetValue(fid, out List<SharePermissionLevel>? bucket))
+                {
+                    matches.AddRange(bucket);
+                }
+            }
+
+            EffectivePermissionLevel level = matches.Count == 0
+                ? EffectivePermissionLevel.None
+                : matches.Max() switch
+                {
+                    SharePermissionLevel.Manage => EffectivePermissionLevel.Manage,
+                    SharePermissionLevel.Edit => EffectivePermissionLevel.Edit,
+                    SharePermissionLevel.Read => EffectivePermissionLevel.Read,
+                    _ => EffectivePermissionLevel.None,
+                };
+            output[info.Id] = new DocumentResolutionResult(level, contributingFolderIds);
         }
 
         return output;
