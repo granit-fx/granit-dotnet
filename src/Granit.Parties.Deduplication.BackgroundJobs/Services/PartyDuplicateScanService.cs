@@ -86,37 +86,55 @@ internal sealed class PartyDuplicateScanService(
         // remain filtered out — we don't surface duplicates of merged-out aggregates.
         using IDisposable _ = dataFilter.Disable<IMultiTenant>();
 
-        List<Party> parties = await db.Parties
+        // Project directly to the scalars consumed by detector.FindCandidatesAsync —
+        // hydrating full Party aggregates just to read e.Address / ph.Number on every
+        // PartyEmail / PartyPhone row is wasteful at 5000 parties per tenant per night.
+        var rows = await db.Parties
             .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             .Where(p => p.TenantId == tenantId)
-            .Include(p => p.Emails)
-            .Include(p => p.Phones)
+            .Select(p => new
+            {
+                p.Id,
+                p.TenantId,
+                p.Kind,
+                p.Name,
+                p.TaxId,
+                Emails = p.Emails.Select(e => e.Address).ToList(),
+                Phones = p.Phones.Select(ph => ph.Number).ToList(),
+            })
             .Take(TenantPartyCap + 1)
             .AsSplitQuery()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        if (parties.Count > TenantPartyCap)
+        if (rows.Count > TenantPartyCap)
         {
             logger.LogWarning(
                 "Tenant {TenantId} has more than {Cap} parties; scan truncated. "
                 + "Paginated incremental scan is a follow-up enhancement.",
                 tenantId, TenantPartyCap);
-            parties = parties.Take(TenantPartyCap).ToList();
+            rows = rows.Take(TenantPartyCap).ToList();
         }
 
         int upserted = 0;
-        foreach (Party party in parties)
+        foreach (var row in rows)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            PartyDraft draft = ToDraft(party);
+            PartyDraft draft = new(
+                TenantId: row.TenantId,
+                Kind: row.Kind,
+                Name: row.Name,
+                TaxId: row.TaxId,
+                Emails: row.Emails,
+                Phones: row.Phones);
+
             IReadOnlyList<DuplicateCandidate> candidates =
                 await detector.FindCandidatesAsync(draft, cancellationToken).ConfigureAwait(false);
 
             // Filter out the self-match before we hand the list to the sink. The sink also
             // guards against this, but eliminating it here keeps the metrics accurate.
             var nonSelf = candidates
-                .Where(c => c.CandidateId.Value != party.Id)
+                .Where(c => c.CandidateId.Value != row.Id)
                 .ToList();
 
             if (nonSelf.Count == 0)
@@ -124,7 +142,7 @@ internal sealed class PartyDuplicateScanService(
                 continue;
             }
 
-            upserted += await sink.UpsertAsync(nonSelf, party.Id, tenantId, cancellationToken)
+            upserted += await sink.UpsertAsync(nonSelf, row.Id, tenantId, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -132,12 +150,4 @@ internal sealed class PartyDuplicateScanService(
         metrics.RecordScanDuration(tenantId, stopwatch.Elapsed);
         return upserted;
     }
-
-    private static PartyDraft ToDraft(Party party) => new(
-        TenantId: party.TenantId,
-        Kind: party.Kind,
-        Name: party.Name,
-        TaxId: party.TaxId,
-        Emails: [.. party.Emails.Select(e => e.Address)],
-        Phones: [.. party.Phones.Select(p => p.Number)]);
 }

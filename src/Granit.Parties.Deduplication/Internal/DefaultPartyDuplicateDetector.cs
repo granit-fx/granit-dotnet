@@ -60,22 +60,34 @@ internal sealed class DefaultPartyDuplicateDetector(
         // active so tombstoned losers don't show up as candidates.
         using IDisposable _ = dataFilter.Disable<IMultiTenant>();
 
-        List<Party> tenantParties = await db.Parties
+        // Project directly to the scalars consumed by FindCandidatesAsync — loading the
+        // full Party aggregate (with audit / soft-delete / canonicalisation columns on
+        // every PartyEmail and PartyPhone row) only to read e.Address / ph.Number is
+        // wasteful at 5000 parties × N children scale.
+        var rows = await db.Parties
             .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
             .Where(p => p.TenantId == tenantId)
-            .Include(x => x.Emails)
-            .Include(x => x.Phones)
+            .Select(p => new
+            {
+                p.Id,
+                p.TenantId,
+                p.Kind,
+                p.Name,
+                p.TaxId,
+                Emails = p.Emails.Select(e => e.Address).ToList(),
+                Phones = p.Phones.Select(ph => ph.Number).ToList(),
+            })
             .Take(TenantScanCap + 1)
             .AsSplitQuery()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
-        if (tenantParties.Count > TenantScanCap)
+        if (rows.Count > TenantScanCap)
         {
             logger.LogWarning(
                 "Tenant {TenantId} has more than {Cap} parties; ScanTenantAsync truncated. "
                 + "Drive large-tenant scans through the background job (#1300) instead.",
                 tenantId, TenantScanCap);
-            tenantParties = tenantParties.Take(TenantScanCap).ToList();
+            rows = rows.Take(TenantScanCap).ToList();
         }
 
         // Each pair is counted ONCE: the lower-id endpoint reports the match, the higher-
@@ -84,24 +96,31 @@ internal sealed class DefaultPartyDuplicateDetector(
         // deterministic, which keeps the count reproducible across re-runs.
         HashSet<(Guid Lower, Guid Higher)> uniquePairs = new();
 
-        foreach (Party party in tenantParties)
+        foreach (var row in rows)
         {
-            PartyDraft draft = ToDraft(party);
+            PartyDraft draft = new(
+                TenantId: row.TenantId,
+                Kind: row.Kind,
+                Name: row.Name,
+                TaxId: row.TaxId,
+                Emails: row.Emails,
+                Phones: row.Phones);
+
             IReadOnlyList<DuplicateCandidate> hits =
                 await FindCandidatesAsync(draft, cancellationToken).ConfigureAwait(false);
 
             foreach (DuplicateCandidate hit in hits)
             {
                 Guid candidate = hit.CandidateId.Value;
-                if (candidate == party.Id)
+                if (candidate == row.Id)
                 {
                     // Self-match — every party is its own deterministic dup. Skip.
                     continue;
                 }
 
-                (Guid lower, Guid higher) = candidate.CompareTo(party.Id) < 0
-                    ? (candidate, party.Id)
-                    : (party.Id, candidate);
+                (Guid lower, Guid higher) = candidate.CompareTo(row.Id) < 0
+                    ? (candidate, row.Id)
+                    : (row.Id, candidate);
 
                 uniquePairs.Add((lower, higher));
             }
@@ -109,14 +128,6 @@ internal sealed class DefaultPartyDuplicateDetector(
 
         return uniquePairs.Count;
     }
-
-    private static PartyDraft ToDraft(Party party) => new(
-        TenantId: party.TenantId,
-        Kind: party.Kind,
-        Name: party.Name,
-        TaxId: party.TaxId,
-        Emails: [.. party.Emails.Select(e => e.Address)],
-        Phones: [.. party.Phones.Select(p => p.Number)]);
 
     /// <summary>
     /// Merges Tier-1 and Tier-3 outputs into a single ranked list keyed by candidate id.
