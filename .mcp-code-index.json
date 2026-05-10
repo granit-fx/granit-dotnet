@@ -586,6 +586,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Browsing",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Caching",
       "deps": [
         "Granit",
@@ -13116,6 +13123,620 @@
           "returnType": "Task<BlobValidationResult>"
         }
       ]
+    },
+    {
+      "name": "BrowserCapabilities",
+      "fqn": "Granit.Browsing.BrowserCapabilities",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/BrowserCapabilities.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "AccessibilityTreeNode",
+      "fqn": "Granit.Browsing.Capabilities.AccessibilityTreeNode",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
+      "line": 24,
+      "members": []
+    },
+    {
+      "name": "IAccessibilityCapability",
+      "fqn": "Granit.Browsing.Capabilities.IAccessibilityCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IAccessibilityCapability.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "SnapshotTreeAsync",
+          "kind": "method",
+          "signature": "SnapshotTreeAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AccessibilityTreeNode>"
+        }
+      ]
+    },
+    {
+      "name": "IHarRecordingCapability",
+      "fqn": "Granit.Browsing.Capabilities.IHarRecordingCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IHarRecordingCapability.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StartHarAsync",
+          "kind": "method",
+          "signature": "StartHarAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StopHarAsync",
+          "kind": "method",
+          "signature": "StopHarAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfCapability",
+      "fqn": "Granit.Browsing.Capabilities.IPdfCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfCapability.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "RenderToPdfAsync",
+          "kind": "method",
+          "signature": "RenderToPdfAsync(IBrowserPage page, PdfOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfDocumentPage",
+      "fqn": "Granit.Browsing.Capabilities.IPdfDocumentPage",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 28,
+      "members": [
+        {
+          "name": "RenderPageToImageAsync",
+          "kind": "method",
+          "signature": "RenderPageToImageAsync(int pageIndex, RenditionDimensions dimensions, CancellationToken cancellationToken = default)",
+          "returnType": "int PageCount { get; } Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "IPdfViewerCapability",
+      "fqn": "Granit.Browsing.Capabilities.IPdfViewerCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "OpenPdfAsync",
+          "kind": "method",
+          "signature": "OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IPdfDocumentPage>"
+        }
+      ]
+    },
+    {
+      "name": "ITracingCapability",
+      "fqn": "Granit.Browsing.Capabilities.ITracingCapability",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "StartTracingAsync",
+          "kind": "method",
+          "signature": "StartTracingAsync(IBrowserPage page, TracingOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "StopTracingAsync",
+          "kind": "method",
+          "signature": "StopTracingAsync(IBrowserPage page, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        }
+      ]
+    },
+    {
+      "name": "PaperFormat",
+      "fqn": "Granit.Browsing.Capabilities.PaperFormat",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 51,
+      "members": []
+    },
+    {
+      "name": "PdfMargins",
+      "fqn": "Granit.Browsing.Capabilities.PdfMargins",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 48,
+      "members": []
+    },
+    {
+      "name": "PdfOptions",
+      "fqn": "Granit.Browsing.Capabilities.PdfOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/PdfOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Format",
+          "kind": "property",
+          "signature": "PaperFormat? Format",
+          "returnType": "PaperFormat?"
+        },
+        {
+          "name": "Width",
+          "kind": "property",
+          "signature": "string? Width",
+          "returnType": "string?"
+        },
+        {
+          "name": "DisplayHeaderFooter",
+          "kind": "property",
+          "signature": "bool DisplayHeaderFooter",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "RenditionDimensions",
+      "fqn": "Granit.Browsing.Capabilities.RenditionDimensions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/IPdfViewerCapability.cs",
+      "line": 49,
+      "members": []
+    },
+    {
+      "name": "TracingOptions",
+      "fqn": "Granit.Browsing.Capabilities.TracingOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Capabilities/ITracingCapability.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "Snapshots",
+          "kind": "property",
+          "signature": "bool Snapshots",
+          "returnType": "bool"
+        },
+        {
+          "name": "Screenshots",
+          "kind": "property",
+          "signature": "bool Screenshots",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "ConsoleMessage",
+      "fqn": "Granit.Browsing.ConsoleMessage",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 127,
+      "members": []
+    },
+    {
+      "name": "BrowsingActivitySource",
+      "fqn": "Granit.Browsing.Diagnostics.BrowsingActivitySource",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowsingActivitySource.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
+    },
+    {
+      "name": "BrowsingMetrics",
+      "fqn": "Granit.Browsing.Diagnostics.BrowsingMetrics",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Diagnostics/BrowsingMetrics.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "RecordPageAcquired",
+          "kind": "method",
+          "signature": "RecordPageAcquired(string engine, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordPageReleased",
+          "kind": "method",
+          "signature": "RecordPageReleased(string engine, string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAcquireDuration",
+          "kind": "method",
+          "signature": "RecordAcquireDuration(string engine, System.TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordRenderDuration",
+          "kind": "method",
+          "signature": "RecordRenderDuration(string engine, string operation, System.TimeSpan duration)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordError",
+          "kind": "method",
+          "signature": "RecordError(string engine, string errorType)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "GranitBrowsingModule",
+      "fqn": "Granit.Browsing.GranitBrowsingModule",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/GranitBrowsingModule.cs",
+      "line": 19,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IBrowserPage",
+      "fqn": "Granit.Browsing.IBrowserPage",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "NavigateAsync",
+          "kind": "method",
+          "signature": "NavigateAsync(string url, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "string EngineName { get; } Task"
+        },
+        {
+          "name": "SetContentAsync",
+          "kind": "method",
+          "signature": "SetContentAsync(string html, NavigationOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetCurrentUrlAsync",
+          "kind": "method",
+          "signature": "GetCurrentUrlAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task<string>"
+        },
+        {
+          "name": "WaitForLoadStateAsync",
+          "kind": "method",
+          "signature": "WaitForLoadStateAsync(LoadState state, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WaitForSelectorAsync",
+          "kind": "method",
+          "signature": "WaitForSelectorAsync(string selector, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "WaitForFunctionAsync",
+          "kind": "method",
+          "signature": "WaitForFunctionAsync(string jsExpression, TimeSpan? timeout = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AddStyleTagAsync",
+          "kind": "method",
+          "signature": "AddStyleTagAsync(string css, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "AddScriptTagAsync",
+          "kind": "method",
+          "signature": "AddScriptTagAsync(string js, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "ScreenshotAsync",
+          "kind": "method",
+          "signature": "ScreenshotAsync(ScreenshotOptions options, CancellationToken cancellationToken = default)",
+          "returnType": "Task<byte[]>"
+        },
+        {
+          "name": "RouteAsync",
+          "kind": "method",
+          "signature": "RouteAsync(string urlPattern, RouteHandler handler, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IBrowserSandboxProfile",
+      "fqn": "Granit.Browsing.IBrowserSandboxProfile",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserSandboxProfile.cs",
+      "line": 17,
+      "members": []
+    },
+    {
+      "name": "IHeadlessBrowser",
+      "fqn": "Granit.Browsing.IHeadlessBrowser",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IHeadlessBrowser.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "Supports",
+          "kind": "method",
+          "signature": "Supports(BrowserCapabilities capability)",
+          "returnType": "string EngineName { get; } BrowserCapabilities Capabilities { get; } bool"
+        },
+        {
+          "name": "AcquirePageAsync",
+          "kind": "method",
+          "signature": "AcquirePageAsync(BrowserPageOptions? options = null, System.Threading.CancellationToken cancellationToken = default)",
+          "returnType": "System.Threading.Tasks.Task<IBrowserPage>"
+        }
+      ]
+    },
+    {
+      "name": "IHeadlessBrowserPool",
+      "fqn": "Granit.Browsing.IHeadlessBrowserPool",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IHeadlessBrowserPool.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "GetStatsAsync",
+          "kind": "method",
+          "signature": "GetStatsAsync(CancellationToken cancellationToken = default)",
+          "returnType": "int ActiveBrowsers { get; } int IdlePages { get; } Task<PoolStats>"
+        },
+        {
+          "name": "DrainAsync",
+          "kind": "method",
+          "signature": "DrainAsync(CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IRouteContext",
+      "fqn": "Granit.Browsing.IRouteContext",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 102,
+      "members": [
+        {
+          "name": "ContinueAsync",
+          "kind": "method",
+          "signature": "ContinueAsync(CancellationToken cancellationToken = default)",
+          "returnType": "string Url { get; } string Method { get; } IReadOnlyDictionary<string, string> Headers { get; } Task"
+        },
+        {
+          "name": "AbortAsync",
+          "kind": "method",
+          "signature": "AbortAsync(string errorCode = \"failed\", CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "FulfillAsync",
+          "kind": "method",
+          "signature": "FulfillAsync(int statusCode, IReadOnlyDictionary<string, string>? headers, byte[]? body, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "LoadState",
+      "fqn": "Granit.Browsing.LoadState",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 80,
+      "members": []
+    },
+    {
+      "name": "BrowserPageOptions",
+      "fqn": "Granit.Browsing.Options.BrowserPageOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Viewport",
+          "kind": "property",
+          "signature": "ViewportSize? Viewport",
+          "returnType": "ViewportSize?"
+        },
+        {
+          "name": "UserAgent",
+          "kind": "property",
+          "signature": "string? UserAgent",
+          "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "CookieParam",
+      "fqn": "Granit.Browsing.Options.CookieParam",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 57,
+      "members": []
+    },
+    {
+      "name": "GranitBrowsingOptions",
+      "fqn": "Granit.Browsing.Options.GranitBrowsingOptions",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "MaxBrowsers",
+          "kind": "property",
+          "signature": "int MaxBrowsers",
+          "returnType": "int"
+        },
+        {
+          "name": "MaxPagesPerBrowser",
+          "kind": "property",
+          "signature": "int MaxPagesPerBrowser",
+          "returnType": "int"
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(5)",
+          "returnType": "TimeSpan PageIdleTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromMinutes",
+          "kind": "method",
+          "signature": "FromMinutes(30)",
+          "returnType": "TimeSpan PageMaxLifetime { get; set; } = TimeSpan."
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan AcquireTimeout { get; set; } = TimeSpan."
+        },
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "ResourceLimits ResourceLimits { get; set; } ="
+        }
+      ]
+    },
+    {
+      "name": "NavigationOptions",
+      "fqn": "Granit.Browsing.Options.NavigationOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/NavigationOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "Timeout",
+          "kind": "property",
+          "signature": "TimeSpan? Timeout",
+          "returnType": "TimeSpan?"
+        }
+      ]
+    },
+    {
+      "name": "ResourceLimits",
+      "fqn": "Granit.Browsing.Options.ResourceLimits",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/GranitBrowsingOptions.cs",
+      "line": 58,
+      "members": [
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "int? MaxMemoryMb { get; set; } public TimeSpan? MaxRenderDuration { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "ScreenshotClip",
+      "fqn": "Granit.Browsing.Options.ScreenshotClip",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 40,
+      "members": []
+    },
+    {
+      "name": "ScreenshotFormat",
+      "fqn": "Granit.Browsing.Options.ScreenshotFormat",
+      "kind": "enum",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "ScreenshotOptions",
+      "fqn": "Granit.Browsing.Options.ScreenshotOptions",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/ScreenshotOptions.cs",
+      "line": 4,
+      "members": [
+        {
+          "name": "Format",
+          "kind": "property",
+          "signature": "ScreenshotFormat Format",
+          "returnType": "ScreenshotFormat"
+        }
+      ]
+    },
+    {
+      "name": "ViewportSize",
+      "fqn": "Granit.Browsing.Options.ViewportSize",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Options/BrowserPageOptions.cs",
+      "line": 45,
+      "members": []
+    },
+    {
+      "name": "PageError",
+      "fqn": "Granit.Browsing.PageError",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IBrowserPage.cs",
+      "line": 132,
+      "members": []
+    },
+    {
+      "name": "PoolStats",
+      "fqn": "Granit.Browsing.PoolStats",
+      "kind": "record",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/IHeadlessBrowserPool.cs",
+      "line": 36,
+      "members": []
     },
     {
       "name": "AesCacheValueEncryptor",
