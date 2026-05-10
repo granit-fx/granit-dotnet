@@ -1,0 +1,145 @@
+---
+title: "Documents — Folder/Document Management with Path-Based ACL"
+description: Document and folder management module with versioned content, share-based ACL, and path-based permission inheritance backed by FusionCache.
+sidebar:
+  label: Documents
+  order: 18
+---
+
+`Granit.Documents` is the framework's document-management module: hierarchical
+folders, versioned documents, and a share-based ACL that inherits down the
+folder tree via the materialised path. It sits on top of `Granit.BlobStorage`
+for the binary plane and on `Granit.MultiTenancy` for tenant isolation.
+
+This page focuses on the **share ACL and inheritance semantics** introduced by
+feature F6. Module overview, folder tree mechanics, and version model are
+covered by [ADR-052](/dotnet/architecture/adr/052-documents-module/).
+
+## Share ACL model
+
+A `DocumentShare` is a single ACL grant. Every share is one of:
+
+| Target | Grantee | Permission | Inheritance |
+| --- | --- | --- | --- |
+| Folder | User / Role / Group | Read / Edit / Manage | Inherits to descendants when IsDefault = true |
+| Document | User / Role / Group | Read / Edit / Manage | No inheritance (single document) |
+
+Two REST endpoints — one nested under each target:
+
+```http
+POST /folders/{folderId}/shares
+POST /documents/{documentId}/shares
+```
+
+Body:
+
+```json
+{
+  "granteeType": "User",
+  "granteeId": "1f6a2b9d-...-...-...",
+  "permission": "Edit",
+  "isDefault": true,
+  "expiresAt": null
+}
+```
+
+The `isDefault` flag is **only meaningful for folder shares** — document shares
+ignore it. Defaulting to `true` matches the most common user expectation: a
+folder share applies to everything inside.
+
+## Path-based inheritance
+
+When the resolver computes the effective permission for a `(documentId, principal)`
+pair it considers:
+
+1. Direct shares on the document.
+2. Shares on the document's folder.
+3. Shares on **every ancestor folder** up to (but excluding) the tenant root.
+
+The check uses the materialised `Folder.Path` column — a tree like:
+
+```text
+/                  (tenant root)
+└── /Contracts     (A)
+    └── /Contracts/2026  (B)
+        └── /Contracts/2026/Client-X  (C)
+            └── invoice.pdf
+```
+
+A folder share on **A** with `IsDefault = true` confers its permission to
+`invoice.pdf` because `/Contracts` is a path-prefix of
+`/Contracts/2026/Client-X`. Granting the same share on **B** would still cover
+`invoice.pdf` but no longer covers documents directly in `A`.
+
+When several grants apply to the same document — direct, ancestor, and via
+multiple roles or groups the principal carries — the **highest permission
+wins** (`Manage` > `Edit` > `Read`). Expired grants (`ExpiresAt` in the past)
+are ignored.
+
+### Worked example
+
+| Grant | Target | Permission | Visible on invoice.pdf? |
+| --- | --- | --- | --- |
+| Share on A (IsDefault=true) for User U | Folder | Read | Yes — U sees Read |
+| Share on C for Role R (U is in R) | Folder | Edit | Yes — U sees **Edit** (highest wins) |
+| Share on B for Group G (U not in G) | Folder | Manage | No — U is not a grantee |
+| Share on sibling /Other for U | Folder | Manage | No — /Other is not an ancestor of C |
+
+### Path-prefix is segment-aware
+
+The resolver expands the document folder path into the full ancestor list
+(`/Contracts`, `/Contracts/2026`, `/Contracts/2026/Client-X`) and matches by
+exact equality, not by string prefix. A folder named `/Contract` (singular)
+is **not** considered an ancestor of `/Contracts/2026`.
+
+## Phase-1 inheritance — `IsDefault` is persisted, always inherits
+
+In phase 1 (the current release), every folder share inherits to descendants.
+The `IsDefault` flag is persisted on the row and threaded through the API but
+the resolver does **not** filter on it — so a folder share with
+`IsDefault = false` still inherits today.
+
+The flag is reserved for phase 2: a non-inherited folder share that grants a
+"membership-only" capability (e.g., the right to list a folder without
+inheriting access to its descendants). Persisting the flag now keeps the
+schema and API stable across the phase boundary.
+
+> **Caution.** Phase 1 treats `IsDefault = false` and `IsDefault = true`
+> identically at resolution time. Don't rely on `IsDefault = false` to limit
+> visibility — until phase 2 ships, the only way to scope a grant tightly is
+> to create it on the specific folder or document rather than on an ancestor.
+
+## FusionCache layer
+
+The resolver is wrapped by a FusionCache decorator (F6.3) that caches each
+`(tenantId, documentId, principal-grantee-set)` answer with a tag set:
+
+- `acl:doc:{documentId}` — direct document tag.
+- `acl:folder:{folderId}` — one tag per ancestor folder visited during resolution.
+- `acl:all` — tenant-wide tag for bulk wipes.
+
+Share grant / revoke and folder path-change events invalidate by tag through
+`AclCacheInvalidationHandler` (Wolverine local bus). Folder moves bulk-wipe via
+`acl:all` because a path change shifts the ancestor set of every descendant.
+
+TTL defaults to 5 minutes (`GranitDocumentsOptions.AclCacheTtl`); the layer can
+be disabled with `AclCacheEnabled = false`. Cache hits / misses are recorded on
+`granit.documents.acl.cache.hits` / `.misses`, tagged with `tenant_id`.
+
+## Permissions
+
+Coarse permissions complement per-row shares — a caller needs both the framework
+permission **and** a matching share to access a document:
+
+| Permission | Required for |
+| --- | --- |
+| Documents.Documents.Read | Read a document the caller has a share on |
+| Documents.Documents.Manage | Create / replace / delete documents |
+| Documents.Folders.Read | List folder contents |
+| Documents.Folders.Manage | Create / move / rename / delete folders |
+| Documents.Shares.Read | List share rows on a folder or document |
+| Documents.Shares.Manage | Grant / revoke shares |
+
+## Related ADRs
+
+- [ADR-052 — Granit.Documents module](/dotnet/architecture/adr/052-documents-module/)

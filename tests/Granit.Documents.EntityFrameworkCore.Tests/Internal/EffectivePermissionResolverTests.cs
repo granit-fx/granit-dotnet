@@ -129,6 +129,39 @@ public sealed class EffectivePermissionResolverTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task IsDefaultFolderShare_InheritsThroughThreeLevels()
+    {
+        // F6.4 acceptance: a folder share with IsDefault=true on /A applies to a document
+        // sitting in /A/B/C — path-prefix inheritance must traverse the full ancestor chain.
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Folder root = await GetOrCreateRootAsync();
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(ct);
+        Folder reloadedRoot = await db.Folders.SingleAsync(f => f.Id == root.Id, ct);
+
+        var a = Folder.Create(Guid.NewGuid(), reloadedRoot, "A", OwnerId);
+        db.Folders.Add(a);
+        await db.SaveChangesAsync(ct);
+        var b = Folder.Create(Guid.NewGuid(), a, "B", OwnerId);
+        db.Folders.Add(b);
+        await db.SaveChangesAsync(ct);
+        var c = Folder.Create(Guid.NewGuid(), b, "C", OwnerId);
+        var doc = Document.Create(Guid.NewGuid(), c, OwnerId, "deep.pdf");
+        db.Folders.Add(c);
+        db.Documents.Add(doc);
+        await db.SaveChangesAsync(ct);
+
+        var user = Guid.NewGuid();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, a.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+
+        EffectivePermissionLevel result = await _sut.GetDocumentPermissionAsync(
+            doc.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+
+        result.ShouldBe(EffectivePermissionLevel.Edit);
+    }
+
+    [Fact]
     public async Task SiblingFolderShare_DoesNotLeakToAdjacentFolder()
     {
         // Grant on /A; document under /B/X — must NOT match.

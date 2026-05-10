@@ -68,6 +68,40 @@ public sealed class EffectivePermissionResolverPostgresTests :
     }
 
     [Fact]
+    public async Task IsDefaultFolderShare_InheritsAcrossThreeLevels_OnPostgres()
+    {
+        // F6.4 acceptance — same-tree, three-level deep inheritance through /A/B/C with
+        // explicit IsDefault=true. Pinned on Postgres to catch any provider-specific quirk
+        // in the path-prefix predicate (the SQLite suite covers the unit-level case).
+        var bootstrap = new DocumentBootstrapService(_factory, new SimpleGuidGenerator());
+        Guid rootId = await bootstrap.EnsureTenantRootAsync(TenantId, OwnerId, TestContext.Current.CancellationToken);
+
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(TestContext.Current.CancellationToken);
+        Folder root = await db.Folders.SingleAsync(f => f.Id == rootId, TestContext.Current.CancellationToken);
+        var a = Folder.Create(Guid.NewGuid(), root, "A", OwnerId);
+        db.Folders.Add(a);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var b = Folder.Create(Guid.NewGuid(), a, "B", OwnerId);
+        db.Folders.Add(b);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var c = Folder.Create(Guid.NewGuid(), b, "C", OwnerId);
+        var doc = Document.Create(Guid.NewGuid(), c, OwnerId, "deep.pdf");
+        db.Folders.Add(c);
+        db.Documents.Add(doc);
+        await db.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var user = Guid.NewGuid();
+        await SeedShareAsync(DocumentShare.ShareToFolder(
+            Guid.NewGuid(), TenantId, a.Id, ShareGranteeType.User, user,
+            SharePermissionLevel.Edit, isDefault: true, OwnerId, Now));
+
+        EffectivePermissionLevel result = await _sut.GetDocumentPermissionAsync(
+            doc.Id, DocumentPrincipal.ForUser(user), TestContext.Current.CancellationToken);
+
+        result.ShouldBe(EffectivePermissionLevel.Edit);
+    }
+
+    [Fact]
     public async Task ShareQuery_PrefersIndexOverSeqScan_OnPostgres()
     {
         // Seed enough rows to push the planner away from a seq scan. Postgres requires
