@@ -1,0 +1,18 @@
+{
+  "culture": "nl",
+  "texts": {
+    "UrlSafety:SchemeNotAllowed": "URL-schema '{0}' is niet toegestaan.",
+    "UrlSafety:HostBlocked": "Host '{0}' is geblokkeerd.",
+    "UrlSafety:PrivateNetwork": "Host '{0}' wordt herleid naar een privénetwerkadres.",
+    "UrlSafety:Loopback": "Host '{0}' wordt herleid naar een loopback-adres.",
+    "UrlSafety:LinkLocal": "Host '{0}' wordt herleid naar een link-local-adres.",
+    "UrlSafety:MetadataEndpoint": "Host '{0}' wordt herleid naar een cloud-metadata-endpoint.",
+    "UrlSafety:IPv6UniqueLocal": "Host '{0}' wordt herleid naar een IPv6 unique-local-adres.",
+    "UrlSafety:ReservedTld": "Host '{0}' gebruikt het gereserveerde TLD '{1}'.",
+    "UrlSafety:MalformedUrl": "URL is misvormd.",
+    "UrlSafety:UrlTooLong": "URL overschrijdt de maximumlengte van {0}.",
+    "UrlSafety:HostPatternDenied": "Host '{0}' komt overeen met een geweigerd patroon.",
+    "UrlSafety:HostPatternNotAllowed": "Host '{0}' staat niet in de lijst met toegestane patronen.",
+    "UrlSafety:DnsResolutionFailed": "DNS-resolutie mislukt voor host '{0}'."
+  }
+}

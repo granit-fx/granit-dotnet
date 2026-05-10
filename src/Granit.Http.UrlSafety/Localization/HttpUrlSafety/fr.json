@@ -1,0 +1,18 @@
+{
+  "culture": "fr",
+  "texts": {
+    "UrlSafety:SchemeNotAllowed": "Le schéma d'URL '{0}' n'est pas autorisé.",
+    "UrlSafety:HostBlocked": "L'hôte '{0}' est bloqué.",
+    "UrlSafety:PrivateNetwork": "L'hôte '{0}' se résout vers une adresse de réseau privé.",
+    "UrlSafety:Loopback": "L'hôte '{0}' se résout vers une adresse de loopback.",
+    "UrlSafety:LinkLocal": "L'hôte '{0}' se résout vers une adresse link-local.",
+    "UrlSafety:MetadataEndpoint": "L'hôte '{0}' se résout vers un endpoint de métadonnées cloud.",
+    "UrlSafety:IPv6UniqueLocal": "L'hôte '{0}' se résout vers une adresse IPv6 unique-local.",
+    "UrlSafety:ReservedTld": "L'hôte '{0}' utilise le TLD réservé '{1}'.",
+    "UrlSafety:MalformedUrl": "L'URL est mal formée.",
+    "UrlSafety:UrlTooLong": "L'URL dépasse la longueur maximale de {0}.",
+    "UrlSafety:HostPatternDenied": "L'hôte '{0}' correspond à un motif refusé.",
+    "UrlSafety:HostPatternNotAllowed": "L'hôte '{0}' n'est pas dans la liste des motifs autorisés.",
+    "UrlSafety:DnsResolutionFailed": "Échec de la résolution DNS pour l'hôte '{0}'."
+  }
+}

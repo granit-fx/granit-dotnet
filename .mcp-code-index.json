@@ -1280,6 +1280,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Http.UrlSafety",
+      "deps": [
+        "Granit"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Identity",
       "deps": [
         "Granit",
@@ -27968,6 +27975,155 @@
       "file": "src/Granit.Http.Abstractions/Timing/MinimumResponseTimeGuard.cs",
       "line": 26,
       "members": []
+    },
+    {
+      "name": "UrlSafetyServiceCollectionExtensions",
+      "fqn": "Granit.Http.UrlSafety.Extensions.UrlSafetyServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/Extensions/UrlSafetyServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitUrlSafety",
+          "kind": "method",
+          "signature": "AddGranitUrlSafety(this IServiceCollection services, Action<UrlSafetyOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitHttpUrlSafetyModule",
+      "fqn": "Granit.Http.UrlSafety.GranitHttpUrlSafetyModule",
+      "kind": "class",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/GranitHttpUrlSafetyModule.cs",
+      "line": 15,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IUrlSafetyValidator",
+      "fqn": "Granit.Http.UrlSafety.IUrlSafetyValidator",
+      "kind": "interface",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/IUrlSafetyValidator.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(Uri url, CancellationToken ct = default)",
+          "returnType": "ValueTask<UrlSafetyResult>"
+        },
+        {
+          "name": "ValidateAsync",
+          "kind": "method",
+          "signature": "ValidateAsync(Uri url, UrlSafetyOptions optionOverrides, CancellationToken ct = default)",
+          "returnType": "ValueTask<UrlSafetyResult>"
+        }
+      ]
+    },
+    {
+      "name": "HttpUrlSafetyLocalizationResource",
+      "fqn": "Granit.Http.UrlSafety.Localization.HttpUrlSafetyLocalizationResource",
+      "kind": "class",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/Localization/HttpUrlSafetyLocalizationResource.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "UrlSafetyOptions",
+      "fqn": "Granit.Http.UrlSafety.UrlSafetyOptions",
+      "kind": "class",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/UrlSafetyOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "AllowedSchemes",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedSchemes",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "AllowPrivateNetworks",
+          "kind": "property",
+          "signature": "bool AllowPrivateNetworks",
+          "returnType": "bool"
+        },
+        {
+          "name": "AllowedHostPatterns",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> AllowedHostPatterns",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "DeniedHostPatterns",
+          "kind": "property",
+          "signature": "IReadOnlyList<string> DeniedHostPatterns",
+          "returnType": "IReadOnlyList<string>"
+        },
+        {
+          "name": "MaxUrlLength",
+          "kind": "property",
+          "signature": "int MaxUrlLength",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(1)",
+          "returnType": "TimeSpan DnsResolveTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "UrlSafetyViolation",
+      "fqn": "Granit.Http.UrlSafety.UrlSafetyViolation",
+      "kind": "record",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/UrlSafetyViolation.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "UrlSafetyViolationKind",
+      "fqn": "Granit.Http.UrlSafety.UrlSafetyViolationKind",
+      "kind": "enum",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/UrlSafetyViolationKind.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "struct",
+      "fqn": "Granit.Http.UrlSafety.struct",
+      "kind": "record",
+      "project": "Granit.Http.UrlSafety",
+      "file": "src/Granit.Http.UrlSafety/UrlSafetyResult.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "Valid",
+          "kind": "method",
+          "signature": "Valid(IReadOnlyList<IPAddress> ips)",
+          "returnType": "UrlSafetyResult"
+        },
+        {
+          "name": "Invalid",
+          "kind": "method",
+          "signature": "Invalid(UrlSafetyViolation v)",
+          "returnType": "UrlSafetyResult"
+        }
+      ]
     },
     {
       "name": "IdentityMetrics",
