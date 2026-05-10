@@ -128,23 +128,32 @@ services.AddGranitBrowsingPlaywright(
 
 ## Sandboxing untrusted content
 
-When rendering host-trusted HTML (server-generated invoices, reports), no
-extra sandboxing is needed. When rendering untrusted content (user-uploaded
-HTML, third-party PDF, web-archive playback), register an
-`IBrowserSandboxProfile`:
+`Granit.Browsing` ships a deny-by-default `IBrowserSandboxProfile` that is
+auto-registered by `GranitBrowsingModule`. The shipped defaults: HTTPS-only,
+no private networks, CSP forced, console redacted, 30 s render cap.
+
+Override the profile to tighten the policy further (per-host
+`AllowedHostPatterns`, `DeniedHostPatterns`, shorter `MaxRenderDuration`):
 
 ```csharp
-services.AddSingleton<IBrowserSandboxProfile>(new RestrictedSandboxProfile
+services.AddSingleton<IBrowserSandboxProfile>(new SandboxProfile
 {
-    DisableJavaScript = true,
-    BlockNetworkRequests = true,
-    DisableImages = false,
-    BlockedUrlPatterns = ["googletagmanager.com", "doubleclick.net"],
+    AllowedHostPatterns = [ "*.partner.com", "cdn.example.com" ],
+    DeniedHostPatterns = [ "*.tracker.example" ],
+    MaxRenderDuration = TimeSpan.FromSeconds(15),
 });
 ```
 
-Both providers honour the profile through native interception. Providers can
-co-exist with non-sandboxed consumers — the profile is a per-host policy.
+Both providers honour the profile through native interception, wrapped by a
+single per-page `RequestRouter` that runs sandbox handlers before user
+`RouteAsync` registrations. The full threat model, audit events,
+`ConsoleRedactor`, `PrivilegedFlagGuard`, and the five Browsing permissions
+are covered in [Browsing security](/dotnet/browsing/security/).
+
+The pre-1.0 hardening pass removed `BrowserPageOptions.BypassCsp`. Disabling
+CSP now requires both a sandbox with `ForceCsp = false` *and* the
+`Granit.Browsing.Pages.BypassCsp` permission on the caller's role — see the
+[migration guide](/dotnet/browsing/migration-pre-1-0-hardening/).
 
 ## Observability
 

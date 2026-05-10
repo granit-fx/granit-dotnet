@@ -1,0 +1,168 @@
+---
+title: "ADR-055: Extract URL safety and temp-file primitives into shared packages"
+description: "The pre-1.0 Browsing security-hardening pass surfaced duplicate SSRF/IP-classification logic (Webhooks + Browsing) and duplicate temp-file usage (Browsing + Privacy). We extract two minimal shared packages — Granit.Http.Security (IUrlSafetyValidator, PrivateNetworkClassifier, ReservedTldClassifier) and Granit.IO (ITempFileFactory) — instead of inlining, folding into Granit core, repurposing Granit.BlobStorage.Temp, or shipping a separate Browsing analyzer."
+sidebar:
+  order: 55
+  label: "055 - Extract URL safety + temp files"
+---
+
+> **Date:** 2026-05-11
+> **Authors:** Jean-Francois Meyers
+> **Scope:** NEW packages `Granit.Http.Security`, `Granit.IO`. Consumers refactored: `Granit.Browsing` (and the two provider packages), `Granit.Webhooks`, `Granit.Privacy.BlobStorage`.
+> **Status:** Accepted
+
+## Context
+
+The pre-1.0 hardening pass on `Granit.Browsing.*` closed 19 audit findings.
+Two structural patterns came out of the audit, not in the individual
+fixes:
+
+1. **Duplicate SSRF / IP-classification logic.** `Granit.Webhooks` shipped a
+   private `WebhookSsrfGuard` with its own classifier for RFC 1918 / loopback
+   / link-local. `Granit.Browsing` was about to grow the same shape under
+   `IBrowserSandboxProfile`. The two implementations had subtly different
+   semantics — Webhooks treated `100.64.0.0/10` (carrier-grade NAT) as
+   private; Browsing didn't. A future module needing the primitive would
+   pick a third interpretation.
+2. **Duplicate temp-file usage.** `Granit.Browsing.PuppeteerSharp` staged
+   PDF bytes in `Path.GetTempFileName()` for its `file://` viewer flow.
+   `Granit.Browsing.Playwright` did the same for HAR and trace. The
+   GDPR-export pipeline (`Granit.Privacy.BlobStorage.DataExport`) staged
+   export ZIPs with `Path.GetTempPath()` + manual cleanup. None of them
+   set 0600. The audit (VULN-103, VULN-301) called out the gap.
+   `Granit.DataExchange` was the next consumer in the pipeline.
+
+The hardening PR needs a single home for both primitives so the fixes
+compose and the next consumer gets them for free.
+
+## Decision
+
+Introduce two new packages:
+
+### `Granit.Http.Security`
+
+- `IUrlSafetyValidator.ValidateAsync(Uri)` returning a `UrlSafetyResult`
+  (no throw — caller decides).
+- `PrivateNetworkClassifier.IsBlocked(IPAddress)` for direct
+  connect-callback consumers.
+- `ReservedTldClassifier.IsReserved(string, out string)` for `.local`,
+  `.onion`, `.test`, `.example`, `.invalid`, `.localhost`, `.home.arpa`.
+- `UrlSafetyOptions` (allowed schemes, allow lists, deny lists, max length,
+  DNS timeout).
+- `AddGranitUrlSafety` extension that wires the three classifiers as
+  singletons.
+
+Dependencies: zero framework, zero NuGet beyond `Microsoft.Extensions.*`.
+
+### `Granit.IO`
+
+- `ITempFileFactory.CreateAsync(category, extension)` returning an
+  `ITempFile` with `Path`, `Stream`, and `MaxSizeBytes`.
+- 0600 (Linux/macOS via `FileOptions.UnixCreateMode`), NTFS ACL (Windows).
+- `FileOptions.DeleteOnClose` for kernel-guaranteed cleanup on process
+  death (including `SIGKILL` / OOM-kill).
+- Per-tenant subdirectories via `ICurrentTenant` (soft dependency).
+- `TempFileJanitorService` hosted service for orphan recovery.
+- `TempFileOptions` (root, lifetime, max size, partitioning, janitor cadence).
+- `AddGranitTempFiles` extension.
+
+Dependencies: zero framework, zero NuGet beyond `Microsoft.Extensions.*`
+and `Granit.MultiTenancy` (soft).
+
+Consumers refactor:
+
+- `Granit.Browsing` depends on both. The `IBrowserSandboxProfile` chain
+  delegates URL checks to `IUrlSafetyValidator`. PDF viewer / HAR / trace
+  files use `ITempFileFactory`.
+- `Granit.Webhooks` drops `WebhookSsrfGuard` (was internal). Validators and
+  `SocketsHttpHandler.ConnectCallback` reach `IUrlSafetyValidator` /
+  `PrivateNetworkClassifier`.
+- `Granit.Privacy.BlobStorage.DataExport.ExportArchiveAssemblyHandler` uses
+  `ITempFileFactory` (GDPR Art. 32 — strict access control).
+
+## Considered alternatives
+
+### 1. Inline in each consumer (status quo)
+
+Pre-hardening state. Two SSRF guards with different ranges; three temp-file
+implementations with three umasks. The next module (DataExchange) would
+fork a fourth. Rejected — duplication is the problem the audit identified.
+
+### 2. Fold into `Granit` core
+
+The anchor `Granit` package holds the module system and a handful of
+universal types (clock, identifiers, base abstractions). URL safety and
+temp files are domain-shaped (network plumbing, filesystem plumbing) and
+not part of every module's surface. Folding them in would bloat the
+package most other modules transitively depend on and force a heavier
+test surface on every `dotnet test`. Rejected — wrong abstraction layer.
+
+### 3. `Granit.BlobStorage.Temp` for temp files
+
+Tempting because `Granit.BlobStorage` already owns "bytes on disk". But
+the abstractions are different:
+
+- BlobStorage is **addressable persistence** — `IBlobStore.GetAsync(key)`,
+  durable, tenant-isolated by container, with content addressing.
+- Temp files are **anonymous filesystem artefacts** that engines
+  (Chromium, ffmpeg, PdfPig) write into and read from *by path*. The
+  engine never goes through a `Stream` interface — it `open(2)`s the file.
+
+Forcing the engine integration through `IBlobStore` would require either a
+"give me a real path" escape hatch (which defeats the abstraction) or a
+costly stage-out / stage-in cycle through a temp directory anyway.
+Rejected — wrong abstraction.
+
+### 4. Separate `Granit.Browsing.Analyzers` for `GRBROWSING001`
+
+The audit shipped a Roslyn analyzer (`GRBROWSING001` — string
+interpolation in `EvaluateAsync` / `AddScriptTagAsync` / `AddStyleTagAsync`,
+VULN-203). Two homes considered:
+
+- A new `Granit.Browsing.Analyzers` NuGet — pure: package name maps to
+  module. Costs: one more NuGet in the catalog for a single rule; the
+  analyzer would need its own `.csproj` + packaging metadata; consumers
+  would need to opt into one more package reference.
+- Fold into the existing `Granit.Analyzers` — already in every consumer's
+  graph; already resolves target symbols by FQN string (so no compile
+  dependency on `Granit.Browsing`); the existing test infrastructure
+  picks the rule up for free.
+
+Rejected — separate package adds catalog noise for a single rule with no
+benefit. The fold-in is the chosen path.
+
+## Consequences
+
+### Positive
+
+- 2 new packages, NOT 3 (catalog +2). The Browsing analyzer lands in the
+  existing `Granit.Analyzers` package.
+- Single SSRF semantics across Webhooks, Browsing, and the future
+  DataExchange consumer. Future audits have one place to look.
+- Single temp-file semantics across Browsing, Privacy, and the future
+  DataExchange consumer.
+- Each new package has zero framework dependencies beyond the soft
+  `ICurrentTenant`. They can be lifted into a separate repo if the
+  upstream consumer ecosystem ever demands it.
+- The `[DependsOn]` rules stay simple — both packages have a `*Module` and
+  are declared by direct consumers.
+
+### Negative
+
+- Two more `*Module` classes, two more `Diagnostics/` folders, two more
+  test projects in the integration shard. Marginal — the trade is
+  against the inline duplication, which was strictly worse.
+- One more shard-filter entry for each (script auto-regenerates).
+
+### Migration
+
+Pre-1.0; no `[Obsolete]` shims. Hosts on the previous Webhooks /
+HttpSecurityHeaders / Browsing contracts follow
+[Migration: Browsing Pre-1.0 Hardening](/dotnet/browsing/migration-pre-1-0-hardening/).
+
+## Related
+
+- [`Granit.Http.Security` — URL Safety](/dotnet/http/security/url-safety/).
+- [`Granit.IO` — Secure Temp Files](/dotnet/io/temp-files/).
+- [Browsing security](/dotnet/browsing/security/).
+- [Migration: Browsing Pre-1.0 Hardening](/dotnet/browsing/migration-pre-1-0-hardening/).

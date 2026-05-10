@@ -1,0 +1,270 @@
+---
+title: "URL Safety Validation"
+description: "Granit.Http.Security ships SSRF-safe URL validation, private-network classification, and reserved-TLD detection. Use it before any outbound fetch — browser navigation, webhook delivery, OEmbed unfurling, third-party integrations — to block requests against cloud metadata endpoints, RFC 1918 ranges, loopback, and DNS-rebinding attacks."
+sidebar:
+  label: URL Safety
+  order: 10
+---
+
+`Granit.Http.Security` is a tiny, dependency-light package that consolidates the
+URL-safety primitives that used to be duplicated across `Granit.Webhooks`
+(`WebhookSsrfGuard`) and `Granit.Browsing` (private SSRF guard). Any code in the
+framework that takes a `Uri` from untrusted input — webhook subscriber URLs,
+headless browser navigation, OEmbed/Open Graph unfurling, federated identity
+discovery documents — funnels through `IUrlSafetyValidator`.
+
+## Threat model
+
+Server-Side Request Forgery (SSRF) is one of the highest-impact classes of bugs
+in modern applications:
+
+- **OWASP API Security Top 10 — API7:2023 — Server-Side Request Forgery.**
+- **OWASP ASVS v4.0.3 — V12.6.1** — "Verify that the web or application server
+  is configured with a deny list of resources […] including loopback,
+  link-local, and private addresses."
+- **Cloud metadata endpoints.** AWS IMDSv1 at `169.254.169.254` is the canonical
+  example; GCP (`metadata.google.internal` / `169.254.169.254`), Azure
+  (`169.254.169.254`), Alibaba, DigitalOcean all expose similar endpoints. A
+  successful SSRF against IMDS can return temporary IAM credentials.
+- **DNS rebinding.** An attacker registers `evil.example.com`, returns
+  `203.0.113.10` on the initial DNS lookup (passes validation), then flips to
+  `127.0.0.1` on the second resolution (executed by the HTTP client). Mitigated
+  by validating *resolved* addresses and re-checking at connect time.
+- **Internal-only services.** Many production deployments expose Redis,
+  Elasticsearch, internal admin panels, Kubernetes API at `10.0.0.0/8` or
+  `localhost` without authentication; an unguarded outbound HTTP call from the
+  application is enough to reach them.
+- **Reserved TLDs.** `.local` (mDNS / Bonjour), `.onion` (Tor), `.test`,
+  `.example`, `.invalid` MUST never be reached from a production service.
+
+`IUrlSafetyValidator` is the single point in the framework that codifies the
+deny list.
+
+## API reference
+
+```csharp
+public interface IUrlSafetyValidator
+{
+    ValueTask<UrlSafetyResult> ValidateAsync(Uri uri, CancellationToken ct = default);
+}
+
+public sealed record UrlSafetyResult(
+    bool IsValid,
+    UrlSafetyViolationKind? Violation,
+    string? Reason,
+    IReadOnlyList<IPAddress> ResolvedAddresses);
+```
+
+A `UrlSafetyResult` is the *only* return type — there is no overload that
+throws. Callers decide whether a violation becomes a `ValidationException`, a
+`Problem(400)`, an audit log entry, or a silent drop.
+
+### Violation kinds
+
+| `UrlSafetyViolationKind` | Trigger |
+| --- | --- |
+| `SchemeNotAllowed` | URL scheme not in `AllowedSchemes` (default: `https`). |
+| `MalformedUri` | Parsed `Uri` is relative, has no host, or has an embedded credential (`https://user:pass@host`). |
+| `HostNotAllowed` | Host doesn't match any pattern in `AllowedHostPatterns` (when configured). |
+| `HostExplicitlyDenied` | Host matches a pattern in `DeniedHostPatterns`. |
+| `PrivateNetwork` | Resolved address is in RFC 1918 (10/8, 172.16/12, 192.168/16), ULA (fc00::/7), or link-local (169.254/16, fe80::/10). |
+| `LoopbackAddress` | Resolved address is in 127/8 or `::1`. |
+| `MulticastOrReserved` | Resolved address is multicast (224/4, ff00::/8) or in IETF-reserved blocks (0/8, 100.64/10, 240/4, etc.). |
+| `CloudMetadataEndpoint` | Host or resolved address matches a known cloud metadata IP (`169.254.169.254`, `metadata.google.internal`, fd00:ec2::254). |
+| `ReservedTld` | Host TLD is reserved (`.local`, `.onion`, `.test`, `.example`, `.invalid`, `.localhost`). |
+| `DnsResolutionFailed` | DNS lookup timed out or returned `NXDOMAIN`. Fail-closed: treated as a violation, never as "OK". |
+| `UrlTooLong` | URL length exceeds `MaxUrlLength` (default: 2048). |
+
+## Configuration
+
+```jsonc
+// appsettings.json
+{
+  "Granit": {
+    "Http": {
+      "Security": {
+        "AllowedSchemes": [ "https" ],
+        "AllowPrivateNetworks": false,
+        "AllowLoopback": false,
+        "AllowedHostPatterns": [ ],
+        "DeniedHostPatterns": [ "*.internal.example.com" ],
+        "MaxUrlLength": 2048,
+        "DnsResolveTimeout": "00:00:02"
+      }
+    }
+  }
+}
+```
+
+`UrlSafetyOptions` properties:
+
+| Property | Default | Notes |
+| --- | --- | --- |
+| `AllowedSchemes` | `[ "https" ]` | `http` MUST be opt-in. `file`, `data`, `ftp`, `gopher`, `dict` are *always* denied — no opt-in flag. |
+| `AllowPrivateNetworks` | `false` | Set to `true` only for on-prem deployments where reaching `10.0.0.0/8` is intended. |
+| `AllowLoopback` | `false` | Set to `true` only for integration tests against `localhost:N`. |
+| `AllowedHostPatterns` | `[]` | When non-empty, host MUST match at least one pattern. Glob (`*.example.com`). |
+| `DeniedHostPatterns` | `[]` | Evaluated before allow-list; explicit deny always wins. |
+| `MaxUrlLength` | `2048` | RFC 7230 §3.1.1 recommends ≥8000; 2048 matches IE-era infrastructure floor. |
+| `DnsResolveTimeout` | `2 s` | Short timeout — DNS lookups should be cache-hot. Exceeding it is a violation. |
+
+## Registration
+
+```csharp
+// Program.cs
+services.AddGranitUrlSafety(opts =>
+{
+    opts.AllowedHostPatterns = [ "api.partner.com", "*.cdn.example.com" ];
+});
+```
+
+`AddGranitUrlSafety` registers `IUrlSafetyValidator` as a singleton along with
+`PrivateNetworkClassifier` and `ReservedTldClassifier`. The validator is
+DNS-cache-aware — repeated calls within `DnsResolveTimeout` for the same host
+reuse the previous resolution.
+
+### Custom override
+
+```csharp
+services.AddGranitUrlSafety();
+services.Replace(ServiceDescriptor.Singleton<IUrlSafetyValidator, MyCorporateUrlSafetyValidator>());
+```
+
+## Usage patterns
+
+### In a FluentValidation rule
+
+```csharp
+public sealed class CreateSubscriptionRequestValidator : AbstractValidator<CreateSubscriptionRequest>
+{
+    public CreateSubscriptionRequestValidator(IUrlSafetyValidator urlSafety)
+    {
+        RuleFor(x => x.CallbackUrl)
+            .NotEmpty()
+            .MustAsync(async (url, ct) =>
+            {
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var uri)) return false;
+                var result = await urlSafety.ValidateAsync(uri, ct).ConfigureAwait(false);
+                return result.IsValid;
+            })
+            .WithErrorCodeAndMessage("Granit:Http:Security:UnsafeCallbackUrl");
+    }
+}
+```
+
+### Before an outbound HTTP call
+
+```csharp
+var result = await _urlSafety.ValidateAsync(target, ct).ConfigureAwait(false);
+if (!result.IsValid)
+{
+    _logger.UnsafeOutboundUrlBlocked(target.Host, result.Violation, result.Reason);
+    throw new UrlSafetyViolationException(result);
+}
+
+using var response = await _http.GetAsync(target, ct).ConfigureAwait(false);
+```
+
+### HttpClient connect-callback (DNS-rebinding mitigation)
+
+```csharp
+services.AddHttpClient("partner")
+    .ConfigurePrimaryHttpMessageHandler(sp =>
+    {
+        var classifier = sp.GetRequiredService<PrivateNetworkClassifier>();
+        return new SocketsHttpHandler
+        {
+            ConnectCallback = async (ctx, ct) =>
+            {
+                var addresses = await Dns.GetHostAddressesAsync(ctx.DnsEndPoint.Host, ct);
+                foreach (var address in addresses)
+                {
+                    if (classifier.IsBlocked(address))
+                    {
+                        throw new UrlSafetyViolationException(
+                            UrlSafetyViolationKind.PrivateNetwork,
+                            $"{address} is in a denied range.");
+                    }
+                }
+                var socket = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                await socket.ConnectAsync(addresses, ctx.DnsEndPoint.Port, ct);
+                return new NetworkStream(socket, ownsSocket: true);
+            },
+        };
+    });
+```
+
+> **Tip — why both layers?** The up-front `ValidateAsync` resolves DNS at
+> request-build time. The connect callback re-validates at the moment the
+> socket is opened. An attacker controlling DNS can flip the answer between
+> those two events; the connect callback is the closing layer that prevents
+> the rebind.
+
+## Helper classifiers
+
+### `PrivateNetworkClassifier`
+
+```csharp
+public sealed class PrivateNetworkClassifier
+{
+    public bool IsBlocked(IPAddress address);
+    public PrivateNetworkKind Classify(IPAddress address);
+}
+
+public enum PrivateNetworkKind
+{
+    Public,
+    Loopback,
+    LinkLocal,        // 169.254/16, fe80::/10
+    PrivateUseRfc1918,// 10/8, 172.16/12, 192.168/16
+    UniqueLocalIpv6,  // fc00::/7
+    CarrierGradeNat,  // 100.64.0.0/10
+    Multicast,
+    Reserved,
+    CloudMetadata,    // 169.254.169.254 + IPv6 variant
+}
+```
+
+Use this directly when your code already has an `IPAddress` and you want a
+single boolean (e.g. inside a `SocketsHttpHandler.ConnectCallback`). Cross-link:
+the [Webhooks security](/dotnet/api/webhooks/) flow uses it in exactly this
+shape.
+
+### `ReservedTldClassifier`
+
+```csharp
+public sealed class ReservedTldClassifier
+{
+    public bool IsReserved(string host, out string? reason);
+}
+```
+
+Reserved TLDs ship as a constant list — `.local` (RFC 6762 mDNS), `.onion`
+(RFC 7686 Tor), `.test`, `.example`, `.invalid`, `.localhost` (RFC 2606),
+`.home.arpa` (RFC 8375). Host-suffix match is case-insensitive and handles
+trailing-dot FQDNs.
+
+## DNS rebinding — defense-in-depth recipe
+
+1. **At validation time** (request entry, FluentValidation):
+   `ValidateAsync` resolves DNS once, returns `ResolvedAddresses`.
+2. **At HTTP client construction**: `SocketsHttpHandler.ConnectCallback`
+   re-resolves and re-checks against `PrivateNetworkClassifier` immediately
+   before opening the socket.
+3. **At provider level** (Browsing): the in-process request router consults
+   `IBrowserSandboxProfile` on every request, including sub-resource loads
+   triggered by the rendered page — see
+   [Browsing security](/dotnet/browsing/security/).
+
+The three layers compose: the attacker would have to win the race at all three
+points, *and* the resolved address would have to be in a public range at each
+check.
+
+## Related
+
+- [`Granit.IO` — secure temp files](/dotnet/io/temp-files/) — the second
+  primitive extracted in the same hardening pass.
+- [Browsing security](/dotnet/browsing/security/) — pillar consumer.
+- [Webhooks](/dotnet/api/webhooks/) — pre-existing consumer, refactored to
+  drop the private SSRF guard.
+- [ADR-055 — Extract URL safety and temp-file primitives](/dotnet/architecture/adr/055-extract-url-safety-and-temp-files/).

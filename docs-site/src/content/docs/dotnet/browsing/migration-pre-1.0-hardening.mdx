@@ -1,0 +1,190 @@
+---
+title: "Migration: Browsing Pre-1.0 Hardening"
+description: "Diff guide for the breaking changes in the pre-1.0 Browsing security hardening pass — typed Uri/RoutePattern APIs, sandbox-gated CSP bypass, removed WebhookSsrfGuard, renamed HttpSecurityHeadersModule, and the 19→0 mapping of closed VULN-* findings to commits."
+sidebar:
+  label: Migration — Hardening
+  order: 30
+---
+
+The pre-1.0 hardening pass on `Granit.Browsing.*` closed 19 audit findings
+(1 Critical, 6 High, 7 Medium, 5 Low/Info) and shipped two new shared
+packages — `Granit.Http.Security` and `Granit.IO`. The breaking surface is
+intentionally narrow but real. This page is the migration checklist for
+hosts on the previous Browsing/Webhooks/HttpSecurityHeaders contracts.
+
+> **Note.** Granit is pre-1.0. We don't ship `[Obsolete]` shims — breaking
+> changes are clean. Update at the cut-over, don't try to dual-target.
+
+## API diff table
+
+| Old | New |
+| --- | --- |
+| `await page.NavigateAsync(url);` *(string)* | `await page.NavigateAsync(new Uri(url));` *(Uri)* |
+| `await page.RouteAsync("**.tracker.com/**", handler);` *(delegate)* | `await page.RouteAsync(RoutePattern.Parse("**.tracker.com/**"), (req, ct) => ValueTask.FromResult(RouteDecision.Abort("blocked")));` |
+| `new BrowserPageOptions { BypassCsp = true }` | `services.AddSingleton<IBrowserSandboxProfile>(new SandboxProfile { ForceCsp = false, … });` + grant `Granit.Browsing.Pages.BypassCsp`. |
+| `GranitBrowsingOptions.ResourceLimits.MaxMemoryMb` | **Removed.** Was unimplemented in the previous shipping version. Will be restored when the cgroup-v2 memory hook lands. Track via the Browsing epic. |
+| `Granit.Webhooks.Internal.WebhookSsrfGuard` | **Removed (internal).** External consumers must depend on `Granit.Http.Security` directly and use `IUrlSafetyValidator`. |
+| `Granit.Http.SecurityHeaders.GranitHttpSecurityModule` | `Granit.Http.SecurityHeaders.GranitHttpSecurityHeadersModule` — type renamed for package-name alignment. Update `[DependsOn(typeof(…))]` and any `AddModule<…>()` references. |
+
+## Code patches
+
+### 1. `NavigateAsync(string)` → `NavigateAsync(Uri)`
+
+```diff
+- await page.NavigateAsync(callbackUrl);
++ if (!Uri.TryCreate(callbackUrl, UriKind.Absolute, out var target))
++     throw new ValidationException("CallbackUrl must be an absolute URL.");
++ await page.NavigateAsync(target);
+```
+
+Construct the `Uri` at the edge (validator / endpoint handler) so the
+error path is observable. Don't `new Uri(string)` inline at the call site —
+it throws `UriFormatException`, which the framework would surface as a
+500-class engine error.
+
+### 2. `RouteAsync` — typed `RoutePattern` + `RouteDecision`
+
+```diff
+- await page.RouteAsync("**.tracker.com/**", async (req, route) =>
+- {
+-     await route.AbortAsync();
+- });
++ await page.RouteAsync(
++     RoutePattern.Parse("**.tracker.com/**"),
++     (req, ct) => ValueTask.FromResult(RouteDecision.Abort("tracker domain")));
+```
+
+The new signature is `Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>>`.
+`RouteDecision` has three factories:
+
+```csharp
+RouteDecision.Continue();
+RouteDecision.Abort("reason");
+RouteDecision.Fulfill(status: 200, contentType: "application/json", body: …, headers: …);
+```
+
+The router collapses concurrent registrations; the sandbox profile always
+runs first, then user handlers in registration order. The first non-
+`Continue` decision wins.
+
+### 3. `BypassCsp` — sandbox + permission
+
+```diff
+- await using var page = await browser.AcquirePageAsync(
+-     new BrowserPageOptions { BypassCsp = true });
++ // 1. Register a sandbox that doesn't force CSP.
++ services.AddSingleton<IBrowserSandboxProfile>(new SandboxProfile
++ {
++     ForceCsp = false,
++ });
++
++ // 2. Grant the caller's role:
++ //    Granit.Browsing.Pages.BypassCsp
++
++ await using var page = await browser.AcquirePageAsync();
+```
+
+`BrowserPageOptions.BypassCsp` is gone. Both the sandbox AND the permission
+must allow it. This makes CSP bypass auditable and revocable at runtime
+without redeploy.
+
+### 4. `MaxMemoryMb` removed
+
+```diff
+- services.AddGranitBrowsingPuppeteerSharp(opts =>
+- {
+-     opts.ResourceLimits = new ResourceLimits { MaxMemoryMb = 1024 };
+- });
++ // Removed. Pod-level memory limits are the supported lever today:
++ //   resources.limits.memory: 1Gi
++ //   GOMEMLIMIT / DOTNET_GCHeapHardLimit if the runtime is the bottleneck.
++ // The cgroup-v2 hook returns later in the Browsing epic.
+```
+
+### 5. `WebhookSsrfGuard` → `IUrlSafetyValidator`
+
+```diff
+- using Granit.Webhooks.Internal;
+- var guard = new WebhookSsrfGuard(/* ... */);
+- if (!guard.IsAllowed(subscriberUrl)) throw new ValidationException(…);
++ using Granit.Http.Security;
++ var result = await urlSafety.ValidateAsync(subscriberUrl, ct);
++ if (!result.IsValid) throw new ValidationException(result.Reason);
+```
+
+If you were reaching into `Granit.Webhooks.Internal` you were already on
+unsupported ground; the new dependency is `Granit.Http.Security`. Full
+reference: [URL Safety](/dotnet/http/security/url-safety/).
+
+### 6. `GranitHttpSecurityModule` → `GranitHttpSecurityHeadersModule`
+
+```diff
+- [DependsOn(typeof(GranitHttpSecurityModule))]
++ [DependsOn(typeof(GranitHttpSecurityHeadersModule))]
+  public sealed class MyModule : GranitModule { … }
+```
+
+```diff
+- services.AddModule<GranitHttpSecurityModule>();
++ services.AddModule<GranitHttpSecurityHeadersModule>();
+```
+
+Pure rename — no behavioural change. The package always was
+`Granit.Http.SecurityHeaders`; the module class now matches.
+
+## Breaking surface checklist
+
+For every host upgrading the Browsing/Webhooks/HttpSecurityHeaders stack:
+
+- [ ] Wrap every `page.NavigateAsync(string)` in `new Uri(...)` at the edge.
+- [ ] Convert every `RouteAsync` to the `RoutePattern` + `RouteDecision` API.
+- [ ] Remove `BrowserPageOptions.BypassCsp`; register a `SandboxProfile` and
+      grant `Granit.Browsing.Pages.BypassCsp` to the relevant role.
+- [ ] Delete references to `GranitBrowsingOptions.ResourceLimits`.
+- [ ] Replace `WebhookSsrfGuard` consumers with `IUrlSafetyValidator`.
+- [ ] Rename `GranitHttpSecurityModule` → `GranitHttpSecurityHeadersModule`
+      in `[DependsOn]` and `AddModule<>` call sites.
+- [ ] Add `services.AddGranitUrlSafety()` and `services.AddGranitTempFiles()`
+      to your composition root (the Browsing and Webhooks modules depend on
+      both transitively, but explicit registration lets you tune
+      `UrlSafetyOptions` / `TempFileOptions` for your host).
+- [ ] Audit roles: add `Granit.Browsing.Pages.{Acquire,Navigate,InjectScript}`
+      to any role that uses headless browsing.
+- [ ] Run the `GRBROWSING001` analyzer; replace any interpolated
+      `EvaluateAsync` payloads with parameterised form.
+- [ ] In Kubernetes manifests: mount an `emptyDir` (preferably `medium: Memory`)
+      at the configured `Granit:IO:TempFiles:RootDirectory`. Cross-link:
+      [Secure Temp Files — Kubernetes deployment](/dotnet/io/temp-files/#kubernetes-deployment).
+- [ ] Confirm `terminationGracePeriodSeconds` ≥ `MaxRenderDuration + 10s`.
+
+## VULN → commit mapping (19 → 0)
+
+| Finding | Severity | Resolution |
+| --- | --- | --- |
+| VULN-001 | **Critical** — SSRF / LFI via `NavigateAsync` | `IUrlSafetyValidator` + `IBrowserSandboxProfile`; `NavigateAsync(string)` removed. |
+| VULN-100 | High — missing render timeout | `BrowsingTimeout` + `MaxRenderDuration` (30 s default). |
+| VULN-101 | High — race in `RouteAsync` (multi-subscriber) | `RequestRouter` single subscriber. |
+| VULN-102 | High — CSP bypass per-call | Sandbox + permission gate. |
+| VULN-103 | High — HAR file world-readable in `/tmp` | `ITempFileFactory` 0600. |
+| VULN-104 | High — cross-tenant page reuse | `TenantAwareHeadlessBrowser` decorator. |
+| VULN-105 | High — `--no-sandbox` enabled by default in non-container deploys | `PrivilegedFlagGuard`. |
+| VULN-106 | High — temp PDFs survive pod redeploy | `FileOptions.DeleteOnClose` + janitor. |
+| VULN-200 | Medium — engine `Request` event missing on Playwright | `RequestRouter` provider impl. |
+| VULN-201 | Medium — DNS rebinding | Up-front + connect-time validation. |
+| VULN-202 | Medium — `BrowserFetcher` downloaded over plain HTTP | Integrity-pinned `BrowserFetcher` (Puppeteer). |
+| VULN-203 | Medium — string interpolation in `EvaluateAsync` | `GRBROWSING001` analyzer. |
+| VULN-204 | Medium — `AutoInstallBrowsers` always-on in production | Env-aware default (Playwright). |
+| VULN-205 | Medium — executable path read from env without allowlist | `IBrowserSandboxProfile.AllowedExecutablePathPrefix`. |
+| VULN-206 | Medium — `_browser` field non-volatile read in dispose path | Field made `volatile`; logged disposal catches. |
+| VULN-300 | Low — console messages leak bearer tokens | `ConsoleRedactor`. |
+| VULN-301 | Low — privacy export temp file `0644` | `ITempFileFactory` migration. |
+| VULN-302 | Info — duplicate SSRF logic between Webhooks and Browsing | `Granit.Http.Security` extraction. |
+| VULN-303 | Info — duplicate temp-file usage between Browsing and Privacy | `Granit.IO` extraction. |
+| VULN-401 | Info — `GranitHttpSecurityModule` name mismatched its package | Renamed to `GranitHttpSecurityHeadersModule`. |
+
+## Related
+
+- [Browsing security](/dotnet/browsing/security/) — the destination state.
+- [URL safety](/dotnet/http/security/url-safety/) — the new SSRF primitive.
+- [Secure temp files](/dotnet/io/temp-files/) — the new temp-file primitive.
+- [ADR-055 — Extract URL safety and temp-file primitives](/dotnet/architecture/adr/055-extract-url-safety-and-temp-files/).

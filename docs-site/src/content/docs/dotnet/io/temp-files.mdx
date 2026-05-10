@@ -1,0 +1,261 @@
+---
+title: "Secure Temp Files"
+description: "Granit.IO provides ITempFileFactory: 0600-permissioned, kernel-cleanup-guaranteed, tenant-partitioned temporary files for headless browsers, GDPR export ZIPs, and any other component that hands a path to an external process. Includes K8s deployment guidance for emptyDir vs PVC."
+sidebar:
+  label: Temp Files
+  order: 10
+---
+
+`Granit.IO` is a tiny utility package that owns one job: hand out temporary
+files that are safe to share with sub-processes (Chromium, ffmpeg, the OS PDF
+viewer) without leaking either the path or the content to other tenants or to
+the next pod that schedules onto the same node.
+
+The headless browser engines (PuppeteerSharp, Playwright) and the GDPR export
+pipeline (`Granit.Privacy.BlobStorage`) both consume `ITempFileFactory`. New
+modules that stage bytes on the filesystem MUST go through it too — never
+through `Path.GetTempFileName()`.
+
+## Threat model
+
+`Path.GetTempFileName()` and `Path.GetTempPath()` are convenient but inherit
+the system default umask. On Linux that means files in `/tmp` are typically
+world-readable (`0644`). The implications:
+
+- **Cross-tenant leakage.** Two tenants sharing a single pod (or worse, two
+  pods sharing an `emptyDir` mounted into both) can read each other's staged
+  HTML, generated PDFs, HAR captures, or GDPR export ZIPs.
+- **Orphan files surviving redeploy.** When `/tmp` is a `PersistentVolume`
+  with `accessModes: ReadWriteMany`, files outlive the pod. A new pod scheduled
+  onto the same PV can enumerate the predecessor's leftovers.
+- **Predictable paths.** `Path.GetTempFileName()` calls `mkstemp`-style
+  but exposes the path to the parent process, and if that parent logs the path
+  (DEBUG-level traces commonly do), an attacker with log access learns where
+  to look.
+- **Crash-leak.** A process that dies between create and explicit delete
+  leaves the file behind forever unless a janitor removes it.
+
+`ITempFileFactory` closes these gaps by default.
+
+## API reference
+
+```csharp
+public interface ITempFileFactory
+{
+    ValueTask<ITempFile> CreateAsync(
+        string category,
+        string extension,
+        CancellationToken ct = default);
+}
+
+public interface ITempFile : IAsyncDisposable
+{
+    string Path { get; }
+    Stream Stream { get; }              // FileMode.Create, owner R/W, DeleteOnClose
+    long MaxSizeBytes { get; }          // enforced via Stream.SetLength
+}
+```
+
+- `category` is a stable identifier used both for tenant partitioning and for
+  metrics (`granit.io.tempfile.created.count{category}`). Stick to kebab-case
+  (`browsing-har`, `privacy-export`, `pdf-viewer`).
+- `extension` includes the dot (`.pdf`, `.har`, `.zip`).
+- `Path` is the absolute filesystem path that a sub-process needs.
+- `Stream` is a `FileStream` opened with the correct permission bits and
+  `FileOptions.DeleteOnClose`. Disposing the `ITempFile` (or letting the
+  process die) deletes the file.
+
+## Guarantees
+
+| Guarantee | Linux / macOS | Windows |
+| --- | --- | --- |
+| Permission bits | `0600` via `FileOptions.UnixCreateMode = UserRead \| UserWrite` (.NET 7+). | NTFS DACL restricted to the process owner SID. |
+| Cleanup on `Dispose` | `unlink()` after close. | Handle close + delete. |
+| Cleanup on `kill -9` / OOM-kill | **Yes** — `FileOptions.DeleteOnClose` is enforced by the kernel; the inode disappears the moment the last `FileHandle` is closed, which the kernel does on process death. | Yes — Windows `FILE_FLAG_DELETE_ON_CLOSE` behaves equivalently. |
+| Cleanup on `SIGKILL` | **Yes** — same mechanism. The kernel still owns the handle table. | Yes. |
+| Cleanup on power loss / node crash | No — file is left behind. The janitor recovers on next start. | Same. |
+| Janitor sweep | `MaxLifetime` (default 30 min) — older files deleted on `JanitorInterval`. | Same. |
+
+> **K8s users — read this.** `FileOptions.DeleteOnClose` is the headline
+> feature for Kubernetes deployments. When a pod is evicted, OOM-killed, or
+> sent `SIGKILL` by the liveness-probe failure path, the kernel still tears
+> down the process's file descriptor table, which triggers the unlink. You
+> get crash-safe cleanup *without* a sidecar.
+
+## Kubernetes deployment
+
+The temp-file root is the single most important deployment decision. Pick
+one of:
+
+### Preferred: `emptyDir` on memory
+
+```yaml
+spec:
+  containers:
+    - name: api
+      env:
+        - name: Granit__IO__TempFiles__RootDirectory
+          value: /var/tmp/granit
+      volumeMounts:
+        - name: granit-tmp
+          mountPath: /var/tmp/granit
+  volumes:
+    - name: granit-tmp
+      emptyDir:
+        medium: Memory          # tmpfs — fastest, never hits disk
+        sizeLimit: 2Gi
+```
+
+- **Fastest** — tmpfs lives in RAM; PDF render I/O round-trips through page
+  cache anyway.
+- **Discarded with pod** — no leak across pod restarts.
+- **Counts against pod memory** — size with care.
+
+### Acceptable: container writable layer
+
+If you don't mount anything at the temp root, files land in the container's
+overlay filesystem. That's discarded when the pod is removed. Fine for most
+production deployments. The trade-off is disk I/O instead of memory.
+
+### Acceptable: `emptyDir` on disk
+
+```yaml
+volumes:
+  - name: granit-tmp
+    emptyDir:
+      sizeLimit: 10Gi   # backed by node ephemeral storage
+```
+
+Lower memory pressure, slower than tmpfs. Same crash-safety guarantees.
+
+### NEVER: `ReadWriteMany` PVC on the temp root
+
+Mounting a shared `RWX` PVC (NFS, CephFS, EFS, Azure Files) as the temp root
+in a multi-replica Deployment lets pod B read pod A's staged files. Two
+defenses still apply — tenant partitioning isolates paths by `TenantId`, and
+0600 keeps the *container* uid (typically `1000` or `app`) the only reader.
+But a sidecar in pod A running as a different uid could read files staged by
+pod B. Treat RWX as a defense-in-depth wear, never the primary boundary.
+
+### Tolerable: `ReadWriteOnce` PVC
+
+`RWO` is bound to a single pod at a time. Tenant partitioning + 0600 prevent
+cross-tenant leakage *within* the pod, which is what you want anyway. Crash
+safety still relies on `DeleteOnClose`. The only added risk is that a
+pod-restart on the same node may attach the same PV with orphan files; the
+janitor cleans those up within `MaxLifetime`.
+
+### Sizing the emptyDir
+
+```text
+sizeLimit ≈ N × MaxSizeBytes × concurrent_renders + headroom
+```
+
+- `N` — number of categories that can be open simultaneously per request
+  (browsing typically 1–2: HAR + trace).
+- `MaxSizeBytes` — default `100 MiB` per file. Bump
+  `Granit:IO:TempFiles:MaxSizeBytes` when generating large PDFs.
+- `concurrent_renders` — `MaxBrowsers × MaxPagesPerBrowser` from
+  `GranitBrowsingOptions`.
+- `headroom` — 50% margin for janitor latency.
+
+For a default browsing pod (`MaxBrowsers=2`, `MaxPagesPerBrowser=8`):
+`1 × 100MiB × 16 × 1.5 ≈ 2.4 GiB` is a sensible starting point.
+
+### Sidecar containers
+
+Do *not* share an `emptyDir` mounted at the temp root with a sidecar unless
+the sidecar runs as the *same* uid and is in the same trust zone. A
+log-shipping sidecar with `securityContext.runAsUser: 0` plus a temp-root
+mount would defeat 0600. If you need the sidecar to inspect content, mount
+the volume read-only and rely on file ACLs.
+
+## Configuration
+
+```jsonc
+// appsettings.json
+{
+  "Granit": {
+    "IO": {
+      "TempFiles": {
+        "RootDirectory": "/var/tmp/granit",
+        "ChmodOwnerOnly": true,
+        "MaxLifetime": "00:30:00",
+        "MaxSizeBytes": 104857600,
+        "TenantPartition": true,
+        "RunJanitor": true,
+        "JanitorInterval": "00:05:00"
+      }
+    }
+  }
+}
+```
+
+| Property | Default | Notes |
+| --- | --- | --- |
+| `RootDirectory` | `Path.GetTempPath()` + `granit` | Override to point at an `emptyDir` mount. |
+| `ChmodOwnerOnly` | `true` | Forces 0600 on POSIX. Disable only if you understand the implications. |
+| `MaxLifetime` | `30 min` | Janitor deletes files older than this. |
+| `MaxSizeBytes` | `100 MiB` | Enforced via `FileStream.SetLength`-style guard; over-write throws. |
+| `TenantPartition` | `true` | Per-tenant subdirectory. Disable only for non-multi-tenant hosts. |
+| `JanitorInterval` | `5 min` | Sweep cadence. |
+| `RunJanitor` | `true` | Disable only on single-process test hosts. |
+
+## Path layout
+
+```text
+{RootDirectory}/
+  t-{tenantId:N}/                  when ICurrentTenant.IsAvailable
+    {category}/
+      {guid:N}.{ext}
+  host/                            when running outside any tenant
+    {category}/
+      {guid:N}.{ext}
+```
+
+- `{tenantId:N}` — no dashes (`a1b2c3d4e5f6...`).
+- `{category}` — the literal `category` argument.
+- `{guid:N}` — fresh GUID per file. No information leakage from filename.
+
+The tenant subdirectory is created with mode `0700` so that even directory
+enumeration is owner-only.
+
+## Janitor
+
+`TempFileJanitorService : BackgroundService` runs every `JanitorInterval`,
+walks `{RootDirectory}` (skipping live `DeleteOnClose` files by inspecting
+their `LastWriteTime`), and deletes entries older than `MaxLifetime`. Metric:
+`granit.io.tempfile.janitor.deleted.count`.
+
+The janitor is the recovery path for the cases `DeleteOnClose` can't cover —
+node crashes, hard kernel panics, application errors that leave the
+`FileStream` referenced by a long-lived object.
+
+## Consumers
+
+| Consumer | Categories | Notes |
+| --- | --- | --- |
+| `Granit.Browsing.PuppeteerSharp` | `pdf-viewer` | PDF file handed to Chromium's native viewer via `file://`. |
+| `Granit.Browsing.Playwright` | `har`, `trace`, `pdf-viewer` | HAR + trace contain `Authorization` headers — treat as sensitive. |
+| `Granit.Privacy.BlobStorage.DataExport` | `privacy-export` | GDPR Art. 32 export ZIP staging. Reviewed in the security hardening pass. |
+| `Granit.DataExchange` *(planned)* | `export-stream` | Future migration; bulk-export staging. |
+
+## Registration
+
+```csharp
+services.AddGranitTempFiles(opts =>
+{
+    opts.RootDirectory = "/var/tmp/granit";
+    opts.MaxSizeBytes = 250 * 1024 * 1024;   // PDF renders over 100 MiB
+});
+```
+
+Registers `ITempFileFactory` as a singleton and the janitor as a hosted
+service. The factory is multi-tenant aware via `ICurrentTenant`.
+
+## Related
+
+- [Browsing security](/dotnet/browsing/security/) — primary consumer.
+- [`Granit.Http.Security`](/dotnet/http/security/url-safety/) — the second
+  primitive from the same hardening pass.
+- [ADR-055 — Extract URL safety and temp-file primitives](/dotnet/architecture/adr/055-extract-url-safety-and-temp-files/).

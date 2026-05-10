@@ -1,0 +1,72 @@
+---
+title: "Provider — Playwright (Chromium / Firefox / WebKit)"
+description: "Granit.Browsing.Playwright implements IHeadlessBrowser on Microsoft.Playwright. Hardened with env-aware AutoInstallBrowsers default, RequestRouter for sandbox/user route handlers, ITempFileFactory-backed HAR and trace files, and the same sandbox + permission gates as the PuppeteerSharp provider."
+sidebar:
+  label: Playwright
+  order: 20
+---
+
+`Granit.Browsing.Playwright` is the multi-engine provider. It is the only
+provider that supports Firefox and WebKit, and it owns
+`ITracingCapability` and `IHarRecordingCapability`.
+
+## What the hardening pass changed
+
+- **`RequestRouter` adoption.** Playwright's `IRoute` is consumed by a single
+  `RequestRouter`. Sandbox handlers run first; user handlers in registration
+  order. See [Browsing security — RequestRouter](/dotnet/browsing/security/#requestrouter--single-subscriber).
+- **Env-aware `AutoInstallBrowsers`.** The default for
+  `Granit:Browsing:Playwright:AutoInstallBrowsers` is now:
+  - `true` in `Development` / `Staging`.
+  - `false` in `Production`.
+  Override per host if you genuinely run `playwright install` at production
+  boot (you usually shouldn't — bundle browsers into the image).
+- **HAR via `ITempFileFactory`.** Recorded HAR lands in
+  `{tempRoot}/t-{tenantId}/har/{guid}.har` with `0600` and `DeleteOnClose`.
+  The HAR contains raw `Authorization` and `Cookie` headers — treat the
+  capability output as sensitive.
+- **Trace via `ITempFileFactory`.** Same factory, category `trace`. Same
+  sensitive-data caveat.
+- **Sandbox + permissions.** Identical to the PuppeteerSharp provider —
+  same `SandboxProfile`, same five permissions, same `PrivilegedFlagGuard`
+  for `--no-sandbox`.
+
+## Production configuration
+
+```jsonc
+// appsettings.Production.json
+{
+  "Granit": {
+    "Browsing": {
+      "Playwright": {
+        "Engine": "Chromium",
+        "AutoInstallBrowsers": false,
+        "ExecutablePath": "/usr/bin/chromium"
+      }
+    }
+  }
+}
+```
+
+> **AutoInstallBrowsers in production.** Running `playwright install` at
+> pod boot adds 30–90 seconds to readiness and an outbound HTTP fetch to
+> the CDN. Both are anti-patterns in production. Bundle the engine at
+> image build, set `AutoInstallBrowsers = false`, and point at the
+> executable.
+
+## Capability surface
+
+| Capability | Chromium | Firefox | WebKit |
+| --- | --- | --- | --- |
+| `IPdfCapability` | ✓ | — | — |
+| `IPdfViewerCapability` | ✓ | — | — |
+| `IAccessibilityCapability` | — *(deprecated upstream)* | — | — |
+| `ITracingCapability` | ✓ | ✓ | ✓ |
+| `IHarRecordingCapability` | ✓ | ✓ | ✓ |
+
+## Related
+
+- [Browsing security](/dotnet/browsing/security/).
+- [Browsing conventions](/dotnet/browsing/conventions/).
+- [Browsing overview](/dotnet/infrastructure/browsing/).
+- [PuppeteerSharp provider](/dotnet/browsing/providers/puppeteer-sharp/).

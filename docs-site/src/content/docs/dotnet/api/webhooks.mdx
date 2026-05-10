@@ -293,14 +293,25 @@ in the database. Always configure encryption for production environments.
 
 ### SSRF protection
 
-Target URLs are validated at two levels:
+Target URLs are validated through [`Granit.Http.Security`](/dotnet/http/security/url-safety/)
+— the shared SSRF primitive extracted from `Granit.Webhooks` (which previously
+shipped a private `WebhookSsrfGuard`) and `Granit.Browsing`. Two layers, same
+primitive:
 
-1. **At registration** — FluentValidation blocks `http://`, private IPs (RFC 1918),
-   loopback, link-local, carrier-grade NAT (`100.64.0.0/10`), and internal TLDs
-   (`.local`, `.internal`, `.localhost`, `.onion`)
-2. **At delivery** — a `SocketsHttpHandler.ConnectCallback` validates the resolved IP
-   address at connection time, preventing DNS rebinding attacks where a hostname
-   resolves to a public IP during validation but to an internal IP during delivery
+1. **At registration** — a FluentValidation `MustAsync` rule calls
+   `IUrlSafetyValidator.ValidateAsync` and blocks `http://` by default, private
+   IPs (RFC 1918), loopback, link-local, carrier-grade NAT (`100.64.0.0/10`),
+   cloud metadata endpoints (`169.254.169.254`), and reserved TLDs (`.local`,
+   `.internal`, `.localhost`, `.onion`, `.test`, `.example`, `.invalid`).
+2. **At delivery** — a `SocketsHttpHandler.ConnectCallback` consults
+   `PrivateNetworkClassifier.IsBlocked(IPAddress)` against the resolved address
+   at the moment the socket is opened, defeating DNS rebinding where a hostname
+   resolves to a public IP during validation but to an internal IP during
+   delivery.
+
+Tune the policy through `UrlSafetyOptions` (`AllowedSchemes`,
+`AllowedHostPatterns`, `DeniedHostPatterns`, `MaxUrlLength`) — see the
+[URL safety reference](/dotnet/http/security/url-safety/) for the full surface.
 
 ### Permissions
 

@@ -1,0 +1,82 @@
+---
+title: "Provider — PuppeteerSharp (Chromium)"
+description: "Granit.Browsing.PuppeteerSharp implements IHeadlessBrowser on PuppeteerSharp + bundled Chromium. Hardened with integrity-pinned BrowserFetcher, executable-path allowlist via IBrowserSandboxProfile, RequestRouter for sandbox/user route handlers, ITempFileFactory for the PDF viewer file:// handoff, and volatile _browser field with logged disposal."
+sidebar:
+  label: PuppeteerSharp
+  order: 10
+---
+
+`Granit.Browsing.PuppeteerSharp` is the Chromium provider. It owns the
+PDF-heavy capabilities (`IPdfCapability`, `IPdfViewerCapability`,
+`IAccessibilityCapability`) and is the recommended pick for HTML→PDF and
+PDF-rasterisation workloads.
+
+## What the hardening pass changed
+
+- **`RequestRouter` adoption.** The Puppeteer `Request` event is now owned
+  by a single `RequestRouter` per page. Sandbox handlers run first; user
+  `RouteAsync` registrations run in order. See
+  [Browsing security — RequestRouter](/dotnet/browsing/security/#requestrouter--single-subscriber).
+- **Integrity-pinned `BrowserFetcher`.** `PuppeteerChromiumProvisionService`
+  refuses to run in production by default. When it does run (dev / staging
+  via `Granit:Browsing:PuppeteerSharp:AllowFetcherInProduction = true` or a
+  detected non-Production environment), it verifies the downloaded archive
+  SHA-256 against the pinned manifest before extraction. A mismatch is a
+  boot-fail.
+- **Executable path allowlist.** When `ChromiumExecutablePath` is set, it
+  must start with `IBrowserSandboxProfile.AllowedExecutablePathPrefix`
+  (default: `/usr/bin/`, `/opt/google/chrome/`, `/snap/bin/chromium/`). An
+  arbitrary path is refused at boot.
+- **`--no-sandbox` guard.** `PrivilegedFlagGuard` evaluates the
+  `DisableSandbox` option against the container + uid + env-opt-in matrix.
+- **PDF viewer via `ITempFileFactory`.** The PDF bytes are written to a
+  `0600` temp file with `DeleteOnClose`, then `NavigateAsync(file://...)`
+  with the framework-internal `Granit.Browsing.Pages.UseFileScheme` grant.
+- **Volatile `_browser` field.** The provider's `_browser` field is now
+  `volatile` and read once into a local before dispose to prevent the
+  double-dispose / null-deref race the audit flagged (VULN-206).
+- **Logged disposal catches.** Disposal exceptions are caught and
+  `LogWarning`-ed via `[LoggerMessage]` — they no longer poison the host
+  shutdown.
+
+## Production configuration
+
+```jsonc
+// appsettings.Production.json
+{
+  "Granit": {
+    "Browsing": {
+      "PuppeteerSharp": {
+        "ChromiumExecutablePath": "/usr/bin/chromium",
+        "SkipChromiumDownload": true,
+        "DisableSandbox": false,
+        "AllowFetcherInProduction": false
+      }
+    }
+  }
+}
+```
+
+> **Don't ship a downloaded browser in production.** `BrowserFetcher`
+> running at boot in production is refused by default. Bundle Chromium into
+> the container image at build time and point at it via
+> `ChromiumExecutablePath`. The fetcher exists for dev/staging convenience.
+
+## Executable path allowlist
+
+```csharp
+services.AddSingleton<IBrowserSandboxProfile>(new SandboxProfile
+{
+    AllowedExecutablePathPrefix = "/opt/granit/chromium/",
+});
+```
+
+`ChromiumExecutablePath` must start with the prefix. Useful for hosts that
+ship a custom Chromium build under a non-standard path.
+
+## Related
+
+- [Browsing security](/dotnet/browsing/security/).
+- [Browsing conventions](/dotnet/browsing/conventions/).
+- [Browsing overview](/dotnet/infrastructure/browsing/).
+- [Playwright provider](/dotnet/browsing/providers/playwright/).

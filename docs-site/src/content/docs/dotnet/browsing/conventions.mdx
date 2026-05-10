@@ -1,0 +1,116 @@
+---
+title: "Browsing Conventions"
+description: "Conventions for code that consumes Granit.Browsing: deny-by-default sandbox, no per-call CSP bypass, typed Uri + RoutePattern APIs, mandatory permissions, parameterised EvaluateAsync, and ITempFileFactory for any file:// handoff."
+sidebar:
+  label: Conventions
+  order: 15
+---
+
+The conventions that follow are enforced by a mix of the C# type system, the
+`GRBROWSING001` analyzer, archi tests, and reviewer judgement. Treat them as
+mandatory unless the page explicitly marks an exception.
+
+## Sandbox by default
+
+Every host registers an `IBrowserSandboxProfile`. The shipped
+`DefaultSandboxProfile` is deny-by-default:
+
+- `AllowedSchemes = { "https" }`
+- `AllowPrivateNetworks = false`
+- `AllowLoopback = false`
+- `ForceCsp = true`
+- `RedactConsoleMessages = true`
+- `MaxRenderDuration = 30 s`
+
+Replace it for tighter rules, not looser ones. Loosening (`http`, private
+networks, no CSP) requires both a deliberate registration *and* the matching
+permission grant. See [Browsing security](/dotnet/browsing/security/).
+
+## No per-call CSP bypass
+
+`BrowserPageOptions.BypassCsp` has been removed. Hosts that need to disable
+CSP for a flow:
+
+1. Register a `SandboxProfile` with `ForceCsp = false`.
+2. Grant `Granit.Browsing.Pages.BypassCsp` to the caller's role.
+
+Both gates must open. Per-call bypass is gone because it was a foot-gun: a
+single PR could quietly disable a security control. The sandbox+permission
+pair makes the decision auditable and revocable.
+
+## Typed APIs
+
+```csharp
+// NavigateAsync takes Uri, never string.
+await page.NavigateAsync(new Uri("https://example.com"));
+
+// RouteAsync takes a RoutePattern, never a glob string.
+await page.RouteAsync(
+    RoutePattern.Parse("**/*.tracker.com/**"),
+    (req, ct) => ValueTask.FromResult(RouteDecision.Abort("tracker")));
+```
+
+`Uri` construction at the edge surfaces malformed input as a 400-class
+`ValidationException` rather than a 500-class engine error. `RoutePattern`
+parsing is the single place to reason about glob semantics across the two
+provider engines.
+
+## Mandatory permissions
+
+A caller using `IHeadlessBrowser` MUST hold:
+
+- `Granit.Browsing.Pages.Acquire` — always.
+- `Granit.Browsing.Pages.Navigate` — if it calls `NavigateAsync`.
+- `Granit.Browsing.Pages.InjectScript` — if it calls `EvaluateAsync` /
+  `AddScriptTagAsync` / `AddStyleTagAsync`.
+
+`Granit.Browsing.Pages.BypassCsp` and `Granit.Browsing.Pages.UseFileScheme`
+are rare and require explicit grants. The full matrix lives in
+[Browsing security — Permissions matrix](/dotnet/browsing/security/#permissions-matrix).
+
+## `EvaluateAsync` — parameterised always
+
+```csharp
+// NO — GRBROWSING001 will fail the build.
+await page.EvaluateAsync($"document.title = '{title}';");
+
+// YES — parameterised, analyzer happy.
+await page.EvaluateAsync("t => { document.title = t; }", title);
+```
+
+Treat `EvaluateAsync` as `eval`. Anything else is template injection.
+
+## `file://` only via `ITempFileFactory`
+
+The `file://` scheme is denied by default. The only sanctioned path is the
+PDF viewer capability, which goes through `ITempFileFactory.CreateAsync` and
+holds the framework-internal `Granit.Browsing.Pages.UseFileScheme`
+permission. Host code never constructs a `file://` URL directly.
+
+## Console output is redacted by default
+
+`RedactConsoleMessages = true` strips bearer tokens, JWTs, AWS keys,
+`Set-Cookie`, and basic-auth-in-URL from `console.*` output before it
+reaches your logger. Disable per-host only when both: the rendered content
+is fully trusted *and* verbatim console output is required for debugging.
+
+## Graceful shutdown
+
+`HeadlessBrowserDrainCoordinator` stops accepting new acquisitions at
+`ApplicationStopping` and waits up to `MaxRenderDuration` for in-flight
+pages. Hosts MUST set `terminationGracePeriodSeconds ≥ MaxRenderDuration + 10`
+in their pod spec.
+
+## Tenant boundary
+
+`TenantAwareHeadlessBrowser` decorates `IHeadlessBrowser` to stamp every
+page with the acquiring `ICurrentTenant.Id` and refuse cross-tenant reuse.
+Tests that fake `ICurrentTenant` need to set it *before* `AcquirePageAsync`,
+not after — the canonical "tenant leaked across an `await`" bug surfaces as
+a `CrossTenantPageAcquisitionException`.
+
+## Related
+
+- [Browsing security](/dotnet/browsing/security/).
+- [Browsing overview](/dotnet/infrastructure/browsing/).
+- [Migration: Pre-1.0 Hardening](/dotnet/browsing/migration-pre-1-0-hardening/).
