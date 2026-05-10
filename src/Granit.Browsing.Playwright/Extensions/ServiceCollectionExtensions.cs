@@ -3,9 +3,9 @@ using Granit.Browsing.Capabilities;
 using Granit.Browsing.Options;
 using Granit.Browsing.Playwright.Internal;
 using Granit.Browsing.Playwright.Options;
+using Granit.Browsing.Pool;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 
 namespace Granit.Browsing.Playwright.Extensions;
 
@@ -50,7 +50,12 @@ public static class ServiceCollectionExtensions
         }
 
         services.TryAddSingleton<PlaywrightHeadlessBrowser>();
-        services.TryAddSingleton<IHeadlessBrowser>(sp => sp.GetRequiredService<PlaywrightHeadlessBrowser>());
+        services.TryAddSingleton<TenantAwareHeadlessBrowser>(sp =>
+            ActivatorUtilities.CreateInstance<TenantAwareHeadlessBrowser>(
+                sp,
+                sp.GetRequiredService<PlaywrightHeadlessBrowser>()));
+
+        services.TryAddSingleton<IHeadlessBrowser>(sp => sp.GetRequiredService<TenantAwareHeadlessBrowser>());
         services.TryAddSingleton<IHeadlessBrowserPool>(sp => sp.GetRequiredService<PlaywrightHeadlessBrowser>());
 
         // Capabilities advertised on every engine. AccessibilityTree intentionally absent —
@@ -84,9 +89,7 @@ public static class ServiceCollectionExtensions
                     $"IPdfViewerCapability is only available with the Chromium engine; configured engine: {opts.Engine}. " +
                     "Switch PlaywrightOptions.Engine to Chromium or use the PuppeteerSharp provider.");
             }
-            return new PlaywrightPdfViewerCapability(
-                sp.GetRequiredService<Granit.Browsing.Diagnostics.BrowsingMetrics>(),
-                sp.GetService<Granit.MultiTenancy.ICurrentTenant>());
+            return ActivatorUtilities.CreateInstance<PlaywrightPdfViewerCapability>(sp);
         });
 
         services.AddHostedService<PlaywrightProvisionService>();

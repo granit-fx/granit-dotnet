@@ -22,6 +22,14 @@ public sealed class PlaywrightOptions
     /// </summary>
     public bool SkipBrowserInstall { get; set; }
 
+    /// <summary>
+    /// Tri-state opt-in for the bundled <c>playwright install</c> CLI invocation:
+    /// <c>true</c> forces a download attempt at boot, <c>false</c> refuses to run the
+    /// CLI (the host must pre-provision browsers), and <c>null</c> (the default) resolves
+    /// to <c>!env.IsProduction()</c> — safe for dev/CI, locked down in production.
+    /// </summary>
+    public bool? AutoInstallBrowsers { get; set; }
+
     /// <summary>Extra command-line arguments forwarded to the underlying browser process.</summary>
     public string[] ExtraArgs { get; set; } = [];
 }

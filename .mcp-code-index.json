@@ -601,14 +601,18 @@
     {
       "name": "Granit.Browsing.Playwright",
       "deps": [
-        "Granit.Browsing"
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
     {
       "name": "Granit.Browsing.PuppeteerSharp",
       "deps": [
-        "Granit.Browsing"
+        "Granit.Browsing",
+        "Granit.Http.Security",
+        "Granit.IO"
       ],
       "framework": "net10.0"
     },
@@ -13890,7 +13894,7 @@
       "kind": "enum",
       "project": "Granit.Browsing.Playwright",
       "file": "src/Granit.Browsing.Playwright/Options/PlaywrightOptions.cs",
-      "line": 30,
+      "line": 38,
       "members": []
     },
     {

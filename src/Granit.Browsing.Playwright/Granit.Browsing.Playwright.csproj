@@ -17,10 +17,13 @@
     <PackageReference Include="Microsoft.Extensions.Options" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" />
     <PackageReference Include="Microsoft.Playwright" />
+    <PackageReference Include="PdfPig" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Granit.Browsing\Granit.Browsing.csproj" />
+    <ProjectReference Include="..\Granit.Http.Security\Granit.Http.Security.csproj" />
+    <ProjectReference Include="..\Granit.IO\Granit.IO.csproj" />
   </ItemGroup>
 
 </Project>

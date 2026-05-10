@@ -5,11 +5,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Options;
+using Granit.Browsing.Pages;
 using Granit.Browsing.Playwright.Options;
+using Granit.Browsing.Pool;
+using Granit.Browsing.Sandbox;
+using Granit.Events;
+using Granit.Guids;
+using Granit.Http.Security;
 using Granit.MultiTenancy;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Playwright;
+using IClock = Granit.Timing.IClock;
 
 namespace Granit.Browsing.Playwright.Internal;
 
@@ -25,15 +33,21 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     private readonly IOptions<PlaywrightOptions> _playwrightOptions;
     private readonly BrowsingMetrics _metrics;
     private readonly ILogger<PlaywrightHeadlessBrowser> _logger;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly IBrowserSandboxProfile _sandbox;
+    private readonly IUrlSafetyValidator _urlValidator;
+    private readonly IHostEnvironment _hostEnvironment;
+    private readonly IClock _clock;
+    private readonly IGuidGenerator _guidGenerator;
     private readonly ICurrentTenant? _currentTenant;
-    private readonly IBrowserSandboxProfile? _sandbox;
+    private readonly ILocalEventBus? _eventBus;
 
     private readonly SemaphoreSlim _initLock = new(1, 1);
     private readonly SemaphoreSlim _pageSemaphore;
     private readonly string _engineName;
     private readonly BrowserCapabilities _capabilities;
     private IPlaywright? _playwright;
-    private IBrowser? _browser;
+    private volatile IBrowser? _browser;
     private int _activePages;
     private int _waitingAcquisitions;
     private long _totalAcquisitions;
@@ -44,15 +58,38 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         IOptions<PlaywrightOptions> playwrightOptions,
         BrowsingMetrics metrics,
         ILogger<PlaywrightHeadlessBrowser> logger,
+        ILoggerFactory loggerFactory,
+        IBrowserSandboxProfile sandbox,
+        IUrlSafetyValidator urlValidator,
+        IHostEnvironment hostEnvironment,
+        IClock clock,
+        IGuidGenerator guidGenerator,
         ICurrentTenant? currentTenant = null,
-        IBrowserSandboxProfile? sandbox = null)
+        ILocalEventBus? eventBus = null)
     {
+        ArgumentNullException.ThrowIfNull(browsingOptions);
+        ArgumentNullException.ThrowIfNull(playwrightOptions);
+        ArgumentNullException.ThrowIfNull(metrics);
+        ArgumentNullException.ThrowIfNull(logger);
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(sandbox);
+        ArgumentNullException.ThrowIfNull(urlValidator);
+        ArgumentNullException.ThrowIfNull(hostEnvironment);
+        ArgumentNullException.ThrowIfNull(clock);
+        ArgumentNullException.ThrowIfNull(guidGenerator);
+
         _browsingOptions = browsingOptions;
         _playwrightOptions = playwrightOptions;
         _metrics = metrics;
         _logger = logger;
-        _currentTenant = currentTenant;
+        _loggerFactory = loggerFactory;
         _sandbox = sandbox;
+        _urlValidator = urlValidator;
+        _hostEnvironment = hostEnvironment;
+        _clock = clock;
+        _guidGenerator = guidGenerator;
+        _currentTenant = currentTenant;
+        _eventBus = eventBus;
 
         int permits = _browsingOptions.Value.MaxBrowsers * _browsingOptions.Value.MaxPagesPerBrowser;
         _pageSemaphore = new SemaphoreSlim(permits, permits);
@@ -85,7 +122,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     }
 
     private string? CurrentTenantId =>
-        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString() : null;
+        _currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public string EngineName => _engineName;
@@ -161,12 +198,11 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             contextOptions.TimezoneId = options?.TimezoneId;
             // Sandbox profile takes precedence over per-call BrowserPageOptions for JS enablement.
             bool jsEnabled = options?.JavaScriptEnabled ?? true;
-            if (_sandbox?.DisableJavaScript == true)
+            if (_sandbox.DisableJavaScript)
             {
                 jsEnabled = false;
             }
             contextOptions.JavaScriptEnabled = jsEnabled;
-            contextOptions.BypassCSP = options?.BypassCsp ?? false;
             contextOptions.ColorScheme = options?.ColorScheme switch
             {
                 "light" => ColorScheme.Light,
@@ -217,7 +253,29 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
                 }).ConfigureAwait(false);
             }
 
-            await ApplySandboxAsync(playwrightPage).ConfigureAwait(false);
+            Guid pageId = _guidGenerator.Create();
+            TimeSpan? maxRender = _sandbox.MaxRenderDuration
+                ?? _browsingOptions.Value.ResourceLimits.MaxRenderDuration;
+
+            var router = new RequestRouter(
+                _sandbox,
+                _urlValidator,
+                _metrics,
+                _loggerFactory.CreateLogger<RequestRouter>(),
+                _clock,
+                EngineName,
+                pageId,
+                _eventBus);
+
+            var playwrightRouter = new PlaywrightRequestRouter(
+                playwrightPage,
+                router,
+                _loggerFactory.CreateLogger<PlaywrightRequestRouter>());
+
+            if (RequiresEagerInterception(_sandbox))
+            {
+                await playwrightRouter.EnsureSubscribedAsync().ConfigureAwait(false);
+            }
 
             Interlocked.Increment(ref _activePages);
             Interlocked.Increment(ref _totalAcquisitions);
@@ -225,7 +283,19 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             _metrics.RecordPageAcquired(EngineName, tenantId);
             _metrics.RecordAcquireDuration(EngineName, tenantId, sw.Elapsed);
 
-            return new PlaywrightBrowserPage(playwrightPage, context, EngineName, OnPageReleased);
+            return new PlaywrightBrowserPage(
+                playwrightPage,
+                context,
+                EngineName,
+                OnPageReleased,
+                playwrightRouter,
+                _sandbox,
+                _urlValidator,
+                maxRender,
+                _clock,
+                _loggerFactory.CreateLogger<PlaywrightBrowserPage>(),
+                pageId,
+                _eventBus);
         }
         catch
         {
@@ -233,6 +303,15 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             throw;
         }
     }
+
+    private static bool RequiresEagerInterception(IBrowserSandboxProfile sandbox) =>
+        sandbox.BlockNetworkRequests
+        || sandbox.DisableImages
+        || (sandbox.BlockedUrlPatterns?.Count ?? 0) > 0
+        || (sandbox.AllowedHostPatterns?.Count ?? 0) > 0
+        || (sandbox.DeniedHostPatterns?.Count ?? 0) > 0
+        || sandbox.BlockPrivateNetworks
+        || sandbox.AllowedSchemes is { Count: > 0 };
 
     private void OnPageReleased()
     {
@@ -257,17 +336,38 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
             if (_browser is not null)
             {
                 // Crashed engine — drop the dead handle and re-launch.
-                try { await _browser.CloseAsync().ConfigureAwait(false); } catch { /* ignore */ }
+                try
+                {
+                    await _browser.CloseAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogDisposeFailure(ex);
+                }
                 _browser = null;
             }
 
             PlaywrightOptions opts = _playwrightOptions.Value;
+
+            // VULN-103: refuse privileged flags outside a vetted container. Playwright
+            // doesn't expose a DisableSandbox option, but a caller could smuggle
+            // --no-sandbox through ExtraArgs — PrivilegedFlagGuard scans for it.
+            PrivilegedFlagGuard.EnsureSafe(disableSandbox: false, opts.ExtraArgs, _logger);
+
+            // VULN-401: refuse to start when production hosts have not pre-provisioned browsers.
+            PlaywrightInstallGuard.EnsureBrowsersProvisioned(opts, _hostEnvironment);
+
+            // VULN-205: refuse a browser binary outside the sandbox-allowed prefix.
+            string? executablePath = PlaywrightExecutablePathValidator.Validate(
+                opts.ExecutablePath,
+                _sandbox.AllowedExecutablePathPrefix);
+
             _playwright ??= await Microsoft.Playwright.Playwright.CreateAsync().ConfigureAwait(false);
 
             BrowserTypeLaunchOptions launch = new()
             {
                 Headless = true,
-                ExecutablePath = opts.ExecutablePath,
+                ExecutablePath = executablePath,
                 Args = opts.ExtraArgs,
             };
 
@@ -288,40 +388,6 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         }
     }
 
-    private async Task ApplySandboxAsync(IPage page)
-    {
-        if (_sandbox is null)
-        {
-            return;
-        }
-        if (_sandbox.BlockNetworkRequests)
-        {
-            await page.RouteAsync("**/*", route => route.AbortAsync()).ConfigureAwait(false);
-            return;
-        }
-        if (_sandbox.DisableImages || (_sandbox.BlockedUrlPatterns?.Count ?? 0) > 0)
-        {
-            await page.RouteAsync("**/*", route =>
-            {
-                if (_sandbox.DisableImages && route.Request.ResourceType == "image")
-                {
-                    return route.AbortAsync();
-                }
-                if (_sandbox.BlockedUrlPatterns is { Count: > 0 } patterns)
-                {
-                    foreach (string pattern in patterns)
-                    {
-                        if (route.Request.Url.Contains(pattern, StringComparison.OrdinalIgnoreCase))
-                        {
-                            return route.AbortAsync();
-                        }
-                    }
-                }
-                return route.ContinueAsync();
-            }).ConfigureAwait(false);
-        }
-    }
-
     /// <inheritdoc/>
     public async Task DrainAsync(CancellationToken cancellationToken = default)
     {
@@ -333,7 +399,14 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
         }
         if (_browser is not null)
         {
-            await _browser.CloseAsync().ConfigureAwait(false);
+            try
+            {
+                await _browser.CloseAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                LogDisposeFailure(ex);
+            }
             _browser = null;
         }
         _playwright?.Dispose();
@@ -345,7 +418,14 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
     {
         if (_browser is not null)
         {
-            await _browser.CloseAsync().ConfigureAwait(false);
+            try
+            {
+                await _browser.CloseAsync().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                LogDisposeFailure(ex);
+            }
             _browser = null;
         }
         _playwright?.Dispose();
@@ -359,4 +439,7 @@ internal sealed partial class PlaywrightHeadlessBrowser : IHeadlessBrowser, IHea
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Granit.Browsing.Playwright {Engine} launched.")]
     private partial void LogBrowserStarted(string engine);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.Playwright failed to dispose a stale browser handle.")]
+    private partial void LogDisposeFailure(Exception exception);
 }

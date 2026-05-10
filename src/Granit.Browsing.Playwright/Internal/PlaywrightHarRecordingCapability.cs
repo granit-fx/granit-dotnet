@@ -4,18 +4,19 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
+using Granit.IO;
 using Microsoft.Playwright;
 
 namespace Granit.Browsing.Playwright.Internal;
 
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="IHarRecordingCapability"/>. Records
-/// network activity through a per-page <c>RouteFromHARAsync</c> session and serialises
-/// it to a JSON HAR document on stop.
+/// network activity through a per-page <c>RouteFromHARAsync</c> session staged to a
+/// securely-created temp file (VULN-105) and serialises it to a JSON HAR document on stop.
 /// </summary>
-internal sealed class PlaywrightHarRecordingCapability : IHarRecordingCapability
+internal sealed class PlaywrightHarRecordingCapability(ITempFileFactory tempFileFactory) : IHarRecordingCapability
 {
-    private readonly Dictionary<IBrowserPage, string> _activeRecordings = new();
+    private readonly Dictionary<IBrowserPage, ITempFile> _activeRecordings = [];
     private readonly object _gate = new();
 
     /// <inheritdoc/>
@@ -28,30 +29,30 @@ internal sealed class PlaywrightHarRecordingCapability : IHarRecordingCapability
                 $"PlaywrightHarRecordingCapability requires a page produced by {nameof(PlaywrightHeadlessBrowser)}; got {page.GetType().Name}.");
         }
 
-        // Playwright supports HAR via context recording; we approximate by routing
-        // every request and serialising on stop. In production hosts wanting full
-        // fidelity, configure the BrowserNewContextOptions.RecordHarPath up-front.
-        string tempPath = Path.Combine(Path.GetTempPath(), $"granit-har-{Path.GetRandomFileName()}.har");
+        ITempFile tempFile = await tempFileFactory
+            .CreateAsync("har", "har", cancellationToken)
+            .ConfigureAwait(false);
+
         lock (_gate)
         {
-            _activeRecordings[page] = tempPath;
+            _activeRecordings[page] = tempFile;
         }
-        await playwrightPage.UnderlyingPage.Context.RouteFromHARAsync(tempPath, new BrowserContextRouteFromHAROptions
+
+        await playwrightPage.UnderlyingPage.Context.RouteFromHARAsync(tempFile.Path, new BrowserContextRouteFromHAROptions
         {
             Update = true,
             UpdateMode = HarMode.Full,
         }).ConfigureAwait(false);
-        _ = cancellationToken;
     }
 
     /// <inheritdoc/>
     public async Task<string> StopHarAsync(IBrowserPage page, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(page);
-        string? path;
+        ITempFile? tempFile;
         lock (_gate)
         {
-            if (!_activeRecordings.TryGetValue(page, out path))
+            if (!_activeRecordings.TryGetValue(page, out tempFile))
             {
                 throw new InvalidOperationException("No active HAR recording for the supplied page — call StartHarAsync first.");
             }
@@ -60,21 +61,18 @@ internal sealed class PlaywrightHarRecordingCapability : IHarRecordingCapability
 
         try
         {
-            // Force flush by closing the context — but we don't want to dispose the
-            // page's context; instead, the host can call this after the page is no
-            // longer needed and the context naturally closes on dispose.
-            if (File.Exists(path))
+            tempFile.Stream.Position = 0;
+            using StreamReader reader = new(tempFile.Stream, leaveOpen: true);
+            string content = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
+            if (string.IsNullOrEmpty(content))
             {
-                return await File.ReadAllTextAsync(path, cancellationToken).ConfigureAwait(false);
+                return "{\"log\":{\"version\":\"1.2\",\"entries\":[]}}";
             }
-            return "{\"log\":{\"version\":\"1.2\",\"entries\":[]}}";
+            return content;
         }
         finally
         {
-            if (File.Exists(path))
-            {
-                try { File.Delete(path); } catch { /* best-effort */ }
-            }
+            await tempFile.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

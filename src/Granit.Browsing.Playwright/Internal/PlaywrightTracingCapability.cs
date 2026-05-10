@@ -4,14 +4,20 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
+using Granit.IO;
 using Microsoft.Playwright;
 
 namespace Granit.Browsing.Playwright.Internal;
 
-/// <summary>Microsoft.Playwright implementation of <see cref="ITracingCapability"/>.</summary>
-internal sealed class PlaywrightTracingCapability : ITracingCapability
+/// <summary>
+/// Microsoft.Playwright implementation of <see cref="ITracingCapability"/>. Stages the
+/// trace zip into a securely-created temp file (VULN-105) — note that Playwright writes
+/// the zip via its own driver process; the file inherits this process's user / ACLs,
+/// so the 0600 perms set by <see cref="ITempFileFactory"/> remain effective.
+/// </summary>
+internal sealed class PlaywrightTracingCapability(ITempFileFactory tempFileFactory) : ITracingCapability
 {
-    private readonly Dictionary<IBrowserPage, string> _activeTraces = new();
+    private readonly Dictionary<IBrowserPage, ITempFile> _activeTraces = [];
     private readonly object _gate = new();
 
     /// <inheritdoc/>
@@ -34,12 +40,14 @@ internal sealed class PlaywrightTracingCapability : ITracingCapability
             Title = options.Title,
         }).ConfigureAwait(false);
 
-        string tempPath = Path.Combine(Path.GetTempPath(), $"granit-trace-{Path.GetRandomFileName()}.zip");
+        ITempFile tempFile = await tempFileFactory
+            .CreateAsync("trace", "zip", cancellationToken)
+            .ConfigureAwait(false);
+
         lock (_gate)
         {
-            _activeTraces[page] = tempPath;
+            _activeTraces[page] = tempFile;
         }
-        _ = cancellationToken;
     }
 
     /// <inheritdoc/>
@@ -52,10 +60,10 @@ internal sealed class PlaywrightTracingCapability : ITracingCapability
                 $"PlaywrightTracingCapability requires a page produced by {nameof(PlaywrightHeadlessBrowser)}; got {page.GetType().Name}.");
         }
 
-        string? path;
+        ITempFile? tempFile;
         lock (_gate)
         {
-            if (!_activeTraces.TryGetValue(page, out path))
+            if (!_activeTraces.TryGetValue(page, out tempFile))
             {
                 throw new InvalidOperationException("No active trace for the supplied page — call StartTracingAsync first.");
             }
@@ -65,17 +73,14 @@ internal sealed class PlaywrightTracingCapability : ITracingCapability
         try
         {
             await playwrightPage.UnderlyingPage.Context.Tracing
-                .StopAsync(new TracingStopOptions { Path = path })
+                .StopAsync(new TracingStopOptions { Path = tempFile.Path })
                 .ConfigureAwait(false);
 
-            return await File.ReadAllBytesAsync(path, cancellationToken).ConfigureAwait(false);
+            return await File.ReadAllBytesAsync(tempFile.Path, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
-            if (File.Exists(path))
-            {
-                try { File.Delete(path); } catch { /* best-effort */ }
-            }
+            await tempFile.DisposeAsync().ConfigureAwait(false);
         }
     }
 }

@@ -5,7 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Sandbox;
+using Granit.IO;
+using Granit.IO.Options;
 using Granit.MultiTenancy;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using UglyToad.PdfPig;
 using BrowsingScreenshotFormat = Granit.Browsing.Options.ScreenshotFormat;
 using BrowsingScreenshotOptions = Granit.Browsing.Options.ScreenshotOptions;
 
@@ -13,9 +19,17 @@ namespace Granit.Browsing.Playwright.Internal;
 
 /// <summary>
 /// Microsoft.Playwright implementation of <see cref="IPdfViewerCapability"/>
-/// (Chromium-only). Uses the same data-URL strategy as the PuppeteerSharp provider.
+/// (Chromium-only). Loads the PDF in Chromium's built-in PDF viewer via a <c>file://</c>
+/// URL pointing at a securely-staged temp file (VULN-102) and counts pages with PdfPig
+/// instead of the fragile substring heuristic.
 /// </summary>
-internal sealed class PlaywrightPdfViewerCapability(BrowsingMetrics metrics, ICurrentTenant? currentTenant = null) : IPdfViewerCapability
+internal sealed partial class PlaywrightPdfViewerCapability(
+    BrowsingMetrics metrics,
+    ITempFileFactory tempFileFactory,
+    IOptions<TempFileOptions> tempFileOptions,
+    IBrowserSandboxProfile sandbox,
+    ILogger<PlaywrightPdfViewerCapability> logger,
+    ICurrentTenant? currentTenant = null) : IPdfViewerCapability
 {
     /// <inheritdoc/>
     public async Task<IPdfDocumentPage> OpenPdfAsync(IBrowserPage page, Stream pdf, CancellationToken cancellationToken = default)
@@ -33,55 +47,102 @@ internal sealed class PlaywrightPdfViewerCapability(BrowsingMetrics metrics, ICu
                 $"Native PDF viewer is Chromium-only. Active engine: {page.EngineName}.");
         }
 
+        _ = sandbox; // referenced via fields; preserved for future profile checks.
+
         using Activity? activity = BrowsingActivitySource.Source.StartActivity(BrowsingActivitySource.PdfViewerOpen);
 
         using MemoryStream buffer = new();
         await pdf.CopyToAsync(buffer, cancellationToken).ConfigureAwait(false);
         byte[] bytes = buffer.ToArray();
 
-        int pageCount = CountPdfPages(bytes);
-        if (pageCount <= 0)
+        ValidatePdfMagic(bytes);
+
+        int pageCount = CountPages(bytes);
+
+        ITempFile tempFile = await tempFileFactory
+            .CreateAsync("pdf-viewer", "pdf", cancellationToken)
+            .ConfigureAwait(false);
+
+        bool fileOwned = true;
+        try
         {
-            pageCount = 1;
-        }
+            await tempFile.Stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+            await tempFile.Stream.FlushAsync(cancellationToken).ConfigureAwait(false);
 
-        string dataUrl = "data:application/pdf;base64," + Convert.ToBase64String(bytes);
-        await playwrightPage.NavigateAsync(dataUrl, options: null, cancellationToken).ConfigureAwait(false);
-        await playwrightPage.WaitForLoadStateAsync(LoadState.Load, timeout: TimeSpan.FromSeconds(15),
-            cancellationToken).ConfigureAwait(false);
-
-        return new PlaywrightPdfDocumentPage(playwrightPage, pageCount, metrics, currentTenant);
-    }
-
-    private static int CountPdfPages(byte[] bytes)
-    {
-        string text = System.Text.Encoding.Latin1.GetString(bytes);
-        int idx = 0;
-        int count = 0;
-        const string marker = "/Type /Page";
-        while ((idx = text.IndexOf(marker, idx, StringComparison.Ordinal)) >= 0)
-        {
-            int after = idx + marker.Length;
-            if (after < text.Length && text[after] == 's')
+            string resolvedPath = Path.GetFullPath(tempFile.Path);
+            string root = Path.GetFullPath(
+                string.IsNullOrWhiteSpace(tempFileOptions.Value.RootDirectory)
+                    ? Path.Combine(Path.GetTempPath(), "granit")
+                    : tempFileOptions.Value.RootDirectory!);
+            if (!resolvedPath.StartsWith(root, StringComparison.Ordinal))
             {
-                idx = after;
-                continue;
+                throw new SandboxViolationException(
+                    SandboxViolationKind.HostBlocked,
+                    $"Temp PDF path '{resolvedPath}' is outside the temp-file root '{root}'.");
             }
-            count++;
-            idx = after;
+
+            Uri fileUri = new(resolvedPath);
+
+            await playwrightPage.NavigateAsync(fileUri, options: null, cancellationToken).ConfigureAwait(false);
+            await playwrightPage.WaitForLoadStateAsync(LoadState.Load, timeout: TimeSpan.FromSeconds(15),
+                cancellationToken).ConfigureAwait(false);
+
+            var result = new PlaywrightPdfDocumentPage(playwrightPage, pageCount, metrics, tempFile, logger, currentTenant);
+            fileOwned = false;
+            return result;
         }
-        return count;
+        finally
+        {
+            if (fileOwned)
+            {
+                try
+                {
+                    await tempFile.DisposeAsync().ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    LogTempCleanupFailure(ex);
+                }
+            }
+        }
     }
+
+    internal static void ValidatePdfMagic(byte[] bytes)
+    {
+        const string magic = "%PDF-1.";
+        if (bytes.Length < magic.Length + 1)
+        {
+            throw new InvalidDataException("PDF stream is shorter than the magic-byte header.");
+        }
+        for (int i = 0; i < magic.Length; i++)
+        {
+            if (bytes[i] != (byte)magic[i])
+            {
+                throw new InvalidDataException($"PDF stream does not start with '{magic}x'.");
+            }
+        }
+    }
+
+    private static int CountPages(byte[] bytes)
+    {
+        using var doc = PdfDocument.Open(bytes);
+        return doc.NumberOfPages;
+    }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.Playwright failed to clean up a staged PDF temp file.")]
+    private partial void LogTempCleanupFailure(Exception exception);
 }
 
-internal sealed class PlaywrightPdfDocumentPage(
+internal sealed partial class PlaywrightPdfDocumentPage(
     PlaywrightBrowserPage page,
     int pageCount,
     BrowsingMetrics metrics,
+    ITempFile tempFile,
+    ILogger logger,
     ICurrentTenant? currentTenant) : IPdfDocumentPage
 {
     private string? CurrentTenantId =>
-        currentTenant is { IsAvailable: true } t ? t.Id?.ToString() : null;
+        currentTenant is { IsAvailable: true } t ? t.Id?.ToString("N") : null;
 
     /// <inheritdoc/>
     public int PageCount { get; } = pageCount;
@@ -112,5 +173,18 @@ internal sealed class PlaywrightPdfDocumentPage(
     }
 
     /// <inheritdoc/>
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await tempFile.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            LogTempCleanupFailure(logger, ex);
+        }
+    }
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Granit.Browsing.Playwright failed to clean up a staged PDF temp file on viewer disposal.")]
+    private static partial void LogTempCleanupFailure(ILogger logger, Exception exception);
 }
