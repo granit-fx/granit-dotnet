@@ -92,6 +92,7 @@ internal sealed class PartyDuplicateScanService(
             .Include(p => p.Emails)
             .Include(p => p.Phones)
             .Take(TenantPartyCap + 1)
+            .AsSplitQuery()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (parties.Count > TenantPartyCap)

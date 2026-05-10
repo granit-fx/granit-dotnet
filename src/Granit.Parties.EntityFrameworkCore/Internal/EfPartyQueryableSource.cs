@@ -25,7 +25,8 @@ internal sealed class EfPartyQueryableSource(
             .Include(c => c.Addresses)
             .Include(c => c.Emails)
             .Include(c => c.Phones)
-            .Include(c => c.ExternalMappings);
+            .Include(c => c.ExternalMappings)
+            .AsSplitQuery();
 
     public void Dispose() => _context.Dispose();
 }

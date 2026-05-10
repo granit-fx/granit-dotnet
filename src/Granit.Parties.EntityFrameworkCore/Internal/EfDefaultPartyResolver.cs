@@ -37,6 +37,7 @@ internal sealed class EfDefaultPartyResolver(
             .Include(c => c.Emails)
             .Include(c => c.Phones)
             .Include(c => c.ExternalMappings)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(
                 c => c.TenantId == null
                   && c.ExternalMappings.Any(m =>
