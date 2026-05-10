@@ -39,7 +39,7 @@ public sealed class ActionResultTests
     public void ActionResult_Failure_ThrowsOnNullKey()
     {
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => ActionResult.Failure(null!));
+        Assert.Throws<ArgumentNullException>(() => ActionResult.Failure(null!));
     }
 
     [Fact]
@@ -125,7 +125,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
 
         // Act
         builder
-            .Post()
+            .ApiCall("POST", "/api/test/testAction")
             .DisplayKey("Test.Action")
             .ServerExecutor<DummyExecutor>();
 
@@ -146,7 +146,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
         // Act & Assert
         InvalidOperationException ex = Assert.Throws<InvalidOperationException>(
             () => builder
-                .Post()
+                .ApiCall("POST", "/api/test/testAction")
                 .DisplayKey("Test.Action")
                 .BulkExecutor<DummyBulkExecutor>());
 
@@ -161,7 +161,7 @@ public sealed class EntityActionBuilderExecutorExtensionTests
 
         // Act
         builder
-            .Post()
+            .ApiCall("POST", "/api/test/testAction")
             .DisplayKey("Test.Action")
             .ServerExecutor<DummyExecutor>()
             .BulkExecutor<DummyBulkExecutor>();
@@ -247,7 +247,7 @@ public sealed class BulkActionIntegrationTests
 
         // Act
         builder
-            .Post()
+            .ApiCall("POST", "/api/test/toggleActive")
             .DisplayKey("Entity.Actions.ToggleActive")
             .Icon("toggle-on")
             .Order(10)
