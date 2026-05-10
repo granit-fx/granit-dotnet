@@ -552,25 +552,6 @@
           "Granit.Timing": "[0.1.0-dev, )"
         }
       },
-      "granit.encryption": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Hosting.Abstractions": "[10.*, )",
-          "Microsoft.Extensions.Options": "[10.*, )",
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "[10.*, )"
-        }
-      },
-      "granit.encryption.entityframeworkcore": {
-        "type": "Project",
-        "dependencies": {
-          "Granit": "[0.1.0-dev, )",
-          "Granit.Encryption": "[0.1.0-dev, )",
-          "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
-          "Microsoft.EntityFrameworkCore": "[10.*, )"
-        }
-      },
       "granit.entities.abstractions": {
         "type": "Project",
         "dependencies": {
@@ -617,7 +598,6 @@
         "dependencies": {
           "Granit.Analytics": "[0.1.0-dev, )",
           "Granit.DataExchange.Abstractions": "[0.1.0-dev, )",
-          "Granit.Encryption.EntityFrameworkCore": "[0.1.0-dev, )",
           "Granit.Entities.Abstractions": "[0.1.0-dev, )",
           "Granit.Guids": "[0.1.0-dev, )",
           "Granit.Identity": "[0.1.0-dev, )",

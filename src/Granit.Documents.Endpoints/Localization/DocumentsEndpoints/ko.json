@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "문서 보기 및 다운로드",
     "Permission:Documents.Folders.Manage": "폴더 만들기, 이름 바꾸기, 이동 및 휴지통으로 이동",
     "Permission:Documents.Folders.Read": "폴더 보기",
+    "Permission:Documents.Shares.Manage": "폴더와 문서의 공유 권한 부여 및 취소",
+    "Permission:Documents.Shares.Read": "폴더와 문서의 공유 권한 보기",
     "PermissionGroup:Documents": "문서"
   }
 }

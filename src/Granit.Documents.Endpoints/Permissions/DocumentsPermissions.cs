@@ -31,4 +31,14 @@ public static class DocumentsPermissions
         /// <summary>Manage documents (upload, rename, move, trash, restore, permanent delete).</summary>
         public const string Manage = "Documents.Documents.Manage";
     }
+
+    /// <summary>Permissions on share ACL grants (F6).</summary>
+    public static class Shares
+    {
+        /// <summary>List share grants on a folder or a document.</summary>
+        public const string Read = "Documents.Shares.Read";
+
+        /// <summary>Grant and revoke share ACL on folders and documents.</summary>
+        public const string Manage = "Documents.Shares.Manage";
+    }
 }

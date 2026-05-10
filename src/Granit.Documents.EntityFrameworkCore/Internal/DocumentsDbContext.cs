@@ -35,6 +35,9 @@ internal sealed class DocumentsDbContext(
     /// <summary>Append-only version history. The current pointer lives on <see cref="Document.CurrentVersionId"/>.</summary>
     public DbSet<DocumentVersion> DocumentVersions { get; set; } = null!;
 
+    /// <summary>ACL grants on folders and documents (F6.1 — see ADR-052 §Permission resolution model).</summary>
+    public DbSet<DocumentShare> DocumentShares { get; set; } = null!;
+
     /// <inheritdoc/>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -574,8 +574,8 @@
       "Sylvan.Data.Excel": {
         "type": "CentralTransitive",
         "requested": "[0.5.*, )",
-        "resolved": "0.5.5",
-        "contentHash": "HBsTVzAupf2tg/koLNEalzsJfWRl0sbtFOaTSdrweujeyEx3zO5BxcxTzW55TD2db9sn1xpRcSLP04tUG0v/jQ=="
+        "resolved": "0.5.6",
+        "contentHash": "6OcGGQRT0dfg1bBEl0AIakNUfuAQCMRclq7ZJEeWejRuIypp0zxzLB52/8FTgw7wFYdLcikI8fK7oLpMA4F7Lw=="
       },
       "ZiggyCreatures.FusionCache": {
         "type": "CentralTransitive",

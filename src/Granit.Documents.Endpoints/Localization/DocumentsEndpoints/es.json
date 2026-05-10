@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Ver y descargar documentos",
     "Permission:Documents.Folders.Manage": "Crear, renombrar, mover y enviar carpetas a la papelera",
     "Permission:Documents.Folders.Read": "Ver carpetas",
+    "Permission:Documents.Shares.Manage": "Conceder y revocar permisos compartidos en carpetas y documentos",
+    "Permission:Documents.Shares.Read": "Ver los permisos compartidos en carpetas y documentos",
     "PermissionGroup:Documents": "Documentos"
   }
 }

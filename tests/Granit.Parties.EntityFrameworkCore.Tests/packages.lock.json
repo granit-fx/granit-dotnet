@@ -545,8 +545,8 @@
       "libphonenumber-csharp": {
         "type": "CentralTransitive",
         "requested": "[9.*, )",
-        "resolved": "9.0.29",
-        "contentHash": "Z6FqHRx0gpHYr+EpW5heEadCSh9VnXJHUScPGEDCrpPLHxkB2mccUZfz+FDo+9yMF1Bxz7RBVMFL4MgV6eYoRA=="
+        "resolved": "9.0.30",
+        "contentHash": "jnGz07XEj63MHtKv6s4U0DC8bGHhnsCtwYRTAjlu5MmzqFSxkss5HBEEdU55Rg0l72HTU518kiLaQM9dcJYVjw=="
       },
       "Microsoft.EntityFrameworkCore": {
         "type": "CentralTransitive",

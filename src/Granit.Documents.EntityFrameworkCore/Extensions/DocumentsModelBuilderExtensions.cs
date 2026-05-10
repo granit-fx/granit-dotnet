@@ -20,6 +20,7 @@ public static class DocumentsModelBuilderExtensions
         modelBuilder.ApplyConfiguration(new FolderConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentConfiguration());
         modelBuilder.ApplyConfiguration(new DocumentVersionConfiguration());
+        modelBuilder.ApplyConfiguration(new DocumentShareConfiguration());
         return modelBuilder;
     }
 }

@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "ドキュメントの表示とダウンロード",
     "Permission:Documents.Folders.Manage": "フォルダーの作成、名前変更、移動、ゴミ箱への移動",
     "Permission:Documents.Folders.Read": "フォルダーを表示",
+    "Permission:Documents.Shares.Manage": "フォルダーとドキュメントの共有権限を付与・取り消し",
+    "Permission:Documents.Shares.Read": "フォルダーとドキュメントの共有権限を表示",
     "PermissionGroup:Documents": "ドキュメント"
   }
 }

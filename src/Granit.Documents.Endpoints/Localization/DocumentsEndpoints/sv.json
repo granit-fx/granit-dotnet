@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Visa och ladda ner dokument",
     "Permission:Documents.Folders.Manage": "Skapa, byta namn på, flytta och papperskorga mappar",
     "Permission:Documents.Folders.Read": "Visa mappar",
+    "Permission:Documents.Shares.Manage": "Bevilja och återkalla delningar på mappar och dokument",
+    "Permission:Documents.Shares.Read": "Visa delningar på mappar och dokument",
     "PermissionGroup:Documents": "Dokument"
   }
 }

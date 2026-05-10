@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Dokumente anzeigen und herunterladen",
     "Permission:Documents.Folders.Manage": "Ordner erstellen, umbenennen, verschieben und in den Papierkorb legen",
     "Permission:Documents.Folders.Read": "Ordner anzeigen",
+    "Permission:Documents.Shares.Manage": "Freigaben für Ordner und Dokumente erteilen und widerrufen",
+    "Permission:Documents.Shares.Read": "Freigaben für Ordner und Dokumente anzeigen",
     "PermissionGroup:Documents": "Dokumente"
   }
 }

@@ -19362,6 +19362,28 @@
       ]
     },
     {
+      "name": "DocumentShare",
+      "fqn": "Granit.Documents.Domain.DocumentShare",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/DocumentShare.cs",
+      "line": 23,
+      "members": [
+        {
+          "name": "ShareToFolder",
+          "kind": "method",
+          "signature": "ShareToFolder(Guid id, Guid? tenantId, Guid folderId, ShareGranteeType granteeType, Guid granteeId, SharePermissionLevel permission, bool isDefault, Guid createdByUserId, DateTimeOffset createdAt, DateTimeOffset? expiresAt = null)",
+          "returnType": "DocumentShare"
+        },
+        {
+          "name": "Revoke",
+          "kind": "method",
+          "signature": "Revoke()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
       "name": "DocumentStatus",
       "fqn": "Granit.Documents.Domain.DocumentStatus",
       "kind": "enum",
@@ -19414,6 +19436,33 @@
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Domain/FolderStatus.cs",
       "line": 10,
+      "members": []
+    },
+    {
+      "name": "ShareGranteeType",
+      "fqn": "Granit.Documents.Domain.ShareGranteeType",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/ShareGranteeType.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "SharePermissionLevel",
+      "fqn": "Granit.Documents.Domain.SharePermissionLevel",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/SharePermissionLevel.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "ShareTargetType",
+      "fqn": "Granit.Documents.Domain.ShareTargetType",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/ShareTargetType.cs",
+      "line": 11,
       "members": []
     },
     {
@@ -19539,7 +19588,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Extensions/DocumentsEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitDocuments",
@@ -19669,6 +19718,42 @@
       "members": []
     },
     {
+      "name": "Shares",
+      "fqn": "Granit.Documents.Endpoints.Permissions.Shares",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 36,
+      "members": []
+    },
+    {
+      "name": "GrantShareRequest",
+      "fqn": "Granit.Documents.Endpoints.Shares.Dtos.GrantShareRequest",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Shares/Dtos/GrantShareRequest.cs",
+      "line": 18,
+      "members": []
+    },
+    {
+      "name": "ListSharesResponse",
+      "fqn": "Granit.Documents.Endpoints.Shares.Dtos.ListSharesResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Shares/Dtos/ListSharesResponse.cs",
+      "line": 6,
+      "members": []
+    },
+    {
+      "name": "ShareResponse",
+      "fqn": "Granit.Documents.Endpoints.Shares.Dtos.ShareResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Shares/Dtos/ShareResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -19777,6 +19862,24 @@
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Events/DocumentRestoredEvent.cs",
       "line": 8,
+      "members": []
+    },
+    {
+      "name": "DocumentShareGrantedEvent",
+      "fqn": "Granit.Documents.Events.DocumentShareGrantedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentShareGrantedEvent.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "DocumentShareRevokedEvent",
+      "fqn": "Granit.Documents.Events.DocumentShareRevokedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentShareRevokedEvent.cs",
+      "line": 12,
       "members": []
     },
     {
@@ -19968,6 +20071,46 @@
           "kind": "method",
           "signature": "TrashAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<Document?>"
+        }
+      ]
+    },
+    {
+      "name": "IDocumentShareService",
+      "fqn": "Granit.Documents.IDocumentShareService",
+      "kind": "interface",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/IDocumentShareService.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "GrantOnFolderAsync",
+          "kind": "method",
+          "signature": "GrantOnFolderAsync(Guid folderId, ShareGranteeType granteeType, Guid granteeId, SharePermissionLevel permission, bool isDefault, Guid createdByUserId, DateTimeOffset? expiresAt = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentShare?>"
+        },
+        {
+          "name": "GrantOnDocumentAsync",
+          "kind": "method",
+          "signature": "GrantOnDocumentAsync(Guid documentId, ShareGranteeType granteeType, Guid granteeId, SharePermissionLevel permission, Guid createdByUserId, DateTimeOffset? expiresAt = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentShare?>"
+        },
+        {
+          "name": "RevokeAsync",
+          "kind": "method",
+          "signature": "RevokeAsync(Guid shareId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<bool>"
+        },
+        {
+          "name": "ListForFolderAsync",
+          "kind": "method",
+          "signature": "ListForFolderAsync(Guid folderId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentShare>>"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentShare>>"
         }
       ]
     },

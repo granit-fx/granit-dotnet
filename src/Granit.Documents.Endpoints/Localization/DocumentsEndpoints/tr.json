@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Belgeleri görüntüle ve indir",
     "Permission:Documents.Folders.Manage": "Klasörleri oluşturma, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
     "Permission:Documents.Folders.Read": "Klasörleri görüntüle",
+    "Permission:Documents.Shares.Manage": "Klasör ve belgelerdeki paylaşım izinlerini ver ve geri al",
+    "Permission:Documents.Shares.Read": "Klasör ve belgelerdeki paylaşım izinlerini görüntüle",
     "PermissionGroup:Documents": "Belgeler"
   }
 }

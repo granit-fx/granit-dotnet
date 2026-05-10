@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Documenten bekijken en downloaden",
     "Permission:Documents.Folders.Manage": "Mappen aanmaken, hernoemen, verplaatsen en in de prullenbak gooien",
     "Permission:Documents.Folders.Read": "Mappen bekijken",
+    "Permission:Documents.Shares.Manage": "Deelmachtigingen op mappen en documenten verlenen en intrekken",
+    "Permission:Documents.Shares.Read": "Deelmachtigingen op mappen en documenten bekijken",
     "PermissionGroup:Documents": "Documenten"
   }
 }

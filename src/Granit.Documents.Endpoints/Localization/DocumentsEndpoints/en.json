@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "View and download documents",
     "Permission:Documents.Folders.Manage": "Create, rename, move, and trash folders",
     "Permission:Documents.Folders.Read": "View folders",
+    "Permission:Documents.Shares.Manage": "Grant and revoke share access on folders and documents",
+    "Permission:Documents.Shares.Read": "View share grants on folders and documents",
     "PermissionGroup:Documents": "Documents"
   }
 }

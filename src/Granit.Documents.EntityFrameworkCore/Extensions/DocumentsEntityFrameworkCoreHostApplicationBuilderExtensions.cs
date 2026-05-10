@@ -52,6 +52,11 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // DocumentVersion atomically.
         builder.Services.AddScoped<IDocumentService, DocumentService>();
 
+        // Share service (F6.1): grant / revoke / list ACL grants on folders and documents.
+        // Effective-permission resolution (F6.2) and FusionCache invalidation (F6.3) plug
+        // in on top in subsequent stories.
+        builder.Services.AddScoped<IDocumentShareService, DocumentShareService>();
+
         return builder;
     }
 }

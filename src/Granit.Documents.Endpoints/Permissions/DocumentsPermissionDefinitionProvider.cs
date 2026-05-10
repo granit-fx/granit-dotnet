@@ -48,5 +48,17 @@ internal sealed class DocumentsPermissionDefinitionProvider : IPermissionDefinit
             LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
                 "Permission:Documents.Documents.Manage"),
             MultiTenancySides.Both);
+
+        group.AddPermission(
+            DocumentsPermissions.Shares.Read,
+            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+                "Permission:Documents.Shares.Read"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            DocumentsPermissions.Shares.Manage,
+            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+                "Permission:Documents.Shares.Manage"),
+            MultiTenancySides.Both);
     }
 }

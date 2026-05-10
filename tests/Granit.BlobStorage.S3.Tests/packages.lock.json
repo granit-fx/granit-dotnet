@@ -438,8 +438,8 @@
       "AWSSDK.S3": {
         "type": "CentralTransitive",
         "requested": "[4.*, )",
-        "resolved": "4.0.22.2",
-        "contentHash": "RYBhoTFlMRq2tiqv/8FfSRFkNz0OCY2U5AbwH5PWpI/XhI3eQp34ujVAT9gD9DqOUHKDaQvJegauypUSO6wkjQ==",
+        "resolved": "4.0.23",
+        "contentHash": "yPvCj0ITnniE8j2YVVCrTfutOfaw+a9CememSzqYL2Y7zQaKLZL6F5385zI8NqnCpw26OzU5cwmKzAC6xssbGw==",
         "dependencies": {
           "AWSSDK.Core": "[4.0.6.1, 5.0.0)"
         }

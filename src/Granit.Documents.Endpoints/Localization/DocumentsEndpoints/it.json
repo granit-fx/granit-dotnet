@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Visualizzare e scaricare documenti",
     "Permission:Documents.Folders.Manage": "Creare, rinominare, spostare e cestinare cartelle",
     "Permission:Documents.Folders.Read": "Visualizzare le cartelle",
+    "Permission:Documents.Shares.Manage": "Concedere e revocare le condivisioni su cartelle e documenti",
+    "Permission:Documents.Shares.Read": "Visualizzare le condivisioni su cartelle e documenti",
     "PermissionGroup:Documents": "Documenti"
   }
 }

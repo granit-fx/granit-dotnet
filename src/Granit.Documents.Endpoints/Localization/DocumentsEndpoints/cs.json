@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Zobrazit a stáhnout dokumenty",
     "Permission:Documents.Folders.Manage": "Vytvářet, přejmenovávat, přesouvat a odstraňovat složky",
     "Permission:Documents.Folders.Read": "Zobrazit složky",
+    "Permission:Documents.Shares.Manage": "Udělovat a odvolávat sdílení složek a dokumentů",
+    "Permission:Documents.Shares.Read": "Zobrazit sdílení složek a dokumentů",
     "PermissionGroup:Documents": "Dokumenty"
   }
 }

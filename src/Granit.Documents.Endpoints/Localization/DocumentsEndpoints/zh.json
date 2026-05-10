@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "查看和下载文档",
     "Permission:Documents.Folders.Manage": "创建、重命名、移动和回收文件夹",
     "Permission:Documents.Folders.Read": "查看文件夹",
+    "Permission:Documents.Shares.Manage": "授予和撤销文件夹与文档的共享授权",
+    "Permission:Documents.Shares.Read": "查看文件夹与文档的共享授权",
     "PermissionGroup:Documents": "文档"
   }
 }

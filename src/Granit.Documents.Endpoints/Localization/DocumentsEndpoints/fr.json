@@ -5,6 +5,8 @@
     "Permission:Documents.Documents.Read": "Consulter et télécharger les documents",
     "Permission:Documents.Folders.Manage": "Créer, renommer, déplacer et corbeillir des dossiers",
     "Permission:Documents.Folders.Read": "Consulter les dossiers",
+    "Permission:Documents.Shares.Manage": "Accorder et révoquer les partages sur les dossiers et les documents",
+    "Permission:Documents.Shares.Read": "Consulter les partages sur les dossiers et les documents",
     "PermissionGroup:Documents": "Documents"
   }
 }
