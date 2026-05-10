@@ -28,7 +28,7 @@ public sealed class EmbeddedTemplatesTests
     [MemberData(nameof(ExpectedTemplates))]
     public void EachExpectedTemplate_IsEmbeddedInTheAssembly(string suffix)
     {
-        Assembly assembly = typeof(GranitApiKeysNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitAuthenticationApiKeysNotificationsModule).Assembly;
         string assemblyName = assembly.GetName().Name!;
         string fullResourceName = $"{assemblyName}.{suffix}";
 
@@ -43,7 +43,7 @@ public sealed class EmbeddedTemplatesTests
     [MemberData(nameof(ExpectedTemplates))]
     public void EachExpectedTemplate_IsNotEmpty(string suffix)
     {
-        Assembly assembly = typeof(GranitApiKeysNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitAuthenticationApiKeysNotificationsModule).Assembly;
         string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
 
         using Stream? stream = assembly.GetManifestResourceStream(fullResourceName);
@@ -61,7 +61,7 @@ public sealed class EmbeddedTemplatesTests
     [MemberData(nameof(ExpectedTemplates))]
     public void NoTemplate_ReferencesAnySecretField(string suffix)
     {
-        Assembly assembly = typeof(GranitApiKeysNotificationsModule).Assembly;
+        Assembly assembly = typeof(GranitAuthenticationApiKeysNotificationsModule).Assembly;
         string fullResourceName = $"{assembly.GetName().Name}.{suffix}";
 
         using Stream? stream = assembly.GetManifestResourceStream(fullResourceName);

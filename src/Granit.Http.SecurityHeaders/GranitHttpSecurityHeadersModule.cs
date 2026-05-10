@@ -29,7 +29,7 @@ namespace Granit.Http.SecurityHeaders;
 /// <b>after</b> exception handling and <b>before</b> routing.
 /// </para>
 /// </remarks>
-public sealed class GranitHttpSecurityModule : GranitModule
+public sealed class GranitHttpSecurityHeadersModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context) =>

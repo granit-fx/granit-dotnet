@@ -7784,11 +7784,11 @@
       "members": []
     },
     {
-      "name": "GranitApiKeysBackgroundJobsModule",
-      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.GranitApiKeysBackgroundJobsModule",
+      "name": "GranitAuthenticationApiKeysBackgroundJobsModule",
+      "fqn": "Granit.Authentication.ApiKeys.BackgroundJobs.GranitAuthenticationApiKeysBackgroundJobsModule",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.BackgroundJobs",
-      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitApiKeysBackgroundJobsModule.cs",
+      "file": "src/Granit.Authentication.ApiKeys.BackgroundJobs/GranitAuthenticationApiKeysBackgroundJobsModule.cs",
       "line": 18,
       "members": [
         {
@@ -8515,11 +8515,11 @@
       ]
     },
     {
-      "name": "GranitApiKeysNotificationsModule",
-      "fqn": "Granit.Authentication.ApiKeys.Notifications.GranitApiKeysNotificationsModule",
+      "name": "GranitAuthenticationApiKeysNotificationsModule",
+      "fqn": "Granit.Authentication.ApiKeys.Notifications.GranitAuthenticationApiKeysNotificationsModule",
       "kind": "class",
       "project": "Granit.Authentication.ApiKeys.Notifications",
-      "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitApiKeysNotificationsModule.cs",
+      "file": "src/Granit.Authentication.ApiKeys.Notifications/GranitAuthenticationApiKeysNotificationsModule.cs",
       "line": 27,
       "members": [
         {
@@ -27863,11 +27863,11 @@
       ]
     },
     {
-      "name": "GranitHttpSecurityModule",
-      "fqn": "Granit.Http.SecurityHeaders.GranitHttpSecurityModule",
+      "name": "GranitHttpSecurityHeadersModule",
+      "fqn": "Granit.Http.SecurityHeaders.GranitHttpSecurityHeadersModule",
       "kind": "class",
       "project": "Granit.Http.SecurityHeaders",
-      "file": "src/Granit.Http.SecurityHeaders/GranitHttpSecurityModule.cs",
+      "file": "src/Granit.Http.SecurityHeaders/GranitHttpSecurityHeadersModule.cs",
       "line": 32,
       "members": [
         {

@@ -24,7 +24,7 @@ namespace Granit.Authentication.ApiKeys.Notifications;
     typeof(GranitAuthenticationApiKeysModule),
     typeof(GranitNotificationsAbstractionsModule),
     typeof(GranitTemplatingModule))]
-public sealed class GranitApiKeysNotificationsModule : GranitModule
+public sealed class GranitAuthenticationApiKeysNotificationsModule : GranitModule
 {
     /// <inheritdoc/>
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -32,7 +32,7 @@ public sealed class GranitApiKeysNotificationsModule : GranitModule
         // Ship the embedded HTML templates for every API-keys notification.
         // Apps can override any of them at runtime through the Granit.Templating
         // admin API (DB-backed resolver runs at higher priority than the embedded one).
-        context.Services.AddEmbeddedTemplates(typeof(GranitApiKeysNotificationsModule).Assembly);
+        context.Services.AddEmbeddedTemplates(typeof(GranitAuthenticationApiKeysNotificationsModule).Assembly);
 
         // Layout glob — covers all snake_case "apikeys.*" notification names. The host
         // application registers the actual `Layout.Email` template; if absent, templates
