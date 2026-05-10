@@ -111,6 +111,7 @@
       "src/Granit.Documents.Renditions.BackgroundJobs/Granit.Documents.Renditions.BackgroundJobs.csproj",
       "src/Granit.Documents.Renditions.Endpoints/Granit.Documents.Renditions.Endpoints.csproj",
       "src/Granit.Documents.Renditions.EntityFrameworkCore/Granit.Documents.Renditions.EntityFrameworkCore.csproj",
+      "src/Granit.Documents.Renditions.Imaging/Granit.Documents.Renditions.Imaging.csproj",
       "src/Granit.Documents.Renditions/Granit.Documents.Renditions.csproj",
       "src/Granit.Documents/Granit.Documents.csproj",
       "src/Granit.Encryption.BackgroundJobs/Granit.Encryption.BackgroundJobs.csproj",

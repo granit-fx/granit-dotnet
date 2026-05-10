@@ -1012,6 +1012,14 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.Renditions.Imaging",
+      "deps": [
+        "Granit.Documents.Renditions",
+        "Granit.Imaging"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Encryption",
       "deps": [
         "Granit"
@@ -22310,6 +22318,38 @@
           "kind": "method",
           "signature": "DeleteForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.Renditions.Imaging.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Imaging",
+      "file": "src/Granit.Documents.Renditions.Imaging/Extensions/ServiceCollectionExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsRenditionsImaging",
+          "kind": "method",
+          "signature": "AddGranitDocumentsRenditionsImaging(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsRenditionsImagingModule",
+      "fqn": "Granit.Documents.Renditions.Imaging.GranitDocumentsRenditionsImagingModule",
+      "kind": "class",
+      "project": "Granit.Documents.Renditions.Imaging",
+      "file": "src/Granit.Documents.Renditions.Imaging/GranitDocumentsRenditionsImagingModule.cs",
+      "line": 18,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

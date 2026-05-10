@@ -58,6 +58,11 @@ internal sealed partial class RenditionGenerationService(
             DocumentRendition row = await GetOrCreateRowAsync(
                 documentId, tenantId, versionId, target, cancellationToken).ConfigureAwait(false);
 
+            if (row.Status == RenditionStatus.Ready)
+            {
+                return;
+            }
+
             try
             {
                 row.MarkGenerating();
