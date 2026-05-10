@@ -1,4 +1,4 @@
-namespace Granit.Http.UrlSafety;
+namespace Granit.Http.Security;
 
 /// <summary>
 /// Validates that an outbound URL is safe to contact: not pointing at private networks,

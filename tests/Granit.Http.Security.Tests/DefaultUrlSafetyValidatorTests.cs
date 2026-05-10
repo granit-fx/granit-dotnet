@@ -1,10 +1,10 @@
 using System.Net;
-using Granit.Http.UrlSafety.Internal;
+using Granit.Http.Security.Internal;
 using Microsoft.Extensions.Options;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.UrlSafety.Tests;
+namespace Granit.Http.Security.Tests;
 
 public sealed class DefaultUrlSafetyValidatorTests
 {

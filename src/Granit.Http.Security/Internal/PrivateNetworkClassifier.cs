@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 
-namespace Granit.Http.UrlSafety.Internal;
+namespace Granit.Http.Security.Internal;
 
 /// <summary>
 /// Classifies IP addresses into SSRF-relevant categories.

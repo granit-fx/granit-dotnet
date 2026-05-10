@@ -1,8 +1,8 @@
-using Granit.Http.UrlSafety.Internal;
+using Granit.Http.Security.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Granit.Http.UrlSafety.Extensions;
+namespace Granit.Http.Security.Extensions;
 
 /// <summary>
 /// DI extensions for <see cref="IUrlSafetyValidator"/>.

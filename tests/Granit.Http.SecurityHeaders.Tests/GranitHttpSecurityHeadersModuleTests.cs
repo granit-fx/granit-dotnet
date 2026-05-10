@@ -11,15 +11,15 @@ using Xunit;
 
 namespace Granit.Http.SecurityHeaders.Tests;
 
-public sealed class GranitHttpSecurityModuleTests
+public sealed class GranitHttpSecurityHeadersModuleTests
 {
     [Fact]
-    public void GranitHttpSecurityModule_IsGranitModule() =>
-        typeof(GranitHttpSecurityModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
+    public void GranitHttpSecurityHeadersModule_IsGranitModule() =>
+        typeof(GranitHttpSecurityHeadersModule).IsAssignableTo(typeof(GranitModule)).ShouldBeTrue();
 
     [Fact]
-    public void GranitHttpSecurityModule_IsSealed() =>
-        typeof(GranitHttpSecurityModule).IsSealed.ShouldBeTrue();
+    public void GranitHttpSecurityHeadersModule_IsSealed() =>
+        typeof(GranitHttpSecurityHeadersModule).IsSealed.ShouldBeTrue();
 
     // -------------------------------------------------------------------------
     // Kestrel Server header

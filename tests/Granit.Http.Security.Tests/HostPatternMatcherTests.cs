@@ -1,8 +1,8 @@
-using Granit.Http.UrlSafety.Internal;
+using Granit.Http.Security.Internal;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Http.UrlSafety.Tests;
+namespace Granit.Http.Security.Tests;
 
 public sealed class HostPatternMatcherTests
 {

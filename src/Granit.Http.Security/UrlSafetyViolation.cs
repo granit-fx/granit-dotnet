@@ -1,4 +1,4 @@
-namespace Granit.Http.UrlSafety;
+namespace Granit.Http.Security;
 
 /// <summary>
 /// Describes a single URL safety violation: its kind, a human-readable English reason,

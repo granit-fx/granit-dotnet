@@ -1,8 +1,8 @@
 using System.Net;
 using System.Net.Sockets;
-using Granit.Http.UrlSafety.Internal;
+using Granit.Http.Security.Internal;
 
-namespace Granit.Http.UrlSafety.Tests;
+namespace Granit.Http.Security.Tests;
 
 /// <summary>Test double for <see cref="IDnsResolver"/>.</summary>
 internal sealed class FakeDnsResolver(Func<string, CancellationToken, ValueTask<IPAddress[]>> resolve) : IDnsResolver

@@ -1,4 +1,4 @@
-namespace Granit.Http.UrlSafety;
+namespace Granit.Http.Security;
 
 /// <summary>
 /// Enumerates the kinds of URL safety violations detected by <see cref="IUrlSafetyValidator"/>.

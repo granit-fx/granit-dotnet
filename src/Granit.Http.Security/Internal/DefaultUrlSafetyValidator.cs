@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using Microsoft.Extensions.Options;
 
-namespace Granit.Http.UrlSafety.Internal;
+namespace Granit.Http.Security.Internal;
 
 /// <summary>
 /// Default <see cref="IUrlSafetyValidator"/>. See package docs for the order of checks.

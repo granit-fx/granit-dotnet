@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Granit.Http.UrlSafety.Internal;
+namespace Granit.Http.Security.Internal;
 
 /// <summary>
 /// Matches hostnames against simple shell-like patterns.

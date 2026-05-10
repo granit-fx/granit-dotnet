@@ -1,4 +1,4 @@
-namespace Granit.Http.UrlSafety.Internal;
+namespace Granit.Http.Security.Internal;
 
 /// <summary>
 /// Detects reserved / never-publicly-resolvable TLDs (RFC 6761, RFC 7686, mDNS).

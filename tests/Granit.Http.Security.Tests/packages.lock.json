@@ -265,7 +265,7 @@
       "granit": {
         "type": "Project"
       },
-      "granit.http.urlsafety": {
+      "granit.http.security": {
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )",

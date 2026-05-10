@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Granit.Http.UrlSafety;
+namespace Granit.Http.Security;
 
 /// <summary>
 /// Result of an <see cref="IUrlSafetyValidator"/> check.

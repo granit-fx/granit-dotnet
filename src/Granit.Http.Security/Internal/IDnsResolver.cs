@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Granit.Http.UrlSafety.Internal;
+namespace Granit.Http.Security.Internal;
 
 /// <summary>
 /// Testable abstraction over <see cref="Dns.GetHostAddressesAsync(string, System.Threading.CancellationToken)"/>.
