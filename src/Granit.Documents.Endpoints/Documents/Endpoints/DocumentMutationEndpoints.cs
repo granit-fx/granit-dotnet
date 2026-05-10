@@ -75,6 +75,19 @@ internal static class DocumentMutationEndpoints
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
+        documents.MapPost("/{id:guid}/restore", RestoreAsync)
+            .WithName("RestoreDocument")
+            .WithSummary("Restores a trashed document.")
+            .WithDescription(
+                "Sets the document identified by `id` back to `Active`. Returns 404 when "
+                + "the document is missing or not currently trashed; 409 when the parent "
+                + "folder is itself trashed (callers must restore the folder first).")
+            .RequireAuthorization(p => p.RequireClaim(
+                "permission", DocumentsPermissions.Documents.Manage))
+            .Produces<DocumentResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
+
         return documents;
     }
 
@@ -193,6 +206,29 @@ internal static class DocumentMutationEndpoints
         }
         catch (InvalidOperationException ex)
         {
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
+    }
+
+    private static async Task<Results<Ok<DocumentResponse>, ProblemHttpResult>> RestoreAsync(
+        Guid id,
+        [FromServices] IDocumentService documents,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Document? document = await documents.RestoreAsync(id, cancellationToken).ConfigureAwait(false);
+            if (document is null)
+            {
+                return TypedResults.Problem(
+                    $"Document '{id}' was not found or is not currently trashed.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(document.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Parent folder is trashed.
             return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
         }
     }

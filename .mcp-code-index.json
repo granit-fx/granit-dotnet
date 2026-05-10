@@ -20251,6 +20251,12 @@
           "kind": "method",
           "signature": "TrashAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<Document?>"
+        },
+        {
+          "name": "RestoreAsync",
+          "kind": "method",
+          "signature": "RestoreAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Document?>"
         }
       ]
     },
@@ -20317,7 +20323,7 @@
         {
           "name": "ListChildrenAsync",
           "kind": "method",
-          "signature": "ListChildrenAsync(Guid? parentFolderId, CancellationToken cancellationToken = default)",
+          "signature": "ListChildrenAsync(Guid? parentFolderId, FolderStatus status = FolderStatus.Active, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<Folder>>"
         },
         {
@@ -20342,6 +20348,12 @@
           "name": "TrashAsync",
           "kind": "method",
           "signature": "TrashAsync(Guid id, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Folder?>"
+        },
+        {
+          "name": "RestoreAsync",
+          "kind": "method",
+          "signature": "RestoreAsync(Guid id, CancellationToken cancellationToken = default)",
           "returnType": "Task<Folder?>"
         }
       ]

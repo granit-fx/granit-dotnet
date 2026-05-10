@@ -33,12 +33,15 @@ public interface IFolderService
     Task<Folder?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Lists active folders under <paramref name="parentFolderId"/>; when <c>null</c>
-    /// the result is the children of the tenant root. The tenant root itself is
-    /// always excluded from the result.
+    /// Lists folders under <paramref name="parentFolderId"/>; when <c>null</c> the
+    /// result is the children of the tenant root. The tenant root itself is always
+    /// excluded from the result. By default only <see cref="FolderStatus.Active"/>
+    /// children are returned — pass <see cref="FolderStatus.Trashed"/> to read the
+    /// trash listing for that parent.
     /// </summary>
     Task<IReadOnlyList<Folder>> ListChildrenAsync(
         Guid? parentFolderId,
+        FolderStatus status = FolderStatus.Active,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -90,4 +93,16 @@ public interface IFolderService
     /// <see cref="FolderStatus.Trashed"/> with the same <c>TrashedAt</c>.
     /// </remarks>
     Task<Folder?> TrashAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Restores a trashed folder. Returns the restored folder, or <c>null</c> when the
+    /// folder is not found / excluded by the tenant filter / not currently trashed.
+    /// Throws <see cref="InvalidOperationException"/> when the parent folder is itself
+    /// trashed (callers must restore the parent first).
+    /// </summary>
+    /// <remarks>
+    /// Restore is non-cascading: descendants stay trashed unless restored individually
+    /// (per the F8.1 acceptance criterion).
+    /// </remarks>
+    Task<Folder?> RestoreAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -27,12 +27,13 @@ internal static class FolderEndpoints
 
         folders.MapGet("/", ListChildrenAsync)
             .WithName("ListFolders")
-            .WithSummary("Lists active child folders under a parent (defaults to the tenant root).")
+            .WithSummary("Lists child folders under a parent (defaults to the tenant root).")
             .WithDescription(
-                "Returns the active children of the folder identified by the optional `parentId` query parameter. "
+                "Returns the children of the folder identified by the optional `parentId` query parameter. "
                 + "When `parentId` is omitted, the children of the invisible tenant root are returned. "
                 + "The tenant root itself is always filtered out of the result set. "
-                + "Trashed folders are excluded — use the trash listing endpoint (F8.2) to retrieve them.")
+                + "Pass `?status=Trashed` to read the trash listing for the same parent (F8.1); the "
+                + "default is `Active`.")
             .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Read))
             .Produces<ListFoldersResponse>();
 
@@ -103,12 +104,26 @@ internal static class FolderEndpoints
             .WithName("TrashFolder")
             .WithSummary("Sends a folder to the trash (soft-delete).")
             .WithDescription(
-                "Moves the folder identified by `id` to the trash. Permanent deletion happens after "
-                + "the configured retention period via the empty-trash background job (F8/F9.2). "
-                + "The tenant root cannot be trashed.")
+                "Moves the folder identified by `id` to the trash. Cascade-trashes every "
+                + "active descendant folder and document in a single transaction (F8.1). "
+                + "Permanent deletion happens after the configured retention period via the "
+                + "empty-trash background job (F8/F9.2). The tenant root cannot be trashed.")
             .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
             .Produces<FolderResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
+
+        folders.MapPost("/{id:guid}/restore", RestoreAsync)
+            .WithName("RestoreFolder")
+            .WithSummary("Restores a trashed folder.")
+            .WithDescription(
+                "Sets the folder identified by `id` back to `Active`. Descendants stay trashed "
+                + "unless restored individually (per F8.1 — restore is non-cascading by design). "
+                + "Returns 404 when the folder is missing or not currently trashed; 409 when the "
+                + "parent folder is itself trashed (callers must restore the parent first).")
+            .RequireAuthorization(p => p.RequireClaim("permission", DocumentsPermissions.Folders.Manage))
+            .Produces<FolderResponse>()
+            .ProducesProblem(StatusCodes.Status404NotFound)
+            .ProducesProblem(StatusCodes.Status409Conflict);
 
         return folders;
     }
@@ -122,10 +137,11 @@ internal static class FolderEndpoints
         [FromServices] IFolderService folders,
         [FromServices] IDocumentPrincipalAccessor principalAccessor,
         [FromServices] IEffectivePermissionResolver permissionResolver,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        [FromQuery] FolderStatus? status = null)
     {
         IReadOnlyList<Folder> children = await folders
-            .ListChildrenAsync(parentId, cancellationToken)
+            .ListChildrenAsync(parentId, status ?? FolderStatus.Active, cancellationToken)
             .ConfigureAwait(false);
 
         // F6.5b — populate the per-row Permission via a single batch call when an
@@ -263,6 +279,29 @@ internal static class FolderEndpoints
                 statusCode: StatusCodes.Status404NotFound);
         }
         return TypedResults.Ok(folder.ToResponse());
+    }
+
+    private static async Task<Results<Ok<FolderResponse>, ProblemHttpResult>> RestoreAsync(
+        Guid id,
+        [FromServices] IFolderService folders,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            Folder? folder = await folders.RestoreAsync(id, cancellationToken).ConfigureAwait(false);
+            if (folder is null)
+            {
+                return TypedResults.Problem(
+                    $"Folder '{id}' was not found or is not currently trashed.",
+                    statusCode: StatusCodes.Status404NotFound);
+            }
+            return TypedResults.Ok(folder.ToResponse());
+        }
+        catch (InvalidOperationException ex)
+        {
+            // Parent folder is trashed — caller must restore the parent first.
+            return TypedResults.Problem(ex.Message, statusCode: StatusCodes.Status409Conflict);
+        }
     }
 
     private static Guid ResolveOwnerUserId(HttpContext? httpContext)

@@ -65,6 +65,7 @@ internal sealed class FolderService(
     /// <inheritdoc />
     public async Task<IReadOnlyList<Folder>> ListChildrenAsync(
         Guid? parentFolderId,
+        FolderStatus status = FolderStatus.Active,
         CancellationToken cancellationToken = default)
     {
         await using DocumentsDbContext context = await contextFactory
@@ -87,7 +88,7 @@ internal sealed class FolderService(
 
         return await context.Folders
             .Where(f => f.ParentFolderId == effectiveParentId
-                && f.Status == FolderStatus.Active
+                && f.Status == status
                 && !f.IsTenantRoot)
             .OrderBy(f => f.Name)
             .ToListAsync(cancellationToken)
@@ -262,7 +263,91 @@ internal sealed class FolderService(
             return null;
         }
 
-        folder.Trash(clock.Now);
+        DateTimeOffset trashedAt = clock.Now;
+
+        // Cascade-trash every active descendant — folders with the requested folder's
+        // path as a strict prefix, plus every active document under those folders.
+        // Single transaction via SaveChangesAsync atomicity.
+        string pathPrefix = folder.Path == Folder.TenantRootPath
+            ? Folder.TenantRootPath
+            : folder.Path + Folder.PathSeparator;
+
+        List<Folder> descendantFolders = folder.IsTenantRoot
+            ? []
+            : await context.Folders
+                .Where(f => f.TenantId == folder.TenantId
+                    && f.Status == FolderStatus.Active
+                    && !f.IsTenantRoot
+                    && f.Id != folder.Id
+                    && f.Path.StartsWith(pathPrefix))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+        // Documents whose folder is the target OR any descendant folder. Two queries —
+        // direct + descendants — kept separate so each gets a clean SQL shape.
+        List<Document> directDocuments = await context.Documents
+            .Where(d => d.FolderId == folder.Id && d.Status == DocumentStatus.Active)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        List<Document> descendantDocuments = descendantFolders.Count == 0
+            ? []
+            : await context.Documents
+                .Where(d => descendantFolders.Select(f => f.Id).Contains(d.FolderId)
+                    && d.Status == DocumentStatus.Active)
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+
+        folder.Trash(trashedAt);
+        foreach (Folder descendant in descendantFolders)
+        {
+            descendant.Trash(trashedAt);
+        }
+        foreach (Document doc in directDocuments)
+        {
+            doc.Trash(trashedAt);
+        }
+        foreach (Document doc in descendantDocuments)
+        {
+            doc.Trash(trashedAt);
+        }
+
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return folder;
+    }
+
+    /// <inheritdoc />
+    public async Task<Folder?> RestoreAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Folder? folder = await context.Folders
+            .FirstOrDefaultAsync(f => f.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (folder is null || folder.Status != FolderStatus.Trashed)
+        {
+            return null;
+        }
+
+        // Reject restore when the parent is itself trashed — callers must restore the
+        // parent first so the restored folder can become reachable from the tree.
+        if (folder.ParentFolderId is { } parentId)
+        {
+            Folder? parent = await context.Folders
+                .FirstOrDefaultAsync(f => f.Id == parentId, cancellationToken)
+                .ConfigureAwait(false);
+            if (parent is not null && parent.Status == FolderStatus.Trashed)
+            {
+                throw new InvalidOperationException(
+                    $"Cannot restore folder {id}: parent folder {parent.Id} is trashed. Restore the parent first.");
+            }
+        }
+
+        folder.Restore();
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return folder;
     }

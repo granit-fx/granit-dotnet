@@ -640,6 +640,40 @@ public sealed class DocumentServiceSqliteTests : IAsyncLifetime
         result.ShouldBeNull();
     }
 
+    [Fact]
+    public async Task RestoreAsync_TrashedDocument_ReturnsActive()
+    {
+        Document seeded = await SeedDocumentAsync();
+        await _sut.TrashAsync(seeded.Id, TestContext.Current.CancellationToken);
+
+        Document? restored = await _sut.RestoreAsync(seeded.Id,
+            TestContext.Current.CancellationToken);
+
+        restored.ShouldNotBeNull();
+        restored.Status.ShouldBe(DocumentStatus.Active);
+        restored.TrashedAt.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task RestoreAsync_NotTrashed_ReturnsNull()
+    {
+        Document seeded = await SeedDocumentAsync();
+
+        Document? result = await _sut.RestoreAsync(seeded.Id,
+            TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task RestoreAsync_Missing_ReturnsNull()
+    {
+        Document? result = await _sut.RestoreAsync(Guid.NewGuid(),
+            TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
     // -------------------------------------------------------------------------
     // F4.1 — AppendVersionAsync (autonomous monotonic versioning)
     // -------------------------------------------------------------------------

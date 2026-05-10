@@ -149,4 +149,12 @@ public interface IDocumentService
     /// when the document is not found.
     /// </summary>
     Task<Document?> TrashAsync(Guid id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Restores a trashed document. Returns the restored aggregate, or <c>null</c> when
+    /// the document is not found / not currently trashed / excluded by the tenant
+    /// filter. Throws <see cref="InvalidOperationException"/> when the document's
+    /// folder is itself trashed (callers must restore the folder first).
+    /// </summary>
+    Task<Document?> RestoreAsync(Guid id, CancellationToken cancellationToken = default);
 }

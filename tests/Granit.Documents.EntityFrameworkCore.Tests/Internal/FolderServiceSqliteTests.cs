@@ -83,7 +83,7 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
         await _sut.CreateAsync(null, "B", OwnerId, TestContext.Current.CancellationToken);
 
         IReadOnlyList<Folder> children = await _sut.ListChildrenAsync(null,
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         children.Count.ShouldBe(2);
         children.ShouldAllBe(f => !f.IsTenantRoot);
@@ -97,7 +97,7 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
         await _sut.TrashAsync(a.Id, TestContext.Current.CancellationToken);
 
         IReadOnlyList<Folder> children = await _sut.ListChildrenAsync(null,
-            TestContext.Current.CancellationToken);
+            cancellationToken: TestContext.Current.CancellationToken);
 
         children.Count.ShouldBe(1);
         children[0].Name.ShouldBe("B");
@@ -162,6 +162,102 @@ public sealed class FolderServiceSqliteTests : IAsyncLifetime
         trashed.ShouldNotBeNull();
         trashed.Status.ShouldBe(FolderStatus.Trashed);
         trashed.TrashedAt.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task TrashAsync_CascadesTo_DescendantFoldersAndDocuments()
+    {
+        // /A → /A/B → /A/B/C plus a document in /A/B and /A/B/C.
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, ct);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, ct);
+        Folder c = await _sut.CreateAsync(b.Id, "C", OwnerId, ct);
+
+        await using DocumentsDbContext seed = await _factory.CreateDbContextAsync(ct);
+        Folder bAttached = await seed.Folders.SingleAsync(f => f.Id == b.Id, ct);
+        Folder cAttached = await seed.Folders.SingleAsync(f => f.Id == c.Id, ct);
+        var docInB = Document.Create(Guid.NewGuid(), bAttached, OwnerId, "in-b.pdf");
+        var docInC = Document.Create(Guid.NewGuid(), cAttached, OwnerId, "in-c.pdf");
+        seed.Documents.Add(docInB);
+        seed.Documents.Add(docInC);
+        await seed.SaveChangesAsync(ct);
+
+        await _sut.TrashAsync(a.Id, ct);
+
+        await using DocumentsDbContext check = await _factory.CreateDbContextAsync(ct);
+        Folder reloadedA = await check.Folders.SingleAsync(f => f.Id == a.Id, ct);
+        Folder reloadedB = await check.Folders.SingleAsync(f => f.Id == b.Id, ct);
+        Folder reloadedC = await check.Folders.SingleAsync(f => f.Id == c.Id, ct);
+        Document reloadedDocB = await check.Documents.SingleAsync(d => d.Id == docInB.Id, ct);
+        Document reloadedDocC = await check.Documents.SingleAsync(d => d.Id == docInC.Id, ct);
+
+        reloadedA.Status.ShouldBe(FolderStatus.Trashed);
+        reloadedB.Status.ShouldBe(FolderStatus.Trashed);
+        reloadedC.Status.ShouldBe(FolderStatus.Trashed);
+        reloadedDocB.Status.ShouldBe(DocumentStatus.Trashed);
+        reloadedDocC.Status.ShouldBe(DocumentStatus.Trashed);
+
+        // Sibling folders untouched.
+        reloadedA.TrashedAt.ShouldBe(reloadedB.TrashedAt);
+        reloadedA.TrashedAt.ShouldBe(reloadedC.TrashedAt);
+    }
+
+    [Fact]
+    public async Task RestoreAsync_TrashedFolder_ReturnsActive_DoesNotCascade()
+    {
+        // Trashing /A cascades; restoring /A leaves /A/B trashed (per F8.1 — opt-in).
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, ct);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, ct);
+        await _sut.TrashAsync(a.Id, ct);
+
+        Folder? restored = await _sut.RestoreAsync(a.Id, ct);
+        restored.ShouldNotBeNull();
+        restored.Status.ShouldBe(FolderStatus.Active);
+        restored.TrashedAt.ShouldBeNull();
+
+        await using DocumentsDbContext db = await _factory.CreateDbContextAsync(ct);
+        Folder reloadedB = await db.Folders.SingleAsync(f => f.Id == b.Id, ct);
+        reloadedB.Status.ShouldBe(FolderStatus.Trashed);
+    }
+
+    [Fact]
+    public async Task RestoreAsync_ParentTrashed_Throws()
+    {
+        // Direct-restore of a child whose parent is still trashed must fail with
+        // InvalidOperationException — caller restores the parent first.
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, ct);
+        Folder b = await _sut.CreateAsync(a.Id, "B", OwnerId, ct);
+        await _sut.TrashAsync(a.Id, ct);
+
+        await Should.ThrowAsync<InvalidOperationException>(() =>
+            _sut.RestoreAsync(b.Id, ct));
+    }
+
+    [Fact]
+    public async Task RestoreAsync_NotTrashed_ReturnsNull()
+    {
+        Folder folder = await _sut.CreateAsync(null, "Active", OwnerId,
+            TestContext.Current.CancellationToken);
+
+        Folder? result = await _sut.RestoreAsync(folder.Id, TestContext.Current.CancellationToken);
+
+        result.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task ListChildrenAsync_StatusTrashed_ReturnsOnlyTrashedRows()
+    {
+        CancellationToken ct = TestContext.Current.CancellationToken;
+        Folder a = await _sut.CreateAsync(null, "A", OwnerId, ct);
+        await _sut.CreateAsync(null, "B", OwnerId, ct);
+        await _sut.TrashAsync(a.Id, ct);
+
+        IReadOnlyList<Folder> trashed = await _sut.ListChildrenAsync(
+            null, FolderStatus.Trashed, ct);
+        trashed.Count.ShouldBe(1);
+        trashed[0].Id.ShouldBe(a.Id);
     }
 
     // -------------------------------------------------------------------------

@@ -619,4 +619,37 @@ internal sealed class DocumentService(
         await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
         return document;
     }
+
+    /// <inheritdoc />
+    public async Task<Document?> RestoreAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        Document? document = await context.Documents
+            .FirstOrDefaultAsync(d => d.Id == id, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null || document.Status != DocumentStatus.Trashed)
+        {
+            return null;
+        }
+
+        // Reject restore when the parent folder is trashed — callers must restore the
+        // folder first so the document is reachable.
+        Folder? parent = await context.Folders
+            .FirstOrDefaultAsync(f => f.Id == document.FolderId, cancellationToken)
+            .ConfigureAwait(false);
+        if (parent is not null && parent.Status == FolderStatus.Trashed)
+        {
+            throw new InvalidOperationException(
+                $"Cannot restore document {id}: parent folder {parent.Id} is trashed. Restore the folder first.");
+        }
+
+        document.Restore();
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+        return document;
+    }
 }
