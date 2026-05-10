@@ -492,6 +492,7 @@
       "granit.documents.entityframeworkcore": {
         "type": "Project",
         "dependencies": {
+          "Granit.Caching": "[0.1.0-dev, )",
           "Granit.Documents": "[0.1.0-dev, )",
           "Granit.Persistence.EntityFrameworkCore": "[0.1.0-dev, )",
           "Microsoft.EntityFrameworkCore.Relational": "[10.*, )",

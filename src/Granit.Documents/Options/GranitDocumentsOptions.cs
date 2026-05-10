@@ -38,4 +38,12 @@ public sealed class GranitDocumentsOptions
     /// </summary>
     [Range(typeof(TimeSpan), "00:00:30", "01:00:00")]
     public TimeSpan AclCacheTtl { get; set; } = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// Enables the FusionCache decorator on top of the effective-ACL resolver (F6.3).
+    /// Disabling this falls back to direct database resolution on every read — useful for
+    /// load-test investigations or environments where Redis is unavailable.
+    /// Default: <c>true</c>.
+    /// </summary>
+    public bool AclCacheEnabled { get; set; } = true;
 }

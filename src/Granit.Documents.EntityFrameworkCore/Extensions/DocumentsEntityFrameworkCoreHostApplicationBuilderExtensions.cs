@@ -1,8 +1,12 @@
+using Granit.Documents.Authorization;
+using Granit.Documents.EntityFrameworkCore.Authorization;
 using Granit.Documents.EntityFrameworkCore.Internal;
+using Granit.Documents.Options;
 using Granit.Persistence.EntityFrameworkCore.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Granit.Documents.EntityFrameworkCore.Extensions;
 
@@ -57,10 +61,20 @@ public static class DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions
         // in on top in subsequent stories.
         builder.Services.AddScoped<IDocumentShareService, DocumentShareService>();
 
-        // Effective-permission resolver (F6.2): resolves a DocumentPrincipal against a
-        // document via the ADR-052 path-prefix permission resolution model. F6.3 will
-        // wrap this with FusionCache for hot reads.
-        builder.Services.AddScoped<Authorization.IEffectivePermissionResolver, EffectivePermissionResolver>();
+        // Effective-permission resolver (F6.2 + F6.3). The concrete EffectivePermissionResolver
+        // is registered first so the cache decorator can delegate to it; the public
+        // IEffectivePermissionResolver registration depends on whether the FusionCache layer
+        // is enabled (DocumentsOptions.AclCacheEnabled — default true).
+        builder.Services.AddScoped<EffectivePermissionResolver>();
+        builder.Services.AddScoped<IEffectivePermissionResolver>(sp =>
+        {
+            GranitDocumentsOptions opts = sp
+                .GetRequiredService<IOptions<GranitDocumentsOptions>>().Value;
+            EffectivePermissionResolver inner = sp.GetRequiredService<EffectivePermissionResolver>();
+            return opts.AclCacheEnabled
+                ? ActivatorUtilities.CreateInstance<CachedEffectivePermissionResolver>(sp, inner)
+                : inner;
+        });
 
         return builder;
     }

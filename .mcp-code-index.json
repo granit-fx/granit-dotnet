@@ -926,6 +926,7 @@
     {
       "name": "Granit.Documents.EntityFrameworkCore",
       "deps": [
+        "Granit.Caching",
         "Granit.Documents",
         "Granit.Persistence.EntityFrameworkCore"
       ],
@@ -19374,6 +19375,18 @@
           "kind": "method",
           "signature": "RecordQuotaRejected(string? tenantId)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordAclCacheHit",
+          "kind": "method",
+          "signature": "RecordAclCacheHit(string? tenantId)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordAclCacheMiss",
+          "kind": "method",
+          "signature": "RecordAclCacheMiss(string? tenantId)",
+          "returnType": "void"
         }
       ]
     },
@@ -19801,12 +19814,46 @@
       "members": []
     },
     {
+      "name": "AclCacheInvalidationHandler",
+      "fqn": "Granit.Documents.EntityFrameworkCore.Authorization.AclCacheInvalidationHandler",
+      "kind": "class",
+      "project": "Granit.Documents.EntityFrameworkCore",
+      "file": "src/Granit.Documents.EntityFrameworkCore/Authorization/AclCacheInvalidationHandler.cs",
+      "line": 30,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareGrantedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentShareRevokedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(FolderPathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        },
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(FolderTreePathChangedEvent @event, IFusionCache cache, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
       "name": "DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.EntityFrameworkCore.Extensions.DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 12,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
@@ -19854,7 +19901,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/GranitDocumentsEntityFrameworkCoreModule.cs",
-      "line": 26,
+      "line": 28,
       "members": []
     },
     {
@@ -20238,6 +20285,12 @@
           "kind": "method",
           "signature": "FromMinutes(5)",
           "returnType": "TimeSpan AclCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "AclCacheEnabled",
+          "kind": "property",
+          "signature": "bool AclCacheEnabled",
+          "returnType": "bool"
         }
       ]
     },

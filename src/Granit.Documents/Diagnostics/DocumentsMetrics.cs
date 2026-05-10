@@ -23,6 +23,8 @@ public sealed class DocumentsMetrics
     private readonly Counter<long> _downloads;
     private readonly Counter<long> _sharesGranted;
     private readonly Counter<long> _quotaRejected;
+    private readonly Counter<long> _aclCacheHits;
+    private readonly Counter<long> _aclCacheMisses;
 
     /// <summary>Initialises the meter and counters.</summary>
     public DocumentsMetrics(IMeterFactory meterFactory)
@@ -46,6 +48,17 @@ public sealed class DocumentsMetrics
         _quotaRejected = meter.CreateCounter<long>(
             "granit.documents.quota.rejected.count",
             description: "Number of upload finalisations rejected because the tenant storage quota would be exceeded.");
+
+        // F6.3 — ACL cache hit/miss counters. Hit ratio is computed downstream by the
+        // observability pipeline (e.g. Prometheus/Grafana) as
+        //   hits / (hits + misses) → granit.documents.acl.cache.hit_ratio.
+        _aclCacheHits = meter.CreateCounter<long>(
+            "granit.documents.acl.cache.hits",
+            description: "Number of effective-ACL resolutions served from the FusionCache layer.");
+
+        _aclCacheMisses = meter.CreateCounter<long>(
+            "granit.documents.acl.cache.misses",
+            description: "Number of effective-ACL resolutions that fell through to the database.");
     }
 
     /// <summary>Records a successful document upload (new document or new version).</summary>
@@ -63,6 +76,14 @@ public sealed class DocumentsMetrics
     /// <summary>Records an upload rejection due to tenant storage quota being exceeded.</summary>
     public void RecordQuotaRejected(string? tenantId) =>
         _quotaRejected.Add(1, CreateTags(tenantId));
+
+    /// <summary>Records an effective-ACL cache hit.</summary>
+    public void RecordAclCacheHit(string? tenantId) =>
+        _aclCacheHits.Add(1, CreateTags(tenantId));
+
+    /// <summary>Records an effective-ACL cache miss (resolution fell through to the database).</summary>
+    public void RecordAclCacheMiss(string? tenantId) =>
+        _aclCacheMisses.Add(1, CreateTags(tenantId));
 
     private static TagList CreateTags(string? tenantId) => new()
     {

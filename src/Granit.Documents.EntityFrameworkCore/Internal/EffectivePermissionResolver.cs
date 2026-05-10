@@ -44,6 +44,25 @@ internal sealed class EffectivePermissionResolver(
         DocumentPrincipal principal,
         CancellationToken cancellationToken = default)
     {
+        DocumentResolutionResult result = await ResolveDocumentAsync(documentId, principal, cancellationToken)
+            .ConfigureAwait(false);
+        return result.Permission;
+    }
+
+    /// <summary>
+    /// Resolves the effective permission AND returns the ancestor folder ids visited during
+    /// resolution. The cache decorator (F6.3) uses the folder ids to tag the cached entry,
+    /// so a folder share change invalidates exactly the entries that depended on it.
+    /// </summary>
+    /// <remarks>
+    /// Internal contract — the public <see cref="IEffectivePermissionResolver"/> stays a
+    /// single-value API.
+    /// </remarks>
+    internal async Task<DocumentResolutionResult> ResolveDocumentAsync(
+        Guid documentId,
+        DocumentPrincipal principal,
+        CancellationToken cancellationToken = default)
+    {
         ArgumentNullException.ThrowIfNull(principal);
 
         // Materialise as a concrete List<Guid> — EF Core's Contains translator is pickier
@@ -52,7 +71,7 @@ internal sealed class EffectivePermissionResolver(
         List<Guid> granteeIds = [.. principal.AllGranteeIds];
         if (granteeIds.Count == 0)
         {
-            return EffectivePermissionLevel.None;
+            return new DocumentResolutionResult(EffectivePermissionLevel.None, []);
         }
 
         await using DocumentsDbContext context = await contextFactory
@@ -71,7 +90,7 @@ internal sealed class EffectivePermissionResolver(
             .ConfigureAwait(false);
         if (docInfo is null)
         {
-            return EffectivePermissionLevel.None;
+            return new DocumentResolutionResult(EffectivePermissionLevel.None, []);
         }
 
         // Build the ancestor-path set in C# (cheap string ops on a materialised path) and
@@ -84,17 +103,18 @@ internal sealed class EffectivePermissionResolver(
         // step 3 reduce to a simple Contains predicate that every EF Core provider can
         // translate — the alternative (a nested Folders.Any inside the share Where clause)
         // doesn't translate on SQLite.
-        // Materialise as List<Guid?> so the IN clause matches Folder.FolderId's nullable type
-        // directly — avoids EF Core having to unwrap .Value across providers (SQLite refused
-        // a Contains(.Value) translation; the nullable list shape works on every provider).
-        List<Guid?> ancestorFolderIds = ancestorPaths.Count == 0
+        List<Guid> ancestorFolderIds = ancestorPaths.Count == 0
             ? []
             : await context.Folders
                 .Where(f => f.TenantId == docInfo.TenantId
                     && ancestorPaths.Contains(f.Path))
-                .Select(f => (Guid?)f.Id)
+                .Select(f => f.Id)
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
+
+        // Materialise as List<Guid?> for the share-IN clause — Folder.FolderId is nullable
+        // and SQLite refused a Contains(.Value) translation; nullable list works everywhere.
+        List<Guid?> ancestorFolderIdsForShareLookup = [.. ancestorFolderIds.Select(id => (Guid?)id)];
 
         DateTimeOffset now = clock.Now;
 
@@ -119,13 +139,13 @@ internal sealed class EffectivePermissionResolver(
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        var folderMatches = ancestorFolderIds.Count == 0
+        var folderMatches = ancestorFolderIdsForShareLookup.Count == 0
             ? []
             : await context.DocumentShares
                 .Where(s => s.TenantId == docInfo.TenantId
                     && granteeIds.Contains(s.GranteeId)
                     && s.TargetType == ShareTargetType.Folder
-                    && ancestorFolderIds.Contains(s.FolderId))
+                    && ancestorFolderIdsForShareLookup.Contains(s.FolderId))
                 .Select(s => new { s.Permission, s.ExpiresAt })
                 .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
@@ -135,18 +155,17 @@ internal sealed class EffectivePermissionResolver(
             .. folderMatches.Where(m => m.ExpiresAt is null || m.ExpiresAt > now).Select(m => m.Permission),
         ];
 
-        if (matches.Count == 0)
-        {
-            return EffectivePermissionLevel.None;
-        }
+        EffectivePermissionLevel level = matches.Count == 0
+            ? EffectivePermissionLevel.None
+            : matches.Max() switch
+            {
+                SharePermissionLevel.Manage => EffectivePermissionLevel.Manage,
+                SharePermissionLevel.Edit => EffectivePermissionLevel.Edit,
+                SharePermissionLevel.Read => EffectivePermissionLevel.Read,
+                _ => EffectivePermissionLevel.None,
+            };
 
-        return matches.Max() switch
-        {
-            SharePermissionLevel.Manage => EffectivePermissionLevel.Manage,
-            SharePermissionLevel.Edit => EffectivePermissionLevel.Edit,
-            SharePermissionLevel.Read => EffectivePermissionLevel.Read,
-            _ => EffectivePermissionLevel.None,
-        };
+        return new DocumentResolutionResult(level, ancestorFolderIds);
     }
 
     /// <summary>
