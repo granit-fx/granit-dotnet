@@ -66,6 +66,7 @@ internal sealed class DefaultPartyDuplicateDetector(
             .Include(x => x.Emails)
             .Include(x => x.Phones)
             .Take(TenantScanCap + 1)
+            .AsSplitQuery()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
 
         if (tenantParties.Count > TenantScanCap)
