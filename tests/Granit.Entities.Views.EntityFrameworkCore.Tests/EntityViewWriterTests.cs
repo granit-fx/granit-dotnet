@@ -6,6 +6,7 @@ using System.Text.Json.Nodes;
 using Granit.Authorization;
 using Granit.Entities.Views.Domain;
 using Granit.Entities.Views.EntityFrameworkCore.Internal;
+using Granit.Entities.Views.Exceptions;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 using NSubstitute;

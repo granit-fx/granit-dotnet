@@ -8631,12 +8631,18 @@
       "kind": "class",
       "project": "Granit.Authentication.DPoP",
       "file": "src/Granit.Authentication.DPoP/Extensions/DPoPJwtBearerExtensions.cs",
-      "line": 15,
+      "line": 16,
       "members": [
         {
           "name": "AddGranitDPoPValidation",
           "kind": "method",
           "signature": "AddGranitDPoPValidation(this IServiceCollection services, Action<DPoPValidationOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        },
+        {
+          "name": "AddGranitDPoPProofValidator",
+          "kind": "method",
+          "signature": "AddGranitDPoPProofValidator(this IServiceCollection services)",
           "returnType": "IServiceCollection"
         }
       ]
@@ -21414,7 +21420,7 @@
       "kind": "class",
       "project": "Granit.Entities.Customization.Endpoints",
       "file": "src/Granit.Entities.Customization.Endpoints/Extensions/EntitiesCustomizationEndpointRouteBuilderExtensions.cs",
-      "line": 14,
+      "line": 15,
       "members": [
         {
           "name": "MapGranitEntitiesCustomization",
@@ -21816,7 +21822,7 @@
       "kind": "class",
       "project": "Granit.Entities.Endpoints",
       "file": "src/Granit.Entities.Endpoints/Extensions/EntitiesEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "MapGranitEntitiesEndpoints",
@@ -22961,7 +22967,7 @@
       "kind": "class",
       "project": "Granit.Entities.Views.Endpoints",
       "file": "src/Granit.Entities.Views.Endpoints/Extensions/EntityViewsEndpointRouteBuilderExtensions.cs",
-      "line": 12,
+      "line": 13,
       "members": [
         {
           "name": "MapGranitEntityViewsEndpoints",
@@ -23065,15 +23071,6 @@
       "members": []
     },
     {
-      "name": "EntityViewNotFoundException",
-      "fqn": "Granit.Entities.Views.EntityViewNotFoundException",
-      "kind": "class",
-      "project": "Granit.Entities.Views.Abstractions",
-      "file": "src/Granit.Entities.Views.Abstractions/EntityViewNotFoundException.cs",
-      "line": 7,
-      "members": []
-    },
-    {
       "name": "EntityViewPermissions",
       "fqn": "Granit.Entities.Views.EntityViewPermissions",
       "kind": "class",
@@ -23114,6 +23111,15 @@
       "project": "Granit.Entities.Views.Abstractions",
       "file": "src/Granit.Entities.Views.Abstractions/EntityViewVisibility.cs",
       "line": 6,
+      "members": []
+    },
+    {
+      "name": "EntityViewNotFoundException",
+      "fqn": "Granit.Entities.Views.Exceptions.EntityViewNotFoundException",
+      "kind": "class",
+      "project": "Granit.Entities.Views.Abstractions",
+      "file": "src/Granit.Entities.Views.Abstractions/Exceptions/EntityViewNotFoundException.cs",
+      "line": 7,
       "members": []
     },
     {
@@ -41073,7 +41079,7 @@
       "kind": "class",
       "project": "Granit.OpenIddict.Server",
       "file": "src/Granit.OpenIddict.Server/Extensions/OpenIddictServerHostApplicationBuilderExtensions.cs",
-      "line": 18,
+      "line": 19,
       "members": [
         {
           "name": "AddGranitOpenIddictServer",

@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Entities.Customization.Endpoints;
+namespace Granit.Entities.Customization.Endpoints.Endpoints;
 
 /// <summary>
 /// CRUD endpoints for the per-tenant Layer 1 customization on each

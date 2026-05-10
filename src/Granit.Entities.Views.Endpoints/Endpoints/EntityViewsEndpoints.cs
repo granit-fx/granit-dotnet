@@ -1,11 +1,12 @@
 using Granit.Entities.Views.Endpoints.Dtos;
+using Granit.Entities.Views.Exceptions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 
-namespace Granit.Entities.Views.Endpoints;
+namespace Granit.Entities.Views.Endpoints.Endpoints;
 
 /// <summary>
 /// Minimal API handlers for the EntityView surface (per ADR-047 §6).

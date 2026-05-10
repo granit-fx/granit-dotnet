@@ -1,3 +1,4 @@
+using Granit.Entities.Endpoints.Endpoints;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
 using Granit.Entities.Internal;

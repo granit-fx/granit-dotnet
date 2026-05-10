@@ -1,5 +1,6 @@
 using Granit.Authorization;
 using Granit.Entities.Views.Domain;
+using Granit.Entities.Views.Exceptions;
 using Granit.Users;
 using Microsoft.EntityFrameworkCore;
 

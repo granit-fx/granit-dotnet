@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Granit.Entities.Endpoints;
+namespace Granit.Entities.Endpoints.Endpoints;
 
 /// <summary>
 /// <c>POST /api/entities/{name}/{id}/relations/aggregates</c> — returns the

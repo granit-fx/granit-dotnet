@@ -1,3 +1,4 @@
+using Granit.Entities.Customization.Endpoints.Endpoints;
 using Granit.Entities.Customization.Endpoints.Options;
 using Granit.Entities.Customization.Endpoints.Permissions;
 using Granit.Validation.AspNetCore;

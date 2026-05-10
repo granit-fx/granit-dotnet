@@ -1,3 +1,4 @@
+using Granit.Authentication.DPoP.Diagnostics;
 using Granit.Authentication.DPoP.Middleware;
 using Granit.Authentication.DPoP.Options;
 using Granit.Authentication.DPoP.Validation;
@@ -30,7 +31,7 @@ public static class DPoPJwtBearerExtensions
             services.Configure(configure);
         }
 
-        services.TryAddSingleton<IDPoPProofValidator, DPoPProofValidator>();
+        services.AddGranitDPoPProofValidator();
 
         // Configure JwtBearer to accept "DPoP <token>" in addition to "Bearer <token>"
         services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -75,4 +76,21 @@ public static class DPoPJwtBearerExtensions
     /// <returns>The application builder for chaining.</returns>
     public static IApplicationBuilder UseGranitDPoPValidation(this IApplicationBuilder app) =>
         app.UseMiddleware<DPoPValidationMiddleware>();
+
+    /// <summary>
+    /// Registers <see cref="IDPoPProofValidator"/> alone, without configuring the JwtBearer
+    /// event pipeline. Useful for hosts that need the validator from a non-JwtBearer code
+    /// path — for example the OpenIddict server's <c>DPoPTokenBindingHandler</c>, which
+    /// validates the proof presented at <c>/connect/token</c> independently of any
+    /// resource-side bearer authentication.
+    /// </summary>
+    public static IServiceCollection AddGranitDPoPProofValidator(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        // The validator depends on DPoPValidationMetrics — register it alongside so the
+        // helper is fully self-contained, regardless of which entry point the host calls.
+        services.TryAddSingleton<DPoPValidationMetrics>();
+        services.TryAddSingleton<IDPoPProofValidator, DPoPProofValidator>();
+        return services;
+    }
 }

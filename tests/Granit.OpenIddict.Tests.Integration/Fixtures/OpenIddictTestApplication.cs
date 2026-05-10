@@ -2,6 +2,7 @@ using System.Diagnostics.Metrics;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Granit.Caching.Extensions;
 using Granit.Events;
 using Granit.Identity;
 using Granit.Identity.Extensions;
@@ -114,6 +115,10 @@ public sealed class OpenIddictTestApplication : IAsyncLifetime
         builder.Services.TryAddSingleton<ICurrentTenant>(
             _ => Substitute.For<ICurrentTenant>());
         builder.Services.AddDistributedMemoryCache();
+
+        // FAPI 2.0 enables DPoP — IDPoPProofValidator depends on IClock + IFusionCache.
+        // AddGranitCaching() pulls in AddGranitTiming() transitively.
+        builder.Services.AddGranitCaching();
 
         // 4. Metrics (requires IMeterFactory)
         builder.Services.TryAddSingleton<IMeterFactory>(

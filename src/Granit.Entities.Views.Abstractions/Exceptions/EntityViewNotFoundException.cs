@@ -1,4 +1,4 @@
-namespace Granit.Entities.Views;
+namespace Granit.Entities.Views.Exceptions;
 
 /// <summary>
 /// Thrown by <see cref="IEntityViewWriter"/> when the targeted view does not exist

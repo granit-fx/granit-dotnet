@@ -51,6 +51,10 @@ public sealed class WolverineCouplingTests
         // Granit.Privacy defines Wolverine Sagas (scatter-gather export/deletion orchestration).
         // These use the Wolverine.Saga base type — genuine coupling at the core domain layer.
         "Granit.Privacy",
+        // Granit.Wolverine.Encryption is a field-level encryption adapter that hooks into
+        // the Wolverine envelope/saga JSON pipeline — the WolverineFx reference and Wolverine
+        // namespace usage are intrinsic to the package's purpose.
+        "Granit.Wolverine.Encryption",
     };
 
     [Fact]
