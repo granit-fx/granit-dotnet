@@ -1,6 +1,7 @@
 using Granit.Documents.Endpoints.Documents.Endpoints;
 using Granit.Documents.Endpoints.Folders.Endpoints;
 using Granit.Documents.Endpoints.Options;
+using Granit.Documents.Endpoints.Quotas.Endpoints;
 using Granit.Documents.Endpoints.Shares.Endpoints;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -43,6 +44,7 @@ public static class DocumentsEndpointRouteBuilderExtensions
         group.MapDocumentEndpoints();
         group.MapDocumentTagProxyEndpoints();
         group.MapShareEndpoints();
+        group.MapQuotaEndpoints();
 
         return group;
     }

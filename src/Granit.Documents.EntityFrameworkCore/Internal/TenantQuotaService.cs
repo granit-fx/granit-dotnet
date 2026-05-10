@@ -1,3 +1,4 @@
+using Granit.Documents;
 using Granit.Documents.Domain;
 using Granit.Documents.Options;
 using Granit.Guids;

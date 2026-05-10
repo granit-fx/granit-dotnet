@@ -1,6 +1,6 @@
 using Granit.Documents.Domain;
 
-namespace Granit.Documents.EntityFrameworkCore.Internal;
+namespace Granit.Documents;
 
 /// <summary>
 /// Service abstraction over <see cref="TenantStorageQuota"/> bookkeeping (F7.1).

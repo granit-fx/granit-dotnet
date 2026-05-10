@@ -114,6 +114,22 @@ public sealed class TenantQuotaServicePostgresTests :
     }
 
     [Fact]
+    public async Task GetAsync_AfterIncrements_ReturnsExpectedQuotaSnapshot()
+    {
+        // F7.3 acceptance: the admin endpoint reads via EnsureTenantQuotaAsync + GetAsync.
+        // Pin the snapshot the endpoint surfaces after a series of increments.
+        await _sut.EnsureTenantQuotaAsync(TenantId, TestContext.Current.CancellationToken);
+        await _sut.IncrementAsync(TenantId, 1_500_000, TestContext.Current.CancellationToken);
+        await _sut.IncrementAsync(TenantId, 500_000, TestContext.Current.CancellationToken);
+        await _sut.DecrementAsync(TenantId, 200_000, TestContext.Current.CancellationToken);
+
+        TenantStorageQuota? snapshot = await _sut.GetAsync(TenantId, TestContext.Current.CancellationToken);
+        snapshot.ShouldNotBeNull();
+        snapshot.UsageBytes.ShouldBe(1_800_000);
+        snapshot.LimitBytes.ShouldBe(5L * 1024L * 1024L * 1024L);
+    }
+
+    [Fact]
     public async Task EnsureTenantQuotaAsync_ConcurrentBootstrap_ConvergesOnSingleRow()
     {
         var tenant = Guid.NewGuid();
