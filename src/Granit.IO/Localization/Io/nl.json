@@ -1,0 +1,9 @@
+{
+  "culture": "nl",
+  "texts": {
+    "TempFile:CategoryInvalid": "Categorie van tijdelijk bestand moet voldoen aan [a-z0-9-]{1,32}; ontvangen '{0}'.",
+    "TempFile:ExtensionInvalid": "Extensie van tijdelijk bestand moet alfanumeriek zijn, 1..16 tekens; ontvangen '{0}'.",
+    "TempFile:SizeExceeded": "Tijdelijk bestand overschreed de maximale grootte van {0} bytes.",
+    "TempFile:RootInvalid": "Hoofdmap voor tijdelijke bestanden is ongeldig of ontoegankelijk: '{0}'."
+  }
+}
