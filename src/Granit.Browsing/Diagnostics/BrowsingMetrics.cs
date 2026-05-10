@@ -27,6 +27,7 @@ public sealed class BrowsingMetrics
     private readonly Histogram<double> _acquireDuration;
     private readonly Histogram<double> _renderDuration;
     private readonly Counter<long> _errors;
+    private readonly Counter<long> _poolDrainTimeouts;
 
     public BrowsingMetrics(IMeterFactory meterFactory)
     {
@@ -53,6 +54,10 @@ public sealed class BrowsingMetrics
         _errors = meter.CreateCounter<long>(
             "granit.browsing.error",
             description: "Number of provider-surfaced errors (timeouts, navigation failures, capability mismatches).");
+
+        _poolDrainTimeouts = meter.CreateCounter<long>(
+            "granit.browsing.pool.drain.timeout",
+            description: "Number of pool DrainAsync operations that exceeded the configured DrainTimeout (force-disposed). VULN-200.");
     }
 
     /// <summary>Records a page acquisition.</summary>
@@ -95,5 +100,12 @@ public sealed class BrowsingMetrics
             { TagEngine, engine },
             { TagTenantId, tenantId ?? DefaultTenant },
             { TagErrorType, errorType },
+        });
+
+    /// <summary>Records a pool drain operation that exceeded the configured <c>DrainTimeout</c>.</summary>
+    public void RecordPoolDrainTimeout(string engine) =>
+        _poolDrainTimeouts.Add(1, new TagList
+        {
+            { TagEngine, engine },
         });
 }

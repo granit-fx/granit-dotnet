@@ -590,6 +590,7 @@
       "deps": [
         "Granit",
         "Granit.Authorization",
+        "Granit.Guids",
         "Granit.Http.Security",
         "Granit.IO",
         "Granit.MultiTenancy",
@@ -13430,6 +13431,12 @@
           "kind": "method",
           "signature": "RecordError(string engine, string? tenantId, string errorType)",
           "returnType": "void"
+        },
+        {
+          "name": "RecordPoolDrainTimeout",
+          "kind": "method",
+          "signature": "RecordPoolDrainTimeout(string engine)",
+          "returnType": "void"
         }
       ]
     },
@@ -13455,7 +13462,7 @@
       "kind": "class",
       "project": "Granit.Browsing",
       "file": "src/Granit.Browsing/GranitBrowsingModule.cs",
-      "line": 30,
+      "line": 32,
       "members": [
         {
           "name": "ConfigureServices",
@@ -13904,6 +13911,106 @@
           "kind": "property",
           "signature": "string? ExecutablePath",
           "returnType": "string?"
+        }
+      ]
+    },
+    {
+      "name": "DefaultEnvironmentProbe",
+      "fqn": "Granit.Browsing.Pool.DefaultEnvironmentProbe",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 120,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new()",
+          "returnType": "DefaultEnvironmentProbe Instance { get; } ="
+        },
+        {
+          "name": "GetEnvironmentVariable",
+          "kind": "method",
+          "signature": "GetEnvironmentVariable(string name)",
+          "returnType": "string?"
+        },
+        {
+          "name": "IsRunningInContainer",
+          "kind": "method",
+          "signature": "IsRunningInContainer()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "IEnvironmentProbe",
+      "fqn": "Granit.Browsing.Pool.IEnvironmentProbe",
+      "kind": "interface",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 107,
+      "members": [
+        {
+          "name": "GetEnvironmentVariable",
+          "kind": "method",
+          "signature": "GetEnvironmentVariable(string name)",
+          "returnType": "string?"
+        },
+        {
+          "name": "IsRunningInContainer",
+          "kind": "method",
+          "signature": "IsRunningInContainer()",
+          "returnType": "bool"
+        },
+        {
+          "name": "IsRunningAsRoot",
+          "kind": "method",
+          "signature": "IsRunningAsRoot()",
+          "returnType": "bool"
+        }
+      ]
+    },
+    {
+      "name": "PrivilegedFlagGuard",
+      "fqn": "Granit.Browsing.Pool.PrivilegedFlagGuard",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/PrivilegedFlagGuard.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "EnsureSafe",
+          "kind": "method",
+          "signature": "EnsureSafe(bool disableSandbox, IReadOnlyList<string>? extraArgs, ILogger logger, IEnvironmentProbe? probe = null)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "TenantAwareHeadlessBrowser",
+      "fqn": "Granit.Browsing.Pool.TenantAwareHeadlessBrowser",
+      "kind": "class",
+      "project": "Granit.Browsing",
+      "file": "src/Granit.Browsing/Pool/TenantAwareHeadlessBrowser.cs",
+      "line": 32,
+      "members": [
+        {
+          "name": "Capabilities",
+          "kind": "property",
+          "signature": "BrowserCapabilities Capabilities",
+          "returnType": "BrowserCapabilities"
+        },
+        {
+          "name": "Supports",
+          "kind": "method",
+          "signature": "Supports(BrowserCapabilities capability)",
+          "returnType": "bool"
+        },
+        {
+          "name": "AcquirePageAsync",
+          "kind": "method",
+          "signature": "AcquirePageAsync(BrowserPageOptions? options = null, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IBrowserPage>"
         }
       ]
     },

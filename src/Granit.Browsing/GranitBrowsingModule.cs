@@ -2,6 +2,7 @@ using Granit.Authorization;
 using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Sandbox;
 using Granit.Diagnostics;
+using Granit.Guids;
 using Granit.Http.Security;
 using Granit.IO;
 using Granit.Modularity;
@@ -24,6 +25,7 @@ namespace Granit.Browsing;
 /// </remarks>
 [DependsOn(
     typeof(GranitAuthorizationModule),
+    typeof(GranitGuidsModule),
     typeof(GranitHttpSecurityModule),
     typeof(GranitIoModule),
     typeof(GranitTimingModule))]
