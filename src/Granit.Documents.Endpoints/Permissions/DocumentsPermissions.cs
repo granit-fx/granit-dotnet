@@ -1,12 +1,9 @@
 namespace Granit.Documents.Endpoints.Permissions;
 
 /// <summary>
-/// Permission constants exposed by <c>Granit.Documents.Endpoints</c>.
+/// Permission constants exposed by <c>Granit.Documents.Endpoints</c> — folder, document,
+/// share, tag, and quota permissions used by the Phase 1 Granit.Documents endpoints.
 /// </summary>
-/// <remarks>
-/// Phase 1 ships only the folder permissions used by F2.3. Document, share, tag, and
-/// quota permissions arrive with their respective stories (F3, F6, F5, F7).
-/// </remarks>
 public static class DocumentsPermissions
 {
     /// <summary>Permission group name (used as the resource-key prefix for localisation).</summary>
@@ -40,5 +37,22 @@ public static class DocumentsPermissions
 
         /// <summary>Grant and revoke share ACL on folders and documents.</summary>
         public const string Manage = "Documents.Shares.Manage";
+    }
+
+    /// <summary>Permissions on the document tag proxy (F5 / T6.1).</summary>
+    public static class Tags
+    {
+        /// <summary>List tags assigned to a document.</summary>
+        public const string Read = "Documents.Tags.Read";
+
+        /// <summary>Assign or unassign tags on a document.</summary>
+        public const string Manage = "Documents.Tags.Manage";
+    }
+
+    /// <summary>Permissions on the tenant storage quota (F7).</summary>
+    public static class Quotas
+    {
+        /// <summary>Read the tenant's storage quota usage.</summary>
+        public const string Read = "Documents.Quotas.Read";
     }
 }

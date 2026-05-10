@@ -19790,7 +19790,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 26,
+      "line": 23,
       "members": []
     },
     {
@@ -19799,7 +19799,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 10,
+      "line": 7,
       "members": []
     },
     {
@@ -19808,7 +19808,16 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 16,
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "Quotas",
+      "fqn": "Granit.Documents.Endpoints.Permissions.Quotas",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 53,
       "members": []
     },
     {
@@ -19817,7 +19826,16 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 36,
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "Tags",
+      "fqn": "Granit.Documents.Endpoints.Permissions.Tags",
+      "kind": "class",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
+      "line": 43,
       "members": []
     },
     {

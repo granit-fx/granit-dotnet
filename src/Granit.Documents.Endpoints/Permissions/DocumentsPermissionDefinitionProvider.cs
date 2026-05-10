@@ -8,11 +8,9 @@ namespace Granit.Documents.Endpoints.Permissions;
 /// <summary>
 /// Declares the <c>Documents.*.*</c> permissions in the Granit RBAC system.
 /// Auto-discovered by <c>GranitAuthorizationModule</c> — no manual registration needed.
+/// Covers folders (F2.3), documents (F3), shares (F6), tags (F5 / T6.1), and tenant
+/// storage quotas (F7).
 /// </summary>
-/// <remarks>
-/// Phase 1 ships only the folder permissions (F2.3). Document, share, tag, and quota
-/// permissions arrive with their respective stories (F3, F6, F5, F7).
-/// </remarks>
 internal sealed class DocumentsPermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     /// <inheritdoc />
@@ -59,6 +57,24 @@ internal sealed class DocumentsPermissionDefinitionProvider : IPermissionDefinit
             DocumentsPermissions.Shares.Manage,
             LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
                 "Permission:Documents.Shares.Manage"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            DocumentsPermissions.Tags.Read,
+            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+                "Permission:Documents.Tags.Read"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            DocumentsPermissions.Tags.Manage,
+            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+                "Permission:Documents.Tags.Manage"),
+            MultiTenancySides.Both);
+
+        group.AddPermission(
+            DocumentsPermissions.Quotas.Read,
+            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+                "Permission:Documents.Quotas.Read"),
             MultiTenancySides.Both);
     }
 }
