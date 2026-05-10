@@ -439,7 +439,7 @@ These are tracked in the Epic and resolved during implementation; they do not bl
 
 ## Cross-references
 
-- [Granit.BlobStorage reference](/dotnet/reference/modules/blob-storage) — composed primitive.
+- [Granit.BlobStorage reference](/dotnet/data/blob-storage/) — composed primitive.
 - ADR-017 — DDD aggregate / value-object strategy. `Document` and `Folder` follow the aggregate-root rules (private setters, `Create()` factory, `AddDomainEvent()`).
 - ADR-020 — Declarative definitions placement. `DocumentQueryDefinition`, `DocumentExportDefinition`, `MetricDefinition` live in the base `Granit.Documents` module.
 - ADR-040 — Three-tier metadata. `Document` and `Folder` ship with their own `EntityDefinition` (Tier A) for OData and admin UI exposure.
