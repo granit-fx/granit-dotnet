@@ -4,9 +4,9 @@
 // GH #947 — parallel claims for the same delivery id must dedupe SMTP sends.
 // =============================================================================
 
+using System.Diagnostics.Metrics;
 using System.Text.Json;
 using System.Threading;
-using System.Diagnostics.Metrics;
 using Granit.Domain;
 using Granit.Guids;
 using Granit.Notifications.Abstractions;
@@ -36,15 +36,14 @@ public sealed class NotificationDeliveryHandlerConcurrencyTests : IDisposable
 
     public NotificationDeliveryHandlerConcurrencyTests()
     {
-        _store = new EfCoreNotificationDeliveryStore(_factory);
+        _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
+        _store = new EfCoreNotificationDeliveryStore(_factory, _clock);
 
         ServiceCollection svc = new();
         svc.AddMetrics();
         _meterProvider = svc.BuildServiceProvider();
         IMeterFactory meters = _meterProvider.GetRequiredService<IMeterFactory>();
         _metrics = new NotificationsMetrics(meters);
-
-        _clock.Now.Returns(_ => DateTimeOffset.UtcNow);
     }
 
     public void Dispose()
