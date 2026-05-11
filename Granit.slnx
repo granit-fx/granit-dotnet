@@ -160,6 +160,7 @@
     <Project Path="src/Granit.Documents.Renditions.Office/Granit.Documents.Renditions.Office.csproj" />
     <Project Path="src/Granit.Documents.Renditions.Pdf/Granit.Documents.Renditions.Pdf.csproj" />
     <Project Path="src/Granit.Documents.Renditions.EntityFrameworkCore/Granit.Documents.Renditions.EntityFrameworkCore.csproj" />
+    <Project Path="src/Granit.Documents.AssetMetadata/Granit.Documents.AssetMetadata.csproj" />
     <Project Path="src/Granit.Documents.Renditions/Granit.Documents.Renditions.csproj" />
     <Project Path="src/Granit.Documents/Granit.Documents.csproj" />
     <Project Path="src/Granit.Features.Endpoints/Granit.Features.Endpoints.csproj" />
@@ -548,6 +549,7 @@
     <Project Path="tests/Granit.Documents.EntityFrameworkCore.Tests.Integration/Granit.Documents.EntityFrameworkCore.Tests.Integration.csproj" />
     <Project Path="tests/Granit.Documents.EntityFrameworkCore.Tests/Granit.Documents.EntityFrameworkCore.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Notifications.Tests/Granit.Documents.Notifications.Tests.csproj" />
+    <Project Path="tests/Granit.Documents.AssetMetadata.Tests/Granit.Documents.AssetMetadata.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.BackgroundJobs.Tests/Granit.Documents.Renditions.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.Endpoints.Tests/Granit.Documents.Renditions.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.Imaging.Tests/Granit.Documents.Renditions.Imaging.Tests.csproj" />

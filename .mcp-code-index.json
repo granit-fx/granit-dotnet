@@ -949,6 +949,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata",
+      "deps": [
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -20426,6 +20433,268 @@
           "kind": "method",
           "signature": "RenderAsync(string html, DocumentFormat targetFormat, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentResult>"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataResult",
+      "fqn": "Granit.Documents.AssetMetadata.AssetMetadataResult",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/AssetMetadataResult.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataActivitySource",
+      "fqn": "Granit.Documents.AssetMetadata.Diagnostics.AssetMetadataActivitySource",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Diagnostics/AssetMetadataActivitySource.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "new",
+          "kind": "method",
+          "signature": "new(Name)",
+          "returnType": "ActivitySource Source ="
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataMetrics",
+      "fqn": "Granit.Documents.AssetMetadata.Diagnostics.AssetMetadataMetrics",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Diagnostics/AssetMetadataMetrics.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "RecordFailed",
+          "kind": "method",
+          "signature": "RecordFailed(string? tenantId, string sourceContentType, string extractor, string errorType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordGpsScrubbed",
+          "kind": "method",
+          "signature": "RecordGpsScrubbed(string? tenantId, string sourceContentType)",
+          "returnType": "void"
+        },
+        {
+          "name": "RecordExtractionDuration",
+          "kind": "method",
+          "signature": "RecordExtractionDuration(string? tenantId, string extractor, double durationMs)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataStatus",
+      "fqn": "Granit.Documents.AssetMetadata.Domain.AssetMetadataStatus",
+      "kind": "enum",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Domain/AssetMetadataStatus.cs",
+      "line": 4,
+      "members": []
+    },
+    {
+      "name": "DocumentAssetMetadata",
+      "fqn": "Granit.Documents.AssetMetadata.Domain.DocumentAssetMetadata",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Domain/DocumentAssetMetadata.cs",
+      "line": 27,
+      "members": [
+        {
+          "name": "Create",
+          "kind": "method",
+          "signature": "Create(Guid id, Guid? tenantId, Guid documentId, Guid documentVersionId, string sourceContentType, DateTimeOffset now)",
+          "returnType": "DocumentAssetMetadata"
+        },
+        {
+          "name": "Status",
+          "kind": "property",
+          "signature": "AssetMetadataStatus Status",
+          "returnType": "AssetMetadataStatus"
+        },
+        {
+          "name": "MarkExtracting",
+          "kind": "method",
+          "signature": "MarkExtracting()",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataExtractedEvent",
+      "fqn": "Granit.Documents.AssetMetadata.Events.AssetMetadataExtractedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Events/AssetMetadataExtractedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataFailedEvent",
+      "fqn": "Granit.Documents.AssetMetadata.Events.AssetMetadataFailedEvent",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Events/AssetMetadataFailedEvent.cs",
+      "line": 9,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataExtractionException",
+      "fqn": "Granit.Documents.AssetMetadata.Exceptions.AssetMetadataExtractionException",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Exceptions/AssetMetadataExtractionException.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AssetMetadataExtractionException",
+          "kind": "method",
+          "signature": "AssetMetadataExtractionException(string extractorName, string sourceContentType, Exception innerException)",
+          "returnType": "string ExtractorName { get; } public string SourceContentType { get; } public"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Extensions/ServiceCollectionExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadata",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadata(this IServiceCollection services, Action<GranitAssetMetadataOptions>? configure = null)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataExtractor",
+      "fqn": "Granit.Documents.AssetMetadata.Extractors.IAssetMetadataExtractor",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Extractors/IAssetMetadataExtractor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "CanHandle",
+          "kind": "method",
+          "signature": "CanHandle(string sourceContentType)",
+          "returnType": "string Name { get; } bool"
+        },
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<AssetMetadataResult>"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataModule",
+      "fqn": "Granit.Documents.AssetMetadata.GranitDocumentsAssetMetadataModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/GranitDocumentsAssetMetadataModule.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataStore",
+      "fqn": "Granit.Documents.AssetMetadata.IAssetMetadataStore",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/IAssetMetadataStore.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "AddAsync",
+          "kind": "method",
+          "signature": "AddAsync(DocumentAssetMetadata metadata, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "UpdateAsync",
+          "kind": "method",
+          "signature": "UpdateAsync(DocumentAssetMetadata metadata, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        },
+        {
+          "name": "GetByVersionAsync",
+          "kind": "method",
+          "signature": "GetByVersionAsync(Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
+        },
+        {
+          "name": "ListForDocumentAsync",
+          "kind": "method",
+          "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<DocumentAssetMetadata>>"
+        },
+        {
+          "name": "DeleteForDocumentAsync",
+          "kind": "method",
+          "signature": "DeleteForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "GranitAssetMetadataOptions",
+      "fqn": "Granit.Documents.AssetMetadata.Options.GranitAssetMetadataOptions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Options/GranitAssetMetadataOptions.cs",
+      "line": 7,
+      "members": [
+        {
+          "name": "StripGpsOnUpload",
+          "kind": "property",
+          "signature": "bool StripGpsOnUpload",
+          "returnType": "bool"
+        },
+        {
+          "name": "MaxConcurrentExtractions",
+          "kind": "property",
+          "signature": "int MaxConcurrentExtractions",
+          "returnType": "int"
+        },
+        {
+          "name": "FromSeconds",
+          "kind": "method",
+          "signature": "FromSeconds(30)",
+          "returnType": "TimeSpan ExtractionTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataPipeline",
+      "fqn": "Granit.Documents.AssetMetadata.Pipeline.IAssetMetadataPipeline",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/Pipeline/IAssetMetadataPipeline.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Stream source, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task<IReadOnlyList<AssetMetadataResult>>"
         }
       ]
     },
