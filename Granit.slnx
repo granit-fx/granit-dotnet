@@ -167,6 +167,7 @@
     <Project Path="src/Granit.Documents.AssetMetadata.Imaging/Granit.Documents.AssetMetadata.Imaging.csproj" />
     <Project Path="src/Granit.Documents.AssetMetadata.Office/Granit.Documents.AssetMetadata.Office.csproj" />
     <Project Path="src/Granit.Documents.AssetMetadata.Pdf/Granit.Documents.AssetMetadata.Pdf.csproj" />
+    <Project Path="src/Granit.Documents.AssetMetadata.AudioVideo/Granit.Documents.AssetMetadata.AudioVideo.csproj" />
     <Project Path="src/Granit.Documents.Renditions/Granit.Documents.Renditions.csproj" />
     <Project Path="src/Granit.Documents/Granit.Documents.csproj" />
     <Project Path="src/Granit.Features.Endpoints/Granit.Features.Endpoints.csproj" />
@@ -562,6 +563,7 @@
     <Project Path="tests/Granit.Documents.AssetMetadata.Imaging.Tests/Granit.Documents.AssetMetadata.Imaging.Tests.csproj" />
     <Project Path="tests/Granit.Documents.AssetMetadata.Office.Tests/Granit.Documents.AssetMetadata.Office.Tests.csproj" />
     <Project Path="tests/Granit.Documents.AssetMetadata.Pdf.Tests/Granit.Documents.AssetMetadata.Pdf.Tests.csproj" />
+    <Project Path="tests/Granit.Documents.AssetMetadata.AudioVideo.Tests/Granit.Documents.AssetMetadata.AudioVideo.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.BackgroundJobs.Tests/Granit.Documents.Renditions.BackgroundJobs.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.Endpoints.Tests/Granit.Documents.Renditions.Endpoints.Tests.csproj" />
     <Project Path="tests/Granit.Documents.Renditions.Imaging.Tests/Granit.Documents.Renditions.Imaging.Tests.csproj" />

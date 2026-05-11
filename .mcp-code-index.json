@@ -956,6 +956,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.AudioVideo",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.AssetMetadata.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -20503,6 +20510,38 @@
       "file": "src/Granit.Documents.AssetMetadata/AssetMetadataResult.cs",
       "line": 12,
       "members": []
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.AudioVideo.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.AudioVideo",
+      "file": "src/Granit.Documents.AssetMetadata.AudioVideo/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataAudioVideo",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataAudioVideo(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataAudioVideoModule",
+      "fqn": "Granit.Documents.AssetMetadata.AudioVideo.GranitDocumentsAssetMetadataAudioVideoModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.AudioVideo",
+      "file": "src/Granit.Documents.AssetMetadata.AudioVideo/GranitDocumentsAssetMetadataAudioVideoModule.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
     },
     {
       "name": "ServiceCollectionExtensions",

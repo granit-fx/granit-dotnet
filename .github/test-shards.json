@@ -212,6 +212,7 @@
         "tests/Granit.Documents.AssetMetadata.Imaging.Tests",
         "tests/Granit.Documents.AssetMetadata.Office.Tests",
         "tests/Granit.Documents.AssetMetadata.Pdf.Tests",
+        "tests/Granit.Documents.AssetMetadata.AudioVideo.Tests",
         "tests/Granit.Documents.Renditions.BackgroundJobs.Tests",
         "tests/Granit.Documents.Renditions.Endpoints.Tests",
         "tests/Granit.Documents.Renditions.Imaging.Tests",

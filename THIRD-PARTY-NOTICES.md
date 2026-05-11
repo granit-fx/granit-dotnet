@@ -4,7 +4,7 @@ Ce fichier répertorie les bibliothèques tierces utilisées par le projet
 **granit-dotnet** ainsi que leurs licences respectives. Il est mis à jour
 à chaque ajout ou modification de dépendance externe.
 
-Dernière mise à jour : 2026-04-29
+Dernière mise à jour : 2026-05-11
 
 ---
 
@@ -17,6 +17,7 @@ Dernière mise à jour : 2026-04-29
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
 | PostgreSQL   | 1                  |
+| LGPL-2.1     | 1                  |
 
 ---
 
@@ -166,6 +167,17 @@ Dernière mise à jour : 2026-04-29
 | ------- | ------- | --------- |
 | Npgsql.EntityFrameworkCore.PostgreSQL | 10.0.1 | Copyright 2025 The Npgsql Development Team |
 | Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite | 10.0.1 | Copyright 2025 The Npgsql Development Team |
+
+### LGPL-2.1
+
+Licence non permissive utilisée en lien dynamique uniquement (NuGet
+ship un assembly distinct, jamais lié statiquement). L'obligation
+copyleft ne se propage pas au framework Granit (Apache-2.0) ni au code
+applicatif consommant le NuGet `Granit.Documents.AssetMetadata.AudioVideo`.
+
+| Package | Version | Copyright |
+| ------- | ------- | --------- |
+| TagLibSharp | 2.3.0 | Copyright (c) Brian Nickel, Gabriel Burt, Stephen Shaw, and contributors |
 
 ---
 
