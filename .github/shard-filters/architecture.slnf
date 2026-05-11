@@ -108,6 +108,7 @@
       "src/Granit.Documents.Endpoints/Granit.Documents.Endpoints.csproj",
       "src/Granit.Documents.EntityFrameworkCore/Granit.Documents.EntityFrameworkCore.csproj",
       "src/Granit.Documents.Notifications/Granit.Documents.Notifications.csproj",
+      "src/Granit.Documents.Renditions/Granit.Documents.Renditions.csproj",
       "src/Granit.Documents/Granit.Documents.csproj",
       "src/Granit.Encryption.BackgroundJobs/Granit.Encryption.BackgroundJobs.csproj",
       "src/Granit.Encryption.EntityFrameworkCore/Granit.Encryption.EntityFrameworkCore.csproj",

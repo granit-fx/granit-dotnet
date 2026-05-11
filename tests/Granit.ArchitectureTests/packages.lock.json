@@ -2379,6 +2379,13 @@
           "Granit.Templating": "[0.1.0-dev, )"
         }
       },
+      "granit.documents.renditions": {
+        "type": "Project",
+        "dependencies": {
+          "Granit": "[0.1.0-dev, )",
+          "Granit.Documents": "[0.1.0-dev, )"
+        }
+      },
       "granit.encryption": {
         "type": "Project",
         "dependencies": {

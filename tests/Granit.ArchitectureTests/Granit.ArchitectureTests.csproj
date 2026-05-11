@@ -136,6 +136,7 @@
     <ProjectReference Include="..\..\src\Granit.Documents.Endpoints\Granit.Documents.Endpoints.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents.EntityFrameworkCore\Granit.Documents.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\..\src\Granit.Documents.Notifications\Granit.Documents.Notifications.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Documents.Renditions\Granit.Documents.Renditions.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption\Granit.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.BackgroundJobs\Granit.Encryption.BackgroundJobs.csproj" />
     <ProjectReference Include="..\..\src\Granit.Encryption.EntityFrameworkCore\Granit.Encryption.EntityFrameworkCore.csproj" />
