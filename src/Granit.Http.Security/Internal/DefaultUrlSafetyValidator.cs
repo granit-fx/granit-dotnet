@@ -17,7 +17,7 @@ internal sealed class DefaultUrlSafetyValidator : IUrlSafetyValidator
     private readonly IDnsResolver _resolver;
     private readonly TimeProvider _timeProvider;
 
-    internal DefaultUrlSafetyValidator(
+    public DefaultUrlSafetyValidator(
         IOptions<UrlSafetyOptions> options,
         IDnsResolver resolver,
         TimeProvider timeProvider)
