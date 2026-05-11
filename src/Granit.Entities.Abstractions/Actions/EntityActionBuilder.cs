@@ -1,3 +1,5 @@
+using Granit.Entities.Actions.Execution;
+
 namespace Granit.Entities.Actions;
 
 /// <summary>
@@ -30,6 +32,7 @@ public sealed class EntityActionBuilder<TEntity>
     private bool _showOnCalendarTile;
     private bool _showOnListHeader;
     private bool _showOnSelection;
+    private Type? _serverExecutorType;
 
     // RouteBase composition state — populated by verb shortcuts (Post / Put / Delete /
     // Patch / Get / Download). At Build() time, if no explicit URL was supplied via
@@ -324,6 +327,28 @@ public sealed class EntityActionBuilder<TEntity>
         return this;
     }
 
+    /// <summary>
+    /// Opts the action into server-side execution (ADR-056). Flags
+    /// <see cref="EntityActionDescriptor.RequiresServerExecution"/> on the
+    /// descriptor and captures <typeparamref name="TExecutor"/> as
+    /// <see cref="EntityActionDescriptor.ServerExecutorType"/> so the bulk
+    /// endpoint can resolve it through DI.
+    /// </summary>
+    /// <remarks>
+    /// The builder does NOT register the executor in DI — hosts add it
+    /// explicitly via <c>services.AddScoped&lt;TExecutor&gt;()</c> (and optionally
+    /// <c>services.AddScoped&lt;IBulkActionExecutor&lt;TEntity&gt;, TExecutor&gt;()</c>
+    /// when the executor implements the bulk-friendly variant). The archi test
+    /// <c>ServerExecutorRegistrationTests</c> enforces the registration shape.
+    /// </remarks>
+    /// <typeparam name="TExecutor">Implementation of <see cref="IEntityActionExecutor{TEntity}"/>.</typeparam>
+    public EntityActionBuilder<TEntity> ServerExecutor<TExecutor>()
+        where TExecutor : class, IEntityActionExecutor<TEntity>
+    {
+        _serverExecutorType = typeof(TExecutor);
+        return this;
+    }
+
     internal EntityActionDescriptor Build()
     {
         string? resolvedUrl = ResolveUrl();
@@ -382,7 +407,9 @@ public sealed class EntityActionBuilder<TEntity>
             ShowOnGalleryCard: _showOnGalleryCard,
             ShowOnCalendarTile: _showOnCalendarTile,
             ShowOnListHeader: _showOnListHeader,
-            ShowOnSelection: _showOnSelection);
+            ShowOnSelection: _showOnSelection,
+            RequiresServerExecution: _serverExecutorType is not null,
+            ServerExecutorType: _serverExecutorType);
     }
 
     private string? ResolveUrl()

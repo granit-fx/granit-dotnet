@@ -40,4 +40,11 @@ public sealed class EntitiesEndpointsOptions
     /// across requests with the same security context and the same window.
     /// </summary>
     public TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// Maximum number of <c>ids</c> accepted by <c>POST /api/entities/{name}/bulk/{action}</c>
+    /// in a single request. Synchronous bulks larger than this should run through
+    /// <c>Granit.DataExchange.Import</c> (background-job-backed) instead. Default 1000.
+    /// </summary>
+    public int BulkActionMaxIds { get; set; } = 1000;
 }

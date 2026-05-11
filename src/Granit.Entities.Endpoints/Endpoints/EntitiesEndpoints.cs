@@ -42,6 +42,7 @@ internal static class EntitiesEndpoints
 
         group.MapRelationAggregatesEndpoint();
         group.MapCalendarRangeEndpoint();
+        group.MapBulkActionEndpoint();
 
         return group;
     }

@@ -1,4 +1,5 @@
 using Granit.Diagnostics;
+using Granit.Entities.Actions.Execution;
 using Granit.Entities.Diagnostics;
 using Granit.Entities.Internal;
 using Granit.Entities.Options;
@@ -42,6 +43,7 @@ public static class EntitiesServiceCollectionExtensions
         }
 
         services.TryAddSingleton<IEntityDefinitionRegistry, EntityDefinitionRegistry>();
+        services.TryAddSingleton<BulkActionExecutionOrchestrator>();
         services.AddHostedService<IntegrityCheckRunner>();
 
         // Default Layer-4 customization applier (ADR-053 §5) — no-op until the

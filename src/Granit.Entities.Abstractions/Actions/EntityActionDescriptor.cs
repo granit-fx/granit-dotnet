@@ -22,6 +22,8 @@ namespace Granit.Entities.Actions;
 /// <param name="ShowOnCalendarTile">When <see langword="true"/>, the action also appears as a compact icon-button on the source entity's calendar tile. Off by default — calendar tiles are smaller than kanban cards so curate carefully.</param>
 /// <param name="ShowOnListHeader">When <see langword="true"/>, the action is pinned on the list-page header (above the list / kanban / gallery / calendar tabs), not on individual rows. Use for entity-scope actions like <c>Import</c>, <c>Export</c>, <c>BulkArchive</c> — the URL template must NOT carry a <c>{id}</c> placeholder since no row is selected. Mirrors Odoo's top-of-list action bar.</param>
 /// <param name="ShowOnSelection">When <see langword="true"/>, the action is exposed on the selection-bar dropdown that appears above the list when at least one row is selected (Odoo's "Action ▼"). Same row URL as the per-row action — the renderer fires N parallel requests, substituting <c>{id}</c> per selected row (concurrency-capped client-side). Mutually exclusive with <see cref="ShowOnListHeader"/>: header actions are entity-scope and cannot also be selection-scope.</param>
+/// <param name="RequiresServerExecution">When <see langword="true"/>, the action runs through the framework's bulk endpoint <c>POST /api/entities/{name}/bulk/{action}</c> and a registered <see cref="Granit.Entities.Actions.Execution.IEntityActionExecutor{TEntity}"/> implementation (ADR-056). Flipped on by <c>EntityActionBuilder{TEntity}.ServerExecutor&lt;TExecutor&gt;()</c>.</param>
+/// <param name="ServerExecutorType">CLR type of the <see cref="Granit.Entities.Actions.Execution.IEntityActionExecutor{TEntity}"/> captured by <c>.ServerExecutor&lt;TExecutor&gt;()</c>. <see langword="null"/> when the action is purely declarative. Stored as <see cref="Type"/> because heterogeneous actions live in one descriptor list.</param>
 public sealed record EntityActionDescriptor(
     string Name,
     EntityActionKind Kind,
@@ -38,4 +40,6 @@ public sealed record EntityActionDescriptor(
     bool ShowOnGalleryCard = false,
     bool ShowOnCalendarTile = false,
     bool ShowOnListHeader = false,
-    bool ShowOnSelection = false);
+    bool ShowOnSelection = false,
+    bool RequiresServerExecution = false,
+    Type? ServerExecutorType = null);
