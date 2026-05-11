@@ -1,5 +1,6 @@
 using Granit.BlobStorage;
 using Granit.BlobStorage.Domain;
+using Granit.BlobStorage.Options;
 using Granit.Documents.Diagnostics;
 using Granit.Documents.Domain;
 using Granit.Documents.Events;
@@ -7,6 +8,7 @@ using Granit.Documents.Exceptions;
 using Granit.Events;
 using Granit.Guids;
 using Granit.MultiTenancy;
+using Granit.Persistence.EntityFrameworkCore;
 using Granit.Timing;
 using Microsoft.EntityFrameworkCore;
 
@@ -836,5 +838,42 @@ internal sealed class DocumentService(
             cancellationToken).ConfigureAwait(false);
 
         return version;
+    }
+
+    /// <inheritdoc />
+    public async Task<PresignedDownloadUrl?> CreatePublicDownloadUrlAsync(
+        Guid documentId,
+        DownloadUrlOptions? options,
+        CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        // Public-link redemption is anonymous — no tenant context. Bypass both the
+        // multi-tenant filter (the link carries its own TenantId) and the soft-delete
+        // filter is unnecessary here because Documents are tombstoned via the
+        // DocumentStatus enum rather than a soft-delete flag.
+        Document? document = await context.Documents
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .FirstOrDefaultAsync(d => d.Id == documentId, cancellationToken)
+            .ConfigureAwait(false);
+        if (document is null || document.Status != DocumentStatus.Active || document.CurrentVersionId is null)
+        {
+            return null;
+        }
+
+        DocumentVersion? version = await context.DocumentVersions
+            .IgnoreQueryFilters([GranitFilterNames.MultiTenant])
+            .FirstOrDefaultAsync(v => v.Id == document.CurrentVersionId, cancellationToken)
+            .ConfigureAwait(false);
+        if (version is null)
+        {
+            return null;
+        }
+
+        return await blobStorage
+            .CreateDownloadUrlAsync(ContainerName, version.BlobDescriptorId, options, cancellationToken)
+            .ConfigureAwait(false);
     }
 }

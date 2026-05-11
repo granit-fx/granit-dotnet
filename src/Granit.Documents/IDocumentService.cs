@@ -1,4 +1,5 @@
 using Granit.BlobStorage;
+using Granit.BlobStorage.Options;
 using Granit.Documents.Domain;
 
 namespace Granit.Documents;
@@ -213,5 +214,28 @@ public interface IDocumentService
         Guid newBlobDescriptorId,
         long newSizeBytes,
         string reason,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Issues a presigned download URL for the document's current version, bypassing
+    /// the multi-tenant query filter — reserved for anonymous public-link redemption
+    /// (F18.3). The caller is expected to have already authorised the request through
+    /// a non-HTTP mechanism (bearer-token hash lookup on a <c>DocumentPublicLink</c>).
+    /// </summary>
+    /// <remarks>
+    /// Returns <c>null</c> when the document is not found, has no current version yet,
+    /// or is trashed / permanently-deleted. No <c>DocumentDownloadedEvent</c> is raised
+    /// — public-link consumption emits its own <c>DocumentPublicLinkConsumedEvent</c>
+    /// for the ISO 27001 audit trail.
+    /// </remarks>
+    /// <param name="documentId">Document whose current version should be served.</param>
+    /// <param name="options">
+    /// Optional download parameters — set <see cref="DownloadUrlOptions.DownloadFileName"/>
+    /// to force <c>Content-Disposition: attachment</c>; leave <c>null</c> for inline preview.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<PresignedDownloadUrl?> CreatePublicDownloadUrlAsync(
+        Guid documentId,
+        DownloadUrlOptions? options,
         CancellationToken cancellationToken = default);
 }

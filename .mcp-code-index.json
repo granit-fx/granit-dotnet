@@ -1059,6 +1059,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.PublicLinks.Endpoints",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Endpoints",
+        "Granit.Documents.PublicLinks",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.PublicLinks.EntityFrameworkCore",
       "deps": [
         "Granit.Documents",
@@ -22230,7 +22240,7 @@
       "kind": "interface",
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/IDocumentService.cs",
-      "line": 11,
+      "line": 12,
       "members": [
         {
           "name": "RequestUploadTicketAsync",
@@ -22321,6 +22331,12 @@
           "kind": "method",
           "signature": "ReplaceVersionBlobAsync(Guid versionId, Guid newBlobDescriptorId, long newSizeBytes, string reason, CancellationToken cancellationToken = default)",
           "returnType": "Task<DocumentVersion?>"
+        },
+        {
+          "name": "CreatePublicDownloadUrlAsync",
+          "kind": "method",
+          "signature": "CreatePublicDownloadUrlAsync(Guid documentId, DownloadUrlOptions? options, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedDownloadUrl?>"
         }
       ]
     },
@@ -22880,7 +22896,7 @@
       "kind": "record",
       "project": "Granit.Documents.PublicLinks",
       "file": "src/Granit.Documents.PublicLinks/IDocumentPublicLinkService.cs",
-      "line": 37,
+      "line": 69,
       "members": []
     },
     {
@@ -22949,6 +22965,95 @@
           "kind": "method",
           "signature": "GenerateRandom()",
           "returnType": "PublicLinkToken"
+        }
+      ]
+    },
+    {
+      "name": "CreatePublicLinkRequest",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Dtos.CreatePublicLinkRequest",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Dtos/CreatePublicLinkRequest.cs",
+      "line": 21,
+      "members": []
+    },
+    {
+      "name": "CreatePublicLinkResponse",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Dtos.CreatePublicLinkResponse",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Dtos/CreatePublicLinkResponse.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "PublicLinkResponse",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Dtos.PublicLinkResponse",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Dtos/PublicLinkResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "RevokePublicLinkRequest",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Dtos.RevokePublicLinkRequest",
+      "kind": "record",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Dtos/RevokePublicLinkRequest.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "DocumentsPublicLinksEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Extensions.DocumentsPublicLinksEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Extensions/DocumentsPublicLinksEndpointRouteBuilderExtensions.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "MapGranitDocumentsPublicLinks",
+          "kind": "method",
+          "signature": "MapGranitDocumentsPublicLinks(this IEndpointRouteBuilder endpoints, Action<DocumentsPublicLinksEndpointsOptions>? configure = null)",
+          "returnType": "IEndpointRouteBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsPublicLinksEndpointsModule",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.GranitDocumentsPublicLinksEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/GranitDocumentsPublicLinksEndpointsModule.cs",
+      "line": 14,
+      "members": []
+    },
+    {
+      "name": "DocumentsPublicLinksEndpointsOptions",
+      "fqn": "Granit.Documents.PublicLinks.Endpoints.Options.DocumentsPublicLinksEndpointsOptions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.Endpoints",
+      "file": "src/Granit.Documents.PublicLinks.Endpoints/Options/DocumentsPublicLinksEndpointsOptions.cs",
+      "line": 6,
+      "members": [
+        {
+          "name": "RoutePrefix",
+          "kind": "property",
+          "signature": "string RoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "AnonymousRoutePrefix",
+          "kind": "property",
+          "signature": "string AnonymousRoutePrefix",
+          "returnType": "string"
+        },
+        {
+          "name": "TagName",
+          "kind": "property",
+          "signature": "string TagName",
+          "returnType": "string"
         }
       ]
     },
@@ -23101,7 +23206,7 @@
       "kind": "interface",
       "project": "Granit.Documents.PublicLinks",
       "file": "src/Granit.Documents.PublicLinks/IDocumentPublicLinkService.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "CreateAsync",
@@ -23120,6 +23225,18 @@
           "kind": "method",
           "signature": "ListForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
           "returnType": "Task<IReadOnlyList<DocumentPublicLink>>"
+        },
+        {
+          "name": "ResolveAndConsumeAsync",
+          "kind": "method",
+          "signature": "ResolveAndConsumeAsync(string token, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentPublicLink?>"
+        },
+        {
+          "name": "CreateRedemptionUrlAsync",
+          "kind": "method",
+          "signature": "CreateRedemptionUrlAsync(DocumentPublicLink link, bool forceAttachment, CancellationToken cancellationToken = default)",
+          "returnType": "Task<PresignedDownloadUrl?>"
         }
       ]
     },

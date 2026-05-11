@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.PublicLinks.Endpoints</PackageId>
+    <Description>Minimal API endpoints for Granit.Documents.PublicLinks (F18.3). Authenticated admin surface for minting / revoking / listing public sharing links, plus the anonymous token-based redemption endpoints that resolve a bearer token to a presigned download URL.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.Endpoints.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+    <ProjectReference Include="..\Granit.Documents.Endpoints\Granit.Documents.Endpoints.csproj" />
+    <ProjectReference Include="..\Granit.Documents.PublicLinks\Granit.Documents.PublicLinks.csproj" />
+    <ProjectReference Include="..\Granit.Http.ApiDocumentation\Granit.Http.ApiDocumentation.csproj" />
+  </ItemGroup>
+
+</Project>

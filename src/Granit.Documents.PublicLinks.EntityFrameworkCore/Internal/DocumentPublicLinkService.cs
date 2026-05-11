@@ -1,3 +1,5 @@
+using Granit.BlobStorage;
+using Granit.BlobStorage.Options;
 using Granit.Documents.Domain;
 using Granit.Documents.PublicLinks.Domain;
 using Granit.Documents.PublicLinks.Options;
@@ -93,6 +95,73 @@ internal sealed class DocumentPublicLinkService(
     public Task<IReadOnlyList<DocumentPublicLink>> ListForDocumentAsync(
         Guid documentId, CancellationToken cancellationToken = default) =>
         store.ListForDocumentAsync(documentId, cancellationToken);
+
+    /// <inheritdoc/>
+    public async Task<DocumentPublicLink?> ResolveAndConsumeAsync(
+        string token, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            return null;
+        }
+
+        GranitDocumentsPublicLinksOptions options = optionsMonitor.CurrentValue;
+        if (options.SigningKey.Length == 0)
+        {
+            throw new InvalidOperationException(
+                "GranitDocumentsPublicLinksOptions.SigningKey is empty — public links cannot be redeemed. " +
+                "Provision the HMAC pepper through Granit.Configuration.Vault before serving redemptions.");
+        }
+
+        byte[] tokenHash = PublicLinkTokenFactory.ComputeHash(token, options.SigningKey);
+
+        DocumentPublicLink? link = await store
+            .ResolveByTokenHashAsync(tokenHash, cancellationToken)
+            .ConfigureAwait(false);
+        if (link is null)
+        {
+            return null;
+        }
+
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        if (!link.IsActive(now))
+        {
+            return null;
+        }
+
+        try
+        {
+            link.RegisterConsumption(timeProvider);
+        }
+        catch (InvalidOperationException)
+        {
+            // Defence in depth — a race with concurrent redemption/revocation has
+            // already taken the aggregate out of the active set. 404 either way.
+            return null;
+        }
+
+        await store.UpdateAsync(link, cancellationToken).ConfigureAwait(false);
+        return link;
+    }
+
+    /// <inheritdoc/>
+    public async Task<PresignedDownloadUrl?> CreateRedemptionUrlAsync(
+        DocumentPublicLink link,
+        bool forceAttachment,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(link);
+
+        // Force an attachment Content-Disposition for download scope; leave the
+        // filename null for view scope so the browser may preview inline.
+        DownloadUrlOptions? options = forceAttachment
+            ? new DownloadUrlOptions(DownloadFileName: $"document-{link.DocumentId:N}")
+            : null;
+
+        return await documents
+            .CreatePublicDownloadUrlAsync(link.DocumentId, options, cancellationToken)
+            .ConfigureAwait(false);
+    }
 
     private static Guid? TryParseUserId(string? userId) =>
         Guid.TryParse(userId, out Guid parsed) ? parsed : null;
