@@ -430,7 +430,12 @@ public static class ODataExposureEndpointRouteBuilderExtensions
             .WithODataResult()
             .WithODataOptions(opts => opts.SetMaxTop(descriptor.MaxTop));
 
-        route.WithName($"OData{descriptor.EntitySetName}List")
+        // Tenant-feed name stays `OData{Set}List` (no breaking change). Host-feed
+        // gains a `Host` segment so an entity exposed on both feeds (e.g. canonical
+        // User aggregate, ADR-051) does not collide on the globally-unique endpoint
+        // name registry.
+        string feedSegment = descriptor.FeedKind == ODataFeedKind.Host ? "Host" : string.Empty;
+        route.WithName($"OData{feedSegment}{descriptor.EntitySetName}List")
              .WithSummary($"Returns the {descriptor.EntitySetName} EntitySet, filtered by the framework's tenant + soft-delete pipeline.")
              .WithDescription($"OData v4 endpoint for the {descriptor.EntitySetName} set. Supports $filter, $select, $top, $skip, $orderby. Tenant and soft-delete filters are applied BEFORE any user $filter — the OData query never bypasses framework access control. Per-set caps: MaxTop={descriptor.MaxTop}, PageSize={descriptor.PageSize}, $count={(descriptor.CountEnabled ? "enabled" : "disabled")}, $expand={(descriptor.ExpandWhitelist is null or { Count: 0 } ? "disabled" : string.Join(",", descriptor.ExpandWhitelist))}.")
              .Produces(StatusCodes.Status200OK)
