@@ -956,6 +956,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "deps": [
+        "Granit.BackgroundJobs",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Documents"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.AssetMetadata.Endpoints",
       "deps": [
         "Granit.Documents",
@@ -20475,6 +20484,86 @@
       "members": []
     },
     {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/Extensions/ServiceCollectionExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataBackgroundJobs",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataBackgroundJobs(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataBackgroundJobsModule",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.GranitDocumentsAssetMetadataBackgroundJobsModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/GranitDocumentsAssetMetadataBackgroundJobsModule.cs",
+      "line": 22,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "DocumentVersionAddedAssetMetadataHandler",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.Handlers.DocumentVersionAddedAssetMetadataHandler",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/Handlers/DocumentVersionAddedAssetMetadataHandler.cs",
+      "line": 14,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentVersionAddedEvent evt, IAssetMetadataGenerationService generationService, CancellationToken cancellationToken)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataGenerationService",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.IAssetMetadataGenerationService",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/IAssetMetadataGenerationService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExtractAsync",
+          "kind": "method",
+          "signature": "ExtractAsync(Guid documentId, Guid? tenantId, Guid versionId, Guid blobDescriptorId, string sourceContentType, CancellationToken cancellationToken = default)",
+          "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataSourceFetcher",
+      "fqn": "Granit.Documents.AssetMetadata.BackgroundJobs.IAssetMetadataSourceFetcher",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata.BackgroundJobs",
+      "file": "src/Granit.Documents.AssetMetadata.BackgroundJobs/IAssetMetadataSourceFetcher.cs",
+      "line": 16,
+      "members": [
+        {
+          "name": "OpenSourceAsync",
+          "kind": "method",
+          "signature": "OpenSourceAsync(Guid blobDescriptorId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<Stream>"
+        }
+      ]
+    },
+    {
       "name": "AssetMetadataActivitySource",
       "fqn": "Granit.Documents.AssetMetadata.Diagnostics.AssetMetadataActivitySource",
       "kind": "class",
@@ -21096,24 +21185,6 @@
       ]
     },
     {
-      "name": "DocumentListPage",
-      "fqn": "Granit.Documents.Domain.DocumentListPage",
-      "kind": "record",
-      "project": "Granit.Documents",
-      "file": "src/Granit.Documents/Domain/DocumentListPage.cs",
-      "line": 12,
-      "members": []
-    },
-    {
-      "name": "DocumentListSort",
-      "fqn": "Granit.Documents.Domain.DocumentListSort",
-      "kind": "enum",
-      "project": "Granit.Documents",
-      "file": "src/Granit.Documents/Domain/DocumentListPage.cs",
-      "line": 21,
-      "members": []
-    },
-    {
       "name": "DocumentShare",
       "fqn": "Granit.Documents.Domain.DocumentShare",
       "kind": "class",
@@ -21330,15 +21401,6 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/ListDocumentVersionsResponse.cs",
       "line": 12,
-      "members": []
-    },
-    {
-      "name": "ListDocumentsResponse",
-      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentsResponse",
-      "kind": "record",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/ListDocumentsResponse.cs",
-      "line": 8,
       "members": []
     },
     {
@@ -22057,12 +22119,6 @@
           "kind": "method",
           "signature": "ListTrashedAsync(int skip, int take, CancellationToken cancellationToken = default)",
           "returnType": "Task<TrashedDocumentPage>"
-        },
-        {
-          "name": "ListAsync",
-          "kind": "method",
-          "signature": "ListAsync(Guid? folderId, DocumentStatus status, int skip, int take, DocumentListSort sort, CancellationToken cancellationToken = default)",
-          "returnType": "Task<DocumentListPage>"
         }
       ]
     },

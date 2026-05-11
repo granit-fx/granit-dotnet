@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.AssetMetadata.BackgroundJobs</PackageId>
+    <Description>Event-driven background extraction for Granit.Documents.AssetMetadata (F17.4). Subscribes to DocumentVersionAddedEvent, fetches the source bytes through a presigned download URL, and runs the registered IAssetMetadataExtractor chain asynchronously.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.BackgroundJobs.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.BackgroundJobs\Granit.BackgroundJobs.csproj" />
+    <ProjectReference Include="..\Granit.Documents.AssetMetadata\Granit.Documents.AssetMetadata.csproj" />
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+  </ItemGroup>
+
+</Project>
