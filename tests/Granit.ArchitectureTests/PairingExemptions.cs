@@ -49,6 +49,7 @@ internal static class PairingExemptions
         "Granit.DataExchange.Export.Domain.ExportJob",                                    // [INFRA] transient export job
         "Granit.DataExchange.Import.Domain.ImportJob",                                    // [INFRA] transient import job
         "Granit.Documents.AssetMetadata.Domain.DocumentAssetMetadata",                    // [INFRA] derived metadata row — no admin grid / business KPI surface, populated by F17 background extractors
+        "Granit.Documents.PublicLinks.Domain.DocumentPublicLink",                         // [INFRA] anonymous public-link entity — surfaced via dedicated admin endpoints (POST/DELETE/GET /documents/{id}/public-links), no admin grid / QueryDefinition needed; no business KPI surface justifies a MetricDefinition
         "Granit.Documents.Renditions.Domain.DocumentRendition",                           // [INFRA] derived rendition row, surfaced via the documents view, no admin grid / KPI of its own
         "Granit.Identity.Federated.Domain.FederatedIdentity",                                // [INFRA] internal user cache
         "Granit.Identity.Local.Domain.GranitRole",                                        // [INFRA] RBAC config
