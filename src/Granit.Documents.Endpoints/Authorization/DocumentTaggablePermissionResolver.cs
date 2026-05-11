@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Granit.Documents.Domain;
-using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Permissions;
 using Granit.Taxonomy.Authorization;
 using Microsoft.AspNetCore.Http;
 

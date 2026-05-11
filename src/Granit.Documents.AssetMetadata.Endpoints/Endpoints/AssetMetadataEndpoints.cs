@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Granit.Documents.AssetMetadata.Domain;
 using Granit.Documents.AssetMetadata.Endpoints.Dtos;
 using Granit.Documents.AssetMetadata.Endpoints.Mapping;
-using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Permissions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;

@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "Documenti",
     "Metric:Granit.Documents.FolderCountMetric": "Cartelle",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "Spazio utilizzato"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Spazio utilizzato",
+    "Permission:Documents.Documents.Manage": "Caricare, rinominare, spostare e cestinare documenti",
+    "Permission:Documents.Documents.Read": "Visualizzare e scaricare documenti",
+    "Permission:Documents.Folders.Manage": "Creare, rinominare, spostare e cestinare cartelle",
+    "Permission:Documents.Folders.Read": "Visualizzare le cartelle",
+    "Permission:Documents.Quotas.Read": "Visualizzare l'utilizzo della quota di archiviazione del tenant",
+    "Permission:Documents.Shares.Manage": "Concedere e revocare le condivisioni su cartelle e documenti",
+    "Permission:Documents.Shares.Read": "Visualizzare le condivisioni su cartelle e documenti",
+    "Permission:Documents.Tags.Manage": "Assegnare e rimuovere etichette dai documenti",
+    "Permission:Documents.Tags.Read": "Visualizzare le etichette assegnate a un documento",
+    "PermissionGroup:Documents": "Documenti"
   }
 }

@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "文档",
     "Metric:Granit.Documents.FolderCountMetric": "文件夹",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "已用存储"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "已用存储",
+    "Permission:Documents.Documents.Manage": "上传、重命名、移动和回收文档",
+    "Permission:Documents.Documents.Read": "查看和下载文档",
+    "Permission:Documents.Folders.Manage": "创建、重命名、移动和回收文件夹",
+    "Permission:Documents.Folders.Read": "查看文件夹",
+    "Permission:Documents.Quotas.Read": "查看租户的存储配额使用情况",
+    "Permission:Documents.Shares.Manage": "授予和撤销文件夹与文档的共享授权",
+    "Permission:Documents.Shares.Read": "查看文件夹与文档的共享授权",
+    "Permission:Documents.Tags.Manage": "为文档分配和取消分配标签",
+    "Permission:Documents.Tags.Read": "查看分配给文档的标签",
+    "PermissionGroup:Documents": "文档"
   }
 }

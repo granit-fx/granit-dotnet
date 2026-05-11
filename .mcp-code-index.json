@@ -21757,60 +21757,6 @@
       ]
     },
     {
-      "name": "Documents",
-      "fqn": "Granit.Documents.Endpoints.Permissions.Documents",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 23,
-      "members": []
-    },
-    {
-      "name": "DocumentsPermissions",
-      "fqn": "Granit.Documents.Endpoints.Permissions.DocumentsPermissions",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 7,
-      "members": []
-    },
-    {
-      "name": "Folders",
-      "fqn": "Granit.Documents.Endpoints.Permissions.Folders",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 13,
-      "members": []
-    },
-    {
-      "name": "Quotas",
-      "fqn": "Granit.Documents.Endpoints.Permissions.Quotas",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 53,
-      "members": []
-    },
-    {
-      "name": "Shares",
-      "fqn": "Granit.Documents.Endpoints.Permissions.Shares",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 33,
-      "members": []
-    },
-    {
-      "name": "Tags",
-      "fqn": "Granit.Documents.Endpoints.Permissions.Tags",
-      "kind": "class",
-      "project": "Granit.Documents.Endpoints",
-      "file": "src/Granit.Documents.Endpoints/Permissions/DocumentsPermissions.cs",
-      "line": 43,
-      "members": []
-    },
-    {
       "name": "TenantStorageQuotaResponse",
       "fqn": "Granit.Documents.Endpoints.Quotas.Dtos.TenantStorageQuotaResponse",
       "kind": "record",
@@ -22851,6 +22797,60 @@
           "returnType": "bool"
         }
       ]
+    },
+    {
+      "name": "Documents",
+      "fqn": "Granit.Documents.Permissions.Documents",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 23,
+      "members": []
+    },
+    {
+      "name": "DocumentsPermissions",
+      "fqn": "Granit.Documents.Permissions.DocumentsPermissions",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 7,
+      "members": []
+    },
+    {
+      "name": "Folders",
+      "fqn": "Granit.Documents.Permissions.Folders",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "Quotas",
+      "fqn": "Granit.Documents.Permissions.Quotas",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 53,
+      "members": []
+    },
+    {
+      "name": "Shares",
+      "fqn": "Granit.Documents.Permissions.Shares",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 33,
+      "members": []
+    },
+    {
+      "name": "Tags",
+      "fqn": "Granit.Documents.Permissions.Tags",
+      "kind": "class",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Permissions/DocumentsPermissions.cs",
+      "line": 43,
+      "members": []
     },
     {
       "name": "DocumentsPublicLinksActivitySource",

@@ -1,11 +1,11 @@
 using Granit.Authorization;
-using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Permissions;
 using Granit.Localization;
 using NSubstitute;
 using Shouldly;
 using Xunit;
 
-namespace Granit.Documents.Endpoints.Tests.Permissions;
+namespace Granit.Documents.Tests.Permissions;
 
 /// <summary>
 /// Unit tests for <see cref="DocumentsPermissionDefinitionProvider"/> — verifies the

@@ -1,7 +1,7 @@
-namespace Granit.Documents.Endpoints.Permissions;
+namespace Granit.Documents.Permissions;
 
 /// <summary>
-/// Permission constants exposed by <c>Granit.Documents.Endpoints</c> — folder, document,
+/// Permission constants exposed by <c>Granit.Documents</c> — folder, document,
 /// share, tag, and quota permissions used by the Phase 1 Granit.Documents endpoints.
 /// </summary>
 public static class DocumentsPermissions

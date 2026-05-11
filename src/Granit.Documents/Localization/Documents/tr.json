@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "Belgeler",
     "Metric:Granit.Documents.FolderCountMetric": "Klasörler",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "Kullanılan depolama"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Kullanılan depolama",
+    "Permission:Documents.Documents.Manage": "Belgeleri yükleme, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
+    "Permission:Documents.Documents.Read": "Belgeleri görüntüle ve indir",
+    "Permission:Documents.Folders.Manage": "Klasörleri oluşturma, yeniden adlandırma, taşıma ve geri dönüşüm kutusuna gönderme",
+    "Permission:Documents.Folders.Read": "Klasörleri görüntüle",
+    "Permission:Documents.Quotas.Read": "Kiracının depolama kotası kullanımını görüntüle",
+    "Permission:Documents.Shares.Manage": "Klasör ve belgelerdeki paylaşım izinlerini ver ve geri al",
+    "Permission:Documents.Shares.Read": "Klasör ve belgelerdeki paylaşım izinlerini görüntüle",
+    "Permission:Documents.Tags.Manage": "Belgelere etiket ata ve etiket kaldır",
+    "Permission:Documents.Tags.Read": "Bir belgeye atanmış etiketleri görüntüle",
+    "PermissionGroup:Documents": "Belgeler"
   }
 }

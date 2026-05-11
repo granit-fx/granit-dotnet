@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "Dokumenty",
     "Metric:Granit.Documents.FolderCountMetric": "Foldery",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "Wykorzystana pamięć"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Wykorzystana pamięć",
+    "Permission:Documents.Documents.Manage": "Przesyłanie, zmiana nazwy, przenoszenie i przenoszenie do kosza dokumentów",
+    "Permission:Documents.Documents.Read": "Wyświetlanie i pobieranie dokumentów",
+    "Permission:Documents.Folders.Manage": "Tworzenie, zmiana nazwy, przenoszenie i przenoszenie do kosza folderów",
+    "Permission:Documents.Folders.Read": "Wyświetlanie folderów",
+    "Permission:Documents.Quotas.Read": "Wyświetlanie wykorzystania limitu pamięci najemcy",
+    "Permission:Documents.Shares.Manage": "Przyznawanie i odbieranie udostępnień folderów i dokumentów",
+    "Permission:Documents.Shares.Read": "Wyświetlanie udostępnień folderów i dokumentów",
+    "Permission:Documents.Tags.Manage": "Przypisywanie i usuwanie tagów dokumentów",
+    "Permission:Documents.Tags.Read": "Wyświetlanie tagów przypisanych do dokumentu",
+    "PermissionGroup:Documents": "Dokumenty"
   }
 }

@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Granit.BlobStorage;
-using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Permissions;
 using Granit.Documents.Renditions;
 using Granit.Documents.Renditions.Domain;
 using Granit.Documents.Renditions.Endpoints.Dtos;

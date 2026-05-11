@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "Dokumente",
     "Metric:Granit.Documents.FolderCountMetric": "Ordner",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "Belegter Speicher"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Belegter Speicher",
+    "Permission:Documents.Documents.Manage": "Dokumente hochladen, umbenennen, verschieben und in den Papierkorb legen",
+    "Permission:Documents.Documents.Read": "Dokumente anzeigen und herunterladen",
+    "Permission:Documents.Folders.Manage": "Ordner erstellen, umbenennen, verschieben und in den Papierkorb legen",
+    "Permission:Documents.Folders.Read": "Ordner anzeigen",
+    "Permission:Documents.Quotas.Read": "Speicherkontingentnutzung des Mandanten anzeigen",
+    "Permission:Documents.Shares.Manage": "Freigaben für Ordner und Dokumente erteilen und widerrufen",
+    "Permission:Documents.Shares.Read": "Freigaben für Ordner und Dokumente anzeigen",
+    "Permission:Documents.Tags.Manage": "Tags Dokumenten zuweisen und entfernen",
+    "Permission:Documents.Tags.Read": "Einem Dokument zugewiesene Tags anzeigen",
+    "PermissionGroup:Documents": "Dokumente"
   }
 }

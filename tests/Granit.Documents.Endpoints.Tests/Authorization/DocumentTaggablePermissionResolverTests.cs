@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Granit.Documents.Domain;
 using Granit.Documents.Endpoints.Authorization;
-using Granit.Documents.Endpoints.Permissions;
+using Granit.Documents.Permissions;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
 using Shouldly;

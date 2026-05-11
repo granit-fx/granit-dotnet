@@ -1,9 +1,9 @@
 using Granit.Authorization;
-using Granit.Documents.Endpoints.Internal;
+using Granit.Documents.Internal;
 using Granit.Localization;
 using Granit.MultiTenancy;
 
-namespace Granit.Documents.Endpoints.Permissions;
+namespace Granit.Documents.Permissions;
 
 /// <summary>
 /// Declares the <c>Documents.*.*</c> permissions in the Granit RBAC system.
@@ -20,60 +20,60 @@ internal sealed class DocumentsPermissionDefinitionProvider : IPermissionDefinit
 
         PermissionGroup group = context.AddGroup(
             DocumentsPermissions.GroupName,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "PermissionGroup:Documents"));
 
         group.AddPermission(
             DocumentsPermissions.Folders.Read,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Folders.Read"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Folders.Manage,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Folders.Manage"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Documents.Read,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Documents.Read"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Documents.Manage,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Documents.Manage"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Shares.Read,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Shares.Read"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Shares.Manage,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Shares.Manage"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Tags.Read,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Tags.Read"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Tags.Manage,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Tags.Manage"),
             MultiTenancySides.Both);
 
         group.AddPermission(
             DocumentsPermissions.Quotas.Read,
-            LocalizableString.Create<DocumentsEndpointsLocalizationResource>(
+            LocalizableString.Create<DocumentsLocalizationResource>(
                 "Permission:Documents.Quotas.Read"),
             MultiTenancySides.Both);
     }

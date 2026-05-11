@@ -1,7 +1,7 @@
 using Granit.Documents;
 using Granit.Documents.Domain;
-using Granit.Documents.Endpoints.Permissions;
 using Granit.Documents.Endpoints.Quotas.Dtos;
+using Granit.Documents.Permissions;
 using Granit.MultiTenancy;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;

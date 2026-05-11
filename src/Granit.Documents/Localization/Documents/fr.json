@@ -3,6 +3,16 @@
   "texts": {
     "Metric:Granit.Documents.DocumentCountMetric": "Documents",
     "Metric:Granit.Documents.FolderCountMetric": "Dossiers",
-    "Metric:Granit.Documents.TotalStorageUsedMetric": "Stockage utilisé"
+    "Metric:Granit.Documents.TotalStorageUsedMetric": "Stockage utilisé",
+    "Permission:Documents.Documents.Manage": "Téléverser, renommer, déplacer et corbeillir les documents",
+    "Permission:Documents.Documents.Read": "Consulter et télécharger les documents",
+    "Permission:Documents.Folders.Manage": "Créer, renommer, déplacer et corbeillir des dossiers",
+    "Permission:Documents.Folders.Read": "Consulter les dossiers",
+    "Permission:Documents.Quotas.Read": "Consulter la consommation du quota de stockage du locataire",
+    "Permission:Documents.Shares.Manage": "Accorder et révoquer les partages sur les dossiers et les documents",
+    "Permission:Documents.Shares.Read": "Consulter les partages sur les dossiers et les documents",
+    "Permission:Documents.Tags.Manage": "Assigner et retirer des étiquettes sur les documents",
+    "Permission:Documents.Tags.Read": "Consulter les étiquettes assignées à un document",
+    "PermissionGroup:Documents": "Documents"
   }
 }

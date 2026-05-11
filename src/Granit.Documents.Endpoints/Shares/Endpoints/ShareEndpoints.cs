@@ -1,7 +1,7 @@
 using Granit.Documents.Domain;
-using Granit.Documents.Endpoints.Permissions;
 using Granit.Documents.Endpoints.Shares.Dtos;
 using Granit.Documents.Endpoints.Shares.Mapping;
+using Granit.Documents.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
