@@ -7199,6 +7199,15 @@
       ]
     },
     {
+      "name": "AuditEntityChangeSummaryResponse",
+      "fqn": "Granit.Auditing.Dtos.AuditEntityChangeSummaryResponse",
+      "kind": "record",
+      "project": "Granit.Auditing",
+      "file": "src/Granit.Auditing/Dtos/AuditEntityChangeSummaryResponse.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "AuditEntryResponse",
       "fqn": "Granit.Auditing.Dtos.AuditEntryResponse",
       "kind": "record",
@@ -7854,7 +7863,7 @@
       "kind": "class",
       "project": "Granit.Auditing",
       "file": "src/Granit.Auditing/Queries/AuditEntityChangeQueryDefinition.cs",
-      "line": 10,
+      "line": 11,
       "members": [
         {
           "name": "Name",

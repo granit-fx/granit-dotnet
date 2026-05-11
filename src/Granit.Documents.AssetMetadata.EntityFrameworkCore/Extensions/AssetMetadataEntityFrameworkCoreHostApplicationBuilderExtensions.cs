@@ -29,6 +29,7 @@ public static class AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtens
 
         builder.Services.AddGranitDbContext<AssetMetadataDbContext>(configure);
         builder.Services.TryAddScoped<IAssetMetadataStore, AssetMetadataStore>();
+        builder.Services.TryAddScoped<IAssetMetadataService, AssetMetadataService>();
 
         return builder;
     }
