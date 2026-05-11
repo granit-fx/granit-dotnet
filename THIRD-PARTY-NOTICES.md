@@ -12,7 +12,7 @@ Dernière mise à jour : 2026-04-29
 
 | Licence      | Nombre de packages |
 | ------------ | ------------------ |
-| MIT          | 89                 |
+| MIT          | 90                 |
 | Apache-2.0   | 36                 |
 | BSD-3-Clause | 2                  |
 | BSD-2-Clause | 1                  |
@@ -38,6 +38,7 @@ Dernière mise à jour : 2026-04-29
 | Azure.Storage.Blobs | 12.27.0 | (c) Microsoft Corporation |
 | ClosedXML | 0.105.0 | ClosedXML Contributors |
 | Cronos | 0.12.0 | Copyright (c) 2016-2025 Hangfire OU |
+| DocumentFormat.OpenXml | 3.5.1 | Copyright (c) Microsoft Corporation |
 | FuzzySharp | 2.0.2 | Copyright (c) Jacob Bayer |
 | Lib.Net.Http.WebPush | 3.3.1 | Copyright (c) Tomasz Pęczek |
 | MailKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |

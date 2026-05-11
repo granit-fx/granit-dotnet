@@ -991,6 +991,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.Office",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.AssetMetadata.Pdf",
       "deps": [
         "Granit.Documents.AssetMetadata"
@@ -20938,6 +20945,38 @@
       "project": "Granit.Documents.AssetMetadata.Imaging",
       "file": "src/Granit.Documents.AssetMetadata.Imaging/GranitDocumentsAssetMetadataImagingModule.cs",
       "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Office.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Office",
+      "file": "src/Granit.Documents.AssetMetadata.Office/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataOffice",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataOffice(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataOfficeModule",
+      "fqn": "Granit.Documents.AssetMetadata.Office.GranitDocumentsAssetMetadataOfficeModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Office",
+      "file": "src/Granit.Documents.AssetMetadata.Office/GranitDocumentsAssetMetadataOfficeModule.cs",
+      "line": 14,
       "members": [
         {
           "name": "ConfigureServices",
