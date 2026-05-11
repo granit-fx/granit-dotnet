@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Documents;
 using Granit.Documents.AssetMetadata.Domain;
 using Granit.Documents.AssetMetadata.Exceptions;
 using Granit.Documents.AssetMetadata.Options;
 using Granit.Documents.AssetMetadata.Pipeline;
+using Granit.Documents.Domain;
 using Granit.Guids;
 using Granit.Timing;
 using Microsoft.Extensions.Logging;
@@ -31,6 +33,7 @@ internal sealed partial class AssetMetadataGenerationService(
     IAssetMetadataStore store,
     IAssetMetadataPipeline pipeline,
     IAssetMetadataSourceFetcher sourceFetcher,
+    IDocumentService documentService,
     IGuidGenerator guidGenerator,
     IClock clock,
     IOptions<GranitAssetMetadataOptions> options,
@@ -64,8 +67,24 @@ internal sealed partial class AssetMetadataGenerationService(
                 row.MarkExtracting();
                 await store.UpdateAsync(row, cancellationToken).ConfigureAwait(false);
 
+                // F17.9 — the StripGpsHandler runs on the same DocumentVersionAddedEvent
+                // and may have swapped the version's BlobDescriptorId for a scrubbed one
+                // between event publication and this handler being dispatched (local vs.
+                // Wolverine queue ordering is not guaranteed). Re-read the current
+                // BlobDescriptorId from the DocumentVersion so the extractor always sees
+                // the post-scrub bytes. Falls back to the event's snapshot if the lookup
+                // returns null (version deleted under us).
+                Guid effectiveBlobId = blobDescriptorId;
+                DocumentVersion? current = await documentService
+                    .GetVersionByIdAsync(versionId, cancellationToken)
+                    .ConfigureAwait(false);
+                if (current is not null && current.BlobDescriptorId != Guid.Empty)
+                {
+                    effectiveBlobId = current.BlobDescriptorId;
+                }
+
                 await using Stream source = await sourceFetcher
-                    .OpenSourceAsync(blobDescriptorId, cancellationToken)
+                    .OpenSourceAsync(effectiveBlobId, cancellationToken)
                     .ConfigureAwait(false);
 
                 IReadOnlyList<AssetMetadataResult> results = await pipeline

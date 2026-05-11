@@ -23,6 +23,15 @@
           "Magick.NET.Core": "14.13.0"
         }
       },
+      "MetadataExtractor": {
+        "type": "Direct",
+        "requested": "[2.*, )",
+        "resolved": "2.9.3",
+        "contentHash": "7dBcqlPC2Zc/bsZtXnv8nCWe5h5WsLHszzHtxnpcsVy4MwlD3KQ3wVNoiYBm0a3rzt5hRwAosPvLPhlXrV5lyg==",
+        "dependencies": {
+          "XmpCore": "6.1.10.1"
+        }
+      },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Direct",
         "requested": "[3.*, )",
@@ -37,6 +46,15 @@
         "dependencies": {
           "Microsoft.CodeCoverage": "18.5.1",
           "Microsoft.TestPlatform.TestHost": "18.5.1"
+        }
+      },
+      "NSubstitute": {
+        "type": "Direct",
+        "requested": "[5.*, )",
+        "resolved": "5.3.0",
+        "contentHash": "lJ47Cps5Qzr86N99lcwd+OUvQma7+fBgr8+Mn+aOC0WrlqMNkdivaYD9IvnZ5Mqo6Ky3LS7ZI+tUq1/s9ERd0Q==",
+        "dependencies": {
+          "Castle.Core": "5.1.1"
         }
       },
       "Shouldly": {
@@ -62,6 +80,14 @@
         "contentHash": "L+4/4y0Uqcg8/d6hfnxhnwh4j9FaeULvefTwrk30rr1o4n/vdPfyUQ8k0yzH8VJx7bmFEkDdcRfbtbjEHlaYcA==",
         "dependencies": {
           "xunit.v3.mtp-v1": "[3.2.2]"
+        }
+      },
+      "Castle.Core": {
+        "type": "Transitive",
+        "resolved": "5.1.1",
+        "contentHash": "rpYtIczkzGpf+EkZgDr9CClTdemhsrwA/W5hMoPjLkRFnXzH44zDLoovXeKtmxb1ykXK9aJVODSpiJml8CTw2g==",
+        "dependencies": {
+          "System.Diagnostics.EventLog": "6.0.0"
         }
       },
       "DiffEngine": {
@@ -195,6 +221,11 @@
         "type": "Transitive",
         "resolved": "6.0.0",
         "contentHash": "CPc6tWO1LAer3IzfZufDBRL+UZQcj5uS207NHALQzP84Vp/z6wF0Aa0YZImOQY8iStY0A2zI/e3ihKNPfUm8XA=="
+      },
+      "System.Diagnostics.EventLog": {
+        "type": "Transitive",
+        "resolved": "6.0.0",
+        "contentHash": "lcyUiXTsETK2ALsZrX+nWuHSIQeazhqPphLfaRxzdGaG93+0kELqpgEHtwWOlQe7+jSFnKwaCAgL4kjeZCQJnw=="
       },
       "System.Management": {
         "type": "Transitive",
@@ -391,7 +422,10 @@
       "granit.documents.assetmetadata.imaging": {
         "type": "Project",
         "dependencies": {
+          "Granit.BlobStorage": "[0.1.0-dev, )",
+          "Granit.Documents": "[0.1.0-dev, )",
           "Granit.Documents.AssetMetadata": "[0.1.0-dev, )",
+          "Magick.NET-Q8-AnyCPU": "[14.*, )",
           "MetadataExtractor": "[2.*, )"
         }
       },
@@ -458,15 +492,6 @@
         "type": "Project",
         "dependencies": {
           "Granit": "[0.1.0-dev, )"
-        }
-      },
-      "MetadataExtractor": {
-        "type": "CentralTransitive",
-        "requested": "[2.*, )",
-        "resolved": "2.9.3",
-        "contentHash": "7dBcqlPC2Zc/bsZtXnv8nCWe5h5WsLHszzHtxnpcsVy4MwlD3KQ3wVNoiYBm0a3rzt5hRwAosPvLPhlXrV5lyg==",
-        "dependencies": {
-          "XmpCore": "6.1.10.1"
         }
       },
       "Microsoft.Extensions.Caching.Abstractions": {

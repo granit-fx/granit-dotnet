@@ -176,4 +176,42 @@ public interface IDocumentService
         int skip,
         int take,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Returns the <see cref="DocumentVersion"/> with the given identifier, or <c>null</c>
+    /// when not found / excluded by the tenant filter. Convenience accessor consumed by
+    /// downstream post-upload flows (F17.4 / F17.9) that need to re-read a version's
+    /// current <c>BlobDescriptorId</c> rather than rely on a stale event snapshot.
+    /// </summary>
+    Task<DocumentVersion?> GetVersionByIdAsync(Guid versionId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Atomically swaps the blob backing a <see cref="DocumentVersion"/> for a freshly-
+    /// uploaded sanitised one. Reserved for GDPR-driven scrub flows (F17.9 — GPS strip on
+    /// upload).
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The implementation updates the version's <c>BlobDescriptorId</c> + <c>SizeBytes</c>,
+    /// soft-deletes the old blob via <see cref="IBlobStorage.DeleteAsync"/>, rebalances the
+    /// tenant's storage quota (decrement old, increment new — the scrubbed blob is
+    /// typically smaller) and publishes a <c>DocumentBlobScrubbedEvent</c> for the audit
+    /// trail. All inside a single <c>SaveChangesAsync</c>.
+    /// </para>
+    /// <para>
+    /// Returns the updated <see cref="DocumentVersion"/>, or <c>null</c> when the version
+    /// is not found / excluded by the tenant filter.
+    /// </para>
+    /// </remarks>
+    /// <param name="versionId">Identifier of the version whose blob to replace.</param>
+    /// <param name="newBlobDescriptorId">Identifier of the freshly-uploaded scrubbed blob (already <c>Valid</c>).</param>
+    /// <param name="newSizeBytes">Verified size of the scrubbed blob.</param>
+    /// <param name="reason">Audit reason recorded on <c>DocumentBlobScrubbedEvent</c> (e.g. <c>"gps-strip"</c>).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<DocumentVersion?> ReplaceVersionBlobAsync(
+        Guid versionId,
+        Guid newBlobDescriptorId,
+        long newSizeBytes,
+        string reason,
+        CancellationToken cancellationToken = default);
 }

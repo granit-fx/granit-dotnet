@@ -740,4 +740,101 @@ internal sealed class DocumentService(
 
         return new TrashedDocumentPage(rows, totalCount);
     }
+
+    /// <inheritdoc />
+    public async Task<DocumentVersion?> GetVersionByIdAsync(
+        Guid versionId, CancellationToken cancellationToken = default)
+    {
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return await context.DocumentVersions
+            .FirstOrDefaultAsync(v => v.Id == versionId, cancellationToken)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async Task<DocumentVersion?> ReplaceVersionBlobAsync(
+        Guid versionId,
+        Guid newBlobDescriptorId,
+        long newSizeBytes,
+        string reason,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+        if (newBlobDescriptorId == Guid.Empty)
+        {
+            throw new ArgumentException("Blob descriptor id cannot be empty.", nameof(newBlobDescriptorId));
+        }
+        if (newSizeBytes < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newSizeBytes), "Size must be non-negative.");
+        }
+
+        await using DocumentsDbContext context = await contextFactory
+            .CreateDbContextAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        DocumentVersion? version = await context.DocumentVersions
+            .FirstOrDefaultAsync(v => v.Id == versionId, cancellationToken)
+            .ConfigureAwait(false);
+        if (version is null)
+        {
+            return null;
+        }
+
+        Guid oldBlobId = version.BlobDescriptorId;
+        long oldSize = version.SizeBytes;
+        if (oldBlobId == newBlobDescriptorId)
+        {
+            return version;
+        }
+
+        version.ReplaceBlob(newBlobDescriptorId, newSizeBytes);
+        await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
+        // Rebalance quota. The scrub usually shrinks the blob, but we never trust the
+        // sign of (new - old) — decrement old, increment new keeps the counter exact
+        // even if the new blob is (somehow) larger.
+        if (version.TenantId is { } tid)
+        {
+            if (oldSize > 0)
+            {
+                await quotas.DecrementAsync(tid, oldSize, cancellationToken).ConfigureAwait(false);
+            }
+            if (newSizeBytes > 0)
+            {
+                await quotas.IncrementAsync(tid, newSizeBytes, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        // Soft-delete the old blob — bytes go, audit row stays for the 3-year trail.
+        // Idempotent in BlobStorage; swallow BlobNotFound to keep the scrub robust
+        // against a stale source.
+        try
+        {
+            await blobStorage
+                .DeleteAsync(ContainerName, oldBlobId, deletionReason: reason, cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (BlobStorage.Exceptions.BlobNotFoundException)
+        {
+            // Old blob already gone — nothing to clean up.
+        }
+
+        await localEventBus.PublishAsync(
+            new DocumentBlobScrubbedEvent(
+                version.DocumentId,
+                version.Id,
+                version.TenantId,
+                oldBlobId,
+                newBlobDescriptorId,
+                oldSize,
+                newSizeBytes,
+                reason,
+                clock.Now),
+            cancellationToken).ConfigureAwait(false);
+
+        return version;
+    }
 }

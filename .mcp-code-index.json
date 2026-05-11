@@ -993,6 +993,8 @@
     {
       "name": "Granit.Documents.AssetMetadata.Imaging",
       "deps": [
+        "Granit.BlobStorage",
+        "Granit.Documents",
         "Granit.Documents.AssetMetadata"
       ],
       "framework": "net10.0"
@@ -20967,7 +20969,7 @@
       "kind": "class",
       "project": "Granit.Documents.AssetMetadata.Imaging",
       "file": "src/Granit.Documents.AssetMetadata.Imaging/Extensions/ServiceCollectionExtensions.cs",
-      "line": 10,
+      "line": 12,
       "members": [
         {
           "name": "AddGranitDocumentsAssetMetadataImaging",
@@ -21378,7 +21380,14 @@
       "project": "Granit.Documents",
       "file": "src/Granit.Documents/Domain/DocumentVersion.cs",
       "line": 23,
-      "members": []
+      "members": [
+        {
+          "name": "ReplaceBlob",
+          "kind": "method",
+          "signature": "ReplaceBlob(Guid newBlobDescriptorId, long newSizeBytes)",
+          "returnType": "string? ContentHash { get; private set; } public Guid UploadedByUserId { get; private set; } public DateTimeOffset UploadedAt { get; private set; } public string? CommitMessage { get; private set; } internal void"
+        }
+      ]
     },
     {
       "name": "Folder",
@@ -21903,6 +21912,15 @@
       "members": []
     },
     {
+      "name": "DocumentBlobScrubbedEvent",
+      "fqn": "Granit.Documents.Events.DocumentBlobScrubbedEvent",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Events/DocumentBlobScrubbedEvent.cs",
+      "line": 20,
+      "members": []
+    },
+    {
       "name": "DocumentCreatedEvent",
       "fqn": "Granit.Documents.Events.DocumentCreatedEvent",
       "kind": "record",
@@ -22275,6 +22293,18 @@
           "kind": "method",
           "signature": "ListTrashedAsync(int skip, int take, CancellationToken cancellationToken = default)",
           "returnType": "Task<TrashedDocumentPage>"
+        },
+        {
+          "name": "GetVersionByIdAsync",
+          "kind": "method",
+          "signature": "GetVersionByIdAsync(Guid versionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentVersion?>"
+        },
+        {
+          "name": "ReplaceVersionBlobAsync",
+          "kind": "method",
+          "signature": "ReplaceVersionBlobAsync(Guid versionId, Guid newBlobDescriptorId, long newSizeBytes, string reason, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentVersion?>"
         }
       ]
     },
@@ -24543,7 +24573,7 @@
       "kind": "class",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionBuilder.cs",
-      "line": 12,
+      "line": 14,
       "members": [
         {
           "name": "Put",
@@ -24599,7 +24629,7 @@
       "kind": "record",
       "project": "Granit.Entities.Abstractions",
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionDescriptor.cs",
-      "line": 25,
+      "line": 27,
       "members": []
     },
     {
@@ -24619,6 +24649,90 @@
       "file": "src/Granit.Entities.Abstractions/Actions/EntityActionServiceCollectionExtensions.cs",
       "line": 9,
       "members": []
+    },
+    {
+      "name": "BulkActionDispatchResult",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionDispatchResult",
+      "kind": "record",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Actions/Execution/BulkActionExecutionOrchestrator.cs",
+      "line": 167,
+      "members": []
+    },
+    {
+      "name": "BulkActionExecutionOrchestrator",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionExecutionOrchestrator",
+      "kind": "class",
+      "project": "Granit.Entities",
+      "file": "src/Granit.Entities/Actions/Execution/BulkActionExecutionOrchestrator.cs",
+      "line": 25,
+      "members": [
+        {
+          "name": "DispatchAsync",
+          "kind": "method",
+          "signature": "DispatchAsync(Type entityType, Type serverExecutorType, IReadOnlyList<Guid> ids, JsonElement payload, IServiceProvider scopedServices, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkActionDispatchResult>"
+        }
+      ]
+    },
+    {
+      "name": "BulkActionExecutionResult",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionExecutionResult",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/BulkActionExecutionResult.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "BulkActionFailure",
+      "fqn": "Granit.Entities.Actions.Execution.BulkActionFailure",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/BulkActionFailure.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "EntityActionExecutionResult",
+      "fqn": "Granit.Entities.Actions.Execution.EntityActionExecutionResult",
+      "kind": "record",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/EntityActionExecutionResult.cs",
+      "line": 11,
+      "members": []
+    },
+    {
+      "name": "IBulkActionExecutor",
+      "fqn": "Granit.Entities.Actions.Execution.IBulkActionExecutor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/IBulkActionExecutor.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ExecuteBulkAsync",
+          "kind": "method",
+          "signature": "ExecuteBulkAsync(IReadOnlyList<Guid> ids, JsonElement payload, CancellationToken cancellationToken)",
+          "returnType": "Task<BulkActionExecutionResult<TEntity>>"
+        }
+      ]
+    },
+    {
+      "name": "IEntityActionExecutor",
+      "fqn": "Granit.Entities.Actions.Execution.IEntityActionExecutor",
+      "kind": "interface",
+      "project": "Granit.Entities.Abstractions",
+      "file": "src/Granit.Entities.Abstractions/Actions/Execution/IEntityActionExecutor.cs",
+      "line": 29,
+      "members": [
+        {
+          "name": "ExecuteAsync",
+          "kind": "method",
+          "signature": "ExecuteAsync(Guid id, JsonElement payload, CancellationToken cancellationToken)",
+          "returnType": "Task<EntityActionExecutionResult<TEntity>>"
+        }
+      ]
     },
     {
       "name": "IEntityActionContributionContext",
@@ -25093,6 +25207,24 @@
       ]
     },
     {
+      "name": "BulkActionRequest",
+      "fqn": "Granit.Entities.Endpoints.Dtos.BulkActionRequest",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/BulkActionRequest.cs",
+      "line": 10,
+      "members": []
+    },
+    {
+      "name": "BulkActionResponse",
+      "fqn": "Granit.Entities.Endpoints.Dtos.BulkActionResponse",
+      "kind": "record",
+      "project": "Granit.Entities.Endpoints",
+      "file": "src/Granit.Entities.Endpoints/Dtos/BulkActionResponse.cs",
+      "line": 10,
+      "members": []
+    },
+    {
       "name": "CalendarRangeRequest",
       "fqn": "Granit.Entities.Endpoints.Dtos.CalendarRangeRequest",
       "kind": "record",
@@ -25242,6 +25374,12 @@
           "kind": "method",
           "signature": "FromMinutes(1)",
           "returnType": "TimeSpan CalendarRangeCacheTtl { get; set; } = TimeSpan."
+        },
+        {
+          "name": "BulkActionMaxIds",
+          "kind": "property",
+          "signature": "int BulkActionMaxIds",
+          "returnType": "int"
         }
       ]
     },
@@ -25343,7 +25481,7 @@
       "kind": "class",
       "project": "Granit.Entities",
       "file": "src/Granit.Entities/Extensions/EntitiesServiceCollectionExtensions.cs",
-      "line": 16,
+      "line": 17,
       "members": [
         {
           "name": "AddGranitEntities",

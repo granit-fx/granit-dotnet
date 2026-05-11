@@ -119,4 +119,25 @@ public sealed class DocumentVersion : Entity, IMultiTenant
 
     /// <summary>Optional free-text changelog supplied by the uploader.</summary>
     public string? CommitMessage { get; private set; }
+
+    /// <summary>
+    /// Replaces the underlying <see cref="BlobDescriptorId"/> + <see cref="SizeBytes"/>
+    /// in-place. Reserved for GDPR-driven scrub flows (F17.9 — GPS strip on upload):
+    /// the version row stays "the same version", but its bytes are swapped for a
+    /// freshly-uploaded, sanitised blob. Internal so the only legitimate caller is
+    /// <c>DocumentService</c> from <c>Granit.Documents.EntityFrameworkCore</c>.
+    /// </summary>
+    internal void ReplaceBlob(Guid newBlobDescriptorId, long newSizeBytes)
+    {
+        if (newBlobDescriptorId == Guid.Empty)
+        {
+            throw new ArgumentException("Blob descriptor id cannot be empty.", nameof(newBlobDescriptorId));
+        }
+        if (newSizeBytes < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(newSizeBytes), "Size must be non-negative.");
+        }
+        BlobDescriptorId = newBlobDescriptorId;
+        SizeBytes = newSizeBytes;
+    }
 }

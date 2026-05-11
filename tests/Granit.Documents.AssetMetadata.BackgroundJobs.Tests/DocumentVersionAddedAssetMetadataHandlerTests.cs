@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Documents;
 using Granit.Documents.AssetMetadata;
 using Granit.Documents.AssetMetadata.BackgroundJobs;
 using Granit.Documents.AssetMetadata.BackgroundJobs.Handlers;
@@ -53,9 +54,11 @@ public sealed class DocumentVersionAddedAssetMetadataHandlerTests
     private static AssetMetadataGenerationService BuildService(
         IAssetMetadataStore store,
         IAssetMetadataPipeline pipeline,
-        IAssetMetadataSourceFetcher fetcher)
+        IAssetMetadataSourceFetcher fetcher,
+        IDocumentService? documentService = null)
         => new(
             store, pipeline, fetcher,
+            documentService ?? Substitute.For<IDocumentService>(),
             GuidGen(),
             FixedClock(Now),
             Microsoft.Extensions.Options.Options.Create(new GranitAssetMetadataOptions()),

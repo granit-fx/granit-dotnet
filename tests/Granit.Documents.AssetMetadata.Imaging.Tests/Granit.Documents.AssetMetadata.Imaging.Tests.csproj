@@ -10,7 +10,9 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="Shouldly" />
+    <PackageReference Include="NSubstitute" />
     <PackageReference Include="Magick.NET-Q8-AnyCPU" />
+    <PackageReference Include="MetadataExtractor" />
     <PackageReference Include="coverlet.collector" />
   </ItemGroup>
 
