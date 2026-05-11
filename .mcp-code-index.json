@@ -21095,6 +21095,24 @@
       ]
     },
     {
+      "name": "DocumentListPage",
+      "fqn": "Granit.Documents.Domain.DocumentListPage",
+      "kind": "record",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/DocumentListPage.cs",
+      "line": 12,
+      "members": []
+    },
+    {
+      "name": "DocumentListSort",
+      "fqn": "Granit.Documents.Domain.DocumentListSort",
+      "kind": "enum",
+      "project": "Granit.Documents",
+      "file": "src/Granit.Documents/Domain/DocumentListPage.cs",
+      "line": 21,
+      "members": []
+    },
+    {
       "name": "DocumentShare",
       "fqn": "Granit.Documents.Domain.DocumentShare",
       "kind": "class",
@@ -21311,6 +21329,15 @@
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Documents/Dtos/ListDocumentVersionsResponse.cs",
       "line": 12,
+      "members": []
+    },
+    {
+      "name": "ListDocumentsResponse",
+      "fqn": "Granit.Documents.Endpoints.Documents.Dtos.ListDocumentsResponse",
+      "kind": "record",
+      "project": "Granit.Documents.Endpoints",
+      "file": "src/Granit.Documents.Endpoints/Documents/Dtos/ListDocumentsResponse.cs",
+      "line": 8,
       "members": []
     },
     {
@@ -22029,6 +22056,12 @@
           "kind": "method",
           "signature": "ListTrashedAsync(int skip, int take, CancellationToken cancellationToken = default)",
           "returnType": "Task<TrashedDocumentPage>"
+        },
+        {
+          "name": "ListAsync",
+          "kind": "method",
+          "signature": "ListAsync(Guid? folderId, DocumentStatus status, int skip, int take, DocumentListSort sort, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentListPage>"
         }
       ]
     },
