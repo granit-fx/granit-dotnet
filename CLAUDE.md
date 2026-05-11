@@ -21,8 +21,9 @@ src/
   Granit.{Module}.BackgroundJobs/ # IBackgroundJob records + handlers
   bundles/Granit.Bundle.{Name}/   # Meta-packages
 tests/{*.Tests, *.Tests.Integration, ArchitectureTests}
-docs-site/                        # Astro + Starlight docs
 ```
+
+> 📚 **Doc site** lives in the sibling repo [`granit-docs`](https://github.com/granit-fx/granit-docs) (`~/dev/granit-fx/granit-docs/`, published to <https://granit-fx.dev>).
 
 One project = one NuGet package. Namespace = project name. Zero circular refs. Discover packages via `ls src/`.
 
@@ -46,10 +47,11 @@ dotnet format .github/shard-filters/<shard>.slnf --verify-no-changes
 dotnet build src/Granit.BlobStorage
 dotnet test  tests/Granit.BlobStorage.Tests --no-build
 
-# Pack / docs
+# Pack
 dotnet pack -c Release -o ./nupkgs
-cd docs-site && npx astro build
 ```
+
+Doc site lives in the [`granit-docs`](https://github.com/granit-fx/granit-docs) sibling repo (`cd ../granit-docs && npx astro build`).
 
 Shard mapping is the source of truth at [`.github/test-shards.json`](.github/test-shards.json) — match a file's directory against that map, no duplicate table here.
 
@@ -113,7 +115,7 @@ Wolverine discovers via `Assembly.ExportedTypes` and needs **public types with p
 
 ### `*.Notifications` packages
 
-Full conventions: [docs-site notifications/conventions.mdx](docs-site/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx). Reference impls: `Granit.Privacy.Notifications`, `Granit.Identity.Local.Notifications`.
+Full conventions: [notifications/conventions.mdx](../granit-docs/src/content/docs/dotnet/infrastructure/notifications/conventions.mdx) (also at <https://granit-fx.dev/dotnet/infrastructure/notifications/conventions/>). Reference impls: `Granit.Privacy.Notifications`, `Granit.Identity.Local.Notifications`.
 
 Critical gotchas:
 
@@ -127,7 +129,7 @@ Critical gotchas:
 
 ### `*.Analytics` (MetricDefinition)
 
-Full conventions: [docs-site analytics/conventions.mdx](docs-site/src/content/docs/dotnet/business/analytics/conventions.mdx). Reference impl: `Granit.Invoicing` (`UnpaidInvoiceCount/TotalMetricDefinition`).
+Full conventions: [analytics/conventions.mdx](../granit-docs/src/content/docs/dotnet/business/analytics/conventions.mdx) (also at <https://granit-fx.dev/dotnet/business/analytics/conventions/>). Reference impl: `Granit.Invoicing` (`UnpaidInvoiceCount/TotalMetricDefinition`).
 
 Critical rules:
 
@@ -198,7 +200,7 @@ Aggregate Root rules (enforced by `DomainConventionTests`):
 - For `IMultiTenant` with private setter: add explicit `Guid? IMultiTenant.TenantId { get; set; }` for interceptor injection.
 - Events via base class (`AddDomainEvent`/`AddDistributedEvent`) — NEVER manual `IDomainEventSource`.
 
-`SingleValueObject<T>`: `sealed`, `init` props, `Create()` with validation, implicit operators. EF converters auto-applied by `ApplyGranitConventions`. JSON via `SingleValueObjectJsonConverterFactory`. Reference: [ADR-017](docs-site/src/content/docs/dotnet/architecture/adr/017-ddd-aggregate-value-object-strategy.md).
+`SingleValueObject<T>`: `sealed`, `init` props, `Create()` with validation, implicit operators. EF converters auto-applied by `ApplyGranitConventions`. JSON via `SingleValueObjectJsonConverterFactory`. Reference: [ADR-017](../granit-docs/src/content/docs/dotnet/architecture/adr/017-ddd-aggregate-value-object-strategy.md).
 
 ### Multi-tenancy (soft dep)
 
@@ -228,7 +230,7 @@ Direct project ref with a `*Module` → declare it. Transitive → omit. `Granit
 
 ## Documentation site
 
-Lives in `docs-site/` (Astro + Starlight). When creating a new module: add `.mdx` in `reference/modules/`, bump `PACKAGE_COUNT` in `docs-site/src/data/constants.ts`, cross-link from related pages.
+Lives in the sibling repo [`granit-docs`](https://github.com/granit-fx/granit-docs) (`~/dev/granit-fx/granit-docs/`, Astro + Starlight, published to <https://granit-fx.dev>). When creating a new module: add `.mdx` in `reference/modules/`, bump `PACKAGE_COUNT` in `src/data/constants.ts`, cross-link from related pages. **Doc updates ship in a separate PR against `granit-docs`** — keep code and docs PRs decoupled.
 
 ## MCP & Code index
 

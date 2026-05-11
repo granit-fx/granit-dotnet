@@ -71,7 +71,6 @@ chore(ci): update GitHub Actions workflow
 src/Granit.{Module}/              # Abstractions + DI registration
 src/Granit.{Module}.{Provider}/   # Provider implementations
 tests/Granit.{Module}.Tests/      # Unit tests (xUnit + Shouldly + NSubstitute)
-docs-site/                        # Astro + Starlight documentation
 ```
 
 Each module follows a consistent layered architecture. See the
@@ -79,15 +78,9 @@ Each module follows a consistent layered architecture. See the
 
 ## Documentation site
 
-The docs live in `docs-site/` (Astro + Starlight):
-
-```bash
-cd docs-site
-pnpm install
-pnpm dev        # local dev server
-pnpm build      # production build (must produce 0 errors)
-pnpm lint       # markdownlint
-```
+The documentation site lives in the sibling repo
+[`granit-fx/granit-docs`](https://github.com/granit-fx/granit-docs) (Astro + Starlight,
+published to <https://granit-fx.dev>). Open a separate PR there for doc changes.
 
 ## Reporting issues
 
