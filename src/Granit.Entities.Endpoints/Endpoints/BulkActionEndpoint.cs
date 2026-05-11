@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 using System.Text.Json;
 
 namespace Granit.Entities.Endpoints.Internal;
@@ -35,7 +36,7 @@ internal static class BulkActionEndpoint
         }
 
         group.MapPost(
-            $"/{entityName}/bulk/{{action}}",
+            $"/{entityName}/bulk/{descriptor.Name}",
             BulkActionHandler<TEntity>)
             .WithName($"BulkExecuteAction{entityName}{descriptor.Name}")
             .WithSummary($"Executes a bulk action ({descriptor.Name}) on multiple {entityName} entities.")
@@ -50,23 +51,42 @@ internal static class BulkActionEndpoint
             .RequireAuthorization(descriptor.RequiresPermission);
     }
 
-    private static async Task<Ok<BulkActionResponse>> BulkActionHandler<TEntity>(
-        string action,
+    private static async Task<Results<Ok<BulkActionResponse>, ProblemHttpResult>> BulkActionHandler<TEntity>(
         [FromBody] BulkActionRequest request,
+        [FromRoute] string name,
+        [FromRoute] string action,
         BulkActionExecutionOrchestrator orchestrator,
+        IEntityDefinitionRegistry registry,
         IDbContextFactory<DbContext> dbContextFactory,
-        ILogger<Program> logger,
+        ILoggerFactory loggerFactory,
         CancellationToken cancellationToken)
         where TEntity : class
     {
+        ILogger logger = loggerFactory.CreateLogger("Granit.Entities.BulkActionEndpoint");
+
         // Validate request
         if (request.Ids is null || request.Ids.Count == 0)
         {
             return TypedResults.Ok(new BulkActionResponse(Affected: 0, Failures: []));
         }
 
-        // In production: lookup action descriptor from registry and validate permission
-        // For now, assume it's valid (passed by the routing middleware)
+        IEntityDefinitionDescriptor? definitionRef = registry.GetByName(name);
+        if (definitionRef is null)
+        {
+            return TypedResults.Problem(
+                detail: $"No EntityDefinition is registered with name '{name}'.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
+
+        EntityActionDescriptor? descriptor = definitionRef.Descriptor.Actions
+            .FirstOrDefault(a => string.Equals(a.Name, action, StringComparison.OrdinalIgnoreCase));
+
+        if (descriptor is null || descriptor.ServerExecutorType is null || !descriptor.RequiresServerExecution)
+        {
+            return TypedResults.Problem(
+                detail: $"Bulk action '{action}' is not configured for server-side execution on entity '{name}'.",
+                statusCode: StatusCodes.Status404NotFound);
+        }
 
         // Coalesce null payload to empty object
         JsonElement payload = request.Payload ?? JsonSerializer.SerializeToElement(new { });
@@ -74,23 +94,6 @@ internal static class BulkActionEndpoint
         try
         {
             await using var dbContext = await dbContextFactory.CreateDbContextAsync(cancellationToken);
-
-            // Create a minimal action descriptor for orchestrator (in production, get from registry)
-            var descriptor = new EntityActionDescriptor(
-                Name: action,
-                Kind: EntityActionKind.ApiCall,
-                DisplayKey: null,
-                Icon: null,
-                Order: 0,
-                RequiresPermission: null,
-                UrlTemplate: null,
-                HttpMethod: "POST",
-                ConfirmationKey: null,
-                WorkflowTransitionName: null,
-                ContributorAssemblyName: null,
-                RequiresServerExecution: true,
-                ServerExecutorType: typeof(IEntityActionExecutor<TEntity>),
-                BulkExecutorType: null);
 
             var result = await orchestrator.ExecuteAsync(
                 descriptor,
