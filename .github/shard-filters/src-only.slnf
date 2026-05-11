@@ -104,6 +104,7 @@
       "src/Granit.DocumentGeneration.Excel/Granit.DocumentGeneration.Excel.csproj",
       "src/Granit.DocumentGeneration.Pdf/Granit.DocumentGeneration.Pdf.csproj",
       "src/Granit.DocumentGeneration/Granit.DocumentGeneration.csproj",
+      "src/Granit.Documents.AssetMetadata.Endpoints/Granit.Documents.AssetMetadata.Endpoints.csproj",
       "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Granit.Documents.AssetMetadata.EntityFrameworkCore.csproj",
       "src/Granit.Documents.AssetMetadata/Granit.Documents.AssetMetadata.csproj",
       "src/Granit.Documents.BackgroundJobs/Granit.Documents.BackgroundJobs.csproj",

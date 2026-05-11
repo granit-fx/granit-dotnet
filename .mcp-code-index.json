@@ -956,6 +956,16 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.Endpoints",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.Endpoints",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Http.ApiDocumentation"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
       "deps": [
         "Granit.Documents",
@@ -20536,6 +20546,40 @@
       ]
     },
     {
+      "name": "AssetMetadataResponse",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.Dtos.AssetMetadataResponse",
+      "kind": "record",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/Dtos/AssetMetadataResponse.cs",
+      "line": 13,
+      "members": []
+    },
+    {
+      "name": "AssetMetadataEndpointRouteBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.Extensions.AssetMetadataEndpointRouteBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/Extensions/AssetMetadataEndpointRouteBuilderExtensions.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "MapGranitDocumentsAssetMetadata",
+          "kind": "method",
+          "signature": "MapGranitDocumentsAssetMetadata(this RouteGroupBuilder group)",
+          "returnType": "RouteGroupBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataEndpointsModule",
+      "fqn": "Granit.Documents.AssetMetadata.Endpoints.GranitDocumentsAssetMetadataEndpointsModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Endpoints",
+      "file": "src/Granit.Documents.AssetMetadata.Endpoints/GranitDocumentsAssetMetadataEndpointsModule.cs",
+      "line": 15,
+      "members": []
+    },
+    {
       "name": "AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
       "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Extensions.AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
       "kind": "class",
@@ -20693,6 +20737,28 @@
           "kind": "method",
           "signature": "ConfigureServices(ServiceConfigurationContext context)",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "IAssetMetadataService",
+      "fqn": "Granit.Documents.AssetMetadata.IAssetMetadataService",
+      "kind": "interface",
+      "project": "Granit.Documents.AssetMetadata",
+      "file": "src/Granit.Documents.AssetMetadata/IAssetMetadataService.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "GetForCurrentVersionAsync",
+          "kind": "method",
+          "signature": "GetForCurrentVersionAsync(Guid documentId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
+        },
+        {
+          "name": "GetForVersionAsync",
+          "kind": "method",
+          "signature": "GetForVersionAsync(Guid documentId, Guid documentVersionId, CancellationToken cancellationToken = default)",
+          "returnType": "Task<DocumentAssetMetadata?>"
         }
       ]
     },
