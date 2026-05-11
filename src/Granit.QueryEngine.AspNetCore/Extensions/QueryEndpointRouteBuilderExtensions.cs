@@ -278,13 +278,20 @@ public static class QueryEndpointRouteBuilderExtensions
             && concrete.Content is not null
             && concrete.Content.TryGetValue("application/json", out OpenApiMediaType? media))
         {
-            // Trigger registration in components.schemas. The returned IOpenApiSchema is the
-            // concrete schema (not a reference) — for OneOf to serialize as $ref we must
-            // construct OpenApiSchemaReference explicitly. Without this, both PagedResult and
-            // GroupedResult are inlined in the response, duplicating ~5KB per query endpoint
-            // and leaving 16 orphan *Of* schemas in components.
-            await context.GetOrCreateSchemaAsync(pagedResultType, null, cancellationToken).ConfigureAwait(false);
-            await context.GetOrCreateSchemaAsync(groupedResultType, null, cancellationToken).ConfigureAwait(false);
+            // GetOrCreateSchemaAsync returns the concrete schema but does NOT reliably
+            // persist it in components.schemas when the same response status has two
+            // .Produces<>() entries — ASP.NET Core dedups at status code, so only the
+            // second (GroupedResult) reaches the schema collector. We register both
+            // explicitly so OneOf $refs resolve and codegen tools don't break.
+            IOpenApiSchema pagedSchema = await context
+                .GetOrCreateSchemaAsync(pagedResultType, null, cancellationToken)
+                .ConfigureAwait(false);
+            IOpenApiSchema groupedSchema = await context
+                .GetOrCreateSchemaAsync(groupedResultType, null, cancellationToken)
+                .ConfigureAwait(false);
+
+            EnsureRegisteredInComponents(context.Document, pagedResultType, pagedSchema);
+            EnsureRegisteredInComponents(context.Document, groupedResultType, groupedSchema);
 
             media.Schema = new OpenApiSchema
             {
@@ -296,6 +303,23 @@ public static class QueryEndpointRouteBuilderExtensions
                 Description = "PagedResult when groupBy is absent; GroupedResult otherwise.",
             };
         }
+    }
+
+    private static void EnsureRegisteredInComponents(
+        OpenApiDocument? document,
+        Type type,
+        IOpenApiSchema schema)
+    {
+        if (document is null || schema is OpenApiSchemaReference)
+        {
+            return;
+        }
+
+        document.Components ??= new OpenApiComponents();
+        document.Components.Schemas ??= new Dictionary<string, IOpenApiSchema>();
+
+        string id = GetSchemaReferenceId(type);
+        document.Components.Schemas.TryAdd(id, schema);
     }
 
     /// <summary>
