@@ -35,8 +35,17 @@ internal static class BrowsingTimeout
         cts.CancelAfter(maxRender.Value);
         CancellationToken effective = cts.Token;
 
-        Task<T> task = op(effective);
-        return await task.WaitAsync(maxRender.Value, effective).ConfigureAwait(false);
+        try
+        {
+            Task<T> task = op(effective);
+            return await task.WaitAsync(maxRender.Value, outer).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!outer.IsCancellationRequested)
+        {
+            // Cap-CTS fired (not the caller's token) — surface as TimeoutException.
+            throw new TimeoutException(
+                $"Browsing operation exceeded the render-duration cap of {maxRender.Value.TotalMilliseconds:F0} ms.");
+        }
     }
 
     /// <summary>Runs a void-returning <paramref name="op"/> with an optional duration cap.</summary>
@@ -57,7 +66,15 @@ internal static class BrowsingTimeout
         cts.CancelAfter(maxRender.Value);
         CancellationToken effective = cts.Token;
 
-        Task task = op(effective);
-        await task.WaitAsync(maxRender.Value, effective).ConfigureAwait(false);
+        try
+        {
+            Task task = op(effective);
+            await task.WaitAsync(maxRender.Value, outer).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (!outer.IsCancellationRequested)
+        {
+            throw new TimeoutException(
+                $"Browsing operation exceeded the render-duration cap of {maxRender.Value.TotalMilliseconds:F0} ms.");
+        }
     }
 }

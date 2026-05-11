@@ -1,144 +1,94 @@
 # Contributing to Granit
 
-Thank you for your interest in contributing to Granit! This guide will help you get
-started.
+Thank you for your interest in contributing to Granit! This guide will help you get started.
 
-## Code of Conduct
-
-Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before contributing. We are
-committed to providing a welcoming and inclusive experience for everyone.
-
-## Getting Started
+## Getting started
 
 ### Prerequisites
 
-- **.NET 10 SDK** — `dotnet --version` should return `10.0.x`
-- **Git** with SSH access
-- **Node.js** (for markdownlint only)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download)
+- [Node.js 22+](https://nodejs.org/) and [pnpm](https://pnpm.io/) (for the docs site)
 
-### Build and test
+### Setup
 
 ```bash
-# Build the entire solution
+git clone https://github.com/granit-fx/granit-dotnet.git
+cd granit-dotnet
+dotnet restore
 dotnet build
-
-# Run all tests
 dotnet test
-
-# Run tests for a specific package
-dotnet test tests/Granit.Users.Tests
-
-# Verify code formatting
-dotnet format --verify-no-changes
 ```
 
-## How to Contribute
+## Development workflow
 
-### Reporting Bugs
-
-Open an issue using the **Bug** template. Include:
-
-- A clear, concise description of the problem
-- Steps to reproduce
-- Expected vs actual behavior
-- .NET version and OS
-
-### Suggesting Features
-
-Open an issue using the **Feature** template. Describe:
-
-- The use case and motivation
-- How it fits into Granit's modular architecture
-- Any alternatives you considered
-
-### Submitting Changes
-
-1. **Fork** the repository
-2. **Create a branch** from `develop`:
-
-   ```text
-   <type>/<short-description>
-
-   Types: feature/ | fix/ | docs/ | refactor/ | chore/ | test/ | perf/
-   ```
-
-3. **Write your code** following the conventions below
-4. **Write or update tests** — every package has a matching `*.Tests` project
-5. **Run the Definition of Done checks** (see below)
-6. **Commit** using [Conventional Commits](https://www.conventionalcommits.org/):
+1. **Fork** the repository and create a branch from `develop`
+2. **Name your branch**: `feature/short-description` or `fix/short-description`
+3. **Make your changes** following the conventions below
+4. **Run checks** before pushing:
 
    ```bash
-   git commit -m "feat(security): add API key rotation support"
-   git commit -m "fix(persistence): handle concurrent soft delete"
-   git commit -m "docs: update Vault integration guide"
+   dotnet build
+   dotnet test
+   dotnet format --verify-no-changes
    ```
 
-7. **Open a pull request** against `develop`
+5. **Open a Pull Request** targeting `develop`
 
-### Definition of Done
+## Code conventions
 
-All checks are **blocking** — a PR will not be merged until they pass:
+- **C# 14** with modern idioms: primary constructors, collection expressions, pattern matching
+- **`var`** when the type is apparent; explicit type otherwise
+- **Expression body** (`=>`) for single-statement methods
+- **`[GeneratedRegex]`** instead of `new Regex(..., Compiled)`
+- **`[LoggerMessage]`** instead of string interpolation in log calls
+- **`ConfigureAwait(false)`** in library code
+- **No `DateTime.Now`/`UtcNow`** — inject `TimeProvider`
 
-1. `dotnet test` — zero failures
-2. `dotnet format --verify-no-changes` — zero formatting issues
-3. `npx markdownlint-cli2 "<file>"` — every modified `.md` file passes
-4. Documentation updated if the change affects public API or behavior
+See [conventions documentation](https://granit-fx.dev/contributing/coding-standards/) for the full list.
 
-## Code Conventions
+## Commit messages
 
-### C# / .NET
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
 
-- **Target**: `net10.0`, **C# 14**
-- **Nullable**: enabled (`<Nullable>enable</Nullable>`)
-- **Warnings as errors**: enabled
-- **Central Package Management**: all versions in `Directory.Packages.props`
-- **Namespaces**: match the project name (`Granit.{Package}`)
-- **`var`**: use when the type is apparent; explicit type otherwise (IDE0008)
-- **Expression body** (`=>`): for single-statement methods (IDE0022)
-- **Regex**: always `[GeneratedRegex]`, never `new Regex(..., Compiled)`
-- **Logging**: always `[LoggerMessage]` source-generated
-- **Time**: never `DateTime.Now`/`UtcNow` — inject `TimeProvider` or `IClock`
-- **Async**: `ConfigureAwait(false)` in library code, `CancellationToken` as last parameter
+```
+feat(persistence): add soft-delete interceptor
+fix(auth): handle expired token refresh
+docs: update BlobStorage guide
+chore(ci): update GitHub Actions workflow
+```
 
-### Architecture
+## Pull request guidelines
 
-- One project = one NuGet package
-- Zero circular references between packages
-- `*.Abstractions` packages have no dependencies on other Granit packages
+- Keep PRs focused on a single change
+- Include tests for new functionality
+- Update documentation if your change affects the public API
+- Ensure CI passes (build, tests, format, markdownlint)
+- No hardcoded secrets, tokens, or PII in code or logs
 
-### Tests
+## Project structure
 
-- **Framework**: xUnit
-- **Assertions**: Shouldly
-- **Mocking**: NSubstitute
-- **Test data**: Bogus
+```
+src/Granit.{Module}/              # Abstractions + DI registration
+src/Granit.{Module}.{Provider}/   # Provider implementations
+tests/Granit.{Module}.Tests/      # Unit tests (xUnit + Shouldly + NSubstitute)
+```
 
-### Security
+Each module follows a consistent layered architecture. See the
+[architecture documentation](https://granit-fx.dev/architecture/) for details.
 
-**Never**:
+## Documentation site
 
-- Commit secrets or credentials
-- Log PII in plain text
-- Disable security scans
+The documentation site lives in the sibling repo
+[`granit-fx/granit-docs`](https://github.com/granit-fx/granit-docs) (Astro + Starlight,
+published to <https://granit-fx.dev>). Open a separate PR there for doc changes.
 
-**Always**:
+## Reporting issues
 
-- Encrypt sensitive data at rest and in transit
-- Maintain audit trail for sensitive operations
-
-## Review Process
-
-A maintainer will review your PR against this checklist:
-
-- [ ] No hardcoded secrets
-- [ ] Tests pass (`dotnet test`)
-- [ ] Build succeeds (`dotnet build`)
-- [ ] Format verified (`dotnet format --verify-no-changes`)
-- [ ] No PII in logs
-- [ ] CHANGELOG.md updated
-- [ ] Documentation updated if applicable
+- **Bugs**: Use the [Bug Report](https://github.com/granit-fx/granit-dotnet/issues/new?template=bug_report.yml) template
+- **Features**: Use the [Feature Request](https://github.com/granit-fx/granit-dotnet/issues/new?template=feature_request.yml) template
+- **Questions**: Open a [Discussion](https://github.com/granit-fx/granit-dotnet/discussions)
+- **Security**: See our [Security Policy](https://github.com/granit-fx/granit-dotnet/security/policy)
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the
-[Apache License 2.0](LICENSE).
+By contributing, you agree that your contributions will be licensed under the [Apache 2.0 License](../LICENSE).
