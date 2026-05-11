@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing;
 using Granit.Browsing.Capabilities;
+using Granit.Browsing.Pages;
 using Granit.DocumentGeneration.Pdf.Internal;
 using Granit.DocumentGeneration.Pdf.Options;
 using Granit.DocumentGeneration.Pipeline;
@@ -61,7 +62,10 @@ public sealed class BrowsingPdfRendererTests
         await browser.Received(1).AcquirePageAsync(
             Arg.Is<Granit.Browsing.Options.BrowserPageOptions?>(o => o != null && !o.JavaScriptEnabled),
             Arg.Any<CancellationToken>());
-        await page.Received(1).RouteAsync("**/*", Arg.Any<RouteHandler>(), Arg.Any<CancellationToken>());
+        await page.Received(1).RouteAsync(
+            Arg.Any<RoutePattern>(),
+            Arg.Any<Func<RouteRequest, CancellationToken, ValueTask<RouteDecision>>>(),
+            Arg.Any<CancellationToken>());
     }
 
     [Theory]

@@ -21,7 +21,7 @@ public sealed class DefaultUrlSafetyValidatorTests
             DnsResolveTimeout = TimeSpan.FromSeconds(2),
         };
         resolver ??= FakeDnsResolver.Returning("8.8.8.8");
-        return new DefaultUrlSafetyValidator(Options.Create(options), resolver, clock ?? TimeProvider.System);
+        return new DefaultUrlSafetyValidator(Microsoft.Extensions.Options.Options.Create(options), resolver, clock ?? TimeProvider.System);
     }
 
     // -------------------------------------------------------------------------
