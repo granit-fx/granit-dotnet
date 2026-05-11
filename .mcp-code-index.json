@@ -988,6 +988,7 @@
         "Granit.Authorization",
         "Granit.Documents",
         "Granit.Http.ApiDocumentation",
+        "Granit.QueryEngine.AspNetCore",
         "Granit.Taxonomy",
         "Granit.Validation"
       ],
@@ -21373,7 +21374,7 @@
       "kind": "class",
       "project": "Granit.Documents.Endpoints",
       "file": "src/Granit.Documents.Endpoints/Extensions/DocumentsEndpointRouteBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "MapGranitDocuments",
@@ -21605,7 +21606,7 @@
       "kind": "class",
       "project": "Granit.Documents.EntityFrameworkCore",
       "file": "src/Granit.Documents.EntityFrameworkCore/Extensions/DocumentsEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
-      "line": 16,
+      "line": 18,
       "members": [
         {
           "name": "AddGranitDocumentsEntityFrameworkCore",
