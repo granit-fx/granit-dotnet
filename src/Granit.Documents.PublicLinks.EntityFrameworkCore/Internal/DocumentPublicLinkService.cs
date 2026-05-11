@@ -1,0 +1,99 @@
+using Granit.Documents.Domain;
+using Granit.Documents.PublicLinks.Domain;
+using Granit.Documents.PublicLinks.Options;
+using Granit.Guids;
+using Granit.Users;
+using Microsoft.Extensions.Options;
+
+namespace Granit.Documents.PublicLinks.EntityFrameworkCore.Internal;
+
+/// <summary>
+/// EF Core-backed <see cref="IDocumentPublicLinkService"/>. Composes
+/// <see cref="IDocumentService"/> (to honour the parent tenant filter / trash
+/// status at creation time) with <see cref="IDocumentPublicLinkStore"/>.
+/// </summary>
+/// <remarks>
+/// Domain events raised by <see cref="DocumentPublicLink"/> are dispatched on
+/// <c>SaveChanges</c> by <c>AuditedEntityInterceptor</c> / the persistence-side
+/// dispatcher — no explicit event bus injection.
+/// </remarks>
+internal sealed class DocumentPublicLinkService(
+    IDocumentPublicLinkStore store,
+    IDocumentService documents,
+    IGuidGenerator guidGenerator,
+    TimeProvider timeProvider,
+    IOptionsMonitor<GranitDocumentsPublicLinksOptions> optionsMonitor,
+    ICurrentUserService? currentUser = null) : IDocumentPublicLinkService
+{
+    /// <inheritdoc/>
+    public async Task<DocumentPublicLinkCreationResult> CreateAsync(
+        Guid documentId,
+        PublicLinkScope scope,
+        TimeSpan ttl,
+        int? maxUses,
+        CancellationToken cancellationToken = default)
+    {
+        GranitDocumentsPublicLinksOptions options = optionsMonitor.CurrentValue;
+        if (options.SigningKey.Length == 0)
+        {
+            throw new InvalidOperationException(
+                "GranitDocumentsPublicLinksOptions.SigningKey is empty — public links cannot be minted. " +
+                "Provision the HMAC pepper through Granit.Configuration.Vault before creating links.");
+        }
+
+        // 1. Tenant-filtered document fetch — proves the caller can see the doc.
+        Document doc = await documents.GetByIdAsync(documentId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                $"Document {documentId} was not found (or the current tenant cannot see it).");
+
+        // 2. TTL handling: default fill-in + hard cap.
+        TimeSpan effectiveTtl = ttl <= TimeSpan.Zero ? options.DefaultTtl : ttl;
+        if (effectiveTtl > options.MaxTtl)
+        {
+            effectiveTtl = options.MaxTtl;
+        }
+
+        int? effectiveMaxUses = maxUses ?? options.DefaultMaxUses;
+
+        // 3. Mint + hash.
+        PublicLinkToken token = PublicLinkTokenFactory.GenerateRandom();
+        byte[] tokenHash = PublicLinkTokenFactory.ComputeHash(token, options.SigningKey);
+
+        DateTimeOffset now = timeProvider.GetUtcNow();
+        var link = DocumentPublicLink.Create(
+            guidGenerator.Create(),
+            doc.Id,
+            doc.TenantId,
+            tokenHash,
+            scope,
+            now.Add(effectiveTtl),
+            effectiveMaxUses,
+            timeProvider);
+
+        // 4. Persist (events flush on SaveChanges).
+        await store.AddAsync(link, cancellationToken).ConfigureAwait(false);
+
+        return new DocumentPublicLinkCreationResult(token, link);
+    }
+
+    /// <inheritdoc/>
+    public async Task RevokeAsync(Guid linkId, string? reason, CancellationToken cancellationToken = default)
+    {
+        DocumentPublicLink link = await store.FindByIdAsync(linkId, cancellationToken).ConfigureAwait(false)
+            ?? throw new InvalidOperationException(
+                $"DocumentPublicLink {linkId} was not found (or the current tenant cannot see it).");
+
+        Guid? revokedBy = TryParseUserId(currentUser?.UserId);
+        link.Revoke(revokedBy, reason, timeProvider);
+
+        await store.UpdateAsync(link, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public Task<IReadOnlyList<DocumentPublicLink>> ListForDocumentAsync(
+        Guid documentId, CancellationToken cancellationToken = default) =>
+        store.ListForDocumentAsync(documentId, cancellationToken);
+
+    private static Guid? TryParseUserId(string? userId) =>
+        Guid.TryParse(userId, out Guid parsed) ? parsed : null;
+}

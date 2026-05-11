@@ -1059,6 +1059,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.PublicLinks.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.PublicLinks",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.Renditions",
       "deps": [
         "Granit",
@@ -22942,6 +22951,63 @@
           "returnType": "PublicLinkToken"
         }
       ]
+    },
+    {
+      "name": "DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.PublicLinks.EntityFrameworkCore.Extensions.DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
+      "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/Extensions/DocumentsPublicLinksEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "AddGranitDocumentsPublicLinksEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsPublicLinksEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "PublicLinksModelBuilderExtensions",
+      "fqn": "Granit.Documents.PublicLinks.EntityFrameworkCore.Extensions.PublicLinksModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
+      "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/Extensions/PublicLinksModelBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigurePublicLinksModule",
+          "kind": "method",
+          "signature": "ConfigurePublicLinksModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsPublicLinksDbProperties",
+      "fqn": "Granit.Documents.PublicLinks.EntityFrameworkCore.GranitDocumentsPublicLinksDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
+      "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/GranitDocumentsPublicLinksDbProperties.cs",
+      "line": 8,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsPublicLinksEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.PublicLinks.EntityFrameworkCore.GranitDocumentsPublicLinksEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.PublicLinks.EntityFrameworkCore",
+      "file": "src/Granit.Documents.PublicLinks.EntityFrameworkCore/GranitDocumentsPublicLinksEntityFrameworkCoreModule.cs",
+      "line": 15,
+      "members": []
     },
     {
       "name": "DocumentPublicLinkConsumedEto",

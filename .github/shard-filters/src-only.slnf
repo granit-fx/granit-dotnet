@@ -116,6 +116,7 @@
       "src/Granit.Documents.Endpoints/Granit.Documents.Endpoints.csproj",
       "src/Granit.Documents.EntityFrameworkCore/Granit.Documents.EntityFrameworkCore.csproj",
       "src/Granit.Documents.Notifications/Granit.Documents.Notifications.csproj",
+      "src/Granit.Documents.PublicLinks.EntityFrameworkCore/Granit.Documents.PublicLinks.EntityFrameworkCore.csproj",
       "src/Granit.Documents.PublicLinks/Granit.Documents.PublicLinks.csproj",
       "src/Granit.Documents.Renditions.BackgroundJobs/Granit.Documents.Renditions.BackgroundJobs.csproj",
       "src/Granit.Documents.Renditions.Endpoints/Granit.Documents.Renditions.Endpoints.csproj",

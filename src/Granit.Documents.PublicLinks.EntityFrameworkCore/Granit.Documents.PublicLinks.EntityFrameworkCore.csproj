@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.PublicLinks.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence for Granit.Documents.PublicLinks (F18.2). Owns the documents_public_links table with HMAC-hashed bearer tokens, scope, TTL, use cap, and revocation metadata.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.PublicLinks.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+    <ProjectReference Include="..\Granit.Documents.PublicLinks\Granit.Documents.PublicLinks.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
