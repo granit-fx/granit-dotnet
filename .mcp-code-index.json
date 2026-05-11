@@ -956,6 +956,15 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "deps": [
+        "Granit.Documents",
+        "Granit.Documents.AssetMetadata",
+        "Granit.Persistence.EntityFrameworkCore"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -20523,6 +20532,79 @@
           "kind": "method",
           "signature": "MarkExtracting()",
           "returnType": "void"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Extensions.AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Extensions/AssetMetadataEntityFrameworkCoreHostApplicationBuilderExtensions.cs",
+      "line": 12,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataEntityFrameworkCore",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataEntityFrameworkCore(this IHostApplicationBuilder builder, Action<DbContextOptionsBuilder> configure)",
+          "returnType": "IHostApplicationBuilder"
+        }
+      ]
+    },
+    {
+      "name": "AssetMetadataModelBuilderExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Extensions.AssetMetadataModelBuilderExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Extensions/AssetMetadataModelBuilderExtensions.cs",
+      "line": 11,
+      "members": [
+        {
+          "name": "ConfigureAssetMetadataModule",
+          "kind": "method",
+          "signature": "ConfigureAssetMetadataModule(this ModelBuilder modelBuilder)",
+          "returnType": "ModelBuilder"
+        }
+      ]
+    },
+    {
+      "name": "GranitAssetMetadataDbProperties",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.GranitAssetMetadataDbProperties",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/GranitAssetMetadataDbProperties.cs",
+      "line": 9,
+      "members": [
+        {
+          "name": "DbTablePrefix",
+          "kind": "property",
+          "signature": "string DbTablePrefix",
+          "returnType": "string"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataEntityFrameworkCoreModule",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.GranitDocumentsAssetMetadataEntityFrameworkCoreModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/GranitDocumentsAssetMetadataEntityFrameworkCoreModule.cs",
+      "line": 16,
+      "members": []
+    },
+    {
+      "name": "DocumentPermanentlyDeletedAssetMetadataHandler",
+      "fqn": "Granit.Documents.AssetMetadata.EntityFrameworkCore.Internal.DocumentPermanentlyDeletedAssetMetadataHandler",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.EntityFrameworkCore",
+      "file": "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Internal/DocumentPermanentlyDeletedAssetMetadataHandler.cs",
+      "line": 20,
+      "members": [
+        {
+          "name": "HandleAsync",
+          "kind": "method",
+          "signature": "HandleAsync(DocumentPermanentlyDeletedEvent evt, IAssetMetadataStore store, ILogger<DocumentPermanentlyDeletedAssetMetadataHandler> logger, CancellationToken cancellationToken)",
+          "returnType": "Task"
         }
       ]
     },

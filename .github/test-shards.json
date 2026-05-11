@@ -206,6 +206,7 @@
         "tests/Granit.Documents.EntityFrameworkCore.Tests",
         "tests/Granit.Documents.Notifications.Tests",
         "tests/Granit.Documents.AssetMetadata.Tests",
+        "tests/Granit.Documents.AssetMetadata.EntityFrameworkCore.Tests",
         "tests/Granit.Documents.Renditions.BackgroundJobs.Tests",
         "tests/Granit.Documents.Renditions.Endpoints.Tests",
         "tests/Granit.Documents.Renditions.Imaging.Tests",

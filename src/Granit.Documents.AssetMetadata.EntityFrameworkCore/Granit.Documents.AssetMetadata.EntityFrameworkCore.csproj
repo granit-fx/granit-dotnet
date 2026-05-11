@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.AssetMetadata.EntityFrameworkCore</PackageId>
+    <Description>EF Core persistence for Granit.Documents.AssetMetadata. Owns the documents_asset_metadata table with typed columns + provider-aware raw payload (jsonb on Postgres, nvarchar(max) on SQL Server / SQLite). Cascades on DocumentPermanentlyDeletedEvent.</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.EntityFrameworkCore.Tests" />
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.EntityFrameworkCore.Tests.Integration" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents\Granit.Documents.csproj" />
+    <ProjectReference Include="..\Granit.Documents.AssetMetadata\Granit.Documents.AssetMetadata.csproj" />
+    <ProjectReference Include="..\Granit.Persistence.EntityFrameworkCore\Granit.Persistence.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>
