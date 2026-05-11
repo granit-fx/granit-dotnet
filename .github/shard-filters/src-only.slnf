@@ -107,6 +107,7 @@
       "src/Granit.Documents.AssetMetadata.BackgroundJobs/Granit.Documents.AssetMetadata.BackgroundJobs.csproj",
       "src/Granit.Documents.AssetMetadata.Endpoints/Granit.Documents.AssetMetadata.Endpoints.csproj",
       "src/Granit.Documents.AssetMetadata.EntityFrameworkCore/Granit.Documents.AssetMetadata.EntityFrameworkCore.csproj",
+      "src/Granit.Documents.AssetMetadata.Imaging/Granit.Documents.AssetMetadata.Imaging.csproj",
       "src/Granit.Documents.AssetMetadata/Granit.Documents.AssetMetadata.csproj",
       "src/Granit.Documents.BackgroundJobs/Granit.Documents.BackgroundJobs.csproj",
       "src/Granit.Documents.Endpoints/Granit.Documents.Endpoints.csproj",

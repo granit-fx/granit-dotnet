@@ -984,6 +984,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.Imaging",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -20898,6 +20905,38 @@
           "kind": "method",
           "signature": "DeleteForDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)",
           "returnType": "Task"
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Imaging.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Imaging",
+      "file": "src/Granit.Documents.AssetMetadata.Imaging/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataImaging",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataImaging(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataImagingModule",
+      "fqn": "Granit.Documents.AssetMetadata.Imaging.GranitDocumentsAssetMetadataImagingModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Imaging",
+      "file": "src/Granit.Documents.AssetMetadata.Imaging/GranitDocumentsAssetMetadataImagingModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

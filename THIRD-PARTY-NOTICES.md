@@ -119,6 +119,7 @@ Dernière mise à jour : 2026-04-29
 | Google.Cloud.Storage.V1 | 4.14.0 | Copyright (c) Google LLC |
 | libphonenumber-csharp | 9.0.29 | Copyright (c) Patrick Mézard, Thomas Clegg, Google, libphonenumber contributors |
 | Magick.NET-Q8-AnyCPU | 14.13.0 | Copyright 2013-2026 Dirk Lemstra |
+| MetadataExtractor | 2.9.3 | Copyright (c) Drew Noakes |
 | ModelContextProtocol | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | ModelContextProtocol.AspNetCore | 1.2.0 | Copyright (c) Anthropic, PBC and Microsoft Corporation |
 | OpenIddict | 7.5.0 | Copyright (c) Kévin Chalet |
