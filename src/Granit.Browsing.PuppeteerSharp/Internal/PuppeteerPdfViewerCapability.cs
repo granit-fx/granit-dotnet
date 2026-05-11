@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Granit.Browsing.Capabilities;
 using Granit.Browsing.Diagnostics;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Sandbox;
 using Granit.IO;
 using Granit.IO.Options;
@@ -166,9 +167,15 @@ internal sealed partial class PuppeteerPdfDocumentPage(
             Height = dimensions.Height,
         }).ConfigureAwait(false);
 
-        await page.EvaluateAsync<bool>(
-            $"(async () => {{ try {{ window.location.hash = '#page={pageIndex + 1}'; return true; }} catch {{ return false; }} }})()",
-            cancellationToken).ConfigureAwait(false);
+        // pageIndex is a server-validated int (ArgumentOutOfRangeException above) — no
+        // user-controllable script payload reaches EvaluateAsync. Suppress GRBROWSING001
+        // (VULN-203) which can't see the upstream bound check.
+        string pageHashScript = "(async () => { try { window.location.hash = '#page=" +
+            (pageIndex + 1).ToString(System.Globalization.CultureInfo.InvariantCulture) +
+            "'; return true; } catch { return false; } })()";
+#pragma warning disable GRBROWSING001
+        await page.EvaluateAsync<bool>(pageHashScript, cancellationToken).ConfigureAwait(false);
+#pragma warning restore GRBROWSING001
 
         await Task.Delay(TimeSpan.FromMilliseconds(150), cancellationToken).ConfigureAwait(false);
 

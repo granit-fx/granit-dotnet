@@ -12,7 +12,7 @@ namespace Granit.Privacy.BlobStorage;
 /// by every <c>IPrivacyDataProvider</c> Wolverine handler in the scatter-gather saga.
 /// </summary>
 [DependsOn(typeof(GranitBlobStorageModule))]
-[DependsOn(typeof(GranitIoModule))]
+[DependsOn(typeof(GranitIOModule))]
 [DependsOn(typeof(GranitPrivacyModule))]
 public sealed class GranitPrivacyBlobStorageModule : GranitModule
 {

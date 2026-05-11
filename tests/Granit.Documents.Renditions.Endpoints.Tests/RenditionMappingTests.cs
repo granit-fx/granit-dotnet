@@ -16,7 +16,7 @@ public sealed class RenditionMappingTests
     [Fact]
     public void ToResponse_should_copy_every_field()
     {
-        var r = DocumentRendition.CreatePending(
+        var r = DocumentRendition.Create(
             Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
             RenditionType.Thumbnail, "image/webp", Now);
         r.MarkGenerating();
@@ -45,8 +45,8 @@ public sealed class RenditionMappingTests
         var versionId = Guid.NewGuid();
         IReadOnlyList<DocumentRendition> rows =
         [
-            DocumentRendition.CreatePending(Guid.NewGuid(), null, documentId, versionId, RenditionType.Thumbnail, "image/png", Now),
-            DocumentRendition.CreatePending(Guid.NewGuid(), null, documentId, versionId, RenditionType.Web, "image/webp", Now),
+            DocumentRendition.Create(Guid.NewGuid(), null, documentId, versionId, RenditionType.Thumbnail, "image/png", Now),
+            DocumentRendition.Create(Guid.NewGuid(), null, documentId, versionId, RenditionType.Web, "image/webp", Now),
         ];
 
         ListRenditionsResponse dto = rows.ToListResponse(documentId, versionId);

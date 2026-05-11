@@ -1,6 +1,6 @@
 using System;
 
-namespace Granit.Browsing.Sandbox;
+namespace Granit.Browsing.Exceptions;
 
 /// <summary>
 /// Thrown by providers and the request router when a sandbox rule blocks an operation.

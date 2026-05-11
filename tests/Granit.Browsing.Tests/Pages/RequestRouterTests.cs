@@ -8,6 +8,7 @@ using Granit.Browsing.Diagnostics;
 using Granit.Browsing.Pages;
 using Granit.Browsing.Sandbox;
 using Granit.Http.Security;
+using Granit.Http.Security.Options;
 using Granit.Timing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;

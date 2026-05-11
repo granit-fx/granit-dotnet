@@ -105,7 +105,7 @@ public sealed class DocumentPermanentlyDeletedRenditionHandlerTests
         Guid documentId, Guid? tenantId, RenditionType type, string format,
         Guid blobDescriptorId, long sizeBytes)
     {
-        var r = DocumentRendition.CreatePending(
+        var r = DocumentRendition.Create(
             Guid.NewGuid(), tenantId, documentId, Guid.NewGuid(), type, format, Now);
         r.MarkGenerating();
         r.MarkReady(blobDescriptorId, sizeBytes, width: 100, height: 100, now: Now);

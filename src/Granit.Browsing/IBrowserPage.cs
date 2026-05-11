@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Options;
 using Granit.Browsing.Pages;
 

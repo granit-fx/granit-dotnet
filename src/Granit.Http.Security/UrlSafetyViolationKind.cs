@@ -1,3 +1,5 @@
+using Granit.Http.Security.Options;
+
 namespace Granit.Http.Security;
 
 /// <summary>

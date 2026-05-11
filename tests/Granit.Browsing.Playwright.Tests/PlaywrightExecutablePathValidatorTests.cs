@@ -1,4 +1,5 @@
 using System.IO;
+using Granit.Browsing.Exceptions;
 using Granit.Browsing.Playwright.Internal;
 using Granit.Browsing.Sandbox;
 using Shouldly;

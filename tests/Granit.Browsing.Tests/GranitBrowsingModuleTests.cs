@@ -37,7 +37,7 @@ public sealed class GranitBrowsingModuleTests
             .Cast<DependsOnAttribute>()
             .Single();
 
-        attr.DependedTypes.ShouldContain(typeof(GranitIoModule));
+        attr.DependedTypes.ShouldContain(typeof(GranitIOModule));
     }
 
     [Fact]

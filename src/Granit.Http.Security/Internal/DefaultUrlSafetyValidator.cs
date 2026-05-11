@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using Granit.Http.Security.Options;
 using Microsoft.Extensions.Options;
 
 namespace Granit.Http.Security.Internal;
