@@ -3,59 +3,87 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using Granit.Entities.Actions.Execution;
+using Granit.Entities.Internal.BulkActions;
+using Granit.Entities.Actions;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddLogging(cfg => cfg.AddSimpleConsole());
 
 // In-memory invoice store and executors
-builder.Services.AddSingleton<InMemoryInvoiceRepository>();
-builder.Services.AddScoped<IUnitOfWork, InMemoryUnitOfWork>();
+// Use real orchestrator from Granit and EF Core-backed DbContext
+builder.Services.AddDbContext<InvoicingDbContext>(opt => opt.UseSqlite("Data Source=issue1822.db"));
+builder.Services.AddScoped<BulkActionExecutionOrchestrator>();
+
 builder.Services.AddScoped<ArchiveInvoiceExecutor>();
 builder.Services.AddScoped<BulkArchiveInvoicesExecutor>();
 
 var app = builder.Build();
 
-app.MapGet("/api/invoices/seed", (InMemoryInvoiceRepository repo) =>
+app.MapGet("/api/invoices/seed", async (IServiceProvider sp) =>
 {
-    repo.SeedSample();
-    return Results.Ok(new { seeded = repo.Count });
+    using var scope = sp.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<InvoicingDbContext>();
+    db.Database.EnsureDeleted();
+    db.Database.EnsureCreated();
+
+    db.Invoices.AddRange(new InvoicingEntity { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Number = "INV-001", Status = InvoiceStatus.Draft },
+                         new InvoicingEntity { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Number = "INV-002", Status = InvoiceStatus.Authorized },
+                         new InvoicingEntity { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Number = "INV-003", Status = InvoiceStatus.Draft });
+    await db.SaveChangesAsync();
+    return TypedResults.Ok(new { seeded = await db.Invoices.CountAsync() });
 });
 
-app.MapPost("/api/entities/invoices/bulk/archive", async (HttpContext http, InMemoryInvoiceRepository repo, IServiceProvider sp) =>
+app.MapPost("/api/entities/invoices/bulk/archive", async (HttpContext http, IServiceProvider sp) =>
 {
     var doc = await JsonDocument.ParseAsync(http.Request.Body);
     var root = doc.RootElement;
-
     var ids = root.GetProperty("ids").EnumerateArray().Select(e => e.GetGuid()).ToList();
-    var invoices = repo.GetByIds(ids);
 
-    var bulkExecutor = sp.GetService<BulkArchiveInvoicesExecutor>();
-    if (bulkExecutor is not null)
-    {
-        var result = await bulkExecutor.ExecuteBulkAsync(invoices, root.GetProperty("payload"), http.RequestAborted);
-        return Results.Ok(new { affected = result.AffectedCount, failures = result.Failures });
-    }
+    using var scope = sp.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<InvoicingDbContext>();
 
-    var executor = sp.GetRequiredService<ArchiveInvoiceExecutor>();
-    var failures = new List<BulkFailure>();
-    int affected = 0;
-    foreach (var inv in invoices)
-    {
-        var r = await executor.ExecuteAsync(inv, root.GetProperty("payload"), http.RequestAborted);
-        if (r.IsSuccess) affected++; else failures.Add(new BulkFailure(inv.Id.ToString(), r.ErrorMessage ?? ""));
-    }
+    // Build descriptor for the action (server executor + bulk executor types)
+    var descriptor = new EntityActionDescriptor(
+        Name: "archive",
+        Kind: EntityActionKind.ApiCall,
+        DisplayKey: "Invoice.Actions.Archive",
+        Icon: "archive-box",
+        Order: 20,
+        RequiresPermission: "Invoicing.Invoices.Manage",
+        UrlTemplate: "/api/invoices/{id}/archive",
+        HttpMethod: "POST",
+        ConfirmationKey: "Invoice.Actions.ArchiveConfirmation",
+        WorkflowTransitionName: null,
+        ContributorAssemblyName: null,
+        ShowOnKanbanCard: false,
+        ShowOnGalleryCard: false,
+        ShowOnCalendarTile: false,
+        ShowOnListHeader: false,
+        ShowOnSelection: true);
 
-    return Results.Ok(new { affected, failures });
+    // Set server/bulk executor types via reflection (properties added in feature)
+    typeof(EntityActionDescriptor).GetProperty("ServerExecutorType")?.SetValue(descriptor, typeof(ArchiveInvoiceExecutor));
+    typeof(EntityActionDescriptor).GetProperty("BulkExecutorType")?.SetValue(descriptor, typeof(BulkArchiveInvoicesExecutor));
+
+    var orchestrator = scope.ServiceProvider.GetRequiredService<BulkActionExecutionOrchestrator>();
+    var result = await orchestrator.ExecuteAsync<InvoicingEntity>(descriptor, db, ids.Select(g => g.ToString()).ToList(), root.GetProperty("payload"), http.RequestAborted);
+
+    return TypedResults.Ok(new { affected = result.AffectedCount, failures = result.Failures });
 });
 
-app.MapGet("/api/invoices", (InMemoryInvoiceRepository repo) => Results.Ok(repo.List()));
+app.MapGet("/api/invoices", async (InvoicingDbContext db) => TypedResults.Ok(await db.Invoices.ToListAsync()));
 
 app.Run("http://localhost:5005");
 
-// --- Minimal implementations below ---
+// --- EF Core-backed implementations for the sample ---
 
-public sealed class Invoice
+public enum InvoiceStatus { Draft = 0, Authorized = 1, Paid = 2, Archived = 3 }
+
+public class InvoicingEntity
 {
     public Guid Id { get; set; }
     public string Number { get; set; } = string.Empty;
@@ -65,69 +93,56 @@ public sealed class Invoice
     public DateTime CreatedAt { get; set; }
 }
 
-public enum InvoiceStatus { Draft = 0, Authorized = 1, Paid = 2, Archived = 3 }
-
-public interface IUnitOfWork { Task CommitAsync(CancellationToken ct = default); }
-public sealed class InMemoryUnitOfWork : IUnitOfWork { public Task CommitAsync(CancellationToken ct = default) => Task.CompletedTask; }
-
-public sealed class InMemoryInvoiceRepository
+public class InvoicingDbContext : DbContext
 {
-    private readonly List<Invoice> _list = new();
-    public int Count => _list.Count;
-    public void SeedSample()
-    {
-        _list.Clear();
-        _list.Add(new Invoice { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Number = "INV-001", Status = InvoiceStatus.Draft, CreatedAt = DateTime.UtcNow });
-        _list.Add(new Invoice { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Number = "INV-002", Status = InvoiceStatus.Authorized, CreatedAt = DateTime.UtcNow });
-        _list.Add(new Invoice { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Number = "INV-003", Status = InvoiceStatus.Draft, CreatedAt = DateTime.UtcNow });
-    }
-    public List<Invoice> GetByIds(IEnumerable<Guid> ids) => _list.Where(i => ids.Contains(i.Id)).ToList();
-    public IReadOnlyList<Invoice> List() => _list.AsReadOnly();
-}
-
-public record ActionResult(bool IsSuccess, string? ErrorMessage = null)
-{
-    public static ActionResult Success() => new(true);
-    public static ActionResult Failure(string key) { ArgumentException.ThrowIfNullOrWhiteSpace(key); return new(false, key); }
-}
-
-public sealed record BulkFailure(string EntityId, string ErrorMessage);
-public sealed record BulkActionResult(int AffectedCount, IReadOnlyList<BulkFailure> Failures)
-{
-    public static BulkActionResult Success(int c) => new(c, Array.Empty<BulkFailure>());
-    public static BulkActionResult WithFailures(int c, params BulkFailure[] f) => new(c, f);
+    public InvoicingDbContext(DbContextOptions<InvoicingDbContext> options) : base(options) { }
+    public DbSet<InvoicingEntity> Invoices => Set<InvoicingEntity>();
 }
 
 public sealed class ArchiveInvoiceExecutor
 {
-    private readonly IUnitOfWork _uow;
+    private readonly InvoicingDbContext _db;
     private readonly ILogger<ArchiveInvoiceExecutor> _logger;
-    private readonly TimeProvider _time;
-    public ArchiveInvoiceExecutor(IUnitOfWork uow, ILogger<ArchiveInvoiceExecutor> logger, TimeProvider time) { _uow = uow; _logger = logger; _time = time; }
-    public Task<ActionResult> ExecuteAsync(Invoice invoice, JsonElement payload, CancellationToken cancellationToken)
+    public ArchiveInvoiceExecutor(InvoicingDbContext db, ILogger<ArchiveInvoiceExecutor> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
+
+    public async Task<ActionResult> ExecuteAsync(InvoicingEntity invoice, JsonElement payload, CancellationToken cancellationToken)
     {
         if (invoice.Status == InvoiceStatus.Authorized)
         {
             _logger.LogWarning("Cannot archive {Number}", invoice.Number);
-            return Task.FromResult(ActionResult.Failure("Granit:Invoicing:CannotArchivePostAuthorized"));
+            return ActionResult.Failure("Granit:Invoicing:CannotArchivePostAuthorized");
         }
+
         invoice.Status = InvoiceStatus.Archived;
-        invoice.ArchivedAt = _time.GetUtcNow().DateTime;
-        return Task.FromResult(ActionResult.Success());
+        invoice.ArchivedAt = DateTime.UtcNow;
+        _db.Update(invoice);
+        await _db.SaveChangesAsync(cancellationToken);
+        return ActionResult.Success();
     }
 }
 
 public sealed class BulkArchiveInvoicesExecutor
 {
+    private readonly InvoicingDbContext _db;
     private readonly ILogger<BulkArchiveInvoicesExecutor> _logger;
-    public BulkArchiveInvoicesExecutor(ILogger<BulkArchiveInvoicesExecutor> logger) { _logger = logger; }
 
-    public Task<BulkActionResult> ExecuteBulkAsync(IReadOnlyList<Invoice> entities, JsonElement payload, CancellationToken cancellationToken)
+    public BulkArchiveInvoicesExecutor(InvoicingDbContext db, ILogger<BulkArchiveInvoicesExecutor> logger)
     {
-        if (entities.Count == 0) return Task.FromResult(BulkActionResult.Success(0));
+        _db = db;
+        _logger = logger;
+    }
+
+    public async Task<BulkActionResult> ExecuteBulkAsync(IReadOnlyList<InvoicingEntity> entities, JsonElement payload, CancellationToken cancellationToken)
+    {
+        if (entities.Count == 0) return BulkActionResult.Success(0);
 
         var failures = new List<BulkFailure>();
         int affected = 0;
+
         foreach (var e in entities)
         {
             if (e.Status == InvoiceStatus.Authorized)
@@ -139,7 +154,11 @@ public sealed class BulkArchiveInvoicesExecutor
             e.ArchivedAt = DateTime.UtcNow;
             affected++;
         }
-        if (failures.Count > 0) return Task.FromResult(BulkActionResult.WithFailures(affected, failures.ToArray()));
-        return Task.FromResult(BulkActionResult.Success(affected));
+
+        _db.UpdateRange(entities);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        if (failures.Count > 0) return BulkActionResult.WithFailures(affected, failures.ToArray());
+        return BulkActionResult.Success(affected);
     }
 }

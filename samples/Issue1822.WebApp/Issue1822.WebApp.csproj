@@ -11,5 +11,12 @@
     <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Granit.Entities.Abstractions\Granit.Entities.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\Granit.Entities\Granit.Entities.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+  </ItemGroup>
 
 </Project>
