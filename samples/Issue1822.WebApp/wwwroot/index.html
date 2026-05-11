@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Issue 1822 Bulk Action UI</title>
+  <style>
+    :root {
+      --bg: #f5f2ea;
+      --surface: #fffdf8;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --accent: #b45309;
+      --accent-2: #92400e;
+      --ok: #166534;
+      --warn: #9a3412;
+      --bad: #991b1b;
+      --border: #e5dccd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 0%, #fff4d6 0%, transparent 35%),
+        radial-gradient(circle at 90% 100%, #f3e8d8 0%, transparent 30%),
+        var(--bg);
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 24px auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 8px 24px rgba(31, 41, 55, 0.06);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.4rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 240px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      transition: transform 140ms ease, background-color 140ms ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: var(--accent-2);
+    }
+
+    button.secondary {
+      background: #d97706;
+    }
+
+    button.ghost {
+      background: #f0e7d8;
+      color: var(--ink);
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 8px;
+      vertical-align: top;
+    }
+
+    .status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .status-draft { background: #e0f2fe; color: #0c4a6e; }
+    .status-authorized { background: #ffedd5; color: var(--warn); }
+    .status-archived { background: #dcfce7; color: var(--ok); }
+    .status-paid { background: #ede9fe; color: #5b21b6; }
+
+    #actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    #log {
+      white-space: pre-wrap;
+      background: #fff;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      min-height: 64px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 680px) {
+      .container { margin: 12px auto; }
+      th:nth-child(4), td:nth-child(4),
+      th:nth-child(5), td:nth-child(5) { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Issue #1822 - Bulk Action Executor Demo</h1>
+      <div class="row">
+        <label for="baseUrl">API base URL:</label>
+        <input id="baseUrl" type="text" value="http://localhost:5005">
+        <button id="btnConnect">Connect</button>
+      </div>
+      <div class="row">
+        <button id="btnSeed" class="secondary">Seed Invoices</button>
+        <button id="btnReload" class="ghost">Reload Invoices</button>
+      </div>
+      <p>
+        This UI loads action metadata from <strong>/api/entities/invoices?facets=actions,collections</strong>.
+        Selection actions are discovered from the manifest (no hardcoded action endpoint).
+      </p>
+      <div id="actions"></div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll"></th>
+            <th>Number</th>
+            <th>Status</th>
+            <th>Archived At</th>
+            <th>ID</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3>Log</h3>
+      <div id="log">Ready.</div>
+    </div>
+  </div>
+
+  <script>
+    const state = {
+      baseUrl: "http://localhost:5005",
+      invoices: [],
+      actions: []
+    };
+
+    const baseUrlEl = document.getElementById("baseUrl");
+    const rowsEl = document.getElementById("rows");
+    const logEl = document.getElementById("log");
+    const actionsEl = document.getElementById("actions");
+
+    function setLog(message, data) {
+      logEl.textContent = data ? `${message}\n${JSON.stringify(data, null, 2)}` : message;
+    }
+
+    function normalizeBaseUrl(url) {
+      return (url || "").trim().replace(/\/$/, "");
+    }
+
+    function statusLabel(status) {
+      if (status === 0) return ["Draft", "status-draft"];
+      if (status === 1) return ["Authorized", "status-authorized"];
+      if (status === 2) return ["Paid", "status-paid"];
+      if (status === 3) return ["Archived", "status-archived"];
+      return [String(status), "status-draft"];
+    }
+
+    function getSelectedIds() {
+      return Array.from(document.querySelectorAll(".row-select:checked")).map(x => x.value);
+    }
+
+    function renderInvoices() {
+      rowsEl.innerHTML = "";
+      for (const inv of state.invoices) {
+        const [label, cls] = statusLabel(inv.status);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input class="row-select" type="checkbox" value="${inv.id}"></td>
+          <td>${inv.number}</td>
+          <td><span class="status ${cls}">${label}</span></td>
+          <td>${inv.archivedAt || "-"}</td>
+          <td>${inv.id}</td>
+        `;
+        rowsEl.appendChild(tr);
+      }
+    }
+
+    function renderActions() {
+      actionsEl.innerHTML = "";
+      for (const action of state.actions) {
+        const btn = document.createElement("button");
+        btn.textContent = action.displayKey || action.name || "Action";
+        btn.addEventListener("click", async () => {
+          const ids = getSelectedIds();
+          if (!ids.length) {
+            setLog("Select at least one invoice first.");
+            return;
+          }
+
+          const endpoint = `${state.baseUrl}${action.bulkUrl}`;
+          const res = await fetch(endpoint, {
+            method: action.method || "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ids, payload: {} })
+          });
+
+          const data = await res.json();
+          setLog(`Action ${action.name} completed (HTTP ${res.status}).`, data);
+          await loadInvoices();
+        });
+        actionsEl.appendChild(btn);
+      }
+    }
+
+    async function loadInvoices() {
+      const res = await fetch(`${state.baseUrl}/api/invoices`);
+      const data = await res.json();
+      state.invoices = Array.isArray(data) ? data : (data.value || []);
+      renderInvoices();
+    }
+
+    async function loadActions() {
+      const res = await fetch(`${state.baseUrl}/api/entities/invoices?facets=actions,collections`);
+      if (!res.ok) {
+        throw new Error(`manifest unavailable (${res.status})`);
+      }
+
+      const manifest = await res.json();
+      const selection = manifest?.collections?.selectionActions || [];
+      const allActions = manifest?.actions || [];
+
+      state.actions = selection.map(s => {
+        const full = allActions.find(a => a.name === s.name) || {};
+        return {
+          name: s.name,
+          displayKey: s.displayKey || full.displayKey || s.name,
+          method: full.httpMethod || "POST",
+          bulkUrl: `/api/entities/invoices/bulk/${s.name}`
+        };
+      });
+
+      renderActions();
+    }
+
+    async function seed() {
+      const res = await fetch(`${state.baseUrl}/api/invoices/seed`);
+      const data = await res.json();
+      setLog("Seed completed.", data);
+      await loadInvoices();
+    }
+
+    async function connect() {
+      state.baseUrl = normalizeBaseUrl(baseUrlEl.value || "http://localhost:5005");
+      setLog(`Connecting to ${state.baseUrl} ...`);
+      await Promise.all([loadActions(), loadInvoices()]);
+      setLog("Connected successfully.");
+    }
+
+    document.getElementById("btnConnect").addEventListener("click", connect);
+    document.getElementById("btnSeed").addEventListener("click", seed);
+    document.getElementById("btnReload").addEventListener("click", loadInvoices);
+    document.getElementById("selectAll").addEventListener("change", (e) => {
+      document.querySelectorAll(".row-select").forEach(cb => {
+        cb.checked = e.target.checked;
+      });
+    });
+
+    connect().catch(err => setLog("Connection failed", { error: String(err) }));
+  </script>
+</body>
+</html>

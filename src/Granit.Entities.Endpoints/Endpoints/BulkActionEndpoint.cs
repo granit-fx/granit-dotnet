@@ -24,9 +24,7 @@ internal static class BulkActionEndpoint
         RouteGroupBuilder group,
         string entityName,
         EntityActionDescriptor descriptor,
-        BulkActionExecutionOrchestrator orchestrator,
-        ILogger logger,
-        IEntityDefinitionRegistry registry)
+        ILogger logger)
         where TEntity : class
     {
         if (descriptor.ServerExecutorType is null)
@@ -39,7 +37,21 @@ internal static class BulkActionEndpoint
 
         RouteHandlerBuilder endpoint = group.MapPost(
             $"/{entityName}/bulk/{descriptor.Name}",
-            BulkActionHandler<TEntity>)
+            ([FromBody] BulkActionRequest request,
+             [FromServices] BulkActionExecutionOrchestrator endpointOrchestrator,
+             [FromServices] IEntityDefinitionRegistry endpointRegistry,
+             [FromServices] IDbContextFactory<DbContext> endpointDbContextFactory,
+             [FromServices] ILoggerFactory endpointLoggerFactory,
+             CancellationToken cancellationToken) =>
+                BulkActionHandler<TEntity>(
+                    request,
+                    entityName,
+                    descriptor.Name,
+                    endpointOrchestrator,
+                    endpointRegistry,
+                    endpointDbContextFactory,
+                    endpointLoggerFactory,
+                    cancellationToken))
             .WithName($"BulkExecuteAction{entityName}{descriptor.Name}")
             .WithSummary($"Executes a bulk action ({descriptor.Name}) on multiple {entityName} entities.")
             .WithDescription(
@@ -63,8 +75,8 @@ internal static class BulkActionEndpoint
 
     private static async Task<Results<Ok<BulkActionResponse>, ProblemHttpResult>> BulkActionHandler<TEntity>(
         [FromBody] BulkActionRequest request,
-        [FromRoute] string name,
-        [FromRoute] string action,
+        string name,
+        string action,
         [FromServices] BulkActionExecutionOrchestrator orchestrator,
         [FromServices] IEntityDefinitionRegistry registry,
         [FromServices] IDbContextFactory<DbContext> dbContextFactory,

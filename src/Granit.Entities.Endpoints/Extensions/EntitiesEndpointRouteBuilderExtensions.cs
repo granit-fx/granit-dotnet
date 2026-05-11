@@ -85,7 +85,6 @@ public static class EntitiesEndpointRouteBuilderExtensions
     private static void MapBulkActionEndpoints(RouteGroupBuilder group, IServiceProvider serviceProvider)
     {
         IEntityDefinitionRegistry registry = serviceProvider.GetRequiredService<IEntityDefinitionRegistry>();
-        BulkActionExecutionOrchestrator orchestrator = serviceProvider.GetRequiredService<BulkActionExecutionOrchestrator>();
         ILogger logger = serviceProvider
             .GetRequiredService<ILoggerFactory>()
             .CreateLogger("Granit.Entities.BulkActionEndpointRegistration");
@@ -105,7 +104,7 @@ public static class EntitiesEndpointRouteBuilderExtensions
             MethodInfo closedMethod = MapBulkActionEndpointMethod.MakeGenericMethod(descriptor.EntityType);
             foreach (EntityActionDescriptor action in serverSelectionActions)
             {
-                closedMethod.Invoke(null, [group, descriptor.Name, action, orchestrator, logger, registry]);
+                closedMethod.Invoke(null, [group, descriptor.Name, action, logger]);
             }
         }
     }
