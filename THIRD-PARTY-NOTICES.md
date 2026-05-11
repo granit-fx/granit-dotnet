@@ -75,6 +75,7 @@ Dernière mise à jour : 2026-04-29
 | MimeKit | 4.16.0 | Copyright (c) 2013-2026 .NET Foundation and Contributors |
 | Mollie.Api | 4.19.0 | Copyright (c) 2023 Vincent Kok |
 | OllamaSharp | 5.4.25 | Copyright (c) 2023-2026 Awalon |
+| PdfPig | 0.1.14 | Copyright (c) Eliot Jones |
 | PuppeteerSharp | 24.40.0 | PuppeteerSharp Contributors |
 | Scalar.AspNetCore | 2.14.6 | Scalar Contributors |
 | Sep | 0.13.0 | Copyright (c) 2023 nietras |

@@ -991,6 +991,13 @@
       "framework": "net10.0"
     },
     {
+      "name": "Granit.Documents.AssetMetadata.Pdf",
+      "deps": [
+        "Granit.Documents.AssetMetadata"
+      ],
+      "framework": "net10.0"
+    },
+    {
       "name": "Granit.Documents.BackgroundJobs",
       "deps": [
         "Granit.BackgroundJobs",
@@ -20965,6 +20972,38 @@
           "kind": "method",
           "signature": "FromSeconds(30)",
           "returnType": "TimeSpan ExtractionTimeout { get; set; } = TimeSpan."
+        }
+      ]
+    },
+    {
+      "name": "ServiceCollectionExtensions",
+      "fqn": "Granit.Documents.AssetMetadata.Pdf.Extensions.ServiceCollectionExtensions",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Pdf",
+      "file": "src/Granit.Documents.AssetMetadata.Pdf/Extensions/ServiceCollectionExtensions.cs",
+      "line": 10,
+      "members": [
+        {
+          "name": "AddGranitDocumentsAssetMetadataPdf",
+          "kind": "method",
+          "signature": "AddGranitDocumentsAssetMetadataPdf(this IServiceCollection services)",
+          "returnType": "IServiceCollection"
+        }
+      ]
+    },
+    {
+      "name": "GranitDocumentsAssetMetadataPdfModule",
+      "fqn": "Granit.Documents.AssetMetadata.Pdf.GranitDocumentsAssetMetadataPdfModule",
+      "kind": "class",
+      "project": "Granit.Documents.AssetMetadata.Pdf",
+      "file": "src/Granit.Documents.AssetMetadata.Pdf/GranitDocumentsAssetMetadataPdfModule.cs",
+      "line": 13,
+      "members": [
+        {
+          "name": "ConfigureServices",
+          "kind": "method",
+          "signature": "ConfigureServices(ServiceConfigurationContext context)",
+          "returnType": "void"
         }
       ]
     },

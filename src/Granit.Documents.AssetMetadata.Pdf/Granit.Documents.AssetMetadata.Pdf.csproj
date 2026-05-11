@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Granit.Documents.AssetMetadata.Pdf</PackageId>
+    <Description>PDF metadata extractor for Granit.Documents.AssetMetadata (F17.6). Built on top of the PdfPig NuGet (Apache-2.0).</Description>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Granit.Documents.AssetMetadata.Pdf.Tests" />
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PdfPig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Granit.Documents.AssetMetadata\Granit.Documents.AssetMetadata.csproj" />
+  </ItemGroup>
+
+</Project>

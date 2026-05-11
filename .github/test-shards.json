@@ -210,6 +210,7 @@
         "tests/Granit.Documents.AssetMetadata.Endpoints.Tests",
         "tests/Granit.Documents.AssetMetadata.BackgroundJobs.Tests",
         "tests/Granit.Documents.AssetMetadata.Imaging.Tests",
+        "tests/Granit.Documents.AssetMetadata.Pdf.Tests",
         "tests/Granit.Documents.Renditions.BackgroundJobs.Tests",
         "tests/Granit.Documents.Renditions.Endpoints.Tests",
         "tests/Granit.Documents.Renditions.Imaging.Tests",
