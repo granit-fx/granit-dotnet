@@ -1,13 +1,18 @@
 using Granit.Entities.Endpoints.Endpoints;
 using Granit.Entities.Endpoints.Internal;
 using Granit.Entities.Endpoints.Options;
+using Granit.Entities.Actions;
 using Granit.Entities.Internal;
+using Granit.Entities.Internal.BulkActions;
 using Granit.Validation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Reflection;
 
 namespace Granit.Entities.Endpoints.Extensions;
 
@@ -46,6 +51,7 @@ public static class EntitiesEndpointRouteBuilderExtensions
             .RequireAuthorization();
 
         group.MapEntitiesEndpoints();
+        MapBulkActionEndpoints(group, endpoints.ServiceProvider);
 
         return group;
     }
@@ -71,5 +77,36 @@ public static class EntitiesEndpointRouteBuilderExtensions
         services.TryAddSingleton<ICalendarRangeService, NullCalendarRangeService>();
         services.AddOptions<EntitiesEndpointsOptions>();
         return services;
+    }
+
+    private static readonly MethodInfo MapBulkActionEndpointMethod = typeof(BulkActionEndpoint)
+        .GetMethod(nameof(BulkActionEndpoint.MapBulkActionEndpoint), BindingFlags.Public | BindingFlags.Static)!;
+
+    private static void MapBulkActionEndpoints(RouteGroupBuilder group, IServiceProvider serviceProvider)
+    {
+        IEntityDefinitionRegistry registry = serviceProvider.GetRequiredService<IEntityDefinitionRegistry>();
+        BulkActionExecutionOrchestrator orchestrator = serviceProvider.GetRequiredService<BulkActionExecutionOrchestrator>();
+        ILogger logger = serviceProvider
+            .GetRequiredService<ILoggerFactory>()
+            .CreateLogger("Granit.Entities.BulkActionEndpointRegistration");
+
+        foreach (IEntityDefinitionDescriptor descriptorRef in registry.All)
+        {
+            EntityDefinitionDescriptor descriptor = descriptorRef.Descriptor;
+            IReadOnlyList<EntityActionDescriptor> serverSelectionActions = descriptor.Actions
+                .Where(a => a.ShowOnSelection && a.RequiresServerExecution && a.ServerExecutorType is not null)
+                .ToList();
+
+            if (serverSelectionActions.Count == 0)
+            {
+                continue;
+            }
+
+            MethodInfo closedMethod = MapBulkActionEndpointMethod.MakeGenericMethod(descriptor.EntityType);
+            foreach (EntityActionDescriptor action in serverSelectionActions)
+            {
+                closedMethod.Invoke(null, [group, descriptor.Name, action, orchestrator, logger, registry]);
+            }
+        }
     }
 }
